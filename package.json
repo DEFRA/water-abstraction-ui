@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "lab -t 90",
-    "test-cov-html": "lab -r html -o coverage.html"
+    "test-cov-html": "lab -r html -o coverage.html",
+    "start": "node index",
+    "postinstall": "gulp default"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +19,9 @@
     "standard": "^10.0.2"
   },
   "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
     "govuk-elements-sass": "^3.1.1",
     "govuk_frontend_toolkit": "^7.0.1",
     "govuk_template_mustache": "^0.22.3",

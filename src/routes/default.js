@@ -45,11 +45,10 @@ module.exports = [
 
 
     var httpRequest = require('request')
-    httpRequest('/public/data/licences/licences.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/licences.json', function (error, response, body) {
       // console.log('error:', error); // Print the error if one occurred
       // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       // console.log('body:', body); // Print the HTML for the Google homepage.
-
       var viewContext = viewContextDefaults(request)
       viewContext.licenceData = JSON.parse(body)
       viewContext.licence = body
@@ -59,14 +58,14 @@ module.exports = [
 
 
   { method: 'GET', path: '/licences', handler: function (request, reply) {
-    console.log('requested signin page')
-
+    console.log('requested signin page for '+request.info.host)
+    console.log(request.info)
 
     var httpRequest = require('request')
-    httpRequest('/public/data/licences/licences.json', function (error, response, body) {
-      // console.log('error:', error); // Print the error if one occurred
-      // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-      // console.log('body:', body); // Print the HTML for the Google homepage.
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/licences.json', function (error, response, body) {
+       console.log('error:', error); // Print the error if one occurred
+       console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+       console.log('body:', body); // Print the HTML for the Google homepage.
 
       var viewContext = viewContextDefaults(request)
       viewContext.licenceData = JSON.parse(body)
@@ -83,7 +82,7 @@ module.exports = [
     console.log(request.query)
 
     var httpRequest = require('request')
-    httpRequest('/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
   // console.log('error:', error); // Print the error if one occurred
   // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
   // console.log('body:', body); // Print the HTML for the Google homepage.
@@ -103,7 +102,7 @@ module.exports = [
 
 
     var httpRequest = require('request')
-    httpRequest('/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
       // console.log('error:', error); // Print the error if one occurred
       // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       // console.log('body:', body); // Print the HTML for the Google homepage.
@@ -122,7 +121,7 @@ module.exports = [
 
 
         var httpRequest = require('request')
-        httpRequest('/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+        httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
           // console.log('error:', error); // Print the error if one occurred
           // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
           // console.log('body:', body); // Print the HTML for the Google homepage.
@@ -137,7 +136,7 @@ module.exports = [
   { method: 'GET', path: '/licences/{licence_id}/terms', handler: function (request, reply) {
     console.log('requested terms page')
     var httpRequest = require('request')
-    httpRequest('/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
       // console.log('error:', error); // Print the error if one occurred
       // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       // console.log('body:', body); // Print the HTML for the Google homepage.

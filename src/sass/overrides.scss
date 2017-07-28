@@ -1,0 +1,283 @@
+// Path to assets for use with the file-url function
+// in the govuk frontend toolkit's url-helpers partial
+$path: "/public/images/";
+
+// Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
+// Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
+@import 'govuk-elements';
+
+
+.button:before {
+    content: "";
+    height: 110%;
+    width: 100%;
+    display: block;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.arbitraryStyle {
+  padding:2px
+}
+
+.sign-out2 {
+    float: right;
+}
+
+// Related items
+// (These styles will be moved to GOV.UK elements, duplicating here for now.)
+
+.govuk-related-items {
+  margin-top: $gutter;
+  border-top: 10px solid $govuk-blue;
+  padding-top: 5px;
+}
+
+  .heading-medium {
+    margin-top: 0.3em;
+    margin-bottom: 0.5em;
+  }
+
+  li {
+    margin-bottom: 10px;
+    }
+
+// Add extra styles here, or re-organise the Sass files in whichever way makes most sense to you
+
+.sourceofsupplyq {
+  display: inline-block;
+  vertical-align: top;
+  padding-bottom: 7px;
+  padding-right: 0.25em;
+  width: 20%;
+}
+.sourceofsupplyqs {
+  display: inline-block;
+  vertical-align: top;
+  padding-bottom: 0px;
+  padding-top: 5px;
+  padding-right: 0.25em;
+  width: 20%;
+}
+
+.sourceofsupplyqstop {
+  display: inline-block;
+  vertical-align: top;
+  padding-bottom: 0px;
+  padding-top: 10px;
+  padding-right: 0.25em;
+  width: 20%;
+}
+
+.licenceLabel {
+  display: inline-block;
+  vertical-align: top;
+  padding-bottom: 7px;
+  padding-right: 0.25em;
+  width: 20%;
+}
+
+.address {
+  width: 100%;
+  padding-bottom: 10px;
+  padding-top: 20px;
+  border-bottom:  1px solid #bfc1c3;
+}
+
+.siteaddress {
+  padding-bottom: 10px;
+  padding-top: 20px;
+  border-bottom:  1px solid #bfc1c3;
+  border-top:  1px solid #bfc1c3;
+}
+
+.sourceofsupplya {
+  display: inline-block;
+  width: 50%;
+  padding-left: 1em;
+}
+
+.sourceofsupplyatop {
+  display: inline-block;
+  width: 50%;
+  padding-bottom: 7px;
+  padding-left: 1em;
+}
+.licenceAnswer {
+  display: inline-block;
+  width: 50%;
+  padding-bottom: 7px;
+  padding-left: 1em;
+}
+
+.licenceAnswers {
+  display: inline-block;
+  width: 50%;
+  padding-bottom: 0px;
+  padding-top: 5px;
+  padding-left: 1em;
+}
+
+.licenceAnswerstop {
+  display: inline-block;
+  width: 50%;
+  padding-bottom: 0px;
+  padding-top: 10px;
+  padding-left: 1em;
+}
+.name {
+  display: inline-block;
+  width: 50%;
+  padding-bottom: 7px;
+  padding-left: 0.5em;
+}
+
+.menubox {
+  background-color: #FFF;
+  cursor: pointer;
+  padding-left: 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid #bfc1c3;
+  transition: 0.4s;
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.25em;
+  line-height: 1.25;
+}
+
+.menubox:hover {
+    background-color: #F8F8F8;
+}
+
+.sign-out {
+float: right;
+margin-top: 1.4em;
+}
+
+.sign-out2 {
+float: right;
+}
+
+.openall{
+float: right;
+padding-bottom: 0px;
+}
+
+.check-all-contact-details {
+  font-size: 0.85em;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.maplist {
+  padding: 0px 0px 30px 21px;
+  line-height: 20px;
+}
+
+.licenceno {
+  padding: 0px 0px 20px;
+}
+
+.licenceholder {
+  padding: 0px 0px 7px;
+}
+
+.abstractionperiod {
+  padding: 5px 0px 7px;
+}
+
+.abstractionpoint {
+  padding: 5px 0px 7px;
+}
+
+.abstractionamount {
+  padding: 5px 0px 0px;
+}
+
+.handsoff {
+  padding: 5px 0px 10px;
+}
+
+.hour {
+padding: 0px 0px 0px 237px;
+}
+
+.day {
+padding: 0px 0px 05px 237px;
+}
+
+.smallprint {
+  font-size: 0.95em;
+  padding: 20px;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+button.accordion,a.accordion {
+   background-color: #FFF;
+   color: #005ea5;
+   cursor: pointer;
+   padding-left: 0px;
+   padding-top: 20px;
+   padding-bottom: 20px;
+   width: 100%;
+   text-align: left;
+   border: none;
+   outline: none;
+   transition: 0.4s;
+   font-family: "nta", Arial, sans-serif;
+   font-weight: 700;
+   font-size: 1.25em;
+   line-height: 1.25;
+}
+
+a.accordion {
+  display:block
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+button.accordion.active, button.accordion:hover, a.accordion.active, a.accordion:hover {
+    background-color: #F8F8F8;
+}
+
+div.grey_line {
+  border-top: 1px solid #bfc1c3;
+}
+
+div.grey_line_bottomh3 {
+border-bottom: 1px solid #bfc1c3;
+padding-bottom: 0px;
+}
+
+div.grey_line_bottom {
+  border-top: 1px solid #bfc1c3;
+  border-bottom: 1px solid #bfc1c3;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+div.white_panel {
+  padding: 30px 0px 20px;
+    background-color: white;
+    display: none;
+}
+
+button.accordion:after,a.accordion:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: #777;
+    float: right;
+    margin-left: 5px;
+    padding-top: 6px;
+    padding-right: 10px;
+}
+
+button.accordion.active:after,a.accordion.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}

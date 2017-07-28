@@ -1,0 +1,109 @@
+{{> styles}}
+
+{{> debug}}
+
+
+<main id="content" role="main">
+    <div class="phase-banner-alpha">
+      <p>
+      <strong class="phase-tag">ALPHA</strong>
+    <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
+    </p>
+            </div>
+    <nav>
+    <div class="breadcrumbs">
+        <ol role="breadcrumbs">
+          <li><a href="#">Your services</a></li>
+          <li><a href="/licences">Abstraction licences</a></li>
+          <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
+        </ol>
+    </nav>
+    </div>
+<a href="/signin" class="sign-out2">Sign out</a>
+
+
+  <h1 class="heading-large">
+    Your water abstraction licence
+    </h1>
+
+  <h2 class="heading-medium">
+    Check your licence details are up to date
+  </h2>
+    <p></p>
+<p>Licence number: {{ licenceData.LicenceSerialNo }}</p>
+<p></p>
+
+<div class="siteaddress">
+  <p></p>
+          <h2 class="heading-medium">
+            Registered licence holder details
+          </h2>
+
+          <p></p>
+        <div class="licenceLabel">Name:</div><div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}</div>
+        <p></p>
+          <div class="licenceLabel">Address:</div><div class="licenceAnswer">{{ licenceData.Addressline1}}, {{ licenceData.Addressline3}}, {{ licenceData.County}}, {{ licenceData.Postcode}}.</div>
+        <p></p>
+          <div class="licenceLabel">Telephone:</div><div class="licenceAnswer">{{ licenceData.tel}}</div>
+          <p></p>
+          <div class="licenceLabel">Email:</div><div class="licenceAnswer">{{ licenceData.Email}}</div>
+          <p></p>
+        </div>
+
+        <div class="address">
+          <p></p>
+                  <h2 class="heading-medium">
+                Site contact details
+              </h2>
+
+            <p></p>
+          <div class="licenceLabel">Name:</div><div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}</div>
+          <p></p>
+            <div class="licenceLabel">Address:</div><div class="licenceAnswer">{{ licenceData.Addressline1}}, {{ licenceData.Addressline3}}, {{ licenceData.County}}, {{ licenceData.Postcode}}.</div>
+          <p></p>
+            <div class="licenceLabel">Telephone:</div><div class="licenceAnswer">{{ licenceData.tel}}</div>
+            <p></p>
+            <div class="licenceLabel">Email:</div><div class="licenceAnswer">{{ licenceData.Email}}</div>
+            <p></p>
+        </div>
+
+<div class="address">
+  <p></p>
+          <h2 class="heading-medium">
+            Billing contact details
+          </h2>
+            <p></p>
+          <div class="licenceLabel">Name:</div><div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}</div>
+          <p></p>
+            <div class="licenceLabel">Address:</div><div class="licenceAnswer">{{ licenceData.Addressline1}}, {{ licenceData.Addressline3}}, {{ licenceData.County}}, {{ licenceData.Postcode}}.</div>
+          <p></p>
+            <div class="licenceLabel">Telephone:</div><div class="licenceAnswer">{{ licenceData.tel}}</div>
+            <p></p>
+            <div class="licenceLabel">Email:</div><div class="licenceAnswer">{{ licenceData.Email}}</div>
+            <p></p>
+</div>
+
+<div class="address">
+  <p></p>
+          <h2 class="heading-medium">
+            Abstraction return contact details
+          </h3>
+          <p></p>
+        <div class="licenceLabel">Name:</div><div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}</div>
+        <p></p>
+          <div class="licenceLabel">Address:</div><div class="licenceAnswer">{{ licenceData.Addressline1}}, {{ licenceData.Addressline3}}, {{ licenceData.County}}, {{ licenceData.Postcode}}.</div>
+        <p></p>
+          <div class="licenceLabel">Telephone:</div><div class="licenceAnswer">{{ licenceData.tel}}</div>
+          <p></p>
+          <div class="licenceLabel">Email:</div><div class="licenceAnswer">{{ licenceData.Email}}</div>
+          <p></p>
+</div>
+</br>
+  <div class='grid-row'>
+    <div class='column-full'>
+      <p></p>
+      <a href="/licences/{{ licence_id }}" >< Back to previous</a>
+</br>
+</div></div>
+
+</main>

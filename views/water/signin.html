@@ -1,0 +1,58 @@
+{{> styles}}
+
+{{> debug}}
+
+
+<main id="content" role="main">
+
+
+
+    <div class="phase-banner-alpha">
+      <p>
+      <strong class="phase-tag">ALPHA</strong>
+    <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
+    </p>
+            </div>
+    <nav>
+    <div class="breadcrumbs">
+        <ol role="breadcrumbs">
+          <li><a href="#">Your services</a></li>
+        </ol>
+    </nav>
+ </div>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <form action="/signin" method="post" class="form">
+
+        <h1 class="form-title heading-large">
+          Sign in to view your licence
+        </h1>
+
+        <!-- User id -->
+        <div class="form-group">
+          <label class="form-label-bold" for="user-id">User ID</label>
+          <span class="form-hint">This is the 10 digit Customer ID which was sent to you in the post or by e-mail.</span>
+          <input name="user_id" type="text" class="form-control" id="user-id">
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label-bold" for="password">
+            Password
+            <span class="form-hint">
+              This is the password which was sent to you in the post or by e-mail.
+              <br>
+              You will be asked to change your password on the first sign in.
+            </span>
+          </label>
+          <input name="password" autocomplete=""type="text" class="form-control" id="password">
+        </div>
+
+        <button class="button button-start" role="button" type="submit">Sign in</a><p></p>
+
+
+      </form>
+    </div>
+  </div>
+</main>

@@ -48,6 +48,12 @@ gulp.task('copy-template-assets', () => {
     .pipe(gulp.dest(paths.public))
 })
 
+gulp.task('copy-frontend-toolkit-assets', () => {
+  gulp
+    .src(paths.govukModules + '/govuk_frontend_toolkit/{images/**/*.*,javascripts/**/*.*}')
+    .pipe(gulp.dest(paths.public))
+})
+
 gulp.task('copy-template-view', function() {
   gulp
     .src('node_modules/govuk_template_mustache/views/**/*.*')
@@ -55,7 +61,7 @@ gulp.task('copy-template-view', function() {
 })
 
 gulp.task('install-govuk-files', [], () => {
-  gulp.run(['copy-template-assets', 'copy-template-view'])
+  gulp.run(['copy-template-assets', 'copy-template-view','copy-frontend-toolkit-assets'])
 })
 
 gulp.task('copy-static-assets', () => {
@@ -99,6 +105,7 @@ gulp.task('standard', function() {
 // gulp clean
 // gulp copy-govuk-files
 // gulp install-govuk-files
+// gulp copy-static-assets
 // gulp sass
 
 gulp.task('build', ['clean'], (callback) => {

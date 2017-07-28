@@ -1,0 +1,14 @@
+<h1>{{title}}
+
+</h1>
+
+<table>
+{{#each obj}}
+    <tr><td valign=top>
+    {{@key}}</td><td valign=top colspan=6>{{this}}
+      <br>
+      {{#>node obj=this}}{{/node}}
+      </td>
+    </tr>
+{{/each}}
+</table>

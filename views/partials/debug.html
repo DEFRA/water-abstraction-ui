@@ -2,9 +2,8 @@
 <div style='border:1px solid red;margin:10px;padding:10px'>
   <b>Debug Info</b>
   <br>
-{{#each session}}
-    Key: {{@key}} Value = {{this}}
-    <br>
-{{/each}}
 
+<table>
+    {{#>node obj=session}}{{/node}}
+</table>
 </div>

@@ -1,7 +1,7 @@
 const Hapi = require('hapi')
 const server = new Hapi.Server()
 
-server.connection({ port: 8000 })
+server.connection({ port: process.env.PORT || 8000 })
 
 const sessionPluginOptions = {
   cache: { segment: 'unique-cache-sement' },

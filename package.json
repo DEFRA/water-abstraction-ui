@@ -1,7 +1,7 @@
 {
-  "name": "hapi-mustache-base-app",
+  "name": "water-abstraction",
   "version": "1.0.0",
-  "description": "Base app for development of systems using Hapi and Mustache",
+  "description": "Web app for Water Abstraction Permit service",
   "main": "index.js",
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",

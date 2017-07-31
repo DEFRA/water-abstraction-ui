@@ -100,19 +100,6 @@ gulp.task('standard', function() {
     }))
 })
 
-// Run server
-gulp.task('server', function (cb) {
-  exec('node index.js', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-  exec('mongod --dbpath ./data', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-})
 
 // Build task
 // Not currently working, need to run:
@@ -126,10 +113,6 @@ gulp.task('build', ['clean'], (callback) => {
   runSequence('copy-govuk-files', 'install-govuk-files', 'sass', 'copy-static-assets',callback);
 })
 
-// for heroku
-gulp.task('heroku', ['clean'], (callback) => {
-  runSequence('copy-govuk-files', 'install-govuk-files', 'sass', 'copy-static-assets','server',callback);
-})
 
 
 // Default task

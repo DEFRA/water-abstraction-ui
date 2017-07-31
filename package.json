@@ -4,7 +4,6 @@
   "description": "Base app for development of systems using Hapi and Mustache",
   "main": "index.js",
   "scripts": {
-    "start":"node index.js",
     "heroku-prebuild": "npm install --only=dev",
     "test": "lab -t 90",
     "test-cov-html": "lab -r html -o coverage.html"

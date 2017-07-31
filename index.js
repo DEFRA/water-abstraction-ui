@@ -7,16 +7,16 @@ const sessionPluginOptions = {
   cache: { segment: 'unique-cache-sement' },
   cookie: { isSecure: false },
   key: 'super-secret-cookie-encryption-key'
-};
+}
 
 server.register(
   { register: require('hapi-server-session'), options: sessionPluginOptions },
   (err) => {
     if (err) {
-      throw err;
+      throw err
     }
   }
-);
+)
 
 server.register([require('inert'), require('vision')], (err) => {
   if (err) {
@@ -38,4 +38,4 @@ server.start((err) => {
   }
   console.log('Server running at:', server.info.uri)
 })
-  module.exports = server
+module.exports = server

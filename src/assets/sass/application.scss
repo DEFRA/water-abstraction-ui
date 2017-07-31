@@ -1,44 +1,42 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
 $path: "/public/images/";
-
 // Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
 // Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
 @import 'govuk-elements';
-
 // Settings (variables)
-@import "colours";                                // Colour variables
-@import "font_stack";                             // Font family variables
-@import "measurements";                           // Widths and gutter variables
-
+@import "colours";
+// Colour variables
+@import "font_stack";
+// Font family variables
+@import "measurements";
+// Widths and gutter variables
 // Mixins
-@import "conditionals";                           // Media query mixin
-@import "device-pixels";                          // Retina image mixin
-@import "grid_layout";                            // Basic grid layout mixin
-@import "typography";                             // Core bold and heading mixins
-@import "shims";                                  // Inline block mixin, clearfix placeholder
-
-
+@import "conditionals";
+// Media query mixin
+@import "device-pixels";
+// Retina image mixin
+@import "grid_layout";
+// Basic grid layout mixin
+@import "typography";
+// Core bold and heading mixins
+@import "shims";
+// Inline block mixin, clearfix placeholder
 // Take a look at in app/assets/sass/patterns/ to see which files are imported.
 // @import 'patterns/check-your-answers';
 // @import 'patterns/task-list';
-
 
 .teststyle {
   color: green;
 }
 
-
-
-
 .arbitraryStyle {
-  padding:2px
+  padding: 2px;
 }
 
 .sign-out2 {
-    float: right;
+  float: right;
 }
-
 // Related items
 // (These styles will be moved to GOV.UK elements, duplicating here for now.)
 
@@ -48,17 +46,15 @@ $path: "/public/images/";
   padding-top: 5px;
 }
 
-  .heading-medium {
-    margin-top: 0.3em;
-    margin-bottom: 0.5em;
-  }
+.heading-medium {
+  margin-top: 0.3em;
+  margin-bottom: 0.5em;
+}
 
-  li {
-    margin-bottom: 10px;
-    }
-
+li {
+  margin-bottom: 10px;
+}
 // Add extra styles here, or re-organise the Sass files in whichever way makes most sense to you
-
 .sourceofsupplyq {
   display: inline-block;
   vertical-align: top;
@@ -66,10 +62,11 @@ $path: "/public/images/";
   padding-right: 0.25em;
   width: 20%;
 }
+
 .sourceofsupplyqs {
   display: inline-block;
   vertical-align: top;
-  padding-bottom: 0px;
+  padding-bottom: 0;
   padding-top: 5px;
   padding-right: 0.25em;
   width: 20%;
@@ -78,7 +75,7 @@ $path: "/public/images/";
 .sourceofsupplyqstop {
   display: inline-block;
   vertical-align: top;
-  padding-bottom: 0px;
+  padding-bottom: 0;
   padding-top: 10px;
   padding-right: 0.25em;
   width: 20%;
@@ -96,14 +93,14 @@ $path: "/public/images/";
   width: 100%;
   padding-bottom: 10px;
   padding-top: 20px;
-  border-bottom:  1px solid #bfc1c3;
+  border-bottom: 1px solid #bfc1c3;
 }
 
 .siteaddress {
   padding-bottom: 10px;
   padding-top: 20px;
-  border-bottom:  1px solid #bfc1c3;
-  border-top:  1px solid #bfc1c3;
+  border-bottom: 1px solid #bfc1c3;
+  border-top: 1px solid #bfc1c3;
 }
 
 .sourceofsupplya {
@@ -118,6 +115,7 @@ $path: "/public/images/";
   padding-bottom: 7px;
   padding-left: 1em;
 }
+
 .licenceAnswer {
   display: inline-block;
   width: 50%;
@@ -128,7 +126,7 @@ $path: "/public/images/";
 .licenceAnswers {
   display: inline-block;
   width: 50%;
-  padding-bottom: 0px;
+  padding-bottom: 0;
   padding-top: 5px;
   padding-left: 1em;
 }
@@ -136,10 +134,11 @@ $path: "/public/images/";
 .licenceAnswerstop {
   display: inline-block;
   width: 50%;
-  padding-bottom: 0px;
+  padding-bottom: 0;
   padding-top: 10px;
   padding-left: 1em;
 }
+
 .name {
   display: inline-block;
   width: 50%;
@@ -150,7 +149,7 @@ $path: "/public/images/";
 .menubox {
   background-color: #FFF;
   cursor: pointer;
-  padding-left: 0px;
+  padding-left: 0;
   padding-top: 20px;
   padding-bottom: 20px;
   width: 100%;
@@ -164,21 +163,21 @@ $path: "/public/images/";
 }
 
 .menubox:hover {
-    background-color: #F8F8F8;
+  background-color: #F8F8F8;
 }
 
 .sign-out {
-float: right;
-margin-top: 1.4em;
+  float: right;
+  margin-top: 1.4em;
 }
 
 .sign-out2 {
-float: right;
+  float: right;
 }
 
-.openall{
-float: right;
-padding-bottom: 0px;
+.openall {
+  float: right;
+  padding-bottom: 0;
 }
 
 .check-all-contact-details {
@@ -186,78 +185,80 @@ padding-bottom: 0px;
 }
 
 img {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .maplist {
-  padding: 0px 0px 30px 21px;
+  padding: 0 0 30px 21px;
   line-height: 20px;
 }
 
 .licenceno {
-  padding: 0px 0px 20px;
+  padding: 0 0 20px;
 }
 
 .licenceholder {
-  padding: 0px 0px 7px;
+  padding: 0 0 7px;
 }
 
 .abstractionperiod {
-  padding: 5px 0px 7px;
+  padding: 5px 0 7px;
 }
 
 .abstractionpoint {
-  padding: 5px 0px 7px;
+  padding: 5px 0 7px;
 }
 
 .abstractionamount {
-  padding: 5px 0px 0px;
+  padding: 5px 0 0;
 }
 
 .handsoff {
-  padding: 5px 0px 10px;
+  padding: 5px 0 10px;
 }
 
 .hour {
-padding: 0px 0px 0px 237px;
+  padding: 0 0 0 237px;
 }
 
 .day {
-padding: 0px 0px 05px 237px;
+  padding: 0 0 5px 237px;
 }
 
 .smallprint {
   font-size: 0.95em;
   padding: 20px;
 }
-
 /* Style the buttons that are used to open and close the accordion panel */
-button.accordion,a.accordion {
-   background-color: #FFF;
-   color: #005ea5;
-   cursor: pointer;
-   padding-left: 0px;
-   padding-top: 20px;
-   padding-bottom: 20px;
-   width: 100%;
-   text-align: left;
-   border: none;
-   outline: none;
-   transition: 0.4s;
-   font-family: "nta", Arial, sans-serif;
-   font-weight: 700;
-   font-size: 1.25em;
-   line-height: 1.25;
+a.accordion,
+button.accordion {
+  background-color: #FFF;
+  color: #005ea5;
+  cursor: pointer;
+  padding-left: 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.25em;
+  line-height: 1.25;
 }
 
 a.accordion {
-  display:block
+  display: block;
 }
-
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-button.accordion.active, button.accordion:hover, a.accordion.active, a.accordion:hover {
-    background-color: #F8F8F8;
+a.accordion.active,
+a.accordion:hover,
+button.accordion.active,
+button.accordion:hover {
+  background-color: #F8F8F8;
 }
 
 div.grey_line {
@@ -265,32 +266,35 @@ div.grey_line {
 }
 
 div.grey_line_bottomh3 {
-border-bottom: 1px solid #bfc1c3;
-padding-bottom: 0px;
+  border-bottom: 1px solid #bfc1c3;
+  padding-bottom: 0;
 }
 
 div.grey_line_bottom {
   border-top: 1px solid #bfc1c3;
   border-bottom: 1px solid #bfc1c3;
 }
-
 /* Style the accordion panel. Note: hidden by default */
 div.white_panel {
-  padding: 30px 0px 20px;
-    background-color: white;
-    display: none;
+  padding: 30px 0 20px;
+  background-color: white;
+  display: none;
 }
 
-button.accordion:after,a.accordion:after {
-    content: '\02795'; /* Unicode character for "plus" sign (+) */
-    font-size: 13px;
-    color: #777;
-    float: right;
-    margin-left: 5px;
-    padding-top: 6px;
-    padding-right: 10px;
+a.accordion:after,
+button.accordion:after {
+  content: '\02795';
+  /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+  padding-top: 6px;
+  padding-right: 10px;
 }
 
-button.accordion.active:after,a.accordion.active:after {
-    content: "\2796"; /* Unicode character for "minus" sign (-) */
+a.accordion.active:after,
+button.accordion.active:after {
+  content: "\2796";
+  /* Unicode character for "minus" sign (-) */
 }

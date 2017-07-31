@@ -14,16 +14,14 @@ const it = lab.it
 const after = lab.after
 
 // require hapi server
-const Helpers = require('../../src/helpers.js')
+const API = require('../../src/routes/API.js')
 
-console.log(Helpers)
+console.log(API)
 
 // tests
-describe('Test Helpers', () => {
-  it('Returns a guid', (done) => {
-    var result = Helpers.createGUID()
-    expect(result).to.be.a.string()
-    expect(result).to.have.length(36)
+describe('Test API', () => {
+  it('has methods', (done) => {
+    expect(API).to.be.a.array()
     done()
   })
 })

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
+    "heroku-postbuild": "gulp build",
     "test": "lab -t 90",
     "test-cov-html": "lab -r html -o coverage.html"
   },

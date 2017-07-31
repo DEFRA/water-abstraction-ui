@@ -7,8 +7,10 @@ function getLicences () {
   fs.readdirSync(baseFilePath).forEach(function (file) {
     if (file.indexOf('.json') > -1) {
       var licenceInfo = getLicenceSummary(file)
-      licenceInfo.key = file.split('.')[0]
-      alllicences.push(licenceInfo)
+      if (licenceInfo){
+        licenceInfo.key = file.split('.')[0]
+        alllicences.push(licenceInfo)
+      }
     }
   })
   return alllicences
@@ -51,12 +53,12 @@ function getLicenceSummary (filename) {
   if (!licenceObject.LicenceSerialNo) {
     fileInfo.LicenceSerialNo = filename
     fileInfo.LicenceName = 'invalid licence'
+    return null
   } else {
     fileInfo.LicenceSerialNo = licenceObject.LicenceSerialNo
     fileInfo.LicenceName = licenceObject.LicenceName
+    return fileInfo
   }
-
-  return fileInfo
 }
 
 module.exports = {

@@ -22,7 +22,7 @@ const defaultContext = {
   propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Water resource licensing service</a></nav></div></div>',
   afterHeader: '',
   footerTop: '',
-  footerSupportLinks: '',
+  footerSupportLinks: '<ul><li><a href="/">Clear data</a></ul>',
   licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
   bodyEnd: ''
 }

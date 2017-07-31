@@ -4,30 +4,35 @@
   "description": "Base app for development of systems using Hapi and Mustache",
   "main": "index.js",
   "scripts": {
+    "start":"node index.js",
+    "heroku-prebuild": "npm install --only=dev",
     "test": "lab -t 90",
-    "test-cov-html": "lab -r html -o coverage.html",
-    "start": "node index",
-    "postinstall": "gulp default"
+    "test-cov-html": "lab -r html -o coverage.html"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "del": "^3.0.0",
     "gulp": "^3.9.1",
+    "gulp-run-sequence": "^0.3.2",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
+    "gulp-standard": "^10.0.0",
     "lab": "^14.1.1",
+    "run-sequence": "^2.1.0",
     "standard": "^10.0.2"
   },
   "dependencies": {
     "gulp": "^3.9.1",
+    "gulp-run-sequence": "^0.3.2",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
+    "gulp-standard": "^10.0.0",
     "govuk-elements-sass": "^3.1.1",
     "govuk_frontend_toolkit": "^7.0.1",
     "govuk_template_mustache": "^0.22.3",
     "handlebars": "^4.0.10",
     "hapi": "^16.5.0",
-    "hapi-server-session": "^3.0.2",
     "inert": "^4.2.1",
     "path": "^0.12.7",
     "vision": "^4.1.1"

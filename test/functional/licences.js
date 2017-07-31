@@ -26,7 +26,7 @@ describe('Test Licences', () => {
   })
 
   it('Update Returns an object', (done) => {
-    newLicence = Licences.update(newLicence, {'test': 'licence2'})
+    newLicence = Licences.update(newLicence, {test: 'licence2',  LicenceSerialNo: 'XX/XX/XX/XXXX', LicenceName: 'Test Licence'})
     expect(newLicence).to.be.a.string()
     done()
   })

@@ -1,10 +1,18 @@
 
 <div style='border:1px solid red;margin:10px;padding:10px'>
-  <b>Debug Info</b>
-  <br>
-{{#each session}}
-    Key: {{@key}} Value = {{this}}
-    <br>
-{{/each}}
+  <h3 class="heading-medium">Debug Info</h3>
+
+  <h4 class="heading-small">Session Info</h4>
+  <table>
+      {{#>node obj=session}}{{/node}}
+  </table>
+
+
+  <h4 class="heading-small">Debug Info</h4>
+  <table>
+      {{#>node obj=debug}}{{/node}}
+  </table>
+
+<hr>
 
 </div>

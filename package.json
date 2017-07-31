@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
-    "heroku-postbuild": "gulp build",
+    "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
     "test": "lab -t 90",
     "test-cov-html": "lab -r html -o coverage.html"
   },

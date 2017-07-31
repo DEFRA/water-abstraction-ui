@@ -19,14 +19,35 @@
         <h1 class="form-title heading-large">
           Sign in to view your licence
         </h1>
+
+{{#if errors}}
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+
+              <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
+                Some required data was not supplied
+              </h2>
+
+              <ul class="error-summary-list">
+                {{#if errors.user-id}}<li><a href="#user-id">User ID was not entered.</a></li>{{/if}}
+                {{#if errors.password}}<li><a href="#password">Password was not entered.</a></li>{{/if}}
+              </ul>
+
+            </div>
+{{/if}}
         <!-- User id -->
-        <div class="form-group">
+        <div class="form-group {{#if errors.user-id}}form-group-error{{/if}}">
           <label class="form-label-bold" for="user-id">User ID</label>
           <span class="form-hint">This is the 10 digit Customer ID which was sent to you in the post or by e-mail.</span>
-          <input name="user_id" type="text" class="form-control" id="user-id">
+          <input name="user_id" type="text" class="form-control" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}"{{/if}}>
+          {{#if errors.user-id}}<span class="error-message">This field is required</span>{{/if}}
+
+
         </div>
+
+
+
         <!-- Password -->
-        <div class="form-group">
+        <div class="form-group {{#if errors.password}}form-group-error{{/if}}">
           <label class="form-label-bold" for="password">
             Password
             <span class="form-hint">
@@ -36,6 +57,7 @@
             </span>
           </label>
           <input name="password" autocomplete="" type="text" class="form-control" id="password">
+          {{#if errors.password}}<span class="error-message">This field is required</span>{{/if}}
         </div>
         <input class="button" type="submit" value="Sign in">
         <p></p>
@@ -48,7 +70,7 @@
           The exact authentication mechanism is to be confirmed.
         </p>
         <p>
-          The functionality above is for example only.
+          The functionality above is for example only, however, an entry is required in both fields.
         </p>
         <ul class="error-summary-list">
           <li><a href="#example-personal-details"></a></li>

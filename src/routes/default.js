@@ -27,14 +27,20 @@ module.exports = [
   } },
   { method: 'GET', path: '/signin', handler: function (request, reply) {
     var viewContext = viewContextDefaults(request)
+//    viewContext.errors={}
+//    viewContext.errors['password']=1;
+//    viewContext.errors['user-id']=1;
+
 
     reply.view('water/signin', viewContext)
   } },
 
   { method: 'POST', path: '/signin', handler: function (request, reply) {
-    if (request.payload && request.payload.user_id) {
+
+
+
+    if (request.payload && request.payload.user_id && request.payload.password) {
       request.session.user_id = request.payload.user_id
-    }
 
     var httpRequest = require('request')
     httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
@@ -43,6 +49,27 @@ module.exports = [
       viewContext.licence = body
       reply.view('water/licences', viewContext)
     })
+
+
+  } else {
+    var viewContext = viewContextDefaults(request)
+    viewContext.payload=request.payload
+    viewContext.errors={}
+//    viewContext.errors['password']=1;
+    if (!request.payload.user_id){
+    viewContext.errors['user-id']=1;
+    }
+
+    if (!request.payload.password){
+    viewContext.errors['password']=1;
+    }
+
+
+    reply.view('water/signin', viewContext)
+
+
+  }
+
   } },
 
   { method: 'GET', path: '/licences', handler: function (request, reply) {

@@ -28,6 +28,7 @@ server.register([require('inert'), require('vision')], (err) => {
   // load routes
   server.route(require('./src/routes/public'))
   server.route(require('./src/routes/default'))
+  server.route(require('./src/routes/API'))
 })
 
 // Start the server

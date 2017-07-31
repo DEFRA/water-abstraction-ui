@@ -47,7 +47,7 @@ module.exports = [
 
 
     var httpRequest = require('request')
-    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/licences.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/API/1.0/licences', function (error, response, body) {
       // console.log('error:', error); // Print the error if one occurred
       // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       // console.log('body:', body); // Print the HTML for the Google homepage.
@@ -60,17 +60,24 @@ module.exports = [
 
 
   { method: 'GET', path: '/licences', handler: function (request, reply) {
-    console.log('requested signin page for '+request.info.host)
+    console.log('requested licences list for '+request.info.host)
     console.log(request.info)
 
     var httpRequest = require('request')
-    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/public/data/licences/licences.json', function (error, response, body) {
+    httpRequest(request.connection.info.protocol+'://'+request.info.host+'/API/1.0/licences', function (error, response, body) {
        console.log('error:', error); // Print the error if one occurred
        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
        console.log('body:', body); // Print the HTML for the Google homepage.
 
       var viewContext = viewContextDefaults(request)
+
+console.log(body);
+
+
       viewContext.licenceData = JSON.parse(body)
+
+
+
       viewContext.licence = body
       reply.view('water/licences', viewContext)
     })

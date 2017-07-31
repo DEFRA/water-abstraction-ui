@@ -6,6 +6,19 @@ $path: "/public/images/";
 // Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
 @import 'govuk-elements';
 
+// Settings (variables)
+@import "colours";                                // Colour variables
+@import "font_stack";                             // Font family variables
+@import "measurements";                           // Widths and gutter variables
+
+// Mixins
+@import "conditionals";                           // Media query mixin
+@import "device-pixels";                          // Retina image mixin
+@import "grid_layout";                            // Basic grid layout mixin
+@import "typography";                             // Core bold and heading mixins
+@import "shims";                                  // Inline block mixin, clearfix placeholder
+
+
 // Take a look at in app/assets/sass/patterns/ to see which files are imported.
 // @import 'patterns/check-your-answers';
 // @import 'patterns/task-list';
@@ -17,16 +30,6 @@ $path: "/public/images/";
 
 
 
-.button:before {
-    content: "";
-    height: 110%;
-    width: 100%;
-    display: block;
-    background: transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
 
 .arbitraryStyle {
   padding:2px

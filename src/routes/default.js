@@ -18,9 +18,9 @@ function viewContextDefaults (request) {
   viewContext.head = null
   viewContext.bodyStart = null
   viewContext.afterHeader = null
-  request.session.connection=request.connection.info
-  request.session.request=request.info
-  request.session.array=['this','that',1,2,3,{'an':'object'}]
+  viewContext.debug={};
+  viewContext.debug.connection=request.connection.info
+  viewContext.debug.request=request.info
   return viewContext
 }
 

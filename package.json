@@ -4,6 +4,8 @@
   "description": "Base app for development of systems using Hapi and Mustache",
   "main": "index.js",
   "scripts": {
+    "start":"node index.js",
+    "postinstall": "gulp build",
     "test": "lab -t 90",
     "test-cov-html": "lab -r html -o coverage.html"
   },

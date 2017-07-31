@@ -2,7 +2,7 @@ const handlebars = require('handlebars')
 const Path = require('path')
 
 const defaultContext = {
-  assetPath: '/public/govuk_template/',
+  assetPath: '/public/',
   topOfPage: 'Login Handler',
   head: '<link href="public/stylesheets/overrides.css" media="screen" rel="stylesheet" />',
   pageTitle: ' Generic Page',
@@ -14,14 +14,17 @@ const defaultContext = {
   headerClass: 'some classes here',
   homepageUrl: 'http://page/url',
   logoLinkTitle: 'Logo Link Title',
-  globalHeaderText: 'Global Header Text',
-  insideHeader: 'Inside Header',
-  propositionHeader: 'Proposition Header',
-  afterHeader: 'After Header',
-  footerTop: 'Footer Top',
-  footerSupportLinks: 'Support links',
-  licenceMessage: 'Licence Message',
-  bodyEnd: 'Body End'
+  globalHeaderText: 'GOV.UK',
+  insideHeader: '',
+
+
+
+  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Water resource licensing service</a></nav></div></div>',
+  afterHeader: '',
+  footerTop: '',
+  footerSupportLinks: '',
+  licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
+  bodyEnd: ''
 }
 
 module.exports = {

@@ -1,6 +1,5 @@
 {{> styles}}
 
-{{> debug}}
 
     <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
 
@@ -19,7 +18,7 @@
       <nav>
       <div class="breadcrumbs">
           <ol role="breadcrumbs">
-            <li><a href="#">Your services</a></li>
+            <li><a href="/">Your services</a></li>
             <li><a href="/licences">Abstraction licences</a></li>
             <li><a href="/licences/{{licence_id}}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
           </ol>
@@ -142,5 +141,6 @@
 <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
 <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>
 
+{{> debug}}
 
 </main>

@@ -1,6 +1,4 @@
 {{> styles}}
-{{> debug}}
-
 
 
 <main id="content" role="main">
@@ -16,7 +14,7 @@
     <nav>
     <div class="breadcrumbs">
         <ol role="breadcrumbs">
-          <li><a href="#">Your services</a></li>
+          <li><a href="/">Your services</a></li>
         </ol>
     </nav>
  </div>
@@ -28,10 +26,12 @@
     View my water resource licence online prototype: Alpha</h1>
     <h1>
 
-<p>Prototype for Water abstraction licence online. Alpha sprint 5.</p>
-
+<p>Server based prototype for Water abstraction licence online, based on Prototype version 5.</p>
+<p>Please note that no authentication is currently in place and licences are served from static files rather than licence repository service.</p>
 </h1>
 <h2 class="heading-medium">Prototype version 5</h2></div>
+
+
 
 <div class="column-two-thirds">
   <ul class="list list-bullet">
@@ -46,23 +46,23 @@
       </a>
     </li>
     <li>
-      <a href="/online_licence?wid=1">
+      <a href="/licences/1">
         Licence
       </a>
     </li>
     <li>
-      <a href="/online_licence/terms?wid=1">
+      <a href="/licences/1/terms">
         Licence terms
       </a>
     </li>
     <li>
-      <a href="/online_licence/contact_details?wid=1">
+      <a href="/licences/1/contact">
         Contact details
       </a>
     </li>
     <li>
-      <a href="/sketch1?wid=4">
-        One page licence
+      <a href="/licences/1/map_of_abstraction_point">
+        Map
       </a>
     </li>
 
@@ -70,4 +70,7 @@
 </div>
 
 </div>
+{{> debug}}
+
+
 </main>

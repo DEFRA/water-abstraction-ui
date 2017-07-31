@@ -12,13 +12,15 @@ function viewContextDefaults (request) {
   request.session.pageviews = request.session.pageviews + 1 || 1
   viewContext.session = request.session
   viewContext.pageTitle = 'Water Abstraction'
-  viewContext.insideHeader = 'View my water resource licence online prototype: Alpha'
-  viewContext.insideHeader = 'Water resource licensing service'
+  viewContext.insideHeader = ''
   viewContext.headerClass = 'with-proposition'
   viewContext.topOfPage = null
   viewContext.head = null
   viewContext.bodyStart = null
   viewContext.afterHeader = null
+  viewContext.debug={};
+  viewContext.debug.connection=request.connection.info
+  viewContext.debug.request=request.info
   return viewContext
 }
 

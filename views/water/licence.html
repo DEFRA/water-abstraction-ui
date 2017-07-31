@@ -1,7 +1,5 @@
 {{> styles}}
 
-{{> debug}}
-
 
 <main id="content" role="main">
 
@@ -16,7 +14,7 @@
     <nav>
     <div class="breadcrumbs">
         <ol role="breadcrumbs">
-          <li><a href="#">Your services</a></li>
+          <li><a href="/">Your services</a></li>
           <li><a href="/licences">Abstraction licences</a></li>
           <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
         </ol>
@@ -72,6 +70,8 @@
 
 
 
+
+              {{> debug}}
 
 
 </main>

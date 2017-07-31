@@ -5,12 +5,10 @@ API page, pending real back end - uses fs to read and write to lkocal json files
 const helpers = require('../helpers')
 const licences = require('../licences')
 
-
 function viewContextDefaults (request) {
   var viewContext = {}
   return viewContext
 }
-
 
 const version = '1.0'
 
@@ -19,7 +17,6 @@ module.exports = [
   { method: 'POST', path: '/API/' + version + '/licences', handler: function (request, reply) {
   // create a new licence
     var newLicence = licences.create(request.payload)
-    console.log(newLicence)
     reply(newLicence)
   } },
 
@@ -27,15 +24,13 @@ module.exports = [
   // return all licences
     var data = {}
     var allLicences = licences.list()
-    console.log('got licences with...')
-    console.log(allLicences)
     reply(allLicences)
   } },
 
   { method: 'GET', path: '/API/' + version + '/licences/{id}', handler: function (request, reply) {
   // return all licences
     var data = {}
-    var licence = licences.get(request.params.id+'.json')
+    var licence = licences.get(request.params.id + '.json')
     reply(licence)
   } },
 

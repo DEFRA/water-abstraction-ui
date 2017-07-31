@@ -1,7 +1,5 @@
 module.exports = [
 
-
-
   {
     method: 'GET',
     path: '/public/{param*}',

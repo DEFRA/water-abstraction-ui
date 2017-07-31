@@ -34,7 +34,6 @@ describe('Functional Tests - Water Abstraction', () => {
       done()
     })
   })
-
   it('should get the signin page', (done) => {
         // make API call to self to test functionality end-to-end
     Server.inject({
@@ -51,6 +50,7 @@ describe('Functional Tests - Water Abstraction', () => {
       done()
     })
   })
+
   it('should get the licences page', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
@@ -141,7 +141,7 @@ describe('Functional Tests - Water Abstraction', () => {
     Server.inject({
       method: 'POST',
       url: '/signin',
-      payload:{user_id:'bob',password:'something'}
+      payload: {user_id: 'bob', password: 'something'}
     }, (response) => {
       expect(response).to.exist()
       expect(response).to.be.a.object()
@@ -150,23 +150,6 @@ describe('Functional Tests - Water Abstraction', () => {
       expect(response.statusCode).to.exist()
       expect(response.statusCode).to.be.a.number()
       expect(response.statusCode).to.equal(200)
-      done()
-    })
-  })
-
-  it('should throw an error if payload not provided for signin', (done) => {
-            // make API call to self to test functionality end-to-end
-    Server.inject({
-      method: 'POST',
-      url: '/signin'
-    }, (response) => {
-      expect(response).to.exist()
-      expect(response).to.be.a.object()
-      expect(response.payload).to.exist()
-      expect(response.payload).to.be.a.string()
-      expect(response.statusCode).to.exist()
-      expect(response.statusCode).to.be.a.number()
-      expect(response.statusCode).to.equal(500)
       done()
     })
   })

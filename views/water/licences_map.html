@@ -1,54 +1,42 @@
 {{> styles}}
-
-
-
 <main id="content" role="main">
-    <div class="phase-banner-alpha">
-      <p>
+  <div class="phase-banner-alpha">
+    <p>
       <strong class="phase-tag">ALPHA</strong>
-    <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
+      <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
     </p>
+  </div>
+  <nav>
+    <div class="breadcrumbs">
+      <ol role="breadcrumbs">
+        <li><a href="/">Your services</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
+      </ol>
     </div>
-<nav>
-<div class="breadcrumbs">
-<ol role="breadcrumbs">
-<li><a href="/">Your services</a></li>
-<li><a href="/licences">Abstraction licences</a></li>
-<li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
-</ol>
-</div>
-</nav>
-<a href="/signin" class="sign-out2">Sign out</a>
+  </nav>
+  <a href="/signin" class="sign-out2">Sign out</a>
+  <figure>
+    <img src="/public/images/map.png" alt="Map">
+  </figure>
+  <p></p>
 
-      <figure>
-        <img src="/public/images/map.png" alt="Map">
-      </figure>
-      <p></p>
+  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
 
-      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
-
-            <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+    <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
               Prototype Note
             </h2>
-
-            <p>
-              The exact map functionality is to be confirmed.
-            </p>
-            <p>
-              The above map is static content and unrelated to the sample licence.
-            </p>
-
-            <ul class="error-summary-list">
-              <li><a href="#example-personal-details"></a></li>
-            </ul>
-
-          </div>
-
-
-      <a href="/licences/{{ licence_id }}" onclick="history.go(-1)">< Back to previous</a>.
-      {{> debug}}
-
-
-
-
-  </main>
+    <p>
+      The exact map functionality is to be confirmed.
+    </p>
+    <p>
+      The above map is static content and unrelated to the sample licence.
+    </p>
+    <ul class="error-summary-list">
+      <li><a href="#example-personal-details"></a></li>
+    </ul>
+  </div>
+  <a href="/licences/{{ licence_id }}" onclick="history.go(-1)">
+    < Back to previous</a>.
+    {{> debug}}
+</main>

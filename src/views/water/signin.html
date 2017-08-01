@@ -50,7 +50,7 @@
     <div class="form-group {{#if errors.user-id}}form-group-error{{/if}}">
       <label class="form-label-bold" for="user-id">User ID</label>
       <span class="form-hint">This is the 10 digit Customer ID which was sent to you in the post or by e-mail.</span>
-      <input name="user_id" type="text" class="form-control" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}> {{#if errors.user-id}}<span class="error-message">This field is required</span>{{/if}}
+      <input name="user_id" type="text" class="form-control   {{#if errors.user-id}}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}> {{#if errors.user-id}}<span class="error-message">This field is required</span>{{/if}}
 
 
     </div>
@@ -67,7 +67,7 @@
               You will be asked to change your password on the first sign in.
             </span>
           </label>
-      <input name="password" autocomplete="" type="text" class="form-control" id="password"> {{#if errors.password}}<span class="error-message">This field is required</span>{{/if}}
+      <input name="password" autocomplete="" type="password" class="form-control  {{#if errors.password}}form-control-error{{/if}}" id="password"> {{#if errors.password}}<span class="error-message">This field is required</span>{{/if}}
     </div>
     <input class="button" type="submit" value="Sign in">
     <p></p>
@@ -84,9 +84,6 @@
         </ul>
 
       </p>
-      <ul class="error-summary-list">
-        <li><a href="#example-personal-details"></a></li>
-      </ul>
     </div>
   </div>
   </div>

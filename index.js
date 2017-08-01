@@ -23,7 +23,7 @@ server.register([require('inert'), require('vision')], (err) => {
     throw err
   }
   // load views
-  server.views(require('./views'))
+  server.views(require('./src/views'))
 
   // load routes
   server.route(require('./src/routes/public'))

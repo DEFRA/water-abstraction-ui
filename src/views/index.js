@@ -9,7 +9,7 @@ const defaultContext = {
   htmlLang: 'en',
   bodyClasses: 'some classes here',
   bodyStart: 'Body Start',
-  skipLinkMessage: 'Skip Link Message',
+  skipLinkMessage: 'Skip to main content',
   cookieMessage: 'Cookie Message',
   headerClass: 'some classes here',
   homepageUrl: 'http://page/url',

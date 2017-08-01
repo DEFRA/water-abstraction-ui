@@ -13,8 +13,9 @@
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
       </ol>
-  </nav>
   </div>
+</nav>
+
   <a href="/signin" class="sign-out2">Sign out</a>
   <h1 class="heading-large">{{ licenceData.LicenceName }} water abstraction licence</h1>
   <p></p>
@@ -47,16 +48,16 @@
         <p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p>
         <p>A flow condition will affect the licensed maximum amount you can abstract.</p>
       </div>
+    </details>
+
   </div>
-  </details>
-  </br>
-  </br>
+<p></p>
   <div class="sourceofsupplyq">Maximum quantities before conditions:</div>
   <div class="licenceAnswer">{{ licenceData.MaximumQuantityofwatertobeabstracted }}</div>
   </br>
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <a href="/licences">
     <p></p>
-    < Back to previous</a>
+    &lt; Back to previous</a>
       {{> debug}}
 </main>

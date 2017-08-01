@@ -20,8 +20,8 @@
   </h1>
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   {{#each licenceData}}
-  <a href="/licences/{{this.key}}">
-    <div class="menubox">{{this.LicenceName}} - licence number: {{this.LicenceSerialNo}}</div>
+  <a href="/licences/{{this.key}}" tabindex="-1">
+    <div class="menubox" tabindex="0">{{this.LicenceName}} - licence number: {{this.LicenceSerialNo}}</div>
   </a>
   {{/each}}
   {{> debug}}

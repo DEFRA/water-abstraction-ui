@@ -82,6 +82,7 @@ gulp.task('sass', function() {
         'govuk_modules/govuk_frontend_toolkit/stylesheets',
         'govuk_modules/govuk_template_mustache/assets/stylesheets',
         'govuk_modules/govuk-elements-sass',
+        'govuk_modules/govuk-elements-sass/public/sass',
         'govuk_modules'
       ]
     }).on('error', sass.logError))

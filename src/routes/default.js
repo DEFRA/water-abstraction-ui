@@ -137,6 +137,28 @@ function getLicenceTerms (request, reply) {
   })
 }
 
+function getTest (request, reply) {
+  var httpRequest = require('request')
+  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + 1 + '.json', function (error, response, body) {
+    var viewContext = viewContextDefaults(request)
+    viewContext.title = 'Your water abstraction licence - Full Terms'
+    viewContext.pageTitle = 'GOV.UK - '+viewContext.title
+    viewContext.breadcrumbs=[];
+
+
+    viewContext.licence_id = 1
+    viewContext.licenceData = JSON.parse(body)
+    viewContext.licence = body
+    console.log(viewContext.licence)
+    viewContext.breadcrumbs.push({'title':'Your services','uri':'/'})
+    viewContext.breadcrumbs.push({'title':'Abstraction licences','uri':'/licences'})
+    viewContext.breadcrumbs.push({'title':'Licence number: '+viewContext.licenceData.LicenceSerialNo,'uri':'/licences/'+viewContext.licence_id})
+
+
+    reply.view('water/test', viewContext)
+  })
+}
+
 module.exports = [
 
   { method: 'GET', path: '/', handler: getRoot },
@@ -146,6 +168,8 @@ module.exports = [
   { method: 'GET', path: '/licences/{licence_id}', handler: getLicence },
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: getLicenceContact },
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: getLicenceMap },
-  { method: 'GET', path: '/licences/{licence_id}/terms', handler: getLicenceTerms }
+  { method: 'GET', path: '/licences/{licence_id}/terms', handler: getLicenceTerms },
 
+
+  { method: 'GET', path: '/test', handler: getTest },
 ]

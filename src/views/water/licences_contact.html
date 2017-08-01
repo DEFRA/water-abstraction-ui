@@ -13,8 +13,9 @@
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
       </ol>
+    </div>
+
   </nav>
-  </div>
   <a href="/signin" class="sign-out2">Sign out</a>
   <h1 class="heading-large">
     Your water abstraction licence  - Contact Details
@@ -86,7 +87,7 @@
     <p></p>
     <h2 class="heading-medium">
             Abstraction return contact details
-          </h3>
+          </h2>
           <p></p>
         <div class="licenceLabel">Name:</div><div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}</div>
         <p></p>
@@ -101,7 +102,7 @@
   <div class='grid-row'>
     <div class='column-full'>
       <p></p>
-      <a href="/licences/{{ licence_id }}" >< Back to previous</a>
+      <a href="/licences/{{ licence_id }}" >&lt; Back to previous</a>
 <br/>
 </div></div>
 {{> debug}}

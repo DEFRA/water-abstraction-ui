@@ -1,6 +1,6 @@
 const fs = require('fs')
 const baseFilePath = __dirname + '/../public/data/licences/'
-const helpers = require('./helpers')
+const Helpers = require('./helpers')
 
 function getLicences () {
   var alllicences = []
@@ -34,7 +34,7 @@ function updateLicence (id, data) {
 }
 
 function createLicence (data) {
-  const id = helpers.createGUID()
+  const id = Helpers.createGUID()
   const thisFile = baseFilePath + id + '.json'
   fs.writeFileSync(thisFile, JSON.stringify(data))
   return id

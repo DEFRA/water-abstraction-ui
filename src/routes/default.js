@@ -2,34 +2,33 @@
 const Helpers = require('../helpers')
 const User = require('../user')
 
-function sessionGet(request){
-  session=request.yar.get('session');
-  if (session){
+function sessionGet (request) {
+  session = request.yar.get('session')
+  if (session) {
     console.log('GET SESSION')
     console.log(session)
     return session
   } else {
     console.log('START SESSION')
-    session={id:Helpers.createGUID()};
-    sessionSet(request,session);
+    session = {id: Helpers.createGUID()}
+    sessionSet(request, session)
     return session
   }
 }
 
-function sessionSet(request,session){
+function sessionSet (request, session) {
   console.log('SET SESSION')
   console.log(session)
-  request.yar.set('session',session);
+  request.yar.set('session', session)
   return
 }
-
 
 function viewContextDefaults (request) {
   var viewContext = {}
 
-  viewContext.session=sessionGet(request)
-console.log("VIEW CONTEXT SESSION")
-console.log(viewContext.session);
+  viewContext.session = sessionGet(request)
+  console.log('VIEW CONTEXT SESSION')
+  console.log(viewContext.session)
 
 //  request.session.id = request.session.id || Helpers.createGUID()
 //  request.session.pageviews = request.session.pageviews + 1 || 1
@@ -59,7 +58,7 @@ function getRoot (request, reply) {
 }
 
 function getSignin (request, reply) {
-  sessionSet(request,{id:Helpers.createGUID()})
+  sessionSet(request, {id: Helpers.createGUID()})
   var viewContext = viewContextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
@@ -70,9 +69,9 @@ function postSignin (request, reply) {
     var getUser = User.authenticate(request.payload.user_id, request.payload.password)
     console.log(getUser)
     if (getUser.status) {
-      var session=sessionGet(request)
-      session.user=getUser.user;
-      sessionSet(request,session)
+      var session = sessionGet(request)
+      session.user = getUser.user
+      sessionSet(request, session)
 
 //      request.session.user = getUser.user
       console.log('redirect to licences page')
@@ -87,7 +86,6 @@ function postSignin (request, reply) {
         reply.view('water/licences', viewContext)
       })
       **/
-
     } else {
       var viewContext = viewContextDefaults(request)
       viewContext.payload = request.payload
@@ -116,106 +114,102 @@ function postSignin (request, reply) {
 }
 
 function getLicences (request, reply) {
+  var viewContext = viewContextDefaults(request)
+  var httpRequest = require('request')
 
+  var user = viewContext.session.user
 
-    var viewContext = viewContextDefaults(request)
-    var httpRequest = require('request')
+  if (!user) {
+    console.log('where has my session gone!!!')
+    getSignin(request, reply)
+  } else {
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
+      var viewContext = viewContextDefaults(request)
 
-    var user=viewContext.session.user
+      try {
+        viewContext.licenceData = JSON.parse(body)
 
-
-    if (!user){
-      console.log("where has my session gone!!!")
-      getSignin(request,reply)
-    } else {
-
-
-  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
-
-    try {
-      viewContext.licenceData = JSON.parse(body)
-
-      viewContext.licence = body
-    } catch (e) {
-      ;
-    }
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-    reply.view('water/licences', viewContext)
-  })
-    }
+        viewContext.licence = body
+      } catch (e) {
+        ;
+      }
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+      reply.view('water/licences', viewContext)
+    })
+  }
 }
 
 function getLicence (request, reply) {
   var httpRequest = require('request')
-    var viewContext = viewContextDefaults(request)
+  var viewContext = viewContextDefaults(request)
   console.log(request.session)
 
-  if (!viewContext.session.user){
-    getSignin(request,reply)
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
   } else {
-
-  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
-    viewContext.licence_id = request.params.licence_id
-    viewContext.licenceData = JSON.parse(body)
-    viewContext.licence = body
-    viewContext.pageTitle = 'GOV.UK - ' + viewContext.licenceData.LicenceName + ' water abstraction licence'
-    reply.view('water/licence', viewContext)
-  })
-}
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+      var viewContext = viewContextDefaults(request)
+      viewContext.licence_id = request.params.licence_id
+      viewContext.licenceData = JSON.parse(body)
+      viewContext.licence = body
+      viewContext.pageTitle = 'GOV.UK - ' + viewContext.licenceData.LicenceName + ' water abstraction licence'
+      reply.view('water/licence', viewContext)
+    })
+  }
 }
 
 function getLicenceContact (request, reply) {
   var viewContext = viewContextDefaults(request)
   var httpRequest = require('request')
 
-  if (!viewContext.session.user){
-    getSignin(request,reply)
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
   } else {
-  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'
-    viewContext.licence_id = request.params.licence_id
-    viewContext.licenceData = JSON.parse(body)
-    viewContext.licence = body
-    reply.view('water/licences_contact', viewContext)
-  })
-}
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+      var viewContext = viewContextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'
+      viewContext.licence_id = request.params.licence_id
+      viewContext.licenceData = JSON.parse(body)
+      viewContext.licence = body
+      reply.view('water/licences_contact', viewContext)
+    })
+  }
 }
 
 function getLicenceMap (request, reply) {
   var httpRequest = require('request')
-  if (!request.session.user){
-    getSignin(request,reply)
-  } else {
+  var viewContext = viewContextDefaults(request)
+  console.log(request.session)
 
-  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - abstraction point'
-    viewContext.licence_id = request.params.licence_id
-    viewContext.licenceData = JSON.parse(body)
-    viewContext.licence = body
-    reply.view('water/licences_map', viewContext)
-  })
-}
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
+  } else {
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+      var viewContext = viewContextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - abstraction point'
+      viewContext.licence_id = request.params.licence_id
+      viewContext.licenceData = JSON.parse(body)
+      viewContext.licence = body
+      reply.view('water/licences_map', viewContext)
+    })
+  }
 }
 
 function getLicenceTerms (request, reply) {
   var httpRequest = require('request')
-    var viewContext = viewContextDefaults(request)
-  if (!viewContext.session.user){
-    getSignin(request,reply)
+  var viewContext = viewContextDefaults(request)
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
   } else {
-  httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'
-    viewContext.licence_id = request.params.licence_id
-    viewContext.licenceData = JSON.parse(body)
-    viewContext.licence = body
-    reply.view('water/licences_terms', viewContext)
-  })
-}
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
+      var viewContext = viewContextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'
+      viewContext.licence_id = request.params.licence_id
+      viewContext.licenceData = JSON.parse(body)
+      viewContext.licence = body
+      reply.view('water/licences_terms', viewContext)
+    })
+  }
 }
 
 function getTest (request, reply) {

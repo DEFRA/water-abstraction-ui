@@ -11,6 +11,32 @@ handlebars.registerHelper( 'concat', function(){
   return arg.join('');
 })
 
+handlebars.registerHelper( 'showhide', function(){
+  var arg = Array.prototype.slice.call(arguments,0);
+  arg.pop();
+  /**
+  <details>
+    <summary><span class="summary" tabindex="0">{{ licenceData.handsOffFlowHelp }}</span></summary>
+    <div class="panel panel-border-narrow">
+      <h3 class="heading-small">What is a flow condition?</h3>
+      <p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p>
+      <p>A flow condition will affect the licensed maximum amount you can abstract.</p>
+    </div>
+  </details>
+  **/
+  var htmlContent='';
+  htmlContent+=''
+  htmlContent+='<details>'
+  htmlContent+='<summary><span class="summary" tabindex="0">'+arg[0]+'</span></summary>'
+  htmlContent+='<div class="panel panel-border-narrow">'
+  htmlContent+='<h3 class="heading-small">'+arg[1]+'</h3>'
+  htmlContent+=arg[2]
+  htmlContent+='</div>'
+  htmlContent+='</details>'
+  return htmlContent;
+})
+
+
 handlebars.registerHelper( 'guid', function(){
   return Helpers.createGUID();
 })

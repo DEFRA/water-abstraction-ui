@@ -9,14 +9,12 @@
       </ol>
     </div>
   </nav>
-  <a href="/signin" class="sign-out2">Sign out</a>
-  <h1 class="heading-large">
-  Your water abstraction licences
-  </h1>
+  {{>element-signout}}
+  {{>element-heading-large content='Your water abstraction licences'}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   {{#each licenceData}}
     {{#>element-licence-link this}}{{/element-licence-link}}
   {{/each}}
-  {{> debug}}
 </main>
 {{> footerjs}}
+{{> debug}}

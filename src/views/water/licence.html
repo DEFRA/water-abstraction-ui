@@ -8,61 +8,22 @@
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
       </ol>
-  </div>
-</nav>
-
-  <a href="/signin" class="sign-out2">Sign out</a>
-  <h1 class="heading-large">{{ licenceData.LicenceName }} water abstraction licence</h1>
+    </div>
+  </nav>
+  {{>element-signout}}
+  {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence')}}
   <p></p>
-  <p></p>
-  <div class="sourceofsupplyq">Licence holder:</div>
-  <div class="licenceAnswer">{{ licenceData.FirstName }} {{ licenceData.Surname }}<br/>
-    <a href="/licences/{{ licence_id }}/contact">Licence contact details</a></div>
-  <p></p>
-  <div class="sourceofsupplyq">Point of abstraction:</div>
-  <div class="licenceAnswer">{{ licenceData.Pointofabstraction}}<br/><a href="/licences/{{licence_id}}/map_of_abstraction_point">View map</a></div>
-  <p></p>
-  <div class="sourceofsupplyq">Licence effective from:</div>
-  <div class="licenceAnswer">{{ licenceData.EffectiveDateStart }}</div>
-  <p></p>
-  <div class="sourceofsupplyq">Licensed until:</div>
-  <div class="licenceAnswer">{{ licenceData.EffectiveDateend }}</div>
-  <p></p>
-  <div class="sourceofsupplyq">Source of supply:</div>
-  <div class="licenceAnswer">{{ licenceData.SourceofSupply }}</div>
-  <p></p>
-  <div class="sourceofsupplyq">Period of abstraction:</div>
-  <div class="licenceAnswer">{{ licenceData.PeriodofAbstraction }}</div>
-  <p></p>
-  <div class="sourceofsupplyq">Flow condition:</div>
-
-
-
-
-  <div class="licenceAnswer">This licence has {{ licenceData.handsOffFlow }}
-    <details>
-      <summary><span class="summary" tabindex="0">{{ licenceData.handsOffFlowHelp }}</span></summary>
-      <div class="panel panel-border-narrow">
-        <h3 class="heading-small">What is a flow condition?</h3>
-        <p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p>
-        <p>A flow condition will affect the licensed maximum amount you can abstract.</p>
-      </div>
-    </details>
-
-  </div>
-<p></p>
-  <div class="sourceofsupplyq">Maximum quantities before conditions:</div>
-  <div class="licenceAnswer">{{ licenceData.MaximumQuantityofwatertobeabstracted }}</div>
-  <br/>
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.FirstName licenceData.Surname '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Point of abstraction' answer=(concat licenceData.Pointofabstraction '<br/><a href="/licences/' licence_id '/map_of_abstraction_point">View map</a>')}}
+  {{>element-licence-row label='Licence effective from' answer=licenceData.EffectiveDateStart}}
+  {{>element-licence-row label='Licensed until' answer=licenceData.EffectiveDateend}}
+  {{>element-licence-row label='Source of supply' answer=licenceData.SourceofSupply}}
+  {{>element-licence-row label='Period of abstraction' answer=licenceData.PeriodofAbstraction}}
+  {{>element-licence-row label='Flow conditions' answer=(concat 'This licence has ' licenceData.handsOffFlow (showhide licenceData.handsOffFlowHelp 'What is a flow condition?' '<p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>' )) }}
+  {{>element-licence-row label='Maximum quantities before conditions' answer=licenceData.MaximumQuantityofwatertobeabstracted}}
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
-
-
-
-
-  <a href="/licences">
-    &lt; Back to previous</a>
-      {{> debug}}
+  <a href="/licences"> &lt; Back to previous</a>
 </main>
-
 {{> footerjs}}
+{{> debug}}

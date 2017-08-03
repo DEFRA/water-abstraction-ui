@@ -11,9 +11,9 @@
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{licence_id}}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
       </ol>
-  </div>
-</nav>
-  <a href="/signin" class="sign-out2">Sign out</a>
+    </div>
+  </nav>
+  {{>element-signout}}
   <div id="wrapper" class="direction-ltr">
     <div class="full-page-width-wrapper">
     </div>
@@ -21,20 +21,12 @@
   <div class="grid-row">
     <div class="column-two-thirds">
       <div class="page-header">
-        <h1 class="heading-large">
-        Your water abstraction licence - full terms
-        </h1>
-        <h2 class="heading-medium">
-        Check your licence details are up to date
-      </h2>
+        {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence - full terms')}}
+        {{>element-heading-medium content='Check your licence details are up to date'}}
         <p>Licence number: {{ licenceData.LicenceSerialNo }}</p>
       </div>
     </div>
   </div>
-
-
-
-
   <div class="grid-row">
     <div class="column-two-thirds">
       <div class="js-hidden" data-module="accordion-with-descriptions">
@@ -54,9 +46,8 @@
   <br/>
   <a href="/licences/{{ licence_id }}">
     &lt; Back to previous</a>
-
-      <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
-      <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>
-      {{> debug}}
+  <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
+  <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>
 </main>
 {{> footerjs}}
+{{> debug}}

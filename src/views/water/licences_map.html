@@ -10,21 +10,16 @@
       </ol>
     </div>
   </nav>
-  <a href="/signin" class="sign-out2">Sign out</a>
-  <h1 class="heading-large">
-    Your water abstraction licence - abstraction point
-    </h1>
-
+  {{>element-signout}}
+  {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence - abstraction point')}}
   <figure>
     <img src="/public/images/map.png" alt="Map">
   </figure>
   <p></p>
-
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
-
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
-              Prototype Note
-            </h2>
+      Prototype Note
+    </h2>
     <p>
       The exact map functionality is to be confirmed.
     </p>
@@ -34,6 +29,6 @@
   </div>
   <a href="/licences/{{ licence_id }}" onclick="history.go(-1)">
     &lt; Back to previous</a>.
-    {{> debug}}
 </main>
 {{> footerjs}}
+{{> debug}}

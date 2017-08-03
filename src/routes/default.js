@@ -14,21 +14,23 @@ function viewContextDefaults (request) {
   viewContext.head = null
   viewContext.bodyStart = null
   viewContext.afterHeader = null
+  viewContext.path = request.path
   viewContext.debug = {}
   viewContext.debug.connection = request.connection.info
   viewContext.debug.request = request.info
+  viewContext.debug.request.path = request.path
   return viewContext
 }
 
 function getRoot (request, reply) {
   var viewContext = viewContextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Water Abstractions Prototype'
+  viewContext.pageTitle = 'GOV.UK - Water Abstractions Prototype'
   reply.view('water/index', viewContext)
 }
 
 function getSignin (request, reply) {
   var viewContext = viewContextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
+  viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
 }
 
@@ -50,7 +52,7 @@ function postRoot (request, reply) {
       viewContext.payload = request.payload
       viewContext.errors = {}
       viewContext.errors['authentication'] = 1
-    viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
+      viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
       reply.view('water/signin', viewContext)
     }
   } else {
@@ -96,7 +98,7 @@ function getLicence (request, reply) {
     viewContext.licence_id = request.params.licence_id
     viewContext.licenceData = JSON.parse(body)
     viewContext.licence = body
-    viewContext.pageTitle = 'GOV.UK - '+viewContext.licenceData.LicenceName+' water abstraction licence'
+    viewContext.pageTitle = 'GOV.UK - ' + viewContext.licenceData.LicenceName + ' water abstraction licence'
     reply.view('water/licence', viewContext)
   })
 }
@@ -142,18 +144,173 @@ function getTest (request, reply) {
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + 1 + '.json', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
     viewContext.title = 'Your water abstraction licence - Full Terms'
-    viewContext.pageTitle = 'GOV.UK - '+viewContext.title
-    viewContext.breadcrumbs=[];
-
+    viewContext.pageTitle = 'GOV.UK - ' + viewContext.title
+    viewContext.breadcrumbs = []
 
     viewContext.licence_id = 1
     viewContext.licenceData = JSON.parse(body)
     viewContext.licence = body
     console.log(viewContext.licence)
-    viewContext.breadcrumbs.push({'title':'Your services','uri':'/'})
-    viewContext.breadcrumbs.push({'title':'Abstraction licences','uri':'/licences'})
-    viewContext.breadcrumbs.push({'title':'Licence number: '+viewContext.licenceData.LicenceSerialNo,'uri':'/licences/'+viewContext.licence_id})
 
+    viewContext.layoutData = [
+      {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Licence Holder:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.FirstName
+          },
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.Surname
+          },
+          {
+            'attributeElementType': 'br',
+          },
+          {
+            'attributeElementType': 'link',
+            'attributeValue': '/contact',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': 'Licence Contact Details'
+              }]
+          },
+        ]},
+        {
+          'attributeElementType': 'textRow',
+          'attributeValue': 'Point of Abstraction:',
+          'attributeChildren': [
+            {
+              'attributeElementType': 'dataValue',
+              'attributeValue': 'Pointofabstraction'
+            },
+            {
+              'attributeElementType': 'br'
+            },
+            {
+              'attributeElementType': 'link',
+              'attributeValue': '/map_of_abstraction_point',
+              'attributeChildren': [
+                {
+                  'attributeElementType': 'textValue',
+                  'attributeValue': 'View Map'
+                }]
+            },
+          ]},
+          {
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Licence effective from:',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': viewContext.licenceData.EffectiveDateStart
+              }
+            ]
+          },
+          {
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Licenced until:',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': viewContext.licenceData.EffectiveDateend
+              }
+            ]
+          },{
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Source of supply:',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': viewContext.licenceData.SourceofSupply
+              }
+            ]
+          },{
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Period of abstraction:',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'dataValue',
+                'attributeValue': 'PeriodofAbstraction'
+              }
+            ]
+          },{
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Flow Conditions:',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': 'This licence has '
+              },
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': viewContext.licenceData.handsOffFlow
+              },
+              {
+                'attributeElementType': 'hidden',
+                'attributeValue': viewContext.licenceData.handsOffFlowHelp,
+                'attributeChildren': [
+                  {
+                    'attributeElementType': 'textValue',
+                    'attributeValue': '<h3 class="heading-small">What is a flow condition?</h3><p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>'
+                  }
+
+                ]
+              }
+            ]
+          },{
+            'attributeElementType': 'textRow',
+            'attributeValue': 'Maximum quantities before conditions',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': viewContext.licenceData.MaximumQuantityofwatertobeabstracted,
+              }
+            ]
+          },
+
+
+
+
+
+      {
+        'attributeRef': 'ABSLink',
+        'attributeElementType': 'link',
+        'attributeValue': '/terms',
+        'attributeChildren': [
+          {
+            'attributeRef': 'linkText',
+            'attributeElementType': 'textValue',
+            'attributeValue': 'Read your full licence terms of use'
+          }]
+      },
+      {
+        'attributeRef': 'accordion1',
+        'attributeElementType': 'accordion',
+        'attributeValue': '',
+        'attributeChildren': [
+          {
+            'attributeRef': 'ex1',
+            'attributeElementType': 'accordionItem',
+            'attributeValue': 'An accordionItem',
+            'attributeChildren': [
+              {
+                'attributeRef': 'ex1text',
+                'attributeElementType': 'textValue',
+                'attributeValue': 'Hello'
+              }
+            ]
+          }
+        ]
+      }
+
+    ]
+
+    viewContext.breadcrumbs.push({'title': 'Your services', 'uri': '/'})
+    viewContext.breadcrumbs.push({'title': 'Abstraction licences', 'uri': '/licences'})
+    viewContext.breadcrumbs.push({'title': 'Licence number: ' + viewContext.licenceData.LicenceSerialNo, 'uri': '/licences/' + viewContext.licence_id})
 
     reply.view('water/test', viewContext)
   })
@@ -170,6 +327,5 @@ module.exports = [
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: getLicenceMap },
   { method: 'GET', path: '/licences/{licence_id}/terms', handler: getLicenceTerms },
 
-
-  { method: 'GET', path: '/test', handler: getTest },
+  { method: 'GET', path: '/test', handler: getTest }
 ]

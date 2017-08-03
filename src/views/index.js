@@ -1,4 +1,20 @@
 const handlebars = require('handlebars')
+const Helpers = require('../helpers')
+
+
+handlebars.registerHelper("equal", require("handlebars-helper-equal"))
+
+
+handlebars.registerHelper( 'concat', function(){
+  var arg = Array.prototype.slice.call(arguments,0);
+  arg.pop();
+  return arg.join('');
+})
+
+handlebars.registerHelper( 'guid', function(){
+  return Helpers.createGUID();
+})
+
 const Path = require('path')
 
 const defaultContext = {

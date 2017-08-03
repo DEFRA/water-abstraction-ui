@@ -3,12 +3,7 @@
   document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
 </script>
 <main id="content">
-  <div class="phase-banner-alpha">
-    <p>
-      <strong class="phase-tag">ALPHA</strong>
-      <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
-    </p>
-  </div>
+  {{>element-phase-tag}}
   <nav>
     {{> breadcrumbs}}
 </nav>
@@ -24,120 +19,47 @@
         {{title}}
         </h1>
         <h2 class="heading-medium">
-        Check your licence details are up to date
+        {{subtitle}}
       </h2>
         <p>Licence number: {{ licenceData.LicenceSerialNo }}</p>
       </div>
     </div>
   </div>
   <div class="grid-row">
-    <div class="column-two-thirds">
-      <div class="js-hidden" data-module="accordion-with-descriptions">
-        <div class="subsection-wrapper">
-
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="pointofabstraction">Point of abstraction</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_0">
-
-
-          <div class="form-group">
-              <details>
-                <summary><span class="summary">Help with date of birth</span></summary>
-                <div class="panel panel-border-narrow">
-                  <p>
-                    If you don’t know your exact date of birth, use the one you put on official documents (for example, your passport or driving licence).
-                  </p>
-                  <p>
-                    If you can’t provide your date of birth you’ll have to send copies of identity documents through the post.
-                  </p>
-                </div>
-              </details>
-            </div>
-
-          </div></div>
-
-
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="sourceofsupply">Source of supply</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_0">
-              {{ licenceData.SourceofSupply }}
-            </div>
+    <div class="column-full">
 
 
 
 
+{{#each layoutData}}
+<!--
+"attributeRef":"SourceofSupply",
+"attributeSource":"SourceofSupply",
+"attributeTitle":"Source of Supply",
+"attributeDataType":"text",
+"attributeElementType":"text",
+"attributeRules":[
+]
+"attributeChildren":[]
+-->
+
+{{#>renderElements data=this root=../this}}{{/renderElements}}
 
 
 
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="pointofabstraction">Point of abstraction</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_1">
-              <p>{{ licenceData.Pointofabstraction }}</p>
-              <a href="/licences/{{licence_id}}/map_of_abstraction_point">View map</a>
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="purposeofabstraction">Purpose of abstraction</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_2">
-              {{ licenceData.Purposeofabstraction }}
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="meansofabstraction">Means of abstraction</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_3">
-              {{ licenceData.Meansofabstraction }}
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="meansofmeasurement">Means of measurement</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_4">
-              {{ licenceData.Meansofmeasurement}}
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="maximumquantities">Maximum quantities before conditions</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_5">
-              {{ licenceData.MaximumQuantityofwatertobeabstracted}}
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="flowconditions">Flow conditions</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_6">
-              {{ licenceData.handsOffFlowDescfull}}
-            </div>
-          </div>
-          <div class="subsection js-subsection">
-            <div class="subsection__header">
-              <h2 class="subsection__title" id="records">Records</h2>
-            </div>
-            <div class="subsection__content js-subsection-content" id="subsection_content_7">
-              {{ licenceData.records}}
-            </div>
-          </div>
-        </div>
-      </div>
+
+{{/each}}
+
+
     </div>
   </div>
   <br/>
   <a href="/licences/{{ licence_id }}">
     &lt; Back to previous</a>
+
+    <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
+    <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>
+
 
       {{> footerjs}}
 <!---

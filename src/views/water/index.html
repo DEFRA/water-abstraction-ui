@@ -1,11 +1,6 @@
 {{> styles}}
 <main id="content">
-  <div class="phase-banner-alpha">
-    <p>
-      <strong class="phase-tag">ALPHA</strong>
-      <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
-    </p>
-  </div>
+  {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
       <ol>
@@ -35,36 +30,12 @@
       </p>
       <p>Alternatively, links are available to specific areas within the application below, but please be aware that these do not follow correct application flow</p>
       <ul class="list list-bullet">
-        <li>
-          <a href="/signin">
-        Sign in
-      </a>
-        </li>
-        <li>
-          <a href="/licences">
-        Abstraction licences
-      </a>
-        </li>
-        <li>
-          <a href="/licences/1">
-        Licence
-      </a>
-        </li>
-        <li>
-          <a href="/licences/1/terms">
-        Licence terms
-      </a>
-        </li>
-        <li>
-          <a href="/licences/1/contact">
-        Contact details
-      </a>
-        </li>
-        <li>
-          <a href="/licences/1/map_of_abstraction_point">
-        Map
-      </a>
-        </li>
+        {{>element-li-link uri='/signin' title='Sign in'}}
+        {{>element-li-link uri='/licences' title='Licences'}}
+        {{>element-li-link uri='/licences/1' title='Licence'}}
+        {{>element-li-link uri='/licences/1/terms' title='Licence terms'}}
+        {{>element-li-link uri='/licences/1/map' title='Abstraction point map'}}
+        {{>element-li-link uri='/licences/1/contact' title='Contact details'}}
       </ul>
     </div>
   </div>

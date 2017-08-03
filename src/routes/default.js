@@ -118,10 +118,10 @@ function postSignin (request, reply) {
 function getLicences (request, reply) {
 
 
-
+    var viewContext = viewContextDefaults(request)
     var httpRequest = require('request')
 
-    user=request.yar.get('user');
+    var user=viewContext.session.user
 
 
     if (!user){

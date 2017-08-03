@@ -1,12 +1,17 @@
+require('dotenv').config()
+
 const Hapi = require('hapi')
-const server = new Hapi.Server()
+const serverOptions={connections:{router:{stripTrailingSlash:true}}}
+const server = new Hapi.Server(serverOptions)
 
 server.connection({ port: process.env.PORT || 8000 })
 
+const cacheKey=process.env.cacheKey||'super-secret-cookie-encryption-key'
+console.log('Cache key'+cacheKey)
 const sessionPluginOptions = {
   cache: { segment: 'unique-cache-sement' },
-  cookie: { isSecure: false },
-  key: 'super-secret-cookie-encryption-key'
+  cookie: { isSecure: true },
+  key: cacheKey
 }
 
 server.register(
@@ -30,6 +35,8 @@ server.register([require('inert'), require('vision')], (err) => {
   server.route(require('./src/routes/default'))
   server.route(require('./src/routes/API'))
 })
+
+
 
 // Start the server
 server.start((err) => {

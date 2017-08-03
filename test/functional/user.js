@@ -18,9 +18,8 @@ const User = require('../../src/user.js')
 
 // tests
 
-describe('Test User js', () => {
+describe('Test User js file', () => {
   it('Returns an object', (done) => {
-
     expect(User).to.be.a.object()
     done()
   })
@@ -28,14 +27,14 @@ describe('Test User js', () => {
 
 describe('Test demo login', () => {
   it('Returns true', (done) => {
-    expect(User.authenticate('demouser','password').status).to.equal(true)
+    expect(User.authenticate('demouser', 'password').status).to.equal(true)
     done()
   })
 })
 
 describe('Test demo incorrect login', () => {
   it('Returns true', (done) => {
-    expect(User.authenticate('demouser','nopassword').status).to.equal(false)
+    expect(User.authenticate('demouser', 'nopassword').status).to.equal(false)
     done()
   })
 })

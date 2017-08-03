@@ -21,6 +21,13 @@ console.log(Helpers)
 // tests
 describe('Test Helpers', () => {
   it('Returns a guid', (done) => {
+    expect(Helpers).to.be.a.object()
+    done()
+  })
+})
+
+describe('Test createGUID', () => {
+  it('Returns a guid', (done) => {
     var result = Helpers.createGUID()
     expect(result).to.be.a.string()
     expect(result).to.have.length(36)

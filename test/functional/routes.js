@@ -17,26 +17,6 @@ const after = lab.after
 const Server = require('../../index.js')
 
 // tests
-describe('Functional Tests - Server', () => {
-  it('should be a HAPI server', (done) => {
-        // make API call to self to test functionality end-to-end
-      expect(Server).to.exist()
-      expect(Server).to.be.a.object()
-      expect(Server.connection).to.exist()
-      expect(Server.registrations).to.be.an.object()
-      expect(Server.registrations['hapi-server-session']).to.be.an.object()
-      expect(Server.registrations['inert']).to.be.an.object()
-
-      expect(Server.registrations['vision']).to.be.an.object()
-      done()
-
-  })
-
-    after((done) => {
-          // placeholder to do something post tests
-      done()
-    })
-  })
 
 describe('Functional Tests - Water Abstraction: Index Page', () => {
   it('should get the index page', (done) => {
@@ -56,14 +36,13 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
     })
   })
 
-    after((done) => {
+  after((done) => {
           // placeholder to do something post tests
-      done()
-    })
+    done()
   })
-  describe('Functional Tests - Water Abstraction: Signin Page', () => {
-
-  it('should get the signin page', (done) => {
+})
+describe('Functional Tests - Water Abstraction: Signin Page', () => {
+  it('should load', (done) => {
         // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -79,7 +58,9 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
       done()
     })
   })
-  it('should login', (done) => {
+})
+describe('Functional Tests - Water Abstraction: Signin Page', () => {
+  it('should login with correct credentials', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'POST',
@@ -97,7 +78,7 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
     })
   })
 
-  it('should not login', (done) => {
+  it('should not login with incorrect credentials', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'POST',
@@ -115,8 +96,7 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
     })
   })
 
-
-  it('should NOT login', (done) => {
+  it('should not login with midssing password', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'POST',
@@ -134,7 +114,7 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
     })
   })
 
-  it('should NOT login', (done) => {
+  it('should not login with missing user id', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'POST',
@@ -157,8 +137,7 @@ describe('Functional Tests - Water Abstraction: Index Page', () => {
   })
 })
 describe('Functional Tests - Water Abstraction: Licences Page', () => {
-
-  it('should get the licences page', (done) => {
+  it('should load', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -180,8 +159,7 @@ describe('Functional Tests - Water Abstraction: Licences Page', () => {
   })
 })
 describe('Functional Tests - Water Abstraction: Licence Page', () => {
-
-  it('should get the licence page', (done) => {
+  it('should load', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -203,8 +181,7 @@ describe('Functional Tests - Water Abstraction: Licence Page', () => {
   })
 })
 describe('Functional Tests - Water Abstraction: Licence Contact Page', () => {
-
-  it('should get the licence contact page', (done) => {
+  it('should load', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -226,8 +203,7 @@ describe('Functional Tests - Water Abstraction: Licence Contact Page', () => {
   })
 })
 describe('Functional Tests - Water Abstraction: Map Page', () => {
-
-  it('should get the licence map_of_abstraction_point page', (done) => {
+  it('should load', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -249,8 +225,7 @@ describe('Functional Tests - Water Abstraction: Map Page', () => {
   })
 })
 describe('Functional Tests - Water Abstraction: Licence Terms Page', () => {
-
-  it('should get the licence terms page', (done) => {
+  it('should load', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({
       method: 'GET',
@@ -274,9 +249,6 @@ describe('Functional Tests - Water Abstraction: Licence Terms Page', () => {
 })
 
 describe('Functional Tests - Water Abstraction: 404', () => {
-
-
-
   it('should return 404 for non existent files', (done) => {
             // make API call to self to test functionality end-to-end
     Server.inject({

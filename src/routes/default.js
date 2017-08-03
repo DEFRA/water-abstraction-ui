@@ -58,6 +58,13 @@ function getRoot (request, reply) {
 }
 
 function getSignin (request, reply) {
+  console.log('Requested Path')
+  console.log(request.path)
+  if(request.path != '/signin'){
+    request.yar.set('postlogin',request.path)
+  } else {
+    request.yar.set('postlogin','/licences')
+  }
   sessionSet(request, {id: Helpers.createGUID()})
   var viewContext = viewContextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
@@ -75,7 +82,7 @@ function postSignin (request, reply) {
 
 //      request.session.user = getUser.user
       console.log('redirect to licences page')
-      reply('<script>location.href=\'/licences\'</script>')
+      reply('<script>location.href=\''+request.yar.get('postlogin')+'\'</script>')
       /**
       var httpRequest = require('request')
       httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {

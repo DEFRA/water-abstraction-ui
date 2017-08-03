@@ -10,10 +10,26 @@ const cacheKey=process.env.cacheKey||'super-secret-cookie-encryption-key'
 console.log('Cache key'+cacheKey)
 const sessionPluginOptions = {
   cache: { segment: 'unique-cache-sement' },
-  cookie: { isSecure: true },
-  key: cacheKey
+  cookie: { isSecure: false },
+  key: 'bla-bla-bla'
 }
 
+
+//isSecure = true for live...
+var yar_options = {
+    storeBlank: false,
+    cookieOptions: {
+        password: 'the-password-must-be-at-least-32-characters-long',
+        isSecure: false
+    }
+};
+
+server.register({
+    register: require('yar'),
+    options: yar_options
+}, function (err) { });
+
+/**
 server.register(
   { register: require('hapi-server-session'), options: sessionPluginOptions },
   (err) => {
@@ -22,6 +38,7 @@ server.register(
     }
   }
 )
+**/
 
 server.register([require('inert'), require('vision')], (err) => {
   if (err) {

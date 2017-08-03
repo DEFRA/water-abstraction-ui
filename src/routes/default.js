@@ -2,11 +2,41 @@
 const Helpers = require('../helpers')
 const User = require('../user')
 
+function sessionGet(request){
+  session=request.yar.get('session');
+  if (session){
+    console.log('GET SESSION')
+    console.log(session)
+    return session
+  } else {
+    console.log('START SESSION')
+    session={id:Helpers.createGUID()};
+    sessionSet(request,session);
+    return session
+  }
+}
+
+function sessionSet(request,session){
+  console.log('SET SESSION')
+  console.log(session)
+  request.yar.set('session',session);
+  return
+}
+
+
 function viewContextDefaults (request) {
   var viewContext = {}
-  request.session.id = request.session.id || Helpers.createGUID()
-  request.session.pageviews = request.session.pageviews + 1 || 1
-  viewContext.session = request.session
+
+  viewContext.session=sessionGet(request)
+console.log("VIEW CONTEXT SESSION")
+console.log(viewContext.session);
+
+//  request.session.id = request.session.id || Helpers.createGUID()
+//  request.session.pageviews = request.session.pageviews + 1 || 1
+
+//  console.log(request.session)
+
+//  viewContext.session = request.session
   viewContext.pageTitle = 'Water Abstraction'
   viewContext.insideHeader = ''
   viewContext.headerClass = 'with-proposition'
@@ -29,16 +59,25 @@ function getRoot (request, reply) {
 }
 
 function getSignin (request, reply) {
+  sessionSet(request,{id:Helpers.createGUID()})
   var viewContext = viewContextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
 }
 
-function postRoot (request, reply) {
+function postSignin (request, reply) {
   if (request.payload && request.payload.user_id && request.payload.password) {
     var getUser = User.authenticate(request.payload.user_id, request.payload.password)
+    console.log(getUser)
     if (getUser.status) {
-      request.session.user = getUser.user
+      var session=sessionGet(request)
+      session.user=getUser.user;
+      sessionSet(request,session)
+
+//      request.session.user = getUser.user
+      console.log('redirect to licences page')
+      reply('<script>location.href=\'/licences\'</script>')
+      /**
       var httpRequest = require('request')
       httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
         var viewContext = viewContextDefaults(request)
@@ -47,6 +86,8 @@ function postRoot (request, reply) {
         viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
         reply.view('water/licences', viewContext)
       })
+      **/
+
     } else {
       var viewContext = viewContextDefaults(request)
       viewContext.payload = request.payload
@@ -75,7 +116,20 @@ function postRoot (request, reply) {
 }
 
 function getLicences (request, reply) {
-  var httpRequest = require('request')
+
+
+
+    var httpRequest = require('request')
+
+    user=request.yar.get('user');
+
+
+    if (!user){
+      console.log("where has my session gone!!!")
+      getSignin(request,reply)
+    } else {
+
+
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
 
@@ -89,10 +143,18 @@ function getLicences (request, reply) {
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
     reply.view('water/licences', viewContext)
   })
+    }
 }
 
 function getLicence (request, reply) {
   var httpRequest = require('request')
+    var viewContext = viewContextDefaults(request)
+  console.log(request.session)
+
+  if (!viewContext.session.user){
+    getSignin(request,reply)
+  } else {
+
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
     viewContext.licence_id = request.params.licence_id
@@ -102,9 +164,15 @@ function getLicence (request, reply) {
     reply.view('water/licence', viewContext)
   })
 }
+}
 
 function getLicenceContact (request, reply) {
+  var viewContext = viewContextDefaults(request)
   var httpRequest = require('request')
+
+  if (!viewContext.session.user){
+    getSignin(request,reply)
+  } else {
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'
@@ -114,9 +182,14 @@ function getLicenceContact (request, reply) {
     reply.view('water/licences_contact', viewContext)
   })
 }
+}
 
 function getLicenceMap (request, reply) {
   var httpRequest = require('request')
+  if (!request.session.user){
+    getSignin(request,reply)
+  } else {
+
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - abstraction point'
@@ -126,9 +199,14 @@ function getLicenceMap (request, reply) {
     reply.view('water/licences_map', viewContext)
   })
 }
+}
 
 function getLicenceTerms (request, reply) {
   var httpRequest = require('request')
+    var viewContext = viewContextDefaults(request)
+  if (!viewContext.session.user){
+    getSignin(request,reply)
+  } else {
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
     var viewContext = viewContextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'
@@ -137,6 +215,7 @@ function getLicenceTerms (request, reply) {
     viewContext.licence = body
     reply.view('water/licences_terms', viewContext)
   })
+}
 }
 
 function getTest (request, reply) {
@@ -166,7 +245,7 @@ function getTest (request, reply) {
             'attributeValue': viewContext.licenceData.Surname
           },
           {
-            'attributeElementType': 'br',
+            'attributeElementType': 'br'
           },
           {
             'attributeElementType': 'link',
@@ -176,104 +255,100 @@ function getTest (request, reply) {
                 'attributeElementType': 'textValue',
                 'attributeValue': 'Licence Contact Details'
               }]
-          },
+          }
         ]},
-        {
-          'attributeElementType': 'textRow',
-          'attributeValue': 'Point of Abstraction:',
-          'attributeChildren': [
-            {
-              'attributeElementType': 'dataValue',
-              'attributeValue': 'Pointofabstraction'
-            },
-            {
-              'attributeElementType': 'br'
-            },
-            {
-              'attributeElementType': 'link',
-              'attributeValue': '/map_of_abstraction_point',
-              'attributeChildren': [
-                {
-                  'attributeElementType': 'textValue',
-                  'attributeValue': 'View Map'
-                }]
-            },
-          ]},
+      {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Point of Abstraction:',
+        'attributeChildren': [
           {
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Licence effective from:',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': viewContext.licenceData.EffectiveDateStart
-              }
-            ]
+            'attributeElementType': 'dataValue',
+            'attributeValue': 'Pointofabstraction'
           },
           {
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Licenced until:',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': viewContext.licenceData.EffectiveDateend
-              }
-            ]
-          },{
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Source of supply:',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': viewContext.licenceData.SourceofSupply
-              }
-            ]
-          },{
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Period of abstraction:',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'dataValue',
-                'attributeValue': 'PeriodofAbstraction'
-              }
-            ]
-          },{
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Flow Conditions:',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': 'This licence has '
-              },
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': viewContext.licenceData.handsOffFlow
-              },
-              {
-                'attributeElementType': 'hidden',
-                'attributeValue': viewContext.licenceData.handsOffFlowHelp,
-                'attributeChildren': [
-                  {
-                    'attributeElementType': 'textValue',
-                    'attributeValue': '<h3 class="heading-small">What is a flow condition?</h3><p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>'
-                  }
-
-                ]
-              }
-            ]
-          },{
-            'attributeElementType': 'textRow',
-            'attributeValue': 'Maximum quantities before conditions',
-            'attributeChildren': [
-              {
-                'attributeElementType': 'textValue',
-                'attributeValue': viewContext.licenceData.MaximumQuantityofwatertobeabstracted,
-              }
-            ]
+            'attributeElementType': 'br'
           },
+          {
+            'attributeElementType': 'link',
+            'attributeValue': '/map_of_abstraction_point',
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': 'View Map'
+              }]
+          }
+        ]},
+      {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Licence effective from:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.EffectiveDateStart
+          }
+        ]
+      },
+      {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Licenced until:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.EffectiveDateend
+          }
+        ]
+      }, {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Source of supply:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.SourceofSupply
+          }
+        ]
+      }, {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Period of abstraction:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'dataValue',
+            'attributeValue': 'PeriodofAbstraction'
+          }
+        ]
+      }, {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Flow Conditions:',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': 'This licence has '
+          },
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.handsOffFlow
+          },
+          {
+            'attributeElementType': 'hidden',
+            'attributeValue': viewContext.licenceData.handsOffFlowHelp,
+            'attributeChildren': [
+              {
+                'attributeElementType': 'textValue',
+                'attributeValue': '<h3 class="heading-small">What is a flow condition?</h3><p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>'
+              }
 
-
-
-
+            ]
+          }
+        ]
+      }, {
+        'attributeElementType': 'textRow',
+        'attributeValue': 'Maximum quantities before conditions',
+        'attributeChildren': [
+          {
+            'attributeElementType': 'textValue',
+            'attributeValue': viewContext.licenceData.MaximumQuantityofwatertobeabstracted
+          }
+        ]
+      },
 
       {
         'attributeRef': 'ABSLink',
@@ -320,7 +395,7 @@ module.exports = [
 
   { method: 'GET', path: '/', handler: getRoot },
   { method: 'GET', path: '/signin', handler: getSignin },
-  { method: 'POST', path: '/signin', handler: postRoot },
+  { method: 'POST', path: '/signin', handler: postSignin },
   { method: 'GET', path: '/licences', handler: getLicences },
   { method: 'GET', path: '/licences/{licence_id}', handler: getLicence },
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: getLicenceContact },

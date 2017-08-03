@@ -35,10 +35,10 @@
     "handlebars": "^4.0.10",
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^16.5.0",
-    "hapi-server-session": "^3.0.2",
     "inert": "^4.2.1",
     "path": "^0.12.7",
-    "vision": "^4.1.1"
+    "vision": "^4.1.1",
+    "yar": "^8.1.2"
   },
   "standard": {
     "ignore": [

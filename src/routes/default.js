@@ -2,7 +2,21 @@
 const Helpers = require('../helpers')
 const User = require('../user')
 
+const moment = require('moment')
+
+function updateSessionTimestamp(request){
+  console.log('*** updateSessionTimestamp ***')
+  var currentSession=moment().unix()
+  console.log('this sesion '+currentSession)
+
+  request.yar.set('sessionUnixTime',currentSession);
+
+
+}
+
+
 function sessionGet (request) {
+  updateSessionTimestamp(request)
   session = request.yar.get('session')
   if (session) {
     console.log('GET SESSION')
@@ -26,7 +40,13 @@ function sessionSet (request, session) {
 function viewContextDefaults (request) {
   var viewContext = {}
 
+//  console.log (getSessionAge(request));
+
   viewContext.session = sessionGet(request)
+
+
+
+
   console.log('VIEW CONTEXT SESSION')
   console.log(viewContext.session)
 
@@ -48,6 +68,7 @@ function viewContextDefaults (request) {
   viewContext.debug.connection = request.connection.info
   viewContext.debug.request = request.info
   viewContext.debug.request.path = request.path
+  viewContext.debug.session=request.yar.get('sessionTimestamp')
   return viewContext
 }
 

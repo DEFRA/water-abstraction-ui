@@ -36,6 +36,7 @@
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^16.5.0",
     "inert": "^4.2.1",
+    "moment": "^2.18.1",
     "path": "^0.12.7",
     "vision": "^4.1.1",
     "yar": "^8.1.2"

@@ -1,0 +1,35 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/">Your services</a></li>
+        <li><a href="/admin">admin</a></li>
+      </ol>
+    </div>
+  </nav>
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-xlarge">
+        Permit Repository - Organisation {{orgId}} Licence Types
+      </h1>
+
+
+
+        <ul class="list list-bullet">
+
+        {{#each data}}
+
+          {{>element-li-link uri=(concat '/admin/organisation/' ../orgId '/licencetypes/' type_id) title=(concat type_id ':' type_nm)}}
+
+        {{/each}}
+      </ul>
+
+
+
+    </div>
+  </div>
+</main>
+{{> footerjs}}
+{{> debug}}

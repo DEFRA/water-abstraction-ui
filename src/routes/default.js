@@ -1,79 +1,21 @@
 
 const Helpers = require('../helpers')
 const User = require('../user')
-
-const moment = require('moment')
-
-function updateSessionTimestamp(request){
-  console.log('*** updateSessionTimestamp ***')
-  var currentSession=moment().unix()
-  console.log('this sesion '+currentSession)
-
-  request.yar.set('sessionUnixTime',currentSession);
-
-
-}
-
-
-function sessionGet (request) {
-  updateSessionTimestamp(request)
-  session = request.yar.get('session')
-  if (session) {
-    console.log('GET SESSION')
-    console.log(session)
-    return session
-  } else {
-    console.log('START SESSION')
-    session = {id: Helpers.createGUID()}
-    sessionSet(request, session)
-    return session
-  }
-}
-
-function sessionSet (request, session) {
-  console.log('SET SESSION')
-  console.log(session)
-  request.yar.set('session', session)
-  return
-}
-
-function viewContextDefaults (request) {
-  var viewContext = {}
-
-//  console.log (getSessionAge(request));
-
-  viewContext.session = sessionGet(request)
+const View = require('../view')
+const Session = require('../session')
 
 
 
 
-  console.log('VIEW CONTEXT SESSION')
-  console.log(viewContext.session)
 
-//  request.session.id = request.session.id || Helpers.createGUID()
-//  request.session.pageviews = request.session.pageviews + 1 || 1
 
-//  console.log(request.session)
 
-//  viewContext.session = request.session
-  viewContext.pageTitle = 'Water Abstraction'
-  viewContext.insideHeader = ''
-  viewContext.headerClass = 'with-proposition'
-  viewContext.topOfPage = null
-  viewContext.head = null
-  viewContext.bodyStart = null
-  viewContext.afterHeader = null
-  viewContext.path = request.path
-  viewContext.debug = {}
-  viewContext.debug.connection = request.connection.info
-  viewContext.debug.request = request.info
-  viewContext.debug.request.path = request.path
-  viewContext.debug.session=request.yar.get('sessionTimestamp')
-  return viewContext
-}
+
+
+
 
 function getRoot (request, reply) {
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Water Abstractions Prototype'
   reply.view('water/index', viewContext)
 }
@@ -86,8 +28,8 @@ function getSignin (request, reply) {
   } else {
     request.yar.set('postlogin','/licences')
   }
-  sessionSet(request, {id: Helpers.createGUID()})
-  var viewContext = viewContextDefaults(request)
+  Session.set(request, {id: Helpers.createGUID()})
+  var viewContext = View.getViewContextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
 }
@@ -97,9 +39,9 @@ function postSignin (request, reply) {
     var getUser = User.authenticate(request.payload.user_id, request.payload.password)
     console.log(getUser)
     if (getUser.status) {
-      var session = sessionGet(request)
+      var session = Session.get(request)
       session.user = getUser.user
-      sessionSet(request, session)
+      Session.set(request, session)
 
 //      request.session.user = getUser.user
       console.log('redirect to licences page')
@@ -107,7 +49,7 @@ function postSignin (request, reply) {
       /**
       var httpRequest = require('request')
       httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
-        var viewContext = viewContextDefaults(request)
+        var viewContext = View.getViewContextDefaults(request)
         viewContext.licenceData = JSON.parse(body)
         viewContext.licence = body
         viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
@@ -115,7 +57,7 @@ function postSignin (request, reply) {
       })
       **/
     } else {
-      var viewContext = viewContextDefaults(request)
+      var viewContext = View.getViewContextDefaults(request)
       viewContext.payload = request.payload
       viewContext.errors = {}
       viewContext.errors['authentication'] = 1
@@ -123,7 +65,7 @@ function postSignin (request, reply) {
       reply.view('water/signin', viewContext)
     }
   } else {
-    var viewContext = viewContextDefaults(request)
+    var viewContext = View.getViewContextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
     viewContext.payload = request.payload
     viewContext.errors = {}
@@ -142,7 +84,7 @@ function postSignin (request, reply) {
 }
 
 function getLicences (request, reply) {
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   var httpRequest = require('request')
 
   var user = viewContext.session.user
@@ -151,13 +93,14 @@ function getLicences (request, reply) {
     console.log('where has my session gone!!!')
     getSignin(request, reply)
   } else {
-    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/licences', function (error, response, body) {
-      var viewContext = viewContextDefaults(request)
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/org/1/licencetype/1/licence', function (error, response, body) {
+      var viewContext = View.getViewContextDefaults(request)
 
       try {
         viewContext.licenceData = JSON.parse(body)
-
+        console.log(viewContext.licenceData)
         viewContext.licence = body
+
       } catch (e) {
         ;
       }
@@ -169,17 +112,20 @@ function getLicences (request, reply) {
 
 function getLicence (request, reply) {
   var httpRequest = require('request')
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   console.log(request.session)
 
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-      var viewContext = viewContextDefaults(request)
+    httpRequest(request.connection.info.protocol + '://' + request.info.host + '/API/1.0/org/1/licencetype/1/licence/' + request.params.licence_id + '', function (error, response, body) {
+      var viewContext = View.getViewContextDefaults(request)
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = JSON.parse(body)
-      viewContext.licence = body
+      console.log('got licence?')
+      console.log(viewContext.licenceData)
+      viewContext.licence = JSON.parse(body)
+      viewContext.debug.licence = JSON.parse(body)
       viewContext.pageTitle = 'GOV.UK - ' + viewContext.licenceData.LicenceName + ' water abstraction licence'
       reply.view('water/licence', viewContext)
     })
@@ -187,14 +133,14 @@ function getLicence (request, reply) {
 }
 
 function getLicenceContact (request, reply) {
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   var httpRequest = require('request')
 
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
     httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-      var viewContext = viewContextDefaults(request)
+      var viewContext = View.getViewContextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = JSON.parse(body)
@@ -206,14 +152,14 @@ function getLicenceContact (request, reply) {
 
 function getLicenceMap (request, reply) {
   var httpRequest = require('request')
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   console.log(request.session)
 
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
     httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-      var viewContext = viewContextDefaults(request)
+      var viewContext = View.getViewContextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - abstraction point'
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = JSON.parse(body)
@@ -225,12 +171,12 @@ function getLicenceMap (request, reply) {
 
 function getLicenceTerms (request, reply) {
   var httpRequest = require('request')
-  var viewContext = viewContextDefaults(request)
+  var viewContext = View.getViewContextDefaults(request)
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
     httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + request.params.licence_id + '.json', function (error, response, body) {
-      var viewContext = viewContextDefaults(request)
+      var viewContext = View.getViewContextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = JSON.parse(body)
@@ -243,7 +189,7 @@ function getLicenceTerms (request, reply) {
 function getTest (request, reply) {
   var httpRequest = require('request')
   httpRequest(request.connection.info.protocol + '://' + request.info.host + '/public/data/licences/' + 1 + '.json', function (error, response, body) {
-    var viewContext = viewContextDefaults(request)
+    var viewContext = View.getViewContextDefaults(request)
     viewContext.title = 'Your water abstraction licence - Full Terms'
     viewContext.pageTitle = 'GOV.UK - ' + viewContext.title
     viewContext.breadcrumbs = []

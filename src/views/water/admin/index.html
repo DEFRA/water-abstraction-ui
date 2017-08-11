@@ -1,0 +1,27 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/">Your services</a></li>
+        <li><a href="/admin">admin</a></li>
+      </ol>
+    </div>
+  </nav>
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-xlarge">
+        Permit Repository Admin
+      </h1>
+
+
+      <ul class="list list-bullet">
+        {{>element-li-link uri='/admin/fields' title='System fields'}}
+        {{>element-li-link uri='/admin/organisation' title='Organisations'}}
+      </ul>
+    </div>
+  </div>
+</main>
+{{> footerjs}}
+{{> debug}}

@@ -51,6 +51,7 @@ server.register([require('inert'), require('vision')], (err) => {
   server.route(require('./src/routes/public'))
   server.route(require('./src/routes/default'))
   server.route(require('./src/routes/API'))
+  server.route(require('./src/routes/admin'))
 })
 
 

@@ -11,6 +11,20 @@ handlebars.registerHelper( 'concat', function(){
   return arg.join('');
 })
 
+handlebars.registerHelper( 'stringify', function(variable){
+  var arg = JSON.stringify(variable);
+  return arg;
+})
+
+handlebars.registerHelper( 'parse', function(variable){
+  try{
+  var arg = JSON.parse(variable);
+} catch(e){
+  return variable
+}
+
+  return arg;
+})
 handlebars.registerHelper( 'showhide', function(){
   var arg = Array.prototype.slice.call(arguments,0);
   arg.pop();

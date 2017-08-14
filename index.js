@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+
 const Hapi = require('hapi')
 const serverOptions={connections:{router:{stripTrailingSlash:true}}}
 const server = new Hapi.Server(serverOptions)
@@ -61,6 +62,41 @@ server.start((err) => {
   if (err) {
     throw err
   }
+
+//TODO: create initial tables etc if they don't exist...
+/**
+SELECT EXISTS (   SELECT 1   FROM   information_schema.tables   WHERE  table_schema = 'public'   AND    table_name = 'licence'   );
+**/
+
+const { Client } = require('pg')
+const client = new Client()
+client.connect()
+client.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'permit' AND table_name = 'licence'   );", [], (err, res) => {
+  console.log(res.rows)
+  if(err){
+  console.log(err ? err.stack : res.rows[0]) // Hello World!
+  client.end()
+} else if (!res.rows[0].exists){
+  console.log('db check: missing tables...')
+  var fs = require('fs');
+  var sql = fs.readFileSync('db/dbcreate.sql').toString();
+client.query(sql, [], (err, res) => {
+  if(err){
+    console.log(err ? err.stack : res.rows[0]) // Hello World!
+    client.end()
+  } else {
+    console.log('db restore completed')
+    client.end()
+  }
+})
+} else {
+  console.log('db check: system table check complete')
+  client.end()
+}
+
+
+})
+
   console.log('Server running at:', server.info.uri)
 })
 module.exports = server

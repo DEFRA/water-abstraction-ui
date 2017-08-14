@@ -60,7 +60,7 @@ function typesGetHandler (request, reply) {
 // return all licence types for org
   API.type.list(request.params, (data) => {
     console.log('got data!')
-    console.log(data)
+//    console.log(data)
     reply(data)
   })
 }
@@ -69,7 +69,7 @@ function typesPostHandler (request, reply) {
 // return all licence types for org
   API.type.create(request, (data) => {
     console.log('got data!')
-    console.log(data)
+//    console.log(data)
     reply(data)
   })
 }
@@ -88,7 +88,7 @@ function licenceFieldsGetHandler (request, reply) {
   console.log(request.params)
   API.licencefield.list(request,(data) => {
     console.log('got data!')
-    console.log(data)
+//    console.log(data)
     reply(data)
   })
 }
@@ -97,7 +97,7 @@ function licencesGetHandler (request, reply) {
 // return licence summaries for org & type
   API.licence.list(request.params, (data) => {
     console.log('got data!')
-    console.log(data)
+//    console.log(data)
     reply(data)
   })
 }

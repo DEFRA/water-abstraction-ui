@@ -23,6 +23,7 @@
     "standard": "^10.0.2"
   },
   "dependencies": {
+    "async-waterfall": "^0.1.5",
     "dotenv": "^4.0.0",
     "govuk-elements-sass": "^3.1.1",
     "govuk_frontend_toolkit": "^7.0.1",

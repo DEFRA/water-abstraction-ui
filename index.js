@@ -50,7 +50,7 @@ server.register([require('inert'), require('vision')], (err) => {
 
   // load routes
   server.route(require('./src/routes/public'))
-  server.route(require('./src/routes/default'))
+  server.route(require('./src/routes/VmL'))
   server.route(require('./src/routes/API'))
   server.route(require('./src/routes/admin'))
 })
@@ -65,8 +65,6 @@ server.start((err) => {
 
 //TODO: create initial tables etc if they don't exist...
 /**
-SELECT EXISTS (   SELECT 1   FROM   information_schema.tables   WHERE  table_schema = 'public'   AND    table_name = 'licence'   );
-**/
 
 const { Client } = require('pg')
 const client = new Client()
@@ -94,8 +92,10 @@ client.query(sql, [], (err, res) => {
   client.end()
 }
 
-
 })
+**/
+
+
 
   console.log('Server running at:', server.info.uri)
 })

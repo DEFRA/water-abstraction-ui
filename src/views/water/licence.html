@@ -33,6 +33,18 @@
   ** end
 </p>
 
+<p>
+  ** Example of generic WR[N].[NN] renderer
+
+  <ul>
+  {{#each (parse licenceData.attributes.SourceOfSupplyTest)}}
+  <li>WR{{this.type}}.{{this.subtype}}: At National Grid Reference {{this.attributes.ngr}} marked ‘{{this.attributes.point_ref}}’ on the map. </li>
+  {{/each}}
+  </ul>
+
+  ** end
+</p>
+
   {{>element-licence-row label='Maximum quantities before conditions' answer=licenceData.attributes.MaximumQuantities}}
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>

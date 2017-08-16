@@ -19,7 +19,7 @@
 
         <ul class="list list-bullet">
 
-        {{#each data}}
+        {{#each data.data}}
 
           {{>element-li-link uri=(concat '/admin/organisation/' org_id '/licencetypes') title=(concat org_id ':' org_nm)}}
 

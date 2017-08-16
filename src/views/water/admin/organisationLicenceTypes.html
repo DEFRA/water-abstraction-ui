@@ -18,10 +18,9 @@
 
 
         <ul class="list list-bullet">
-
         {{#each data}}
 
-          {{>element-li-link uri=(concat '/admin/organisation/' ../orgId '/licencetypes/' type_id) title=(concat type_id ':' type_nm)}}
+          {{>element-li-link uri=(concat '/admin/organisation/' ../orgId '/licencetypes/' type_id) title=(concat type_id ':' this.type_nm)}}
 
         {{/each}}
       </ul>

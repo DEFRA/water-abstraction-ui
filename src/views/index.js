@@ -2,7 +2,7 @@ const handlebars = require('handlebars')
 console.log('working dir for views')
 console.log(__dirname)
 
-const Helpers = require('../../src/lib/helpers')
+const Helpers = require('../lib/helpers')
 
 handlebars.registerHelper("equal", require("handlebars-helper-equal"))
 

@@ -38,21 +38,13 @@ server.register([require('inert'), require('vision')], (err) => {
 })
 
 server.errorHandler=function(error){
-  exception=function (value){
-     this.value = JSON.stringify(value);
-     this.toString = function() {
-        return this.value;
-     };
-  }
-  throw exception(error)
+  throw error
 }
-
-
 
 // Start the server
 server.start((err) => {
-  if(err){
-    server.errorHandler(err)
+  if (err) {
+    throw err
   }
   console.log('Server running at:', server.info.uri)
 })

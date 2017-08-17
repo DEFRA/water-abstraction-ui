@@ -1,0 +1,31 @@
+{{> styles}}
+<main id="content" role="main">
+  <div class="phase-banner-alpha">
+    <p>
+      <strong class="phase-tag">ALPHA</strong>
+      <span>This is an Alpha prototype, details may be missing whilst we build the service. Your feedback will help us improve this service.</span>
+    </p>
+  </div>
+  <nav>
+    <div class="breadcrumbs">
+      <ol >
+        <li><a href="/">Your services</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        <li></li>
+      </ol>
+    </div>
+  </nav>
+  <a href="/signin" class="sign-out2">Sign out</a>
+  <h1 class="heading-large">
+  Your water abstraction licences
+  </h1>
+  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+  {{#each licenceData}}
+  <a href="/licences/{{this.key}}">
+    <div class="menubox">{{this.LicenceName}} - licence number: {{this.LicenceSerialNo}}</div>
+  </a>
+  {{/each}}
+  </div>
+  </div>
+  {{> debug}}
+</main>

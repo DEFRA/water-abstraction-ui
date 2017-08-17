@@ -16,31 +16,29 @@ const after = lab.after
 // require hapi server
 const Server = require('../../index.js')
 
+
 // tests
+describe('VML getRoot', () => {
+  it('has methods', (done) => {
 
-describe('Functional Tests - Water Abstraction: Index Page', () => {
-  it('should get the index page', (done) => {
-        // make API call to self to test functionality end-to-end
+
     Server.inject({
-      method: 'GET',
-      url: '/'
-    }, (response) => {
-      expect(response).to.exist()
-      expect(response).to.be.a.object()
-      expect(response.payload).to.exist()
-      expect(response.payload).to.be.a.string()
-      expect(response.statusCode).to.exist()
-      expect(response.statusCode).to.be.a.number()
-      expect(response.statusCode).to.equal(200)
-      done()
-    })
-  })
+          method: 'GET',
+          url: '/'
+        }, (response) => {
+          expect(response).to.exist()
+          expect(response).to.be.a.object()
+          expect(response.payload).to.exist()
+          expect(response.payload).to.be.a.string()
+          expect(response.statusCode).to.exist()
+          expect(response.statusCode).to.be.a.number()
+          expect(response.statusCode).to.equal(200)
+          done()
+        })
 
-  after((done) => {
-          // placeholder to do something post tests
-    done()
   })
 })
+
 describe('Functional Tests - Water Abstraction: Signin Page', () => {
   it('should load', (done) => {
         // make API call to self to test functionality end-to-end
@@ -65,7 +63,7 @@ describe('Functional Tests - Water Abstraction: Signin Page', () => {
     Server.inject({
       method: 'POST',
       url: '/signin',
-      payload: {user_id: 'demouser', password: 'password'}
+      payload: {user_id: 'demouser', password: 'wat3r1sl1fe'}
     }, (response) => {
       expect(response).to.exist()
       expect(response).to.be.a.object()

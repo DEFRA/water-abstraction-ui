@@ -14,14 +14,13 @@ const it = lab.it
 const after = lab.after
 
 // require hapi server
-const API = require('../../src/routes/API.js')
+const Public = require('../../src/routes/public.js')
 
-console.log(API)
 
 // tests
-describe('Test API', () => {
+describe('Public Route', () => {
   it('has methods', (done) => {
-    expect(API).to.be.a.array()
+    expect(Public).to.be.a.array()
     done()
   })
 })

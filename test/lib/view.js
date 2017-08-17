@@ -14,23 +14,14 @@ const it = lab.it
 const after = lab.after
 
 // require hapi server
-const Helpers = require('../../src/helpers.js')
+const Views = require('../../src/views/index.js')
 
-console.log(Helpers)
+
 
 // tests
-describe('Test Helpers', () => {
-  it('Returns a guid', (done) => {
-    expect(Helpers).to.be.a.object()
-    done()
-  })
-})
-
-describe('Test createGUID', () => {
-  it('Returns a guid', (done) => {
-    var result = Helpers.createGUID()
-    expect(result).to.be.a.string()
-    expect(result).to.have.length(36)
+describe('Public Route', () => {
+  it('has methods', (done) => {
+    expect(Views).to.be.a.object()
     done()
   })
 })

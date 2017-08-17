@@ -14,7 +14,7 @@ const it = lab.it
 const after = lab.after
 
 // require hapi server
-const User = require('../../src/user.js')
+const User = require('../../src/lib/user.js')
 
 // tests
 
@@ -27,7 +27,7 @@ describe('Test User js file', () => {
 
 describe('Test demo login', () => {
   it('Returns true', (done) => {
-    expect(User.authenticate('demouser', 'password').status).to.equal(true)
+    expect(User.authenticate('demouser', 'wat3r15l1f3').status).to.equal(true)
     done()
   })
 })

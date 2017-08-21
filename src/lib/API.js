@@ -6,7 +6,7 @@ var httpRequest = require('request')
 process.env.apiURI = 'https://prototype-permit-repository.herokuapp.com/API/1.0/'
 
 function makeURIRequest (uri, cb) {
-  httpRequest(uri, function (error, response, body) {
+  httpRequest(uri+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
@@ -19,7 +19,7 @@ function getFields (request, reply, cb) {
 }
 
 function getOrg (request, reply, cb) {
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId, function (error, response, body) {
+  httpRequest(process.env.apiURI + 'org/' + request.params.orgId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
@@ -27,7 +27,7 @@ function getOrg (request, reply, cb) {
 
 function listLicenceTypes (request, reply, cb) {
 // return all licence types for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype', function (error, response, body) {
+  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
@@ -35,7 +35,7 @@ function listLicenceTypes (request, reply, cb) {
 
 function getLicenceType (request, reply,cb) {
   // return specific licence type definition for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId, function (error, response, body) {
+  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
@@ -43,7 +43,7 @@ function getLicenceType (request, reply,cb) {
 
 function getlicenceTypeFields (request, reply, cb) {
 // return specific licence type definition for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId, function (error, response, body) {
+  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
@@ -52,7 +52,7 @@ function getlicenceTypeFields (request, reply, cb) {
 function listLicences
  (request, reply, cb) {
 // return licence summaries for org & type
-  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence'
+  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence'+'?token='+process.env.JWT_TOKEN
   console.log(URI)
   httpRequest(URI, function (error, response, body) {
     var data = JSON.parse(body)
@@ -64,7 +64,7 @@ function getLicence (request, reply, cb) {
 // return specific licence for org & type
 //  console.log(data)
   console.log('get licence request')
-  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence/' + request.params.licence_id
+  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence/' + request.params.licence_id+'?token='+process.env.JWT_TOKEN
   httpRequest(URI, function (error, response, body) {
     var data = JSON.parse(body)
 

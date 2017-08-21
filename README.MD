@@ -3,6 +3,40 @@
 
 Project for the GOV.UK Water Abstraction service
 
+## Installation
+
+```
+npm install --only=dev
+gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass
+```
+
+## Environment variables
+
+A `.env` file should be created in the root directory with the following optional configuration variables
+
+### PORT
+Specify the port for the service to run on
+
+`PORT=[port]`
+
+### cacheKey
+32+ characters used to secure session variables
+
+`cacheKey=a-string-of-at-least-32-characters`
+
+### JWT_TOKEN
+The JWT used in requests to the permit repository API
+
+## Launching
+
+`node index.js`
+
+## Security
+
+A valid JWT token is required for requests to the API. This should be appended to the URL in the format /API/1.0/org?token=[insert token here].
+
+Please note that a mechanism for obtaining the JWT token is not yet in place.
+
 ## Contributing to this project
 
 Please read the [contribution guidelines](/CONTRIBUTING.md) before submitting a pull request.

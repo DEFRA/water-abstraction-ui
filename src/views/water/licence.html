@@ -41,10 +41,7 @@
 
   <ul>
   {{#each (parse licenceData.attributes.SourceOfSupplyTest)}}
-
-{{#dynamicView viewType="WR" viewData=this}}{{/dynamicView}}
-
-  <li>WR{{this.type}}.{{this.subtype}}: At National Grid Reference {{this.attributes.ngr}} marked ‘{{this.attributes.point_ref}}’ on the map. </li>
+  <li>{{#dynamicView viewType="WR" viewData=this}}{{/dynamicView}}</li>
   {{/each}}
   </ul>
 

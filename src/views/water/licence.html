@@ -21,6 +21,9 @@
   {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.PeriodOfAbstraction}}
   {{>element-licence-row label='Flow conditions' answer=(concat 'This licence has ' licenceData.handsOffFlow (showhide licenceData.handsOffFlowHelp 'What is a flow condition?' '<p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>' )) }}
 
+
+
+
 <p>
   ** Example of parsed array for flow conditions
 
@@ -38,6 +41,9 @@
 
   <ul>
   {{#each (parse licenceData.attributes.SourceOfSupplyTest)}}
+
+{{#dynamicView viewType="WR" viewData=this}}{{/dynamicView}}
+
   <li>WR{{this.type}}.{{this.subtype}}: At National Grid Reference {{this.attributes.ngr}} marked ‘{{this.attributes.point_ref}}’ on the map. </li>
   {{/each}}
   </ul>

@@ -1,48 +1,60 @@
 const handlebars = require('handlebars')
+
+
 console.log('working dir for views')
 console.log(__dirname)
 
 const Helpers = require('../lib/helpers')
+const DynamicView = require('../lib/dynamicview')
 
-handlebars.registerHelper("equal", require("handlebars-helper-equal"))
+handlebars.registerHelper('equal', require('handlebars-helper-equal'))
 
-handlebars.registerHelper( 'concat', function(){
-  var arg = Array.prototype.slice.call(arguments,0);
-  arg.pop();
-  return arg.join('');
+handlebars.registerHelper('concat', function () {
+  var arg = Array.prototype.slice.call(arguments, 0)
+  arg.pop()
+  return arg.join('')
 })
 
-handlebars.registerHelper( 'stringify', function(variable){
-  var arg = JSON.stringify(variable);
-  return arg;
+handlebars.registerHelper('dynamicView', function () {
+  var args = Array.prototype.slice.call(arguments, 0).pop()
+  console.log("Called dynamic view with args")
+  console.log(args)
+  var requestedFunction=args.hash.viewType
+  var data=args.hash.viewData
+  return DynamicView[requestedFunction](data)
 })
 
-handlebars.registerHelper( 'parse', function(variable){
-  try{
-  var arg = JSON.parse(variable);
-} catch(e){
-  return variable
-}
-
-  return arg;
-})
-handlebars.registerHelper( 'showhide', function(){
-  var arg = Array.prototype.slice.call(arguments,0);
-  arg.pop();
-  var htmlContent='';
-  htmlContent+=''
-  htmlContent+='<details>'
-  htmlContent+='<summary><span class="summary" tabindex="0">'+arg[0]+'</span></summary>'
-  htmlContent+='<div class="panel panel-border-narrow">'
-  htmlContent+='<h3 class="heading-small">'+arg[1]+'</h3>'
-  htmlContent+=arg[2]
-  htmlContent+='</div>'
-  htmlContent+='</details>'
-  return htmlContent;
+handlebars.registerHelper('stringify', function (variable) {
+  var arg = JSON.stringify(variable)
+  return arg
 })
 
-handlebars.registerHelper( 'guid', function(){
-  return Helpers.createGUID();
+handlebars.registerHelper('parse', function (variable) {
+  try {
+    var arg = JSON.parse(variable)
+  } catch (e) {
+    return variable
+  }
+
+  return arg
+})
+handlebars.registerHelper('showhide', function () {
+  var arg = Array.prototype.slice.call(arguments, 0)
+  arg.pop()
+  var htmlContent = ''
+  htmlContent += ''
+  htmlContent += '<details>'
+  htmlContent += '<summary><span class="summary" tabindex="0">' + arg[0] + '</span></summary>'
+  htmlContent += '<div class="panel panel-border-narrow">'
+  htmlContent += '<h3 class="heading-small">' + arg[1] + '</h3>'
+  htmlContent += arg[2]
+  htmlContent += '</div>'
+  htmlContent += '</details>'
+  return htmlContent
+})
+
+handlebars.registerHelper('guid', function () {
+  return Helpers.createGUID()
 })
 
 const Path = require('path')
@@ -63,8 +75,6 @@ const defaultContext = {
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
 
-
-
   propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Water resource licensing service</a></nav></div></div>',
   afterHeader: '',
   footerTop: '',
@@ -80,7 +90,6 @@ module.exports = {
   path: Path.join(__dirname, ''),
   layoutPath: Path.join(__dirname, 'govuk_template_mustache/layouts'),
   layout: 'govuk_template',
-  partialsPath: Path.join(__dirname, 'partials/')
-  ,
+  partialsPath: Path.join(__dirname, 'partials/'),
   context: defaultContext
 }

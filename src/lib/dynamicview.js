@@ -1,8 +1,5 @@
 
-console.log('path tests')
-var path = require("path");
-console.log(". = %s", path.resolve("."));
-console.log(__dirname)
+
 const pathToTemplates=__dirname+'/../views/partials/jsPartials/'
 
 

@@ -16,12 +16,17 @@ handlebars.registerHelper('concat', function () {
 })
 
 handlebars.registerHelper('dynamicView', function () {
+  /**
+  The dynamicView helper loads javascript renderers from the views/partials/jsPartials directory
+  **/
   var args = Array.prototype.slice.call(arguments, 0).pop()
-  console.log("Called dynamic view with args")
-  console.log(args)
   var requestedFunction=args.hash.viewType
-  var data=args.hash.viewData
-  return DynamicView[requestedFunction](data)
+  if (DynamicView[requestedFunction]){
+  return `${DynamicView[requestedFunction].getContent(args)}`
+} else {
+  return `Error: Unknown component: ${requestedFunction}`
+}
+
 })
 
 handlebars.registerHelper('stringify', function (variable) {

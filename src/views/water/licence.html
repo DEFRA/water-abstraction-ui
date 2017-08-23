@@ -36,12 +36,16 @@
   ** end
 </p>
 
+{{#dynamicView viewType="example" viewData=this}}{{/dynamicView}}
+
 <p>
   ** Example of generic WR[N].[NN] renderer
 
+
+
   <ul>
   {{#each (parse licenceData.attributes.SourceOfSupplyTest)}}
-  <li>{{#dynamicView viewType="WR" viewData=this}}{{/dynamicView}}</li>
+  <li>{{#dynamicView viewType="wr" viewData=this}}{{/dynamicView}}</li>
   {{/each}}
   </ul>
 

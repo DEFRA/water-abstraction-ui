@@ -1,7 +1,11 @@
 function getContent () {
-  var wrType = arguments[0].type
-  var wrSubtype = arguments[0].subtype
-  var wrAttributes = arguments[0].attributes
+
+console.log('get content----')
+  console.log(arguments[0])
+
+  var wrType = arguments[0].hash.viewData.type
+  var wrSubtype = arguments[0].hash.viewData.subtype
+  var wrAttributes = arguments[0].hash.viewData.attributes
 
   // TODO: renderers for individual WR components
   switch (wrType) {

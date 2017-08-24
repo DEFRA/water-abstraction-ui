@@ -3,7 +3,7 @@ const Helpers = require('./helpers')
 // const DB = require('./db')
 var httpRequest = require('request')
 
-process.env.apiURI = 'https://prototype-permit-repository.herokuapp.com/API/1.0/'
+
 
 function makeURIRequest (uri, cb) {
   httpRequest(uri+'?token='+process.env.JWT_TOKEN, function (error, response, body) {

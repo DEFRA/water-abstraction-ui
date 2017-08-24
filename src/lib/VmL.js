@@ -28,13 +28,36 @@ function getSignin (request, reply) {
 function postSignin (request, reply) {
   //post from signin page
   if (request.payload && request.payload.user_id && request.payload.password) {
-    var getUser = User.authenticate(request.payload.user_id, request.payload.password)
-    if (getUser.status) {
+    User.authenticate(request.payload.user_id, request.payload.password,(getUser)=>{
+
+
+      console.log("response from get user")
+      console.log(getUser)
+
+    if (!getUser.error) {
+
+      console.log('user login success')
+      console.log('user login success')
+            console.log('user login success')
+                  console.log('user login success')
+                        console.log('user login success')
+
       var session = Session.get(request)
-      session.user = getUser.user
+
+      console.log(getUser)
+
+
+      var getUser=JSON.parse(getUser.data)
+      session.user = getUser.sessionGuid
+      session.cookie=getUser.sessionCookie
+      session.licences=getUser.licences
+
+      console.log('session set as')
+      console.log(session)
       Session.set(request, session)
       reply('<script>location.href=\''+request.yar.get('postlogin')+'\'</script>')
     } else {
+      console.log('user login failure')
       var viewContext = View.contextDefaults(request)
       viewContext.payload = request.payload
       viewContext.errors = {}
@@ -42,7 +65,9 @@ function postSignin (request, reply) {
       viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
       reply.view('water/signin', viewContext)
     }
+  });
   } else {
+    console.log('incomplete form data for login')
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
     viewContext.payload = request.payload
@@ -56,27 +81,26 @@ function postSignin (request, reply) {
     }
 
     reply.view('water/signin', viewContext)
+
   }
 }
 
 function getLicences (request, reply) {
   //get licences for user
   var viewContext = View.contextDefaults(request)
-  var httpRequest = require('request')
-  var user = viewContext.session.user
-  if (!user) {
-    getSignin(request, reply)
-  } else {
-    //TODO: save params for session
-    request.params.orgId=1;
-    request.params.typeId=1;
-    API.licence.list(request,reply,(data)=>{
-      var viewContext = View.contextDefaults(request)
-      viewContext.licenceData = data
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      reply.view('water/licences', viewContext)
-    })
-  }
+
+  var session=Session.get(request)
+
+
+  var viewContext = View.contextDefaults(request)
+  viewContext.licenceData = session.licences.data
+  viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+  reply.view('water/licences', viewContext)
+
+
+
+
+
 }
 
 function getLicence (request, reply) {

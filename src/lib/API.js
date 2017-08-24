@@ -12,6 +12,28 @@ function makeURIRequest (uri, cb) {
   })
 }
 
+function makeURIPostRequest(uri,data,cb){
+  console.log('make http post')
+  httpRequest.post({
+            url: uri+'?token='+process.env.JWT_TOKEN,
+            form: data
+        },
+        function (err, httpResponse, body) {
+            console.log('got http post')
+//            console.log(err, body);
+            cb({err:err,data:body})
+
+        });
+}
+
+function login (id,password, cb) {
+  var data={username:id,password:password}
+  makeURIPostRequest(process.env.apiURI+'tactical/user/login', data, (result) => {
+    console.log('got login response')
+    cb(result)
+  })
+}
+
 function getFields (request, reply, cb) {
   makeURIRequest(process.env.apiURI, (result) => {
     cb(result)
@@ -85,5 +107,6 @@ module.exports = {
     list: listLicences,
     get: getLicence
 
-  }
+  },
+  user:{login: login}
 }

@@ -18,6 +18,19 @@
   {{>element-licence-row label='Licence effective from' answer=licenceData.attributes.licenceData.effectiveFrom}}
   {{>element-licence-row label='Licensed until' answer=licenceData.attributes.licenceData.effectiveTo}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
+
+
+
+  <ul>
+<h3>purposes</h3>
+
+  {{#each (parse licenceData.attributes.purposes)}}
+  <li>{{@key}}: {{this}}</li>
+  {{/each}}
+  </ul>
+
+
+
   {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.PeriodOfAbstraction}}
   {{>element-licence-row label='Flow conditions' answer=(concat 'This licence has ' licenceData.handsOffFlow (showhide licenceData.handsOffFlowHelp 'What is a flow condition?' '<p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>' )) }}
 

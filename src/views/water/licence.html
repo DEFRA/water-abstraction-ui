@@ -38,14 +38,11 @@
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
   {{#each this.points}}
-    {{@key}}:
-    {{this.id}}
-    {{this.name}}
-    {{this.ngr1}}
-    {{this.ngr2}}
-    {{this.ngr3}}
-    {{this.ngr4}}
-    {{this.meansOfAbstraction}}
+  {{>element-licence-row label='Abstraction Points'}}
+  {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
+  {{>element-licence-row label='Means of Abstraction' answer=(concat this.meansOfAbstraction)}}
+  {{>element-licence-row label='NGR' answer=(concat this.ngr1 this.ngr2 this.ngr3 this.ngr4)}}
+
   {{/each}}
 
   {{#each this.conditions}}

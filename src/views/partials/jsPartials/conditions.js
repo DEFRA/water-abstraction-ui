@@ -8,7 +8,7 @@ console.log('get content----')
 
   var code = arguments[0].hash.viewData.code
   var subCode = arguments[0].hash.viewData.subCode
-  var attributes = arguments[0].hash.viewData.attributes
+  var attributes = arguments[0].hash.viewData
 
   switch (code) {
     case "CES":
@@ -17,11 +17,11 @@ console.log('get content----')
           var response = `<tr><td>CES FLOW: ${attributes.text}</td></tr>`
           break
         default:
-          var response = `<tr><td>CES ${subcode}: ${attributes.text} with data ${JSON.stringify(wrAttributes)}</td></tr>`
+          var response = `<tr><td>CES ${subcode}: with data ${JSON.stringify(attributes)}</td></tr>`
       }
       break
     default:
-      var response = `<tr><td>${code} ${subCode} with data ${JSON.stringify(wrAttributes)}</td></tr>`
+      var response = `<tr><td>${code} ${subCode} with data ${JSON.stringify(attributes)}</td></tr>`
   }
 
   return response

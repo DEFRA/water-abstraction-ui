@@ -10,11 +10,17 @@ console.log('get content----')
   var subCode = arguments[0].hash.viewData.subCode
   var attributes = arguments[0].hash.viewData
 
+/**
+<div class="sourceofsupplyq">
+</div><div class="licenceAnswer">
+</div>
+**/
+
   switch (code) {
     case "CES":
       switch (subCode) {
         case "FLOW":
-          var response = `<tr><td>CES FLOW:<br>`
+          var response = `<div class="sourceofsupplyq">CES FLOW:</div><div class="licenceAnswer">`
           if (attributes.parameter1){
               response+=`Param1: ${attributes.parameter1}<br>`
           }
@@ -24,10 +30,10 @@ console.log('get content----')
           if (attributes.text){
               response+=`${attributes.text}<br>`
           }
-          response+=`</td></tr>`
+          response+=`</div>`
           break
         default:
-          var response = `<tr><td>CES ${subCode}:<br>`
+          var response = `<div class="sourceofsupplyq">CES ${subCode}:</div><div class="licenceAnswer">`
           if (attributes.parameter1){
               response+=`Param1: ${attributes.parameter1}<br>`
           }
@@ -37,11 +43,11 @@ console.log('get content----')
           if (attributes.text){
               response+=`${attributes.text}<br>`
           }
-          response+=`</td></tr>`
+          response+=`</div>`
       }
       break
     default:
-    var response = `<tr><td>${code} ${subCode}:<br>`
+          var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div><div class="licenceAnswer">`
     if (attributes.parameter1){
         response+=`Param1: ${attributes.parameter1}<br>`
     }
@@ -51,7 +57,7 @@ console.log('get content----')
     if (attributes.text){
         response+=`${attributes.text}<br>`
     }
-    response+=`</td></tr>`
+    response+=`</div>`
   }
 
   return response

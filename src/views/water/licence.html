@@ -24,7 +24,7 @@
   <ul>
 <h3>purposes</h3>
 
-  {{#each (parse licenceData.attributes.purposes)}}
+  {{#each (parse licenceData.attributes.licenceData.purposes)}}
   <li>{{@key}}: {{this}}</li>
   {{/each}}
   </ul>

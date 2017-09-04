@@ -6,47 +6,39 @@
       <ol >
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
+        <li><a href="/licences/{{ licenceData.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
       </ol>
     </div>
   </nav>
   {{>element-signout}}
   {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence - contact details')}}
   {{>element-heading-medium content='Check your licence details are up to date'}}
-  <p>Licence number: {{ licenceData.LicenceSerialNo }}</p>
+  <p>Licence number: {{ licenceData.licence_ref }}</p>
   <p></p>
   <div class="siteaddress">
     <p></p>
     {{>element-heading-medium content='Registered licence holder details'}}
-    {{>element-licence-row label='Name' answer=(concat licenceData.FirstName licenceData.Surname)}}
-    {{>element-licence-row label='Address' answer=(concat licenceData.Addressline1 ',' licenceData.Addressline3 ',' licenceData.County ',' licenceData.Postcode)}}
-    {{>element-licence-row label='Telephone' answer=licenceData.tel}}
-    {{>element-licence-row label='Email' answer=licenceData.Email}}
+    {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
+    {{>element-licence-row label='Address' answer=licenceData.attributes.licenceData.address}}
   </div>
   <div class="address">
     <p></p>
     {{>element-heading-medium content='Site contact details'}}
-    {{>element-licence-row label='Name' answer=(concat licenceData.FirstName licenceData.Surname)}}
-    {{>element-licence-row label='Address' answer=(concat licenceData.Addressline1 ',' licenceData.Addressline3 ',' licenceData.County ',' licenceData.Postcode)}}
-    {{>element-licence-row label='Telephone' answer=licenceData.tel}}
-    {{>element-licence-row label='Email' answer=licenceData.Email}}
+    {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
+    {{>element-licence-row label='Address' answer=licenceData.attributes.licenceData.address}}
   </div>
   <div class="address">
     <p></p>
     {{>element-heading-medium content='Billing contact details'}}
-    {{>element-licence-row label='Name' answer=(concat licenceData.FirstName licenceData.Surname)}}
-    {{>element-licence-row label='Address' answer=(concat licenceData.Addressline1 ',' licenceData.Addressline3 ',' licenceData.County ',' licenceData.Postcode)}}
-    {{>element-licence-row label='Telephone' answer=licenceData.tel}}
-    {{>element-licence-row label='Email' answer=licenceData.Email}}
+    {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
+    {{>element-licence-row label='Address' answer=licenceData.attributes.licenceData.address}}
     <p></p>
   </div>
   <div class="address">
     <p></p>
     {{>element-heading-medium content='Abstraction return contact details'}}
-    {{>element-licence-row label='Name' answer=(concat licenceData.FirstName licenceData.Surname)}}
-    {{>element-licence-row label='Address' answer=(concat licenceData.Addressline1 ',' licenceData.Addressline3 ',' licenceData.County ',' licenceData.Postcode)}}
-    {{>element-licence-row label='Telephone' answer=licenceData.tel}}
-    {{>element-licence-row label='Email' answer=licenceData.Email}}
+    {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
+    {{>element-licence-row label='Address' answer=licenceData.attributes.licenceData.address}}
     <p></p>
   </div>
   <br/>

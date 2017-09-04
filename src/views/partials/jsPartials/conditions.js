@@ -58,7 +58,7 @@ function getContent () {
       }
       response += `</div>`
   }
-  console.log(response)
+  resposne+=`<p></p>`
   return response
 }
 

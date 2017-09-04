@@ -1,6 +1,6 @@
 function getContent () {
-  console.log('get content----')
-  console.log(arguments[0])
+//  console.log('get content----')
+//  console.log(arguments[0])
 
   var code = arguments[0].hash.viewData.code
   var subCode = arguments[0].hash.viewData.subCode

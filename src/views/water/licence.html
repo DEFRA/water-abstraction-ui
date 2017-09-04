@@ -37,21 +37,18 @@
   {{>element-licence-row label='hourlyQuantity' answer=(concat this.hourlyQuantity )}}
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
-  {{#each this.points}}
   {{>element-licence-row label='Abstraction Points'}}
+  {{#each this.points}}
+
   {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
   {{>element-licence-row label='Means of Abstraction' answer=(concat this.meansOfAbstraction)}}
   {{>element-licence-row label='NGR' answer=(concat this.ngr1 this.ngr2 this.ngr3 this.ngr4)}}
 
   {{/each}}
 
+  {{>element-licence-row label='Abstraction Conditions'}}
   {{#each this.conditions}}
-    {{@key}}: {{this}}
-    {{this.code}}
-    {{this.subCode}}
-    {{this.parameter1}}
-    {{this.parameter2}}
-
+  {{>element-licence-row label=(concat this.code "." this.subCode) answer=(concat this.parameter1 ":" this.parameter1 "<br>" this.text)}}
 
   {{/each}}
 

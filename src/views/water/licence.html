@@ -26,6 +26,19 @@
 
   {{#each (parse licenceData.attributes.licenceData.purposes)}}
   <li>{{@key}}: {{this}}</li>
+
+  {{>element-licence-row label='ID' answer=(concat this.id)}}
+  {{>element-licence-row label='Code' answer=(concat this.primaryCode "." this.secondaryCode "." this.useCode)}}
+
+  "annualQuantity": "9375",
+  "dailyQuantity": "63",
+  "hourlyQuantity": "6",
+  "instantQuantity": "1.7",
+  "description": "Spray Irrigation - Direct",
+  "periodOfAbstraction": "01/04 - 31/03",
+  "meansOfMeasurement": "Meter",
+
+
   {{/each}}
   </ul>
 

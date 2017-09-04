@@ -21,7 +21,7 @@
 
 
 
-  {{>element-heading-medium content="Purposes")}}
+  {{>element-heading-medium content="Purposes"}}
 
 
   {{#each (parse licenceData.attributes.licenceData.purposes)}}
@@ -36,7 +36,7 @@
   {{>element-licence-row label='hourlyQuantity' answer=(concat this.hourlyQuantity )}}
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
-  {{>element-heading-medium content="Abstraction Points")}}
+  {{>element-heading-medium content="Abstraction Points"}}
   {{#each this.points}}
 
   {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
@@ -45,7 +45,7 @@
 
   {{/each}}
 
-  {{>element-heading-medium content="Abstraction Conditions")}}
+  {{>element-heading-medium content="Abstraction Conditions"}}
   {{#each this.conditions}}
   {{>element-licence-row label=(concat this.code "." this.subCode) answer=(concat this.parameter1 ":" this.parameter1 "<br>" this.text)}}
 

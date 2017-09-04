@@ -38,11 +38,24 @@
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
   {{#each this.points}}
-    <li>{{@key}}: {{this}}</li>
+    {{@key}}:
+    {{this.id}}
+    {{this.name}}
+    {{this.ngr1}}
+    {{this.ngr2}}
+    {{this.ngr3}}
+    {{this.ngr4}}
+    {{this.meansOfAbstraction}}
   {{/each}}
 
   {{#each this.conditions}}
-    <li>{{@key}}: {{this}}</li>
+    {{@key}}: {{this}}
+    {{this.code}}
+    {{this.subCode}}
+    {{this.parameter1}}
+    {{this.parameter2}}
+
+
   {{/each}}
 
 

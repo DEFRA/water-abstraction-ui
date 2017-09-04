@@ -45,7 +45,7 @@ function getContent () {
       }
       break
     default:
-    if(code){
+    if(!code){
       var response = '';
     } else {
       var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div>`

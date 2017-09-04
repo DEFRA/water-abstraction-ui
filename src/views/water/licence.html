@@ -42,6 +42,12 @@
   <div class="licenceAnswer">
 
   <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>NGR</th>
+      <th>Means of Abstraction</th>
+    </tr>
   {{#each this.points}}
   {{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}
   {{/each}}
@@ -50,10 +56,18 @@
 <p></p>
 
   {{>element-heading-medium content="Abstraction Conditions"}}
+
+  <div class="sourceofsupplyq">
+  </div>
+  <div class="licenceAnswer">
+
   {{#each this.conditions}}
+  {{#dynamicView viewType="conditions" viewData=this}}{{/dynamicView}}
   {{>element-licence-row label=(concat this.code "." this.subCode) answer=(concat this.parameter1 ":" this.parameter1 "<br>" this.text)}}
 
   {{/each}}
+</div>
+<p></p>
 
 
   {{/each}}

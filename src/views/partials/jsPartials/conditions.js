@@ -58,7 +58,7 @@ function getContent () {
       }
       response += `</div>`
   }
-  resposne+=`<p></p>`
+  response+=`<p></p>`
   return response
 }
 

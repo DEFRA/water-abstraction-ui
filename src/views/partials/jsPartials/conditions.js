@@ -45,6 +45,9 @@ function getContent () {
       }
       break
     default:
+    if(code){
+      var response = '';
+    } else {
       var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div>`
       response += `<div class="licenceAnswer">`
       if (attributes.parameter1) {
@@ -57,6 +60,7 @@ function getContent () {
         response += `${attributes.text}<br>`
       }
       response += `</div>`
+    }
   }
   response+=`<p></p>`
   return response

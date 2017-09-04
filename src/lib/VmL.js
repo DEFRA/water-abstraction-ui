@@ -113,7 +113,7 @@ function getLicence (request, reply) {
   } else {
     //TODO: save params for session
     request.params.orgId=1;
-    request.params.typeId=1;
+    request.params.typeId=8;
     API.licence.get(request,reply,(data)=>{
       console.log('got licence')
       var viewContext = View.contextDefaults(request)

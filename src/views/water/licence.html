@@ -37,7 +37,13 @@
   {{>element-licence-row label='hourlyQuantity' answer=(concat this.hourlyQuantity )}}
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
+  {{#each (this.points)}}
+    <li>{{@key}}: {{this}}</li>
+  {{/each}}
 
+  {{#each (this.conditions)}}
+    <li>{{@key}}: {{this}}</li>
+  {{/each}}
 
 
   {{/each}}

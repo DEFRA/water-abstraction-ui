@@ -61,7 +61,6 @@
 
   {{#each this.conditions}}
   {{#dynamicView viewType="conditions" viewData=this}}{{/dynamicView}}
-  {{>element-licence-row label=(concat this.code "." this.subCode) answer=(concat this.parameter1 ":" this.parameter1 "<br>" this.text)}}
 
   {{/each}}
 

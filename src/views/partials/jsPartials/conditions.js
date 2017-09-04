@@ -14,14 +14,44 @@ console.log('get content----')
     case "CES":
       switch (subCode) {
         case "FLOW":
-          var response = `<tr><td>CES FLOW: ${attributes.text}</td></tr>`
+          var response = `<tr><td>CES FLOW:<br>`
+          if (attributes.parameter1){
+              response+=`Param1: ${attributes.parameter1}<br>`
+          }
+          if (attributes.parameter2){
+              response+=`Param2: ${attributes.parameter2}<br>`
+          }
+          if (attributes.text){
+              response+=`${attributes.text}<br>`
+          }
+          response+=`</td></tr>`
           break
         default:
-          var response = `<tr><td>CES ${subcode}: with data ${JSON.stringify(attributes)}</td></tr>`
+          var response = `<tr><td>CES ${subcode}:<br>`
+          if (attributes.parameter1){
+              response+=`Param1: ${attributes.parameter1}<br>`
+          }
+          if (attributes.parameter2){
+              response+=`Param2: ${attributes.parameter2}<br>`
+          }
+          if (attributes.text){
+              response+=`${attributes.text}<br>`
+          }
+          response+=`</td></tr>`
       }
       break
     default:
-      var response = `<tr><td>${code} ${subCode} with data ${JSON.stringify(attributes)}</td></tr>`
+    var response = `<tr><td>${code} ${subcode}:<br>`
+    if (attributes.parameter1){
+        response+=`Param1: ${attributes.parameter1}<br>`
+    }
+    if (attributes.parameter2){
+        response+=`Param2: ${attributes.parameter2}<br>`
+    }
+    if (attributes.text){
+        response+=`${attributes.text}<br>`
+    }
+    response+=`</td></tr>`
   }
 
   return response

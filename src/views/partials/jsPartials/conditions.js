@@ -46,7 +46,7 @@ function getContent () {
       break
     default:
     if(!code){
-      var response = '';
+      var response = '<div class="sourceofsupplyq">None</div><div class="licenceAnswer">No conditions defined</div>';
     } else {
       var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div>`
       response += `<div class="licenceAnswer">`

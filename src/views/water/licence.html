@@ -37,8 +37,6 @@
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
   {{>element-heading-medium content="Abstraction Points"}}
-  <div class="sourceofsupplyq">
-  </div>
   {{#each this.points}}
   {{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}
   {{/each}}

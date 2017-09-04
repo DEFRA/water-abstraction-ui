@@ -21,11 +21,10 @@
 
 
 
-  <ul>
-<h3>purposes</h3>
+  {{>element-heading-medium content="Purposes")}}
+
 
   {{#each (parse licenceData.attributes.licenceData.purposes)}}
-  <li>{{@key}}: {{this}}</li>
 
   {{>element-licence-row label='ID' answer=(concat this.id)}}
   {{>element-licence-row label='Code' answer=(concat this.primaryCode "." this.secondaryCode "." this.useCode)}}
@@ -37,7 +36,7 @@
   {{>element-licence-row label='hourlyQuantity' answer=(concat this.hourlyQuantity )}}
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
-  {{>element-licence-row label='Abstraction Points'}}
+  {{>element-heading-medium content="Abstraction Points")}}
   {{#each this.points}}
 
   {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
@@ -46,7 +45,7 @@
 
   {{/each}}
 
-  {{>element-licence-row label='Abstraction Conditions'}}
+  {{>element-heading-medium content="Abstraction Conditions")}}
   {{#each this.conditions}}
   {{>element-licence-row label=(concat this.code "." this.subCode) answer=(concat this.parameter1 ":" this.parameter1 "<br>" this.text)}}
 

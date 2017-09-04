@@ -1,7 +1,6 @@
 function getContent () {
 
-console.log('get content----')
-  console.log(arguments[0])
+
 
   response=`
   <tr>

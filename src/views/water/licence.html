@@ -38,7 +38,7 @@
 
   {{>element-heading-medium content="Abstraction Points"}}
   {{#each this.points}}
-
+  <li>{{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}</li>
   {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
   {{>element-licence-row label='Means of Abstraction' answer=(concat this.meansOfAbstraction)}}
   {{>element-licence-row label='NGR' answer=(concat this.ngr1 this.ngr2 this.ngr3 this.ngr4)}}
@@ -57,41 +57,9 @@
 
 
 
-  {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.PeriodOfAbstraction}}
-  {{>element-licence-row label='Flow conditions' answer=(concat 'This licence has ' licenceData.handsOffFlow (showhide licenceData.handsOffFlowHelp 'What is a flow condition?' '<p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>' )) }}
 
 
 
-
-<p>
-  ** Example of parsed array for flow conditions
-
-  <ul>
-  {{#each (parse licenceData.attributes.FlowConditions)}}
-  <li>{{@key}}: {{this}}</li>
-  {{/each}}
-  </ul>
-
-  ** end
-</p>
-
-{{#dynamicView viewType="example" viewData=this}}{{/dynamicView}}
-
-<p>
-  ** Example of generic WR[N].[NN] renderer
-
-
-
-  <ul>
-  {{#each (parse licenceData.attributes.SourceOfSupplyTest)}}
-  <li>{{#dynamicView viewType="wr" viewData=this}}{{/dynamicView}}</li>
-  {{/each}}
-  </ul>
-
-  ** end
-</p>
-
-  {{>element-licence-row label='Maximum quantities before conditions' answer=licenceData.attributes.MaximumQuantities}}
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
   <a href="/licences"> &lt; Back to previous</a>

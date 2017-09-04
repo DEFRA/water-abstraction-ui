@@ -17,7 +17,7 @@
   {{>element-licence-row label='Point of abstraction' answer=(concat licenceData.attributes.licenceData.PointOfAbstraction '<br/><a href="/licences/' licence_id '/map_of_abstraction_point">View map</a>')}}
   {{>element-licence-row label='Licence effective from' answer=licenceData.attributes.licenceDataeffectiveFrom}}
   {{>element-licence-row label='Licensed until' answer=licenceData.attributes.licenceDataeffectiveTo}}
-  {{>element-licence-row label='Source of supply' answer=licenceData..attributes.licenceDatasourceOfSupply}}
+  {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceDatasourceOfSupply}}
   {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.PeriodOfAbstraction}}
   {{>element-licence-row label='Flow conditions' answer=(concat 'This licence has ' licenceData.handsOffFlow (showhide licenceData.handsOffFlowHelp 'What is a flow condition?' '<p>A licence condition which applies to some water abstraction licences, to protect our water levels in times of low surface water supply.</p><p>A flow condition will affect the licensed maximum amount you can abstract.</p>' )) }}
 

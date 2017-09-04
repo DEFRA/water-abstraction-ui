@@ -27,7 +27,7 @@ console.log('get content----')
           response+=`</td></tr>`
           break
         default:
-          var response = `<tr><td>CES ${subcode}:<br>`
+          var response = `<tr><td>CES ${subCode}:<br>`
           if (attributes.parameter1){
               response+=`Param1: ${attributes.parameter1}<br>`
           }
@@ -41,7 +41,7 @@ console.log('get content----')
       }
       break
     default:
-    var response = `<tr><td>${code} ${subcode}:<br>`
+    var response = `<tr><td>${code} ${subCode}:<br>`
     if (attributes.parameter1){
         response+=`Param1: ${attributes.parameter1}<br>`
     }

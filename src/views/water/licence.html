@@ -37,13 +37,17 @@
   {{>element-licence-row label='instantQuantity' answer=(concat this.instantQuantity)}}
 
   {{>element-heading-medium content="Abstraction Points"}}
-  {{#each this.points}}
-  <li>{{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}</li>
-  {{>element-licence-row label='Name' answer=(concat this.id ":" this.name)}}
-  {{>element-licence-row label='Means of Abstraction' answer=(concat this.meansOfAbstraction)}}
-  {{>element-licence-row label='NGR' answer=(concat this.ngr1 this.ngr2 this.ngr3 this.ngr4)}}
+  <div class="sourceofsupplyq">
+  </div>
+  <div class="licenceAnswer">
 
+  <table>
+  {{#each this.points}}
+  {{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}
   {{/each}}
+  </table>
+</div>
+<p></p>
 
   {{>element-heading-medium content="Abstraction Conditions"}}
   {{#each this.conditions}}

@@ -39,21 +39,9 @@
   {{>element-heading-medium content="Abstraction Points"}}
   <div class="sourceofsupplyq">
   </div>
-  <div class="licenceAnswer">
-
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>NGR</th>
-      <th>Means of Abstraction</th>
-    </tr>
   {{#each this.points}}
   {{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}
   {{/each}}
-  </table>
-</div>
-<p></p>
 
   {{>element-heading-medium content="Abstraction Conditions"}}
 
@@ -61,7 +49,6 @@
 
   {{#each this.conditions}}
   {{#dynamicView viewType="conditions" viewData=this}}{{/dynamicView}}
-
   {{/each}}
 
 <p></p>

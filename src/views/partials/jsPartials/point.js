@@ -1,16 +1,13 @@
 function getContent () {
 
 
+  var response = `<div class="sourceofsupplyq">${arguments[0].hash.viewData.name}</div>`
+  response += `<div class="licenceAnswer">`
 
-  response=`
-  <tr>
-  <td>
-  ${arguments[0].hash.viewData.id}:
-  </td><td>${arguments[0].hash.viewData.name}</td>
-  <td>${arguments[0].hash.viewData.ngr1}</td>
-  <td>${arguments[0].hash.viewData.meansOfAbstraction}</td>
-  </tr>
-  `
+
+  response+=`${arguments[0].hash.viewData.ngr1}<br>
+${arguments[0].hash.viewData.meansOfAbstraction}
+</div><p></p>  `
 
 
   return response

@@ -1,10 +1,6 @@
 function getContent () {
-
-console.log('get content----')
+  console.log('get content----')
   console.log(arguments[0])
-
-
-
 
   var code = arguments[0].hash.viewData.code
   var subCode = arguments[0].hash.viewData.subCode
@@ -17,56 +13,54 @@ console.log('get content----')
 **/
 
   switch (code) {
-    case "CES":
+    case 'CES':
       switch (subCode) {
-        case "FLOW":
-          var response = `<div class="sourceofsupplyq">CES FLOW:</div><div class="licenceAnswer">`
-          if (attributes.parameter1){
-              response+=`Param1: ${attributes.parameter1}<br>`
+        case 'FLOW':
+          var response = `<div class="sourceofsupplyq">CES FLOW:</div>`
+          response += `<div class="licenceAnswer">`
+          if (attributes.parameter1) {
+            response += `Param1: ${attributes.parameter1}<br>`
           }
-          if (attributes.parameter2){
-              response+=`Param2: ${attributes.parameter2}<br>`
+          if (attributes.parameter2) {
+            response += `Param2: ${attributes.parameter2}<br>`
           }
-          if (attributes.text){
-              response+=`${attributes.text}<br>`
+          if (attributes.text) {
+            response += `${attributes.text}<br>`
           }
-          response+=`</div>`
+          response += `</div>`
           break
         default:
-          var response = `<div class="sourceofsupplyq">CES ${subCode}:</div><div class="licenceAnswer">`
-          if (attributes.parameter1){
-              response+=`Param1: ${attributes.parameter1}<br>`
+          var response = `<div class="sourceofsupplyq">CES ${subCode}:</div>`
+          response += `<div class="licenceAnswer">`
+          if (attributes.parameter1) {
+            response += `Param1: ${attributes.parameter1}<br>`
           }
-          if (attributes.parameter2){
-              response+=`Param2: ${attributes.parameter2}<br>`
+          if (attributes.parameter2) {
+            response += `Param2: ${attributes.parameter2}<br>`
           }
-          if (attributes.text){
-              response+=`${attributes.text}<br>`
+          if (attributes.text) {
+            response += `${attributes.text}<br>`
           }
-          response+=`</div>`
+          response += `</div>`
       }
       break
     default:
-          var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div><div class="licenceAnswer">`
-    if (attributes.parameter1){
-        response+=`Param1: ${attributes.parameter1}<br>`
-    }
-    if (attributes.parameter2){
-        response+=`Param2: ${attributes.parameter2}<br>`
-    }
-    if (attributes.text){
-        response+=`${attributes.text}<br>`
-    }
-    response+=`</div>`
+      var response = `<div class="sourceofsupplyq">${code} ${subCode}:</div>`
+      response += `<div class="licenceAnswer">`
+      if (attributes.parameter1) {
+        response += `Param1: ${attributes.parameter1}<br>`
+      }
+      if (attributes.parameter2) {
+        response += `Param2: ${attributes.parameter2}<br>`
+      }
+      if (attributes.text) {
+        response += `${attributes.text}<br>`
+      }
+      response += `</div>`
   }
-
+  console.log(response)
   return response
 }
-
-
-
-
-
 
 module.exports = {
   getContent: getContent

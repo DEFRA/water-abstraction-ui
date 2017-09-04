@@ -6,15 +6,15 @@
       <ol>
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_data.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
+        <li><a href="/licences/{{ licenceData.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
       </ol>
     </div>
   </nav>
   {{>element-signout}}
   {{>element-heading-large content=(concat licenceData.attributes.licenceData.name 'water abstraction licence')}}
   <p></p>
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(concat licenceData.attributes.licenceData.PointOfAbstraction '<br/><a href="/licences/' licence_id '/map_of_abstraction_point">View map</a>')}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licenceData.licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Point of abstraction' answer=(concat licenceData.attributes.licenceData.PointOfAbstraction '<br/><a href="/licences/' licenceData.licence_id '/map_of_abstraction_point">View map</a>')}}
   {{>element-licence-row label='Licence effective from' answer=licenceData.attributes.licenceData.effectiveFrom}}
   {{>element-licence-row label='Licensed until' answer=licenceData.attributes.licenceData.effectiveTo}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}

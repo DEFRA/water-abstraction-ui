@@ -135,7 +135,7 @@ function getLicenceContact (request, reply) {
   } else {
     //TODO: save params for session
     request.params.orgId=1;
-    request.params.typeId=1;
+    request.params.typeId=8;
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'

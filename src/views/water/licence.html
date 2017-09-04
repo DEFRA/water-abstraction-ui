@@ -25,7 +25,7 @@
 
 
   {{#each (parse licenceData.attributes.licenceData.purposes)}}
-  {{>element-heading-medium content=(concat this.id ":" this.descruption)}}
+  {{>element-heading-medium content=(concat this.id ":" this.description)}}
   {{>element-licence-row label='Code' answer=(concat this.primaryCode "." this.secondaryCode "." this.useCode)}}
   {{>element-licence-row label='periodOfAbstraction' answer=(concat this.periodOfAbstraction)}}
   {{>element-licence-row label='meansOfMeasurement' answer=(concat this.meansOfMeasurement)}}

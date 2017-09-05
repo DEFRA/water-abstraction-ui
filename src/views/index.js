@@ -65,9 +65,6 @@ handlebars.registerHelper('guid', function () {
 
 handlebars.registerHelper('formatDate', function (dateInput) {
   var date = moment(dateInput, "DD/MM/YYYY")
-  console.log(dateInput)
-  console.log ("Is valid " + date.isValid())
-  console.log('Output ' + date.format("dddd, MMMM DD, YYYY"))
   return date.isValid() ? date.format("dddd, MMMM DD, YYYY") : dateInput
 })
 

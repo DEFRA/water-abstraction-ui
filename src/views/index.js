@@ -1,4 +1,5 @@
 const handlebars = require('handlebars')
+const moment = require('moment')
 
 
 console.log('working dir for views')
@@ -60,6 +61,14 @@ handlebars.registerHelper('showhide', function () {
 
 handlebars.registerHelper('guid', function () {
   return Helpers.createGUID()
+})
+
+handlebars.registerHelper('formatDate', function (dateInput) {
+  var date = moment(dateInput, "DD/MM/YYYY")
+  console.log(dateInput)
+  console.log ("Is valid " + date.isValid())
+  console.log('Output ' + date.format("dddd, MMMM DD, YYYY"))
+  return date.isValid() ? date.format("dddd, MMMM DD, YYYY") : dateInput
 })
 
 const Path = require('path')

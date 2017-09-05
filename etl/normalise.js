@@ -2,7 +2,7 @@ function createLicence(licenceRow) {
   return {
     id: licenceRow["Licence No."],
     name: licenceRow["Name"],
-    address: licenceRow["Address"].replace(" ,", ""),
+    address: licenceRow["Address"].replace(new RegExp(" ,", 'g'), ""),
     postCode: licenceRow["Postcode"],
     maxAnnualQuantity: licenceRow["Max Annual Quantity"],
     maxDailyQuantity: licenceRow["Max Daily Quantity"],

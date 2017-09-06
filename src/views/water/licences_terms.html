@@ -9,7 +9,7 @@
       <ol >
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{licence_id}}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
+        <li><a href="/licences/{{licenceData.licence_id}}">Licence number: {{ licenceData.licence_ref }}</a></li>
       </ol>
     </div>
   </nav>
@@ -21,9 +21,9 @@
   <div class="grid-row">
     <div class="column-two-thirds">
       <div class="page-header">
-        {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence - full terms')}}
+        {{>element-heading-large content='Your water abstraction licence'}}
         {{>element-heading-medium content='Check your licence details are up to date'}}
-        <p>Licence number: {{ licenceData.LicenceSerialNo }}</p>
+        <p>Licence number: {{ licenceData.licence_ref }}</p>
       </div>
     </div>
   </div>
@@ -31,20 +31,18 @@
     <div class="column-two-thirds">
       <div class="js-hidden" data-module="accordion-with-descriptions">
         <div class="subsection-wrapper">
-          {{>element-accordion-item accordion_title='Source of supply' accordion_content=licenceData.SourceofSupply el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(concat '<p>' licenceData.Pointofabstraction '</p><a href="/licences/' licence_id 'map_of_abstraction_point">View map</a>') el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.Purposeofabstraction el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.Meansofabstraction el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Means of measurement' accordion_content=licenceData.Meansofmeasurement el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Maximum quantities before conditions' accordion_content=licenceData.MaximumQuantityofwatertobeabstracted el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Flow conditions' accordion_content=licenceData.handsOffFlowDescfull el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Records' accordion_content=licenceData.records el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Source of supply' accordion_content=licenceData.attributes.licenceData.sourceOfSupply el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(ngrPoint licenceData.attributes.licenceData.purposes.0.points) el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.description el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.points.0.meansOfAbstraction el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Means of measurement' accordion_content=licenceData.attributes.licenceData.purposes.0.meansOfMeasurement el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Maximum quantities before conditions' accordion_content=(concat licenceData.attributes.licenceData.maxDailyQuantity ' cubic metres per day <br/>' licenceData.attributes.licenceData.maxAnnualQuantity ' cubic metres per year') el_guid=(guid)}}
         </div>
       </div>
     </div>
   </div>
   <br/>
-  <a href="/licences/{{ licence_id }}">
+  <a href="/licences/{{ licenceData.licence_id }}">
     &lt; Back to previous</a>
   <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
   <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>

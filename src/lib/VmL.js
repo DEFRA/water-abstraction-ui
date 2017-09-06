@@ -178,8 +178,7 @@ function getLicenceTerms (request, reply) {
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'
-      viewContext.licence_id = request.params.licence_id
-      viewContext.licenceData = data
+      viewContext.licenceData = data.data
       reply.view('water/licences_terms', viewContext)
     })
   }

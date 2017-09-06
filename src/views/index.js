@@ -88,9 +88,9 @@ handlebars.registerHelper('ngrPoint', function (points) {
       + formatGridReference(point.ngr3) + ' and '
       + formatGridReference(point.ngr4)
   } else if (point.ngr2) {
-    response = `Between National Grid References ` + point.ngr1 + ` and ` + point.ngr2
+    response = `Between National Grid References ` + formatGridReference(point.ngr1) + ` and ` + formatGridReference(point.ngr2)
   } else {
-    response = `At National Grid Reference ` + point.ngr1
+    response = `At National Grid Reference ` + formatGridReference(point.ngr1)
   }
 
   return response

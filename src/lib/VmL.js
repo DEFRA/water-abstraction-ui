@@ -81,7 +81,6 @@ function postSignin (request, reply) {
     }
 
     reply.view('water/signin', viewContext)
-
   }
 }
 
@@ -91,16 +90,10 @@ function getLicences (request, reply) {
 
   var session=Session.get(request)
 
-
   var viewContext = View.contextDefaults(request)
   viewContext.licenceData = session.licences.data
   viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
   reply.view('water/licences', viewContext)
-
-
-
-
-
 }
 
 function getLicence (request, reply) {
@@ -111,9 +104,9 @@ function getLicence (request, reply) {
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    //TODO: save params for session
-    request.params.orgId=1;
-    request.params.typeId=8;
+    request.params.orgId = process.env.licenceOrgId
+    request.params.typeId= process.env.licenceTypeId
+
     API.licence.get(request,reply,(data)=>{
       console.log('got licence')
       var viewContext = View.contextDefaults(request)
@@ -133,9 +126,9 @@ function getLicenceContact (request, reply) {
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    //TODO: save params for session
-    request.params.orgId=1;
-    request.params.typeId=8;
+    request.params.orgId = process.env.licenceOrgId
+    request.params.typeId= process.env.licenceTypeId
+
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - contact details'
@@ -153,9 +146,9 @@ function getLicenceMap (request, reply) {
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    //TODO: save params for session
-    request.params.orgId=1;
-    request.params.typeId=8;
+    request.params.orgId = process.env.licenceOrgId
+    request.params.typeId= process.env.licenceTypeId
+
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - abstraction point'
@@ -172,9 +165,9 @@ function getLicenceTerms (request, reply) {
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    //TODO: save params for session
-    request.params.orgId=1;
-    request.params.typeId=8;
+    request.params.orgId = process.env.licenceOrgId
+    request.params.typeId= process.env.licenceTypeId
+    
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'

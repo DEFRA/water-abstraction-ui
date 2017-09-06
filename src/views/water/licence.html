@@ -11,54 +11,15 @@
     </div>
   </nav>
   {{>element-signout}}
-  {{>element-heading-large content=(concat licenceData.attributes.licenceData.name 'water abstraction licence')}}
+  {{>element-heading-large content=(concat licenceData.attributes.licenceData.name ' water abstraction licence')}}
   <p></p>
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licenceData.licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(concat licenceData.attributes.licenceData.PointOfAbstraction '<br/><a href="/licences/' licenceData.licence_id '/map_of_abstraction_point">View map</a>')}}
-  {{>element-licence-row label='Licence effective from' answer=licenceData.attributes.licenceData.effectiveFrom}}
-  {{>element-licence-row label='Licensed until' answer=licenceData.attributes.licenceData.effectiveTo}}
+  {{#dynamicView viewType="point" viewData=licenceData.attributes.licenceData.purposes.0.points}}{{/dynamicView}}
+  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
+  {{>element-licence-row label='Licensed until' answer=(formatDate licenceData.attributes.licenceData.effectiveTo)}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
-
-
-
-  {{>element-heading-medium content="Purposes"}}
-
-
-  {{#each (parse licenceData.attributes.licenceData.purposes)}}
-  {{>element-heading-medium content=(concat this.id ": " this.description)}}
-  {{>element-licence-row label='Code' answer=(concat this.primaryCode "." this.secondaryCode "." this.useCode)}}
-  {{>element-licence-row label='Period of Abstraction' answer=(concat this.periodOfAbstraction)}}
-  {{>element-licence-row label='Means Of Measurement' answer=(concat this.meansOfMeasurement)}}
-  {{>element-licence-row label='Annual Quantity' answer=(concat this.annualQuantity )}}
-  {{>element-licence-row label='Daily Quantity' answer=(concat this.dailyQuantity )}}
-  {{>element-licence-row label='Hourly Quantity' answer=(concat this.hourlyQuantity )}}
-  {{>element-licence-row label='Instant Quantity' answer=(concat this.instantQuantity)}}
-
-  {{>element-heading-medium content="Abstraction Points"}}
-  {{#each this.points}}
-  {{#dynamicView viewType="point" viewData=this}}{{/dynamicView}}
-  {{/each}}
-
-  {{>element-heading-medium content="Abstraction Conditions"}}
-
-
-
-  {{#each this.conditions}}
-  {{#dynamicView viewType="conditions" viewData=this}}{{/dynamicView}}
-  {{/each}}
-
-<p></p>
-
-
-  {{/each}}
-  </ul>
-
-
-
-
-
-
-  <p><a href="/licences/{{licenceData.licence_id}}/terms">Read your full licence terms of use</a></p>
+  {{>element-licence-row label='Period of Abstraction' answer=licenceData.attributes.licenceData.purposes.0.periodOfAbstraction}}
+  {{>element-licence-row label='Maximum quantities before conditions' answer=(concat licenceData.attributes.licenceData.maxAnnualQuantity ' cubic metres per year <br/>' licenceData.attributes.licenceData.maxDailyQuantity ' cubic metres per day')}}
   <p></p>
   <a href="/licences"> &lt; Back to previous</a>
 </main>

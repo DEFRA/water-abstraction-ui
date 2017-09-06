@@ -79,7 +79,10 @@ function getRandom(items) {
 }
 
 function getRandomNgr() {
-  return 'NT' + Math.floor(Math.random() * 10000000000);
+  var min = 1000000000;
+  var max = 10000000000;
+  // Force the random number to be 10 digits
+  return 'NT' + Math.floor(Math.random() * (max - min) + min);
 }
 
 function getPersonalData() {

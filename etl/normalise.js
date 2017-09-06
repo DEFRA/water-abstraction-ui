@@ -2,9 +2,10 @@ function createLicence(licenceRow) {
   return {
     id: licenceRow["Licence No."],
     name: licenceRow["Name"],
-    address: licenceRow["Address"].replace(" ,", ""),
+    address: licenceRow["Address"].replace(new RegExp(" ,", 'g'), ""),
     postCode: licenceRow["Postcode"],
-    maxQuantity: licenceRow["Max Annual Quantity"],
+    maxAnnualQuantity: licenceRow["Max Annual Quantity"],
+    maxDailyQuantity: licenceRow["Max Daily Quantity"],
     sourceOfSupply: licenceRow["Source Type"],
     effectiveFrom: licenceRow["Orig. Effective Date"],
     effectiveTo: licenceRow["Expiry Date"] ? licenceRow["Expiry Date"] : "No expiry",

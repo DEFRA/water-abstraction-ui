@@ -11,19 +11,20 @@ function getContent () {
   var response =
 `<div class="sourceofsupplyq">
   Point of abstraction:
-</div>`
+</div>
+`
   response +=
 `<div class="licenceAnswer">
   `
 
   if (arguments[0].hash.viewData[0].ngr4) {
-    response+= `Within the area formed by the straight lines running between the following National Grid References:-`
+    response+= `Within the area formed by the straight lines running between the following National Grid References`
     response+= formatGridReference(arguments[0].hash.viewData[0].ngr1) + ', '
       + formatGridReference(arguments[0].hash.viewData[0].ngr2) + ', '
       + formatGridReference(arguments[0].hash.viewData[0].ngr3) + ', '
       + formatGridReference(arguments[0].hash.viewData[0].ngr4)
   } else if (arguments[0].hash.viewData[0].ngr2) {
-    response+=`Between the following National Grid References:- ${arguments[0].hash.viewData[0].ngr1}, ${arguments[0].hash.viewData[0].ngr2}`
+    response+=`Between National Grid References ${arguments[0].hash.viewData[0].ngr1} and ${arguments[0].hash.viewData[0].ngr2}`
   } else {
     response+=`At National Grid Reference ${arguments[0].hash.viewData[0].ngr1}`
   }

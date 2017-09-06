@@ -68,6 +68,34 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   return date.isValid() ? date.format("dddd, MMMM DD, YYYY") : dateInput
 })
 
+handlebars.registerHelper('ngrPoint', function (points) {
+  function formatGridReference(reference) {
+    // The length of one of the numbers in the NGR is the length of the whole thing
+    // minus the two letters at the start, then divided by two (as there are two numbers)
+    var accuracy = (reference.length - 2)/2
+    return reference.substring(0, 2) + ' '
+         + reference.substring(2, 2 + accuracy) + ' '
+         + reference.substring(2 + accuracy);
+  }
+
+  var response = ''
+  var point = points[0]
+
+  if (point.ngr4) {
+    response = `Within the area formed by the straight lines running between National Grid References `
+      + formatGridReference(point.ngr1) + ', '
+      + formatGridReference(point.ngr2) + ', '
+      + formatGridReference(point.ngr3) + ' and '
+      + formatGridReference(point.ngr4)
+  } else if (point.ngr2) {
+    response = `Between National Grid References ` + point.ngr1 + ` and ` + point.ngr2
+  } else {
+    response = `At National Grid Reference ` + point.ngr1
+  }
+
+  return response
+})
+
 const Path = require('path')
 
 const defaultContext = {

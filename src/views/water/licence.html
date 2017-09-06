@@ -14,7 +14,7 @@
   {{>element-heading-large content=(concat licenceData.attributes.licenceData.name ' water abstraction licence')}}
   <p></p>
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licenceData.licence_id '/contact">Licence contact details</a>')}}
-  {{#dynamicView viewType="point" viewData=licenceData.attributes.licenceData.purposes.0.points}}{{/dynamicView}}
+  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.attributes.licenceData.purposes.0.points)}}
   {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
   {{>element-licence-row label='Licensed until' answer=(formatDate licenceData.attributes.licenceData.effectiveTo)}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}

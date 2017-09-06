@@ -32,7 +32,7 @@
       <div class="js-hidden" data-module="accordion-with-descriptions">
         <div class="subsection-wrapper">
           {{>element-accordion-item accordion_title='Source of supply' accordion_content=licenceData.attributes.licenceData.sourceOfSupply el_guid=(guid)}}
-<!--          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(concat '<p>' licenceData.Pointofabstraction '</p><a href="/licences/' licence_id 'map_of_abstraction_point">View map</a>') el_guid=(guid)}}-->
+          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(ngrPoint licenceData.attributes.licenceData.purposes.0.points) el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.description el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.points.0.meansOfAbstraction el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Means of measurement' accordion_content=licenceData.attributes.licenceData.purposes.0.meansOfMeasurement el_guid=(guid)}}
@@ -42,7 +42,7 @@
     </div>
   </div>
   <br/>
-  <a href="/licences/{{ licence_id }}">
+  <a href="/licences/{{ licenceData.licence_id }}">
     &lt; Back to previous</a>
   <script src="/public/javascripts/jquery-1.12.4-cb0decd18b4b0abbece3cfc180d9adc8e11dfa693cf34c2ff1ffcda86e725301.js"></script>
   <script src="/public/javascripts/application-fa751ac52dc0f490ce602b0e9be8ef77560ed543cc20c3b5339fc30f560df47b.js"></script>

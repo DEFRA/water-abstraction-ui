@@ -30,22 +30,17 @@ function postSignin (request, reply) {
   if (request.payload && request.payload.user_id && request.payload.password) {
     User.authenticate(request.payload.user_id, request.payload.password,(getUser)=>{
 
+    console.log("response from get user")
+    console.log(getUser)
 
-      console.log("response from get user")
-      console.log(getUser)
-
-    if (!getUser.error) {
+    var data = JSON.parse(getUser.data)
+    if (!data.error) {
 
       console.log('user login success')
-      console.log('user login success')
-            console.log('user login success')
-                  console.log('user login success')
-                        console.log('user login success')
 
       var session = Session.get(request)
 
       console.log(getUser)
-
 
       var getUser=JSON.parse(getUser.data)
       session.user = getUser.sessionGuid
@@ -167,7 +162,7 @@ function getLicenceTerms (request, reply) {
   } else {
     request.params.orgId = process.env.licenceOrgId
     request.params.typeId= process.env.licenceTypeId
-    
+
     API.licence.get(request,reply,(data)=>{
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licence - Full Terms'

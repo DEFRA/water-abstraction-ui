@@ -96,6 +96,10 @@ handlebars.registerHelper('ngrPoint', function (points) {
   return response
 })
 
+handlebars.registerHelper('maxQuantities', function (quantities) {
+  return Number(quantities.maxDailyQuantity).toFixed(2) + ' cubic metres per day <br/>' + Number(quantities.maxAnnualQuantity).toFixed(2) + ' cubic metres per year'
+})
+
 const Path = require('path')
 
 const defaultContext = {

@@ -36,7 +36,7 @@
           {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.description el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.attributes.licenceData.purposes.0.points.0.meansOfAbstraction el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Means of measurement' accordion_content=licenceData.attributes.licenceData.purposes.0.meansOfMeasurement el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Maximum quantities before conditions' accordion_content=(concat licenceData.attributes.licenceData.maxDailyQuantity ' cubic metres per day <br/>' licenceData.attributes.licenceData.maxAnnualQuantity ' cubic metres per year') el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Maximum quantities before conditions' accordion_content=(maxQuantities licenceData.attributes.licenceData) el_guid=(guid)}}
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@
   {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
   {{>element-licence-row label='Licensed until' answer=(formatDate licenceData.attributes.licenceData.effectiveTo)}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of Abstraction' answer=licenceData.attributes.licenceData.purposes.0.periodOfAbstraction}}
+  {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.licenceData.purposes.0.periodOfAbstraction}}
   {{>element-licence-row label='Maximum quantities before conditions' answer=(concat licenceData.attributes.licenceData.maxDailyQuantity ' cubic metres per day <br/>' licenceData.attributes.licenceData.maxAnnualQuantity ' cubic metres per year')}}
   <p></p>
   <p><a href="/licences/{{licenceData.licence_id}}/terms">Read your full licence terms of use</a></p>

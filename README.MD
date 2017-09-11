@@ -27,6 +27,12 @@ Specify the port for the service to run on
 ### JWT_TOKEN
 The JWT used in requests to the permit repository API
 
+### licenceOrgId
+The organisation ID for the Water Licensing organisation in the permit repository. This can be found in the org table.
+
+### licenceTypeId
+The type ID for abstraction licences in the permit repository. This can be found in the type table.
+
 ## Launching
 
 `node index.js`

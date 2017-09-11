@@ -5,8 +5,12 @@ const API = require('./API')
 
 
 function authenticateUser (id,password,cb) {
-
+  console.log('authenticate user')
+  console.log(id)
+  console.log(password)
   API.user.login(id,password,(data)=>{
+    console.log('auth user returns:')
+    console.log(data)
     cb(data)
   })
 /**

@@ -16,5 +16,16 @@
     {{#>element-licence-link this}}{{/element-licence-link}}
   {{/each}}
 </main>
+<input id='shortcode' type='text'/>
+<button onclick='sendShortcode()'>Register Licence</button>
+
+
 {{> footerjs}}
 {{> debug}}
+
+<script>
+  function sendShortcode(){
+    console.log($('#shortcode').val)
+    document.location='/shortcode/'+$('#shortcode').val()
+  }
+</script>

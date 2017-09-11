@@ -15,17 +15,18 @@ function getRoot (request, reply) {
 function getSignin (request, reply) {
   //get signin page
   if(request.path != '/signin'){
-    request.yar.set('postlogin',request.path)
+    request.session.postlogin=request.path
   } else {
-    request.yar.set('postlogin','/licences')
+    request.session.postlogin='/licences'
   }
-  Session.set(request, {id: Helpers.createGUID()})
+  request.session.id=Helpers.createGUID()
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
 }
 
 function postSignin (request, reply) {
+  console.log('POST SIGN IN!!!!!')
   //post from signin page
   if (request.payload && request.payload.user_id && request.payload.password) {
     User.authenticate(request.payload.user_id, request.payload.password,(getUser)=>{
@@ -37,25 +38,18 @@ function postSignin (request, reply) {
     if (!getUser.error) {
 
       console.log('user login success')
-      console.log('user login success')
-            console.log('user login success')
-                  console.log('user login success')
-                        console.log('user login success')
 
-      var session = Session.get(request)
+      var session = request.session
 
       console.log(getUser)
 
 
       var getUser=JSON.parse(getUser.data)
-      session.user = getUser.sessionGuid
-      session.cookie=getUser.sessionCookie
-      session.licences=getUser.licences
+      request.session.user = getUser.sessionGuid
+      request.session.cookie=getUser.sessionCookie
+      request.session.licences=getUser.licences
 
-      console.log('session set as')
-      console.log(session)
-      Session.set(request, session)
-      reply('<script>location.href=\''+request.yar.get('postlogin')+'\'</script>')
+      reply('<script>location.href=\''+request.session.postlogin+'\'</script>')
     } else {
       console.log('user login failure')
       var viewContext = View.contextDefaults(request)
@@ -89,11 +83,18 @@ function getLicences (request, reply) {
   //get licences for user
   var viewContext = View.contextDefaults(request)
 
-  var session=Session.get(request)
+
+
+
 
 
   var viewContext = View.contextDefaults(request)
-  viewContext.licenceData = session.licences.data
+  if(request.session.licences){
+  viewContext.licenceData = request.session.licences.data
+} else {
+viewContext.licenceData=[]
+}
+
   viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
   reply.view('water/licences', viewContext)
 
@@ -184,7 +185,37 @@ function getLicenceTerms (request, reply) {
   }
 }
 
+function useShortcode(request,reply){
 
+  console.log('got shortcode requests')
+
+
+
+
+
+  API.user.useShortcode(request.params.shortcode,request.session.cookie,(res)=>{
+    console.log('response from user shortcode')
+//    console.log(response)
+    console.log(res)
+    var data=JSON.parse(res.data)
+    console.log(data)
+    if(data.error){
+      var viewContext = View.contextDefaults(request)
+          viewContext.pageTitle = 'GOV.UK - register licence error '+data.error
+
+          reply.view('water/shortcode_used_error', viewContext)
+    } else {
+      var viewContext = View.contextDefaults(request)
+      viewContext.licence_id=res.data[0].licence_id
+
+      viewContext.pageTitle = 'GOV.UK - register licence '
+          reply.view('water/shortcode_use_success', viewContext)
+    }
+
+  })
+
+
+}
 
 module.exports={
   getRoot:getRoot,
@@ -194,6 +225,7 @@ module.exports={
   getLicence:getLicence,
   getLicenceContact:getLicenceContact,
   getLicenceMap:getLicenceMap,
-  getLicenceTerms:getLicenceTerms
+  getLicenceTerms:getLicenceTerms,
+  useShortcode:useShortcode
 
 }

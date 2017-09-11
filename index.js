@@ -18,14 +18,25 @@ var yar_options = {
     storeBlank: false,
     cookieOptions: {
         password: process.env.cacheKey,
-        isSecure: false
+        isSecure: false,
+        isSameSite: false
     }
 };
-
+/**
 server.register({
     register: require('yar'),
     options: yar_options
 }, function (err) { });
+**/
+
+server.register({
+  register: require('hapi-server-session'),
+  options: {
+    cookie: {
+      isSecure: false,isSameSite: false
+    },
+  },
+}, function (err) { if (err) { throw err; } });
 
 server.register([require('inert'), require('vision')], (err) => {
 

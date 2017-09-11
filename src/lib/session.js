@@ -1,22 +1,29 @@
 const moment = require('moment')
 const Helpers = require('./helpers')
 
-function sessionGet (request) {
-  updateSessionTimestamp(request)
-  session = request.yar.get('session')
-  if (session) {
-    return session
+function sessionGet (request,key) {
+//  updateSessionTimestamp(request)
+  if(request.session.id){
+
   } else {
     console.log('START SESSION')
-    session = {id: Helpers.createGUID()}
-    sessionSet(request, session)
-    return session
+    request.session.id=Helpers.createGUID()
+
+  }
+
+  //session = request.yar.get('session')
+  if (request.session[key]) {
+    return request.session[key]
+  } else {
+    return null
   }
 }
 
-function sessionSet (request, session) {
-  request.yar.set('session', session)
-  return
+function sessionSet (request, key, value) {
+  console.log("session "+key+"is set with ")
+  console.log(value)
+  console.log('******')
+  request.session[key]=value
 }
 
 function updateSessionTimestamp(request){

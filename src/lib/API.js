@@ -1,5 +1,6 @@
 const baseFilePath = __dirname + '/../public/data/licences/'
 const Helpers = require('./helpers')
+const Session = require('./session')
 // const DB = require('./db')
 var httpRequest = require('request')
 
@@ -13,13 +14,18 @@ function makeURIRequest (uri, cb) {
 }
 
 function makeURIPostRequest(uri,data,cb){
+
   console.log('make http post')
+  console.log('to '+uri+' with')
+  console.log(data)
   httpRequest.post({
             url: uri+'?token='+process.env.JWT_TOKEN,
             form: data
         },
         function (err, httpResponse, body) {
             console.log('got http post')
+
+
 //            console.log(err, body);
             cb({err:err,data:body})
 
@@ -28,8 +34,10 @@ function makeURIPostRequest(uri,data,cb){
 
 function login (id,password, cb) {
   var data={username:id,password:password}
+  console.log(process.env.apiURI+'tactical/user/login')
   makeURIPostRequest(process.env.apiURI+'tactical/user/login', data, (result) => {
     console.log('got login response')
+    console.log(result)
     cb(result)
   })
 }
@@ -94,6 +102,22 @@ function getLicence (request, reply, cb) {
   })
 }
 
+function useShortcode(shortcode,cookie,cb){
+  console.log('use shortcode request - step 2')
+  //{"user_id":2}
+  //sessionCookie
+  console.log(  cookie)
+  var postBody={sessionCookie : cookie}
+  var URI = process.env.apiURI + 'shortcode/' + shortcode
+  console.log(URI)
+  console.log(postBody)
+  makeURIPostRequest(URI, postBody,function (error, response, body) {
+
+
+    cb(error,response,body)
+  })
+}
+
 module.exports = {
   system: {getFields: getFields},
   org: {get: getOrg},
@@ -108,5 +132,5 @@ module.exports = {
     get: getLicence
 
   },
-  user:{login: login}
+  user:{login: login,useShortcode:useShortcode}
 }

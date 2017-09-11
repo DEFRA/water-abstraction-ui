@@ -10,14 +10,35 @@
     </div>
   </nav>
   {{>element-signout}}
+
+  {{>element-heading-large content='Register a licence'}}
+  Enter provided shortcode to register a new licence
+
+  <a tabindex="-1">
+    <div class="menubox" tabindex="0">
+      <input id='shortcode' type='text'/> &nbsp;
+      <button class='button button-start' onclick='sendShortcode()'>
+      Register Licence
+      </button>
+
+
+
+    </div>
+  </a>
+
+
+
+
   {{>element-heading-large content='Your water abstraction licences'}}
+
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   {{#each licenceData}}
     {{#>element-licence-link this}}{{/element-licence-link}}
   {{/each}}
+  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+  <p></p>
+
 </main>
-<input id='shortcode' type='text'/>
-<button onclick='sendShortcode()'>Register Licence</button>
 
 
 {{> footerjs}}

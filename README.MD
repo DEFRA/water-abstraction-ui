@@ -5,6 +5,14 @@ Project for the GOV.UK Water Abstraction service
 
 ## Installation
 
+If on Windows you will need to open powershell with administrator privileges and run this command. This is a prerequisite for bcrypt.
+
+```
+npm install --global --production windows-build-tools
+```
+
+On all platforms run:
+
 ```
 npm install --only=dev
 gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass

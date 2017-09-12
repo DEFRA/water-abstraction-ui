@@ -7,10 +7,10 @@
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licenceData.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
+        {{>element-signout}}
       </ol>
     </div>
   </nav>
-  {{>element-signout}}
   {{>element-heading-large content=(concat licenceData.LicenceName 'Your water abstraction licence')}}
   {{>element-heading-medium content='Check your licence details are up to date'}}
   <p>Licence number: {{ licenceData.licence_ref }}</p>

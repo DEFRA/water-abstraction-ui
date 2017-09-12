@@ -34,9 +34,6 @@ $path: "/public/images/";
   padding: 2px;
 }
 
-.sign-out2 {
-  float: right;
-}
 // Related items
 // (These styles will be moved to GOV.UK elements, duplicating here for now.)
 
@@ -173,6 +170,8 @@ li {
 
 .sign-out2 {
   float: right;
+  font-size: 0.875em;
+  line-height: 1.14286;
 }
 
 .openall {

@@ -19,6 +19,7 @@ function getSignin (request, reply) {
   } else {
     request.session.postlogin='/licences'
   }
+  console.log('postlogin set to '+request.session.postlogin)
   request.session.id=Helpers.createGUID()
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
@@ -44,6 +45,7 @@ function postSignin (request, reply) {
       console.log(getUser)
 
       var getUser=JSON.parse(getUser.data)
+      console.log('postlogin get as '+request.session.postlogin)
       request.session.user = getUser.sessionGuid
       request.session.cookie=getUser.sessionCookie
       request.session.licences=getUser.licences

@@ -36,8 +36,8 @@ function login (id,password, cb) {
   var data={username:id,password:password}
   console.log(process.env.apiURI+'tactical/user/login')
   makeURIPostRequest(process.env.apiURI+'tactical/user/login', data, (result) => {
-    console.log('got login response')
-    console.log(result)
+//    console.log('got login response')
+//    console.log(result)
     cb(result)
   })
 }

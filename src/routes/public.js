@@ -3,6 +3,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/public/{param*}',
+    config: { auth: false },
     handler: {
       directory: {
         path: 'public/',
@@ -15,6 +16,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/images/{param*}',
+    config: { auth: false },
     handler: {
       directory: {
         path: 'public/images',
@@ -27,6 +29,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/stylesheets/{param*}',
+    config: { auth: false },
     handler: {
       directory: {
         path: 'public/stylesheets',
@@ -39,6 +42,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/javascripts/{param*}',
+    config: { auth: false }, 
     handler: {
       directory: {
         path: 'public/javascripts',

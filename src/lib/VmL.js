@@ -12,8 +12,15 @@ function getRoot (request, reply) {
   reply.view('water/index', viewContext)
 }
 
+function getSignout (request, reply) {
+  request.cookieAuth.clear()
+  return reply.redirect('/');
+}
+
 function getSignin (request, reply) {
   //get signin page
+
+
   if(request.path != '/signin'){
     request.session.postlogin=request.path
   } else {
@@ -27,14 +34,11 @@ function getSignin (request, reply) {
 }
 
 function postSignin (request, reply) {
-  console.log('POST SIGN IN!!!!!')
+
+
   //post from signin page
   if (request.payload && request.payload.user_id && request.payload.password) {
     User.authenticate(request.payload.user_id, request.payload.password,(getUser)=>{
-
-    console.log("response from get user")
-    console.log(getUser)
-
     var data = JSON.parse(getUser.data)
     if (!data.error) {
 
@@ -42,7 +46,6 @@ function postSignin (request, reply) {
 
       var session = request.session
 
-      console.log(getUser)
 
       var getUser=JSON.parse(getUser.data)
       console.log('postlogin get as '+request.session.postlogin)
@@ -50,7 +53,14 @@ function postSignin (request, reply) {
       request.session.cookie=getUser.sessionCookie
       request.session.licences=getUser.licences
 
-      reply('<script>location.href=\''+request.session.postlogin+'\'</script>')
+
+
+          request.cookieAuth.set({ sid: getUser.sessionGuid });
+          return reply.redirect(request.session.postlogin);
+
+
+
+
     } else {
       console.log('user login failure')
       var viewContext = View.contextDefaults(request)
@@ -214,6 +224,7 @@ function useShortcode(request,reply){
 module.exports={
   getRoot:getRoot,
   getSignin:getSignin,
+  getSignout:getSignout,
   postSignin:postSignin,
   getLicences:getLicences,
   getLicence:getLicence,

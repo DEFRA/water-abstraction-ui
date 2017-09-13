@@ -11,6 +11,7 @@
       </ol>
     </div>
   </nav>
+  <a class="link-back" href="/licences/{{ licenceData.licence_id }}" >Back</a>
   {{>element-heading-large content=(concat licenceData.LicenceName 'Your water abstraction licence')}}
   <p>Licence number: {{ licenceData.licence_ref }}</p>
   <p></p>
@@ -41,16 +42,6 @@
   {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
   {{>element-licence-row label='Address' answer=licenceData.attributes.licenceData.address}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
-  <p></p>
-
-  <br/>
-  <div class='grid-row'>
-    <div class='column-full'>
-      <p></p>
-      <a href="/licences/{{ licenceData.licence_id }}" >&lt; Back to previous</a>
-      <br/>
-    </div>
-  </div>
 </main>
 {{> footerjs}}
 {{> debug}}

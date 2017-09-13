@@ -11,6 +11,7 @@
       </ol>
     </div>
   </nav>
+  <a class="link-back" href="/licences">Back</a>
   {{>element-heading-large content=(concat licenceData.attributes.licenceData.name ' water abstraction licence')}}
   <p></p>
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licenceData.licence_id '/contact">Licence contact details</a>')}}
@@ -24,7 +25,6 @@
   <p></p>
   <p><a href="/licences/{{licenceData.licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
-  <a href="/licences"> &lt; Back to previous</a>
 </main>
 {{> footerjs}}
 {{> debug}}

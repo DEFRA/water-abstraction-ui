@@ -65,7 +65,25 @@ handlebars.registerHelper('guid', function () {
 
 handlebars.registerHelper('formatDate', function (dateInput) {
   var date = moment(dateInput, "DD/MM/YYYY")
-  return date.isValid() ? date.format("dddd, MMMM DD, YYYY") : dateInput
+  return date.isValid() ? date.format("D MMMM YYYY") : dateInput
+})
+
+handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
+  var periodStart = moment(inputStart, "DD/MM")
+  var periodEnd = moment(inputEnd, "DD/MM")
+  return 'From ' + periodStart.format("D MMMM") + ' until ' + periodEnd.format("D MMMM")
+})
+
+handlebars.registerHelper('formatAddress', function (address) {
+  var formattedAddress = address.addressLine1 + '<br/>'
+  formattedAddress += address.addressLine2 ? address.addressLine2 + '<br/>' : ''
+  formattedAddress += address.addressLine3 ? address.addressLine3 + '<br/>' : ''
+  formattedAddress += address.addressLine4 ? address.addressLine4 + '<br/>' : ''
+  formattedAddress += address.town ? address.town + '<br/>' : ''
+  formattedAddress += address.county ? address.county + '<br/>' : ''
+  formattedAddress += address.country ? address.country + '<br/>' : ''
+  formattedAddress += address.postCode
+  return formattedAddress
 })
 
 handlebars.registerHelper('ngrPoint', function (points) {

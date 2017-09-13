@@ -6,10 +6,10 @@
       <ol>
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
+        {{>element-signout}}
       </ol>
     </div>
   </nav>
-  {{>element-signout}}
 
   {{>element-heading-large content='Register a licence'}}
   Enter provided shortcode to register a new licence
@@ -20,26 +20,19 @@
       <button class='button button-start' onclick='sendShortcode()'>
       Register Licence
       </button>
-
-
-
     </div>
   </a>
 
-
-
-
   {{>element-heading-large content='Your water abstraction licences'}}
 
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   {{#each licenceData}}
     {{#>element-licence-link this}}{{/element-licence-link}}
   {{/each}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+  
   <p></p>
 
 </main>
-
 
 {{> footerjs}}
 {{> debug}}

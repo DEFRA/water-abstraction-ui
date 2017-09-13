@@ -7,10 +7,11 @@
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.LicenceSerialNo }}</a></li>
+        {{>element-signout}}
       </ol>
     </div>
   </nav>
-  {{>element-signout}}
+  <a class="link-back" href="/licences/{{ licence_id }}" onclick="history.go(-1)">Back</a>
   {{>element-heading-large content=(concat licenceData.LicenceName 'water abstraction licence - abstraction point')}}
   <figure>
     <img src="/public/images/map.png" alt="Map">
@@ -27,8 +28,6 @@
       The above map is static content and unrelated to the sample licence.
     </p>
   </div>
-  <a href="/licences/{{ licence_id }}" onclick="history.go(-1)">
-    &lt; Back to previous</a>.
 </main>
 {{> footerjs}}
 {{> debug}}

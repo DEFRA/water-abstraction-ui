@@ -34,9 +34,6 @@ $path: "/public/images/";
   padding: 2px;
 }
 
-.sign-out2 {
-  float: right;
-}
 // Related items
 // (These styles will be moved to GOV.UK elements, duplicating here for now.)
 
@@ -59,8 +56,9 @@ li {
   display: inline-block;
   vertical-align: top;
   padding-bottom: 7px;
-  padding-right: 0.25em;
+  padding-right: 0.5em;
   width: 20%;
+  font-weight: bold;
 }
 
 .sourceofsupplyqs {
@@ -120,7 +118,7 @@ li {
   display: inline-block;
   width: 50%;
   padding-bottom: 7px;
-  padding-left: 1em;
+  padding-left: 3em;
 }
 
 .licenceAnswers {
@@ -146,6 +144,11 @@ li {
   padding-left: 0.5em;
 }
 
+.data-table {
+  border-top: 1px solid #bfc1c3;
+  padding-top: 0.5em;
+}
+
 .menubox {
   background-color: #FFF;
   cursor: pointer;
@@ -154,7 +157,7 @@ li {
   padding-bottom: 20px;
   width: 100%;
   text-align: left;
-  border-bottom: 1px solid #bfc1c3;
+  border-top: 1px solid #bfc1c3;
   transition: 0.4s;
   font-family: "nta", Arial, sans-serif;
   font-weight: 700;
@@ -166,6 +169,12 @@ li {
   background-color: #F8F8F8;
 }
 
+.licence-title {
+  display: inline-block;
+  padding-bottom: 7px;
+  font-weight: bold;
+}
+
 .sign-out {
   float: right;
   margin-top: 1.4em;
@@ -173,6 +182,8 @@ li {
 
 .sign-out2 {
   float: right;
+  font-size: 0.875em;
+  line-height: 1.14286;
 }
 
 .openall {

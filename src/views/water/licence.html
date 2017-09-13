@@ -7,10 +7,11 @@
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licenceData.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
+        {{>element-signout}}
       </ol>
     </div>
   </nav>
-  {{>element-signout}}
+  <a class="link-back" href="/licences">Back</a>
   {{>element-heading-large content=(concat licenceData.attributes.licenceData.name ' water abstraction licence')}}
   <p></p>
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licenceData.licence_id '/contact">Licence contact details</a>')}}
@@ -18,12 +19,12 @@
   {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
   {{>element-licence-row label='Licensed until' answer=(formatDate licenceData.attributes.licenceData.effectiveTo)}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of abstraction' answer=licenceData.attributes.licenceData.purposes.0.periodOfAbstraction}}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.attributes.licenceData.purposes.0.periodStart licenceData.attributes.licenceData.purposes.0.periodEnd)}}
   {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData.attributes.licenceData)}}
+  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>
   <p><a href="/licences/{{licenceData.licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
-  <a href="/licences"> &lt; Back to previous</a>
 </main>
 {{> footerjs}}
 {{> debug}}

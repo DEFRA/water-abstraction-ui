@@ -10,7 +10,7 @@ function authenticateUser (id,password,cb) {
   console.log(password)
   API.user.login(id,password,(data)=>{
     console.log('auth user returns:')
-    console.log(data)
+//    console.log(data)
     cb(data)
   })
 /**

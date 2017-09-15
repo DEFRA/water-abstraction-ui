@@ -108,26 +108,53 @@ viewContext.licenceData=[]
   reply.view('water/licences', viewContext)
 }
 
+function verifyUserLicenceAccess(licence_id,licences,cb){
+  console.log('------------Params ->')
+  console.log(licence_id)
+  var canAccessLicence=false
+  for(licence in licences){
+    if(licence_id==licences[licence].licence_id){
+      canAccessLicence=true
+    }
+    console.log(licences[licence].licence_id)
+  }
+  cb(canAccessLicence)
+}
+
 function getLicence (request, reply) {
   var httpRequest = require('request')
   var viewContext = View.contextDefaults(request)
   console.log(request.session)
 
+
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    request.params.orgId = process.env.licenceOrgId
-    request.params.typeId= process.env.licenceTypeId
 
-    API.licence.get(request,reply,(data)=>{
-      console.log('got licence')
-      var viewContext = View.contextDefaults(request)
-      console.log(JSON.stringify(data))
-      viewContext.licenceData = data.data
-      viewContext.debug.licenceData = viewContext.licenceData
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      reply.view('water/licence', viewContext)
+    verifyUserLicenceAccess(request.params.licence_id,request.session.licences.data,(access)=>{
+      console.log('access: '+access)
+      if(access){
+        request.params.orgId = process.env.licenceOrgId
+        request.params.typeId= process.env.licenceTypeId
+
+
+        API.licence.get(request,reply,(data)=>{
+          console.log('got licence')
+          var viewContext = View.contextDefaults(request)
+          console.log(JSON.stringify(data))
+          viewContext.licenceData = data.data
+          viewContext.debug.licenceData = viewContext.licenceData
+          viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+          reply.view('water/licence', viewContext)
+        })
+      } else {
+        viewContext.debug.licenceData = viewContext.licenceData
+        viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+        reply.view('water/licence_unauthorised_error', viewContext)
+      }
     })
+
+
   }
 }
 

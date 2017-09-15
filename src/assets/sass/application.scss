@@ -149,7 +149,7 @@ li {
   padding-top: 0.5em;
 }
 
-.menubox {
+.list-link {
   background-color: #FFF;
   cursor: pointer;
   padding-left: 0;
@@ -163,9 +163,10 @@ li {
   font-weight: 700;
   font-size: 1.25em;
   line-height: 1.25;
+  display: block;
 }
 
-.menubox:hover {
+.list-link:hover {
   background-color: #F8F8F8;
 }
 

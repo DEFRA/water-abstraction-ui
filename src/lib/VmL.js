@@ -133,25 +133,35 @@ function getLicence (request, reply) {
 
     verifyUserLicenceAccess(request.params.licence_id,request.session.licences.data,(access)=>{
       console.log('access: '+access)
-      if(access){
         request.params.orgId = process.env.licenceOrgId
         request.params.typeId= process.env.licenceTypeId
 
 
         API.licence.get(request,reply,(data)=>{
-          console.log('got licence')
-          var viewContext = View.contextDefaults(request)
-          console.log(JSON.stringify(data))
-          viewContext.licenceData = data.data
-          viewContext.debug.licenceData = viewContext.licenceData
-          viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-          reply.view('water/licence', viewContext)
+
+          if(data.error){
+            var viewContext = View.contextDefaults(request)
+            console.log(JSON.stringify(data))
+            viewContext.error = data.error
+            viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+            viewContext.error='Licence not found'
+            console.log(viewContext.error)
+            reply.view('water/licence_error', viewContext)
+          } else if (!access){
+            var viewContext = View.contextDefaults(request)
+            viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+            viewContext.error='You are not authorised to view this licence'
+            console.log(viewContext.error)
+            reply.view('water/licence_error', viewContext)
+          } else {
+            var viewContext = View.contextDefaults(request)
+            console.log(JSON.stringify(data))
+            viewContext.licenceData = data.data
+            viewContext.debug.licenceData = viewContext.licenceData
+            viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+            reply.view('water/licence', viewContext)
+          }
         })
-      } else {
-        viewContext.debug.licenceData = viewContext.licenceData
-        viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-        reply.view('water/licence_unauthorised_error', viewContext)
-      }
     })
 
 

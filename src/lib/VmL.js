@@ -117,7 +117,7 @@ function renderLicencePage (view, pageTitle, request, reply) {
       API.licence.get(request, reply, (data) => {
         if (data.error) { // licence not found
           viewContext.error = data.error
-          viewContext.error = 'Licence not found'
+          viewContext.error = 'You have requested a licence with an invalid ID'
           reply.view('water/licence_error', viewContext)
         } else if (!access) { // licence not available for current user
           viewContext.error = 'You are not authorised to view this licence'

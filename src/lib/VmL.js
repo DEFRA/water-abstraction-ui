@@ -77,18 +77,29 @@ function postSignin (request, reply) {
 }
 
 function getLicences (request, reply) {
-  // get licences for user
-  var viewContext = View.contextDefaults(request)
 
-  var viewContext = View.contextDefaults(request)
-  if (request.session.licences) {
-    viewContext.licenceData = request.session.licences.data
+  if(!request.session.user){
+      return reply.redirect('/signin')
   } else {
-    viewContext.licenceData = []
+    // get licences for user
+    var viewContext = View.contextDefaults(request)
+
+    console.log('get licences')
+    console.log(request.session)
+    console.log(request.session.user)
+    console.log(request.session.licences)
+
+    if (request.session.licences) {
+      viewContext.licenceData = request.session.licences.data
+    } else {
+      viewContext.licenceData = []
+    }
+
+    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+    reply.view('water/licences', viewContext)
   }
 
-  viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-  reply.view('water/licences', viewContext)
+
 }
 
 function verifyUserLicenceAccess (licence_id, licences, cb) {

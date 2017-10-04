@@ -10,6 +10,8 @@ module.exports = [
   { method: 'GET', path: '/signout', config: { auth: false }, handler: VmL.getSignout },
   { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },
   { method: 'POST', path: '/signin', config: { auth: false }, handler: VmL.postSignin },
+  { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
+  { method: 'POST', path: '/update_password', handler: VmL.postUpdatePassword },
   { method: 'GET', path: '/licences',  handler: VmL.getLicences },
   { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },

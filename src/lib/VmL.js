@@ -43,6 +43,7 @@ function postSignin (request, reply) {
         var getUser = JSON.parse(getUser.data)
         console.log('postlogin get as ' + request.session.postlogin)
         request.session.user = getUser.sessionGuid
+        request.session.username = request.payload.user_id
         request.session.cookie = getUser.sessionCookie
         request.session.licences = getUser.licences
 
@@ -193,6 +194,41 @@ function useShortcode (request, reply) {
   })
 }
 
+function getUpdatePassword(request, reply) {
+  reply.view('water/update_password', View.contextDefaults(request))
+}
+
+function postUpdatePassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+
+  console.log('Update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'])
+  if (request.payload && request.payload.password && request.payload['confirm-password']) {
+    API.user.updatePassword(viewContext.session.username, request.payload.password, (res) => {
+      var data = JSON.parse(res.data)
+
+      if (data.error) {
+        reply.view('water/update_password', viewContext)
+      } else {
+        viewContext.pageTitle = 'GOV.UK - licences '
+        reply.view('water/licences', viewContext)
+      }
+    })
+  } else {
+    console.log('incorrect form data for password change')
+    viewContext.pageTitle = 'Hello'
+    viewContext.errors = {}
+    if (!request.payload.user_id) {
+      viewContext.errors['password'] = 1
+    }
+
+    if (!request.payload.password) {
+      viewContext.errors['confirm-password'] = 1
+    }
+
+    reply.view('water/update_password', viewContext)
+  }
+}
+
 module.exports = {
   getRoot: getRoot,
   getSignin: getSignin,
@@ -203,6 +239,7 @@ module.exports = {
   getLicenceContact: getLicenceContact,
   getLicenceMap: getLicenceMap,
   getLicenceTerms: getLicenceTerms,
-  useShortcode: useShortcode
-
+  useShortcode: useShortcode,
+  getUpdatePassword: getUpdatePassword,
+  postUpdatePassword: postUpdatePassword
 }

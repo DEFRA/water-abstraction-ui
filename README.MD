@@ -35,6 +35,12 @@ Specify the port for the service to run on
 ### JWT_TOKEN
 The JWT used in requests to the permit repository API
 
+### apiURI
+The URI for the permit repostiory. This should probably end '/API/1.0/'
+
+### idmURI
+The URI for the tactical IDM. This should probably end '/IDM/1.0/'
+
 ### licenceOrgId
 The organisation ID for the Water Licensing organisation in the permit repository. This can be found in the org table.
 

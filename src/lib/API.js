@@ -32,6 +32,25 @@ function makeURIPostRequest(uri,data,cb){
         });
 }
 
+function makeURIPutRequest(uri,data,cb){
+
+  console.log('make http put')
+  console.log('to '+uri+' with')
+  console.log(data)
+  httpRequest.put({
+            url: uri+'?token='+process.env.JWT_TOKEN,
+            form: data
+        },
+        function (err, httpResponse, body) {
+            console.log('got http put')
+
+
+//            console.log(err, body);
+            cb({err:err,data:body})
+
+        });
+}
+
 function login (id,password, cb) {
   var data={username:id,password:password}
   console.log(process.env.apiURI+'tactical/user/login')
@@ -79,8 +98,7 @@ function getlicenceTypeFields (request, reply, cb) {
   })
 }
 
-function listLicences
- (request, reply, cb) {
+function listLicences (request, reply, cb) {
 // return licence summaries for org & type
   var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence'+'?token='+process.env.JWT_TOKEN
   console.log(URI)
@@ -118,6 +136,14 @@ function useShortcode(shortcode,cookie,cb){
   })
 }
 
+function updatePassword (username, password, cb) {
+  var data = { username: username, password: password }
+  console.log("Change password: " + username + " " + password)
+  makeURIPutRequest(process.env.idmURI + 'user', data, (result) => {
+    cb(result)
+  })
+}
+
 module.exports = {
   system: {getFields: getFields},
   org: {get: getOrg},
@@ -132,5 +158,9 @@ module.exports = {
     get: getLicence
 
   },
-  user:{login: login,useShortcode:useShortcode}
+  user: {
+    login: login,
+    useShortcode: useShortcode,
+    updatePassword: updatePassword
+  }
 }

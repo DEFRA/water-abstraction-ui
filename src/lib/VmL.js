@@ -198,11 +198,52 @@ function getUpdatePassword(request, reply) {
   reply.view('water/update_password', View.contextDefaults(request))
 }
 
+function validatePasswordRules(password) {
+  var regex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[£!@#\$%\^&\*\?])(?=.{8,})")
+  return regex.test(password);
+}
+
+function validatePassword(password, confirmPassword) {
+  if(!password && !confirmPassword) {
+    return {
+      noPassword: true,
+      noConfirmPassword: true
+    }
+  }
+
+  if(!password) {
+    return {
+      noPassword: true
+    }
+  }
+
+  if(!confirmPassword) {
+    return {
+      noConfirmPassword: true
+    }
+  }
+
+  if(!validatePasswordRules(password)) {
+    return {
+      passwordInvalid: true
+    }
+  }
+
+  if(password != confirmPassword) {
+    return {
+      passwordsDontMatch: true
+    }
+  }
+
+  return null;
+}
+
 function postUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
 
   console.log('Update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'])
-  if (request.payload && request.payload.password && request.payload['confirm-password']) {
+  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  if (!errors) {
     API.user.updatePassword(viewContext.session.username, request.payload.password, (res) => {
       var data = JSON.parse(res.data)
 
@@ -215,16 +256,7 @@ function postUpdatePassword(request, reply) {
     })
   } else {
     console.log('incorrect form data for password change')
-    viewContext.pageTitle = 'Hello'
-    viewContext.errors = {}
-    if (!request.payload.user_id) {
-      viewContext.errors['password'] = 1
-    }
-
-    if (!request.payload.password) {
-      viewContext.errors['confirm-password'] = 1
-    }
-
+    viewContext.errors = errors
     reply.view('water/update_password', viewContext)
   }
 }

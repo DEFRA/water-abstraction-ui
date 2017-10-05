@@ -238,7 +238,7 @@ function postUpdatePassword(request, reply) {
         reply.view('water/update_password', viewContext)
       } else {
         viewContext.pageTitle = 'GOV.UK - licences '
-        reply.view('water/licences', viewContext)
+        reply.redirect('licences')
       }
     })
   } else {

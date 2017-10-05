@@ -7,37 +7,29 @@ var httpRequest = require('request')
 
 
 function makeURIRequest (uri, cb) {
-  httpRequest(uri+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
-    var data = JSON.parse(body)
-    cb(data)
-  })
+  makeURIRequestWithBody(uri, 'GET', null, (response) => {
+    cb(JSON.parse(response.data))
+  });
 }
 
-function makeURIPostRequest(uri,data,cb){
-
-  console.log('make http post')
-  console.log('to '+uri+' with')
+function makeURIRequestWithBody(uri, method, data, cb) {
+  console.log('make http ' + method + 'to ' + uri + ' with:')
   console.log(data)
-  httpRequest.post({
-            url: uri+'?token='+process.env.JWT_TOKEN,
+
+  httpRequest({
+            method: method,
+            url: uri + '?token=' + process.env.JWT_TOKEN,
             form: data
         },
         function (err, httpResponse, body) {
-            console.log('got http post')
-
-
-//            console.log(err, body);
-            cb({err:err,data:body})
-
+            console.log('got http ' + method + ' response')
+            cb({ err: err, data: body })
         });
 }
 
 function login (id,password, cb) {
-  var data={username:id,password:password}
-  console.log(process.env.apiURI+'tactical/user/login')
-  makeURIPostRequest(process.env.apiURI+'tactical/user/login', data, (result) => {
-//    console.log('got login response')
-//    console.log(result)
+  var data = { username:id, password:password }
+  makeURIRequestWithBody(process.env.apiURI + 'tactical/user/login', 'POST', data, (result) => {
     cb(result)
   })
 }
@@ -79,8 +71,7 @@ function getlicenceTypeFields (request, reply, cb) {
   })
 }
 
-function listLicences
- (request, reply, cb) {
+function listLicences (request, reply, cb) {
 // return licence summaries for org & type
   var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence'+'?token='+process.env.JWT_TOKEN
   console.log(URI)
@@ -102,19 +93,24 @@ function getLicence (request, reply, cb) {
   })
 }
 
-function useShortcode(shortcode,cookie,cb){
+function useShortcode(shortcode, cookie, cb) {
   console.log('use shortcode request - step 2')
-  //{"user_id":2}
-  //sessionCookie
-  console.log(  cookie)
-  var postBody={sessionCookie : cookie}
+  console.log(cookie)
+  var postBody = { sessionCookie : cookie }
   var URI = process.env.apiURI + 'shortcode/' + shortcode
   console.log(URI)
   console.log(postBody)
-  makeURIPostRequest(URI, postBody,function (error, response, body) {
 
+  makeURIRequestWithBody(URI, 'POST', postBody, function (error, response, body) {
+    cb(error, response, body)
+  })
+}
 
-    cb(error,response,body)
+function updatePassword (username, password, cb) {
+  var data = { username: username, password: password }
+  console.log("Change password: " + username + " " + password)
+  makeURIRequestWithBody(process.env.idmURI + 'user', 'PUT', data, (result) => {
+    cb(result)
   })
 }
 
@@ -132,5 +128,9 @@ module.exports = {
     get: getLicence
 
   },
-  user:{login: login,useShortcode:useShortcode}
+  user: {
+    login: login,
+    useShortcode: useShortcode,
+    updatePassword: updatePassword
+  }
 }

@@ -43,6 +43,7 @@ function postSignin (request, reply) {
         var getUser = JSON.parse(getUser.data)
         console.log('postlogin get as ' + request.session.postlogin)
         request.session.user = getUser.sessionGuid
+        request.session.username = request.payload.user_id
         request.session.cookie = getUser.sessionCookie
         request.session.licences = getUser.licences
 
@@ -187,10 +188,70 @@ function useShortcode (request, reply) {
       var viewContext = View.contextDefaults(request)
       viewContext.licence_id = res.data[0].licence_id
 
-      viewContext.pageTitle = 'GOV.UK - register licence '
+      viewContext.pageTitle = 'GOV.UK - register licence'
       reply.view('water/shortcode_use_success', viewContext)
     }
   })
+}
+
+function getUpdatePassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
+  } else {
+    viewContext.pageTitle = 'GOV.UK - change your password'
+    reply.view('water/update_password', viewContext)
+  }
+}
+
+function validatePasswordRules(password) {
+  var regex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[£!@#\$%\^&\*\?])(?=.{8,})")
+  return regex.test(password);
+}
+
+function validatePassword(password, confirmPassword) {
+  if(!password || !confirmPassword) {
+    return {
+      noPassword: true,
+    }
+  }
+
+  if(!validatePasswordRules(password)) {
+    return {
+      passwordInvalid: true
+    }
+  }
+
+  if(password != confirmPassword) {
+    return {
+      passwordsDontMatch: true
+    }
+  }
+
+  return null;
+}
+
+function postUpdatePassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - change your password'
+
+  console.log('Update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'])
+  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  if (!errors) {
+    API.user.updatePassword(viewContext.session.username, request.payload.password, (res) => {
+      var data = JSON.parse(res.data)
+
+      if (data.error) {
+        reply.view('water/update_password', viewContext)
+      } else {
+        reply.redirect('licences')
+      }
+    })
+  } else {
+    console.log('incorrect form data for password change')
+    viewContext.errors = errors
+    reply.view('water/update_password', viewContext)
+  }
 }
 
 module.exports = {
@@ -203,6 +264,7 @@ module.exports = {
   getLicenceContact: getLicenceContact,
   getLicenceMap: getLicenceMap,
   getLicenceTerms: getLicenceTerms,
-  useShortcode: useShortcode
-
+  useShortcode: useShortcode,
+  getUpdatePassword: getUpdatePassword,
+  postUpdatePassword: postUpdatePassword
 }

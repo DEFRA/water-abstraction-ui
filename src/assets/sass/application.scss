@@ -37,6 +37,12 @@ $path: "/public/images/";
 // Related items
 // (These styles will be moved to GOV.UK elements, duplicating here for now.)
 
+.form-hint {
+  .list {
+    margin-left: 20px;
+  }
+}
+
 .govuk-related-items {
   margin-top: $gutter;
   border-top: 10px solid $govuk-blue;
@@ -177,15 +183,15 @@ li {
   font-weight: bold;
 }
 
-.sign-out {
-  float: right;
-  margin-top: 1.4em;
-}
+.header-links {
+    float: right;
 
-.sign-out2 {
-  float: right;
-  font-size: 0.875em;
-  line-height: 1.14286;
+    a {
+      font-size: 0.875em;
+      line-height: 1.14286;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+    }
 }
 
 .openall {

@@ -188,7 +188,7 @@ function useShortcode (request, reply) {
       var viewContext = View.contextDefaults(request)
       viewContext.licence_id = res.data[0].licence_id
 
-      viewContext.pageTitle = 'GOV.UK - register licence '
+      viewContext.pageTitle = 'GOV.UK - register licence'
       reply.view('water/shortcode_use_success', viewContext)
     }
   })
@@ -199,7 +199,8 @@ function getUpdatePassword(request, reply) {
   if (!viewContext.session.user) {
     getSignin(request, reply)
   } else {
-    reply.view('water/update_password', View.contextDefaults(request))
+    viewContext.pageTitle = 'GOV.UK - change your password'
+    reply.view('water/update_password', viewContext)
   }
 }
 
@@ -232,6 +233,7 @@ function validatePassword(password, confirmPassword) {
 
 function postUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - change your password'
 
   console.log('Update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'])
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);

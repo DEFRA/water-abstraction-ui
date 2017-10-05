@@ -195,7 +195,12 @@ function useShortcode (request, reply) {
 }
 
 function getUpdatePassword(request, reply) {
-  reply.view('water/update_password', View.contextDefaults(request))
+  var viewContext = View.contextDefaults(request)
+  if (!viewContext.session.user) {
+    getSignin(request, reply)
+  } else {
+    reply.view('water/update_password', View.contextDefaults(request))
+  }
 }
 
 function validatePasswordRules(password) {
@@ -237,7 +242,6 @@ function postUpdatePassword(request, reply) {
       if (data.error) {
         reply.view('water/update_password', viewContext)
       } else {
-        viewContext.pageTitle = 'GOV.UK - licences '
         reply.redirect('licences')
       }
     })

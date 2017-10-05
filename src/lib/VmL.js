@@ -210,9 +210,22 @@ function validatePasswordRules(password) {
 }
 
 function validatePassword(password, confirmPassword) {
-  if(!password || !confirmPassword) {
+  if(!password && !confirmPassword) {
     return {
       noPassword: true,
+      noConfirmPassword: true
+    }
+  }
+
+  if(!password) {
+    return {
+      noPassword: true,
+    }
+  }
+
+  if(!confirmPassword) {
+    return {
+      noConfirmPassword: true,
     }
   }
 

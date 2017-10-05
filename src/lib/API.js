@@ -7,56 +7,30 @@ var httpRequest = require('request')
 
 
 function makeURIRequest (uri, cb) {
-  httpRequest(uri+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
-    var data = JSON.parse(body)
-    cb(data)
-  })
+  makeURIRequestWithBody(uri, 'GET', null, (response) => {
+    cb(JSON.parse(response.data))
+  });
 }
 
-function makeURIPostRequest(uri,data,cb){
-
-  console.log('make http post')
-  console.log('to '+uri+' with')
+function makeURIRequestWithBody(uri, method, data, cb) {
+  console.log('make http ' + method + 'to ' + uri + ' with:')
   console.log(data)
-  httpRequest.post({
-            url: uri+'?token='+process.env.JWT_TOKEN,
+
+  httpRequest({
+            method: method,
+            url: uri + '?token=' + process.env.JWT_TOKEN,
             form: data
         },
         function (err, httpResponse, body) {
-            console.log('got http post')
-
-
-//            console.log(err, body);
-            cb({err:err,data:body})
-
-        });
-}
-
-function makeURIPutRequest(uri,data,cb){
-
-  console.log('make http put')
-  console.log('to '+uri+' with')
-  console.log(data)
-  httpRequest.put({
-            url: uri+'?token='+process.env.JWT_TOKEN,
-            form: data
-        },
-        function (err, httpResponse, body) {
-            console.log('got http put')
-
-
-//            console.log(err, body);
-            cb({err:err,data:body})
-
+            console.log('got http ' + method + ' response')
+            cb({ err: err, data: body })
         });
 }
 
 function login (id,password, cb) {
-  var data={username:id,password:password}
-  console.log(process.env.apiURI+'tactical/user/login')
-  makeURIPostRequest(process.env.apiURI+'tactical/user/login', data, (result) => {
-//    console.log('got login response')
-//    console.log(result)
+  var data = { username:id, password:password }
+  console.log(process.env.apiURI + 'tactical/user/login')
+  makeURIRequestWithBody(process.env.apiURI + 'tactical/user/login', 'POST', data, (result) => {
     cb(result)
   })
 }
@@ -120,26 +94,23 @@ function getLicence (request, reply, cb) {
   })
 }
 
-function useShortcode(shortcode,cookie,cb){
+function useShortcode(shortcode, cookie, cb) {
   console.log('use shortcode request - step 2')
-  //{"user_id":2}
-  //sessionCookie
-  console.log(  cookie)
-  var postBody={sessionCookie : cookie}
+  console.log(cookie)
+  var postBody = { sessionCookie : cookie }
   var URI = process.env.apiURI + 'shortcode/' + shortcode
   console.log(URI)
   console.log(postBody)
-  makeURIPostRequest(URI, postBody,function (error, response, body) {
 
-
-    cb(error,response,body)
+  makeURIRequestWithBody(URI, 'POST', postBody, function (error, response, body) {
+    cb(error, response, body)
   })
 }
 
 function updatePassword (username, password, cb) {
   var data = { username: username, password: password }
   console.log("Change password: " + username + " " + password)
-  makeURIPutRequest(process.env.idmURI + 'user', data, (result) => {
+  makeURIRequestWithBody(process.env.idmURI + 'user', 'PUT', data, (result) => {
     cb(result)
   })
 }

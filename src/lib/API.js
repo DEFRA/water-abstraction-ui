@@ -29,7 +29,6 @@ function makeURIRequestWithBody(uri, method, data, cb) {
 
 function login (id,password, cb) {
   var data = { username:id, password:password }
-  console.log(process.env.apiURI + 'tactical/user/login')
   makeURIRequestWithBody(process.env.apiURI + 'tactical/user/login', 'POST', data, (result) => {
     cb(result)
   })

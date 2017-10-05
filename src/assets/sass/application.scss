@@ -185,18 +185,13 @@ li {
 
 .header-links {
     float: right;
-}
 
-.sign-out {
-  float: right;
-  margin-top: 1.4em;
-}
-
-.sign-out2 {
-  font-size: 0.875em;
-  line-height: 1.14286;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+    a {
+      font-size: 0.875em;
+      line-height: 1.14286;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+    }
 }
 
 .openall {

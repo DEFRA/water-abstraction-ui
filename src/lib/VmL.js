@@ -205,8 +205,26 @@ function getUpdatePassword(request, reply) {
 }
 
 function validatePasswordRules(password) {
-  var regex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[£!@#\$%\^&\*\?])(?=.{8,})")
-  return regex.test(password);
+  var result = {
+    hasValidationErrors: false
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    result.hasValidationErrors = true;
+    result.passwordHasNoUpperCase = true;
+  }
+
+  if (!/[£!@#\$%\^&\*\?]/.test(password)) {
+    result.hasValidationErrors = true;
+    result.passwordHasNoSymbol = true;
+  }
+
+  if (password.length < 8) {
+    result.hasValidationErrors = true;
+    result.passwordTooShort = true;
+  }
+
+  return result;
 }
 
 function validatePassword(password, confirmPassword) {
@@ -229,10 +247,9 @@ function validatePassword(password, confirmPassword) {
     }
   }
 
-  if(!validatePasswordRules(password)) {
-    return {
-      passwordInvalid: true
-    }
+  var passwordValidationFailures = validatePasswordRules(password)
+  if(passwordValidationFailures.hasValidationErrors) {
+    return passwordValidationFailures;
   }
 
   if(password != confirmPassword) {

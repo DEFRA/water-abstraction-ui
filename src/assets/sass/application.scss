@@ -41,6 +41,35 @@ $path: "/public/images/";
   .list {
     margin-bottom: 0px;
     margin-left: 20px;
+
+    li {
+      list-style: none;
+
+      :before {
+        position: absolute;
+        margin-left: -1.3em;
+        font-weight: bold;
+      }
+
+      &.password-validation {
+        color: green;
+
+        &:before {
+          color: green;
+          content: "\2713";
+        }
+
+      }
+
+      &.password-validation-failure {
+        color: red;
+
+        &:before {
+          color: red;
+          content: "\2717";
+        }
+      }
+    }
   }
 }
 

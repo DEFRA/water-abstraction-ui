@@ -284,6 +284,47 @@ function postUpdatePassword(request, reply) {
   }
 }
 
+function getResetPassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password'
+  reply.view('water/reset_password', viewContext)
+}
+
+function getResetPasswordCheckEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - check your email'
+  reply.view('water/reset_password_check_email', viewContext)
+}
+
+function resetPassword(emailAddress) {
+  // Regex taken from Stack Overflow, we may want to validate this properly at some point
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  if (emailAddress === "" || !emailRegex.test(emailAddress)) {
+    return {
+      invalidEmailAddress: true
+    }
+  }
+
+  return null
+}
+
+function postResetPassword(request, reply) {
+  console.log('Reset password request: ' + request.payload.email_address)
+  var errors = resetPassword(request.payload.email_address);
+  if (!errors) {
+    //API.user.resetPassword(request.payload.email_address, (res) => {
+      reply.redirect('reset_password_check_email')
+    //})
+  } else {
+    console.log('incorrect form data for password reset')
+    var viewContext = View.contextDefaults(request)
+    viewContext.pageTitle = 'GOV.UK - reset your password'
+    viewContext.errors = errors
+    viewContext.payload = request.payload
+    reply.view('water/reset_password', viewContext)
+  }
+}
+
 module.exports = {
   getRoot: getRoot,
   getSignin: getSignin,
@@ -296,5 +337,8 @@ module.exports = {
   getLicenceTerms: getLicenceTerms,
   useShortcode: useShortcode,
   getUpdatePassword: getUpdatePassword,
-  postUpdatePassword: postUpdatePassword
+  postUpdatePassword: postUpdatePassword,
+  getResetPassword: getResetPassword,
+  postResetPassword: postResetPassword,
+  getResetPasswordCheckEmail: getResetPasswordCheckEmail
 }

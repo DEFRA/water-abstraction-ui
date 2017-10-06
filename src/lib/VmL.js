@@ -284,6 +284,129 @@ function postUpdatePassword(request, reply) {
   }
 }
 
+function getResetPassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password'
+  reply.view('water/reset_password', viewContext)
+}
+
+function getResetPasswordCheckEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - check your email'
+  reply.view('water/reset_password_check_email', viewContext)
+}
+
+function getResetPasswordResendEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - resend email'
+  reply.view('water/reset_password_resend_email', viewContext)
+}
+
+function getResetPasswordResentEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - resent email'
+  reply.view('water/reset_password_resent_email', viewContext)
+}
+
+function getResetPasswordLink(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - get link'
+  reply.view('water/reset_password_get_link', viewContext)
+}
+
+function getResetPasswordChangePassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - update your password'
+  viewContext.resetGuid = request.query.resetGuid
+  reply.view('water/reset_password_change_password', viewContext)
+}
+
+function validateEmailAddress(emailAddress) {
+  // Regex taken from Stack Overflow, we may want to validate this properly at some point
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  if (emailAddress === "" || !emailRegex.test(emailAddress)) {
+    return {
+      invalidEmailAddress: true
+    }
+  }
+
+  return null
+}
+
+function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
+    console.log('Reset password request: ' + request.payload.email_address)
+    var errors = validateEmailAddress(request.payload.email_address);
+    if (!errors) {
+      API.user.resetPassword(request.payload.email_address, (res) => {
+        reply.redirect(redirect)
+      })
+    } else {
+      console.log('incorrect form data for password reset')
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = title
+      viewContext.errors = errors
+      viewContext.payload = request.payload
+      reply.view(errorRedirect, viewContext)
+    }
+}
+
+function postResetPassword(request, reply) {
+  resetPasswordImpl(request, reply, 'reset_password_check_email', 'GOV.UK - reset your password', 'water/reset_password')
+}
+
+function postResetPasswordResendEmail(request, reply) {
+  resetPasswordImpl(request, reply, 'reset_password_resent_email', 'GOV.UK - reset your password - resend email', 'water/reset_password_resend_email')
+}
+
+function postResetPasswordLink(request, reply) {
+    console.log('Get password reset link: ' + request.payload.email_address)
+    var errors = validateEmailAddress(request.payload.email_address);
+    if (!errors) {
+      API.user.getPasswordResetLink(request.payload.email_address, (data) => {
+        console.log(data)
+
+        if(data.err) {
+          var viewContext = View.contextDefaults(request)
+          viewContext.pageTitle = 'Debug page'
+          viewContext.errors = { noPasswordResetRequest: true }
+          viewContext.payload = request.payload
+          reply.view('water/reset_password_get_link', viewContext)
+        } else {
+          reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
+        }
+      })
+    } else {
+      console.log('incorrect form data for password reset get link')
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = 'Debug page'
+      viewContext.errors = errors
+      viewContext.payload = request.payload
+      reply.view('water/reset_password_get_link', viewContext)
+    }
+}
+
+function postResetPasswordChangePassword(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - update your password'
+
+  console.log('Reset update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'] + ' ' + request.payload.resetGuid)
+  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  if (!errors) {
+    API.user.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password, (res) => {
+      var data = JSON.parse(res.data)
+
+      if (data.error) {
+        reply.view('water/reset_password_change_password', viewContext)
+      } else {
+        reply.redirect('signin')
+      }
+    })
+  } else {
+    viewContext.errors = errors
+    reply.view('water/reset_password_change_password', viewContext)
+  }
+}
+
 module.exports = {
   getRoot: getRoot,
   getSignin: getSignin,
@@ -296,5 +419,15 @@ module.exports = {
   getLicenceTerms: getLicenceTerms,
   useShortcode: useShortcode,
   getUpdatePassword: getUpdatePassword,
-  postUpdatePassword: postUpdatePassword
+  postUpdatePassword: postUpdatePassword,
+  getResetPassword: getResetPassword,
+  postResetPassword: postResetPassword,
+  getResetPasswordCheckEmail: getResetPasswordCheckEmail,
+  getResetPasswordResendEmail: getResetPasswordResendEmail,
+  postResetPasswordResendEmail: postResetPasswordResendEmail,
+  getResetPasswordResentEmail: getResetPasswordResentEmail,
+  getResetPasswordLink: getResetPasswordLink,
+  postResetPasswordLink: postResetPasswordLink,
+  getResetPasswordChangePassword: getResetPasswordChangePassword,
+  postResetPasswordChangePassword: postResetPasswordChangePassword
 }

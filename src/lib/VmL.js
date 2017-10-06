@@ -362,15 +362,17 @@ function postResetPasswordLink(request, reply) {
     console.log('Get password reset link: ' + request.payload.email_address)
     var errors = validateEmailAddress(request.payload.email_address);
     if (!errors) {
-      API.user.getPasswordResetLink(request.payload.email_address, (res) => {
-        if(res.errors) {
+      API.user.getPasswordResetLink(request.payload.email_address, (data) => {
+        console.log(data)
+
+        if(data.err) {
           var viewContext = View.contextDefaults(request)
           viewContext.pageTitle = 'Debug page'
           viewContext.errors = { noPasswordResetRequest: true }
           viewContext.payload = request.payload
           reply.view('water/reset_password_get_link', viewContext)
         } else {
-          reply.redirect('reset_password_change_password' + '?resetGuid=' + res.reset_guid)
+          reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
         }
       })
     } else {
@@ -390,7 +392,7 @@ function postResetPasswordChangePassword(request, reply) {
   console.log('Reset update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'] + ' ' + request.payload.resetGuid)
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
-    API.user.updatePasswordWithGuid(viewContext.query.resetGuid, request.payload.password, (res) => {
+    API.user.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password, (res) => {
       var data = JSON.parse(res.data)
 
       if (data.error) {

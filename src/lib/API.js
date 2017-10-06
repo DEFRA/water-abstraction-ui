@@ -125,11 +125,10 @@ function resetPassword (emailAddress, cb) {
 }
 
 function getPasswordResetLink (emailAddress, cb) {
-  var data = { emailAddress: emailAddress }
-  console.log("Get reset password link: " + emailAddress)
-  makeURIRequestWithBody(process.env.idmURI + 'resetPassword', 'GET', data, (result) => {
-    console.log(result)
-    cb(result)
+  var URI = process.env.idmURI + 'resetPassword' + '?token=' + process.env.JWT_TOKEN + '&emailAddress=' + emailAddress
+  httpRequest(URI, function (error, response, body) {
+    var data = JSON.parse(body)
+    cb(data)
   })
 }
 

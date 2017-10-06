@@ -124,6 +124,24 @@ function resetPassword (emailAddress, cb) {
   })
 }
 
+function getPasswordResetLink (emailAddress, cb) {
+  var data = { emailAddress: emailAddress }
+  console.log("Get reset password link: " + emailAddress)
+  makeURIRequestWithBody(process.env.idmURI + 'resetPassword', 'GET', data, (result) => {
+    console.log(result)
+    cb(result)
+  })
+}
+
+function updatePasswordWithGuid (resetGuid, password, cb) {
+  var data = { resetGuid: resetGuid, password: password }
+  console.log("Reset password: " + resetGuid + " " + password)
+  makeURIRequestWithBody(process.env.idmURI + 'changePassword', 'POST', data, (result) => {
+    console.log(result)
+    cb(result)
+  })
+}
+
 module.exports = {
   system: {getFields: getFields},
   org: {get: getOrg},
@@ -142,6 +160,8 @@ module.exports = {
     login: login,
     useShortcode: useShortcode,
     updatePassword: updatePassword,
-    resetPassword: resetPassword
+    resetPassword: resetPassword,
+    getPasswordResetLink: getPasswordResetLink,
+    updatePasswordWithGuid: updatePasswordWithGuid
   }
 }

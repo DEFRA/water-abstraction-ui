@@ -324,9 +324,9 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     console.log('Reset password request: ' + request.payload.email_address)
     var errors = validateEmailAddress(request.payload.email_address);
     if (!errors) {
-      //API.user.resetPassword(request.payload.email_address, (res) => {
+      API.user.resetPassword(request.payload.email_address, (res) => {
         reply.redirect(redirect)
-      //})
+      })
     } else {
       console.log('incorrect form data for password reset')
       var viewContext = View.contextDefaults(request)

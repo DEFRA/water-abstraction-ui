@@ -13,7 +13,7 @@ function makeURIRequest (uri, cb) {
 }
 
 function makeURIRequestWithBody(uri, method, data, cb) {
-  console.log('make http ' + method + 'to ' + uri + ' with:')
+  console.log('make http ' + method + ' to ' + uri + ' with:')
   console.log(data)
 
   httpRequest({
@@ -110,6 +110,16 @@ function updatePassword (username, password, cb) {
   var data = { username: username, password: password }
   console.log("Change password: " + username + " " + password)
   makeURIRequestWithBody(process.env.idmURI + 'user', 'PUT', data, (result) => {
+    console.log(result)
+    cb(result)
+  })
+}
+
+function resetPassword (emailAddress, cb) {
+  var data = { emailAddress: emailAddress }
+  console.log("Reset password: " + emailAddress)
+  makeURIRequestWithBody(process.env.idmURI + 'resetPassword', 'POST', data, (result) => {
+    console.log(result)
     cb(result)
   })
 }
@@ -131,6 +141,7 @@ module.exports = {
   user: {
     login: login,
     useShortcode: useShortcode,
-    updatePassword: updatePassword
+    updatePassword: updatePassword,
+    resetPassword: resetPassword
   }
 }

@@ -296,7 +296,19 @@ function getResetPasswordCheckEmail(request, reply) {
   reply.view('water/reset_password_check_email', viewContext)
 }
 
-function resetPassword(emailAddress) {
+function getResetPasswordResendEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - resend email'
+  reply.view('water/reset_password_resend_email', viewContext)
+}
+
+function getResetPasswordResentEmail(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - reset your password - resent email'
+  reply.view('water/reset_password_resent_email', viewContext)
+}
+
+function validateEmailAddress(emailAddress) {
   // Regex taken from Stack Overflow, we may want to validate this properly at some point
   var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   if (emailAddress === "" || !emailRegex.test(emailAddress)) {
@@ -308,21 +320,29 @@ function resetPassword(emailAddress) {
   return null
 }
 
+function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
+    console.log('Reset password request: ' + request.payload.email_address)
+    var errors = validateEmailAddress(request.payload.email_address);
+    if (!errors) {
+      //API.user.resetPassword(request.payload.email_address, (res) => {
+        reply.redirect(redirect)
+      //})
+    } else {
+      console.log('incorrect form data for password reset')
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = title
+      viewContext.errors = errors
+      viewContext.payload = request.payload
+      reply.view(errorRedirect, viewContext)
+    }
+}
+
 function postResetPassword(request, reply) {
-  console.log('Reset password request: ' + request.payload.email_address)
-  var errors = resetPassword(request.payload.email_address);
-  if (!errors) {
-    //API.user.resetPassword(request.payload.email_address, (res) => {
-      reply.redirect('reset_password_check_email')
-    //})
-  } else {
-    console.log('incorrect form data for password reset')
-    var viewContext = View.contextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - reset your password'
-    viewContext.errors = errors
-    viewContext.payload = request.payload
-    reply.view('water/reset_password', viewContext)
-  }
+  resetPasswordImpl(request, reply, 'reset_password_check_email', 'GOV.UK - reset your password', 'water/reset_password')
+}
+
+function postResetPasswordResendEmail(request, reply) {
+  resetPasswordImpl(request, reply, 'reset_password_resent_email', 'GOV.UK - reset your password - resend email', 'water/reset_password_resend_email')
 }
 
 module.exports = {
@@ -340,5 +360,8 @@ module.exports = {
   postUpdatePassword: postUpdatePassword,
   getResetPassword: getResetPassword,
   postResetPassword: postResetPassword,
-  getResetPasswordCheckEmail: getResetPasswordCheckEmail
+  getResetPasswordCheckEmail: getResetPasswordCheckEmail,
+  getResetPasswordResendEmail: getResetPasswordResendEmail,
+  postResetPasswordResendEmail: postResetPasswordResendEmail,
+  getResetPasswordResentEmail: getResetPasswordResentEmail
 }

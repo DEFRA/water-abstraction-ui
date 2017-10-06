@@ -43,9 +43,7 @@ $path: "/public/images/";
     margin-left: 20px;
 
     li {
-      list-style: none;
-
-      :before {
+      &:before {
         position: absolute;
         margin-left: -1.3em;
         font-weight: bold;
@@ -53,6 +51,8 @@ $path: "/public/images/";
 
       &.password-validation {
         color: green;
+        list-style: none;
+        list-style-position: outside;
 
         &:before {
           color: green;
@@ -63,6 +63,8 @@ $path: "/public/images/";
 
       &.password-validation-failure {
         color: red;
+        list-style: none;
+        list-style-position: outside;
 
         &:before {
           color: red;

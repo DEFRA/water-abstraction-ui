@@ -22,16 +22,31 @@ function makeURIRequestWithBody(uri, method, data, cb) {
             form: data
         },
         function (err, httpResponse, body) {
+            console.log(err)
             console.log('got http ' + method + ' response')
-            cb({ err: err, data: body })
+            console.log(httpResponse.statusCode)
+            if(body.err){
+              err=body.err
+            }
+            cb({ err: err, statusCode:httpResponse.statusCode,data: body })
         });
 }
 
 function login (id,password, cb) {
-  var data = { username:id, password:password }
+  var data = { user_name:id, password:password }
+  console.log(process.env.IDM_URI + '/user/login')
+  console.log(data)
+  makeURIRequestWithBody(process.env.IDM_URI + '/user/login', 'POST', data, (result) => {
+    console.log(result)
+    cb(result)
+  })
+
+/**
+
   makeURIRequestWithBody(process.env.apiURI + 'tactical/user/login', 'POST', data, (result) => {
     cb(result)
   })
+**/
 }
 
 function getFields (request, reply, cb) {
@@ -40,40 +55,40 @@ function getFields (request, reply, cb) {
   })
 }
 
-function getOrg (request, reply, cb) {
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
+function getRegime (request, reply, cb) {
+  httpRequest(process.env.apiURI + 'regime/' + request.params.regimeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
 }
 
 function listLicenceTypes (request, reply, cb) {
-// return all licence types for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype?token='+process.env.JWT_TOKEN, function (error, response, body) {
+// return all licence types for regime
+  httpRequest(process.env.apiURI + 'regime/' + request.params.regimeId + '/licencetype?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
 }
 
 function getLicenceType (request, reply,cb) {
-  // return specific licence type definition for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
+  // return specific licence type definition for regime
+  httpRequest(process.env.apiURI + 'regime/' + request.params.regimeId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
 }
 
 function getlicenceTypeFields (request, reply, cb) {
-// return specific licence type definition for org
-  httpRequest(process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
+// return specific licence type definition for regime
+  httpRequest(process.env.apiURI + 'regime/' + request.params.regimeId + '/licencetype/' + request.params.typeId+'?token='+process.env.JWT_TOKEN, function (error, response, body) {
     var data = JSON.parse(body)
     cb(data)
   })
 }
 
 function listLicences (request, reply, cb) {
-// return licence summaries for org & type
-  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence'+'?token='+process.env.JWT_TOKEN
+// return licence summaries for regime & type
+  var URI = process.env.apiURI + 'regime/' + request.params.regimeId + '/licencetype/' + request.params.typeId + '/licence'+'?token='+process.env.JWT_TOKEN
   console.log(URI)
   httpRequest(URI, function (error, response, body) {
     var data = JSON.parse(body)
@@ -81,11 +96,13 @@ function listLicences (request, reply, cb) {
   })
 }
 
+
 function getLicence (request, reply, cb) {
-// return specific licence for org & type
+// return specific licence for regime & type
 //  console.log(data)
   console.log('get licence request')
-  var URI = process.env.apiURI + 'org/' + request.params.orgId + '/licencetype/' + request.params.typeId + '/licence/' + request.params.licence_id+'?token='+process.env.JWT_TOKEN
+  var URI = process.env.apiURI + 'regime/' + request.params.regimeId + '/licencetype/' + request.params.typeId + '/licence/' + request.params.licence_id+'?token='+process.env.JWT_TOKEN
+  console.log(URI)
   httpRequest(URI, function (error, response, body) {
     var data = JSON.parse(body)
 
@@ -143,7 +160,7 @@ function updatePasswordWithGuid (resetGuid, password, cb) {
 
 module.exports = {
   system: {getFields: getFields},
-  org: {get: getOrg},
+  regime: {get: getRegime},
   licencetype: {
     list: listLicenceTypes,
     get: getLicenceType,

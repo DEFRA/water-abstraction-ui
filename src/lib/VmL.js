@@ -35,20 +35,25 @@ function postSignin (request, reply) {
   if (request.payload && request.payload.user_id && request.payload.password) {
     User.authenticate(request.payload.user_id, request.payload.password, (getUser) => {
       var data = JSON.parse(getUser.data)
-      if (!data.error) {
+      console.log('check for status code!!!')
+      console.log(getUser)
+      if (getUser.statusCode==200) {
         console.log('user login success')
 
         var session = request.session
-
         var getUser = JSON.parse(getUser.data)
         console.log('postlogin get as ' + request.session.postlogin)
+        console.log(getUser)
         request.session.user = getUser.sessionGuid
         request.session.username = request.payload.user_id
         request.session.cookie = getUser.sessionCookie
         request.session.licences = getUser.licences
 
         request.cookieAuth.set({ sid: getUser.sessionGuid })
-        return reply.redirect(request.session.postlogin)
+        console.log(request.session)
+        console.log("redirect to "+request.session.postlogin+" after successful login")
+        return reply('<script>location.href=\'/licences\'</script>')
+//        return reply.redirect(request.session.postlogin)
       } else {
         console.log('user login failure')
         var viewContext = View.contextDefaults(request)
@@ -79,25 +84,49 @@ function postSignin (request, reply) {
 
 function getLicences (request, reply) {
 
-  if(!request.session.user){
+
+
+
+
+
+  if(!request.session.id){
+    console.log("no session found. redirect to signin")
       return reply.redirect('/signin')
   } else {
     // get licences for user
     var viewContext = View.contextDefaults(request)
 
-    console.log('get licences')
-    console.log(request.session)
-    console.log(request.session.user)
-    console.log(request.session.licences)
+    var httpRequest = require('request')
+    var uri='http://127.0.0.1:8010/crm/1.0/entity/'+request.session.username
+    console.log('make http get  to ' + uri + ' with:')
 
-    if (request.session.licences) {
-      viewContext.licenceData = request.session.licences.data
-    } else {
-      viewContext.licenceData = []
-    }
 
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-    reply.view('water/licences', viewContext)
+    httpRequest({
+              method: 'get',
+              url: uri + '?token=' + process.env.JWT_TOKEN
+          },
+          function (err, httpResponse, body) {
+              console.log(err)
+              console.log('got http get response')
+              if(body.err){
+                err=body.err
+              }
+              data=JSON.parse(body)
+
+              console.log(data.data.documentAssociations)
+              request.session.licences=data.data.documentAssociations
+              viewContext.licenceData=request.session.licences
+              viewContext.debug.licenceData=request.session.licences
+
+              viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+              reply.view('water/licences', viewContext)
+
+
+          });
+
+
+
+
   }
 
 
@@ -117,15 +146,34 @@ function verifyUserLicenceAccess (licence_id, licences, cb) {
 }
 
 function renderLicencePage (view, pageTitle, request, reply) {
+
+  //use request.session.licences to find licence system_internal_id (i.e. the ID in the permit repo)
+  //licence id in request.params = document_id in request.session.licences
+  /**
+
+  [
+  {"document_id":"6b6a550b-aade-e447-66f3-a4c08c513b2a",
+  "regime_entity_id":"0434dc31-a34e-7158-5775-4694af7a60cf",
+  "system_id":"permit-repo",
+  "system_internal_id":"1019",
+  "system_external_id":"1/21/00/070T/R01",
+  "metadata":{"Name":"Test Document"},"owner_entity_id":"8f51dfd9-29a3-593f-c297-437e4181b08d"}]
+  **/
+  console.log(request.session.licences)
+  console.log('find licence data')
+  console.log(request.session.licences.find(x => x.document_id === request.params.licence_id))
+  var thisLicence=request.session.licences.find(x => x.document_id === request.params.licence_id)
   var viewContext = View.contextDefaults(request)
-  if (!viewContext.session.user) {
+  if (!viewContext.session.id) {
     getSignin(request, reply)
   } else {
-    request.params.orgId = process.env.licenceOrgId
+    request.params.regimeId = process.env.licenceRegimeId
     request.params.typeId = process.env.licenceTypeId
+    request.params.licence_id = thisLicence.system_internal_id
     viewContext.pageTitle = pageTitle
-    verifyUserLicenceAccess(request.params.licence_id, request.session.licences.data, (access) => {
-      console.log('access: ' + access)
+//    verifyUserLicenceAccess(thisLicence.system_internal_id, request.session.licences.data, (access) => {
+//      console.log('access: ' + access)
+      var access=true;
       API.licence.get(request, reply, (data) => {
         if (data.error) { // licence not found
           viewContext.error = data.error
@@ -140,13 +188,14 @@ function renderLicencePage (view, pageTitle, request, reply) {
           viewContext.debug.licenceData = viewContext.licenceData
           reply.view(view, viewContext)
         }
-      })
+//      })
     })
   }
 }
 
 
 function getLicence (request, reply) {
+  console.log('render licence page!!!')
   renderLicencePage(
     'water/licence', 'GOV.UK - Your water abstraction licences', request, reply
   )

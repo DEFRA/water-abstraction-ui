@@ -6,12 +6,12 @@
       <ol >
         <li><a href="/">Your services</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licenceData.licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
         {{>element-header-links}}
       </ol>
     </div>
   </nav>
-  <a class="link-back" href="/licences/{{ licenceData.licence_id }}" >Back</a>
+  <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
   {{>element-heading-large content=(concat licenceData.LicenceName 'Your water abstraction licence')}}
   <p>Licence number: {{ licenceData.licence_ref }}</p>
   <p></p>

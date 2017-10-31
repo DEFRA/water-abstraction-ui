@@ -56,13 +56,7 @@ server.errorHandler = function (error) {
 server.ext({
     type: 'onPreHandler',
     method: function (request, reply) {
-      console.log(request.url.href+' requested')
-/**
-      if(request.auth){
-        console.log('request.auth')
-        console.log(request.auth)
-      }
-**/
+      //console.log(request.url.href+' requested')
 
         return reply.continue();
     }

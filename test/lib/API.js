@@ -25,15 +25,6 @@ describe('API Route', () => {
   })
 })
 
-describe('getFields', () => {
-  it('returns an object', (done) => {
-    API.system.getFields({},{},(data)=>{
-      expect(data).to.be.a.object()
-    done()
-    })
-
-  })
-})
 
 describe('getOrg', () => {
   it('returns an object', (done) => {
@@ -64,15 +55,7 @@ describe('getLicenceType', () => {
   })
 })
 
-describe('getLicenceTypeFields', () => {
-  it('returns an object', (done) => {
-    API.licencetype.getFields({params:{orgId:1,typeId:1}},{},(data)=>{
-      expect(data).to.be.a.object()
-      done()
 
-    })
-  })
-})
 
 describe('listLicences', () => {
   it('returns an object', (done) => {

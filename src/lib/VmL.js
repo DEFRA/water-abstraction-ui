@@ -322,7 +322,6 @@ function postResetPasswordLink(request, reply) {
       //TODO: generic error page
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'Debug page'
-      viewContext.error='Email address not found'
       viewContext.errors = {
         noPasswordResetRequest: true
       }

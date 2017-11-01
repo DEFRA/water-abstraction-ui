@@ -17,6 +17,7 @@ function login(user_name,password){
 
 
     }).catch((response)=>{
+      console.log(response)
       console.log('rejecting in idm.login')
       reject(response)
     })
@@ -91,7 +92,7 @@ function updatePassword (username, password, cb) {
 
 
 
-function updatePasswordWithGuid (resetGuid, password, cb) {
+function updatePasswordWithGuid (resetGuid, password) {
 
 
   return new Promise((resolve, reject) => {

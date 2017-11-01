@@ -23,7 +23,14 @@ module.exports = [
   { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: VmL.getLicenceMap },
-  { method: 'GET', path: '/licences/{licence_id}/terms', handler: VmL.getLicenceTerms }
+  { method: 'GET', path: '/licences/{licence_id}/terms', handler: VmL.getLicenceTerms },
+
+{
+      method: '*',
+      path: '/{p*}', // catch-all path
+      handler: VmL.fourOhFour
+  }
+
 ]
 
 /**

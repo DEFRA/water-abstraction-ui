@@ -26,6 +26,11 @@ $path: "/public/images/";
 // @import 'patterns/check-your-answers';
 // @import 'patterns/task-list';
 
+* {
+family: "nta", Arial, sans-serif;
+}
+
+
 .teststyle {
   color: green;
 }

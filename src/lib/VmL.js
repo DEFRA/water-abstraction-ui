@@ -57,14 +57,24 @@ function postSignin(request, reply) {
       }
 
     }).catch((getuser) => {
-      var viewContext = View.contextDefaults(request)
-      viewContext.payload = request.payload
-      viewContext.errors = {}
-      viewContext.errors['authentication'] = 1
-      viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-      reply.view('water/signin', viewContext)
+      console.log(getuser)
+      if(getuser.statusCode && getuser.statusCode==401){
+        var viewContext = View.contextDefaults(request)
+        viewContext.payload = request.payload
+        viewContext.errors = {}
+        viewContext.errors['authentication'] = 1
+        viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
+        reply.view('water/signin', viewContext)
+      } else {
+        var viewContext = View.contextDefaults(request)
+        viewContext.pageTitle = 'GOV.UK - Error'
+        reply.view('water/error', viewContext)
+      }
+
+
     })
   } else {
+      console.log('error type 2')
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
     viewContext.payload = request.payload
@@ -93,7 +103,11 @@ function getLicences(request, reply) {
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
       reply.view('water/licences', viewContext)
     }).catch((data) => {
-      //TODO: generic error page
+
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Error'
+      reply.view('water/error', viewContext)
+
     })
   }
 }
@@ -378,6 +392,11 @@ function postResetPasswordChangePassword(request, reply) {
   }
 }
 
+function fourOhFour(request, reply){
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - Not Found'
+  reply.view('water/404', viewContext).code(404)
+}
 module.exports = {
   getRoot: getRoot,
   getSignin: getSignin,
@@ -399,5 +418,6 @@ module.exports = {
   getResetPasswordLink: getResetPasswordLink,
   postResetPasswordLink: postResetPasswordLink,
   getResetPasswordChangePassword: getResetPasswordChangePassword,
-  postResetPasswordChangePassword: postResetPasswordChangePassword
+  postResetPasswordChangePassword: postResetPasswordChangePassword,
+  fourOhFour:fourOhFour
 }

@@ -46,6 +46,8 @@ server.register([{
   // load routes
   server.route(require('./src/routes/public'))
   server.route(require('./src/routes/VmL'))
+
+
 })
 
 server.errorHandler = function (error) {

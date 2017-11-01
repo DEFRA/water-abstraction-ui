@@ -1,13 +1,13 @@
 const moment = require('moment')
 const Helpers = require('./helpers')
 
-function sessionGet (request,key) {
-//  updateSessionTimestamp(request)
-  if(request.session.id){
+function sessionGet(request, key) {
+  //  updateSessionTimestamp(request)
+  if (request.session.id) {
 
   } else {
     console.log('START SESSION')
-    request.session.id=Helpers.createGUID()
+    request.session.id = Helpers.createGUID()
 
   }
 
@@ -19,14 +19,14 @@ function sessionGet (request,key) {
   }
 }
 
-function sessionSet (request, key, value) {
-  console.log("session "+key+"is set with ")
+function sessionSet(request, key, value) {
+  console.log("session " + key + "is set with ")
   console.log(value)
   console.log('******')
-  request.session[key]=value
+  request.session[key] = value
 }
 
-function updateSessionTimestamp(request){
+function updateSessionTimestamp(request) {
   //TODO: hanbdler session expiry
 
 }
@@ -34,5 +34,5 @@ function updateSessionTimestamp(request){
 module.exports = {
   get: sessionGet,
   set: sessionSet,
-  updateTimestamp:updateSessionTimestamp
+  updateTimestamp: updateSessionTimestamp
 }

@@ -1,66 +1,59 @@
 const Helpers = require('../lib/helpers')
-const User = require('../lib/user')
 const View = require('../lib/view')
-const Session = require('../lib/session')
-const API = require('../lib/API')
+const CRM = require('./connectors/crm')
+const IDM = require('./connectors/idm')
+const Permit = require('./connectors/permit')
 
-function getRoot (request, reply) {
+function getRoot(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Water Abstractions Prototype'
   reply.view('water/index', viewContext)
 }
 
-function getSignout (request, reply) {
+function getSignout(request, reply) {
   request.cookieAuth.clear()
   return reply.redirect('/')
 }
 
-function getSignin (request, reply) {
+function getSignin(request, reply) {
   // get signin page
-
   if (request.path != '/signin') {
     request.session.postlogin = request.path
   } else {
     request.session.postlogin = '/licences'
   }
-  console.log('postlogin set to ' + request.session.postlogin)
   request.session.id = Helpers.createGUID()
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   reply.view('water/signin', viewContext)
 }
 
-function postSignin (request, reply) {
+function postSignin(request, reply) {
   // post from signin page
   if (request.payload && request.payload.user_id && request.payload.password) {
-    User.authenticate(request.payload.user_id, request.payload.password, (getUser) => {
-      var data = JSON.parse(getUser.data)
-      if (!data.error) {
-        console.log('user login success')
 
-        var session = request.session
+    IDM.login(request.payload.user_id, request.payload.password).then((getUser) => {
+      var session = request.session
+      request.session.user = getUser.body
+      request.session.username = request.payload.user_id
+      request.session.cookie = getUser.sessionCookie
+      request.session.licences = getUser.licences
+      request.session.id = getUser.body.sessionGUID
 
-        var getUser = JSON.parse(getUser.data)
-        console.log('postlogin get as ' + request.session.postlogin)
-        request.session.user = getUser.sessionGuid
-        request.session.username = request.payload.user_id
-        request.session.cookie = getUser.sessionCookie
-        request.session.licences = getUser.licences
-
-        request.cookieAuth.set({ sid: getUser.sessionGuid })
-        return reply.redirect(request.session.postlogin)
-      } else {
-        console.log('user login failure')
-        var viewContext = View.contextDefaults(request)
-        viewContext.payload = request.payload
-        viewContext.errors = {}
-        viewContext.errors['authentication'] = 1
-        viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-        reply.view('water/signin', viewContext)
-      }
+      request.cookieAuth.set({
+        sid: getUser.sessionGuid
+      })
+      //TODO: consider post login redirect to other than main licences page
+      return reply('<script>location.href=\'/licences\'</script>')
+    }).catch((getuser) => {
+      var viewContext = View.contextDefaults(request)
+      viewContext.payload = request.payload
+      viewContext.errors = {}
+      viewContext.errors['authentication'] = 1
+      viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
+      reply.view('water/signin', viewContext)
     })
   } else {
-    console.log('incomplete form data for login')
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
     viewContext.payload = request.payload
@@ -77,122 +70,79 @@ function postSignin (request, reply) {
   }
 }
 
-function getLicences (request, reply) {
-
-  if(!request.session.user){
-      return reply.redirect('/signin')
+function getLicences(request, reply) {
+  if (!request.session.id) {
+    return reply.redirect('/signin')
   } else {
-    // get licences for user
     var viewContext = View.contextDefaults(request)
-
-    console.log('get licences')
-    console.log(request.session)
-    console.log(request.session.user)
-    console.log(request.session.licences)
-
-    if (request.session.licences) {
-      viewContext.licenceData = request.session.licences.data
-    } else {
-      viewContext.licenceData = []
-    }
-
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-    reply.view('water/licences', viewContext)
-  }
-
-
-}
-
-function verifyUserLicenceAccess (licence_id, licences, cb) {
-  console.log('------------Params ->')
-  console.log(licence_id)
-  var canAccessLicence = false
-  for (licence in licences) {
-    if (licence_id == licences[licence].licence_id) {
-      canAccessLicence = true
-    }
-    console.log(licences[licence].licence_id)
-  }
-  cb(canAccessLicence)
-}
-
-function renderLicencePage (view, pageTitle, request, reply) {
-  var viewContext = View.contextDefaults(request)
-  if (!viewContext.session.user) {
-    getSignin(request, reply)
-  } else {
-    request.params.orgId = process.env.licenceOrgId
-    request.params.typeId = process.env.licenceTypeId
-    viewContext.pageTitle = pageTitle
-    verifyUserLicenceAccess(request.params.licence_id, request.session.licences.data, (access) => {
-      console.log('access: ' + access)
-      API.licence.get(request, reply, (data) => {
-        if (data.error) { // licence not found
-          viewContext.error = data.error
-          viewContext.error = 'You have requested a licence with an invalid ID'
-          reply.view('water/licence_error', viewContext)
-        } else if (!access) { // licence not available for current user
-          viewContext.error = 'You are not authorised to view this licence'
-          console.log(viewContext.error)
-          reply.view('water/licence_error', viewContext)
-        } else {
-          viewContext.licenceData = data.data
-          viewContext.debug.licenceData = viewContext.licenceData
-          reply.view(view, viewContext)
-        }
-      })
+    CRM.getLicences(request.session.username).then((data) => {
+      request.session.licences = data
+      viewContext.licenceData = data
+      viewContext.debug.licenceData = data
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+      reply.view('water/licences', viewContext)
+    }).catch((data) => {
+      //TODO: generic error page
     })
   }
 }
 
 
-function getLicence (request, reply) {
+
+function renderLicencePage(view, pageTitle, request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = pageTitle
+  if (!viewContext.session.id) {
+    getSignin(request, reply)
+  } else {
+    CRM.getLicenceInternalID(request.session.licences, request.params.licence_id)
+      .then((thisLicence) => {
+        Permit.getLicence(thisLicence.system_internal_id).then((licence) => {
+          data = JSON.parse(licence.body)
+          viewContext.licence_id = request.params.licence_id
+          viewContext.licenceData = data.data
+          viewContext.debug.licenceData = viewContext.licenceData
+          reply.view(view, viewContext)
+        }).catch((response) => {
+          viewContext.debug.response = response
+          viewContext.error = response
+          viewContext.error = 'You have requested a licence with an invalid ID'
+          reply.view('water/licence_error', viewContext)
+        })
+      }).catch((response) => {
+        viewContext.debug.response = response
+        viewContext.error = response
+        reply.view('water/licence_error', viewContext)
+      })
+  }
+}
+
+function getLicence(request, reply) {
+  console.log('render licence page!!!')
   renderLicencePage(
     'water/licence', 'GOV.UK - Your water abstraction licences', request, reply
   )
 }
 
-function getLicenceContact (request, reply) {
+function getLicenceContact(request, reply) {
   renderLicencePage(
     'water/licences_contact', 'GOV.UK - Your water abstraction licences - contact details', request, reply
   )
 }
 
-function getLicenceMap (request, reply) {
+function getLicenceMap(request, reply) {
   renderLicencePage(
     'water/licences_map', 'GOV.UK - Your water abstraction licences - Map', request, reply
   )
 }
 
-function getLicenceTerms (request, reply) {
+function getLicenceTerms(request, reply) {
   renderLicencePage(
     'water/licences_terms', 'GOV.UK - Your water abstraction licences - Full Terms', request, reply
   )
 }
 
-function useShortcode (request, reply) {
-  console.log('got shortcode requests')
 
-  API.user.useShortcode(request.params.shortcode, request.session.cookie, (res) => {
-    console.log('response from user shortcode')
-//    console.log(response)
-    console.log(res)
-    var data = JSON.parse(res.data)
-    console.log(data)
-    if (data.error) {
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'GOV.UK - register licence error ' + data.error
-
-      reply.view('water/shortcode_used_error', viewContext)
-    } else {
-      var viewContext = View.contextDefaults(request)
-      viewContext.licence_id = res.data[0].licence_id
-
-      viewContext.pageTitle = 'GOV.UK - register licence'
-      reply.view('water/shortcode_use_success', viewContext)
-    }
-  })
-}
 
 function getUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
@@ -228,31 +178,31 @@ function validatePasswordRules(password) {
 }
 
 function validatePassword(password, confirmPassword) {
-  if(!password && !confirmPassword) {
+  if (!password && !confirmPassword) {
     return {
       noPassword: true,
       noConfirmPassword: true
     }
   }
 
-  if(!password) {
+  if (!password) {
     return {
       noPassword: true,
     }
   }
 
-  if(!confirmPassword) {
+  if (!confirmPassword) {
     return {
       noConfirmPassword: true,
     }
   }
 
   var passwordValidationFailures = validatePasswordRules(password)
-  if(passwordValidationFailures.hasValidationErrors) {
+  if (passwordValidationFailures.hasValidationErrors) {
     return passwordValidationFailures;
   }
 
-  if(password != confirmPassword) {
+  if (password != confirmPassword) {
     return {
       passwordsDontMatch: true
     }
@@ -264,21 +214,15 @@ function validatePassword(password, confirmPassword) {
 function postUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
-
-  console.log('Update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'])
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
-    API.user.updatePassword(viewContext.session.username, request.payload.password, (res) => {
+    IDM.updatePassword(viewContext.session.username, request.payload.password).then((res) => {
       var data = JSON.parse(res.data)
-
-      if (data.error) {
-        reply.view('water/update_password', viewContext)
-      } else {
-        reply.redirect('licences')
-      }
+      reply.redirect('licences')
+    }).catch(() => {
+      reply.view('water/update_password', viewContext)
     })
   } else {
-    console.log('incorrect form data for password change')
     viewContext.errors = errors
     reply.view('water/update_password', viewContext)
   }
@@ -334,20 +278,20 @@ function validateEmailAddress(emailAddress) {
 }
 
 function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
-    console.log('Reset password request: ' + request.payload.email_address)
-    var errors = validateEmailAddress(request.payload.email_address);
-    if (!errors) {
-      API.user.resetPassword(request.payload.email_address, (res) => {
-        reply.redirect(redirect)
-      })
-    } else {
-      console.log('incorrect form data for password reset')
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = title
-      viewContext.errors = errors
-      viewContext.payload = request.payload
-      reply.view(errorRedirect, viewContext)
-    }
+  var errors = validateEmailAddress(request.payload.email_address);
+  if (!errors) {
+    IDM.resetPassword(request.payload.email_address).then((res) => {
+      reply.redirect(redirect)
+    }).catch((err) => {
+      //TODO: generic error handler
+    })
+  } else {
+    var viewContext = View.contextDefaults(request)
+    viewContext.pageTitle = title
+    viewContext.errors = errors
+    viewContext.payload = request.payload
+    reply.view(errorRedirect, viewContext)
+  }
 }
 
 function postResetPassword(request, reply) {
@@ -359,47 +303,44 @@ function postResetPasswordResendEmail(request, reply) {
 }
 
 function postResetPasswordLink(request, reply) {
-    console.log('Get password reset link: ' + request.payload.email_address)
-    var errors = validateEmailAddress(request.payload.email_address);
-    if (!errors) {
-      API.user.getPasswordResetLink(request.payload.email_address, (data) => {
-        console.log(data)
-
-        if(data.err) {
-          var viewContext = View.contextDefaults(request)
-          viewContext.pageTitle = 'Debug page'
-          viewContext.errors = { noPasswordResetRequest: true }
-          viewContext.payload = request.payload
-          reply.view('water/reset_password_get_link', viewContext)
-        } else {
-          reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
+  var errors = validateEmailAddress(request.payload.email_address);
+  if (!errors) {
+    IDM.getPasswordResetLink(request.payload.email_address).then((data) => {
+      data = JSON.parse(data)
+      if (data.err) {
+        var viewContext = View.contextDefaults(request)
+        viewContext.pageTitle = 'Debug page'
+        viewContext.errors = {
+          noPasswordResetRequest: true
         }
-      })
-    } else {
-      console.log('incorrect form data for password reset get link')
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'Debug page'
-      viewContext.errors = errors
-      viewContext.payload = request.payload
-      reply.view('water/reset_password_get_link', viewContext)
-    }
+        viewContext.payload = request.payload
+        reply.view('water/reset_password_get_link', viewContext)
+      } else {
+        reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
+      }
+    }).catch((err) => {
+      //TODO: generic error page
+    })
+
+  } else {
+    var viewContext = View.contextDefaults(request)
+    viewContext.pageTitle = 'Debug page'
+    viewContext.errors = errors
+    viewContext.payload = request.payload
+    reply.view('water/reset_password_get_link', viewContext)
+  }
 }
 
 function postResetPasswordChangePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - update your password'
-
-  console.log('Reset update password request: ' + request.payload.password + ' ' + request.payload['confirm-password'] + ' ' + request.payload.resetGuid)
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
-    API.user.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password, (res) => {
-      var data = JSON.parse(res.data)
-
-      if (data.error) {
-        reply.view('water/reset_password_change_password', viewContext)
-      } else {
-        reply.redirect('signin')
-      }
+    IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {
+      reply.redirect('signin')
+    }).catch((err) => {
+      viewContext.errors = err
+      reply.view('water/reset_password_change_password', viewContext)
     })
   } else {
     viewContext.errors = errors
@@ -417,7 +358,6 @@ module.exports = {
   getLicenceContact: getLicenceContact,
   getLicenceMap: getLicenceMap,
   getLicenceTerms: getLicenceTerms,
-  useShortcode: useShortcode,
   getUpdatePassword: getUpdatePassword,
   postUpdatePassword: postUpdatePassword,
   getResetPassword: getResetPassword,

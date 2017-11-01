@@ -1,7 +1,7 @@
 console.log(__dirname)
 const Session = require('./session')
 
-function viewContextDefaults (request) {
+function viewContextDefaults(request) {
   var viewContext = {}
   viewContext.session = request.session
   viewContext.pageTitle = 'Water Abstraction'
@@ -16,7 +16,7 @@ function viewContextDefaults (request) {
   viewContext.debug.connection = request.connection.info
   viewContext.debug.request = request.info
   viewContext.debug.request.path = request.path
-//  viewContext.debug.session = request.yar.get('sessionTimestamp')
+  //  viewContext.debug.session = request.yar.get('sessionTimestamp')
   return viewContext
 }
 

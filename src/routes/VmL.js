@@ -6,7 +6,6 @@ const VmL=require('../lib/VmL')
 module.exports = [
 
   { method: 'GET', path: '/', config: { auth: false }, handler: VmL.getRoot },
-  { method: 'GET', path: '/shortcode/{shortcode}', handler: VmL.useShortcode },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: VmL.getSignout },
   { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },
   { method: 'POST', path: '/signin', config: { auth: false }, handler: VmL.postSignin },

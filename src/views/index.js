@@ -118,6 +118,10 @@ handlebars.registerHelper('maxQuantities', function (quantities) {
   return Number(quantities.maxDailyQuantity).toFixed(2) + ' cubic metres per day <br/>' + Number(quantities.maxAnnualQuantity).toFixed(2) + ' cubic metres per year'
 })
 
+handlebars.registerHelper('abstractionConditions', function (quantities) {
+  return 'Abstraction conditions TODO:'
+})
+
 const Path = require('path')
 
 const defaultContext = {

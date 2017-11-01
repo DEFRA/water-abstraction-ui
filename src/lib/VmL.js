@@ -320,6 +320,13 @@ function postResetPasswordLink(request, reply) {
       }
     }).catch((err) => {
       //TODO: generic error page
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = 'Debug page'
+      viewContext.error='Email address not found'
+      viewContext.errors = {
+        noPasswordResetRequest: true
+      }
+      reply.view('water/reset_password_get_link', viewContext)
     })
 
   } else {

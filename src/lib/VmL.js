@@ -30,9 +30,11 @@ function getSignin(request, reply) {
 
 function postSignin(request, reply) {
   // post from signin page
+  console.log('process login')
   if (request.payload && request.payload.user_id && request.payload.password) {
 
     IDM.login(request.payload.user_id, request.payload.password).then((getUser) => {
+      console.log(getUser)
       var session = request.session
       request.session.user = getUser.body
       request.session.username = request.payload.user_id
@@ -44,7 +46,16 @@ function postSignin(request, reply) {
         sid: getUser.sessionGuid
       })
       //TODO: consider post login redirect to other than main licences page
-      return reply('<script>location.href=\'/licences\'</script>')
+      console.log('getUser.body.reset_required')
+      console.log(getUser.body.reset_required)
+
+
+      if (getUser.body.reset_required && getUser.body.reset_required ==1){
+        reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid+'&forced=1')
+      } else {
+        return reply('<script>location.href=\'/licences\'</script>')
+      }
+
     }).catch((getuser) => {
       var viewContext = View.contextDefaults(request)
       viewContext.payload = request.payload
@@ -262,6 +273,18 @@ function getResetPasswordChangePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - update your password'
   viewContext.resetGuid = request.query.resetGuid
+
+
+  console.log('forced password reset!')
+  console.log(request.query.forced)
+
+  if(request.query.forced){
+
+    // show forced reset message
+    viewContext.forced=true
+  }
+
+
   reply.view('water/reset_password_change_password', viewContext)
 }
 
@@ -340,6 +363,7 @@ function postResetPasswordLink(request, reply) {
 function postResetPasswordChangePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - update your password'
+
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
     IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {

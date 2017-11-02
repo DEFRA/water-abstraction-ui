@@ -1,5 +1,4 @@
 console.log(__dirname)
-const Session = require('./session')
 
 function viewContextDefaults(request) {
   var viewContext = {}

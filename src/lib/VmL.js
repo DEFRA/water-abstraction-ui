@@ -25,16 +25,13 @@ function getSignin(request, reply) {
   request.session.id = Helpers.createGUID()
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-  reply.view('water/signin', viewContext)
+  return reply.view('water/signin', viewContext)
 }
 
 function postSignin(request, reply) {
   // post from signin page
-  console.log('process login')
   if (request.payload && request.payload.user_id && request.payload.password) {
-
     IDM.login(request.payload.user_id, request.payload.password).then((getUser) => {
-      console.log(getUser)
       var session = request.session
       request.session.user = getUser.body
       request.session.username = request.payload.user_id
@@ -64,11 +61,11 @@ function postSignin(request, reply) {
         viewContext.errors = {}
         viewContext.errors['authentication'] = 1
         viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-        reply.view('water/signin', viewContext)
+        return reply.view('water/signin', viewContext)
       } else {
         var viewContext = View.contextDefaults(request)
         viewContext.pageTitle = 'GOV.UK - Error'
-        reply.view('water/error', viewContext)
+        return reply.view('water/error', viewContext)
       }
 
 
@@ -87,7 +84,7 @@ function postSignin(request, reply) {
       viewContext.errors['password'] = 1
     }
 
-    reply.view('water/signin', viewContext)
+    return reply.view('water/signin', viewContext)
   }
 }
 
@@ -101,12 +98,12 @@ function getLicences(request, reply) {
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      reply.view('water/licences', viewContext)
+      return reply.view('water/licences', viewContext)
     }).catch((data) => {
 
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Error'
-      reply.view('water/error', viewContext)
+      return reply.view('water/error', viewContext)
 
     })
   }
@@ -127,17 +124,17 @@ function renderLicencePage(view, pageTitle, request, reply) {
           viewContext.licence_id = request.params.licence_id
           viewContext.licenceData = data.data
           viewContext.debug.licenceData = viewContext.licenceData
-          reply.view(view, viewContext)
+          return reply.view(view, viewContext)
         }).catch((response) => {
           viewContext.debug.response = response
           viewContext.error = response
           viewContext.error = 'You have requested a licence with an invalid ID'
-          reply.view('water/licence_error', viewContext)
+          return reply.view('water/licence_error', viewContext)
         })
       }).catch((response) => {
         viewContext.debug.response = response
         viewContext.error = response
-        reply.view('water/licence_error', viewContext)
+        return reply.view('water/licence_error', viewContext)
       })
   }
 }
@@ -175,7 +172,7 @@ function getUpdatePassword(request, reply) {
     getSignin(request, reply)
   } else {
     viewContext.pageTitle = 'GOV.UK - change your password'
-    reply.view('water/update_password', viewContext)
+    return reply.view('water/update_password', viewContext)
   }
 }
 
@@ -243,44 +240,44 @@ function postUpdatePassword(request, reply) {
   if (!errors) {
     IDM.updatePassword(viewContext.session.username, request.payload.password).then((res) => {
       var data = JSON.parse(res.data)
-      reply.redirect('licences')
+      return reply.redirect('licences')
     }).catch(() => {
-      reply.view('water/update_password', viewContext)
+      return reply.view('water/update_password', viewContext)
     })
   } else {
     viewContext.errors = errors
-    reply.view('water/update_password', viewContext)
+    return reply.view('water/update_password', viewContext)
   }
 }
 
 function getResetPassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password'
-  reply.view('water/reset_password', viewContext)
+  return reply.view('water/reset_password', viewContext)
 }
 
 function getResetPasswordCheckEmail(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password - check your email'
-  reply.view('water/reset_password_check_email', viewContext)
+  return reply.view('water/reset_password_check_email', viewContext)
 }
 
 function getResetPasswordResendEmail(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password - resend email'
-  reply.view('water/reset_password_resend_email', viewContext)
+  return reply.view('water/reset_password_resend_email', viewContext)
 }
 
 function getResetPasswordResentEmail(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password - resent email'
-  reply.view('water/reset_password_resent_email', viewContext)
+  return reply.view('water/reset_password_resent_email', viewContext)
 }
 
 function getResetPasswordLink(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password - get link'
-  reply.view('water/reset_password_get_link', viewContext)
+  return reply.view('water/reset_password_get_link', viewContext)
 }
 
 function getResetPasswordChangePassword(request, reply) {
@@ -299,7 +296,7 @@ function getResetPasswordChangePassword(request, reply) {
   }
 
 
-  reply.view('water/reset_password_change_password', viewContext)
+  return reply.view('water/reset_password_change_password', viewContext)
 }
 
 function validateEmailAddress(emailAddress) {
@@ -318,7 +315,7 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
   var errors = validateEmailAddress(request.payload.email_address);
   if (!errors) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
-      reply.redirect(redirect)
+      return reply.redirect(redirect)
     }).catch((err) => {
       //TODO: generic error handler
     })
@@ -327,7 +324,7 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     viewContext.pageTitle = title
     viewContext.errors = errors
     viewContext.payload = request.payload
-    reply.view(errorRedirect, viewContext)
+    return reply.view(errorRedirect, viewContext)
   }
 }
 
@@ -351,9 +348,9 @@ function postResetPasswordLink(request, reply) {
           noPasswordResetRequest: true
         }
         viewContext.payload = request.payload
-        reply.view('water/reset_password_get_link', viewContext)
+        return reply.view('water/reset_password_get_link', viewContext)
       } else {
-        reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
+        return reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
       }
     }).catch((err) => {
       //TODO: generic error page
@@ -362,7 +359,7 @@ function postResetPasswordLink(request, reply) {
       viewContext.errors = {
         noPasswordResetRequest: true
       }
-      reply.view('water/reset_password_get_link', viewContext)
+      return reply.view('water/reset_password_get_link', viewContext)
     })
 
   } else {
@@ -370,7 +367,7 @@ function postResetPasswordLink(request, reply) {
     viewContext.pageTitle = 'Debug page'
     viewContext.errors = errors
     viewContext.payload = request.payload
-    reply.view('water/reset_password_get_link', viewContext)
+    return reply.view('water/reset_password_get_link', viewContext)
   }
 }
 
@@ -381,22 +378,26 @@ function postResetPasswordChangePassword(request, reply) {
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
     IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {
-      reply.redirect('signin')
+      return reply.redirect('signin')
     }).catch((err) => {
       viewContext.errors = err
-      reply.view('water/reset_password_change_password', viewContext)
+      viewContext.resetGuid = request.payload.resetGuid
+      return reply.view('water/reset_password_change_password', viewContext)
     })
   } else {
     viewContext.errors = errors
-    reply.view('water/reset_password_change_password', viewContext)
+    viewContext.resetGuid = request.payload.resetGuid
+    return reply.view('water/reset_password_change_password', viewContext)
   }
 }
 
 function fourOhFour(request, reply){
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Not Found'
-  reply.view('water/404', viewContext).code(404)
+  return reply.view('water/404', viewContext).code(404)
 }
+
+
 module.exports = {
   getRoot: getRoot,
   getSignin: getSignin,

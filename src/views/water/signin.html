@@ -4,42 +4,46 @@
   <div class="grid-row">
     <div class="column-two-thirds">
       <form action="/signin" method="post" class="form">
-        <h1 class="form-title heading-large">
-          Sign in to view your licence
-        </h1>
+
         {{#if errors}}
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
           {{#if errors.authentication}}
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-              Check your sign in details
+              Your email address or password are incorrect
             </h2>
             <ul class="error-summary-list">
-              <li><a href="#user-id">Your user ID or password is incorrect</a></li>
+              <li><a href="#user-id">Re-enter your email address</a></li>
+              <li><a href="#user-id">Re-enter your password</a></li>
             </ul>
           {{else}}
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-              Check your sign in details
+              Your email address or password are incorrect
             </h2>
             <ul class="error-summary-list">
-              {{#if errors.user-id}}<li><a href="#user-id">You must enter a user ID</a></li>{{/if}}
-              {{#if errors.password}}<li><a href="#password">You must enter a password</a></li>{{/if}}
+              <li><a href="#user-id">Re-enter your email address</a></li>
+              <li><a href="#user-id">Re-enter your password</a></li>
             </ul>
           {{/if}}
         </div>
         {{/if}}
+        <h1 class="form-title heading-large">
+          Sign in
+        </h1>
         <!-- User id -->
         <div class="form-group {{#if errors.user-id}}form-group-error{{/if}} {{#if errors.authentication }}form-group-error{{/if}}">
-          <label class="form-label-bold" for="user-id">User ID</label>
+          <label class="form-label-bold" for="user-id">Email address</label>
           <span class="form-hint">This is the email address used to create your account.</span>
-          <input name="user_id" type="text" class="form-control {{#if errors.user-id }}form-control-error{{/if}} {{#if errors.authentication }}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}>
-          {{#if errors.user-id}}<span class="error-message">This field is required</span>{{/if}}
+          {{#if errors.user-id}}<span class="error-message">Please enter the email address you registered with us.</span>{{/if}}
+          <input name="user_id" type="text" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}>
+
         </div>
         <!-- Password -->
         <div class="form-group {{#if errors.password}}form-group-error{{/if}} {{#if errors.authentication }}form-group-error{{/if}}">
           <label class="form-label-bold" for="password">Password</label>
           <span class="form-hint">You should have received this by post or email.</span>
-          <input name="password" autocomplete="off" type="password" class="form-control  {{#if errors.password}}form-control-error{{/if}} {{#if errors.authentication }}form-control-error{{/if}}" id="password">
-          {{#if errors.password}}<span class="error-message">This field is required</span>{{/if}}
+          {{#if errors.password}}<span class="error-message">Please enter the password we sent you.</span>{{/if}}
+          <input name="password" autocomplete="off" type="password" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="password">
+
         </div>
         <input class="button button-start" type="submit" value="Sign in"/>
         <p></p>

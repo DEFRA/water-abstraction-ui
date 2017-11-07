@@ -1,26 +1,133 @@
 'use strict'
-// See Code API ref at https://github.com/hapijs/code/blob/HEAD/API.md
 
-// requires for testing
-const Code = require('code')
-
-const expect = Code.expect
 const Lab = require('lab')
 const lab = exports.lab = Lab.script()
 
-// use some BDD verbage instead of lab default
-const describe = lab.describe
-const it = lab.it
-const after = lab.after
-
-// require hapi server
-const VmL = require('../../src/lib/VmL.js')
+const Code = require('code')
+const rewire = require('rewire');
 
 
-// tests
-describe('VML Library', () => {
-  it('has methods', (done) => {
-    expect(VmL).to.be.a.object()
-    done()
-  })
+
+const vml = require('../../src/lib/VmL.js')
+
+
+
+lab.experiment('vml.getRoot', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getRoot).to.be.a.function()
+})
+})
+
+lab.experiment('vml.getSignin', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getSignin).to.be.a.function()
+})
+})
+lab.experiment('vml.getSignout', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getSignout).to.be.a.function()
+})
+})
+lab.experiment('vml.postSignin', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postSignin).to.be.a.function()
+})
+})
+lab.experiment('vml.getLicences', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getLicences).to.be.a.function()
+})
+})
+lab.experiment('vml.getLicence', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getLicence).to.be.a.function()
+})
+})
+lab.experiment('vml.getLicenceContact', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getLicenceContact).to.be.a.function()
+})
+})
+lab.experiment('vml.getLicenceMap', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getLicenceMap).to.be.a.function()
+})
+})
+lab.experiment('vml.getLicenceTerms', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getLicenceTerms).to.be.a.function()
+})
+})
+lab.experiment('vml.getUpdatePassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getUpdatePassword).to.be.a.function()
+})
+})
+lab.experiment('vml.postUpdatePassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postUpdatePassword).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPassword).to.be.a.function()
+})
+})
+lab.experiment('vml.postResetPassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postResetPassword).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPasswordCheckEmail', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPasswordCheckEmail).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPasswordResendEmail', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPasswordResendEmail).to.be.a.function()
+})
+})
+lab.experiment('vml.postResetPasswordResendEmail', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postResetPasswordResendEmail).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPasswordResentEmail', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPasswordResentEmail).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPasswordLink', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPasswordLink).to.be.a.function()
+})
+})
+lab.experiment('vml.postResetPasswordLink', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postResetPasswordLink).to.be.a.function()
+})
+})
+lab.experiment('vml.getResetPasswordChangePassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.getResetPasswordChangePassword).to.be.a.function()
+})
+})
+lab.experiment('vml.postResetPasswordChangePassword', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.postResetPasswordChangePassword).to.be.a.function()
+})
+})
+lab.experiment('vml.fourOhFour', () => {
+  lab.test('function exists', async () => {
+  Code.expect(vml.fourOhFour).to.be.a.function()
+})
+})
+
+lab.experiment('vml.getSignin', () => {
+  var request={path:'/signin',session:{},connection:{info:''},info:{}}
+  var reply={view:function(){return true}}
+  lab.test('returns true', async () => {
+  Code.expect(vml.getSignin(request,reply)).to.be.equal(true)
+})
 })

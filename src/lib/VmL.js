@@ -39,13 +39,13 @@ function postSignin(request, reply) {
       request.session.licences = getUser.licences
       request.session.id = getUser.body.sessionGUID
 
+
       request.cookieAuth.set({
         sid: getUser.sessionGuid
       })
       //TODO: consider post login redirect to other than main licences page
       console.log('getUser.body.reset_required')
       console.log(getUser.body.reset_required)
-
 
       if (getUser.body.reset_required && getUser.body.reset_required ==1){
         reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid+'&forced=1')
@@ -245,6 +245,7 @@ function postUpdatePassword(request, reply) {
       return reply.view('water/update_password', viewContext)
     })
   } else {
+    console.log(errors)
     viewContext.errors = errors
     return reply.view('water/update_password', viewContext)
   }
@@ -317,10 +318,13 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect)
     }).catch((err) => {
-      //TODO: generic error handler
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Error'
+      return reply.view('water/error', viewContext)
     })
   } else {
     var viewContext = View.contextDefaults(request)
+        console.log(errors)
     viewContext.pageTitle = title
     viewContext.errors = errors
     viewContext.payload = request.payload
@@ -353,7 +357,6 @@ function postResetPasswordLink(request, reply) {
         return reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
       }
     }).catch((err) => {
-      //TODO: generic error page
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'Debug page'
       viewContext.errors = {
@@ -365,6 +368,7 @@ function postResetPasswordLink(request, reply) {
   } else {
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'Debug page'
+        console.log(errors)
     viewContext.errors = errors
     viewContext.payload = request.payload
     return reply.view('water/reset_password_get_link', viewContext)
@@ -385,6 +389,7 @@ function postResetPasswordChangePassword(request, reply) {
       return reply.view('water/reset_password_change_password', viewContext)
     })
   } else {
+        console.log(errors)
     viewContext.errors = errors
     viewContext.resetGuid = request.payload.resetGuid
     return reply.view('water/reset_password_change_password', viewContext)

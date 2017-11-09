@@ -4,7 +4,7 @@ function makeURIRequest (uri, data, cb) {
   request({
     method: 'POST',
     headers: {'content-type':'application/json'},
-    url: process.env.apiURI + uri + '?token=' + process.env.JWT_TOKEN,
+    url: process.env.API_URL: + uri + '?token=' + process.env.JWT_TOKEN,
     json: data
   }, cb)
 }

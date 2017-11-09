@@ -11,13 +11,14 @@ function getLicence(licence_id){
       var licenceTypeId=process.env.licenceTypeId
 
 
-    var uri = process.env.apiURI + 'regime/' + licenceRegimeId + '/licencetype/' + licenceTypeId + '/licence/' + licence_id+'?token='+process.env.JWT_TOKEN
+    var uri = process.env.PERMIT_URI + 'regime/' + licenceRegimeId + '/licencetype/' + licenceTypeId + '/licence/' + licence_id+'?token='+process.env.JWT_TOKEN
     console.log(uri)
     Helpers.makeURIRequest(uri).then((response)=>{
       console.log('licence response')
       console.log(response)
       resolve(response)
     }).catch((response)=>{
+      console.log(response)
       console.log('rejecting in permit.getLicence')
       reject(response)
     })

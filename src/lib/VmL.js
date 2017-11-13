@@ -50,7 +50,8 @@ function postSignin(request, reply) {
       if (getUser.body.reset_required && getUser.body.reset_required ==1){
         reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid+'&forced=1')
       } else {
-        return reply('<script>location.href=\'/licences\'</script>')
+
+        return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>')
       }
 
     }).catch((getuser) => {

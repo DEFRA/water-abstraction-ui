@@ -45,7 +45,7 @@
           <input name="password" autocomplete="off" type="password" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="password">
 
         </div>
-        <input id="signInButton" class="button button-start" type="submit" value="Sign in" {{#if errors}}disabled="disabled" aria-disabled="true"{{/if}}/>
+        <input id="signInButton" class="button button-start" type="submit" value="Sign in" />
         <p></p>
       </form>
       <a href="/reset_password">Forgotten password?</a>
@@ -57,6 +57,8 @@
 
 {{#if errors}}
 <script>
+document.getElementById('signInButton').disabled = true;
+document.getElementById('signInButton').setAttribute('aria-disabled', 'true');
 window.setTimeout(function(){
   console.log('unlock')
   document.getElementById('signInButton').disabled = false;

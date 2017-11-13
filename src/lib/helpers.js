@@ -1,5 +1,8 @@
 //contains generic functions unrelated to a specific component
-var rp = require('request-promise-native');
+var rp = require('request-promise-native').defaults({
+    proxy:null,
+    strictSSL :false
+  })
 
 //make a simple http request (without a body), uses promises
 function makeURIRequest(uri) {

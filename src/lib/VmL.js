@@ -130,12 +130,12 @@ function renderLicencePage(view, pageTitle, request, reply) {
           viewContext.debug.response = response
           viewContext.error = response
           viewContext.error = 'You have requested a licence with an invalid ID'
-          return reply.view('water/licence_error', viewContext)
+          return reply.view('water/404', viewContext)
         })
       }).catch((response) => {
         viewContext.debug.response = response
         viewContext.error = response
-        return reply.view('water/licence_error', viewContext)
+        return reply.view('water/404', viewContext)
       })
   }
 }

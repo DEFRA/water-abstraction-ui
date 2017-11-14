@@ -1,45 +1,89 @@
 require('dotenv').config()
 
+const serverOptions = {
+  connections: {
+    router: {
+      stripTrailingSlash: true
+    }
+  }
+}
 const Hapi = require('hapi')
-const serverOptions = {connections: {router: {stripTrailingSlash: true}}}
 const server = new Hapi.Server(serverOptions)
+const Blipp = require('blipp');
+const Disinfect = require('disinfect');
+const SanitizePayload = require('hapi-sanitize-payload')
 
-server.connection({ port: process.env.PORT})
+
+server.connection({
+  port: process.env.PORT
+})
 
 server.state('sessionCookie', {
-    ttl: 24 * 60 * 60 * 1000,     // One day
-    isSecure: false, isHttpOnly: false, isSameSite: 'Lax',
-    encoding: 'base64json'
+  ttl: 24 * 60 * 60 * 1000, // One day
+  isSecure: false,
+  isHttpOnly: false,
+  isSameSite: 'Lax',
+  encoding: 'base64json'
 });
 
 
-server.register({
+
+
+server.register([
+  {
+  // Session plugin
   register: require('hapi-server-session'),
   options: {
     cookie: {
-      isSecure: false, isSameSite: false
+      isSecure: false,
+      isSameSite: false
     }
   }
-}, function (err) { if (err) { throw err } })
+},{
+  // Plugin to display the routes table to console at startup
+  // See https://www.npmjs.com/package/blipp
+  register: Blipp,
+  options: {
+    showAuth: true
+  }
+}, {
+  register: require('hapi-auth-cookie')
+}, {
+  // Plugin to prevent CSS attack by applying Google's Caja HTML Sanitizer on route query, payload, and params
+  // See https://www.npmjs.com/package/disinfect
+  register: Disinfect,
+  options: {
+    deleteEmpty: true,
+    deleteWhitespace: true,
+    disinfectQuery: true,
+    disinfectParams: true,
+    disinfectPayload: true
+  }
+}, {
+  // Plugin to recursively sanitize or prune values in a request.payload object
+  // See https://www.npmjs.com/package/hapi-sanitize-payload
+  register: SanitizePayload,
+  options: {
+    pruneMethod: 'delete'
+  }
+}, require('inert'), require('vision')
+], (err) => {
 
-server.register([{
-            register: require('hapi-auth-cookie')
-        },require('inert'), require('vision')], (err) => {
 
 
+  server.auth.strategy('standard', 'cookie', {
+    password: 'somecrazycookiesecretthatcantbeguesseswouldgohere', // cookie secret
+    isSecure: false, // required for non-https applications
+    isSameSite: 'Lax',
+    ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
+    redirectTo: '/signin',
+    isHttpOnly: false
+  });
 
-          server.auth.strategy('standard', 'cookie', {
-                      password: 'somecrazycookiesecretthatcantbeguesseswouldgohere', // cookie secret
-                      isSecure: false, // required for non-https applications
-                      isSameSite: 'Lax',
-                      ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-                      redirectTo: '/signin',
-                      isHttpOnly:false
-                  });
-
-                  server.auth.default({
-                      strategy: 'standard',mode:'try'
-                  });
+  server.auth.default({
+    strategy: 'standard',
+    mode: 'try'
+  });
 
   // load views
   server.views(require('./src/views'))
@@ -50,21 +94,36 @@ server.register([{
 
 })
 
-server.errorHandler = function (error) {
+server.errorHandler = function(error) {
   throw error
 }
 
 
 server.ext({
-    type: 'onPreHandler',
-    method: function (request, reply) {
-      //console.log(request.url.href+' requested')
+  type: 'onPreHandler',
+  method: function(request, reply) {
 
-        return reply.continue();
+    //TODO: Define offline mechanisms - assuming s3 for now...
+
+    var offline = false;
+
+
+    if (offline && request.path.indexOf('public') == -1) {
+      var viewContext = {}
+      viewContext.session = request.session
+      viewContext.pageTitle = 'Water Abstraction'
+      viewContext.insideHeader = ''
+      viewContext.headerClass = 'with-proposition'
+      viewContext.topOfPage = null
+      viewContext.head = null
+      viewContext.bodyStart = null
+      viewContext.afterHeader = null
+      viewContext.path = request.path
+      return reply.view('water/offline', viewContext)
     }
+    return reply.continue();
+  }
 });
-
-
 // Start the server
 server.start((err) => {
   if (err) {

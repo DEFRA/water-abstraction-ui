@@ -2,6 +2,7 @@ const Helpers = require('../lib/helpers')
 const View = require('../lib/view')
 const CRM = require('./connectors/crm')
 const IDM = require('./connectors/idm')
+const Water = require('./connectors/water')
 const Permit = require('./connectors/permit')
 
 function getRoot(request, reply) {
@@ -44,19 +45,16 @@ function postSignin(request, reply) {
         sid: getUser.sessionGuid
       })
       //TODO: consider post login redirect to other than main licences page
-      console.log('getUser.body.reset_required')
-      console.log(getUser.body.reset_required)
 
-      if (getUser.body.reset_required && getUser.body.reset_required ==1){
-        reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid+'&forced=1')
+      if (getUser.body.reset_required && getUser.body.reset_required == 1) {
+        reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid + '&forced=1')
       } else {
 
         return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>')
       }
 
     }).catch((getuser) => {
-      console.log(getuser)
-      if(getuser.statusCode && getuser.statusCode==401){
+      if (getuser.statusCode && getuser.statusCode == 401) {
         var viewContext = View.contextDefaults(request)
         viewContext.payload = request.payload
         viewContext.errors = {}
@@ -72,7 +70,6 @@ function postSignin(request, reply) {
 
     })
   } else {
-      console.log('error type 2')
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
     viewContext.payload = request.payload
@@ -141,7 +138,6 @@ function renderLicencePage(view, pageTitle, request, reply) {
 }
 
 function getLicence(request, reply) {
-  console.log('render licence page!!!')
   renderLicencePage(
     'water/licence', 'GOV.UK - Your water abstraction licences', request, reply
   )
@@ -246,7 +242,6 @@ function postUpdatePassword(request, reply) {
       return reply.view('water/update_password', viewContext)
     })
   } else {
-    console.log(errors)
     viewContext.errors = errors
     return reply.view('water/update_password', viewContext)
   }
@@ -288,13 +283,11 @@ function getResetPasswordChangePassword(request, reply) {
   viewContext.resetGuid = request.query.resetGuid
 
 
-  console.log('forced password reset!')
-  console.log(request.query.forced)
 
-  if(request.query.forced){
+  if (request.query.forced) {
 
     // show forced reset message
-    viewContext.forced=true
+    viewContext.forced = true
   }
 
 
@@ -325,7 +318,7 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     })
   } else {
     var viewContext = View.contextDefaults(request)
-        console.log(errors)
+    console.log(errors)
     viewContext.pageTitle = title
     viewContext.errors = errors
     viewContext.payload = request.payload
@@ -369,7 +362,6 @@ function postResetPasswordLink(request, reply) {
   } else {
     var viewContext = View.contextDefaults(request)
     viewContext.pageTitle = 'Debug page'
-        console.log(errors)
     viewContext.errors = errors
     viewContext.payload = request.payload
     return reply.view('water/reset_password_get_link', viewContext)
@@ -390,14 +382,14 @@ function postResetPasswordChangePassword(request, reply) {
       return reply.view('water/reset_password_change_password', viewContext)
     })
   } else {
-        console.log(errors)
+
     viewContext.errors = errors
     viewContext.resetGuid = request.payload.resetGuid
     return reply.view('water/reset_password_change_password', viewContext)
   }
 }
 
-function fourOhFour(request, reply){
+function fourOhFour(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Not Found'
   return reply.view('water/404', viewContext).code(404)
@@ -426,5 +418,5 @@ module.exports = {
   postResetPasswordLink: postResetPasswordLink,
   getResetPasswordChangePassword: getResetPasswordChangePassword,
   postResetPasswordChangePassword: postResetPasswordChangePassword,
-  fourOhFour:fourOhFour
+  fourOhFour: fourOhFour
 }

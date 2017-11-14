@@ -2,18 +2,12 @@ const Helpers = require('../helpers')
 
 function getLicences(user_name) {
   var uri = process.env.CRM_URI + '/entity/' + user_name + '?token=' + process.env.JWT_TOKEN
-  console.log(uri)
   return new Promise((resolve, reject) => {
     Helpers.makeURIRequest(uri)
       .then((response) => {
-        console.log('crm.getLicences entity response')
-        console.log(response.body)
         var data = JSON.parse(response.body)
-        console.log(data.data.documentAssociations)
         resolve(data.data.documentAssociations)
       }).catch((response) => {
-        console.log('rejecting in crm.getLicences')
-        console.log(response)
         reject(response)
       })
   });

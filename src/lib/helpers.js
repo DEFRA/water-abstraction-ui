@@ -7,7 +7,6 @@ var rp = require('request-promise-native').defaults({
 //make a simple http request (without a body), uses promises
 function makeURIRequest(uri) {
   return new Promise((resolve, reject) => {
-    console.log('make http get to ' + uri + ' with:')
     var options = {
       method: 'get',
       uri: uri

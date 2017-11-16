@@ -2,11 +2,31 @@
 const VmL=require('../lib/VmL')
 
 
+/**
+Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
+**/
 
 module.exports = [
+
+  {
+        method: 'GET',
+        path: '/',
+        handler: function (request, reply) {
+          console.log('serve the file!!!')
+          var fs = require('fs');
+          fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
+            if (err) {
+              throw err;
+            }
+            reply(data.toString());
+          });
+
+        }
+    },
+
   { method: 'GET', path: '/robots.txt', handler: function(request,reply){return reply('exterminate').code(200)}, config:{auth: false,description:'Ooh. Robots'}},
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
-  { method: 'GET', path: '/', config: { auth: false }, handler: VmL.getRoot },
+  { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: VmL.getSignout },
   { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },
   { method: 'POST', path: '/signin', config: { auth: false }, handler: VmL.postSignin },

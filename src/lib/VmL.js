@@ -6,9 +6,7 @@ const Water = require('./connectors/water')
 const Permit = require('./connectors/permit')
 
 function getRoot(request, reply) {
-  var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Water Abstractions Prototype'
-  reply.view('water/index', viewContext)
+  reply.file('./staticindex.html')
 }
 
 function getSignout(request, reply) {

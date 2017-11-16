@@ -21,7 +21,7 @@ module.exports = [
             reply(data.toString());
           });
 
-        }
+        }config: { auth: false },config: { auth: false }
     },
 
   { method: 'GET', path: '/robots.txt', handler: function(request,reply){return reply('exterminate').code(200)}, config:{auth: false,description:'Ooh. Robots'}},

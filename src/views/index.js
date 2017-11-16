@@ -140,7 +140,7 @@ const defaultContext = {
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
 
-  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Water resource licensing service</a></nav></div></div>',
+  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Manage your water abstraction or impoundment licence</a></nav></div></div>',
   afterHeader: '',
   footerTop: '',
   footerSupportLinks: '<ul><li><a href="/">Clear data</a></ul>',

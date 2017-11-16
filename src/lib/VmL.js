@@ -183,7 +183,7 @@ function validatePasswordRules(password) {
     result.passwordHasNoUpperCase = true;
   }
 
-  if (!/[£!@#\$%\^&\*\?]/.test(password)) {
+  if (!/[^a-zA-Z\d\s]/.test(password)) {
     result.hasValidationErrors = true;
     result.passwordHasNoSymbol = true;
   }
@@ -234,10 +234,11 @@ function postUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  console.log(errors)
   if (!errors) {
     IDM.updatePassword(viewContext.session.username, request.payload.password).then((res) => {
-      var data = JSON.parse(res.data)
-      return reply.redirect('licences')
+      console.log('password updated')
+      return reply.redirect('password_updated')
     }).catch(() => {
       return reply.view('water/update_password', viewContext)
     })
@@ -398,9 +399,14 @@ function fourOhFour(request, reply) {
 function getFeedback(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Not Found'
-  return reply.view('water/feedback', viewContext).code(404)
+  return reply.view('water/feedback', viewContext)
 }
 
+function getUpdatedPassword(request,reply){
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - Not Found'
+  return reply.view('water/updated_password', viewContext)
+}
 
 module.exports = {
   getRoot: getRoot,
@@ -425,5 +431,6 @@ module.exports = {
   getResetPasswordChangePassword: getResetPasswordChangePassword,
   postResetPasswordChangePassword: postResetPasswordChangePassword,
   fourOhFour: fourOhFour,
-  getFeedback:getFeedback
+  getFeedback:getFeedback,
+  getUpdatedPassword:getUpdatedPassword
 }

@@ -11,6 +11,7 @@ module.exports = [
   { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },
   { method: 'POST', path: '/signin', config: { auth: false }, handler: VmL.postSignin },
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
+  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   { method: 'POST', path: '/update_password', handler: VmL.postUpdatePassword },
   { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
   { method: 'POST', path: '/reset_password', config: { auth: false }, handler: VmL.postResetPassword },

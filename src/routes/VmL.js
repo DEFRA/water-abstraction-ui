@@ -5,6 +5,7 @@ const VmL=require('../lib/VmL')
 
 module.exports = [
   { method: 'GET', path: '/robots.txt', handler: function(request,reply){return reply('exterminate').code(200)}, config:{auth: false,description:'Ooh. Robots'}},
+  { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: VmL.getSignout },
   { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },

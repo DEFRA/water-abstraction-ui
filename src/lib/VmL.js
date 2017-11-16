@@ -395,6 +395,12 @@ function fourOhFour(request, reply) {
   return reply.view('water/404', viewContext).code(404)
 }
 
+function getFeedback(request, reply) {
+  var viewContext = View.contextDefaults(request)
+  viewContext.pageTitle = 'GOV.UK - Not Found'
+  return reply.view('water/feedback', viewContext).code(404)
+}
+
 
 module.exports = {
   getRoot: getRoot,
@@ -418,5 +424,6 @@ module.exports = {
   postResetPasswordLink: postResetPasswordLink,
   getResetPasswordChangePassword: getResetPasswordChangePassword,
   postResetPasswordChangePassword: postResetPasswordChangePassword,
-  fourOhFour: fourOhFour
+  fourOhFour: fourOhFour,
+  getFeedback:getFeedback
 }

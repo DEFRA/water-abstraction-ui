@@ -47,7 +47,7 @@
         <!-- Password -->
         <div class="form-group {{#if errors.password}}form-group-error{{/if}} {{#if errors.authentication }}form-group-error{{/if}}">
           <label class="form-label-bold" for="password">Password</label>
-          <span class="form-hint">You should have received this by post or email.</span>
+          <span class="form-hint">You should have received this by email.</span>
           {{#if errors.password}}<span class="error-message">Please enter the password we sent you.</span>{{/if}}
           <input name="password" autocomplete="off" type="password" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="password">
 

@@ -140,7 +140,7 @@ server.ext({
           } else {
 //            console.log(data.Body.toString());
             status = data.Body.toString()
-            console.log('remote server status read as ' + status)
+            console.log(`s3 file found at ${process.env.environment}-status with value of ${status}`)
             fs.writeFile("./server-status", status, function(err) {
               if (err) {
                 return console.log(err);

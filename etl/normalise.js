@@ -12,7 +12,7 @@ function createLicence(licenceRow) {
     postCode: licenceRow["Postcode"],
     maxAnnualQuantity: licenceRow["Max Annual Quantity"],
     maxDailyQuantity: licenceRow["Max Daily Quantity"],
-    sourceOfSupply: licenceRow["Source Type"],
+    sourceOfSupply: licenceRow["Point Name"],
     effectiveFrom: licenceRow["Orig. Effective Date"],
     effectiveTo: licenceRow["Expiry Date"] ? licenceRow["Expiry Date"] : "No expiry",
     purposes: []

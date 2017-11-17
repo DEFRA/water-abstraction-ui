@@ -33,7 +33,7 @@ var licenceTypeId = process.argv[4]
 
 var workbook = loadWorkbook(workbookName)
 var data = loadData(workbook)
-data = anonymise.anonymiseData(data)
+//data = anonymise.anonymiseData(data)
 //writeWorkbook(workbook, data)
 
 data = normalise.normalise(data)

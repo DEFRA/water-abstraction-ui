@@ -195,6 +195,9 @@ function validatePasswordRules(password) {
 }
 
 function validatePassword(password, confirmPassword) {
+  console.log('confirm password')
+  console.log(password)
+  console.log(confirmPassword)
   if (!password && !confirmPassword) {
     return {
       noPassword: true,
@@ -219,10 +222,19 @@ function validatePassword(password, confirmPassword) {
     return passwordValidationFailures;
   }
 
+
   if (password != confirmPassword) {
+    console.log('Passwords dont match!')
+    console.log(password)
+    console.log(confirmPassword)
     return {
       passwordsDontMatch: true
     }
+  } else {
+    console.log('Passwords  match!')
+    console.log(password)
+    console.log(confirmPassword)
+
   }
 
   return null;
@@ -242,6 +254,7 @@ function postUpdatePassword(request, reply) {
     })
   } else {
     viewContext.errors = errors
+    viewContext.debug.errors = errors
     return reply.view('water/update_password', viewContext)
   }
 }

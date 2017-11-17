@@ -29,8 +29,7 @@ server.state('sessionCookie', {
 
 
 
-server.register([
-  {
+server.register([{
   // Session plugin
   register: require('hapi-server-session'),
   options: {
@@ -39,7 +38,7 @@ server.register([
       isSameSite: false
     }
   }
-},{
+}, {
   // Plugin to display the routes table to console at startup
   // See https://www.npmjs.com/package/blipp
   register: Blipp,
@@ -66,8 +65,7 @@ server.register([
   options: {
     pruneMethod: 'delete'
   }
-}, require('inert'), require('vision')
-], (err) => {
+}, require('inert'), require('vision')], (err) => {
 
 
 
@@ -103,25 +101,103 @@ server.ext({
   type: 'onPreHandler',
   method: function(request, reply) {
 
-    //TODO: Define offline mechanisms - assuming s3 for now...
-
-    var offline = false;
 
 
-    if (offline && request.path.indexOf('public') == -1) {
-      var viewContext = {}
-      viewContext.session = request.session
-      viewContext.pageTitle = 'Water Abstraction'
-      viewContext.insideHeader = ''
-      viewContext.headerClass = 'with-proposition'
-      viewContext.topOfPage = null
-      viewContext.head = null
-      viewContext.bodyStart = null
-      viewContext.afterHeader = null
-      viewContext.path = request.path
-      return reply.view('water/offline', viewContext)
+
+
+
+    var moment = require('moment')
+    var status = null;
+    var fs = require('fs');
+    fs.stat("./server-status", function(err, stats) {
+      //get timestamp of server status file and calc difference from now in seconds...
+      var difference
+      try{
+      var mtime = stats.mtime;
+      difference = parseInt(moment().diff(mtime) / 1000);
+      console.log(`Service status last checked ${difference} seconds ago`)
+    } catch(e){
+      difference=9999
     }
-    return reply.continue();
+
+      if (difference > 60) {
+        //refresh the file every minute
+        var AWS = require('aws-sdk');
+        var config = new AWS.Config({
+          accessKeyId: process.env.s3_key,
+          secretAccessKey: process.env.s3_secret
+        });
+        var s3 = new AWS.S3(config);
+        var params = {
+          Bucket: process.env.s3_bucket,
+          Key: process.env.environment+'-status'
+        };
+        s3.getObject(params, function(err, data) {
+          if (err) {
+            console.log(`s3 file not found at ${process.env.environment}-status . assume online`)
+            processServerStatus(1)
+//            console.log(err, err.stack);
+          } else {
+//            console.log(data.Body.toString());
+            status = data.Body.toString()
+            console.log('remote server status read as ' + status)
+            fs.writeFile("./server-status", status, function(err) {
+              if (err) {
+                return console.log(err);
+              }
+              processServerStatus(status)
+            });
+          }
+        });
+
+      } else {
+        //read from local
+        fs.readFile('./server-status', function read(err, data) {
+          if (err) {
+            throw err;
+          }
+          status = data;
+          console.log('local server status read as ' + status)
+          processServerStatus(status)
+
+        });
+      }
+    });
+
+
+    function processServerStatus(status) {
+      console.log('processServerStatus=' + status)
+      if (status == 0) {
+        var offline = true;
+      } else {
+        var offline = false;
+      }
+      console.log('offline = ' + offline)
+
+
+
+
+
+      if (offline && request.path.indexOf('public') == -1) {
+        var viewContext = {}
+        viewContext.session = request.session
+        viewContext.pageTitle = 'Water Abstraction'
+        viewContext.insideHeader = ''
+        viewContext.headerClass = 'with-proposition'
+        viewContext.topOfPage = null
+        viewContext.head = null
+        viewContext.bodyStart = null
+        viewContext.afterHeader = null
+        viewContext.path = request.path
+        return reply.view('water/offline', viewContext)
+      }
+      return reply.continue();
+    }
+
+
+
+
+
   }
 });
 // Start the server

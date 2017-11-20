@@ -128,11 +128,11 @@ server.ext({
       if (err) {
         console.log('local file not found')
         processServerStatus(status)
+      } else {
+        status = data;
+        console.log('local server status read as ' + status)
+        processServerStatus(status)  
       }
-      status = data;
-      console.log('local server status read as ' + status)
-      processServerStatus(status)
-
     });
 
       if (difference > 60) {

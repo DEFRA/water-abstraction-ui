@@ -127,11 +127,18 @@ server.ext({
     fs.readFile('./server-status', function read(err, data) {
       if (err) {
         console.log('local file not found')
+        fs.writeFile("./server-status", '1', function(err) {
+          if (err) {
+            return console.log(err);
+          }
+
+        });
         processServerStatus(status)
+
       } else {
         status = data;
         console.log('local server status read as ' + status)
-        processServerStatus(status)  
+        processServerStatus(status)
       }
     });
 

@@ -123,9 +123,11 @@ server.ext({
     console.log('time difference since last check '+difference)
 
 
+
     fs.readFile('./server-status', function read(err, data) {
       if (err) {
-        throw err;
+        console.log('local file not found')
+        processServerStatus(status)
       }
       status = data;
       console.log('local server status read as ' + status)

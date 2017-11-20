@@ -120,6 +120,19 @@ server.ext({
       difference=9999
     }
 
+    console.log('time difference since last check '+difference)
+
+
+    fs.readFile('./server-status', function read(err, data) {
+      if (err) {
+        throw err;
+      }
+      status = data;
+      console.log('local server status read as ' + status)
+      processServerStatus(status)
+
+    });
+
       if (difference > 60) {
         //refresh the file every minute
         var AWS = require('aws-sdk');
@@ -127,6 +140,7 @@ server.ext({
           accessKeyId: process.env.s3_key,
           secretAccessKey: process.env.s3_secret
         });
+
         var s3 = new AWS.S3(config);
         var params = {
           Bucket: process.env.s3_bucket,
@@ -135,35 +149,20 @@ server.ext({
         s3.getObject(params, function(err, data) {
           if (err) {
             console.log(`s3 file not found at ${process.env.environment}-status . assume online`)
-            processServerStatus(1)
-//            console.log(err, err.stack);
+
           } else {
-//            console.log(data.Body.toString());
             status = data.Body.toString()
             console.log(`s3 file found at ${process.env.environment}-status with value of ${status}`)
             fs.writeFile("./server-status", status, function(err) {
               if (err) {
                 return console.log(err);
               }
-              processServerStatus(status)
+
             });
           }
         });
-
-      } else {
-        //read from local
-        fs.readFile('./server-status', function read(err, data) {
-          if (err) {
-            throw err;
-          }
-          status = data;
-          console.log('local server status read as ' + status)
-          processServerStatus(status)
-
-        });
       }
-    });
-
+})
 
     function processServerStatus(status) {
       console.log('processServerStatus=' + status)

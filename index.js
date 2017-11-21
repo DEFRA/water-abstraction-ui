@@ -9,7 +9,6 @@ const serverOptions = {
 }
 const Hapi = require('hapi')
 const server = new Hapi.Server(serverOptions)
-const Blipp = require('blipp');
 const Disinfect = require('disinfect');
 const SanitizePayload = require('hapi-sanitize-payload')
 
@@ -29,7 +28,17 @@ server.state('sessionCookie', {
 
 
 
-server.register([{
+server.register([
+  {
+      register: require('node-hapi-airbrake'),
+      options: {
+        key: process.env.errbit_key,
+        host: process.env.errbit_server
+      }
+  },
+
+
+  {
   // Session plugin
   register: require('hapi-server-session'),
   options: {
@@ -41,7 +50,7 @@ server.register([{
 }, {
   // Plugin to display the routes table to console at startup
   // See https://www.npmjs.com/package/blipp
-  register: Blipp,
+  register: require('blipp'),
   options: {
     showAuth: true
   }

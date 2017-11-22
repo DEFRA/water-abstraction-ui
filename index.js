@@ -111,7 +111,9 @@ server.ext({
   method: function(request, reply) {
 
 
-
+    if(request.payload){
+      console.log(request.payload)
+    }
 
 
 
@@ -124,18 +126,18 @@ server.ext({
       try{
       var mtime = stats.mtime;
       difference = parseInt(moment().diff(mtime) / 1000);
-      console.log(`Service status last checked ${difference} seconds ago`)
+//      console.log(`Service status last checked ${difference} seconds ago`)
     } catch(e){
       difference=9999
     }
 
-    console.log('time difference since last check '+difference)
+//    console.log('time difference since last check '+difference)
 
 
 
     fs.readFile('./server-status', function read(err, data) {
       if (err) {
-        console.log('local file not found')
+//        console.log('local file not found')
         fs.writeFile("./server-status", '1', function(err) {
           if (err) {
             return console.log(err);
@@ -146,7 +148,7 @@ server.ext({
 
       } else {
         status = data;
-        console.log('local server status read as ' + status)
+//        console.log('local server status read as ' + status)
         processServerStatus(status)
       }
     });
@@ -166,11 +168,11 @@ server.ext({
         };
         s3.getObject(params, function(err, data) {
           if (err) {
-            console.log(`s3 file not found at ${process.env.environment}-status . assume online`)
+//            console.log(`s3 file not found at ${process.env.environment}-status . assume online`)
 
           } else {
             status = data.Body.toString()
-            console.log(`s3 file found at ${process.env.environment}-status with value of ${status}`)
+//            console.log(`s3 file found at ${process.env.environment}-status with value of ${status}`)
             fs.writeFile("./server-status", status, function(err) {
               if (err) {
                 return console.log(err);
@@ -183,13 +185,13 @@ server.ext({
 })
 
     function processServerStatus(status) {
-      console.log('processServerStatus=' + status)
+//      console.log('processServerStatus=' + status)
       if (status == 0) {
         var offline = true;
       } else {
         var offline = false;
       }
-      console.log('offline = ' + offline)
+//      console.log('offline = ' + offline)
 
 
 

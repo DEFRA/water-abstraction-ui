@@ -241,6 +241,9 @@ function validatePassword(password, confirmPassword) {
 }
 
 function postUpdatePassword(request, reply) {
+  console.log('*****postUpdatePassword*****')
+  console.log('request.payload')
+  console.log(request.payload)
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);

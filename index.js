@@ -28,53 +28,54 @@ server.state('sessionCookie', {
 
 
 
-server.register([
-  {
-      register: require('node-hapi-airbrake'),
-      options: {
-        key: process.env.errbit_key,
-        host: process.env.errbit_server
-      }
+server.register([{
+    register: require('node-hapi-airbrake'),
+    options: {
+      key: process.env.errbit_key,
+      host: process.env.errbit_server
+    }
   },
 
 
   {
-  // Session plugin
-  register: require('hapi-server-session'),
-  options: {
-    cookie: {
-      isSecure: false,
-      isSameSite: false
+    // Session plugin
+    register: require('hapi-server-session'),
+    options: {
+      cookie: {
+        isSecure: false,
+        isSameSite: false
+      }
     }
-  }
-}, {
-  // Plugin to display the routes table to console at startup
-  // See https://www.npmjs.com/package/blipp
-  register: require('blipp'),
-  options: {
-    showAuth: true
-  }
-}, {
-  register: require('hapi-auth-cookie')
-}, {
-  // Plugin to prevent CSS attack by applying Google's Caja HTML Sanitizer on route query, payload, and params
-  // See https://www.npmjs.com/package/disinfect
-  register: Disinfect,
-  options: {
-    deleteEmpty: true,
-    deleteWhitespace: true,
-    disinfectQuery: true,
-    disinfectParams: true,
-    disinfectPayload: true
-  }
-}, {
-  // Plugin to recursively sanitize or prune values in a request.payload object
-  // See https://www.npmjs.com/package/hapi-sanitize-payload
-  register: SanitizePayload,
-  options: {
-    pruneMethod: 'delete'
-  }
-}, require('inert'), require('vision')], (err) => {
+  }, {
+    // Plugin to display the routes table to console at startup
+    // See https://www.npmjs.com/package/blipp
+    register: require('blipp'),
+    options: {
+      showAuth: true
+    }
+  }, {
+    register: require('hapi-auth-cookie')
+  }, {
+    // Plugin to prevent CSS attack by applying Google's Caja HTML Sanitizer on route query, payload, and params
+    // See https://www.npmjs.com/package/disinfect
+    register: Disinfect,
+    options: {
+      deleteEmpty: true,
+      deleteWhitespace: true,
+      disinfectQuery: true,
+      disinfectParams: true,
+      disinfectPayload: true
+    }
+  }, {
+    // Plugin to recursively sanitize or prune values in a request.payload object
+    // See https://www.npmjs.com/package/hapi-sanitize-payload
+    register: SanitizePayload,
+    options: {
+      pruneMethod: 'delete'
+    }
+  },
+  require('inert'), require('vision')
+], (err) => {
 
 
 
@@ -110,114 +111,129 @@ server.ext({
   type: 'onPreHandler',
   method: function(request, reply) {
 
+    if (request.path.indexOf('public') != -1) {
+      //files in public dir are always online...
+      return reply.continue();
+    } else {
 
-    if(request.payload){
-      console.log(request.payload)
-    }
-
-
-
-    var moment = require('moment')
-    var status = null;
-    var fs = require('fs');
-    fs.stat("./server-status", function(err, stats) {
-      //get timestamp of server status file and calc difference from now in seconds...
-      var difference
-      try{
-      var mtime = stats.mtime;
-      difference = parseInt(moment().diff(mtime) / 1000);
-//      console.log(`Service status last checked ${difference} seconds ago`)
-    } catch(e){
-      difference=9999
-    }
-
-//    console.log('time difference since last check '+difference)
-
-
-
-    fs.readFile('./server-status', function read(err, data) {
-      if (err) {
-//        console.log('local file not found')
-        fs.writeFile("./server-status", '1', function(err) {
-          if (err) {
-            return console.log(err);
-          }
-
-        });
-        processServerStatus(status)
-
-      } else {
-        status = data;
-//        console.log('local server status read as ' + status)
-        processServerStatus(status)
-      }
-    });
-
-      if (difference > 60) {
-        //refresh the file every minute
+      function updateS3StatusFile() {
+        //private function to refresh status control file from s3
+        //contents of file: 0=offline, 1=online
+        //it's a fire and forget function, we don't wait for a response
         var AWS = require('aws-sdk');
         var config = new AWS.Config({
           accessKeyId: process.env.s3_key,
           secretAccessKey: process.env.s3_secret
         });
-
         var s3 = new AWS.S3(config);
         var params = {
           Bucket: process.env.s3_bucket,
-          Key: process.env.environment+'-status'
+          Key: process.env.environment + '-status'
         };
         s3.getObject(params, function(err, data) {
           if (err) {
-//            console.log(`s3 file not found at ${process.env.environment}-status . assume online`)
-
+            //we don't actually care if there's an error as we always assume online if we don't know...
+            //console.log(`s3 file not found at ${process.env.environment}-status`)
+            
+            return
           } else {
+            //read file contents from s3, and write to local file
             status = data.Body.toString()
-//            console.log(`s3 file found at ${process.env.environment}-status with value of ${status}`)
             fs.writeFile("./server-status", status, function(err) {
               if (err) {
-                return console.log(err);
+                console.log(err);
+              } else {
+                //s3 file updated
               }
 
             });
           }
         });
       }
-})
 
-    function processServerStatus(status) {
-//      console.log('processServerStatus=' + status)
-      if (status == 0) {
-        var offline = true;
-      } else {
-        var offline = false;
+
+      var moment = require('moment')
+      var status = null;
+      var fs = require('fs');
+      var difference
+
+      //check for local file with service status from s3
+      fs.stat("./server-status", function(err, stats) {
+        //get timestamp of server status file and calc difference from now in seconds...
+        console.log('try stat')
+        try {
+          var mtime = stats.mtime;
+          difference = parseInt(moment().diff(mtime) / 1000);
+          //Service status last checked ${difference} seconds ago
+        } catch (e) {
+          //local status file not found
+          console.log(e)
+          difference = null
+        }
+
+        if (!difference) {
+          //local file not found. get from S3 and assume we're online
+          processServerStatus(1)
+          updateS3StatusFile()
+        } else if (difference > 60) {
+          //local file found AND older than 60 seconds so refresh it...
+          updateS3StatusFile()
+        }
+
+        fs.readFile('./server-status', function read(err, data) {
+          if (err) {
+            //local file not found, so write it in with status of 1
+            fs.writeFile("./server-status", '1', function(err) {
+              if (err) {
+                return console.log(err);
+              }
+            });
+            processServerStatus(1)
+          } else {
+            //Local file contents: ' + data
+            status = data;
+            processServerStatus(status)
+          }
+        });
+
+      })
+
+      function processServerStatus(status) {
+        console.log('processServerStatus=' + status)
+        if (status == 0) {
+          var offline = true;
+        } else {
+          var offline = false;
+        }
+        console.log('offline = ' + offline)
+
+
+
+
+
+        if (offline && request.path.indexOf('public') == -1) {
+          var viewContext = {}
+          viewContext.session = request.session
+          viewContext.pageTitle = 'Water Abstraction'
+          viewContext.insideHeader = ''
+          viewContext.headerClass = 'with-proposition'
+          viewContext.topOfPage = null
+          viewContext.head = null
+          viewContext.bodyStart = null
+          viewContext.afterHeader = null
+          viewContext.path = request.path
+          return reply.view('water/offline', viewContext)
+        }
+        return reply.continue();
       }
-//      console.log('offline = ' + offline)
 
 
 
 
 
-      if (offline && request.path.indexOf('public') == -1) {
-        var viewContext = {}
-        viewContext.session = request.session
-        viewContext.pageTitle = 'Water Abstraction'
-        viewContext.insideHeader = ''
-        viewContext.headerClass = 'with-proposition'
-        viewContext.topOfPage = null
-        viewContext.head = null
-        viewContext.bodyStart = null
-        viewContext.afterHeader = null
-        viewContext.path = request.path
-        return reply.view('water/offline', viewContext)
-      }
-      return reply.continue();
     }
-
-
-
-
-
   }
+
 });
 // Start the server
 server.start((err) => {

@@ -1,10 +1,21 @@
 require('dotenv').config()
 fs=require('fs')
 var AWS = require('aws-sdk');
+var proxy = require('proxy-agent');
+
+
+
 var config = new AWS.Config({
   accessKeyId: process.env.S3_KEY,
   secretAccessKey: process.env.S3_SECRET
 });
+
+AWS.config.update({
+  httpOptions: {
+    agent: proxy('http://devpxlb01.aws-int.defra.cloud:3128') 
+  }
+});
+
 console.log(config)
 var s3 = new AWS.S3(config);
 var params = {

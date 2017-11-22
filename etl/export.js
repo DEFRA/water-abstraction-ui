@@ -1,4 +1,7 @@
-var request = require('request')
+var request = require('request').defaults({
+    proxy:null,
+    strictSSL :false
+  })
 
 function makeURIRequest (uri, data, cb) {
   var reqURL=process.env.API_URL + uri + '?token=' + process.env.JWT_TOKEN
@@ -32,11 +35,11 @@ function exportLicence(licence, orgId, licenceTypeId) {
       console.log(error);
     }
 
+    console.log(body)
 
 
 
 
-    var request = require("request");
     var data={}
     data.regime_entity_id='0434dc31-a34e-7158-5775-4694af7a60cf'
     //

@@ -1,13 +1,17 @@
 var request = require('request')
 
 function makeURIRequest (uri, data, cb) {
+  var reqURL=process.env.API_URL + uri + '?token=' + process.env.JWT_TOKEN
+  console.log(`using ${reqURL}`)
+
   request({
     method: 'POST',
     headers: {'content-type':'application/json'},
-    url: process.env.API_URL + uri + '?token=' + process.env.JWT_TOKEN,
+    url: reqURL,
     json: data
   }, cb)
 }
+
 
 function exportLicence(licence, orgId, licenceTypeId) {
   var requestBody = {
@@ -24,11 +28,11 @@ function exportLicence(licence, orgId, licenceTypeId) {
 
   makeURIRequest ('regime/' + orgId + '/licencetype/' + licenceTypeId + '/licence', requestBody, function (error,body) {
     if (error) {
+      console.log('error');
       console.log(error);
     }
-    console.log(body)
-    console.log(body.body.data.licence_id)
-    //use licence id to create CRM record
+
+
 
 
 
@@ -40,7 +44,7 @@ function exportLicence(licence, orgId, licenceTypeId) {
     owners.push('8f51dfd9-29a3-593f-c297-437e4181b08d')
     owners.push('andrew')
     owners.push('russell')
-    data.owner_entity_id = owners[Math.floor(Math.random()*owners.length)];
+    data.owner_entity_id = '';
 
       data.system_id= 'permit-repo'
       data.system_internal_id= body.body.data.licence_id
@@ -48,7 +52,7 @@ function exportLicence(licence, orgId, licenceTypeId) {
       data.metadata='{"Name":"'+licence.name+'"}'
       console.log('-----')
       console.log(data)
-
+      console.log(process.env.CRM_URI+'/documentHeader?token='+process.env.JWT_TOKEN)
       request.post({
                   url: process.env.CRM_URI+'/documentHeader?token='+process.env.JWT_TOKEN,
                   form: data

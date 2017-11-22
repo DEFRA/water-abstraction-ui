@@ -134,7 +134,7 @@ server.ext({
           if (err) {
             //we don't actually care if there's an error as we always assume online if we don't know...
             //console.log(`s3 file not found at ${process.env.environment}-status`)
-            
+
             return
           } else {
             //read file contents from s3, and write to local file
@@ -180,6 +180,7 @@ server.ext({
           updateS3StatusFile()
         }
 
+try{
         fs.readFile('./server-status', function read(err, data) {
           if (err) {
             //local file not found, so write it in with status of 1
@@ -195,7 +196,9 @@ server.ext({
             processServerStatus(status)
           }
         });
-
+}catch(e){
+              processServerStatus(1)
+}
       })
 
       function processServerStatus(status) {

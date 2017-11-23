@@ -11,7 +11,7 @@ var config = new AWS.Config({
 });
 
 if(process.env.proxy){
-  console.log('proxy: process.env.proxy')
+  console.log('proxy: '+process.env.proxy)
   AWS.config.update({
     httpOptions: {
       agent: proxy(process.env.proxy)

@@ -114,22 +114,28 @@ server.errorHandler = function(error) {
 }
 
 
+
+
 server.ext({
   type: 'onPreHandler',
   method: function(request, reply) {
 
-    console.log('check for cookie!')
-    var cookie = request.state.sessionCookie
-    console.log(cookie)
-    if(cookie){
-      request.session=cookie
-    }
 
 
     if (request.path.indexOf('public') != -1) {
       //files in public dir are always online...
       return reply.continue();
     } else {
+
+      console.log('check for cookie!')
+      var cookie = request.state.sessionCookie
+      if(cookie){
+        request.session=cookie
+        console.log("cookie found")
+      } else {
+        console.log("COOKIE NOT FOUND")
+      }
+
 
       function updateS3StatusFile() {
         //private function to refresh status control file from s3

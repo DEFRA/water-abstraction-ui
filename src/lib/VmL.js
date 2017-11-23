@@ -115,6 +115,12 @@ function renderLicencePage(view, pageTitle, request, reply) {
   if (!viewContext.session.id) {
     getSignin(request, reply)
   } else {
+
+    CRM.getLicences(request.session.username).then((data) => {
+      request.session.licences = data
+
+
+
     CRM.getLicenceInternalID(request.session.licences, request.params.licence_id)
       .then((thisLicence) => {
         Permit.getLicence(thisLicence.system_internal_id).then((licence) => {
@@ -138,6 +144,9 @@ function renderLicencePage(view, pageTitle, request, reply) {
         viewContext.error = response
         return reply.view('water/404', viewContext)
       })
+
+    })
+
   }
 }
 

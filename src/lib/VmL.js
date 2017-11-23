@@ -48,7 +48,9 @@ function postSignin(request, reply) {
         reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid + '&forced=1')
       } else {
 
-        return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>')
+//        return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>')
+
+        return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>').state('sessionCookie', session)
       }
 
     }).catch((getuser) => {

@@ -12,7 +12,6 @@ module.exports = [
         method: 'GET',
         path: '/',
         handler: function (request, reply) {
-          console.log('serve the file!!!')
           var fs = require('fs');
           fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
             if (err) {

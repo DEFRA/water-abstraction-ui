@@ -122,12 +122,16 @@ function renderLicencePage(view, pageTitle, request, reply) {
           viewContext.debug.licenceData = viewContext.licenceData
           return reply.view(view, viewContext)
         }).catch((response) => {
+          console.log('404 - 1')
+          console.log(response)
           viewContext.debug.response = response
           viewContext.error = response
           viewContext.error = 'You have requested a licence with an invalid ID'
           return reply.view('water/404', viewContext)
         })
       }).catch((response) => {
+        console.log('404 - 2')
+        console.log(response)
         viewContext.debug.response = response
         viewContext.error = response
         return reply.view('water/404', viewContext)

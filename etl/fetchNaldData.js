@@ -11,16 +11,19 @@ var config = new AWS.Config({
 });
 
 if(process.env.proxy){
+  console.log('proxy: process.env.proxy')
   AWS.config.update({
     httpOptions: {
-      agent: proxy('http://devpxlb01.aws-int.defra.cloud:3128')
+      agent: proxy(process.env.proxy)
     }
-  });  
+  });
+} else {
+console.log('no proxy')
 }
 
 
 
-console.log(config)
+
 var s3 = new AWS.S3(config);
 var params = {
   Bucket: process.env.S3_PATH,

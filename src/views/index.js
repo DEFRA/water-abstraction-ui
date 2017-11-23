@@ -64,13 +64,19 @@ handlebars.registerHelper('guid', function () {
 })
 
 handlebars.registerHelper('formatDate', function (dateInput) {
-  var date = moment(dateInput, "DD/MM/YYYY")
+  console.log('formatDate')
+
+  console.log(dateInput)
+  var date = moment(dateInput, "MM/DD/YYYY")
+
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
 handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
-  var periodStart = moment(inputStart, "DD/MM")
-  var periodEnd = moment(inputEnd, "DD/MM")
+  var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
+  var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
+  var periodStart = moment(tmp_inputStart, "DD/MMM/YYYY")
+  var periodEnd = moment(tmp_inputEnd, "DD/MMM/YYYY")
   return 'From ' + periodStart.format("D MMMM") + ' until ' + periodEnd.format("D MMMM")
 })
 

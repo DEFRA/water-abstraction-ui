@@ -68,6 +68,12 @@ handlebars.registerHelper('formatDate', function (dateInput) {
 
   console.log(dateInput)
   var date = moment(dateInput, "MM/DD/YYYY")
+  console.log(date)
+  var isFutureDate = moment().isBefore(date);
+  if(isFutureDate){
+    date.subtract('year', 100)
+  }
+  console.log('Future date:' +isFutureDate)
 
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })

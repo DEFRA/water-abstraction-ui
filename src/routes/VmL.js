@@ -12,13 +12,19 @@ module.exports = [
         method: 'GET',
         path: '/',
         handler: function (request, reply) {
-          var fs = require('fs');
-          fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
-            if (err) {
-              throw err;
-            }
-            reply(data.toString());
-          });
+          console.log(request.query)
+          if(request.query.access && request.query.access=='PB01'){
+            var fs = require('fs');
+            fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
+              if (err) {
+                throw err;
+              }
+              reply(data.toString());
+            });
+          } else {
+              reply('unauthorised').code(401)
+          }
+
 
         },config: { auth: false },config: { auth: false }
     },

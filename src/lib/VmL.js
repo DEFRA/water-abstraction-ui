@@ -427,7 +427,7 @@ function fourOhFour(request, reply) {
 
 function getFeedback(request, reply) {
   var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Not Found'
+  viewContext.pageTitle = 'GOV.UK - Tell us what you think about this service'
   return reply.view('water/feedback', viewContext)
 }
 

@@ -433,7 +433,7 @@ function getFeedback(request, reply) {
 
 function getUpdatedPassword(request,reply){
   var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Not Found'
+  viewContext.pageTitle = 'GOV.UK - Password Updated'
   return reply.view('water/updated_password', viewContext)
 }
 

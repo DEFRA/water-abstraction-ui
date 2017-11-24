@@ -11,7 +11,7 @@ function getRoot(request, reply) {
 
 function getSignout(request, reply) {
   request.cookieAuth.clear()
-  return reply.redirect('/')
+  return reply.redirect('/?access=PB01')
 }
 
 function getSignin(request, reply) {

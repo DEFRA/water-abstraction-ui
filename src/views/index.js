@@ -83,7 +83,9 @@ handlebars.registerHelper('formatToDate', function (dateInput) {
 
   console.log(dateInput)
   var date = moment(dateInput, "MM/DD/YYYY")
-
+  if (!date.isValid()){
+    var date = moment(dateInput, "DD/MM/YYYY")
+  }
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 

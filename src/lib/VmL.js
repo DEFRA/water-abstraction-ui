@@ -115,32 +115,57 @@ function getLicences(request, reply) {
  * Gets a list of licences with options to filter by email address,
  * Search by licence number, and sort by number/user defined name
  * @param {Object} request - the HAPI HTTP request
- * @TODO document request params 
+ * @param {String} request.emailAddress - the email address to filter on
+ * @param {String} request.licenceNumber - the licence number to search on
  * @param {Object} reply - the HAPI HTTP response
  */
 function getLicences(request, reply) {
-  if (!request.session.id) {
-    return reply.redirect('/signin')
-  } else {
-    var viewContext = View.contextDefaults(request)
-    CRM.getLicences(request.session.username).then((data) => {
-      request.session.licences = data
+
+  // Get entity record from CRM for current user
+  CRM.getEntity(request.session.username)
+    .then((response) => {
+
+      // Get the entity ID for the current user from CRM response
+      const { entity_id } = response.data.entity[0];
+
+      // Get filtered list of licences
+      const filter = {
+        entity_id,
+        string : request.query.licenceNumber,
+        email : request.query.emailAddress
+      };
+
+      return CRM.getLicences(filter);
+    })
+    .then((response) => {
+
+      const { data } = response;
+
+      // Render HTML page
+      const viewContext = View.contextDefaults(request);
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+
       return reply.view('water/licences', viewContext)
-    }).catch((data) => {
+    })
+    .catch((err) => {
 
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Error'
       return reply.view('water/error', viewContext)
+    });
 
-    })
-  }
 }
 
 
-
+/**
+ * Renders a licence page with one of several different views 
+ * @param {String} view - the template to load
+ * @param {String} pageTitle - custom page title for this view
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ */
 function renderLicencePage(view, pageTitle, request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = pageTitle
@@ -148,37 +173,42 @@ function renderLicencePage(view, pageTitle, request, reply) {
     getSignin(request, reply)
   } else {
 
-    CRM.getLicences(request.session.username).then((data) => {
-      request.session.licences = data
+    // Get entity record from CRM for current user
+    CRM.getEntity(request.session.username)
+      .then((response) => {
 
+        // Get the entity ID for the current user from CRM response
+        const { entity_id } = response.data.entity[0];
 
+        // Get filtered list of licences
+        const filter = {
+          entity_id,
+          document_id : request.params.licence_id
+        };
 
-    CRM.getLicenceInternalID(request.session.licences, request.params.licence_id)
-      .then((thisLicence) => {
-        Permit.getLicence(thisLicence.system_internal_id).then((licence) => {
-          data = JSON.parse(licence.body)
-          viewContext.licence_id = request.params.licence_id
-          viewContext.licenceData = data.data
-          viewContext.debug.licenceData = viewContext.licenceData
-          return reply.view(view, viewContext)
-        }).catch((response) => {
-          console.log('404 - 1')
-          console.log(response)
-          viewContext.debug.response = response
-          viewContext.error = response
-          viewContext.error = 'You have requested a licence with an invalid ID'
-          return reply.view('water/404', viewContext)
-        })
-      }).catch((response) => {
-        console.log('404 - 2')
-        console.log(response)
-        viewContext.debug.response = response
-        viewContext.error = response
+        return CRM.getLicences(filter);
+      })
+      .then((response) => {
+        if(response.data.length != 1) {
+          throw new Error('You have requested a licence with an invalid ID');
+        }
+        // Get permit
+        return Permit.getLicence(response.data[0].system_internal_id);
+
+      })
+      .then((response) => {
+        const data = JSON.parse(response.body)
+        viewContext.licence_id = request.params.licence_id
+        viewContext.licenceData = data.data
+        viewContext.debug.licenceData = viewContext.licenceData
+        return reply.view(view, viewContext)
+      })
+      .catch((err) => {
+        console.log(err)
+        viewContext.debug.response = err
+        viewContext.error = err
         return reply.view('water/404', viewContext)
       })
-
-    })
-
   }
 }
 

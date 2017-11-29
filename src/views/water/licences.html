@@ -25,21 +25,25 @@
 -->
   {{>element-heading-large content='All water abstraction licences'}}
 
+  <form method="GET" action="/licences" name="licenceSearch">
+
   <!-- Licence search form -->
   <div class="grid-row">
+
+
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
         <label class="form-label form-label--bold" for="emailAddress">User email address</label>
         <span class="form-hint">View licence list by user account.</span>
-        <input type="text" class="form-control form-control--block" name="emailAddress" id="emailAddress" />
+        <input type="text" class="form-control form-control--block" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
-        <label class="form-label form-label--bold" for="licenseNumber">Search licences</label>
+        <label class="form-label form-label--bold" for="licenceNumber">Search licences</label>
         <span class="form-hint">Search by licence name or number.</span>
-        <input type="text" class="form-control form-control--block" name="licenseNumber" id="licenseNumber" />
+        <input type="text" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
     </div>
 
@@ -71,6 +75,8 @@
 
   </div>
 
+</form>
+
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
 
   <p></p>
@@ -79,8 +85,6 @@
 
 {{> footerjs}}
 
-<script src="/public/javascripts/underscore.js"></script>
-<script src="/public/javascripts/licence_search.js"></script>
 
 {{> debug}}
 

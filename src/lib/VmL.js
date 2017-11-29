@@ -86,6 +86,38 @@ function postSignin(request, reply) {
   }
 }
 
+
+/*
+function getLicences(request, reply) {
+  if (!request.session.id) {
+    return reply.redirect('/signin')
+  } else {
+    var viewContext = View.contextDefaults(request)
+    CRM.getLicences(request.session.username).then((data) => {
+      request.session.licences = data
+      viewContext.licenceData = data
+      viewContext.debug.licenceData = data
+      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+      return reply.view('water/licences', viewContext)
+    }).catch((data) => {
+
+      var viewContext = View.contextDefaults(request)
+      viewContext.pageTitle = 'GOV.UK - Error'
+      return reply.view('water/error', viewContext)
+
+    })
+  }
+}
+*/
+
+
+/**
+ * Gets a list of licences with options to filter by email address,
+ * Search by licence number, and sort by number/user defined name
+ * @param {Object} request - the HAPI HTTP request
+ * @TODO document request params 
+ * @param {Object} reply - the HAPI HTTP response
+ */
 function getLicences(request, reply) {
   if (!request.session.id) {
     return reply.redirect('/signin')

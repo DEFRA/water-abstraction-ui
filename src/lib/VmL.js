@@ -143,7 +143,6 @@ function getLicences(request, reply) {
       const direction = request.query.direction === -1 ? -1 : 1;
       const sort = {};
       sort[sortFields[sortField]] = direction;
-      console.log(filter.sort);
 
       // Set sort info on viewContext
       viewContext.direction = direction;
@@ -154,6 +153,8 @@ function getLicences(request, reply) {
     .then((response) => {
 
       const { data } = response;
+
+      // console.log(response);
 
       // Render HTML page
       viewContext.licenceData = data

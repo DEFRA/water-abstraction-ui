@@ -128,7 +128,7 @@ function getLicences(request, reply) {
     .then((response) => {
 
       // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity;
+      const { entity_id, entity_type } = response.data.entity;
 
       // Get filtered list of licences
       const filter = {
@@ -148,18 +148,23 @@ function getLicences(request, reply) {
       viewContext.direction = direction;
       viewContext.sort = sortField;
 
+      // @TODO check valid role names
+      viewContext.showEmailFilter = ['agent', 'admin'].includes(entity_type);
+
       return CRM.getLicences(filter, sort);
     })
     .then((response) => {
 
       const { data } = response;
 
-      // console.log(response);
-
       // Render HTML page
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+
+      // @TODO confirm number of records to display search form
+      viewContext.enableSearch = data.length > 5;
+
       return reply.view('water/licences', viewContext)
     })
     .catch((err) => {

@@ -25,12 +25,13 @@
 -->
   {{>element-heading-large content='All water abstraction licences'}}
 
+
+  {{#if enableSearch}}
   <form method="GET" action="/licences" name="licenceSearch">
 
   <!-- Licence search form -->
   <div class="grid-row">
-
-
+    {{#if showEmailFilter }}
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
         <label class="form-label form-label--bold" for="emailAddress">User email address</label>
@@ -38,6 +39,7 @@
         <input type="text" class="form-control form-control--block" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
+    {{/if}}
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
@@ -54,6 +56,7 @@
   <!-- End licence search form -->
 
   </form>
+  {{/if}}
 
 
   <!-- Results page goes here -->
@@ -66,7 +69,7 @@
         </a>
       </div>
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">User defined name
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">Licence name
           {{{ sortIcon  direction=direction sort=sort field="name" }}}
         </a>
       </div>

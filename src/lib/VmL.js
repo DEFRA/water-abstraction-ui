@@ -193,7 +193,7 @@ function renderLicencePage(view, pageTitle, request, reply) {
       .then((response) => {
 
         // Get the entity ID for the current user from CRM response
-        const { entity_id } = response.data.entity[0];
+        const { entity_id } = response.data.entity;
 
         // Get filtered list of licences
         const filter = {
@@ -204,6 +204,7 @@ function renderLicencePage(view, pageTitle, request, reply) {
         return CRM.getLicences(filter);
       })
       .then((response) => {
+
         if(response.data.length != 1) {
           throw new Error('You have requested a licence with an invalid ID');
         }
@@ -219,7 +220,6 @@ function renderLicencePage(view, pageTitle, request, reply) {
         return reply.view(view, viewContext)
       })
       .catch((err) => {
-        console.log(err)
         viewContext.debug.response = err
         viewContext.error = err
         return reply.view('water/404', viewContext)

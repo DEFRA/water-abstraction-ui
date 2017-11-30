@@ -1,6 +1,6 @@
 const handlebars = require('handlebars')
 const moment = require('moment')
-
+const qs = require('querystring');
 
 console.log('working dir for views')
 console.log(__dirname)
@@ -9,6 +9,41 @@ const Helpers = require('../lib/helpers')
 const DynamicView = require('../lib/dynamicview')
 
 handlebars.registerHelper('equal', require('handlebars-helper-equal'))
+
+
+
+
+/**
+ * A handlebars helper to get a query string for sorting data
+ */
+handlebars.registerHelper('sortQuery', function(context, options) {
+  const {direction, sort, field,  ...params} = arguments[0].hash
+  const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
+  const query = Object.assign(params, {sort : field, direction : newDirection});
+  return qs.stringify(query);
+});
+
+/**
+ * A handlebars helper to get a sort direction triangle
+ */
+handlebars.registerHelper('sortIcon',  function(context, options) {
+  const {direction, sort, field} = arguments[0].hash
+  const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
+
+  if(sort == field) {
+    return '<span class="sort-icon">' + (newDirection === 1 ? '&#x25be;' : '&#x25b4;') + '</span>';
+  }
+
+});
+
+
+
+// handlebars.registerHelper('sortLink', function () {
+//   var arg = Array.prototype.slice.call(arguments, 0)
+//   arg.pop()
+//   return arg.join('')
+// })
+
 
 handlebars.registerHelper('concat', function () {
   var arg = Array.prototype.slice.call(arguments, 0)

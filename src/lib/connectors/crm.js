@@ -1,5 +1,5 @@
 /**
- * Provides convenience methods for HTTP API requests from the tactical CRM 
+ * Provides convenience methods for HTTP API requests from the tactical CRM
  * @module lib/connectors/crm
  */
 const rp = require('request-promise-native').defaults({
@@ -24,20 +24,23 @@ function getEntity(user_name) {
 
 /**
  * Get a list of licences based on the supplied options
- * @param {Object} filter
+ * @param {Object} filter - criteria to filter licence lisrt
  * @param {String} [filter.entity_id] - the current user's entity ID
  * @param {String} [filter.email] - the email address to search on
  * @param {String} [filter.string] - the search query, can be licence number, user-defined name etc.
+ * @param {Object} [sort] - fields to sort on
+ * @param {Number} [sort.licenceNumber] - sort on licence number, +1 : asc, -1 : desc
+ * @param {Number} [sort.name] - sort on licence name, +1 : asc, -1 : desc
  * @return {Promise} resolves with array of licence records
  * @example getLicences({entity_id : 'guid'})
  */
-function getLicences(filter) {
+function getLicences(filter, sort = {}) {
   const uri = process.env.CRM_URI + '/documentHeader/filter?token=' + process.env.JWT_TOKEN;
   return rp({
     uri,
     method : 'POST',
     json : true,
-    body : { filter }
+    body : { filter, sort }
   });
 }
 

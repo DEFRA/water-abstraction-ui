@@ -45,6 +45,7 @@
     "hapi-sanitize-payload": "^1.5.0",
     "hapi-server-session": "^3.0.2",
     "inert": "^4.2.1",
+    "joi": "^13.0.2",
     "moment": "^2.18.1",
     "node-hapi-airbrake": "0.0.6",
     "path": "^0.12.7",

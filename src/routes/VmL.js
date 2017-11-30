@@ -1,6 +1,6 @@
 
 const VmL=require('../lib/VmL')
-
+const Joi = require('joi');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -46,7 +46,16 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
     { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
-  { method: 'GET', path: '/licences',  handler: VmL.getLicences },
+  { method: 'GET', path: '/licences',  handler: VmL.getLicences, config: {
+    validate: {
+         query: {
+             sort: Joi.string().valid('licenceNumber', 'name'),
+             direction : Joi.number().valid(1, -1),
+             emailAddress : Joi.string(),
+             licenceNumber : Joi.string()
+         }
+     }
+  }},
   { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: VmL.getLicenceMap },

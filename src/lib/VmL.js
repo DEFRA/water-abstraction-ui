@@ -121,12 +121,14 @@ function getLicences(request, reply) {
  */
 function getLicences(request, reply) {
 
+  const viewContext = View.contextDefaults(request);
+
   // Get entity record from CRM for current user
   CRM.getEntity(request.session.username)
     .then((response) => {
 
       // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity[0];
+      const { entity_id } = response.data.entity;
 
       // Get filtered list of licences
       const filter = {
@@ -135,21 +137,33 @@ function getLicences(request, reply) {
         email : request.query.emailAddress
       };
 
-      return CRM.getLicences(filter);
+      // Sorting
+      const sortFields= {licenceNumber : 'document_id', name : 'name'};
+      const sortField = request.query.sort || 'licenceNumber';
+      const direction = request.query.direction === -1 ? -1 : 1;
+      const sort = {};
+      sort[sortFields[sortField]] = direction;
+      console.log(filter.sort);
+
+      // Set sort info on viewContext
+      viewContext.direction = direction;
+      viewContext.sort = sortField;
+
+      return CRM.getLicences(filter, sort);
     })
     .then((response) => {
 
       const { data } = response;
 
       // Render HTML page
-      const viewContext = View.contextDefaults(request);
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-
       return reply.view('water/licences', viewContext)
     })
     .catch((err) => {
+
+      console.log(err);
 
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Error'
@@ -160,7 +174,7 @@ function getLicences(request, reply) {
 
 
 /**
- * Renders a licence page with one of several different views 
+ * Renders a licence page with one of several different views
  * @param {String} view - the template to load
  * @param {String} pageTitle - custom page title for this view
  * @param {Object} request - the HAPI HTTP request

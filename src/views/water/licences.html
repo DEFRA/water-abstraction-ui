@@ -53,7 +53,7 @@
   </div>
   <!-- End licence search form -->
 
-
+  </form>
 
 
   <!-- Results page goes here -->
@@ -61,23 +61,34 @@
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="#" aria-label="Sort by licence serial number">Licence serial number<span class="sort-icon"> &#x25be;</span></a>
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}">Licence serial number
+          {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
+        </a>
       </div>
       <div class="license-results-header__column">
-        <a href="#" aria-label="Sort by licence name">User defined name</a>
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}">User defined name
+          {{{ sortIcon  direction=direction sort=sort field="name" }}}
+        </a>
       </div>
       <div class="license-results-header__column"></div>
     </div>
 
+    {{^licenceData}}
+    <!-- No results found -->
+    <div class="license-result">
+      <h2 class="heading-medium license-result__column">No licences found.</h2>
+      <p class="license-result__column license-result__column--description"></p>
+      <div class="license-result__column license-result__column--view" aria-hidden="true"></div>
+    </div>
+    {{/licenceData}}
+
+    <!-- Display list of clickable licence rows/tiles -->
     {{#each licenceData}}
       {{#>element-licence-link this}}{{/element-licence-link}}
     {{/each}}
 
   </div>
 
-</form>
-
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
 
   <p></p>
 

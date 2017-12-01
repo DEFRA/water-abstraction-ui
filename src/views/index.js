@@ -31,7 +31,7 @@ handlebars.registerHelper('sortIcon',  function(context, options) {
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
 
   if(sort == field) {
-    return '<span class="sort-icon">' + (newDirection === 1 ? '&#x25be;' : '&#x25b4;') + '</span>';
+    return '<span class="sort-icon">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
   }
 
 });

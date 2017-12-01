@@ -61,7 +61,7 @@ module.exports = [
       description : 'Update the user-defined licence name',
       validate : {
         payload : {
-          name : Joi.string().required()
+          name : Joi.string()
         }
       }
   }},

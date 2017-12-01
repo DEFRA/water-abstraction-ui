@@ -57,6 +57,15 @@ module.exports = [
      }
   }},
   { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
+  { method: 'POST', path: '/licences/{licence_id}', handler: VmL.postLicence, config : {
+      description : 'Update the user-defined licence name',
+      validate : {
+        payload : {
+          name : Joi.string().required()
+        }
+      }
+  }},
+
   { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: VmL.getLicenceMap },
   { method: 'GET', path: '/licences/{licence_id}/terms', handler: VmL.getLicenceTerms },

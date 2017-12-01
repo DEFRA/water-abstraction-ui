@@ -87,28 +87,6 @@ function postSignin(request, reply) {
 }
 
 
-/*
-function getLicences(request, reply) {
-  if (!request.session.id) {
-    return reply.redirect('/signin')
-  } else {
-    var viewContext = View.contextDefaults(request)
-    CRM.getLicences(request.session.username).then((data) => {
-      request.session.licences = data
-      viewContext.licenceData = data
-      viewContext.debug.licenceData = data
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      return reply.view('water/licences', viewContext)
-    }).catch((data) => {
-
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'GOV.UK - Error'
-      return reply.view('water/error', viewContext)
-
-    })
-  }
-}
-*/
 
 
 /**
@@ -128,7 +106,7 @@ function getLicences(request, reply) {
     .then((response) => {
 
       // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity;
+      const { entity_id, entity_type } = response.data.entity;
 
       // Get filtered list of licences
       const filter = {
@@ -148,18 +126,23 @@ function getLicences(request, reply) {
       viewContext.direction = direction;
       viewContext.sort = sortField;
 
+      // @TODO check valid role names
+      viewContext.showEmailFilter = ['agent', 'admin'].includes(entity_type);
+
       return CRM.getLicences(filter, sort);
     })
     .then((response) => {
 
       const { data } = response;
 
-      // console.log(response);
-
       // Render HTML page
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+
+      // @TODO confirm number of records to display search form
+      viewContext.enableSearch = data.length > 5;
+
       return reply.view('water/licences', viewContext)
     })
     .catch((err) => {
@@ -208,6 +191,10 @@ function renderLicencePage(view, pageTitle, request, reply) {
         if(response.data.length != 1) {
           throw new Error('You have requested a licence with an invalid ID');
         }
+
+        // Output CRM data in addition to permit repository data to view
+        viewContext.crmData = response.data[0];
+
         // Get permit
         return Permit.getLicence(response.data[0].system_internal_id);
 
@@ -251,6 +238,44 @@ function getLicenceTerms(request, reply) {
   )
 }
 
+
+/**
+ * Update a licence name
+ * @param {Object} request - the HAPI HTTP request
+ * @param {String} request.payload.name - the new name for the licence
+ * @param {Object} reply - the HAPI HTTP response
+ */
+function postLicence(request, reply) {
+  console.log(request.payload.name);
+  // Get entity record from CRM for current user
+  CRM.getEntity(request.session.username)
+    .then((response) => {
+
+      // Get the entity ID for the current user from CRM response
+      const { entity_id } = response.data.entity;
+
+      // Get filtered list of licences
+      const filter = {
+        entity_id,
+        document_id : request.params.licence_id
+      };
+
+      return CRM.getLicences(filter);
+    })
+    .then((response) => {
+      // Udpate licence name in CRM
+      return CRM.setLicenceName(request.params.licence_id, request.payload.name);
+    })
+    .then(() => {
+      // Updated - redirect to licence view
+      reply.redirect(`/licences/${ request.params.licence_id }`);
+    })
+    .catch((err) => {
+      console.log(err);
+      reply(err);
+    });
+
+}
 
 
 function getUpdatePassword(request, reply) {
@@ -521,6 +546,7 @@ module.exports = {
   postSignin: postSignin,
   getLicences: getLicences,
   getLicence: getLicence,
+  postLicence: postLicence,
   getLicenceContact: getLicenceContact,
   getLicenceMap: getLicenceMap,
   getLicenceTerms: getLicenceTerms,

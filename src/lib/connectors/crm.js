@@ -44,6 +44,23 @@ function getLicences(filter, sort = {}) {
   });
 }
 
+/**
+ * Set licence name
+ * @param {String} documentId - the CRM document ID identifying the permit
+ * @param {String} name - the user-defined document name
+ * @return {Promise} resolves when name updated
+ */
+function setLicenceName(documentId, name) {
+  const uri = process.env.CRM_URI + '/documentHeader/' + documentId + '/entity/0/name?token=' + process.env.JWT_TOKEN;
+  return rp({
+    uri,
+    method : 'POST',
+    json : true,
+    body : { name }
+  });
+}
+
+
 
 function getLicenceInternalID(licences, document_id) {
   /**this function gets the internal ID (i.e. the ID of the licence in the permit repository) from the document_id
@@ -61,6 +78,6 @@ function getLicenceInternalID(licences, document_id) {
 module.exports = {
   getEntity,
   getLicences,
-  getLicenceInternalID: getLicenceInternalID
-
+  getLicenceInternalID,
+  setLicenceName
 }

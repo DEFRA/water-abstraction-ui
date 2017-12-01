@@ -36,6 +36,16 @@ server.state('sessionCookie', {
 
 
 server.register([{
+  register: require('hapi-error'),
+  options : {
+    templateName : 'water/error.html',
+    statusCodes : {
+      401 : {
+        redirect : '/login'
+      }
+    }
+  }
+}, {
     register: require('node-hapi-airbrake'),
     options: {
       key: process.env.errbit_key,
@@ -92,7 +102,13 @@ server.register([{
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',
-    isHttpOnly: false
+    isHttpOnly: false,
+
+    // @TODO run this past Dave
+    validateFunc: function (request, session, callback) {
+      const {username} = request.session;
+      callback(null, username != null, {username});
+    }
   });
 
   server.auth.default({

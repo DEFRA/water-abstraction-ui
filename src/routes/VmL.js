@@ -70,15 +70,39 @@ module.exports = [
   { method: 'POST', path: '/licences/{licence_id}', handler: LicencesController.postLicence, config : {
       description : 'Update the user-defined licence name',
       validate : {
+        params : {
+          licence_id : Joi.string().required().guid()
+        },
         payload : {
           name : Joi.string()
         }
       }
   }},
 
-  { method: 'GET', path: '/licences/{licence_id}/contact', handler: LicencesController.getLicenceContact },
-  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: LicencesController.getLicenceMap },
-  { method: 'GET', path: '/licences/{licence_id}/terms', handler: LicencesController.getLicenceTerms },
+  { method: 'GET', path: '/licences/{licence_id}/contact', handler: LicencesController.getLicenceContact, config : {
+    description : 'View contact info for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: LicencesController.getLicenceMap, config : {
+    description : 'View abstraction point map for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  }},
+  { method: 'GET', path: '/licences/{licence_id}/terms', handler: LicencesController.getLicenceTerms, config : {
+    description : 'View abstraction point terms for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
 
 {
       method: '*',

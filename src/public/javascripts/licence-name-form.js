@@ -27,7 +27,7 @@ $(function() {
     return false;
   });
 
-  $('#showForm').on('click', function(ev) {
+  $('#showForm, #nameLicence').on('click', function(ev) {
     state.showForm = true;
     updateView();
     ev.preventDefault();

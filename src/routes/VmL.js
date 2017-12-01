@@ -2,6 +2,8 @@
 const VmL=require('../lib/VmL')
 const Joi = require('joi');
 
+const LicencesController = require('../controllers/licences');
+
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
 **/
@@ -46,7 +48,8 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
     { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
-  { method: 'GET', path: '/licences',  handler: VmL.getLicences, config: {
+  { method: 'GET', path: '/licences',  handler: LicencesController.getLicences, config: {
+    description : 'View list of licences with facility to sort/filter',
     validate: {
          query: {
              sort: Joi.string().valid('licenceNumber', 'name'),
@@ -56,8 +59,15 @@ module.exports = [
          }
      }
   }},
-  { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
-  { method: 'POST', path: '/licences/{licence_id}', handler: VmL.postLicence, config : {
+  { method: 'GET', path: '/licences/{licence_id}', handler: LicencesController.getLicence, config : {
+    description : 'View a single licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+ }},
+  { method: 'POST', path: '/licences/{licence_id}', handler: LicencesController.postLicence, config : {
       description : 'Update the user-defined licence name',
       validate : {
         payload : {
@@ -66,9 +76,9 @@ module.exports = [
       }
   }},
 
-  { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },
-  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: VmL.getLicenceMap },
-  { method: 'GET', path: '/licences/{licence_id}/terms', handler: VmL.getLicenceTerms },
+  { method: 'GET', path: '/licences/{licence_id}/contact', handler: LicencesController.getLicenceContact },
+  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: LicencesController.getLicenceMap },
+  { method: 'GET', path: '/licences/{licence_id}/terms', handler: LicencesController.getLicenceTerms },
 
 {
       method: '*',

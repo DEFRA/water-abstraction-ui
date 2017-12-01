@@ -4,7 +4,7 @@ const Lab = require('lab')
 const lab = exports.lab = Lab.script()
 
 const Code = require('code')
-const rewire = require('rewire');
+// const rewire = require('rewire');
 
 
 

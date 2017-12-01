@@ -19,9 +19,11 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-standard": "^10.0.0",
-    "lab": "^14.1.1",
+    "lab": "^14.3.2",
     "run-sequence": "^2.1.0",
-    "standard": "^10.0.2"
+    "sinon": "^4.1.2",
+    "standard": "^10.0.2",
+    "xmldom": "^0.1.27"
   },
   "dependencies": {
     "async-waterfall": "^0.1.5",

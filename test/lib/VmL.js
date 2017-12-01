@@ -4,7 +4,7 @@ const Lab = require('lab')
 const lab = exports.lab = Lab.script()
 
 const Code = require('code')
-const rewire = require('rewire');
+// const rewire = require('rewire');
 
 
 
@@ -33,31 +33,12 @@ lab.experiment('vml.postSignin', () => {
   Code.expect(vml.postSignin).to.be.a.function()
 })
 })
-lab.experiment('vml.getLicences', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicences).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicence', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicence).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceContact', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceContact).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceMap', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceMap).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceTerms', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceTerms).to.be.a.function()
-})
-})
+// lab.experiment('vml.getLicences', () => {
+//   lab.test('function exists', async () => {
+//   Code.expect(vml.getLicences).to.be.a.function()
+// })
+// })
+
 lab.experiment('vml.getUpdatePassword', () => {
   lab.test('function exists', async () => {
   Code.expect(vml.getUpdatePassword).to.be.a.function()

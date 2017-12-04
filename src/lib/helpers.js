@@ -4,6 +4,10 @@ var rp = require('request-promise-native').defaults({
     strictSSL :false
   })
 
+
+
+
+
 //make a simple http request (without a body), uses promises
 function makeURIRequest(uri) {
   return new Promise((resolve, reject) => {

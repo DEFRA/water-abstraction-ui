@@ -7,20 +7,22 @@ const Code = require('code')
 const DOMParser = require('xmldom').DOMParser
 
 const server = require('../../index')
-const user = { username : process.env.test_username, password : process.env.test_password };
+const user = { username : process.env.test_username}
+const payload = { name : 'A new name'};
 
 const guid = require('uuid/v1');
 const routePath = `/licences/${ process.env.test_licence_id }`
 const invalidPath = '/licences/123'
 const notFoundPath = `/licences/${ guid() }`
 
-lab.experiment('Check single licence', () => {
+
+lab.experiment('Update licence name', () => {
   lab.test('The page should redirect if unauthorised', async () => {
     const request = {
-      method: 'GET',
+      method: 'POST',
       url: routePath,
       headers: {},
-      payload: {}
+      payload
     }
 
     //not logged in redirects
@@ -30,10 +32,10 @@ lab.experiment('Check single licence', () => {
 
   lab.test('The page should return 400 if licence number not GUID', async () => {
     const request = {
-      method: 'GET',
+      method: 'POST',
       url: invalidPath,
       headers: {},
-      payload: {},
+      payload,
       credentials : user
     }
 
@@ -41,27 +43,32 @@ lab.experiment('Check single licence', () => {
     Code.expect(res.statusCode).to.equal(400)
   })
 
-  lab.test('The page should return 200 if valid licence', async () => {
+  lab.test('The page should return 302 redirect if updated successfully', async () => {
 
     const request = {
-      method: 'GET',
+      method: 'POST',
       url: routePath,
       headers: {},
-      payload: {},
+      payload,
       credentials : user
     }
     const res = await server.inject(request)
-    Code.expect(res.statusCode).to.equal(200)
+
+
+    console.log('code:', res.statusCode);
+
+
+    Code.expect(res.statusCode).to.equal(302)
 
   })
 
   lab.test('The page should return 404 if licence not found for user', async () => {
 
     const request = {
-      method: 'GET',
+      method: 'POST',
       url: notFoundPath,
       headers: {},
-      payload: {},
+      payload,
       credentials : user
     }
     const res = await server.inject(request)

@@ -1,6 +1,9 @@
 const Helpers = require('../helpers')
 
 function getLicence(licence_id){
+
+  console.log(`Getting permit with licence_id ${licence_id}`);
+
   return new Promise((resolve, reject) => {
       var licenceRegimeId=process.env.licenceRegimeId
       var licenceTypeId=process.env.licenceTypeId

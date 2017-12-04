@@ -36,6 +36,16 @@ server.state('sessionCookie', {
 
 
 server.register([{
+  register: require('hapi-error'),
+  options : {
+    templateName : 'water/error.html',
+    statusCodes : {
+      401 : {
+        redirect : '/login'
+      }
+    }
+  }
+}, {
     register: require('node-hapi-airbrake'),
     options: {
       key: process.env.errbit_key,
@@ -92,7 +102,13 @@ server.register([{
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',
-    isHttpOnly: false
+    isHttpOnly: false,
+
+    // @TODO run this past Dave
+    validateFunc: function (request, session, callback) {
+      const {username} = request.session;
+      callback(null, username != null, {username});
+    }
   });
 
   server.auth.default({
@@ -119,8 +135,6 @@ server.errorHandler = function(error) {
 server.ext({
   type: 'onPreHandler',
   method: function(request, reply) {
-
-
 
     if (request.path.indexOf('public') != -1) {
       //files in public dir are always online...
@@ -259,11 +273,16 @@ try{
   }
 
 });
-// Start the server
-server.start((err) => {
-  if (err) {
-    throw err
-  }
-  console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`)
-})
+
+
+
+// Start the server if not testing with Lab
+if (!module.parent) {
+  server.start((err) => {
+    if (err) {
+      throw err
+    }
+    console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`)
+  })
+}
 module.exports = server

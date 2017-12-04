@@ -6,7 +6,7 @@
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
     "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
-    "test": "lab -t 60 -m 0",
+    "test": "lab -t 60 -m 3000",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011"
   },
@@ -19,9 +19,11 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-standard": "^10.0.0",
-    "lab": "^14.1.1",
+    "lab": "^14.3.2",
     "run-sequence": "^2.1.0",
-    "standard": "^10.0.2"
+    "sinon": "^4.1.2",
+    "standard": "^10.0.2",
+    "xmldom": "^0.1.27"
   },
   "dependencies": {
     "async-waterfall": "^0.1.5",
@@ -42,8 +44,10 @@
     "hapi": "^16.5.0",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-cookie": "^0.1.0",
+    "hapi-error": "^1.8.0",
     "hapi-sanitize-payload": "^1.5.0",
     "hapi-server-session": "^3.0.2",
+    "http-errors": "^1.6.2",
     "inert": "^4.2.1",
     "joi": "^13.0.2",
     "moment": "^2.18.1",

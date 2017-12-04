@@ -23,10 +23,13 @@ lab.experiment('Check signin', () => {
       payload: {}
     }
 
-
-
     const res = await server.inject(request)
+
+    console.log(res);
+
     Code.expect(res.statusCode).to.equal(200)
+
+
 
     const parser = new DOMParser()
     const doc = parser.parseFromString(res.payload, 'text/html')

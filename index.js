@@ -136,8 +136,6 @@ server.ext({
   type: 'onPreHandler',
   method: function(request, reply) {
 
-
-
     if (request.path.indexOf('public') != -1) {
       //files in public dir are always online...
       return reply.continue();
@@ -275,11 +273,16 @@ try{
   }
 
 });
-// Start the server
-server.start((err) => {
-  if (err) {
-    throw err
-  }
-  console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`)
-})
+
+
+
+// Start the server if not testing with Lab
+if (!module.parent) {
+  server.start((err) => {
+    if (err) {
+      throw err
+    }
+    console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`)
+  })
+}
 module.exports = server

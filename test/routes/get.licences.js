@@ -14,16 +14,19 @@ const user = { username : process.env.test_username}
 // Used to stub CRM call
 const sinon = require('sinon');
 const CRM = require('../../src/lib/connectors/crm');
-
-let sandbox = sinon.sandbox.create();
+let sandbox;
 
 lab.experiment('Check licences', () => {
 
+  lab.beforeEach((cb) => {
+    sandbox = sinon.sandbox.create();
+    cb();
+  })
 
   lab.afterEach((cb) => {
-    sandbox.reset();
+    sandbox.restore();
     cb();
-  });
+  })
 
   lab.test('The page should redirect if unauthorised', async () => {
     const request = {
@@ -113,7 +116,8 @@ lab.experiment('Check licences', () => {
     lab.test('The page should handle CRM error', async () => {
 
       // Stub the CRM getLicences method to throw an error
-      CRM.getLicences = sandbox.stub().throws();
+      const getLicences = sandbox.stub(CRM, 'getLicences');
+      getLicences.throws(new Error('CRM error'));
 
       const request = {
         method: 'GET',
@@ -126,7 +130,6 @@ lab.experiment('Check licences', () => {
       const res = await server.inject(request);
 
       Code.expect(res.statusCode).to.equal(500);
-
 
     })
 

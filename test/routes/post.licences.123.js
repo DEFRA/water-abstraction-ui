@@ -53,6 +53,11 @@ lab.experiment('Update licence name', () => {
       credentials : user
     }
     const res = await server.inject(request)
+
+
+    console.log('code:', res.statusCode);
+
+
     Code.expect(res.statusCode).to.equal(302)
 
   })

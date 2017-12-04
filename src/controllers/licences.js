@@ -5,43 +5,37 @@
 const CRM = require('../lib/connectors/crm');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
-const httpError = require('http-errors');
+const Boom = require('boom');
+const errorHandler = require('../lib/error-handler');
 
 
-// function errorHandler(err) {
-//   console.error(err);
-// }
+/**
+ * Get the user entity from the CRM for the current user
+ * throws Boom errors if user not found / CRM error
+ * @param {Object} HAPI request
+ * @param {Object} HAPI reply
+ * @return {Promise} resolves with entity record
+ */
+function _crmGetEntity(request, reply) {
+  // Get entity record from CRM for current user
+  return CRM.getEntity(request.auth.credentials.username)
+    .then((response) => {
 
-// const Boom = require('boom');
-//
-function errorHandler(request, reply) {
-  return function(err) {
-    // Log error
-    if(err.status) {
-      if(err.status >= 500) {
-        console.error(err);
+      if(response.err) {
+        throw Boom.badImplementation(`CRM error`, response);
       }
-      else {
-        console.log(err);
+
+      // Get the entity ID for the current user from CRM response
+      const { entity_id } = response.data.entity;
+
+      if(!entity_id) {
+        throw Boom.badImplementation(`CRM error: User ${request.auth.credentials.username} not found`, response);
       }
-    }
 
-    // Create view context
-    const {session} = request;
-
-    // Output HTML page
-    if(err.status == 404) {
-      reply.view('water/404.html', {session}).code(err.status);
-    }
-    // Unauthorised
-    else if(err.status >= 401 && err.status <= 403) {
-      reply.redirect('/login');
-    }
-    else {
-      reply.view('water/error.html', {session}).code(err.status);
-    }
-  }
+      return Promise.resolve(response.data.entity);
+    });
 }
+
 
 
 /**
@@ -59,18 +53,10 @@ function getLicences(request, reply) {
 
   const viewContext = View.contextDefaults(request);
 
-  // console.log('username', request.auth.credentials.username);
+  _crmGetEntity(request, reply)
+    .then((entity) => {
 
-  // Get entity record from CRM for current user
-  return CRM.getEntity(request.auth.credentials.username)
-    .then((response) => {
-
-      // Get the entity ID for the current user from CRM response
-      const { entity_id, entity_type } = response.data.entity;
-
-      if(!entity_id) {
-        throw httpError(500, 'User not found in CRM');
-      }
+      const {entity_id, entity_type} = entity;
 
       // Get filtered list of licences
       const filter = {
@@ -91,11 +77,18 @@ function getLicences(request, reply) {
       viewContext.sort = sortField;
 
       // @TODO check valid role names
-      viewContext.showEmailFilter = ['agent', 'admin'].includes(entity_type);
+      viewContext.showEmailFilter = true;
+      // ['agent', 'admin'].includes(entity_type);
 
       return CRM.getLicences(filter, sort);
     })
     .then((response) => {
+
+      console.log(response);
+
+      if(response.err) {
+        throw Boom.badImplementation('CRM error', response);
+      }
 
       const { data } = response;
 
@@ -105,30 +98,11 @@ function getLicences(request, reply) {
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
 
       // @TODO confirm number of records to display search form
-      viewContext.enableSearch = data.length > 5;
+      viewContext.enableSearch = data.length > 3;
 
       return reply.view('water/licences', viewContext)
     })
     .catch(errorHandler(request, reply));
-    // .catch((err) => {
-    //
-    //   // @TODO replace with HAPI error handler
-    //   console.log(err);
-    //
-    //   var viewContext = View.contextDefaults(request)
-    //   viewContext.pageTitle = 'GOV.UK - Error'
-    //   return reply.view('water/error', viewContext).code(500);
-    // });
-    // .catch(errorHandler(request, reply));
-    // .catch((err) => {
-    //
-    //   // @TODO replace with HAPI error handler
-    //   console.log(err);
-    //
-    //   var viewContext = View.contextDefaults(request)
-    //   viewContext.pageTitle = 'GOV.UK - Error'
-    //   return reply.view('water/error', viewContext).code(500);
-    // });
 
 }
 
@@ -144,23 +118,10 @@ function renderLicencePage(view, pageTitle, request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = pageTitle
 
-  // @TODO check with dave re. redirect to login if not auth
-  // if (!viewContext.session.id) {
-  //   getSignin(request, reply)
-  // } else {
+  _crmGetEntity(request, reply)
+    .then((entity) => {
 
-  // Get entity record from CRM for current user
-  return CRM.getEntity(request.auth.credentials.username)
-    .then((response) => {
-
-      // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity;
-
-      // If no entity ID - CRM error
-      if(!entity_id) {
-        // throw Boom.badImplementation('User not found in CRM');
-        throw httpError(500, 'User not found in CRM');
-      }
+      const {entity_id} = entity;
 
       // Get filtered list of licences
       const filter = {
@@ -172,9 +133,11 @@ function renderLicencePage(view, pageTitle, request, reply) {
     })
     .then((response) => {
 
+      if(response.err) {
+        throw Boom.badImplementation(`CRM error`, response);
+      }
       if(response.data.length != 1) {
-        // throw Boom.notFound('Requested licence not found');
-        throw httpError(404, `Requested licence ${ request.params.licence_id } not found`);
+        throw new Boom.notFound('Document not found in CRM', response);
       }
 
       // Output CRM data in addition to permit repository data to view
@@ -193,21 +156,6 @@ function renderLicencePage(view, pageTitle, request, reply) {
       return reply.view(view, viewContext)
     })
     .catch(errorHandler(request, reply));
-    // (err) => {
-    //   request.
-    // });
-    // .catch((err) => {
-    //
-    //   // @TODO replace with HAPI error handler
-    //   console.log(err);
-    //
-    //   var viewContext = View.contextDefaults(request)
-    //   viewContext.pageTitle = 'GOV.UK - Error'
-    //   return reply.view('water/error', viewContext).code(500);
-    // });
-
-
-
 }
 
 function getLicence(request, reply) {
@@ -244,19 +192,10 @@ function getLicenceTerms(request, reply) {
  */
 function postLicence(request, reply) {
 
-  console.log(`username: ${request.auth.credentials.username}`);
+  _crmGetEntity(request, reply)
+    .then((entity) => {
 
-  // console.log(request.payload.name);
-  // Get entity record from CRM for current user
-  CRM.getEntity(request.auth.credentials.username)
-    .then((response) => {
-
-      // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity;
-
-      if(!entity_id) {
-        throw new httpError(500, 'User not found in CRM');
-      }
+      const {entity_id} = entity;
 
       // Get filtered list of licences
       const filter = {
@@ -268,8 +207,16 @@ function postLicence(request, reply) {
     })
     .then((response) => {
 
+      if(!response) {
+        throw new Boom.badImplementation('No CRM response', response);
+      }
+
+      if(response.err) {
+        throw new Boom.badImplementation('CRM error', response);
+      }
+
       if(response.data.length !== 1) {
-        throw new httpError(404, 'Document not found in CRM');
+        throw new Boom.notFound('Document not found in CRM');
       }
 
       // Get the document ID from the returned CRM data
@@ -278,17 +225,14 @@ function postLicence(request, reply) {
       // Udpate licence name in CRM
       return CRM.setLicenceName(document_id, request.payload.name);
     })
-    .then(() => {
+    .then((response) => {
+
+      console.log(response);
+
       // Updated - redirect to licence view
       reply.redirect(`/licences/${ request.params.licence_id }`);
     })
     .catch(errorHandler(request, reply));
-
-      /*(err) => {
-      console.log(err.status, err);
-      reply(err);
-    });
-    */
 
 }
 

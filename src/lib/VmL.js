@@ -16,12 +16,12 @@ function getSignout(request, reply) {
 
 function getSignin(request, reply) {
   // get signin page
-  if (request.path != '/signin') {
-    request.session.postlogin = request.path
-  } else {
-    request.session.postlogin = '/licences'
-  }
-  request.session.id = Helpers.createGUID()
+  // if (request.path != '/signin') {
+  //   request.session.postlogin = request.path
+  // } else {
+  //   request.session.postlogin = '/licences'
+  // }
+  // request.session.id = Helpers.createGUID()
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
   return reply.view('water/signin', viewContext)

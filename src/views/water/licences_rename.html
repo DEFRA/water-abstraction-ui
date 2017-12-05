@@ -19,21 +19,15 @@
 
   <!-- User-defined licence name row -->
   <div class="data-table">
-    <div class="sourceofsupplyq">Licence name</div>
+    <label for="name" class="sourceofsupplyq">Licence name</label>
     <div class="licenceAnswer">
 
-
-      <!-- Current licence name -->
-      {{#if crmData.document_custom_name }}
-        {{ crmData.document_custom_name}}
-        <br />
-        <a id="showForm" href="/licences/{{ licence_id }}/rename">Change name</a>
-      {{/if}}
-      {{^crmData.document_custom_name }}
-        No licence name
-        <br />
-        <a id="nameLicence" href="/licences/{{ licence_id }}/rename">Name this licence</a>
-      {{/crmData.document_custom_name}}
+      <!-- Set licence name form -->
+      <form name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
+        <input type="text" class="form-control" id="name" name="name" value="{{ crmData.document_custom_name }}" />
+        <button type="submit" class="button button-inline">Save</button>
+        <p style="margin-bottom: 0;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
+      </form>
 
     </div>
   </div>
@@ -52,5 +46,6 @@
   <p></p>
 </main>
 {{> footerjs}}
+
 
 {{> debug}}

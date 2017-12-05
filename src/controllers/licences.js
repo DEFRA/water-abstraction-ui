@@ -10,6 +10,39 @@ const errorHandler = require('../lib/error-handler');
 
 
 /**
+ * A function to get role flags from
+ * supplied licences summary returned from CRM
+ * @param {Array} summary - summary data from licences list call
+ * @return {Object} with boolean flags for each user role and total licence count
+ */
+function _licenceRoles(summary) {
+  const initial = {
+    user : false,
+    agent : false,
+    admin : false
+  };
+  return summary.reduce((memo, item) => {
+    memo[item.role] = true;
+    return memo;
+  }, initial);
+}
+
+/**
+ * A function to get total number of licences from
+ * supplied licences summary returned from CRM
+ * @param {Array} summary - summary data from licences list call
+ * @return {Number} total licence count
+ */
+function _licenceCount(summary) {
+  return summary.reduce((memo, item) => {
+    return memo + item.count;
+  }, 0);
+}
+
+
+
+
+/**
  * Gets a list of licences with options to filter by email address,
  * Search by licence number, and sort by number/user defined name
  * @param {Object} request - the HAPI HTTP request
@@ -44,10 +77,6 @@ function getLicences(request, reply) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  // @TODO check valid role names
-  viewContext.showEmailFilter = true;
-  // ['agent', 'admin'].includes(entity_type);
-
   CRM.getLicences(filter, sort)
     .then((response) => {
 
@@ -55,15 +84,18 @@ function getLicences(request, reply) {
         throw Boom.badImplementation('CRM error', response);
       }
 
-      const { data } = response;
+      const { data, summary } = response;
 
       // Render HTML page
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+      viewContext.licenceCount = _licenceCount(summary);
 
-      // @TODO confirm number of records to display search form
-      viewContext.enableSearch = data.length > 3;
+      // Calculate whether to display email filter / search form depending on summary
+      const userRoles = _licenceRoles(summary);
+      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+      viewContext.enableSearch = data.length > 5; // @TODO confirm with design team
 
       return reply.view('water/licences', viewContext)
     })

@@ -2,6 +2,7 @@
 ./node_modules/.bin/lab ./test/lib/connectors/idm.js
 ./node_modules/.bin/lab ./test/lib/connectors/permit.js
 
+./node_modules/.bin/lab ./test/lib/joi-profanity.js
 ./node_modules/.bin/lab ./test/lib/helpers.js
 ./node_modules/.bin/lab ./test/lib/VmL.js
 

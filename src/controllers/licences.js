@@ -183,6 +183,12 @@ function getLicenceTerms(request, reply) {
   )
 }
 
+function getLicenceRename(request, reply) {
+  renderLicencePage(
+    'water/licence'
+  )
+}
+
 
 /**
  * Update a licence name

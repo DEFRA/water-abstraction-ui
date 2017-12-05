@@ -23,23 +23,23 @@
     <div class="licenceAnswer">
 
       <!-- Set licence name form -->
-      <form name="nameForm" id="nameForm" class="hide-js" method="POST" action="/licences/{{ licence_id }}">
+      <form name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
         <input type="text" class="form-control" id="name" name="name" value="{{ crmData.document_custom_name }}" />
         <button type="submit" class="button button-inline">Save</button>
-        <p class="show-js" style="margin-bottom: 0;"><a href="#" id="cancel">Cancel</a></p>
+        <p style="margin-bottom: 0;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
       </form>
 
       <!-- Current licence name -->
-      <div id="licenceName" class="show-js">
+      <div id="licenceName">
       {{#if crmData.document_custom_name }}
         {{ crmData.document_custom_name}}
         <br />
-        <a id="showForm" href="#nameForm">Change name</a>
+        <a id="showForm" href="/licences/{{ licence_id }}/rename">Change name</a>
       {{/if}}
       {{^crmData.document_custom_name }}
         No licence name
         <br />
-        <a id="nameLicence" href="#nameForm">Name this licence</a>
+        <a id="nameLicence" href="/licences/{{ licence_id }}/rename">Name this licence</a>
       {{/crmData.document_custom_name}}
       </div>
     </div>

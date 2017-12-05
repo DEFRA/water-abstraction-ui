@@ -2,11 +2,17 @@
  * HAPI Route handlers for viewing and managing licences
  * @module controllers/licences
  */
+const Boom = require('boom');
+const BaseJoi = require('joi');
+
 const CRM = require('../lib/connectors/crm');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
-const Boom = require('boom');
 const errorHandler = require('../lib/error-handler');
+
+const joiProfanityExtension = require('../lib/joi-profanity');
+const Joi = BaseJoi.extend(joiProfanityExtension);
+
 
 
 /**
@@ -39,6 +45,56 @@ function _licenceCount(summary) {
   }, 0);
 }
 
+
+/**
+ * Licence name validator
+ * @param {String} - the licence name to validate
+ * @return Promise - resolves if valid, rejects with array of errors otherwise
+ */
+function _licenceNameValidator(name) {
+
+  const schema = {
+    name : Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ]+$/i)
+  };
+
+  const {error, value} = Joi.validate({name}, schema, {abortEarly : false});
+
+  return new Promise((resolve, reject) => {
+    isProfanity(value.name, (b) => {
+
+      // @TODO add profanity check
+
+      if(error) {
+        reject(error);
+      }
+      else resolve(value);
+    });
+  });
+
+
+  // // Validation
+  // const errors = [];
+  // if(!name.match(/[a-z0-9-_ ]/i)) {
+  //     errors.push('invalid');
+  // }
+  // if(name.length < 2 || name.length > 32) {
+  //   errors.push('length');
+  // }
+  //
+  // return new Promise((resolve, reject) => {
+  //   isProfanity(name, (res) => {
+  //       if(res) {
+  //         errors.push('profanity');
+  //       }
+  //       if(errors.length) {
+  //         reject(errors);
+  //       }
+  //       else {
+  //         resolve(name);
+  //       }
+  //   });
+  // });
+}
 
 
 
@@ -111,12 +167,14 @@ function getLicences(request, reply) {
  * @param {String} pageTitle - custom page title for this view
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} [context] - additional view context data
  */
-function renderLicencePage(view, pageTitle, request, reply) {
+function renderLicencePage(view, pageTitle, request, reply, context = {}) {
 
   const { entity_id } = request.auth.credentials;
 
-  const viewContext = View.contextDefaults(request)
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+
   viewContext.pageTitle = pageTitle
 
   // Get filtered list of licences
@@ -148,6 +206,7 @@ function renderLicencePage(view, pageTitle, request, reply) {
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = data.data
       viewContext.debug.licenceData = viewContext.licenceData
+      viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
       return reply.view(view, viewContext)
     })
     .catch(errorHandler(request, reply));
@@ -178,9 +237,9 @@ function getLicenceTerms(request, reply) {
   )
 }
 
-function getLicenceRename(request, reply) {
+function getLicenceRename(request, reply, context = {}) {
   renderLicencePage(
-    'water/licences_rename', 'GOV.UK - Your water abstraction licences - Rename', request, reply
+    'water/licences_rename', 'GOV.UK - Your water abstraction licences - Rename', request, reply, context
   )
 }
 
@@ -193,13 +252,23 @@ function getLicenceRename(request, reply) {
  */
 function postLicence(request, reply) {
 
+  const { name } = request.payload;
   const { entity_id } = request.auth.credentials;
 
-  // Get filtered list of licences
+  // Prepare filter for filtering licence list from CRM
   const filter = {
     entity_id,
     document_id : request.params.licence_id
   };
+
+  // Validate supplied licence name
+  const schema = {
+    name : Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ]+$/i).profanity()
+  };
+  const {error, value} = Joi.validate({name}, schema, {abortEarly : false});
+  if(error) {
+      return getLicenceRename(request, reply, {error, name : request.payload.name });
+  }
 
   CRM.getLicences(filter)
     .then((response) => {
@@ -217,14 +286,13 @@ function postLicence(request, reply) {
       }
 
       // Get the document ID from the returned CRM data
-      const { document_id } = response.data[0];
+      const { document_id, system_internal_id } = response.data[0];
 
       // Udpate licence name in CRM
-      return CRM.setLicenceName(document_id, request.payload.name);
+      return CRM.setLicenceName(document_id, value.name);
     })
     .then((response) => {
-
-      // Updated - redirect to licence view
+      // Licence updated - redirect to licence view
       reply.redirect(`/licences/${ request.params.licence_id }`);
     })
     .catch(errorHandler(request, reply));

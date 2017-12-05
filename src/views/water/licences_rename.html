@@ -38,8 +38,8 @@
   <!-- Set licence name form -->
   <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
 
-    <div class="form-group {{#if err }}form-group-error{{/if}}">
-      <label for="name" class="form-label-bold {{#if err }}form-label-error{{/if}}">Licence name</label>
+    <div class="form-group {{#if error }}form-group-error{{/if}}">
+      <label for="name" class="form-label-bold {{#if error }}form-label-error{{/if}}">Licence name</label>
 
       {{#if error }}
         {{#each error.details }}
@@ -53,7 +53,7 @@
         {{/each}}
       {{/if}}
 
-      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if err }}form-control-error{{/if}}" id="name" name="name" value="{{ name }}" />
+      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{ name }}" />
 
     </div>
 

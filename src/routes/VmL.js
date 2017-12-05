@@ -98,6 +98,15 @@ module.exports = [
       }
     }
   } },
+  { method: 'GET', path: '/licences/{licence_id}/rename', handler: LicencesController.getLicenceRename, config : {
+    description : 'Set user-defined name for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+
   { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: LicencesController.getLicenceMap, config : {
     description : 'View abstraction point map for licence',
     validate : {

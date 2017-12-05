@@ -147,7 +147,7 @@ function getLicenceTerms(request, reply) {
 
 function getLicenceRename(request, reply) {
   renderLicencePage(
-    'water/licence'
+    'water/licences_rename', 'GOV.UK - Your water abstraction licences - Rename', request, reply
   )
 }
 
@@ -191,8 +191,6 @@ function postLicence(request, reply) {
     })
     .then((response) => {
 
-      console.log(response);
-
       // Updated - redirect to licence view
       reply.redirect(`/licences/${ request.params.licence_id }`);
     })
@@ -207,5 +205,6 @@ module.exports = {
   postLicence,
   getLicenceContact,
   getLicenceMap,
-  getLicenceTerms
+  getLicenceTerms,
+  getLicenceRename
 };

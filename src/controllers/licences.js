@@ -263,7 +263,7 @@ function postLicence(request, reply) {
 
   // Validate supplied licence name
   const schema = {
-    name : Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ]+$/i).profanity()
+    name : Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ']+$/i).profanity()
   };
   const {error, value} = Joi.validate({name}, schema, {abortEarly : false});
   if(error) {

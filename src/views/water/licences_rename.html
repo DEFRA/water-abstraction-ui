@@ -45,8 +45,8 @@
         {{#each error.details }}
         <label for="name"><span class="error-message">
           {{#equal this.type 'string.min' }}The name must be at least 2 characters long{{/equal}}
-          {{#equal this.type 'string.max' }}The name must be no more than least 32 characters long{{/equal}}
-          {{#equal this.type 'string.regex.base' }}The name can only use alphanumeric characters (A-Z and 0-9) or spaces{{/equal}}
+          {{#equal this.type 'string.max' }}The name must be no more than 32 characters long{{/equal}}
+          {{#equal this.type 'string.regex.base' }}The name can only use alphanumeric characters (A-Z and 0-9), spaces or apostrophes{{/equal}}
           {{#equal this.type 'string.profanity' }}The name cannot contain profanity{{/equal}}
           {{#equal this.type 'any.required' }}The name field is required{{/equal}}
         </span></label>

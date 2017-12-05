@@ -13,24 +13,85 @@
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
+
+  {{#if error}}
+  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+
+    <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+      Licence not saved
+    </h2>
+
+    <ul class="error-summary-list">
+        <li><a href="#name">There was a problem with the licence name field</a></li>
+    </ul>
+
+  </div>
+  {{/if}}
+
+
+
+
   <h1 class="heading-medium">Licence serial number {{ licenceData.licence_ref }}</h1>
 
   <p></p>
 
+  <!-- Set licence name form -->
+  <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
+
+    <div class="form-group {{#if error }}form-group-error{{/if}}">
+      <label for="name" class="form-label-bold {{#if error }}form-label-error{{/if}}">Licence name</label>
+
+      {{#if error }}
+        {{#each error.details }}
+        <label for="name"><span class="error-message">
+          {{#equal this.type 'string.min' }}The name must be at least 2 characters long{{/equal}}
+          {{#equal this.type 'string.max' }}The name must be no more than 32 characters long{{/equal}}
+          {{#equal this.type 'string.regex.base' }}The name can only use alphanumeric characters (A-Z and 0-9), spaces or apostrophes{{/equal}}
+          {{#equal this.type 'string.profanity' }}The name cannot contain profanity{{/equal}}
+          {{#equal this.type 'any.required' }}The name field is required{{/equal}}
+        </span></label>
+        {{/each}}
+      {{/if}}
+
+      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{ name }}" />
+
+    </div>
+
+    <button type="submit" class="button">Save</button>
+    <p class="form-cancel"><a href="/licences/{{ licence_id }}">Cancel</a></p>
+
+  </form>
+
+
+
+
+
+
   <!-- User-defined licence name row -->
+<!--
   <div class="data-table">
     <label for="name" class="sourceofsupplyq">Licence name</label>
     <div class="licenceAnswer">
 
-      <!-- Set licence name form -->
+
       <form name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
-        <input type="text" class="form-control" id="name" name="name" value="{{ crmData.document_custom_name }}" />
-        <button type="submit" class="button button-inline">Save</button>
-        <p style="margin-bottom: 0;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
+
+        <div class="form-group form-group-error">
+          <label><span class="error-message">Your licence name cannot include a profanity</span></label>
+          <input type="text" class="form-control form-control-error" id="name" name="name" value="{{ crmData.document_custom_name }}" />
+
+
+        </div>
+        <button type="submit" class="button">Save</button>
+
       </form>
 
+
+        <p style="margin-bottom: 0; margin-top: 1em;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
+
+
     </div>
-  </div>
+  </div> -->
 
 
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}

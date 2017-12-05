@@ -54,6 +54,7 @@
     "node-hapi-airbrake": "0.0.6",
     "path": "^0.12.7",
     "pg": "^7.1.0",
+    "profanity-util": "^0.2.0",
     "request-promise-native": "^1.0.5",
     "vision": "^4.1.1",
     "yar": "^8.1.2"

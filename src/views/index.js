@@ -214,5 +214,6 @@ module.exports = {
   layoutPath: Path.join(__dirname, 'govuk_template_mustache/layouts'),
   layout: 'govuk_template',
   partialsPath: Path.join(__dirname, 'partials/'),
-  context: defaultContext
+  context: defaultContext,
+  isCached : process.env.NODE_ENV === 'production'
 }

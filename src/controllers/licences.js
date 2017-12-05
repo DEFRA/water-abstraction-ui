@@ -47,58 +47,6 @@ function _licenceCount(summary) {
 
 
 /**
- * Licence name validator
- * @param {String} - the licence name to validate
- * @return Promise - resolves if valid, rejects with array of errors otherwise
- */
-function _licenceNameValidator(name) {
-
-  const schema = {
-    name : Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ]+$/i)
-  };
-
-  const {error, value} = Joi.validate({name}, schema, {abortEarly : false});
-
-  return new Promise((resolve, reject) => {
-    isProfanity(value.name, (b) => {
-
-      // @TODO add profanity check
-
-      if(error) {
-        reject(error);
-      }
-      else resolve(value);
-    });
-  });
-
-
-  // // Validation
-  // const errors = [];
-  // if(!name.match(/[a-z0-9-_ ]/i)) {
-  //     errors.push('invalid');
-  // }
-  // if(name.length < 2 || name.length > 32) {
-  //   errors.push('length');
-  // }
-  //
-  // return new Promise((resolve, reject) => {
-  //   isProfanity(name, (res) => {
-  //       if(res) {
-  //         errors.push('profanity');
-  //       }
-  //       if(errors.length) {
-  //         reject(errors);
-  //       }
-  //       else {
-  //         resolve(name);
-  //       }
-  //   });
-  // });
-}
-
-
-
-/**
  * Gets a list of licences with options to filter by email address,
  * Search by licence number, and sort by number/user defined name
  * @param {Object} request - the HAPI HTTP request

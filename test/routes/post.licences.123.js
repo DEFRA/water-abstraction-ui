@@ -7,7 +7,7 @@ const Code = require('code')
 const DOMParser = require('xmldom').DOMParser
 
 const server = require('../../index')
-const user = { username : process.env.test_username}
+const user = { username : process.env.test_username, entity_id : process.env.test_entity_id };
 const payload = { name : 'A new name'};
 
 const guid = require('uuid/v1');

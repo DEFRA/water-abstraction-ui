@@ -94,21 +94,13 @@ server.register([{
   require('inert'), require('vision')
 ], (err) => {
 
-
-
   server.auth.strategy('standard', 'cookie', {
-    password: 'somecrazycookiesecretthatcantbeguesseswouldgohere', // cookie secret
-    isSecure: false, // required for non-https applications
+    password: process.env.cookie_secret, // cookie secret
+    isSecure: process.env.NODE_ENV == 'production', // use secure cookie in production
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',
-    isHttpOnly: false,
-
-    // @TODO run this past Dave
-    validateFunc: function (request, session, callback) {
-      const {username} = request.session;
-      callback(null, username != null, {username});
-    }
+    isHttpOnly: true,
   });
 
   server.auth.default({

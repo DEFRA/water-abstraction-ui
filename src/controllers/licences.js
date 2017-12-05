@@ -1,5 +1,5 @@
 /**
- * Route handlers for viewing and managing licences
+ * HAPI Route handlers for viewing and managing licences
  * @module controllers/licences
  */
 const CRM = require('../lib/connectors/crm');
@@ -7,35 +7,6 @@ const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const Boom = require('boom');
 const errorHandler = require('../lib/error-handler');
-
-
-/**
- * Get the user entity from the CRM for the current user
- * throws Boom errors if user not found / CRM error
- * @param {Object} HAPI request
- * @param {Object} HAPI reply
- * @return {Promise} resolves with entity record
- */
-function _crmGetEntity(request, reply) {
-  // Get entity record from CRM for current user
-  return CRM.getEntity(request.auth.credentials.username)
-    .then((response) => {
-
-      if(response.err) {
-        throw Boom.badImplementation(`CRM error`, response);
-      }
-
-      // Get the entity ID for the current user from CRM response
-      const { entity_id } = response.data.entity;
-
-      if(!entity_id) {
-        throw Boom.badImplementation(`CRM error: User ${request.auth.credentials.username} not found`, response);
-      }
-
-      return Promise.resolve(response.data.entity);
-    });
-}
-
 
 
 /**
@@ -53,38 +24,32 @@ function getLicences(request, reply) {
 
   const viewContext = View.contextDefaults(request);
 
-  _crmGetEntity(request, reply)
-    .then((entity) => {
+  const { entity_id } = request.auth.credentials;
 
-      const {entity_id, entity_type} = entity;
+  // Get filtered list of licences
+  const filter = {
+    entity_id,
+    string : request.query.licenceNumber,
+    email : request.query.emailAddress
+  };
 
-      // Get filtered list of licences
-      const filter = {
-        entity_id,
-        string : request.query.licenceNumber,
-        email : request.query.emailAddress
-      };
+  // Sorting
+  const sortFields= {licenceNumber : 'document_id', name : 'name'};
+  const sortField = request.query.sort || 'licenceNumber';
+  const direction = request.query.direction === -1 ? -1 : 1;
+  const sort = {};
+  sort[sortFields[sortField]] = direction;
 
-      // Sorting
-      const sortFields= {licenceNumber : 'document_id', name : 'name'};
-      const sortField = request.query.sort || 'licenceNumber';
-      const direction = request.query.direction === -1 ? -1 : 1;
-      const sort = {};
-      sort[sortFields[sortField]] = direction;
+  // Set sort info on viewContext
+  viewContext.direction = direction;
+  viewContext.sort = sortField;
 
-      // Set sort info on viewContext
-      viewContext.direction = direction;
-      viewContext.sort = sortField;
+  // @TODO check valid role names
+  viewContext.showEmailFilter = true;
+  // ['agent', 'admin'].includes(entity_type);
 
-      // @TODO check valid role names
-      viewContext.showEmailFilter = true;
-      // ['agent', 'admin'].includes(entity_type);
-
-      return CRM.getLicences(filter, sort);
-    })
+  CRM.getLicences(filter, sort)
     .then((response) => {
-
-      console.log(response);
 
       if(response.err) {
         throw Boom.badImplementation('CRM error', response);
@@ -115,22 +80,19 @@ function getLicences(request, reply) {
  * @param {Object} reply - the HAPI HTTP response
  */
 function renderLicencePage(view, pageTitle, request, reply) {
-  var viewContext = View.contextDefaults(request)
+
+  const { entity_id } = request.auth.credentials;
+
+  const viewContext = View.contextDefaults(request)
   viewContext.pageTitle = pageTitle
 
-  _crmGetEntity(request, reply)
-    .then((entity) => {
+  // Get filtered list of licences
+  const filter = {
+    entity_id,
+    document_id : request.params.licence_id
+  };
 
-      const {entity_id} = entity;
-
-      // Get filtered list of licences
-      const filter = {
-        entity_id,
-        document_id : request.params.licence_id
-      };
-
-      return CRM.getLicences(filter);
-    })
+  CRM.getLicences(filter)
     .then((response) => {
 
       if(response.err) {
@@ -198,19 +160,15 @@ function getLicenceRename(request, reply) {
  */
 function postLicence(request, reply) {
 
-  _crmGetEntity(request, reply)
-    .then((entity) => {
+  const { entity_id } = request.auth.credentials;
 
-      const {entity_id} = entity;
+  // Get filtered list of licences
+  const filter = {
+    entity_id,
+    document_id : request.params.licence_id
+  };
 
-      // Get filtered list of licences
-      const filter = {
-        entity_id,
-        document_id : request.params.licence_id
-      };
-
-      return CRM.getLicences(filter);
-    })
+  CRM.getLicences(filter)
     .then((response) => {
 
       if(!response) {

@@ -9,7 +9,7 @@ const server = require('../../index')
 const DOMParser = require('xmldom').DOMParser
 const routePath = '/licences'
 
-const user = { username : process.env.test_username}
+const user = { username : process.env.test_username, entity_id : process.env.test_entity_id };
 
 // Used to stub CRM call
 const sinon = require('sinon');

@@ -7,13 +7,13 @@ function login(user_name,password){
     var method='post'
     Helpers.makeURIRequestWithBody(uri, method, data)
     .then((response)=>{
-      console.log('login response')
-      console.log(response.body)
+      // console.log('login response')
+      // console.log(response.body)
       response.body.sessionGUID=Helpers.createGUID()
         resolve(response)
     }).catch((response)=>{
-      console.log(response)
-      console.log('rejecting in idm.login')
+      // console.log(response)
+      // console.log('rejecting in idm.login')
       reject(response)
     })
 

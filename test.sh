@@ -24,5 +24,5 @@
 ./node_modules/.bin/lab ./test/routes/postReset_Password_Change_Password.js
 ./node_modules/.bin/lab ./test/routes/postReset_Password_Resend_Email.js
 ./node_modules/.bin/lab ./test/routes/postReset_Password.js
-./node_modules/.bin/lab ./test/routes/postSign.js
+./node_modules/.bin/lab ./test/routes/postSignin.js
 ./node_modules/.bin/lab ./test/routes/postUpdate_Password.js

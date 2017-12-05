@@ -7,7 +7,8 @@ const Code = require('code')
 const DOMParser = require('xmldom').DOMParser
 
 const server = require('../../index')
-const user = { username : process.env.test_username, password : process.env.test_password };
+const user = { username : process.env.test_username, entity_id : process.env.test_entity_id };
+
 
 const guid = require('uuid/v1');
 const routePath = `/licences/${ process.env.test_licence_id }`

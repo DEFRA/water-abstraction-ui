@@ -94,8 +94,9 @@ function getLicences(request, reply) {
 
       // Calculate whether to display email filter / search form depending on summary
       const userRoles = _licenceRoles(summary);
+      const licenceCount = _licenceCount(summary);
       viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-      viewContext.enableSearch = data.length > 5; // @TODO confirm with design team
+      viewContext.enableSearch = licenceCount > 5; // @TODO confirm with design team
 
       return reply.view('water/licences', viewContext)
     })

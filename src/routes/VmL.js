@@ -43,8 +43,8 @@ module.exports = [
     auth : false,
     validate : {
       payload : {
-        user_id : Joi.string().required(),
-        password: Joi.string().required()
+        user_id : Joi.string(),
+        password: Joi.string()
       }
     }
   }},

@@ -2,13 +2,15 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
+const Joi = require('joi');
+const Boom = require('boom');
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
-const Boom = require('boom');
 const errorHandler = require('../lib/error-handler');
 const Helpers = require('../lib/helpers');
+const joiPromise = require('../lib/joi-promise');
 
 /**
  * View signin page
@@ -40,7 +42,17 @@ function getSignout(request, reply) {
  */
 function postSignin(request, reply) {
 
-    IDM.login(request.payload.user_id, request.payload.password).then((getUser) => {
+    // Validation schema for HTTP form post
+    const schema = {
+      user_id : Joi.string().email().required(),
+      password: Joi.string().required().min(8)
+    };
+
+    joiPromise(request.payload, schema)
+      .then(() => {
+        return IDM.login(request.payload.user_id, request.payload.password);
+      })
+      .then((getUser) => {
 
       // Check for password reset flag - if set don't log them in yet and force
       // password reset
@@ -87,7 +99,7 @@ function postSignin(request, reply) {
         reply.redirect('reset_password_change_password' + '?resetGuid=' + err.reset_guid + '&forced=1');
       }
       // Unauthorised status
-      else if (err.statusCode && err.statusCode == 401) {
+      else if ((err.statusCode && err.statusCode == 401) || (err.name && err.name == 'ValidationError')) {
         var viewContext = View.contextDefaults(request)
         viewContext.payload = request.payload
         viewContext.errors = {}

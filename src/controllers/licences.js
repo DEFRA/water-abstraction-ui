@@ -221,11 +221,7 @@ function postLicence(request, reply) {
   CRM.getLicences(filter)
     .then((response) => {
 
-      if(!response) {
-        throw new Boom.badImplementation('No CRM response', response);
-      }
-
-      if(response.err) {
+      if(!response || response.err) {
         throw new Boom.badImplementation('CRM error', response);
       }
 

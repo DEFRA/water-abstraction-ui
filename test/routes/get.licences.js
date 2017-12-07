@@ -113,11 +113,11 @@ lab.experiment('Check licences', () => {
 
     })
 
-    lab.test('The page should handle CRM error', async () => {
+    lab.test('The page should handle CRM exception', async () => {
 
       // Stub the CRM getLicences method to throw an error
       const getLicences = sandbox.stub(CRM, 'getLicences');
-      getLicences.throws(new Error('CRM error'));
+      getLicences.throws(new Error('CRM exception'));
 
       const request = {
         method: 'GET',
@@ -129,6 +129,25 @@ lab.experiment('Check licences', () => {
 
       const res = await server.inject(request);
 
+      Code.expect(res.statusCode).to.equal(500);
+
+    })
+
+    lab.test('The page should handle CRM error', async () => {
+
+      // Stub the CRM getLicences method to throw an error
+      const getLicences = sandbox.stub(CRM, 'getLicences');
+      getLicences.resolves({ err : 'Some CRM error', data : [] });
+
+      const request = {
+        method: 'GET',
+        url: `${ routePath }?licenceNumber=001&emailAddress=${ user.username }&sort=licenceNumber&direction=-1`,
+        headers: {},
+        payload: {},
+        credentials : user
+      }
+
+      const res = await server.inject(request);
       Code.expect(res.statusCode).to.equal(500);
 
     })

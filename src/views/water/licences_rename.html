@@ -17,9 +17,9 @@
   {{#if error}}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
 
-    <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+    <h1 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
       Licence not saved
-    </h2>
+    </h1>
 
     <ul class="error-summary-list">
         <li><a href="#name">There was a problem with the licence name field</a></li>
@@ -39,19 +39,22 @@
   <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
 
     <div class="form-group {{#if error }}form-group-error{{/if}}">
-      <label for="name" class="form-label-bold {{#if error }}form-label-error{{/if}}">Licence name</label>
+      <label for="name" class="{{#if error }}form-label-error{{/if}}">
 
+        <span class="form-label-bold">Licence name</span>
       {{#if error }}
         {{#each error.details }}
-        <label for="name"><span class="error-message">
+        <span class="error-message">
           {{#equal this.type 'string.min' }}The name must be at least 2 characters long{{/equal}}
           {{#equal this.type 'string.max' }}The name must be no more than 32 characters long{{/equal}}
           {{#equal this.type 'string.regex.base' }}The name can only use alphanumeric characters (A-Z and 0-9), spaces or apostrophes{{/equal}}
           {{#equal this.type 'string.profanity' }}The name cannot contain profanity{{/equal}}
           {{#equal this.type 'any.required' }}The name field is required{{/equal}}
-        </span></label>
+        </span>
         {{/each}}
       {{/if}}
+
+      </label>
 
       <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{ name }}" />
 

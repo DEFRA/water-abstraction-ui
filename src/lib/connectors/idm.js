@@ -1,6 +1,6 @@
 const Helpers = require('../helpers')
 
-function login(user_name,password){
+function login(user_name, password){
   return new Promise((resolve, reject) => {
     var data = { user_name:user_name, password:password }
     var uri=process.env.IDM_URI + '/user/login'+ '?token=' + process.env.JWT_TOKEN

@@ -11,7 +11,7 @@ function getRoot(request, reply) {
 
 function getUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
-  if (!viewContext.session.user) {
+  if (!request.auth.credentials) {
     getSignin(request, reply)
   } else {
     viewContext.pageTitle = 'GOV.UK - change your password'

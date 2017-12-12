@@ -7,6 +7,9 @@ const rp = require('request-promise-native').defaults({
     strictSSL :false
   })
 
+
+
+
 /**
  * Get entity record
  * @param {String} user_name - the email address of the current user

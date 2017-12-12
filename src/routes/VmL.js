@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
-
+const RegistrationController = require('../controllers/registration');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -122,7 +122,26 @@ module.exports = [
         licence_id : Joi.string().required().guid()
       }
     }
-  } },
+  }},
+
+
+  // Registration process
+  { method: 'GET', path: '/register', handler: RegistrationController.getEmailAddress, config : {
+    auth : false,
+    description : 'Register user account - get email address'
+  }},
+
+  // Registration process
+  { method: 'POST', path: '/register', handler: RegistrationController.postEmailAddress, config : {
+    auth : false,
+    description : 'Register user account - email address form handler',
+    validate : {
+      payload : {
+        email : Joi.string().allow('')
+      }
+    }
+  }},
+
 
 {
       method: '*',

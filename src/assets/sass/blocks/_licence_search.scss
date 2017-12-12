@@ -26,65 +26,10 @@
 .form-control--block {
   width: 100%;
 }
-// .form-group {
-//   &--horizontal {
-//     display: flex;
-//     flex-direction: column;
-//
-//     &>input {
-//       align-self: flex-end;
-//     }
-//   }
-// }
-
-
-
-/**
- * Flexbox implementation
-.flex {
-    padding: 15px;
-    @media screen and (min-width: 641px) {
-      display: flex;
-      padding: 0 15px;
-    }
-  & > * {
-    @media screen and (min-width: 641px) {
-      margin-right: 30px;
-    }
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-
-
-  &__40 {
-    flex: 0 1 40%;
-  }
-  &__20 {
-    flex: 0 1 20%;
-  }
+input[type=search] {
+  box-sizing: border-box;
 }
 
-.form-group {
-  &--horizontal {
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    height: 100%;
-
-    &>* {
-      flex: 0 1 auto;
-    }
-
-    &>input {
-      // align-self: flex-end;
-    }
-  }
-}
-
-*/
 .button {
   &-license-search {
     @media screen and (min-width: 641px) {
@@ -190,6 +135,8 @@
     padding: 0;
   }
 
+
+
   &__column {
 
     // Display as table cell on desktop
@@ -201,10 +148,6 @@
       width: 40%;
       padding: 15px;
       font-weight: normal;
-
-      :active &, :focus & {
-        border-bottom: none;
-      }
 
       &:first-child {
         padding-left: 0;
@@ -225,6 +168,12 @@
         text-align: right;
         text-decoration: underline;
       }
+    }
+  }
+
+  &:active, &:focus {
+    &>* {
+      border-bottom-color: transparent;
     }
   }
 

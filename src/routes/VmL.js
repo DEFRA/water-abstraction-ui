@@ -65,8 +65,8 @@ module.exports = [
          query: {
              sort: Joi.string().valid('licenceNumber', 'name'),
              direction : Joi.number().valid(1, -1),
-             emailAddress : Joi.string(),
-             licenceNumber : Joi.string()
+             emailAddress : Joi.string().allow(''),
+             licenceNumber : Joi.string().allow('')
          }
      }
   }},

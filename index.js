@@ -1,7 +1,6 @@
 require('dotenv').config()
 
 
-
 /**
 request.cookieAuth.set(user);
 
@@ -33,9 +32,30 @@ server.state('sessionCookie', {
 });
 
 
+// logging options
+const goodOptions = {
+    ops: {
+        interval: 1000
+    },
+    reporters: {
+        myConsoleReporter: [{
+            module: 'good-squeeze',
+            name: 'Squeeze',
+            args: [{ log: '*', response: '*' }]
+        }, {
+            module: 'good-console'
+        }, 'stdout']
+    }
+};
 
 
-server.register([{
+server.register([
+  {
+    register: require('good'),
+    options: goodOptions
+  },
+
+  {
   register: require('hapi-error'),
   options : {
     templateName : 'water/error.html',
@@ -45,7 +65,8 @@ server.register([{
       }
     }
   }
-}, {
+},
+{
     register: require('node-hapi-airbrake'),
     options: {
       key: process.env.errbit_key,
@@ -72,18 +93,8 @@ server.register([{
     }
   }, {
     register: require('hapi-auth-cookie')
-  }, {
-    // Plugin to prevent CSS attack by applying Google's Caja HTML Sanitizer on route query, payload, and params
-    // See https://www.npmjs.com/package/disinfect
-    register: Disinfect,
-    options: {
-      deleteEmpty: true,
-      deleteWhitespace: true,
-      disinfectQuery: true,
-      disinfectParams: true,
-      disinfectPayload: true
-    }
-  }, {
+  },
+  {
     // Plugin to recursively sanitize or prune values in a request.payload object
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
@@ -91,6 +102,7 @@ server.register([{
       pruneMethod: 'delete'
     }
   },
+
   require('inert'), require('vision')
 ], (err) => {
 

@@ -17,6 +17,9 @@
 module.exports = function(request, reply) {
   return function(err) {
 
+    // Log with good
+    request.log(err);
+
     const statusCode = err.isBoom ? (err.output.statusCode || 500) : 500;
 
     // Log error

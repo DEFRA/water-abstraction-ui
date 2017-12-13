@@ -8,6 +8,7 @@ const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
 const joiPromise = require('../lib/joi-promise');
 const IDM = require('../lib/connectors/idm');
+const CRM = require('../lib/connectors/crm');
 
 /**
  * Render form to get user email address
@@ -44,11 +45,27 @@ function postEmailAddress(request, reply) {
     })
     .then((response) => {
       if(response.error) {
-        throw Boom.badImplementation('IDM error', response);
+        throw Boom.badImplementation('IDM error', response.error);
       }
-      
+      // Trigger password reset email
+      return IDM.resetPassword(request.payload.email);
+    })
+    .then(() => {
+      // Create CRM entity
+      return CRM.createEntity(request.payload.email);
+    })
+    .then((res) => {
+      // Redirect to success page
+      return reply.redirect('/success')
     })
     .catch((error) => {
+
+      // User already exists - handle error
+      if(error.isBoom && error.data.code && (error.data.code == 23505)) {
+        return IDM.resetPassword(request.payload.email);
+      }
+
+      // Email was invalid - handle error
       if(error.name === 'ValidationError') {
         var viewContext = View.contextDefaults(request);
         viewContext.pageTitle = 'GOV.UK - Create Account';
@@ -57,14 +74,30 @@ function postEmailAddress(request, reply) {
       }
       throw error;
     })
+    .then(() => {
+      // Redirect to success page
+      return reply.redirect('/success')
+    })
     .catch(errorHandler(request,reply));
 
 
 }
 
 
+/**
+ * Success page shown when account created
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply
+ */
+function getRegisterSuccess(request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Account Created';
+  return reply.view('water/register_success', viewContext);
+}
+
 
 module.exports = {
   getEmailAddress,
-  postEmailAddress
+  postEmailAddress,
+  getRegisterSuccess
 };

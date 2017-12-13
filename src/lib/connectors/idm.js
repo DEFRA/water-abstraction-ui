@@ -53,23 +53,24 @@ function login(user_name, password){
 
 }
 
+
+/**
+ * Send password reset email
+ * @param {String} emailAddress - the user email address to send password reset email to
+ * @return {Promise} - resolves with HTTP response
+ */
 function resetPassword(emailAddress){
-  return new Promise((resolve, reject) => {
-    var data = { emailAddress: emailAddress }
-    var uri=process.env.IDM_URI + '/resetPassword'+ '?token=' + process.env.JWT_TOKEN
-    var method='post'
-    Helpers.makeURIRequestWithBody(uri, method, data)
-    .then((response)=>{
-        resolve(response)
-    }).catch((response)=>{
-      //console.log('rejecting in idm.resetPassword.login')
-      reject(response)
-    })
-
+  return rp({
+    uri : process.env.IDM_URI + '/resetPassword',
+    method : 'POST',
+    json : true,
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      emailAddress
+    }
   });
-
-
-
 }
 
 function getPasswordResetLink (emailAddress) {

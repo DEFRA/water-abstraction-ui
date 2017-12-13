@@ -130,8 +130,6 @@ module.exports = [
     auth : false,
     description : 'Register user account - get email address'
   }},
-
-  // Registration process
   { method: 'POST', path: '/register', handler: RegistrationController.postEmailAddress, config : {
     auth : false,
     description : 'Register user account - email address form handler',
@@ -140,6 +138,10 @@ module.exports = [
         email : Joi.string().allow('')
       }
     }
+  }},
+  { method: 'GET', path: '/success', handler: RegistrationController.getRegisterSuccess, config : {
+    auth : false,
+    description : 'Register user account - success page'
   }},
 
 

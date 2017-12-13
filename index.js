@@ -143,139 +143,15 @@ server.ext({
     if (request.path.indexOf('public') != -1) {
       //files in public dir are always online...
       return reply.continue();
+    } else if (request.path == '/robots.txt') {
+      //robots.txt is always online because it's used for ELB healthcheck...
+      return reply.continue();
+
     } else {
-
-      console.log('check for cookie!')
-      var cookie = request.state.sessionCookie
-      if(cookie){
-        request.session=cookie
-        console.log("cookie found")
-      } else {
-        console.log("COOKIE NOT FOUND")
-      }
-
-
-      function updateS3StatusFile() {
-        //private function to refresh status control file from s3
-        //contents of file: 0=offline, 1=online
-        //it's a fire and forget function, we don't wait for a response
-        var AWS = require('aws-sdk');
-        var config = new AWS.Config({
-          accessKeyId: process.env.s3_key,
-          secretAccessKey: process.env.s3_secret
-        });
-        var s3 = new AWS.S3(config);
-        var params = {
-          Bucket: process.env.s3_bucket,
-          Key: process.env.environment + '-status'
-        };
-        s3.getObject(params, function(err, data) {
-          if (err) {
-            //we don't actually care if there's an error as we always assume online if we don't know...
-            //console.log(`s3 file not found at ${process.env.environment}-status`)
-
-            return
-          } else {
-            //read file contents from s3, and write to local file
-            status = data.Body.toString()
-            fs.writeFile("./server-status", status, function(err) {
-              if (err) {
-                console.log(err);
-              } else {
-                //s3 file updated
-              }
-
-            });
-          }
-        });
-      }
-
-
-      var moment = require('moment')
-      var status = null;
-      var fs = require('fs');
-      var difference
-
-      //check for local file with service status from s3
-      fs.stat("./server-status", function(err, stats) {
-        //get timestamp of server status file and calc difference from now in seconds...
-        console.log('try stat')
-        try {
-          var mtime = stats.mtime;
-          difference = parseInt(moment().diff(mtime) / 1000);
-          //Service status last checked ${difference} seconds ago
-        } catch (e) {
-          //local status file not found
-          console.log(e)
-          difference = null
-        }
-
-        if (!difference) {
-          //local file not found. get from S3 and assume we're online
-          processServerStatus(1)
-          updateS3StatusFile()
-        } else if (difference > 60) {
-          //local file found AND older than 60 seconds so refresh it...
-          updateS3StatusFile()
-        }
-
-try{
-        fs.readFile('./server-status', function read(err, data) {
-          if (err) {
-            //local file not found, so write it in with status of 1
-            fs.writeFile("./server-status", '1', function(err) {
-              if (err) {
-                return console.log(err);
-              }
-            });
-            processServerStatus(1)
-          } else {
-            //Local file contents: ' + data
-            status = data;
-            processServerStatus(status)
-          }
-        });
-}catch(e){
-              processServerStatus(1)
-}
-      })
-
-      function processServerStatus(status) {
-        console.log('processServerStatus=' + status)
-        if (status == 0) {
-          var offline = true;
-        } else {
-          var offline = false;
-        }
-        console.log('offline = ' + offline)
-
-
-
-
-
-        if (offline && request.path.indexOf('public') == -1) {
-          var viewContext = {}
-          viewContext.session = request.session
-          viewContext.pageTitle = 'Water Abstraction'
-          viewContext.insideHeader = ''
-          viewContext.headerClass = 'with-proposition'
-          viewContext.topOfPage = null
-          viewContext.head = null
-          viewContext.bodyStart = null
-          viewContext.afterHeader = null
-          viewContext.path = request.path
-          return reply.view('water/offline', viewContext)
-        }
-        return reply.continue();
-      }
-
-
-
-
-
+      //removed s3 status file check since it's leaking memory...
+      return reply.continue();
     }
   }
-
 });
 
 

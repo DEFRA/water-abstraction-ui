@@ -1,0 +1,67 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+      </ol>
+    </div>
+  </nav>
+
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <h1 class="heading-large">
+        Tell us your licence information
+      </h1>
+
+      <form method="POST" action="/add-licences">
+
+        <!-- licence number field -->
+        <div class="form-group">
+          <label for="licence_no">
+
+            <fieldset>
+              <span class="form-label-bold">Your licence numbers</span>
+              <span class="form-hint">
+                Give us a list of all your licence numbers.
+              </span>
+
+              {{#if error }}
+              <span id="enterLicenceNo" class="error-message">Enter your licence number.</span>
+              {{/if}}
+            </fieldset>
+
+          </label>
+          <textarea class="form-control form-control-3-4" name="licence_no" id="licence_no" rows="5" value="" required ></textarea>
+        </div>
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+    </form>
+
+    <p></p>
+
+    <details class="closeOnOpen">
+      <summary><span class="summary">Don't have this information?</span></summary>
+
+      <p>Call our team for help:</p>
+
+      <ul class="list list-bullet">
+        <li>phone - <a href="tel:03708506506">03708 506 506</a> (UK)</li>
+        <li>minicom if you are deaf or hard of hearing - 03702 422 549</li>
+      </ul>
+
+      <p>Phone lines are open Monday to Friday, 8am to 6pm.
+    </br>Call charges can be found on <a href="http://www.gov.uk">GOV.UK</a></p>
+    </details>
+
+    </div>
+  </div>
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

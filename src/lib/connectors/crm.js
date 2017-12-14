@@ -59,10 +59,13 @@ function getEntity(user_name) {
  * @example getLicences({entity_id : 'guid'})
  */
 function getLicences(filter, sort = {}) {
-  const uri = process.env.CRM_URI + '/documentHeader/filter?token=' + process.env.JWT_TOKEN;
+  const uri = process.env.CRM_URI + '/documentHeader/filter';
   return rp({
     uri,
     method : 'POST',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
     json : true,
     body : { filter, sort }
   });

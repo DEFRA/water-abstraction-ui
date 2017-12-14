@@ -53,6 +53,7 @@
     "http-errors": "^1.6.2",
     "inert": "^4.2.1",
     "joi": "^13.0.2",
+    "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "node-hapi-airbrake": "0.0.6",
     "path": "^0.12.7",

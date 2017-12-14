@@ -1,0 +1,56 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+      </ol>
+    </div>
+  </nav>
+
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <h1 class="heading-large">
+        Are these all of your water abstraction or impoundment licences?
+      </h1>
+
+      <form method="POST" action="/confirm-licences">
+
+        <fieldset>
+          <legend>
+            <span class="body-text">Remove any licence serial numbers that do not apply:</span>
+          </legend>
+
+
+        {{#each licences}}
+        <div class="multiple-choice">
+          <input checked="checked" type="checkbox" name="licences[]" value="{{ this.document_id }}" id="{{ this.document_id }}" />
+          <label for="{{ this.document_id }}">{{ this.system_external_id }}</label>
+        </div>
+        {{/each}}
+
+        </fieldset>
+
+        <br />
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+      </form>
+
+      <br />
+
+      <p>
+        <a href="#">These aren't my licences, or some are missing</a>
+      </p>
+
+
+    </div>
+  </div>
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

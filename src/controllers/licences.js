@@ -71,7 +71,7 @@ function getLicences(request, reply) {
   };
 
   // Sorting
-  const sortFields= {licenceNumber : 'document_id', name : 'name'};
+  const sortFields= {licenceNumber : 'system_external_id', name : 'document_custom_name'};
   const sortField = request.query.sort || 'licenceNumber';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};

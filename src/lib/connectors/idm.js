@@ -1,19 +1,19 @@
 const Helpers = require('../helpers')
 
-function login(user_name,password){
+function login(user_name, password){
   return new Promise((resolve, reject) => {
     var data = { user_name:user_name, password:password }
     var uri=process.env.IDM_URI + '/user/login'+ '?token=' + process.env.JWT_TOKEN
     var method='post'
     Helpers.makeURIRequestWithBody(uri, method, data)
     .then((response)=>{
-      console.log('login response')
-      console.log(response.body)
+      // console.log('login response')
+      // console.log(response.body)
       response.body.sessionGUID=Helpers.createGUID()
         resolve(response)
     }).catch((response)=>{
-      console.log(response)
-      console.log('rejecting in idm.login')
+      // console.log(response)
+      // console.log('rejecting in idm.login')
       reject(response)
     })
 

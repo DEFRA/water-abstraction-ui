@@ -1,5 +1,9 @@
 
 const VmL=require('../lib/VmL')
+const Joi = require('joi');
+
+const LicencesController = require('../controllers/licences');
+const AuthController = require('../controllers/authentication');
 
 
 /**
@@ -12,14 +16,19 @@ module.exports = [
         method: 'GET',
         path: '/',
         handler: function (request, reply) {
-          console.log('serve the file!!!')
-          var fs = require('fs');
-          fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
-            if (err) {
-              throw err;
-            }
-            reply(data.toString());
-          });
+          console.log(request.query)
+          if(request.query.access && request.query.access=='PB01'){
+            var fs = require('fs');
+            fs.readFile( __dirname + '/../views/water/index.html', function (err, data) {
+              if (err) {
+                throw err;
+              }
+              reply(data.toString());
+            });
+          } else {
+              reply('unauthorised').code(401)
+          }
+
 
         },config: { auth: false },config: { auth: false }
     },
@@ -27,9 +36,18 @@ module.exports = [
   { method: 'GET', path: '/robots.txt', handler: function(request,reply){return reply('exterminate').code(200)}, config:{auth: false,description:'Ooh. Robots'}},
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
-  { method: 'GET', path: '/signout', config: { auth: false }, handler: VmL.getSignout },
-  { method: 'GET', path: '/signin', config: { auth: false }, handler: VmL.getSignin },
-  { method: 'POST', path: '/signin', config: { auth: false }, handler: VmL.postSignin },
+  { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },
+  { method: 'GET', path: '/signin', config: { auth: false }, handler: AuthController.getSignin },
+  { method: 'POST', path: '/signin', handler: AuthController.postSignin, config : {
+    description : 'Login form handler',
+    auth : false,
+    validate : {
+      payload : {
+        user_id : Joi.string(),
+        password: Joi.string()
+      }
+    }
+  }},
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
   { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   { method: 'POST', path: '/update_password', handler: VmL.postUpdatePassword },
@@ -41,11 +59,70 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
     { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
-  { method: 'GET', path: '/licences',  handler: VmL.getLicences },
-  { method: 'GET', path: '/licences/{licence_id}', handler: VmL.getLicence },
-  { method: 'GET', path: '/licences/{licence_id}/contact', handler: VmL.getLicenceContact },
-  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: VmL.getLicenceMap },
-  { method: 'GET', path: '/licences/{licence_id}/terms', handler: VmL.getLicenceTerms },
+  { method: 'GET', path: '/licences',  handler: LicencesController.getLicences, config: {
+    description : 'View list of licences with facility to sort/filter',
+    validate: {
+         query: {
+             sort: Joi.string().valid('licenceNumber', 'name'),
+             direction : Joi.number().valid(1, -1),
+             emailAddress : Joi.string().allow(''),
+             licenceNumber : Joi.string().allow('')
+         }
+     }
+  }},
+  { method: 'GET', path: '/licences/{licence_id}', handler: LicencesController.getLicence, config : {
+    description : 'View a single licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+ }},
+  { method: 'POST', path: '/licences/{licence_id}', handler: LicencesController.postLicence, config : {
+      description : 'Update the user-defined licence name',
+      validate : {
+        params : {
+          licence_id : Joi.string().required().guid()
+        },
+        payload : {
+          name : Joi.string()
+        }
+      }
+  }},
+
+  { method: 'GET', path: '/licences/{licence_id}/contact', handler: LicencesController.getLicenceContact, config : {
+    description : 'View contact info for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+  { method: 'GET', path: '/licences/{licence_id}/rename', handler: LicencesController.getLicenceRename, config : {
+    description : 'Set user-defined name for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+
+  { method: 'GET', path: '/licences/{licence_id}/map_of_abstraction_point', handler: LicencesController.getLicenceMap, config : {
+    description : 'View abstraction point map for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  }},
+  { method: 'GET', path: '/licences/{licence_id}/terms', handler: LicencesController.getLicenceTerms, config : {
+    description : 'View abstraction point terms for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
 
 {
       method: '*',

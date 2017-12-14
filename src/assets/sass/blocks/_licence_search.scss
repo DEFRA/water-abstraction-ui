@@ -1,0 +1,197 @@
+// Column widths for search fields - designed to mimic the
+// column naming convention for thirds
+.column-two-fifths {
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+
+  @media screen and (min-width: 641px) {
+    width: 40%;
+    float: left;
+  }
+}
+.column-one-fifth {
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+
+  @media screen and (min-width: 641px) {
+    width: 20%;
+    float: left;
+  }
+}
+.form-label--bold {
+  font-weight: bold;
+}
+.form-control--block {
+  width: 100%;
+}
+input[type=search] {
+  box-sizing: border-box;
+}
+
+.button {
+  &-license-search {
+    @media screen and (min-width: 641px) {
+      margin-top: 50px;
+      float: right;
+      width: 100%;
+    }
+  }
+}
+
+// Table cells
+.cell-two-fifths {
+  @media screen and (min-width: 641px) {
+    width: 40%;
+    padding-left: 15px;
+    padding-right: 15px;
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+}
+
+
+// License results table / mobile tiles
+.license-results {
+      @media screen and (min-width: 641px) {
+        display: table;
+        width: 100%;
+      }
+
+      // Table header
+      &--header {
+        & a {
+          font-weight: bold;
+        }
+      }
+
+}
+
+
+// Header row with links to sort by licence number/name
+.license-results-header {
+
+  // For modern mobile device, use flexbox
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid $border-colour;
+
+  @media screen and (min-width: 641px) {
+    display: table-row;
+  }
+
+  // Columns within table header
+  &__column {
+
+    padding: 15px 0;
+    font-weight: bold;
+
+    &:last-child {
+      display: none;
+    }
+
+    @media screen and (min-width: 641px) {
+      display: table-cell;
+      padding: 15px;
+      border-bottom: 1px solid $border-colour;
+
+      &:first-child {
+        width: 40%;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        display: table-cell;
+      }
+    }
+
+
+  }
+}
+
+
+.license-result {
+
+  display: block;
+  border-bottom: 1px solid $border-colour;
+  padding: 15px 0 0 0;
+  text-decoration: none;
+
+  &:hover {
+    background: $highlight-colour;
+    .license-result__column--view {
+      color: $link-hover-colour;
+    }
+  }
+  &:focus {
+    background: $focus-colour;
+    border-bottom-color: transparent;
+  }
+
+  @media screen and (min-width: 641px) {
+    display: table-row;
+    padding: 0;
+  }
+
+
+
+  &__column {
+
+    // Display as table cell on desktop
+    @media screen and (min-width: 641px) {
+      color: $text-colour;
+      font-size: inherit;
+      display: table-cell;
+      border-bottom: 1px solid $border-colour;
+      width: 40%;
+      padding: 15px;
+      font-weight: normal;
+
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+
+    &--description {
+      color: $text-colour;
+    }
+
+    &--view {
+      display: none;
+
+      @media screen and (min-width: 641px) {
+        display: table-cell;
+        width: 20%;
+        color: $link-colour;
+        text-align: right;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &:active, &:focus {
+    &>* {
+      border-bottom-color: transparent;
+    }
+  }
+
+}
+
+// AJAX loading spinner
+.spinner {
+  background: url("../images/ajax-loader.gif") center center no-repeat;
+  height: 56px;
+  margin: 0;
+  padding: 0;
+  text-indent: -10000em;
+}
+
+// Sort icons - don't want underline but still part of link
+.sort-icon {
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.66em;
+}

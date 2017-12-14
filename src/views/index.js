@@ -1,6 +1,6 @@
 const handlebars = require('handlebars')
 const moment = require('moment')
-
+const qs = require('querystring');
 
 console.log('working dir for views')
 console.log(__dirname)
@@ -9,6 +9,41 @@ const Helpers = require('../lib/helpers')
 const DynamicView = require('../lib/dynamicview')
 
 handlebars.registerHelper('equal', require('handlebars-helper-equal'))
+
+
+
+
+/**
+ * A handlebars helper to get a query string for sorting data
+ */
+handlebars.registerHelper('sortQuery', function(context, options) {
+  const {direction, sort, field,  ...params} = arguments[0].hash
+  const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
+  const query = Object.assign(params, {sort : field, direction : newDirection});
+  return qs.stringify(query);
+});
+
+/**
+ * A handlebars helper to get a sort direction triangle
+ */
+handlebars.registerHelper('sortIcon',  function(context, options) {
+  const {direction, sort, field} = arguments[0].hash
+  const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
+
+  if(sort == field) {
+    return '<span class="sort-icon">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
+  }
+
+});
+
+
+
+// handlebars.registerHelper('sortLink', function () {
+//   var arg = Array.prototype.slice.call(arguments, 0)
+//   arg.pop()
+//   return arg.join('')
+// })
+
 
 handlebars.registerHelper('concat', function () {
   var arg = Array.prototype.slice.call(arguments, 0)
@@ -64,13 +99,36 @@ handlebars.registerHelper('guid', function () {
 })
 
 handlebars.registerHelper('formatDate', function (dateInput) {
-  var date = moment(dateInput, "DD/MM/YYYY")
+  console.log('formatDate')
+
+  console.log(dateInput)
+  var date = moment(dateInput, "MM/DD/YYYY")
+  console.log(date)
+  var isFutureDate = moment().isBefore(date);
+  if(isFutureDate){
+    date.subtract('year', 100)
+  }
+  console.log('Future date:' +isFutureDate)
+
+  return date.isValid() ? date.format("D MMMM YYYY") : dateInput
+})
+
+handlebars.registerHelper('formatToDate', function (dateInput) {
+  console.log('formatDate')
+
+  console.log(dateInput)
+  var date = moment(dateInput, "MM/DD/YYYY")
+  if (!date.isValid()){
+    var date = moment(dateInput, "DD/MM/YYYY")
+  }
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
 handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
-  var periodStart = moment(inputStart, "DD/MM")
-  var periodEnd = moment(inputEnd, "DD/MM")
+  var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
+  var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
+  var periodStart = moment(tmp_inputStart, "DD/MMM/YYYY")
+  var periodEnd = moment(tmp_inputEnd, "DD/MMM/YYYY")
   return 'From ' + periodStart.format("D MMMM") + ' until ' + periodEnd.format("D MMMM")
 })
 
@@ -140,7 +198,7 @@ const defaultContext = {
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
 
-  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/" id="proposition-name">Manage your water abstraction or impoundment licence</a></nav></div></div>',
+  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/?access=PB01" id="proposition-name">Manage your water abstraction or impoundment licence</a></nav></div></div>',
   afterHeader: '',
   footerTop: '',
   footerSupportLinks: '',
@@ -156,5 +214,6 @@ module.exports = {
   layoutPath: Path.join(__dirname, 'govuk_template_mustache/layouts'),
   layout: 'govuk_template',
   partialsPath: Path.join(__dirname, 'partials/'),
-  context: defaultContext
+  context: defaultContext,
+  isCached : process.env.NODE_ENV === 'production'
 }

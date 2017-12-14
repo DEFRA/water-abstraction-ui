@@ -9,161 +9,9 @@ function getRoot(request, reply) {
   reply.file('./staticindex.html')
 }
 
-function getSignout(request, reply) {
-  request.cookieAuth.clear()
-  return reply.redirect('/')
-}
-
-function getSignin(request, reply) {
-  // get signin page
-  if (request.path != '/signin') {
-    request.session.postlogin = request.path
-  } else {
-    request.session.postlogin = '/licences'
-  }
-  request.session.id = Helpers.createGUID()
-  var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-  return reply.view('water/signin', viewContext)
-}
-
-function postSignin(request, reply) {
-  // post from signin page
-  if (request.payload && request.payload.user_id && request.payload.password) {
-    IDM.login(request.payload.user_id, request.payload.password).then((getUser) => {
-      var session = request.session
-      request.session.user = getUser.body
-      request.session.username = request.payload.user_id
-      request.session.cookie = getUser.sessionCookie
-      request.session.licences = getUser.licences
-      request.session.id = getUser.body.sessionGUID
-
-
-      request.cookieAuth.set({
-        sid: getUser.sessionGuid
-      })
-      //TODO: consider post login redirect to other than main licences page
-
-      if (getUser.body.reset_required && getUser.body.reset_required == 1) {
-        reply.redirect('reset_password_change_password' + '?resetGuid=' + getUser.body.reset_guid + '&forced=1')
-      } else {
-
-        return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>')
-      }
-
-    }).catch((getuser) => {
-      if (getuser.statusCode && getuser.statusCode == 401) {
-        var viewContext = View.contextDefaults(request)
-        viewContext.payload = request.payload
-        viewContext.errors = {}
-        viewContext.errors['authentication'] = 1
-        viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-        return reply.view('water/signin', viewContext)
-      } else {
-        var viewContext = View.contextDefaults(request)
-        viewContext.pageTitle = 'GOV.UK - Error'
-        return reply.view('water/error', viewContext)
-      }
-
-
-    })
-  } else {
-    var viewContext = View.contextDefaults(request)
-    viewContext.pageTitle = 'GOV.UK - Sign in to view your licence'
-    viewContext.payload = request.payload
-    viewContext.errors = {}
-    if (!request.payload.user_id) {
-      viewContext.errors['user-id'] = 1
-    }
-
-    if (!request.payload.password) {
-      viewContext.errors['password'] = 1
-    }
-
-    return reply.view('water/signin', viewContext)
-  }
-}
-
-function getLicences(request, reply) {
-  if (!request.session.id) {
-    return reply.redirect('/signin')
-  } else {
-    var viewContext = View.contextDefaults(request)
-    CRM.getLicences(request.session.username).then((data) => {
-      request.session.licences = data
-      viewContext.licenceData = data
-      viewContext.debug.licenceData = data
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      return reply.view('water/licences', viewContext)
-    }).catch((data) => {
-
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'GOV.UK - Error'
-      return reply.view('water/error', viewContext)
-
-    })
-  }
-}
-
-
-
-function renderLicencePage(view, pageTitle, request, reply) {
-  var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = pageTitle
-  if (!viewContext.session.id) {
-    getSignin(request, reply)
-  } else {
-    CRM.getLicenceInternalID(request.session.licences, request.params.licence_id)
-      .then((thisLicence) => {
-        Permit.getLicence(thisLicence.system_internal_id).then((licence) => {
-          data = JSON.parse(licence.body)
-          viewContext.licence_id = request.params.licence_id
-          viewContext.licenceData = data.data
-          viewContext.debug.licenceData = viewContext.licenceData
-          return reply.view(view, viewContext)
-        }).catch((response) => {
-          viewContext.debug.response = response
-          viewContext.error = response
-          viewContext.error = 'You have requested a licence with an invalid ID'
-          return reply.view('water/404', viewContext)
-        })
-      }).catch((response) => {
-        viewContext.debug.response = response
-        viewContext.error = response
-        return reply.view('water/404', viewContext)
-      })
-  }
-}
-
-function getLicence(request, reply) {
-  renderLicencePage(
-    'water/licence', 'GOV.UK - Your water abstraction licences', request, reply
-  )
-}
-
-function getLicenceContact(request, reply) {
-  renderLicencePage(
-    'water/licences_contact', 'GOV.UK - Your water abstraction licences - contact details', request, reply
-  )
-}
-
-function getLicenceMap(request, reply) {
-  renderLicencePage(
-    'water/licences_map', 'GOV.UK - Your water abstraction licences - Map', request, reply
-  )
-}
-
-function getLicenceTerms(request, reply) {
-  renderLicencePage(
-    'water/licences_terms', 'GOV.UK - Your water abstraction licences - Full Terms', request, reply
-  )
-}
-
-
-
 function getUpdatePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
-  if (!viewContext.session.user) {
+  if (!request.auth.credentials) {
     getSignin(request, reply)
   } else {
     viewContext.pageTitle = 'GOV.UK - change your password'
@@ -241,6 +89,9 @@ function validatePassword(password, confirmPassword) {
 }
 
 function postUpdatePassword(request, reply) {
+  console.log('*****postUpdatePassword*****')
+  console.log('request.payload')
+  console.log(request.payload)
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
@@ -409,26 +260,18 @@ function fourOhFour(request, reply) {
 
 function getFeedback(request, reply) {
   var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Not Found'
+  viewContext.pageTitle = 'GOV.UK - Tell us what you think about this service'
   return reply.view('water/feedback', viewContext)
 }
 
 function getUpdatedPassword(request,reply){
   var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - Not Found'
+  viewContext.pageTitle = 'GOV.UK - Password Updated'
   return reply.view('water/updated_password', viewContext)
 }
 
 module.exports = {
   getRoot: getRoot,
-  getSignin: getSignin,
-  getSignout: getSignout,
-  postSignin: postSignin,
-  getLicences: getLicences,
-  getLicence: getLicence,
-  getLicenceContact: getLicenceContact,
-  getLicenceMap: getLicenceMap,
-  getLicenceTerms: getLicenceTerms,
   getUpdatePassword: getUpdatePassword,
   postUpdatePassword: postUpdatePassword,
   getResetPassword: getResetPassword,

@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-var xlsx = require('XLSX')
+var xlsx = require('xlsx')
 var anonymise = require('./anonymise')
 var normalise = require('./normalise')
 var exportLicence = require('./export')

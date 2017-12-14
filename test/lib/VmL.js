@@ -4,7 +4,7 @@ const Lab = require('lab')
 const lab = exports.lab = Lab.script()
 
 const Code = require('code')
-const rewire = require('rewire');
+// const rewire = require('rewire');
 
 
 
@@ -18,46 +18,27 @@ lab.experiment('vml.getRoot', () => {
 })
 })
 
-lab.experiment('vml.getSignin', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getSignin).to.be.a.function()
-})
-})
-lab.experiment('vml.getSignout', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getSignout).to.be.a.function()
-})
-})
-lab.experiment('vml.postSignin', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.postSignin).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicences', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicences).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicence', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicence).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceContact', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceContact).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceMap', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceMap).to.be.a.function()
-})
-})
-lab.experiment('vml.getLicenceTerms', () => {
-  lab.test('function exists', async () => {
-  Code.expect(vml.getLicenceTerms).to.be.a.function()
-})
-})
+// lab.experiment('vml.getSignin', () => {
+//   lab.test('function exists', async () => {
+//   Code.expect(vml.getSignin).to.be.a.function()
+// })
+// })
+// lab.experiment('vml.getSignout', () => {
+//   lab.test('function exists', async () => {
+//   Code.expect(vml.getSignout).to.be.a.function()
+// })
+// })
+// lab.experiment('vml.postSignin', () => {
+//   lab.test('function exists', async () => {
+//   Code.expect(vml.postSignin).to.be.a.function()
+// })
+// })
+// lab.experiment('vml.getLicences', () => {
+//   lab.test('function exists', async () => {
+//   Code.expect(vml.getLicences).to.be.a.function()
+// })
+// })
+
 lab.experiment('vml.getUpdatePassword', () => {
   lab.test('function exists', async () => {
   Code.expect(vml.getUpdatePassword).to.be.a.function()
@@ -124,10 +105,10 @@ lab.experiment('vml.fourOhFour', () => {
 })
 })
 
-lab.experiment('vml.getSignin', () => {
-  var request={path:'/signin',session:{},connection:{info:''},info:{}}
-  var reply={view:function(){return true}}
-  lab.test('returns true', async () => {
-  Code.expect(vml.getSignin(request,reply)).to.be.equal(true)
-})
-})
+// lab.experiment('vml.getSignin', () => {
+//   var request={path:'/signin',session:{},connection:{info:''},info:{}}
+//   var reply={view:function(){return true}}
+//   lab.test('returns true', async () => {
+//   Code.expect(vml.getSignin(request,reply)).to.be.equal(true)
+// })
+// })

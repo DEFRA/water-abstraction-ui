@@ -7,6 +7,7 @@ const Code = require('code')
 const DOMParser = require('xmldom').DOMParser
 
 const server = require('../../index')
+
 //const CookieService = require('../../src/services/cookie.service')
 
 //let validateCookieStub

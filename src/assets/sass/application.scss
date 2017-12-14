@@ -26,6 +26,10 @@ $path: "/public/images/";
 // @import 'patterns/check-your-answers';
 // @import 'patterns/task-list';
 
+@import "blocks/licence_search";
+@import "blocks/licence_rename";
+
+
 * {
 family: "nta", Arial, sans-serif;
 }
@@ -361,4 +365,28 @@ float: right;
 font-size: 0.875em;
 line-height: 1.14286;
 margin-left: 0.75em;
+}
+
+/* inline buttons - designed to be used next to input field */
+.button-inline {
+  line-height: 1.15;
+}
+
+
+/* hidden/shown utility classes */
+.hide {
+  display: none;
+}
+.hide-js {
+  display: block;
+
+  body.js-enabled & {
+    display: none;
+  }
+}
+.show-js {
+  display: none;
+  body.js-enabled & {
+    display: block;
+  }
 }

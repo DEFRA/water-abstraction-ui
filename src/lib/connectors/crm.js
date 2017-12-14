@@ -7,6 +7,30 @@ const rp = require('request-promise-native').defaults({
     strictSSL :false
   })
 
+
+  /**
+   * Create entity record
+   * @param {String} entity_nm - entity name - the user's email address
+   * @param {String} [entity_type] - entity type, individual|company etc.
+   * @return {Promise} resolves with user entity record
+   */
+  function createEntity(entity_nm, entity_type = 'individual') {
+    var uri = process.env.CRM_URI + '/entity';
+    return rp({
+      uri,
+      method : 'POST',
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      body : {
+        entity_nm,
+        entity_type
+      },
+      json : true
+    });
+  }
+
+
 /**
  * Get entity record
  * @param {String} user_name - the email address of the current user
@@ -77,6 +101,7 @@ function getLicenceInternalID(licences, document_id) {
 
 module.exports = {
   getEntity,
+  createEntity,
   getLicences,
   getLicenceInternalID,
   setLicenceName

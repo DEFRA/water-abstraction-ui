@@ -1,4 +1,36 @@
-const Helpers = require('../helpers')
+const Helpers = require('../helpers');
+const rp = require('request-promise-native');
+
+/**
+ * Create user account in registration process
+ * No password is supplied so a random GUID is used as a
+ * temporary password, and the user is flagged for password reset
+ * @param {String} email - the user email address
+ * @return {Promise} - resolves if user account created
+ */
+function createUserWithoutPassword(email) {
+
+    // Generate password
+    const tempPassword = Helpers.createGUID();
+
+    return rp({
+      uri : process.env.IDM_URI + '/user',
+      method : 'POST',
+      json : true,
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      body : {
+        username : email,
+        password : tempPassword,
+        admin : 0,
+        user_data : '{}',
+        reset_required : 1
+      }
+    });
+}
+
+
 
 function login(user_name, password){
   return new Promise((resolve, reject) => {
@@ -21,23 +53,24 @@ function login(user_name, password){
 
 }
 
+
+/**
+ * Send password reset email
+ * @param {String} emailAddress - the user email address to send password reset email to
+ * @return {Promise} - resolves with HTTP response
+ */
 function resetPassword(emailAddress){
-  return new Promise((resolve, reject) => {
-    var data = { emailAddress: emailAddress }
-    var uri=process.env.IDM_URI + '/resetPassword'+ '?token=' + process.env.JWT_TOKEN
-    var method='post'
-    Helpers.makeURIRequestWithBody(uri, method, data)
-    .then((response)=>{
-        resolve(response)
-    }).catch((response)=>{
-      //console.log('rejecting in idm.resetPassword.login')
-      reject(response)
-    })
-
+  return rp({
+    uri : process.env.IDM_URI + '/resetPassword',
+    method : 'POST',
+    json : true,
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      emailAddress
+    }
   });
-
-
-
 }
 
 function getPasswordResetLink (emailAddress) {
@@ -104,7 +137,7 @@ login:login,
 resetPassword:resetPassword,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
-updatePasswordWithGuid: updatePasswordWithGuid
-
+updatePasswordWithGuid: updatePasswordWithGuid,
+createUserWithoutPassword
 
 }

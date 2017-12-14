@@ -4,6 +4,7 @@ function viewContextDefaults(request) {
   var viewContext = {}
 
   viewContext.query = request.query;
+  viewContext.payload = request.payload;
   viewContext.session = request.session
   viewContext.pageTitle = 'Water Abstraction'
   viewContext.insideHeader = ''

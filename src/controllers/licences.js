@@ -6,6 +6,7 @@ const Boom = require('boom');
 const BaseJoi = require('joi');
 
 const CRM = require('../lib/connectors/crm');
+const IDM = require('../lib/connectors/idm');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
@@ -81,7 +82,39 @@ function getLicences(request, reply) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  CRM.getLicences(filter, sort)
+  // Validate email address
+  const schema = {
+    emailAddress : Joi.string().allow('').email(),
+    licenceNumber : Joi.string().allow(''),
+    sort : Joi.string().allow(''),
+    direction : Joi.number()
+  };
+  const {error, value} = Joi.validate(request.query, schema);
+  if(error) {
+    viewContext.error = error;
+  }
+
+  // Look up user
+  const findUser = () => {
+    if(value.emailAddress && !error) {
+      return IDM.getUser(value.emailAddress);
+    }
+    return Promise.resolve();
+  }
+
+  findUser()
+    .catch((err) => {
+      // Handle user not found error - 404
+      if(err.statusCode === 404) {
+        viewContext.error = err;
+        return;
+      }
+      throw err;
+    })
+    .then(() => {
+      // Look up licences
+      return CRM.getLicences(filter, sort);
+    })
     .then((response) => {
 
       if(response.err) {

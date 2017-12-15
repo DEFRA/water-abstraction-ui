@@ -5,6 +5,7 @@ const rp = require('request-promise-native').defaults({
   });
 
 
+
 /**
  * Create user account in registration process
  * No password is supplied so a random GUID is used as a
@@ -34,7 +35,24 @@ function createUserWithoutPassword(email) {
     });
 }
 
-
+/**
+ * Get user by numeric ID/email address
+ * @param {String|Number} numeric ID or string email address
+ * @return {Promise} resolves with user if found
+ */
+ function getUser(user_id) {
+   return rp({
+     uri : process.env.IDM_URI + '/user/' + user_id,
+     method : 'GET',
+     json : true,
+     headers : {
+       Authorization : process.env.JWT_TOKEN
+     },
+     qs : {
+       user_id
+     }
+   });
+ }
 
 function login(user_name, password){
   return new Promise((resolve, reject) => {
@@ -142,6 +160,7 @@ resetPassword:resetPassword,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,
-createUserWithoutPassword
+createUserWithoutPassword,
+getUser
 
 }

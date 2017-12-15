@@ -1,5 +1,9 @@
 const Helpers = require('../helpers');
-const rp = require('request-promise-native');
+const rp = require('request-promise-native').defaults({
+    proxy:null,
+    strictSSL :false
+  });
+
 
 /**
  * Create user account in registration process
@@ -92,7 +96,7 @@ function updatePassword (username, password, cb) {
 
 
   return new Promise((resolve, reject) => {
-//  console.log("Change password: " + username + " " + password)
+  console.log("Change password: " + username + " " + password)
     var data = { username: username, password: password }
     var uri = process.env.IDM_URI + '/user' + '?token=' + process.env.JWT_TOKEN
     Helpers.makeURIRequestWithBody(uri,'PUT', data)

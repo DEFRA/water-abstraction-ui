@@ -54,8 +54,40 @@ function checkLicenceSimilarity(licences) {
   return (names.length + postcodes.length) <= 3;
 }
 
+/**
+ * A function to get role flags from
+ * supplied licences summary returned from CRM
+ * @param {Array} summary - summary data from licences list call
+ * @return {Object} with boolean flags for each user role and total licence count
+ */
+function licenceRoles(summary) {
+  const initial = {
+    user : false,
+    agent : false,
+    admin : false
+  };
+  return summary.reduce((memo, item) => {
+    memo[item.role] = true;
+    return memo;
+  }, initial);
+}
+
+/**
+ * A function to get total number of licences from
+ * supplied licences summary returned from CRM
+ * @param {Array} summary - summary data from licences list call
+ * @return {Number} total licence count
+ */
+function licenceCount(summary) {
+  return summary.reduce((memo, item) => {
+    return memo + item.count;
+  }, 0);
+}
+
 
 module.exports = {
   extractLicenceNumbers,
-  checkLicenceSimilarity
+  checkLicenceSimilarity,
+  licenceRoles,
+  licenceCount
 };

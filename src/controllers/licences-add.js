@@ -81,6 +81,7 @@ function postLicenceAdd(request, reply) {
 
       // Check licences are similar
       const similar = checkLicenceSimilarity(res.data);
+      console.log(res.data);
       if(!similar) {
         throw {name : 'ValidationError'};
       }
@@ -99,6 +100,16 @@ function postLicenceAdd(request, reply) {
 
 
 }
+
+
+
+/**
+ * Confirm list of licences
+ */
+function confirmLicences(request, reply) {
+
+}
+
 
 module.exports = {
   getLicenceAdd,

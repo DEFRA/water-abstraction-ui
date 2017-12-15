@@ -37,7 +37,13 @@ module.exports = [
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },
-  { method: 'GET', path: '/signin', config: { auth: false }, handler: AuthController.getSignin },
+  { method: 'GET', path: '/signin', handler: AuthController.getSignin, config: { auth: false,
+    validate : {
+      query : {
+        flash : Joi.string().max(32)
+      }
+    }
+  } },
   { method: 'POST', path: '/signin', handler: AuthController.postSignin, config : {
     description : 'Login form handler',
     auth : false,

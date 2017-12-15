@@ -238,7 +238,7 @@ function postResetPasswordChangePassword(request, reply) {
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
     IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {
-      return reply.redirect('signin')
+      return reply.redirect('signin?flash=password-reset');
     }).catch((err) => {
       viewContext.errors = err
       viewContext.resetGuid = request.payload.resetGuid

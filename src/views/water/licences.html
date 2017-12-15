@@ -10,6 +10,18 @@
       </ol>
     </div>
   </nav>
+
+  {{#if error }}
+  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+    <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
+      The email address was incorrect
+    </h2>
+    <ul class="error-summary-list">
+      <li><a href="#emailAddress">Re-enter the email address</a></li>
+    </ul>
+  </div>
+  {{/if}}
+
 <!--
   {{>element-heading-large content='Register a licence'}}
   Enter provided shortcode to register a new licence
@@ -31,12 +43,13 @@
 
   <!-- Licence search form -->
   <div class="grid-row">
+
     {{#if showEmailFilter }}
     <div class="column-two-fifths">
-      <div class="form-group form-group--horizontal">
+      <div class="form-group form-group--horizontal {{#if error }}form-group-error{{/if}}">
         <label class="form-label form-label--bold" for="emailAddress">User email address</label>
         <span class="form-hint">View licence list by user account.</span>
-        <input type="text" class="form-control form-control--block" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
+        <input type="text" class="form-control form-control--block {{#if error}}form-control-error{{/if}}" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
     {{/if}}

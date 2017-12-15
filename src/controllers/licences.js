@@ -81,6 +81,20 @@ function getLicences(request, reply) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
+  // Validate email address
+  const schema = {
+    emailAddress : Joi.string().allow('').email(),
+    licenceNumber : Joi.string().allow(''),
+    sort : Joi.string().allow(''),
+    direction : Joi.number()
+  };
+  const {error, value} = Joi.validate(request.query, schema);
+  if(error) {
+    viewContext.error = error;
+    console.log(error);
+  }
+
+
   CRM.getLicences(filter, sort)
     .then((response) => {
 

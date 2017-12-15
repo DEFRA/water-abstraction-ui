@@ -11,7 +11,7 @@ const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 
-const Joi = require('Joi');
+const Joi = require('joi');
 
 /**
  * A function to get role flags from

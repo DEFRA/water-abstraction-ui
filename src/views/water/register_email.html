@@ -1,0 +1,64 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+      </ol>
+    </div>
+  </nav>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <form novalidate action="/register" method="post" class="form">
+
+          {{#if error}}
+          <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+                <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+                  That email address isn’t valid
+                </h2>
+
+                <ul class="error-summary-list">
+                  <li><a href="#email">Re-enter your email address</a></li>
+                </ul>
+          </div>
+          {{/if}}
+
+            <h1 class="heading-large">
+              Give us your email address
+            </h1>
+
+
+            <p class="lede">Tell us your email address, this will be used as a user name to access your account.</p>
+
+
+
+          <div class="form-group {{#if error}}form-group-error{{/if}}">
+            <label for="email">
+
+                <fieldset>
+                  <span class="form-label-bold">Email address</span>
+                  {{#if error}}
+                  <span class="error-message">Please enter a valid email address</span>
+                  {{/if}}
+                </fieldset>
+
+            </label>
+
+            <input value="{{ payload.email }}" type="email" class="form-control" id="email" name="email" required=""/>
+          </div>
+
+
+            <input type="submit" value="Continue" class="button" role="button"/>
+
+
+    </form>
+
+
+    </main>
+  </div>
+</div>
+
+{{> footerjs}}
+{{> debug}}

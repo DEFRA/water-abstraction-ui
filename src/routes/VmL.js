@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
-
+const RegistrationController = require('../controllers/registration');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -37,7 +37,13 @@ module.exports = [
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },
-  { method: 'GET', path: '/signin', config: { auth: false }, handler: AuthController.getSignin },
+  { method: 'GET', path: '/signin', handler: AuthController.getSignin, config: { auth: false,
+    validate : {
+      query : {
+        flash : Joi.string().max(32)
+      }
+    }
+  } },
   { method: 'POST', path: '/signin', handler: AuthController.postSignin, config : {
     description : 'Login form handler',
     auth : false,
@@ -122,7 +128,28 @@ module.exports = [
         licence_id : Joi.string().required().guid()
       }
     }
-  } },
+  }},
+
+
+  // Registration process
+  { method: 'GET', path: '/register', handler: RegistrationController.getEmailAddress, config : {
+    auth : false,
+    description : 'Register user account - get email address'
+  }},
+  { method: 'POST', path: '/register', handler: RegistrationController.postEmailAddress, config : {
+    auth : false,
+    description : 'Register user account - email address form handler',
+    validate : {
+      payload : {
+        email : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'GET', path: '/success', handler: RegistrationController.getRegisterSuccess, config : {
+    auth : false,
+    description : 'Register user account - success page'
+  }},
+
 
 {
       method: '*',

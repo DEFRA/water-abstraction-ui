@@ -6,14 +6,12 @@ const Boom = require('boom');
 const BaseJoi = require('joi');
 
 const CRM = require('../lib/connectors/crm');
+const IDM = require('../lib/connectors/idm');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 
-const joiProfanityExtension = require('../lib/joi-profanity');
-const Joi = BaseJoi.extend(joiProfanityExtension);
-
-
+const Joi = require('joi');
 
 /**
  * A function to get role flags from
@@ -81,7 +79,39 @@ function getLicences(request, reply) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  CRM.getLicences(filter, sort)
+  // Validate email address
+  const schema = {
+    emailAddress : Joi.string().allow('').email(),
+    licenceNumber : Joi.string().allow(''),
+    sort : Joi.string().allow(''),
+    direction : Joi.number()
+  };
+  const {error, value} = Joi.validate(request.query, schema);
+  if(error) {
+    viewContext.error = error;
+  }
+
+  // Look up user
+  const findUser = () => {
+    if(value.emailAddress && !error) {
+      return IDM.getUser(value.emailAddress);
+    }
+    return Promise.resolve();
+  }
+
+  findUser()
+    .catch((err) => {
+      // Handle user not found error - 404
+      if(err.statusCode === 404) {
+        viewContext.error = err;
+        return;
+      }
+      throw err;
+    })
+    .then(() => {
+      // Look up licences
+      return CRM.getLicences(filter, sort);
+    })
     .then((response) => {
 
       if(response.err) {
@@ -134,7 +164,7 @@ function renderLicencePage(view, pageTitle, request, reply, context = {}) {
   CRM.getLicences(filter)
     .then((response) => {
 
-      if(response.err) {
+      if(response.error) {
         throw Boom.badImplementation(`CRM error`, response);
       }
       if(response.data.length != 1) {
@@ -211,7 +241,7 @@ function postLicence(request, reply) {
 
   // Validate supplied licence name
   const schema = {
-    name : Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ']+$/i).profanity()
+    name : Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ']+$/i)
   };
   const {error, value} = Joi.validate({name}, schema, {abortEarly : false});
   if(error) {

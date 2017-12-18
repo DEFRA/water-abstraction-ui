@@ -5,11 +5,19 @@
  */
 const Boom = require('boom');
 const Joi = require('joi');
+const Iron = require('iron');
+const Bluebird = require('bluebird');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
 const joiPromise = require('../lib/joi-promise');
 const IDM = require('../lib/connectors/idm');
 const CRM = require('../lib/connectors/crm');
+
+// Create promisifies versions of Iron seal/unseal
+const ironSeal = Bluebird.promisify(Iron.seal);
+const ironUnseal = Bluebird.promisify(Iron.unseal);
+
+
 
 const {checkLicenceSimilarity, extractLicenceNumbers} = require('../lib/licence-helpers');
 
@@ -23,9 +31,6 @@ function getLicenceAdd(request, reply) {
   viewContext.pageTitle = 'GOV.UK - Add Licence';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
-
-
-
 
 
 
@@ -71,26 +76,35 @@ function postLicenceAdd(request, reply) {
 
       // Check 1+ licences found
       if(res.data.length < 1) {
-        throw {name : 'ValidationError'};
+        throw {name : 'ValidationError', details : [{message : 'No licence numbers submitted', path : 'licence_no'}]};
       }
 
       // Check # of licences returned = that searched for
       if(res.data.length != licenceNumbers.length) {
-        throw {name : 'ValidationError'};
+        throw {name : 'ValidationError', details : [{message : 'Not all the licences could be found', path : 'licence_no'}]};
       }
 
       // Check licences are similar
       const similar = checkLicenceSimilarity(res.data);
-      console.log(res.data);
       if(!similar) {
-        throw {name : 'ValidationError'};
+        throw {name : 'ValidationError', detaiuls : [{message : 'The licences failed an integrity check', path : 'licence_no'}]};
       }
 
       viewContext.licences = res.data;
+
+      // Seal the list of permitted licence numbers into a token
+      // to prevent validation needing to be repeated on following step
+      const documentIds = res.data.map(item => item.document_id);
+      return ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
+
+    })
+    .then((token) => {
+      viewContext.token = token;
       return reply.view('water/licences-add/select-licences', viewContext);
     })
     .catch((err) => {
       if(err.name === 'ValidationError') {
+        console.log(err);
         viewContext.error = err;
         return reply.view('water/licences-add/add-licences', viewContext);
       }
@@ -106,12 +120,36 @@ function postLicenceAdd(request, reply) {
 /**
  * Confirm list of licences
  */
-function confirmLicences(request, reply) {
+function postConfirmLicences(request, reply) {
+
+  const documentIds = request.payload.licences;
+
+  // Decode token
+  ironUnseal(request.payload.token, process.env.cookie_secret, Iron.defaults)
+    .then((data) => {
+
+      // Check >0 licences selected
+      if(documentIds.length < 1) {
+        throw {name : 'ValidationError', details : [{message : 'No licences were selected', path : 'licences'}]};
+      }
+
+      // Check all posted licences were in sealed token
+      documentIds.forEach((documentId) => {
+        if(data.documentIds.indexOf(documentId) === -1) {
+          throw {name : 'ValidationError', details : [{message : 'Licence/token error', path : 'licences'}]};
+        }
+      })
+
+      // We're OK to now request validation of these licences
+      console.log(documentIds);
+    })
+    .catch(errorHandler(request, reply));
 
 }
 
 
 module.exports = {
   getLicenceAdd,
-  postLicenceAdd
+  postLicenceAdd,
+  postConfirmLicences
 };

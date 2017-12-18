@@ -19,6 +19,8 @@
 
       <form method="POST" action="/confirm-licences">
 
+        <input type="hidden" name="token" value="{{ token }}" />
+
         <fieldset>
           <legend>
             <span class="body-text">Remove any licence serial numbers that do not apply:</span>
@@ -27,7 +29,7 @@
 
         {{#each licences}}
         <div class="multiple-choice">
-          <input checked="checked" type="checkbox" name="licences[]" value="{{ this.document_id }}" id="{{ this.document_id }}" />
+          <input checked="checked" type="checkbox" name="licences" value="{{ this.document_id }}" id="{{ this.document_id }}" />
           <label for="{{ this.document_id }}">{{ this.system_external_id }}</label>
         </div>
         {{/each}}

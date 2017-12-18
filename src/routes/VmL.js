@@ -157,7 +157,15 @@ module.exports = [
       }
     }
   }},
-
+  { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
+    description : 'Confirm licences to add to account',
+    validate : {
+      payload : {
+        token : Joi.string().required(),
+        licences : Joi.array()
+      }
+    }
+  }},
 
 
 

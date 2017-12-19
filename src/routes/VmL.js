@@ -5,6 +5,7 @@ const Joi = require('joi');
 const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
 const RegistrationController = require('../controllers/registration');
+const LicencesAddController = require('../controllers/licences-add');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -149,6 +150,40 @@ module.exports = [
     auth : false,
     description : 'Register user account - success page'
   }},
+
+  // Add licence to account
+  { method: 'GET', path: '/add-licences', handler: LicencesAddController.getLicenceAdd, config : {
+    description : 'Start flow to add licences'
+  }},
+  { method: 'POST', path: '/add-licences', handler: LicencesAddController.postLicenceAdd, config : {
+    description : 'Start flow to add licences',
+    validate : {
+      payload : {
+        licence_no : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
+    description : 'Confirm licences to add to account',
+    validate : {
+      payload : {
+        token : Joi.string().required(),
+        licences : Joi.array()
+      }
+    }
+  }},
+  { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
+    description : 'Enter auth code received by post'
+  }},
+  { method: 'POST', path: '/security-code', handler: LicencesAddController.postSecurityCode, config : {
+    description : 'Enter auth code received by post',
+    validate : {
+      payload : {
+        verification_code : Joi.string().allow('')
+      }
+    }
+  }},
+
 
 
 {

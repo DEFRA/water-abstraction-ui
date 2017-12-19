@@ -52,6 +52,8 @@ function postEmailAddress(request, reply) {
     })
     .then(() => {
       // Create CRM entity
+      // @TODO what if already exists?
+      // @TODO should we create company at this stage?
       return CRM.createEntity(request.payload.email);
     })
     .then((res) => {

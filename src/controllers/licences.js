@@ -11,38 +11,9 @@ const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 
+
+const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
 const Joi = require('joi');
-
-/**
- * A function to get role flags from
- * supplied licences summary returned from CRM
- * @param {Array} summary - summary data from licences list call
- * @return {Object} with boolean flags for each user role and total licence count
- */
-function _licenceRoles(summary) {
-  const initial = {
-    user : false,
-    agent : false,
-    admin : false
-  };
-  return summary.reduce((memo, item) => {
-    memo[item.role] = true;
-    return memo;
-  }, initial);
-}
-
-/**
- * A function to get total number of licences from
- * supplied licences summary returned from CRM
- * @param {Array} summary - summary data from licences list call
- * @return {Number} total licence count
- */
-function _licenceCount(summary) {
-  return summary.reduce((memo, item) => {
-    return memo + item.count;
-  }, 0);
-}
-
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -69,7 +40,7 @@ function getLicences(request, reply) {
   };
 
   // Sorting
-  const sortFields= {licenceNumber : 'document_id', name : 'name'};
+  const sortFields= {licenceNumber : 'system_external_id', name : 'document_custom_name'};
   const sortField = request.query.sort || 'licenceNumber';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};
@@ -124,13 +95,13 @@ function getLicences(request, reply) {
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-      viewContext.licenceCount = _licenceCount(summary);
+
 
       // Calculate whether to display email filter / search form depending on summary
-      const userRoles = _licenceRoles(summary);
-      const licenceCount = _licenceCount(summary);
+      const userRoles = licenceRoles(summary);
+      viewContext.licenceCount = licenceCount(summary);
       viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-      viewContext.enableSearch = licenceCount > 5; // @TODO confirm with design team
+      viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
 
       return reply.view('water/licences', viewContext)
     })

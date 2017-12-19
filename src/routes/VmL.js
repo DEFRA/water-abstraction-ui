@@ -166,7 +166,17 @@ module.exports = [
       }
     }
   }},
-
+  { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
+    description : 'Enter auth code received by post'
+  }},
+  { method: 'POST', path: '/security-code', handler: LicencesAddController.postSecurityCode, config : {
+    description : 'Enter auth code received by post',
+    validate : {
+      payload : {
+        verification_code : Joi.string().allow('')
+      }
+    }
+  }},
 
 
 

@@ -12,11 +12,20 @@
     <div class="column-two-thirds">
       <form action="/signin" method="post" class="form">
 
+        {{#equal query.flash 'password-reset'}}
+        <div style="border-top: none;" class="panel panel-border-wide" role="alert" tabindex="-1">
+            <h2 class="heading-medium">
+              Your password has been reset
+            </h2>
+          <p>Sign in to your account using your new password</p>
+        </div>
+        {{/equal}}
+
         {{#if errors}}
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
           {{#if errors.authentication}}
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-              Your email address or password are incorrect
+              Your email address or password is incorrect
             </h2>
             <ul class="error-summary-list">
               <li><a href="#user-id">Re-enter your email address</a></li>
@@ -24,7 +33,7 @@
             </ul>
           {{else}}
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-              Your email address or password are incorrect
+              Your email address or password is incorrect
             </h2>
             <ul class="error-summary-list">
               <li><a href="#user-id">Re-enter your email address</a></li>
@@ -40,15 +49,15 @@
         <div class="form-group {{#if errors.user-id}}form-group-error{{/if}} {{#if errors.authentication }}form-group-error{{/if}}">
           <label class="form-label-bold" for="user-id">Email address</label>
           <span class="form-hint">This is the email address used to create your account.</span>
-          {{#if errors.user-id}}<span class="error-message">Please enter the email address you registered with us.</span>{{/if}}
+          {{#if errors}}<span class="error-message">Please enter the email address you registered with us.</span>{{/if}}
           <input name="user_id" type="text" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}>
 
         </div>
         <!-- Password -->
         <div class="form-group {{#if errors.password}}form-group-error{{/if}} {{#if errors.authentication }}form-group-error{{/if}}">
           <label class="form-label-bold" for="password">Password</label>
-          <span class="form-hint">You should have received this by email.</span>
-          {{#if errors.password}}<span class="error-message">Please enter the password we sent you.</span>{{/if}}
+          <span class="form-hint">Enter the password you created.</span>
+          {{#if errors}}<span class="error-message">Please check and enter the password you created.</span>{{/if}}
           <input name="password" autocomplete="off" type="password" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="password">
 
         </div>

@@ -1,5 +1,10 @@
 const Helpers = require('../helpers');
-const rp = require('request-promise-native');
+const rp = require('request-promise-native').defaults({
+    proxy:null,
+    strictSSL :false
+  });
+
+
 
 /**
  * Create user account in registration process
@@ -30,7 +35,24 @@ function createUserWithoutPassword(email) {
     });
 }
 
-
+/**
+ * Get user by numeric ID/email address
+ * @param {String|Number} numeric ID or string email address
+ * @return {Promise} resolves with user if found
+ */
+ function getUser(user_id) {
+   return rp({
+     uri : process.env.IDM_URI + '/user/' + user_id,
+     method : 'GET',
+     json : true,
+     headers : {
+       Authorization : process.env.JWT_TOKEN
+     },
+     qs : {
+       user_id
+     }
+   });
+ }
 
 function login(user_name, password){
   return new Promise((resolve, reject) => {
@@ -92,7 +114,7 @@ function updatePassword (username, password, cb) {
 
 
   return new Promise((resolve, reject) => {
-//  console.log("Change password: " + username + " " + password)
+  console.log("Change password: " + username + " " + password)
     var data = { username: username, password: password }
     var uri = process.env.IDM_URI + '/user' + '?token=' + process.env.JWT_TOKEN
     Helpers.makeURIRequestWithBody(uri,'PUT', data)
@@ -138,6 +160,7 @@ resetPassword:resetPassword,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,
-createUserWithoutPassword
+createUserWithoutPassword,
+getUser
 
 }

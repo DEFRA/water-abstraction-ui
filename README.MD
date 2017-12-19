@@ -47,6 +47,25 @@ The organisation ID for the Water Licensing organisation in the permit repositor
 ### licenceTypeId
 The type ID for abstraction licences in the permit repository. This can be found in the type table.
 
+### cookie_secret
+A random string used for cookie encryption
+
+### test_username
+The username for a test account for unit testing
+
+### test_password
+The password for a test account for unit testing
+
+### test_entity_id
+The entity ID in the CRM of the user corresponding to the test_username and test_password above
+
+### test_licence_id
+A licence guid accessible to the test user above
+
+### query_access
+The access code for entry in private beta
+
+
 ## Launching
 
 `node index.js`

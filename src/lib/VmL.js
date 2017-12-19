@@ -97,7 +97,7 @@ function postUpdatePassword(request, reply) {
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   console.log(errors)
   if (!errors) {
-    IDM.updatePassword(viewContext.session.username, request.payload.password).then((res) => {
+    IDM.updatePassword(request.auth.credentials.username, request.payload.password).then((res) => {
       console.log('password updated')
       return reply.redirect('password_updated')
     }).catch(() => {
@@ -238,7 +238,7 @@ function postResetPasswordChangePassword(request, reply) {
   var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
   if (!errors) {
     IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {
-      return reply.redirect('signin')
+      return reply.redirect('signin?flash=password-reset');
     }).catch((err) => {
       viewContext.errors = err
       viewContext.resetGuid = request.payload.resetGuid

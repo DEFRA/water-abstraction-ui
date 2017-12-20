@@ -1,0 +1,68 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        {{>element-header-links}}
+      </ol>
+    </div>
+  </nav>
+
+<div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div>
+
+
+  {{>element-heading-large content='Remove access to your licences'}}
+
+  <form method="post" action="/manage_licences/remove_access" method="post" class="form">
+
+      <div class="error-summary hidden" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+
+            <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+              That email address isn’t valid
+            </h2>
+
+            <ul class="error-summary-list">
+              <li><a href="#user-id">Re-enter your email address</a></li>
+            </ul>
+
+          </div>
+
+
+
+
+
+          <p class="lede">Enter the person’s email address and we’ll remove their access to this account immediately.</p>
+
+
+
+        <div class="form-group">
+          <label for="user-id">
+
+              <fieldset>
+                <span class="form-label-bold">Email address</span>
+                <span data-parsely-id="user-id" class="error-message hidden">Please enter a valid email address</span>
+              </fieldset>
+
+          </label>
+
+          <input type="email" class="form-control" id="email" name="email" required="" autocomplete="off" value="{{email}}" readonly>
+          <input type="hidden" name="entity_role_id" value="{{entity_role_id}}" readonly>
+
+        </div>
+
+
+          <input type="submit" value="Continue" class="button button-start" role="button">
+
+
+  </form>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

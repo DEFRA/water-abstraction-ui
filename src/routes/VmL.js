@@ -5,6 +5,7 @@ const Joi = require('joi');
 const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
 const RegistrationController = require('../controllers/registration');
+const LicencesAddController = require('../controllers/licences-add');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -63,8 +64,23 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
   { method: 'POST', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.postResetPasswordResendEmail },
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
-    { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
+
+  { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
+
+  { method: 'GET', path: '/create-password', handler: VmL.getCreatePassword, config: {
+    auth: false,
+    validate : {
+      query : {
+        resetGuid : Joi.string().guid().required()
+      }
+    }}},
+
+
+  { method: 'POST', path: '/create-password', config: { auth: false }, handler: VmL.postCreatePassword },
+
+
+
   { method: 'GET', path: '/licences',  handler: LicencesController.getLicences, config: {
     description : 'View list of licences with facility to sort/filter',
     validate: {
@@ -149,6 +165,75 @@ module.exports = [
     auth : false,
     description : 'Register user account - success page'
   }},
+  { method: 'GET', path: '/send-again', handler: RegistrationController.getSendAgain, config : {
+    auth : false,
+    description: 'Register user account - resend email form'
+  }},
+  { method: 'POST', path: '/send-again', handler: RegistrationController.postSendAgain, config : {
+    auth : false,
+    description : 'Register user account - resend email address form handler',
+    validate : {
+      payload : {
+        email : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'GET', path: '/resent-success', handler: RegistrationController.getResentSuccess, config : {
+    auth : false,
+    description : 'Register user account - email resent success page'
+  }},
+
+  // Manage licences
+  { method: 'GET', path: '/manage_licences', handler: LicencesController.getAccessList, config : {
+    description : 'Manage licences - main page'
+  }},
+  { method: 'GET', path: '/manage_licences/remove_access', handler: LicencesController.getRemoveAccess, config : {
+    description : 'Manage licences - remove access form'
+  }},
+  { method: 'POST', path: '/manage_licences/remove_access', handler: LicencesController.postRemoveAccess, config : {
+    description : 'Managfe licences - remove access process'
+  }},
+  { method: 'GET', path: '/manage_licences/add_access', handler: LicencesController.getAddAccess, config : {
+    description : 'Manage licences - add access form'
+  }},
+  { method: 'POST', path: '/manage_licences/add_access', handler: LicencesController.postAddAccess, config : {
+    description : 'Managfe licences - add access process'
+  }},
+
+  // Add licence to account
+  { method: 'GET', path: '/add-licences', handler: LicencesAddController.getLicenceAdd, config : {
+    description : 'Start flow to add licences'
+  }},
+  { method: 'POST', path: '/add-licences', handler: LicencesAddController.postLicenceAdd, config : {
+    description : 'Start flow to add licences',
+    validate : {
+      payload : {
+        licence_no : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
+    description : 'Confirm licences to add to account',
+    validate : {
+      payload : {
+        token : Joi.string().required(),
+        licences : Joi.array()
+      }
+    }
+  }},
+  { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
+    description : 'Enter auth code received by post'
+  }},
+  { method: 'POST', path: '/security-code', handler: LicencesAddController.postSecurityCode, config : {
+    description : 'Enter auth code received by post',
+    validate : {
+      payload : {
+        verification_code : Joi.string().allow('')
+      }
+    }
+  }},
+
+
 
 
 {

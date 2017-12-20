@@ -64,8 +64,23 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
   { method: 'POST', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.postResetPasswordResendEmail },
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
-    { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
+
+  { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
+
+  { method: 'GET', path: '/create-password', handler: VmL.getCreatePassword, config: {
+    auth: false,
+    validate : {
+      query : {
+        resetGuid : Joi.string().guid().required()
+      }
+    }}},
+
+
+  { method: 'POST', path: '/create-password', config: { auth: false }, handler: VmL.postCreatePassword },
+
+
+
   { method: 'GET', path: '/licences',  handler: LicencesController.getLicences, config: {
     description : 'View list of licences with facility to sort/filter',
     validate: {

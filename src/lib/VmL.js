@@ -145,8 +145,6 @@ function getResetPasswordChangePassword(request, reply) {
   viewContext.pageTitle = 'GOV.UK - update your password'
   viewContext.resetGuid = request.query.resetGuid
 
-
-
   if (request.query.forced) {
 
     // show forced reset message
@@ -156,6 +154,21 @@ function getResetPasswordChangePassword(request, reply) {
 
   return reply.view('water/reset_password_change_password', viewContext)
 }
+
+
+function getCreatePassword(request, reply) {
+  request.query.create = true;
+  getResetPasswordChangePassword(request, reply);
+}
+
+function postCreatePassword(request, reply) {
+  request.query.create = true;
+  postResetPasswordChangePassword(request, reply);
+}
+
+
+
+
 
 function validateEmailAddress(emailAddress) {
   // Regex taken from Stack Overflow, we may want to validate this properly at some point
@@ -284,6 +297,8 @@ module.exports = {
   postResetPasswordLink: postResetPasswordLink,
   getResetPasswordChangePassword: getResetPasswordChangePassword,
   postResetPasswordChangePassword: postResetPasswordChangePassword,
+  getCreatePassword,
+  postCreatePassword,
   fourOhFour: fourOhFour,
   getFeedback:getFeedback,
   getUpdatedPassword:getUpdatedPassword

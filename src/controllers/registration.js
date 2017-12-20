@@ -8,6 +8,7 @@ const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
 const joiPromise = require('../lib/joi-promise');
 const IDM = require('../lib/connectors/idm');
+const Notify = require('../lib/connectors/notify');
 const CRM = require('../lib/connectors/crm');
 
 /**
@@ -26,6 +27,7 @@ function getEmailAddress(request, reply) {
  * Process email form
  * - validates email address
  * - creates user in IDM
+ * - @TODO send notify email depending on whether last_login is null
  * - @TODO send password reset email
  * - @TODO create CRM entity
  *
@@ -46,6 +48,18 @@ function postEmailAddress(request, reply, options = {}) {
   const schema = {
     email : Joi.string().trim().required().email()
   };
+
+  const _sendNotifyEmail = (res) => {
+    const {reset_guid, user_name} = res.data;
+    if(res.data.last_login) {
+      return Notify.sendExistingUserPasswordReset(user_name, reset_guid);
+    }
+    else {
+      return Notify.sendNewUserPasswordReset(user_name, reset_guid);
+    }
+  }
+
+
   joiPromise(request.payload, schema)
     .then((result) => {
       return IDM.createUserWithoutPassword(result.email);
@@ -55,12 +69,15 @@ function postEmailAddress(request, reply, options = {}) {
         throw Boom.badImplementation('IDM error', response.error);
       }
       // Trigger password reset email
-      return IDM.resetPassword(request.payload.email);
+      return IDM.resetPasswordQuiet(request.payload.email);
+    })
+    .then((res) => {
+      return _sendNotifyEmail(res);
     })
     .then(() => {
       // Create CRM entity
       // @TODO what if already exists?
-      // @TODO should we create company at this stage?
+      // @TODO should we create company at this stage? - don't think this is necessary
       return CRM.createEntity(request.payload.email);
     })
     .then((res) => {
@@ -71,7 +88,10 @@ function postEmailAddress(request, reply, options = {}) {
 
       // User already exists - handle error
       if(error.isBoom && error.data.code && (error.data.code == 23505)) {
-        return IDM.resetPassword(request.payload.email);
+        return IDM.resetPasswordQuiet(request.payload.email)
+          .then((res) => {
+            return _sendNotifyEmail(res);
+          });
       }
 
       // Email was invalid - handle error

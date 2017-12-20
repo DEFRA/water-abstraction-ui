@@ -5,30 +5,156 @@
 const rp = require('request-promise-native').defaults({
     proxy:null,
     strictSSL :false
-  })
+  });
+const moment = require('moment');
+
+// require('request-promise-native').debug = true;
 
 
-  /**
-   * Create entity record
-   * @param {String} entity_nm - entity name - the user's email address
-   * @param {String} [entity_type] - entity type, individual|company etc.
-   * @return {Promise} resolves with user entity record
-   */
-  function createEntity(entity_nm, entity_type = 'individual') {
-    var uri = process.env.CRM_URI + '/entity';
-    return rp({
-      uri,
-      method : 'POST',
-      headers : {
-        Authorization : process.env.JWT_TOKEN
-      },
-      body : {
-        entity_nm,
-        entity_type
-      },
-      json : true
-    });
-  }
+/**
+ * Enter verification code
+ * @param {String} entity_id - the individual's entity ID
+ * @param {String} company_entity_id - the company entity ID to verify licences for
+ * @param {String} verification_code - the verification code supplied by the user
+ * @return {Promise} - resolves if code OK
+ */
+function checkVerification(entity_id, company_entity_id, verification_code) {
+  var uri = process.env.CRM_URI + '/verification/check';
+  return rp({
+    method: 'POST',
+    uri,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    body : {
+      entity_id,
+      company_entity_id,
+      verification_code
+    },
+    json : true
+  });
+}
+
+/**
+ * Enter verification code
+ * @param {String} entity_id - the individual's entity ID
+ * @param {String} company_entity_id - the company entity ID to verify licences for
+ * @param {String} verification_code - the verification code supplied by the user
+ * @return {Promise} - resolves if code OK
+ */
+function completeVerification(verification_id) {
+  var uri = process.env.CRM_URI + '/verification/' + verification_id;
+  return rp({
+    method: 'PATCH',
+    uri,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    body: {
+      date_verified : moment().format()
+    },
+    json : true
+  });
+}
+
+
+/**
+ * Create verification
+ * @param {String} entity_id - the individual's entity ID
+ * @param {String} company_entity_id - the company entity ID to verify licences for
+ * @param {String} [method] - the verification method, e.g. post|phone
+ * @return {Promise} resolves with user entity record
+ */
+function createVerification(entity_id, company_entity_id, method = 'post') {
+  var uri = process.env.CRM_URI + '/verification';
+  return rp({
+    uri,
+    method : 'POST',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      entity_id,
+      company_entity_id,
+      method
+    },
+    json : true
+  });
+}
+
+
+/**
+ * Bulk update document headers
+ * @param {Object} query - find the documents to update
+ * @param {Object} set - specifies the fields to update
+ * @return {Promise}
+ * @example updateDocumentHeaders({query : document_id : ['123', '456']}, {verification_id : 'xyx'})
+ */
+function updateDocumentHeaders(query, set) {
+  var uri = process.env.CRM_URI + '/documentHeaders';
+  return rp({
+    uri,
+    method : 'PATCH',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      query,
+      set
+    },
+    json : true
+  });
+}
+
+
+/**
+ * Create entity record
+ * @param {String} entity_nm - entity name - the user's email address
+ * @param {String} [entity_type] - entity type, individual|company etc.
+ * @return {Promise} resolves with user entity record
+ */
+function createEntity(entity_nm, entity_type = 'individual') {
+  var uri = process.env.CRM_URI + '/entity';
+  return rp({
+    uri,
+    method : 'POST',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      entity_nm,
+      entity_type
+    },
+    json : true
+  });
+}
+
+/**
+ * Add entity role
+ * Allows an entity to access a certain company
+ * @param {String} entity_id - the individual entity being granted access
+ * @param {String} company_entity_id - the company entity ID the individual is being granted access to
+ * @param {String} role - the role can be user|agent|admin
+ * @param {Boolean} is_primary - whether primary user for company
+ * @return {Promise} resolves with role created on success
+ */
+function addEntityRole(entity_id, company_entity_id, role, is_primary = false) {
+  var uri = process.env.CRM_URI + '/entity/' + entity_id + '/roles';
+  return rp({
+    uri,
+    method : 'POST',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      company : company_entity_id,
+      role,
+      is_primary : is_primary ? 1 : 0
+    },
+    json : true
+  });
+}
+
 
 
 /**
@@ -47,6 +173,23 @@ function getEntity(user_name) {
 }
 
 /**
+ * Get entity roles
+ * @param {String} entityId - the user's individual entity ID
+ * @return {Promise} resolves with found roles
+ */
+function getEntityRoles(entityId) {
+  const uri = process.env.CRM_URI + '/entity/' + entityId + '/roles';
+  return rp({
+    uri,
+    method : 'GET',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    json : true
+  });
+}
+
+/**
  * Get a list of licences based on the supplied options
  * @param {Object} filter - criteria to filter licence lisrt
  * @param {String} [filter.entity_id] - the current user's entity ID
@@ -59,10 +202,14 @@ function getEntity(user_name) {
  * @example getLicences({entity_id : 'guid'})
  */
 function getLicences(filter, sort = {}) {
-  const uri = process.env.CRM_URI + '/documentHeader/filter?token=' + process.env.JWT_TOKEN;
+  const uri = process.env.CRM_URI + '/documentHeader/filter';
+  console.log(filter, sort);
   return rp({
     uri,
     method : 'POST',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
     json : true,
     body : { filter, sort }
   });
@@ -157,6 +304,8 @@ async function addColleagueRole(entity_id,email) {
 
 module.exports = {
   getEntity,
+  getEntityRoles,
+  addEntityRole,
   createEntity,
   getLicences,
   getLicenceInternalID,
@@ -164,4 +313,8 @@ module.exports = {
   getEditableRoles,
   deleteColleagueRole,
   addColleagueRole
+  createVerification,
+  checkVerification,
+  completeVerification,
+  updateDocumentHeaders
 }

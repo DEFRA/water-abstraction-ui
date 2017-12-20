@@ -1,0 +1,63 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+      </ol>
+    </div>
+  </nav>
+
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      {{#if error}}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        You need to enter the code we sent you
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#verification_code">Re-enter your confirmation code</a></li>
+      </ul>
+    </div>
+      {{/if}}
+
+
+      <h1 class="heading-large">
+        Enter your security code
+      </h1>
+
+      <form method="POST" action="/security-code">
+
+        <!-- licence number field -->
+        <div class="form-group {{#if error }}form-group-error{{/if}}">
+          <label for="verification_code">
+            <span class="form-hint">
+              We sent this by post to the registered address you chose.
+            </span>
+
+            {{#if error}}
+                <span id="enterPassword" class="error-message">Please check your code is correct.</span>
+            {{/if}}
+
+          </label>
+
+          <input value="{{ payload.verification_code }}" type="password" class="form-control" name="verification_code" id="verification_code" required="">
+        </div>
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+    </form>
+
+    <h2>Todo: add licences here</h2>
+
+
+    </div>
+  </div>
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

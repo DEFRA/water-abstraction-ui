@@ -1,3 +1,25 @@
+const NotifyClient = require('notifications-node-client').NotifyClient;
+const notifyClient = new NotifyClient(process.env.NOTIFY_KEY);
+
+function sendNewUserPasswordReset(emailAddress, resetGuid) {
+  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid;
+  return notifyClient
+    .sendEmail('3d25b496-abbd-49bb-b943-016019082988', emailAddress, {
+      personalisation: { link }
+  });
+}
+function sendExistingUserPasswordReset(emailAddress, resetGuid) {
+  const link = process.env.base_url + '/signin';
+  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid;
+  return notifyClient
+    .sendEmail('d9654596-a533-47e9-aa27-2cf869c6aa13', emailAddress, {
+      personalisation: { link, resetLink }
+  });
+}
+
+
+
+
 function sendAccesseNotification(params) {
 
 
@@ -58,4 +80,6 @@ function sendAccesseNotification(params) {
 
 module.exports = {
   sendAccesseNotification: sendAccesseNotification,
+  sendNewUserPasswordReset,
+  sendExistingUserPasswordReset
 };

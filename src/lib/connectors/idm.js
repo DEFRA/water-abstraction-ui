@@ -95,6 +95,25 @@ function resetPassword(emailAddress){
   });
 }
 
+/**
+ * Resets user reset_guid without sending notify email
+ * @param {String} emailAddress - the user email address to send password reset email to
+ * @return {Promise} - resolves with HTTP response
+ */
+function resetPasswordQuiet(emailAddress){
+  return rp({
+    uri : process.env.IDM_URI + '/resetPasswordQuiet',
+    method : 'POST',
+    json : true,
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    body : {
+      emailAddress
+    }
+  });
+}
+
 function getPasswordResetLink (emailAddress) {
   return new Promise((resolve, reject) => {
     var uri = process.env.IDM_URI + '/resetPassword' + '?token=' + process.env.JWT_TOKEN + '&emailAddress=' + emailAddress
@@ -156,7 +175,8 @@ function updatePasswordWithGuid (resetGuid, password) {
 
 module.exports = {
 login:login,
-resetPassword:resetPassword,
+resetPassword,
+resetPasswordQuiet,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,

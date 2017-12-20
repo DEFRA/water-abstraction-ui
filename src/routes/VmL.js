@@ -64,8 +64,23 @@ module.exports = [
   { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
   { method: 'POST', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.postResetPasswordResendEmail },
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
-    { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
+
+  { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
   { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
+
+  { method: 'GET', path: '/create-password', handler: VmL.getCreatePassword, config: {
+    auth: false,
+    validate : {
+      query : {
+        resetGuid : Joi.string().guid().required()
+      }
+    }}},
+
+
+  { method: 'POST', path: '/create-password', config: { auth: false }, handler: VmL.postCreatePassword },
+
+
+
   { method: 'GET', path: '/licences',  handler: LicencesController.getLicences, config: {
     description : 'View list of licences with facility to sort/filter',
     validate: {
@@ -150,6 +165,24 @@ module.exports = [
     auth : false,
     description : 'Register user account - success page'
   }},
+  { method: 'GET', path: '/send-again', handler: RegistrationController.getSendAgain, config : {
+    auth : false,
+    description: 'Register user account - resend email form'
+  }},
+  { method: 'POST', path: '/send-again', handler: RegistrationController.postSendAgain, config : {
+    auth : false,
+    description : 'Register user account - resend email address form handler',
+    validate : {
+      payload : {
+        email : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'GET', path: '/resent-success', handler: RegistrationController.getResentSuccess, config : {
+    auth : false,
+    description : 'Register user account - email resent success page'
+  }},
+
   // Manage licences
   { method: 'GET', path: '/manage_licences', handler: LicencesController.getAccessList, config : {
     description : 'Manage licences - main page'
@@ -166,7 +199,6 @@ module.exports = [
   { method: 'POST', path: '/manage_licences/add_access', handler: LicencesController.postAddAccess, config : {
     description : 'Managfe licences - add access process'
   }},
-
 
   // Add licence to account
   { method: 'GET', path: '/add-licences', handler: LicencesAddController.getLicenceAdd, config : {

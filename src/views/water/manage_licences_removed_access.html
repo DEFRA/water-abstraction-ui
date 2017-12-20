@@ -1,0 +1,41 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        {{>element-header-links}}
+      </ol>
+    </div>
+  </nav>
+
+<div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div>
+
+
+  {{>element-heading-large content='Access removed'}}
+
+  <div class="column-two-thirds">
+
+
+
+
+
+
+          <p class="lede"><a href="mailto:{{email}}">{{email}}</a> can no longer view your licences.</p>
+
+
+          <a href="/manage_licences">Return to licences</a>
+
+
+
+      </div>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

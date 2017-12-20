@@ -390,3 +390,66 @@ margin-left: 0.75em;
     display: block;
   }
 }
+
+
+// Tab nav
+nav.tabs {
+
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-bottom: 2px solid $panel-colour;
+
+  & ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: table-row;
+
+    & li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: table-cell;
+
+
+      & a, & span {
+        margin-left: 5px;
+        margin: 0 0 2px 5px;
+        display:  block;
+        background: $panel-colour;
+        text-decoration: none;
+        padding : 10px;
+        color: black;
+
+
+        &.active {
+          background: none;
+          border: 2px solid $panel-colour;
+          margin-bottom: 0;
+          padding-bottom: 12px;
+          border-bottom: 0;
+          position: relative;
+          text-decoration: none;
+          color: black;
+
+          &:after {
+            content :  ' ';
+            display: block;
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 100%;
+            height: 3px;
+            background: $page-colour;
+            color: black;
+          }
+        }
+      }
+
+      &:first-child a {
+        margin-left: 0;
+      }
+    }
+  }
+}

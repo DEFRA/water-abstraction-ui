@@ -7,6 +7,7 @@ const BaseJoi = require('joi');
 
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
+const Notify = require('../lib/connectors/notify');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
@@ -245,6 +246,139 @@ function postLicence(request, reply) {
 }
 
 
+/**
+ * Renders list of emails with access to your licences
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} [context] - additional view context data
+ */
+
+
+async function getAccessList(request, reply, context = {}) {
+  console.log('***** getAccessList ***')
+  const { entity_id } = request.auth.credentials;
+  console.log(entity_id)
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.pageTitle = "Manage access to your licences"
+  viewContext.entity_id=entity_id
+  //get list of role  s in same org as current user
+  //need to ensure that current user is admin...
+
+
+  const licenceAccess = await CRM.getEditableRoles(entity_id)
+  viewContext.licenceAccess=JSON.parse(licenceAccess)
+  return reply.view('water/manage_licences', viewContext)
+}
+
+
+
+/**
+ * Renders form for user to share their licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} [context] - additional view context data
+ */
+function getAddAccess(request, reply, context = {}) {
+  const { entity_id } = request.auth.credentials;
+  console.log(request.query)
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.pageTitle = "Manage access to your licences"
+  //get list of roles in same org as current user
+  return reply.view('water/manage_licences_add_access_form', viewContext)
+}
+
+/**
+ * share their licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ * @param {string} email - the email of account to share with
+ * @param {Object} [context] - additional view context data
+ */
+function postAddAccess(request, reply, context = {}) {
+
+  console.log('*** postAddAccess ***')
+  const { entity_id } = request.auth.credentials;
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.pageTitle = "Manage access to your licences"
+  viewContext.email=request.payload.email
+
+  IDM.createUserWithoutPassword(request.payload.email)
+  .then((response) => {
+      console.log('*** createUserWithoutPassword *** '+request.payload.email)
+    console.log(response)
+    if(response.error) {
+      console.log('notified not new user')
+      notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email})
+      .then((d)=>{
+        console.log(d)
+      }).catch((e)=>{
+        console.log(e)
+      })
+      //send notify email!!!
+//      throw Boom.badImplementation('IDM error', response.error);
+    } else {
+      console.log('notified new user')
+      notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email})      .then((d)=>{
+              console.log(d)
+            }).catch((e)=>{
+              console.log(e)
+            })
+
+
+    }
+
+  })
+  .then(() => {
+      console.log('*** createEntity *** '+request.payload.email)
+    // Create CRM entity
+    return CRM.createEntity(request.payload.email);
+  }).catch((error) => {
+    console.log(error)
+    console.log('entity exists')
+  }).then(async ()=>{
+      console.log('add role')
+      const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
+      return reply.view('water/manage_licences_added_access', viewContext)
+  })
+}
+
+/**
+ * Renders form for user to unshare their licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} [context] - additional view context data
+ */
+function getRemoveAccess(request, reply, context = {}) {
+  const { entity_id } = request.auth.credentials;
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.pageTitle = "Manage access to your licences"
+  viewContext.entity_role_id=request.query.entity_role_id
+  viewContext.email=request.query.email
+  console.log(viewContext)
+
+  return reply.view('water/manage_licences_remove_access_form', viewContext)
+}
+
+/**
+ * Renders form for user to share their licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ * @param {string} email - the email of account to unshare with
+ * @param {Object} [context] - additional view context data
+ */
+async function postRemoveAccess(request, reply, context = {}) {
+  const { entity_id } = request.auth.credentials;
+  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.email=request.payload.email
+  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.payload.entity_role_id)
+  console.log('viewContext ',viewContext)
+  viewContext.pageTitle = "Manage access to your licences"
+  //get list of roles in same org as current user
+  //call CRM and add role. CRM will call IDM if account does not exist...
+  return reply.view('water/manage_licences_removed_access', viewContext)
+}
+
+
 module.exports = {
   getLicences,
   getLicence,
@@ -252,5 +386,11 @@ module.exports = {
   getLicenceContact,
   getLicenceMap,
   getLicenceTerms,
-  getLicenceRename
+  getLicenceRename,
+  getAccessList,
+  getAddAccess,
+  postAddAccess,
+  getRemoveAccess,
+  postRemoveAccess,
+
 };

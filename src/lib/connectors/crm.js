@@ -99,10 +99,69 @@ function getLicenceInternalID(licences, document_id) {
   })
 }
 
+
+async function getEditableRoles(entity_id) {
+  ///entity/{entity_id}/colleagues
+  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues?token=' + process.env.JWT_TOKEN
+  console.log(uri)
+  const options = {
+        method: `GET`,
+        uri: uri
+      };
+      try {
+        const response = await rp(options);
+        return Promise.resolve(response);
+      }
+      catch (error) {
+        Promise.reject(error);
+      }
+}
+
+async function deleteColleagueRole(entity_id,entity_role_id) {
+  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/'+entity_role_id+'?token=' + process.env.JWT_TOKEN
+  console.log(uri)
+  const options = {
+        method: `DELETE`,
+        uri: uri
+      };
+      try {
+        const response = await rp(options);
+        return Promise.resolve(response);
+      }
+      catch (error) {
+        Promise.reject(error);
+      }
+}
+
+async function addColleagueRole(entity_id,email) {
+
+  console.log('addColleagueRole email',email)
+  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/?token=' + process.env.JWT_TOKEN
+  console.log(uri)
+  var data={email:email}
+  const options = {
+        method: `POST`,
+        uri: uri,
+        json : true,
+        body : data
+      };
+      try {
+        const response = await rp(options);
+        return Promise.resolve(response);
+      }
+      catch (error) {
+        console.log(error)
+        return Promise.reject(error);
+      }
+}
+
 module.exports = {
   getEntity,
   createEntity,
   getLicences,
   getLicenceInternalID,
-  setLicenceName
+  setLicenceName,
+  getEditableRoles,
+  deleteColleagueRole,
+  addColleagueRole
 }

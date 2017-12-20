@@ -1,0 +1,80 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        {{>element-header-links}}
+      </ol>
+    </div>
+  </nav>
+
+
+  <div class="column-full" style="margin-top:35px;margin-bottom:35px;">
+        <nav class="tabs">
+            	  <ul>
+                  <li><a href="/licences">Licence list</a></li>
+            	    <li><span class="active">Manage licence access</span></li>
+
+        </ul>
+        </nav>
+        </div>
+
+
+  {{>element-heading-large content='Manage access to your licences'}}
+
+<p>You can remove their access at any time.</p>
+<a class="button" href="/manage_licences/add_access" role="button" style="margin-bottom:20px;">Add user</a>
+
+
+
+  <!-- Results page goes here -->
+  <div class="license-results" id="results">
+
+    <div class="license-results-header">
+      <div class="license-results-header__column">
+        <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="individual_nm"}}}#results">Access given to
+          {{{ sortIcon  direction=direction sort=sort field="individual_nm" }}}
+        </a>
+      </div>
+      <div class="license-results-header__column">
+        <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="created_at"}}}#results">Access given on
+          {{{ sortIcon  direction=direction sort=sort field="created_at" }}}
+        </a>
+      </div>
+      <div class="license-results-header__column"></div>
+      <div class="license-results-header__column"></div>
+    </div>
+
+    {{^licenceAccess}}
+    <!-- No results found -->
+    <div class="license-result">
+      <h2 class="heading-medium license-result__column">No results found.</h2>
+      <p class="license-result__column license-result__column--description"></p>
+      <div class="license-result__column license-result__column--view" aria-hidden="true"></div>
+    </div>
+    {{/licenceAccess}}
+
+    <!-- Display list of clickable licence rows/tiles -->
+    {{#each licenceAccess}}
+    <div class="license-result">
+      <h2 class="heading-medium license-result__column">{{entity_nm}}</h2>
+      <p class="license-result__column license-result__column--description">{{created_at}}</p>
+      <p class="license-result__column license-result__column--description"><a href="/manage_licences/remove_access?entity_role_id={{entity_role_id}}&email={{entity_nm}}" aria-hidden="true">Remove access </a></p>
+      </div>
+    {{/each}}
+
+  </div>
+
+
+  <p></p>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

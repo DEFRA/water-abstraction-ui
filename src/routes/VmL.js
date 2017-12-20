@@ -149,7 +149,22 @@ module.exports = [
     auth : false,
     description : 'Register user account - success page'
   }},
-
+  // Manage licences
+  { method: 'GET', path: '/manage_licences', handler: LicencesController.getAccessList, config : {
+    description : 'Manage licences - main page'
+  }},
+  { method: 'GET', path: '/manage_licences/remove_access', handler: LicencesController.getRemoveAccess, config : {
+    description : 'Manage licences - remove access form'
+  }},
+  { method: 'POST', path: '/manage_licences/remove_access', handler: LicencesController.postRemoveAccess, config : {
+    description : 'Managfe licences - remove access process'
+  }},
+  { method: 'GET', path: '/manage_licences/add_access', handler: LicencesController.getAddAccess, config : {
+    description : 'Manage licences - add access form'
+  }},
+  { method: 'POST', path: '/manage_licences/add_access', handler: LicencesController.postAddAccess, config : {
+    description : 'Managfe licences - add access process'
+  }},
 
 {
       method: '*',

@@ -1,0 +1,36 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Abstraction licences</a></li>
+        {{>element-header-links}}
+      </ol>
+    </div>
+  </nav>
+
+<div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div>
+
+
+  {{>element-heading-large content=(concat 'Access email sent to ' email)}}
+  <div class="column-two-thirds">
+
+
+  <p class="lede">We’ve sent instructions about how to create an account and view your licences.</p>
+
+  <a href="/manage_licences">Return to licences</a>
+  <p>You can remove access to your licences on this page.</p>
+
+
+  </div>
+
+</main>
+
+
+
+{{> footerjs}}
+
+
+{{> debug}}

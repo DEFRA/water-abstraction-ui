@@ -1,5 +1,5 @@
 
-# water-abstraction
+# water-abstraction-ui
 
 Project for the GOV.UK Water Abstraction service
 

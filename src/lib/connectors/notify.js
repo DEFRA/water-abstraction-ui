@@ -9,7 +9,7 @@ function sendAccesseNotification(params) {
         notifyClient = new NotifyClient(process.env.NOTIFY_KEY);
 
         if(params.newUser){
-          var templateId = '6563423c-e35e-42f6-b8a5-2f652c9867b1'
+          var templateId = '145e2919-da41-4f4d-9570-17f5bb12f119'
           var link=`${process.env.reset_url}`
           var personalisation = {
             title: "title",

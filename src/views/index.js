@@ -51,6 +51,13 @@ handlebars.registerHelper('concat', function () {
   return arg.join('')
 })
 
+handlebars.registerHelper('encode', function (value) {
+
+  console.log(value)
+  console.log(encodeURIComponent(value.hash.value))
+  return encodeURIComponent(value.hash.value)
+})
+
 handlebars.registerHelper('dynamicView', function () {
   /**
   The dynamicView helper loads javascript renderers from the views/partials/jsPartials directory

@@ -312,7 +312,7 @@ module.exports = {
   setLicenceName,
   getEditableRoles,
   deleteColleagueRole,
-  addColleagueRole
+  addColleagueRole,
   createVerification,
   checkVerification,
   completeVerification,

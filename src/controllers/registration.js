@@ -34,7 +34,14 @@ function getEmailAddress(request, reply) {
  * @param {String} request.payload.email - email address for user account
  * @param {Object} reply - HAPI HTTP reply
  */
-function postEmailAddress(request, reply) {
+function postEmailAddress(request, reply, options = {}) {
+
+  const defaults = {
+    template : 'water/register_email',
+    redirect : '/success'
+  };
+  const config = Object.assign(defaults, options);
+
   // Validate input data with Joi
   const schema = {
     email : Joi.string().trim().required().email()
@@ -58,7 +65,7 @@ function postEmailAddress(request, reply) {
     })
     .then((res) => {
       // Redirect to success page
-      return reply.redirect('/success')
+      return reply.redirect(config.redirect);
     })
     .catch((error) => {
 
@@ -72,13 +79,13 @@ function postEmailAddress(request, reply) {
         var viewContext = View.contextDefaults(request);
         viewContext.pageTitle = 'GOV.UK - Create Account';
         viewContext.error = error;
-        return reply.view('water/register_email', viewContext);
+        return reply.view(config.template, viewContext);
       }
       throw error;
     })
     .then(() => {
       // Redirect to success page
-      return reply.redirect('/success')
+      return reply.redirect(config.redirect)
     })
     .catch(errorHandler(request,reply));
 
@@ -97,9 +104,48 @@ function getRegisterSuccess(request, reply) {
   return reply.view('water/register_success', viewContext);
 }
 
+/**
+ * Try sending email again
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply
+ */
+function getSendAgain(request, reply) {
+  var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Resend Email';
+  return reply.view('water/register_send_again', viewContext);
+}
+
+/**
+ * Send email again
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} request.payload.email - email address for user account
+ * @param {Object} reply - HAPI HTTP reply
+ */
+function postSendAgain(request, reply) {
+  const options = {
+    template: 'water/register_send_again',
+    redirect: '/resent-success'
+  };
+  postEmailAddress(request, reply, options);
+}
+
+
+/**
+ * Success page shown when account created
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply
+ */
+function getResentSuccess(request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Account Created';
+  return reply.view('water/register_resent_success', viewContext);
+}
 
 module.exports = {
   getEmailAddress,
   postEmailAddress,
-  getRegisterSuccess
+  getRegisterSuccess,
+  getSendAgain,
+  postSendAgain,
+  getResentSuccess
 };

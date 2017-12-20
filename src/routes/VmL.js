@@ -150,6 +150,24 @@ module.exports = [
     auth : false,
     description : 'Register user account - success page'
   }},
+  { method: 'GET', path: '/send-again', handler: RegistrationController.getSendAgain, config : {
+    auth : false,
+    description: 'Register user account - resend email form'
+  }},
+  { method: 'POST', path: '/send-again', handler: RegistrationController.postSendAgain, config : {
+    auth : false,
+    description : 'Register user account - resend email address form handler',
+    validate : {
+      payload : {
+        email : Joi.string().allow('')
+      }
+    }
+  }},
+  { method: 'GET', path: '/resent-success', handler: RegistrationController.getResentSuccess, config : {
+    auth : false,
+    description : 'Register user account - email resent success page'
+  }},
+
   // Manage licences
   { method: 'GET', path: '/manage_licences', handler: LicencesController.getAccessList, config : {
     description : 'Manage licences - main page'
@@ -166,7 +184,6 @@ module.exports = [
   { method: 'POST', path: '/manage_licences/add_access', handler: LicencesController.postAddAccess, config : {
     description : 'Managfe licences - add access process'
   }},
-
 
   // Add licence to account
   { method: 'GET', path: '/add-licences', handler: LicencesAddController.getLicenceAdd, config : {

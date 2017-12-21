@@ -198,21 +198,41 @@ function getEntityRoles(entityId) {
  * @param {Object} [sort] - fields to sort on
  * @param {Number} [sort.licenceNumber] - sort on licence number, +1 : asc, -1 : desc
  * @param {Number} [sort.name] - sort on licence name, +1 : asc, -1 : desc
+ * @param {Boolean} [roleFilter] - whether to include roll filtering (true) or search raw licence data (false)
  * @return {Promise} resolves with array of licence records
  * @example getLicences({entity_id : 'guid'})
  */
-function getLicences(filter, sort = {}) {
-  const uri = process.env.CRM_URI + '/documentHeader/filter';
-  console.log(filter, sort);
-  return rp({
-    uri,
-    method : 'POST',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    json : true,
-    body : { filter, sort }
-  });
+function getLicences(filter, sort = {}, roleFilter = true) {
+
+  if(roleFilter) {
+    const uri = process.env.CRM_URI + '/documentHeader/filter';
+    return rp({
+      uri,
+      method : 'POST',
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      json : true,
+      body : { filter, sort }
+    });
+  }
+  else {
+    const uri = process.env.CRM_URI + '/documentHeader';
+
+    console.log(uri);
+    console.log(filter, sort);
+
+    return rp({
+      uri,
+      method : 'GET',
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      json : true,
+      qs : { filter : JSON.stringify(filter), sort : JSON.stringify(sort)}
+    });
+  }
+
 }
 
 /**

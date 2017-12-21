@@ -47,7 +47,7 @@ function getLicenceAdd(request, reply) {
  * @param {String} request.payload.licence_no - user-entered licence numbers
  * @param {Object} reply - HAPI HTTP reply
  */
-function postLicenceAdd(request, reply) {
+async function postLicenceAdd(request, reply) {
 
   // @TODO handle error conditions:
   // Not all licences matched
@@ -57,29 +57,32 @@ function postLicenceAdd(request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Add Licence';
 
-  // Get list of licence numbers from supplied data
-  const licenceNumbers = extractLicenceNumbers(request.payload.licence_no);
-
   // Validate posted data
   const schema = {
-    licence_no : Joi.string().required().allow('').max(6000)
+    licence_no : Joi.string().required().allow('').trim().max(6000)
   };
-  joiPromise(request.payload, schema)
-    .then((value) => {
-      // Extract licence numbers from string
-      if(licenceNumbers.length < 1) {
-        throw {name : 'ValidationError'};
+  try {
+      // Validate post data
+      const {error, value} = Joi.validate(request.payload, schema);
+      if(error) {
+        throw error;
       }
-      // Get unverified licences from DB
-      return CRM.getLicences({ system_external_id : licenceNumbers, verified : null, verification_id : null });
-    })
-    .then((res) => {
 
-      console.log(res);
+      // Get list of licence numbers from supplied data
+      const licenceNumbers = extractLicenceNumbers(value.licence_no);
+      if(licenceNumbers.length < 1) {
+        throw {name : 'ValidationError', details : [{message : 'No licence numbers submitted'}]};
+      }
+
+      // Get unverified licences from DB
+      const res = await CRM.getLicences({ system_external_id : licenceNumbers, verified : null, verification_id : null }, {}, false);
+      if(res.error) {
+        throw res.error;
+      }
 
       // Check 1+ licences found
       if(res.data.length < 1) {
-        throw {name : 'ValidationError', details : [{message : 'No licence numbers submitted', path : 'licence_no'}]};
+        throw {name : 'ValidationError', details : [{message : 'No licence numbers could be found', path : 'licence_no'}]};
       }
 
       // Check # of licences returned = that searched for
@@ -98,23 +101,18 @@ function postLicenceAdd(request, reply) {
       // Seal the list of permitted licence numbers into a token
       // to prevent validation needing to be repeated on following step
       const documentIds = res.data.map(item => item.document_id);
-      return ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
+      viewContext.token = await ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
 
-    })
-    .then((token) => {
-      viewContext.token = token;
       return reply.view('water/licences-add/select-licences', viewContext);
-    })
-    .catch((err) => {
-      if(err.name === 'ValidationError') {
-        console.log(err);
-        viewContext.error = err;
-        return reply.view('water/licences-add/add-licences', viewContext);
-      }
-      throw err;
-    })
-    .catch(errorHandler(request, reply));
-
+  }
+  catch (err) {
+    console.log(err);
+    if(err.name === 'ValidationError') {
+      viewContext.error = err;
+      return reply.view('water/licences-add/add-licences', viewContext);
+    }
+    errorHandler(request, reply)(err);
+  }
 
 }
 

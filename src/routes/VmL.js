@@ -212,26 +212,70 @@ module.exports = [
       }
     }
   }},
-  { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
-    description : 'Confirm licences to add to account',
+
+  // Select licences
+  { method : 'GET', path : '/select-licences', handler: LicencesAddController.getLicenceSelect, config : {
+    description : 'Select the licences to add',
     validate : {
-      payload : {
+      query : {
         token : Joi.string().required(),
-        address : Joi.string().guid()
+        error : Joi.string()
       }
     }
   }},
-  {
-    method: 'POST', path : '/confirm-address', handler: LicencesAddController.postConfirmAddress, config : {
-      description : 'Select address for verification',
-      validate : {
-        payload : {
-          token : Joi.string().required(),
-          licences : [Joi.array(), Joi.string()]
-        }
+  { method: 'POST', path: '/select-licences', handler: LicencesAddController.postLicenceSelect, config : {
+    description : 'Post handler for licence select',
+    validate : {
+      payload : {
+        token : Joi.string().required(),
+        licences : [Joi.array(), Joi.string().allow('')]
       }
     }
-  },
+  }},
+
+
+  { method : 'GET', path : '/select-address', handler: LicencesAddController.getAddressSelect, config : {
+    description : 'Select the address to send postal verification letter',
+    validate : {
+      query : {
+        token : Joi.string().required(),
+        error : Joi.string().allow('')
+      }
+    }
+  }},
+
+  { method : 'POST', path : '/select-address', handler: LicencesAddController.postAddressSelect, config : {
+    description : 'Post handler for select address form',
+    validate : {
+      payload : {
+        address : Joi.string(),
+        token : Joi.string().required()
+      }
+    }
+  }},
+
+  // { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
+  //   description : 'Confirm licences to add to account',
+  //   validate : {
+  //     payload : {
+  //       token : Joi.string().required(),
+  //       address : Joi.string().guid()
+  //     }
+  //   }
+  // }},
+
+
+  // {
+  //   method: 'POST', path : '/confirm-address', handler: LicencesAddController.postConfirmAddress, config : {
+  //     description : 'Select address for verification',
+  //     validate : {
+  //       payload : {
+  //         token : Joi.string().required(),
+  //         licences : [Joi.array(), Joi.string()]
+  //       }
+  //     }
+  //   }
+  // },
   { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
     description : 'Enter auth code received by post'
   }},

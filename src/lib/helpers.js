@@ -12,6 +12,9 @@ const isArray = require('lodash/isArray');
  * @return {Array} the value wrapped in array
  */
 function forceArray(val) {
+  if(val === null || val === undefined) {
+    return [];
+  }
   return isArray(val) ? val : [val];
 }
 

@@ -42,7 +42,8 @@ function getLicenceAdd(request, reply) {
  * - extract licence numbers from supplied text
  * - get licence numbers from CRM
  * - Check address / licence holder name consistency
- * - create verification step
+ * If checks pass, redirects to select licence screen, otherwise
+ * re-render form with errors
  * @param {Object} request - HAPI HTTP request
  * @param {Object} request.payload - form POST
  * @param {String} request.payload.licence_no - user-entered licence numbers
@@ -91,7 +92,7 @@ async function postLicenceAdd(request, reply) {
       // Check licences are similar
       const similar = checkLicenceSimilarity(res.data);
       if(!similar) {
-        throw {name : 'ValidationError', detaiuls : [{message : 'The licences failed an integrity check', path : 'licence_no'}]};
+        throw {name : 'ValidationError', details : [{message : 'The licences failed an integrity check', path : 'licence_no'}]};
       }
 
       viewContext.licences = res.data;
@@ -99,9 +100,9 @@ async function postLicenceAdd(request, reply) {
       // Seal the list of permitted licence numbers into a token
       // to prevent validation needing to be repeated on following step
       const documentIds = res.data.map(item => item.document_id);
-      viewContext.token = await ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
+      const token =  await ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
 
-      return reply.view('water/licences-add/select-licences', viewContext);
+      reply.redirect('/select-licences?token=' + token);
   }
   catch (err) {
     console.log(err);
@@ -115,6 +116,152 @@ async function postLicenceAdd(request, reply) {
 }
 
 
+
+/**
+ * Select licences to add in this verification step
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} request.query.token - the Iron encoded token
+ * @param {Object} reply - HAPI HTTP reply
+ */
+async function getLicenceSelect(request, reply) {
+  const { documentIds } = await ironUnseal(request.query.token, process.env.cookie_secret, Iron.defaults);
+
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Select Licences';
+
+  try {
+    // Get unverified licences from DB
+    const {data, error} = await CRM.getLicences({ document_id : documentIds, verified : null, verification_id : null }, {}, false);
+
+    if(error) {
+      throw error;
+    }
+
+    viewContext.licences = data;
+    viewContext.token = request.query.token;
+    return reply.view('water/licences-add/select-licences', viewContext);
+
+  }
+  catch (err) {
+    console.log(err);
+    reply.redirect('/add-licences?error=token');
+  }
+
+}
+
+/**
+ * Post handler for licence select
+ * User must select
+ * - at least one licence
+ * - licences must be from verified list
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} request.payload.token - signed Iron token containing licence info
+ * @param {Array|String} request.payload.licences - array of licences selected (or string if 1)
+ * @param {Object} reply - HAPI HTTP reply
+ */
+async function postLicenceSelect(request, reply) {
+
+  const { token, licences } = request.payload;
+
+  try {
+
+    const { documentIds } = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
+
+    const selectedIds = await _verifyTokenRequest(token, licences);
+
+    // Create new token
+    const newToken = await ironSeal({documentIds, selectedIds}, process.env.cookie_secret, Iron.defaults);
+    reply.redirect('/select-address?token=' + newToken);
+  }
+  catch (err) {
+
+    console.log(err);
+    if(err.name === 'NoLicencesSelectedError') {
+      return reply.redirect('/select-licences?error=noLicencesSelected&token=' + token);
+    }
+    errorHandler(request, reply)(err);
+  }
+
+}
+
+
+
+/**
+ * Renders an HTML form for the user to select their address for postal
+ * verification
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} request.query - GET query params
+ * @param {String} request.query.token - signed Iron token containing all and selected licence IDs
+ */
+async function getAddressSelect(request, reply) {
+
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Choose Address';
+
+  try {
+    // Decode the Iron token
+    const { token } = request.query;
+    const {documentIds, selectedIds} = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
+
+    // Find licences in CRM for selected documents
+    const { data } = await CRM.getLicences({document_id : selectedIds}, {}, false);
+
+    const uniqueAddressLicences = uniqueAddresses(data);
+
+    viewContext.token = token;
+    viewContext.licences = uniqueAddressLicences;
+
+    return reply.view('water/licences-add/select-address', viewContext);
+
+  }
+  catch(err) {
+    errorHandler(request, reply)(err);
+  }
+
+}
+
+
+/**
+ * Post handler for select address form
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} request.payload - HTTP POST request params
+ * @param {String} request.payload.token - signed Iron token containing all and selected licence IDs
+ * @param {String} request.payload.address - documentId for licence with address for post verify
+ * @param {Object} reply - HAPI HTTP reply
+ */
+async function postAddressSelect(request, reply) {
+    const { token, address } = request.payload;
+    const {entity_id} = request.auth.credentials;
+
+    try {
+      const {documentIds, selectedIds} = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
+
+      // Ensure address present in list of document IDs in token
+      if(!selectedIds.includes(address)) {
+        throw {name : 'InvalidAddressError'};
+      }
+
+      // Get company entity ID for current user
+      const companyEntityId = await _getOrCreateCompanyEntity(entity_id);
+
+      // Create verification
+      const verification = await _createVerification(entity_id, companyEntityId, selectedIds);
+
+
+      const viewContext = View.contextDefaults(request);
+      viewContext.pageTitle = 'GOV.UK - Security Code Sent';
+      viewContext.verification = verification;
+      return reply.view('water/licences-add/verification-sent', viewContext);
+    }
+    catch (err) {
+
+      if(err.name === 'InvalidAddressError') {
+        return reply.redirect('/select-address?error=invalidAddress&token=' + token);
+      }
+
+      errorHandler(request, reply)(err);
+    }
+}
 
 /**
  * Verifies the request
@@ -132,10 +279,14 @@ async function _verifyTokenRequest(token, requestDocumentIds) {
   // Decode the Iron token
   const { documentIds } = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
 
+  if(requestDocumentIds.length < 1) {
+    throw {name : 'NoLicencesSelectedError', details : [{ message : 'No licences selected'}]}
+  };
+
   // Ensure all submitted licences are in token
   requestDocumentIds.forEach((documentId) => {
     if(!documentIds.includes(documentId)) {
-      throw {name : 'ValidationError', details : [{ message : 'Licence not part of original request'}]};
+      throw {name : 'TokenError', details : [{ message : 'Licence/token mismatch'}]};
     }
   });
 
@@ -145,40 +296,6 @@ async function _verifyTokenRequest(token, requestDocumentIds) {
 
 
 
-
-/**
- * Checks/accepts the licences submitted in the previous step.
- * Allows user to select the licence address they wish to use for address
- * verification
- *
- * @param {Object} request - HAPI HTTP request instance
- * @param {String} request.token - an Iron token containing licence IDs from previous step
- * @param {Object} reply - HAPI HTTP reply instance
- */
-async function postConfirmAddress(request, reply) {
-  const {licences, token} = request.payload;
-
-  const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Choose Address';
-
-  try {
-    // Decode the Iron token and verify token request
-    const documentIds = await _verifyTokenRequest(token, licences);
-
-    // Find licences in CRM
-    const { data } = await CRM.getLicences({document_id : documentIds }, {}, false);
-
-    const uniqueAddressLicences = uniqueAddresses(data);
-
-    viewContext.licences = uniqueAddressLicences;
-    viewContext.token = await ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
-
-    return reply.view('water/licences-add/confirm-address', viewContext);
-  }
-  catch (err) {
-    errorHandler(request, reply)(err);
-  }
-}
 
 
 /**
@@ -245,73 +362,6 @@ async function _createVerification(entityId, companyEntityId, documentIds) {
 }
 
 
-/**
- * Validates the requested set of document IDs to verify
- * @param {String} token - a sealed object created with Iron, contains list of validated document IDs
- * @param {Array} documentIds - the user-requested list of document IDs to verify
- * @return {Promise} resolves if valid request
- */
-async function _validateRequest(token, documentIds) {
-
-  // Check >0 licences selected
-  if(documentIds.length < 1) {
-    throw {name : 'ValidationError', details : [{message : 'No licences were selected', path : 'licences'}]};
-  };
-
-  // Unseal Iron token
-  const data = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
-
-  // Check all posted licences were in sealed token
-  documentIds.forEach((documentId) => {
-    if(data.documentIds.indexOf(documentId) === -1) {
-      throw {name : 'ValidationError', details : [{message : 'Licence/token error', path : 'licences'}]};
-    }
-  });
-
-  return documentIds;
-};
-
-
-
-/**
- * Post handler for confirming licences to add
- * @param {Object} request - HAPI HTTP request
- * @param {Object} request.payload - form POST data
- * @param {Array} request.payload.licences - array of CRM documentIds for licences user wishes to add
- * @param {String} request.payload.token - a token created with Iron containing list of licence doc IDs from previous step
- * @param {Object} reply - HAPI HTTP reply
- */
-async function postConfirmLicences(request, reply) {
-
-  const {token, address} = request.payload;
-  const {entity_id} = request.auth.credentials;
-
-  const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Security Code Sent';
-
-  try {
-
-    // Unseal Iron token containing document IDs for licences being claimed
-    const { documentIds } = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
-
-    // Ensure address present in list of document IDs in token
-    if(!documentIds.includes(address)) {
-      throw {name : 'InvalidAddressError'};
-    }
-
-    // Get company entity ID for current user
-    const companyEntityId = await _getOrCreateCompanyEntity(entity_id);
-
-    // Create verification
-    const verification = await _createVerification(entity_id, companyEntityId, documentIds);
-
-    viewContext.verification = verification;
-    return reply.view('water/licences-add/verification-sent', viewContext);
-  }
-  catch (err) {
-    errorHandler(request, reply)(err);
-  }
-}
 
 /**
  * Verify licences with code received in post
@@ -395,16 +445,16 @@ function postSecurityCode(request, reply) {
     })
     .catch(errorHandler(request, reply));
 
-
-  // CRM.checkVerification(entity_id, company_entity_id, verification_code)
 }
 
 
 module.exports = {
   getLicenceAdd,
   postLicenceAdd,
-  postConfirmAddress,
-  postConfirmLicences,
+  getLicenceSelect,
+  postLicenceSelect,
+  getAddressSelect,
+  postAddressSelect,
   getSecurityCode,
   postSecurityCode
 };

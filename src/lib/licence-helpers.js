@@ -53,6 +53,27 @@ function checkLicenceSimilarity(licences) {
   return (names.length + postcodes.length) <= 3;
 }
 
+
+/**
+ * Get list of licences with unique addresses
+ * @param {Array} licences - a full list of licences
+ * @return {Array} a subset of licences containing only those with unique addresses (the first found)
+ */
+function uniqueAddresses(licences) {
+  const uniqueAddresses = [];
+  const filteredList = [];
+  licences.forEach((licence) => {
+    const {AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode } = licence;
+    const address = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode].join(', ').toUpperCase();
+    if(!uniqueAddresses.includes(address)) {
+      uniqueAddresses.push(address);
+      filteredList.push(licence);
+    }
+  });
+  return filteredList;
+}
+
+
 /**
  * A function to get role flags from
  * supplied licences summary returned from CRM
@@ -88,5 +109,6 @@ module.exports = {
   extractLicenceNumbers,
   checkLicenceSimilarity,
   licenceRoles,
-  licenceCount
+  licenceCount,
+  uniqueAddresses
 };

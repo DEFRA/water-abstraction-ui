@@ -217,10 +217,21 @@ module.exports = [
     validate : {
       payload : {
         token : Joi.string().required(),
-        licences : Joi.array()
+        address : Joi.string().guid()
       }
     }
   }},
+  {
+    method: 'POST', path : '/confirm-address', handler: LicencesAddController.postConfirmAddress, config : {
+      description : 'Select address for verification',
+      validate : {
+        payload : {
+          token : Joi.string().required(),
+          licences : [Joi.array(), Joi.string()]
+        }
+      }
+    }
+  },
   { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
     description : 'Enter auth code received by post'
   }},

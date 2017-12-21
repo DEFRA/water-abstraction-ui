@@ -219,9 +219,6 @@ function getLicences(filter, sort = {}, roleFilter = true) {
   else {
     const uri = process.env.CRM_URI + '/documentHeader';
 
-    console.log(uri);
-    console.log(filter, sort);
-
     return rp({
       uri,
       method : 'GET',

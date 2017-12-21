@@ -13,20 +13,30 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
-      <div class="panel panel-border-wide">
-        <h1 class="heading-large">
-  Security code sent            </h1>
-        <p class="lede">
-  Your security code and instructions will be sent by 2nd Class mail. You should receive them within 5 working days.        </p>
+        <h1 class="heading-large">We're sending you a letter</h1>
+
+        <p>Your letter contaning a security code and instructions will be sent by
+          2nd Class mail to:</p>
+
+        <p>
+          <b>TODO</b>
+        </p>
+
+        <p>
+          You should receive it within 5 working days.
+        </p>
+
+        <!-- Links -->
+        <p>
+          <a href="/licences">Return to your licence list</a><br> <!-- @TODO only if licences>0 -->
+          <a href="/signout">Sign out</a>
+        </p>
+
+        <h2>Your code is: <b>{{ verification.verification_code }}</b></h2>
+
+
       </div>
 
-      <!-- Links -->
-      <p>
-        <a href="/licences">Return to your licences</a><br>
-        <a href="/signout">Sign out</a>
-      </p>
-
-      <h2>Your code is: <b>{{ verification.verification_code }}</b></h2>
 
     </div>
   </div>

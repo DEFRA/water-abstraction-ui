@@ -9,6 +9,17 @@
     </div>
   </nav>
 
+  {{#equal error.name 'AddressInvalidError' }}
+  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+    We need more information
+  </h2>
+  <ul class="error-summary-list">
+    <li><a href="#address">Please select an address.</a></li>
+  </ul>
+ </div>
+  {{/equal}}
+
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -33,19 +44,19 @@
 
         <input type="hidden" name="token" value="{{ token }}" />
 
-        <fieldset>
+        <fieldset id="address">
 
         {{#each licences}}
         <div class="multiple-choice">
           <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
           <label for="{{ this.document_id }}">
-            {{ this.metadata.AddressLine1 }},
-            {{ this.metadata.AddressLine2 }},
-            {{ this.metadata.AddressLine3 }},
-            {{ this.metadata.AddressLine4 }},
-            {{ this.metadata.Town }},
-            {{ this.metadata.County }},
-            {{ this.metadata.Postcode }}
+{{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
+{{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
+{{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
+{{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
+{{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
+{{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
+{{ this.metadata.Postcode }}
             <br />
             <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
           </label>

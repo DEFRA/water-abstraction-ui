@@ -81,18 +81,18 @@ async function postLicenceAdd(request, reply) {
 
       // Check 1+ licences found
       if(res.data.length < 1) {
-        throw {name : 'ValidationError', details : [{message : 'No licence numbers could be found', path : 'licence_no'}]};
+        throw {name : 'LicenceNotFoundError', details : [{message : 'No licence numbers could be found', path : 'licence_no'}]};
       }
 
       // Check # of licences returned = that searched for
       if(res.data.length != licenceNumbers.length) {
-        throw {name : 'ValidationError', details : [{message : 'Not all the licences could be found', path : 'licence_no'}]};
+        throw {name : 'LicenceMissingError', details : [{message : 'Not all the licences could be found', path : 'licence_no'}]};
       }
 
       // Check licences are similar
       const similar = checkLicenceSimilarity(res.data);
       if(!similar) {
-        throw {name : 'ValidationError', details : [{message : 'The licences failed an integrity check', path : 'licence_no'}]};
+        throw {name : 'LicenceSimilarityError', details : [{message : 'The licences failed an affinity check', path : 'licence_no'}]};
       }
 
       viewContext.licences = res.data;
@@ -106,7 +106,7 @@ async function postLicenceAdd(request, reply) {
   }
   catch (err) {
     console.log(err);
-    if(err.name === 'ValidationError') {
+    if(['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
       return reply.view('water/licences-add/add-licences', viewContext);
     }
@@ -128,6 +128,10 @@ async function getLicenceSelect(request, reply) {
 
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Select Licences';
+
+  if(request.query.error === 'noLicenceSelected') {
+    viewContext.error = {name : 'LicenceNotSelectedError'};
+  }
 
   try {
     // Get unverified licences from DB
@@ -177,7 +181,7 @@ async function postLicenceSelect(request, reply) {
 
     console.log(err);
     if(err.name === 'NoLicencesSelectedError') {
-      return reply.redirect('/select-licences?error=noLicencesSelected&token=' + token);
+      return reply.redirect('/select-licences?error=noLicenceSelected&token=' + token);
     }
     errorHandler(request, reply)(err);
   }
@@ -197,6 +201,10 @@ async function getAddressSelect(request, reply) {
 
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Choose Address';
+
+  if(request.query.error === 'invalidAddress') {
+    viewContext.error = {name : 'AddressInvalidError'};
+  }
 
   try {
     // Decode the Iron token
@@ -247,10 +255,23 @@ async function postAddressSelect(request, reply) {
       // Create verification
       const verification = await _createVerification(entity_id, companyEntityId, selectedIds);
 
+      // Get the licence containing the selected verification address
+      const { error, data } = await CRM.getLicence(address);
+      if(error) {
+        throw error;
+      }
+
+      // Get all licences - this is needed to determine whether to display link back to dashboard
+      const { error: err2, data: licences} = await CRM.getLicences();
+      if(err2) {
+        throw err2;
+      }
 
       const viewContext = View.contextDefaults(request);
       viewContext.pageTitle = 'GOV.UK - Security Code Sent';
       viewContext.verification = verification;
+      viewContext.licence = data[0];
+      viewContext.licenceCount = licences.length;
       return reply.view('water/licences-add/verification-sent', viewContext);
     }
     catch (err) {

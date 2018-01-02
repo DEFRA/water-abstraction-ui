@@ -10,6 +10,18 @@
   </nav>
 
 
+  {{#equal error.name 'LicenceNotSelectedError' }}
+  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+    We need more information
+  </h2>
+  <ul class="error-summary-list">
+    <li><a href="#licences">Please select at least one licence.</a></li>
+  </ul>
+ </div>
+  {{/equal}}
+
+
   <div class="grid-row">
     <div class="column-two-thirds">
 
@@ -21,7 +33,7 @@
 
         <input type="hidden" name="token" value="{{ token }}" />
 
-        <fieldset>
+        <fieldset id="licences">
           <legend>
             <span class="body-text">You can add more licences later.</span>
           </legend>

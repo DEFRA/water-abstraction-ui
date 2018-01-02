@@ -229,7 +229,25 @@ function getLicences(filter, sort = {}, roleFilter = true) {
       qs : { filter : JSON.stringify(filter), sort : JSON.stringify(sort)}
     });
   }
+}
 
+
+/**
+ * Get a licence by document ID
+ * @param {String} documentId - the GUID for the licence document header
+ * @return {Promise} resolves with licence if found
+ */
+function getLicence(documentId) {
+
+  const uri = process.env.CRM_URI + '/documentHeader/' + documentId;
+  return rp({
+    uri,
+    method : 'GET',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    json : true
+  });
 }
 
 /**
@@ -324,6 +342,7 @@ module.exports = {
   getEntityRoles,
   addEntityRole,
   createEntity,
+  getLicence,
   getLicences,
   getLicenceInternalID,
   setLicenceName,

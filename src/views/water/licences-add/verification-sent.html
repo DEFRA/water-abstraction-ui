@@ -19,7 +19,13 @@
           2nd Class mail to:</p>
 
         <p>
-          <b>TODO</b>
+          {{ licence.metadata.AddressLine1 }}{{#if licence.metadata.AddressLine2 }},{{/if}}
+          {{ licence.metadata.AddressLine2 }}{{#if licence.metadata.AddressLine3 }},{{/if}}
+          {{ licence.metadata.AddressLine3 }}{{#if licence.metadata.AddressLine4 }},{{/if}}
+          {{ licence.metadata.AddressLine4 }}{{#if licence.metadata.Town }},{{/if}}
+          {{ licence.metadata.Town }}{{#if licence.metadata.County }},{{/if}}
+          {{ licence.metadata.County }}{{#if licence.metadata.Postcode }},{{/if}}
+          {{ licence.metadata.Postcode }}
         </p>
 
         <p>
@@ -28,7 +34,9 @@
 
         <!-- Links -->
         <p>
-          <a href="/licences">Return to your licence list</a><br> <!-- @TODO only if licences>0 -->
+          {{#if licenceCount }}
+          <a href="/licences">Return to your licence list</a><br>
+          {{/if}}
           <a href="/signout">Sign out</a>
         </p>
 

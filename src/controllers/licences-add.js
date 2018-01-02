@@ -15,6 +15,7 @@ const View = require('../lib/view');
 const joiPromise = require('../lib/joi-promise');
 const IDM = require('../lib/connectors/idm');
 const CRM = require('../lib/connectors/crm');
+const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
 // Create promisified versions of Iron seal/unseal
@@ -229,6 +230,7 @@ async function getAddressSelect(request, reply) {
 }
 
 
+
 /**
  * Post handler for select address form
  * @param {Object} request - HAPI HTTP request
@@ -260,6 +262,9 @@ async function postAddressSelect(request, reply) {
       if(error) {
         throw error;
       }
+
+      // Post letter
+      const result = await Notify.sendSecurityCode(data[0], verification.verification_code);
 
       // Get all licences - this is needed to determine whether to display link back to dashboard
       const { error: err2, data: licences} = await CRM.getLicences();

@@ -92,11 +92,15 @@ function getLicences(request, reply) {
 
       const { data, summary } = response;
 
+      // For new users with no licences, redirect them to the add licence flow
+      if(data.length==0 && !filter.string) {
+        return reply.redirect('/add-licences');
+      }
+
       // Render HTML page
       viewContext.licenceData = data
       viewContext.debug.licenceData = data
       viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-
 
       // Calculate whether to display email filter / search form depending on summary
       const userRoles = licenceRoles(summary);

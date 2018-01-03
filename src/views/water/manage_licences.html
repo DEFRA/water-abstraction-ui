@@ -35,8 +35,8 @@
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="individual_nm"}}}#results">Access given to
-          {{{ sortIcon  direction=direction sort=sort field="individual_nm" }}}
+        <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="entity_nm"}}}#results">Access given to
+          {{{ sortIcon  direction=direction sort=sort field="entity_nm" }}}
         </a>
       </div>
       <div class="license-results-header__column">
@@ -61,7 +61,7 @@
     {{#each licenceAccess}}
     <div class="license-result">
       <h2 class="heading-medium license-result__column">{{entity_nm}}</h2>
-      <p class="license-result__column license-result__column--description">{{created_at}}</p>
+      <p class="license-result__column license-result__column--description">{{formatTS created_at}}</p>
       <p class="license-result__column license-result__column--description"><a href="/manage_licences/remove_access?entity_role_id={{entity_role_id}}&email={{encode value=entity_nm}}" aria-hidden="true">Remove access </a></p>
       </div>
     {{/each}}

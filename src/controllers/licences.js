@@ -255,17 +255,28 @@ function postLicence(request, reply) {
 
 
 async function getAccessList(request, reply, context = {}) {
-  console.log('***** getAccessList ***')
   const { entity_id } = request.auth.credentials;
-  console.log(entity_id)
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  // Sorting
+  const sortFields= {entity_nm : 'entity_nm', created_at : 'created_at'};
+  const sortField = request.query.sort || 'entity_nm';
+  const direction = request.query.direction === -1 ? -1 : 1;
+  const sort = {};
+  sort[sortFields[sortField]] = direction;
+
+  // Set sort info on viewContext
+  viewContext.direction = direction;
+  viewContext.sort = sortField;
+
+
+
   viewContext.pageTitle = "Manage access to your licences"
   viewContext.entity_id=entity_id
   //get list of role  s in same org as current user
   //need to ensure that current user is admin...
 
 
-  const licenceAccess = await CRM.getEditableRoles(entity_id)
+  const licenceAccess = await CRM.getEditableRoles(entity_id,sortField,direction)
   viewContext.licenceAccess=JSON.parse(licenceAccess)
   return reply.view('water/manage_licences', viewContext)
 }
@@ -280,7 +291,6 @@ async function getAccessList(request, reply, context = {}) {
  */
 function getAddAccess(request, reply, context = {}) {
   const { entity_id } = request.auth.credentials;
-  console.log(request.query)
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
   //get list of roles in same org as current user
@@ -296,7 +306,6 @@ function getAddAccess(request, reply, context = {}) {
  */
 function postAddAccess(request, reply, context = {}) {
 
-  console.log('*** postAddAccess ***')
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
@@ -305,9 +314,7 @@ function postAddAccess(request, reply, context = {}) {
   IDM.createUserWithoutPassword(request.payload.email)
   .then((response) => {
       console.log('*** createUserWithoutPassword *** '+request.payload.email)
-    console.log(response)
     if(response.error) {
-      console.log('notified not new user')
       notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email})
       .then((d)=>{
         console.log(d)
@@ -317,7 +324,6 @@ function postAddAccess(request, reply, context = {}) {
       //send notify email!!!
 //      throw Boom.badImplementation('IDM error', response.error);
     } else {
-      console.log('notified new user')
       notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email})      .then((d)=>{
               console.log(d)
             }).catch((e)=>{

@@ -27,7 +27,7 @@ const Joi = require('joi');
  * @param {Number} [request.query.direction] - sort direction +1 : asc, -1 : desc
  * @param {Object} reply - the HAPI HTTP response
  */
-function getLicences(request, reply) {
+async function getLicences(request, reply) {
 
   const viewContext = View.contextDefaults(request);
 
@@ -63,50 +63,63 @@ function getLicences(request, reply) {
     viewContext.error = error;
   }
 
-  // Look up user
-  const findUser = () => {
+  try {
+
+    // Look up user for email filter
     if(value.emailAddress && !error) {
-      return IDM.getUser(value.emailAddress);
+      try {
+          const user = await IDM.getUser(value.emailAddress);
+      }
+      catch(error) {
+        // User not found
+        if(error.statusCode === 404) {
+            viewContext.error = error;
+        }
+        else {
+          throw error;
+        }
+      }
     }
-    return Promise.resolve();
+
+    // Lookup licences
+    const { data, err, summary } = await CRM.getLicences(filter, sort);
+
+    if(err) {
+      throw Boom.badImplementation('CRM error', response);
+    }
+
+    // Does user have no licences to view?
+    if(data.length < 1 && !filter.string) {
+      // Does user have outstanding verification codes?
+      const { data : verifications, error } = await CRM.getOutstandingVerifications(entity_id);
+      if(error) {
+        throw error;
+      }
+      if(verifications.length > 0) {
+        return reply.redirect('/security-code');
+      }
+      else {
+        return reply.redirect('/add-licences');
+      }
+    }
+
+    // Render HTML page
+    viewContext.licenceData = data
+    viewContext.debug.licenceData = data
+    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+
+    // Calculate whether to display email filter / search form depending on summary
+    const userRoles = licenceRoles(summary);
+    viewContext.licenceCount = licenceCount(summary);
+    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+    viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
+
+    return reply.view('water/licences', viewContext)
+
   }
-
-  findUser()
-    .catch((err) => {
-      // Handle user not found error - 404
-      if(err.statusCode === 404) {
-        viewContext.error = err;
-        return;
-      }
-      throw err;
-    })
-    .then(() => {
-      // Look up licences
-      return CRM.getLicences(filter, sort);
-    })
-    .then((response) => {
-
-      if(response.err) {
-        throw Boom.badImplementation('CRM error', response);
-      }
-
-      const { data, summary } = response;
-
-      // Render HTML page
-      viewContext.licenceData = data
-      viewContext.debug.licenceData = data
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-
-
-      // Calculate whether to display email filter / search form depending on summary
-      const userRoles = licenceRoles(summary);
-      viewContext.licenceCount = licenceCount(summary);
-      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-      viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
-
-      return reply.view('water/licences', viewContext)
-    })
-    .catch(errorHandler(request, reply));
+  catch(error) {
+    errorHandler(request, reply)(error);
+  }
 
 }
 

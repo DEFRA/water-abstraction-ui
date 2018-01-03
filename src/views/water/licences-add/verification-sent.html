@@ -13,20 +13,38 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
-      <div class="panel panel-border-wide">
-        <h1 class="heading-large">
-  Security code sent            </h1>
-        <p class="lede">
-  Your security code and instructions will be sent by 2nd Class mail. You should receive them within 5 working days.        </p>
+        <h1 class="heading-large">We're sending you a letter</h1>
+
+        <p>Your letter contaning a security code and instructions will be sent by
+          2nd Class mail to:</p>
+
+        <p>
+          {{ licence.metadata.AddressLine1 }}{{#if licence.metadata.AddressLine2 }},{{/if}}
+          {{ licence.metadata.AddressLine2 }}{{#if licence.metadata.AddressLine3 }},{{/if}}
+          {{ licence.metadata.AddressLine3 }}{{#if licence.metadata.AddressLine4 }},{{/if}}
+          {{ licence.metadata.AddressLine4 }}{{#if licence.metadata.Town }},{{/if}}
+          {{ licence.metadata.Town }}{{#if licence.metadata.County }},{{/if}}
+          {{ licence.metadata.County }}{{#if licence.metadata.Postcode }},{{/if}}
+          {{ licence.metadata.Postcode }}
+        </p>
+
+        <p>
+          You should receive it within 5 working days.
+        </p>
+
+        <!-- Links -->
+        <p>
+          {{#if licenceCount }}
+          <a href="/licences">Return to your licence list</a><br>
+          {{/if}}
+          <a href="/signout">Sign out</a>
+        </p>
+
+        <h2>Your code is: <b>{{ verification.verification_code }}</b></h2>
+
+
       </div>
 
-      <!-- Links -->
-      <p>
-        <a href="/licences">Return to your licences</a><br>
-        <a href="/signout">Sign out</a>
-      </p>
-
-      <h2>Your code is: <b>{{ verification.verification_code }}</b></h2>
 
     </div>
   </div>

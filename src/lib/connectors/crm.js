@@ -8,32 +8,33 @@ const rp = require('request-promise-native').defaults({
   });
 const moment = require('moment');
 
-// require('request-promise-native').debug = true;
-
 
 /**
  * Enter verification code
  * @param {String} entity_id - the individual's entity ID
  * @param {String} company_entity_id - the company entity ID to verify licences for
  * @param {String} verification_code - the verification code supplied by the user
- * @return {Promise} - resolves if code OK
+ * @return {Promise} - resolves with verification records if found
  */
 function checkVerification(entity_id, company_entity_id, verification_code) {
-  var uri = process.env.CRM_URI + '/verification/check';
+  const uri = process.env.CRM_URI + '/verification';
   return rp({
-    method: 'POST',
+    method: 'GET',
     uri,
     headers: {
       Authorization: process.env.JWT_TOKEN
     },
-    body : {
-      entity_id,
-      company_entity_id,
-      verification_code
+    qs : {
+      filter : JSON.stringify({
+        entity_id,
+        company_entity_id,
+        verification_code
+      })
     },
     json : true
   });
 }
+
 
 /**
  * Enter verification code
@@ -66,7 +67,7 @@ function completeVerification(verification_id) {
  * @return {Promise} resolves with user entity record
  */
 function createVerification(entity_id, company_entity_id, method = 'post') {
-  var uri = process.env.CRM_URI + '/verification';
+  const uri = process.env.CRM_URI + '/verification';
   return rp({
     uri,
     method : 'POST',
@@ -82,6 +83,29 @@ function createVerification(entity_id, company_entity_id, method = 'post') {
   });
 }
 
+/**
+ * Get outstanding verifications for user
+ * @param {String} entity_id - the individual's entity ID
+ * @return {Promise} resolves with list of verifications that haven't been completed
+ */
+function getOutstandingVerifications(entity_id) {
+  const uri = process.env.CRM_URI + '/verification';
+  const filter = JSON.stringify({
+    entity_id,
+    date_verified : null
+  });
+  return rp({
+    uri,
+    method : 'GET',
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    qs : {
+      filter
+    },
+    json : true
+  });
+}
 
 /**
  * Bulk update document headers
@@ -198,20 +222,55 @@ function getEntityRoles(entityId) {
  * @param {Object} [sort] - fields to sort on
  * @param {Number} [sort.licenceNumber] - sort on licence number, +1 : asc, -1 : desc
  * @param {Number} [sort.name] - sort on licence name, +1 : asc, -1 : desc
+ * @param {Boolean} [roleFilter] - whether to include roll filtering (true) or search raw licence data (false)
  * @return {Promise} resolves with array of licence records
  * @example getLicences({entity_id : 'guid'})
  */
-function getLicences(filter, sort = {}) {
-  const uri = process.env.CRM_URI + '/documentHeader/filter';
-  console.log(filter, sort);
+function getLicences(filter, sort = {}, roleFilter = true) {
+
+  if(roleFilter) {
+    const uri = process.env.CRM_URI + '/documentHeader/filter';
+    return rp({
+      uri,
+      method : 'POST',
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      json : true,
+      body : { filter, sort }
+    });
+  }
+  else {
+    const uri = process.env.CRM_URI + '/documentHeader';
+
+    return rp({
+      uri,
+      method : 'GET',
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      },
+      json : true,
+      qs : { filter : JSON.stringify(filter), sort : JSON.stringify(sort)}
+    });
+  }
+}
+
+
+/**
+ * Get a licence by document ID
+ * @param {String} documentId - the GUID for the licence document header
+ * @return {Promise} resolves with licence if found
+ */
+function getLicence(documentId) {
+
+  const uri = process.env.CRM_URI + '/documentHeader/' + documentId;
   return rp({
     uri,
-    method : 'POST',
+    method : 'GET',
     headers : {
       Authorization : process.env.JWT_TOKEN
     },
-    json : true,
-    body : { filter, sort }
+    json : true
   });
 }
 
@@ -304,6 +363,7 @@ module.exports = {
   getEntityRoles,
   addEntityRole,
   createEntity,
+  getLicence,
   getLicences,
   getLicenceInternalID,
   setLicenceName,
@@ -312,6 +372,7 @@ module.exports = {
   addColleagueRole,
   createVerification,
   checkVerification,
+  getOutstandingVerifications,
   completeVerification,
   updateDocumentHeaders
 }

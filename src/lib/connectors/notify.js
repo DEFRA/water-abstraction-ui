@@ -17,6 +17,52 @@ function sendExistingUserPasswordReset(emailAddress, resetGuid) {
   });
 }
 
+/**
+ * Sends a letter contaning a security code to the user.
+ * In environments other than production, this is skipped and the
+ * the function always resolves.
+ *
+ * @param {Object} licence - licence document header data from CRM
+ * @param {String} accesscode - code user receives in post to verify access
+ * @return {Promise} resolves with object if successful
+ */
+function sendSecurityCode(licence, accesscode) {
+  // Get address components from licence
+  const {AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode : postcode, Name : licenceholder} = licence.metadata;
+
+  // Filter out non-null lines
+  const lines = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County].filter(str => str.trim());
+
+  // Format personalisation with address lines and postcode
+  const personalisation = lines.reduce((memo, line, i) => {
+    memo[`address_line_${ i+1 }`] = line;
+    return memo;
+  }, {
+    accesscode,
+    siteaddress: process.env.base_url,
+    licenceholder,
+    postcode
+  });
+
+  // Don't send letters unless production
+  if(process.env.NODE_ENV === 'production') {
+      return NotifyClient
+        .sendLetter('d48d29cc-ed03-4a01-b496-5cce90beb889', {
+          personalisation
+        });
+  }
+  // Mock a response
+  else {
+    console.log(`Environment is ${process.env.NODE_ENV} - skipping sending security code letter`, {personalisation});
+    return Promise.resolve({
+      id : 'guid'
+    });
+  }
+
+}
+
+
+
 
 
 
@@ -81,5 +127,6 @@ function sendAccesseNotification(params) {
 module.exports = {
   sendAccesseNotification: sendAccesseNotification,
   sendNewUserPasswordReset,
-  sendExistingUserPasswordReset
+  sendExistingUserPasswordReset,
+  sendSecurityCode
 };

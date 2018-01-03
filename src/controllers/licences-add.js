@@ -241,7 +241,7 @@ async function getAddressSelect(request, reply) {
  */
 async function postAddressSelect(request, reply) {
     const { token, address } = request.payload;
-    const {entity_id} = request.auth.credentials;
+    const { entity_id } = request.auth.credentials;
 
     try {
       const {documentIds, selectedIds} = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
@@ -253,6 +253,8 @@ async function postAddressSelect(request, reply) {
 
       // Get company entity ID for current user
       const companyEntityId = await _getOrCreateCompanyEntity(entity_id);
+
+      console.log('companyEntityId', companyEntityId);
 
       // Create verification
       const verification = await _createVerification(entity_id, companyEntityId, selectedIds);
@@ -352,7 +354,9 @@ async function _getPrimaryCompany(entityId) {
  */
 async function _getOrCreateCompanyEntity(entityId) {
 
-  const companyId = _getPrimaryCompany(entityId);
+  const companyId = await _getPrimaryCompany(entityId);
+
+  console.log('_getOrCreateCompanyEntity', companyId);
 
   if(companyId) {
     return companyId;
@@ -418,7 +422,13 @@ async function _verify(entityId, verificationCode) {
 
   // Verify with code
   const res = await CRM.checkVerification(entityId, companyEntityId, verificationCode);
-  const { verification_id, company_entity_id } = res.data;
+  if(res.error) {
+    throw res.error;
+  }
+  if(res.data.length !== 1) {
+    throw {name : 'VerificationNotFoundError'};
+  }
+  const { verification_id, company_entity_id } = res.data[0];
 
   // Update document headers
   const res2 = await CRM.updateDocumentHeaders({verification_id}, {company_entity_id, verified : 1});
@@ -457,7 +467,7 @@ function postSecurityCode(request, reply) {
     .catch((err) => {
 
       // Verification code invalid
-      if(err.name === 'StatusCodeError' && err.statusCode === 401) {
+      if(err.name === 'VerificationNotFoundError') {
         viewContext.error = err;
         return reply.view('water/licences-add/security-code', viewContext);
       }

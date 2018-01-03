@@ -7,6 +7,27 @@ const rp = require('request-promise-native').defaults({
 
 
 /**
+ * Check reset guid
+ * @param {String} resetGuid - the password reset GUID issued by email
+ * @return {Promise} resolves with user record if found or null otherwise
+ */
+async function getUserByResetGuid(reset_guid) {
+  const data = await rp({
+    uri : process.env.IDM_URI + '/user',
+    method : 'GET',
+    json : true,
+    headers : {
+      Authorization : process.env.JWT_TOKEN
+    },
+    qs : {
+      filter : JSON.stringify({reset_guid})
+    }
+  });
+  return data.length === 1 ? data[0] : null;
+}
+
+
+/**
  * Create user account in registration process
  * No password is supplied so a random GUID is used as a
  * temporary password, and the user is flagged for password reset
@@ -181,6 +202,7 @@ getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,
 createUserWithoutPassword,
-getUser
+getUser,
+getUserByResetGuid
 
 }

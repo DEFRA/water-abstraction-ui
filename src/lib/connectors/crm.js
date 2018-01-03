@@ -14,24 +14,27 @@ const moment = require('moment');
  * @param {String} entity_id - the individual's entity ID
  * @param {String} company_entity_id - the company entity ID to verify licences for
  * @param {String} verification_code - the verification code supplied by the user
- * @return {Promise} - resolves if code OK
+ * @return {Promise} - resolves with verification records if found
  */
 function checkVerification(entity_id, company_entity_id, verification_code) {
-  var uri = process.env.CRM_URI + '/verification/check';
+  const uri = process.env.CRM_URI + '/verification';
   return rp({
-    method: 'POST',
+    method: 'GET',
     uri,
     headers: {
       Authorization: process.env.JWT_TOKEN
     },
-    body : {
-      entity_id,
-      company_entity_id,
-      verification_code
+    qs : {
+      filter : JSON.stringify({
+        entity_id,
+        company_entity_id,
+        verification_code
+      })
     },
     json : true
   });
 }
+
 
 /**
  * Enter verification code

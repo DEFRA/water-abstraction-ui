@@ -356,8 +356,6 @@ async function _getOrCreateCompanyEntity(entityId) {
 
   const companyId = await _getPrimaryCompany(entityId);
 
-  console.log('_getOrCreateCompanyEntity', companyId);
-
   if(companyId) {
     return companyId;
   }
@@ -398,10 +396,41 @@ async function _createVerification(entityId, companyEntityId, documentIds) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-function getSecurityCode(request, reply) {
+async function getSecurityCode(request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
-  return reply.view('water/licences-add/security-code', viewContext);
+
+  const {entity_id} = request.auth.credentials;
+
+  try {
+
+    // Get outstanding verifications for current user
+    const res = await CRM.getOutstandingVerifications(entity_id);
+    if(res.error) {
+      throw res.error;
+    }
+
+    // Get array list of verification IDs
+    const verification_id = res.data.map(row => row.verification_id);
+
+    // Find licences with this ID
+    const {error, data} = await CRM.getLicences({
+      verification_id,
+      verified : null
+    }, null, false);
+    if(error) {
+      throw error;
+    }
+
+    viewContext.licences = data;
+
+    return reply.view('water/licences-add/security-code', viewContext);
+  }
+  catch(error) {
+    errorHandler(request, reply)(error);
+  }
+
+
 }
 
 

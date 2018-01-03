@@ -120,6 +120,14 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
+handlebars.registerHelper('formatTS', function (dateInput) {
+  console.log('formatDate')
+
+  console.log(dateInput)
+  var date = moment(dateInput, "YYYY-MM-DD")
+  return date.isValid() ? date.format("D MMMM YYYY") : dateInput
+})
+
 handlebars.registerHelper('formatToDate', function (dateInput) {
   console.log('formatDate')
 

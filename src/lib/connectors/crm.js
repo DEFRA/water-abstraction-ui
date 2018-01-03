@@ -306,9 +306,9 @@ function getLicenceInternalID(licences, document_id) {
 }
 
 
-async function getEditableRoles(entity_id) {
+async function getEditableRoles(entity_id,sort,direction) {
   ///entity/{entity_id}/colleagues
-  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues?token=' + process.env.JWT_TOKEN
+  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues?sort='+sort+'&direction='+direction+'&token=' + process.env.JWT_TOKEN
   console.log(uri)
   const options = {
         method: `GET`,
@@ -325,7 +325,6 @@ async function getEditableRoles(entity_id) {
 
 async function deleteColleagueRole(entity_id,entity_role_id) {
   const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/'+entity_role_id+'?token=' + process.env.JWT_TOKEN
-  console.log(uri)
   const options = {
         method: `DELETE`,
         uri: uri
@@ -341,9 +340,7 @@ async function deleteColleagueRole(entity_id,entity_role_id) {
 
 async function addColleagueRole(entity_id,email) {
 
-  console.log('addColleagueRole email',email)
   const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/?token=' + process.env.JWT_TOKEN
-  console.log(uri)
   var data={email:email}
   const options = {
         method: `POST`,

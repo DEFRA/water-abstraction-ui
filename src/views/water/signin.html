@@ -10,7 +10,7 @@
   </nav>
   <div class="grid-row">
     <div class="column-two-thirds">
-      <form action="/signin" method="post" class="form">
+      <form novalidate action="/signin" method="post" class="form">
 
         {{#equal query.flash 'password-reset'}}
         <div style="border-top: none;" class="panel panel-border-wide" role="alert" tabindex="-1">

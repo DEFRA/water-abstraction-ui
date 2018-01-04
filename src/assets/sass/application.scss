@@ -59,24 +59,24 @@ family: "nta", Arial, sans-serif;
       }
 
       &.password-validation {
-        color: green;
+        color: $green;
         list-style: none;
         list-style-position: outside;
 
         &:before {
-          color: green;
+          color: $green;
           content: "\2713";
         }
 
       }
 
       &.password-validation-failure {
-        color: red;
+        color: $error-colour;
         list-style: none;
         list-style-position: outside;
 
         &:before {
-          color: red;
+          color: $error-colour;
           content: "\2717";
         }
       }

@@ -46,10 +46,33 @@ family: "nta", Arial, sans-serif;
 // Related items
 // (These styles will be moved to GOV.UK elements, duplicating here for now.)
 
+// Screen-reader only text
+// @see https://accessible360.com/accessible360-blog/use-aria-label-screen-reader-text/
+.sr-only {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  clip: rect(1px 1px 1px 1px); // IE 6 and 7
+  clip: rect(1px,1px,1px,1px);
+  clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
+  -webkit-clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
+  overflow: hidden !important;
+}
+
 .form-hint {
   .list {
     margin-bottom: 0px;
-    margin-left: 20px;
+
+
+    &-errors {
+      margin-left: 0px;
+      padding-left: 0px;  
+    }
+
+    .validation-icon {
+      display: inline-block;
+      width: 1em;
+    }
 
     li {
       &:before {
@@ -62,23 +85,12 @@ family: "nta", Arial, sans-serif;
         color: $green;
         list-style: none;
         list-style-position: outside;
-
-        &:before {
-          color: $green;
-          content: "\2713";
-        }
-
       }
 
       &.password-validation-failure {
         color: $error-colour;
         list-style: none;
         list-style-position: outside;
-
-        &:before {
-          color: $error-colour;
-          content: "\2717";
-        }
       }
     }
   }

@@ -85,23 +85,12 @@ family: "nta", Arial, sans-serif;
         color: $green;
         list-style: none;
         list-style-position: outside;
-
-        // &:before {
-        //   color: green;
-        //   content: "\2713";
-        // }
-
       }
 
       &.password-validation-failure {
         color: $error-colour;
         list-style: none;
         list-style-position: outside;
-
-        // &:before {
-        //   color: red;
-        //   content: "\2717";
-        // }
       }
     }
   }

@@ -11,7 +11,9 @@
     </div>
   </nav>
 
-  <div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div>
+  <div class="grid-row">
+      <div class="column-two-thirds">
+  <a href="#" class="link-back" onclick="history.go(-1)">Back</a>
 
 
   {{>element-heading-large content='Give access to view your licences'}}
@@ -25,30 +27,23 @@
             </h2>
 
             <ul class="error-summary-list">
-              <li><a href="#user-id">Re-enter your email address</a></li>
+              <li><a href="#email">Re-enter email address</a></li>
             </ul>
 
           </div>
 
 
 
-
-
-
-          <p class="lede">Enter the person’s email address and we’ll send them a link to create an account. This will give them access to view your licences.</p>
-
-
-
         <div class="form-group">
-          <label for="user-id">
+          <p>Enter the person’s email address and we’ll send them a link to create an account. This will give them access to view your licences.</p>
 
+          <label for="email">
               <fieldset>
                 <span class="form-label-bold">Email address</span>
-                <span data-parsely-id="user-id" class="error-message hidden">Please enter a valid email address</span>
+<!--                <span data-parsely-id="email" class="error-message hidden">Please enter a valid email address</span>
+-->
               </fieldset>
-
           </label>
-
           <input type="email" class="form-control" id="email" name="email" required="" autocomplete="off">
         </div>
 
@@ -57,7 +52,7 @@
 
 
   </form>
-
+</div>
 </main>
 
 {{stringify licenceAccess}}

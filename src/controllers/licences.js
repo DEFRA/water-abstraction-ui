@@ -363,40 +363,26 @@ function postAddAccess(request, reply, context = {}) {
 }
 
 /**
- * Renders form for user to unshare their licence
+ * unshare a licence
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
  * @param {Object} [context] - additional view context data
  */
-function getRemoveAccess(request, reply, context = {}) {
+async function getRemoveAccess(request, reply, context = {}) {
+
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.pageTitle = "Manage access to your licences"
-  viewContext.entity_role_id=request.query.entity_role_id
   viewContext.email=request.query.email
-  console.log(viewContext)
-
-  return reply.view('water/manage_licences_remove_access_form', viewContext)
-}
-
-/**
- * Renders form for user to share their licence
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
- * @param {string} email - the email of account to unshare with
- * @param {Object} [context] - additional view context data
- */
-async function postRemoveAccess(request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.email=request.payload.email
-  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.payload.entity_role_id)
+  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.query.entity_role_id)
   console.log('viewContext ',viewContext)
   viewContext.pageTitle = "Manage access to your licences"
   //get list of roles in same org as current user
   //call CRM and add role. CRM will call IDM if account does not exist...
   return reply.view('water/manage_licences_removed_access', viewContext)
+
+
 }
+
 
 
 module.exports = {
@@ -410,7 +396,6 @@ module.exports = {
   getAccessList,
   getAddAccess,
   postAddAccess,
-  getRemoveAccess,
-  postRemoveAccess,
+  getRemoveAccess
 
 };

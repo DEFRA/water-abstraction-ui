@@ -40,6 +40,12 @@
           <a href="/signout">Sign out</a>
         </p>
 
+        {{#if showCode}}
+        <p>
+          Your code is <code><b>{{ verification.verification_code }}</b></code>
+        </p>
+        {{/if}}
+
       </div>
 
 

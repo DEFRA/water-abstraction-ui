@@ -358,6 +358,41 @@ async function addColleagueRole(entity_id,email) {
       }
 }
 
+
+/**
+ * Gets or creates an individual entity for an individual
+ * with the supplied email address
+ * @param {String} emailAddress
+ * @return {Promise} resolves with entity ID
+ */
+async function getOrCreateIndividualEntity(emailAddress) {
+
+  const entity_nm = emailAddress.toLowerCase().trim();
+
+  // Get existing entity
+  // @todo this should check for company entity type
+  const {error, data} = await getEntity(entity_nm);
+
+  // CRM error
+  if(error) {
+    throw error;
+  }
+
+  // Entity was found
+  if(data && data.entity && data.entity.entity_id) {
+    console.log(`Existing CRM entity ${ data.entity.entity_id }`);
+    return data.entity.entity_id;
+  }
+
+  // Create new entity
+  const res = await createEntity(emailAddress.toLowerCase().trim(), 'individual');
+  if(res.error) {
+    throw res.error;
+  }
+  console.log(`Created CRM entity ${ res.data.entity_id }`);
+  return res.data.entity_id;
+}
+
 module.exports = {
   getEntity,
   getEntityRoles,
@@ -374,5 +409,6 @@ module.exports = {
   checkVerification,
   getOutstandingVerifications,
   completeVerification,
-  updateDocumentHeaders
+  updateDocumentHeaders,
+  getOrCreateIndividualEntity
 }

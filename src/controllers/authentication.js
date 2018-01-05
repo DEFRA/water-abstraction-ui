@@ -11,6 +11,7 @@ const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 const Helpers = require('../lib/helpers');
 const joiPromise = require('../lib/joi-promise');
+const signIn = require('../lib/sign-in');
 
 /**
  * View signin page
@@ -54,38 +55,20 @@ function postSignin(request, reply) {
       })
       .then((getUser) => {
 
-      // Check for password reset flag - if set don't log them in yet and force
-      // password reset
-      if (getUser.body.reset_required && getUser.body.reset_required == 1) {
-        throw {
-          message : 'Password reset required',
-          reset_guid : getUser.body.reset_guid
-        };
-      }
+        // Check for password reset flag - if set don't log them in yet and force
+        // password reset
+        if (getUser.body.reset_required && getUser.body.reset_required == 1) {
+          throw {
+            message : 'Password reset required',
+            reset_guid : getUser.body.reset_guid
+          };
+        }
 
-      // Get the CRM user for the authenticated email address
-      return CRM.getEntity(request.payload.user_id);
+        // OK, sign in user
+        return signIn.auto(request, request.payload.user_id);
 
     })
-    .then(({error, data}) => {
-
-      if(error) {
-        throw Boom.badImplementation(`CRM error`, error);
-      }
-
-      // Get the entity ID for the current user from CRM response
-      const { entity_id } = data.entity;
-
-      if(!entity_id) {
-        throw Boom.badImplementation(`CRM error: User ${request.auth.credentials.username} not found`, response);
-      }
-
-      // Set user info in signed cookie
-      request.cookieAuth.set({
-        sid : Helpers.createGUID(),
-        username : request.payload.user_id,
-        entity_id
-      });
+    .then((session) => {
 
       // Resolves Chrome issue where it won't set cookie and redirect in same request
       // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}

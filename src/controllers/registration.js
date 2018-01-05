@@ -91,6 +91,10 @@ function postEmailAddress(request, reply, options = {}) {
         return IDM.resetPasswordQuiet(request.payload.email)
           .then((res) => {
             return _sendNotifyEmail(res);
+          })
+          .then(() => {
+            // Redirect to success page
+            return reply.redirect(config.redirect)
           });
       }
 
@@ -102,10 +106,6 @@ function postEmailAddress(request, reply, options = {}) {
         return reply.view(config.template, viewContext);
       }
       throw error;
-    })
-    .then(() => {
-      // Redirect to success page
-      return reply.redirect(config.redirect)
     })
     .catch(errorHandler(request,reply));
 

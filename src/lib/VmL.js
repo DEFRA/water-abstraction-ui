@@ -4,6 +4,7 @@ const CRM = require('./connectors/crm')
 const IDM = require('./connectors/idm')
 const Water = require('./connectors/water')
 const Permit = require('./connectors/permit')
+const signIn = require('../lib/sign-in')
 
 function getRoot(request, reply) {
   reply.file('./staticindex.html')
@@ -200,6 +201,7 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect)
     }).catch((err) => {
+      console.log(err);
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Error'
       return reply.view('water/error', viewContext)
@@ -282,24 +284,9 @@ async function postResetPasswordChangePassword(request, reply) {
       }
 
       // Log user in
-      const res = await CRM.getEntity(user.user_name);
-      if(res.error) {
-        throw error;
-      }
-      const {entity_id} = res.data.entity;
-
-      if(!entity_id) {
-        throw {name : 'EntityNotFoundError', data : res};
-      }
-
-      request.cookieAuth.set({
-        sid : Helpers.createGUID(),
-        username : user.user_name,
-        entity_id
-      });
+      const session = await signIn.auto(request, user.user_name);
 
       reply.redirect('/licences');
-
 
   }
   catch(error) {

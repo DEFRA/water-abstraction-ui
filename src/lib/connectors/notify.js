@@ -77,32 +77,32 @@ function sendAccesseNotification(params) {
         notifyClient = new NotifyClient(process.env.NOTIFY_KEY);
 
         if(params.newUser){
+      console.log('NEW USER')
           var templateId = '145e2919-da41-4f4d-9570-17f5bb12f119'
-          var link=`${process.env.reset_url}`
+          var link=`${process.env.base_url}/reset_password`
           var personalisation = {
-            title: "title",
-            initials:"initials",
-            licenceHolderName:"licence holder name",
-            link:link
-
+            link:link,
+            email:params.email,
+            sender:params.sender
           }
 
         } else {
+      console.log('EXISTING USER')
           var templateId = '725e399e-772b-4c91-835b-68f4995ab6ff'
-          var link=`${process.env.reset_url}`
+          var link=`${process.env.base_url}?access=PB01`
           var personalisation = {
-            link:link
+            link:link,
+            email:params.email,
+            sender:params.sender
+
           }
 
         }
 
-        personalisation = {
-          sender_name:"licence holder name",
-          weblink:link
 
-        }
 
       var emailAddress = params.email
+      console.log('**********personalisation**********')
       console.log(personalisation)
       notifyClient
         .sendEmail(templateId, emailAddress, {

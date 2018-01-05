@@ -68,17 +68,17 @@ function postEmailAddress(request, reply, options = {}) {
       if(response.error) {
         throw Boom.badImplementation('IDM error', response.error);
       }
-      // Trigger password reset email
+
+      // User was created in IDM, create CRM record for them
+      return CRM.createEntity(request.payload.email);
+    })
+    .then(() => {
+      // Reset user password - user now exists
       return IDM.resetPasswordQuiet(request.payload.email);
     })
     .then((res) => {
+      // Email them password reset guid
       return _sendNotifyEmail(res);
-    })
-    .then(() => {
-      // Create CRM entity
-      // @TODO what if already exists?
-      // @TODO should we create company at this stage? - don't think this is necessary
-      return CRM.createEntity(request.payload.email);
     })
     .then((res) => {
       // Redirect to success page

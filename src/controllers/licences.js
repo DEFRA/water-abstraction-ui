@@ -324,42 +324,64 @@ function postAddAccess(request, reply, context = {}) {
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
   viewContext.email=request.payload.email
+  viewContext.errors={}
+  // Validate input data with Joi
+  const schema = {
+    email : Joi.string().trim().required().email()
+  };
 
-  IDM.createUserWithoutPassword(request.payload.email)
-  .then((response) => {
-      console.log('*** createUserWithoutPassword *** '+request.payload.email)
-    if(response.error) {
-      notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email,sender:request.auth.credentials.username})
-      .then((d)=>{
-        console.log(d)
-      }).catch((e)=>{
-        console.log(e)
-      })
-      //send notify email!!!
-//      throw Boom.badImplementation('IDM error', response.error);
-    } else {
-      notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email,sender:request.auth.credentials.username})      .then((d)=>{
-              console.log(d)
-            }).catch((e)=>{
-              console.log(e)
-            })
+  Joi.validate(request.payload, schema, function (err, value) {
+  // Value is the parsed and validated document.
+  if (err) {
+    // Gracefully handle any errors.
+    viewContext.errors.email=true
+    return reply.view('water/manage_licences_add_access_form', viewContext)
+  } else {
 
 
-    }
+    IDM.createUserWithoutPassword(request.payload.email)
+    .then((response) => {
+        console.log('*** createUserWithoutPassword *** '+request.payload.email)
+      if(response.error) {
+        notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email,sender:request.auth.credentials.username})
+        .then((d)=>{
+          console.log(d)
+        }).catch((e)=>{
+          console.log(e)
+        })
+        //send notify email!!!
+  //      throw Boom.badImplementation('IDM error', response.error);
+      } else {
+        notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email,sender:request.auth.credentials.username})      .then((d)=>{
+                console.log(d)
+              }).catch((e)=>{
+                console.log(e)
+              })
 
-  })
-  .then(() => {
-      console.log('*** createEntity *** '+request.payload.email)
-    // Create CRM entity
-    return CRM.createEntity(request.payload.email);
-  }).catch((error) => {
-    console.log(error)
-    console.log('entity exists')
-  }).then(async ()=>{
-      console.log('add role')
-      const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
-      return reply.view('water/manage_licences_added_access', viewContext)
-  })
+
+      }
+
+    })
+    .then(() => {
+        console.log('*** createEntity *** '+request.payload.email)
+      // Create CRM entity
+      return CRM.createEntity(request.payload.email);
+    }).catch((error) => {
+      console.log(error)
+      console.log('entity exists')
+    }).then(async ()=>{
+        console.log('add role')
+        const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
+        return reply.view('water/manage_licences_added_access', viewContext)
+    })
+
+
+
+  }
+});
+
+
+
 }
 
 /**

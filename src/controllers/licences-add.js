@@ -279,6 +279,8 @@ async function postAddressSelect(request, reply) {
       viewContext.verification = verification;
       viewContext.licence = data[0];
       viewContext.licenceCount = licences.length;
+      viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
+
       return reply.view('water/licences-add/verification-sent', viewContext);
     }
     catch (err) {

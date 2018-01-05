@@ -45,7 +45,7 @@ function sendSecurityCode(licence, accesscode) {
   });
 
   // Don't send letters unless production
-  if(process.env.NODE_ENV === 'production') {
+  if((process.env.NODE_ENV || '').match(/^production|preprod$/i)) {
       return NotifyClient
         .sendLetter('d48d29cc-ed03-4a01-b496-5cce90beb889', {
           personalisation

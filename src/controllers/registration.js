@@ -69,10 +69,6 @@ function postEmailAddress(request, reply, options = {}) {
         throw Boom.badImplementation('IDM error', response.error);
       }
 
-      // User was created in IDM, create CRM record for them
-      return CRM.createEntity(request.payload.email);
-    })
-    .then(() => {
       // Reset user password - user now exists
       return IDM.resetPasswordQuiet(request.payload.email);
     })

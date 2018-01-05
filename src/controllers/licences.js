@@ -319,6 +319,7 @@ function getAddAccess(request, reply, context = {}) {
  */
 function postAddAccess(request, reply, context = {}) {
 
+
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
@@ -328,7 +329,7 @@ function postAddAccess(request, reply, context = {}) {
   .then((response) => {
       console.log('*** createUserWithoutPassword *** '+request.payload.email)
     if(response.error) {
-      notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email})
+      notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email,sender:request.auth.credentials.username})
       .then((d)=>{
         console.log(d)
       }).catch((e)=>{
@@ -337,7 +338,7 @@ function postAddAccess(request, reply, context = {}) {
       //send notify email!!!
 //      throw Boom.badImplementation('IDM error', response.error);
     } else {
-      notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email})      .then((d)=>{
+      notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email,sender:request.auth.credentials.username})      .then((d)=>{
               console.log(d)
             }).catch((e)=>{
               console.log(e)

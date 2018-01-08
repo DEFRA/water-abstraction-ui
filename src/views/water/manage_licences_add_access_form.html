@@ -13,50 +13,39 @@
 
   <div class="grid-row">
       <div class="column-two-thirds">
-  <a href="#" class="link-back" onclick="history.go(-1)">Back</a>
-
-
-  {{>element-heading-large content='Give access to view your licences'}}
+        <a href="#" class="link-back" onclick="history.go(-1)">Back</a>
+        {{>element-heading-large content='Give access to view your licences'}}
 
   <form novalidate method="post" action="/manage_licences/add_access" class="form">
-{{#if errors.email}}
+    {{#if errors.email}}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+        <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+          That email address isn’t valid
+        </h2>
 
-            <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-              That email address isn’t valid
-            </h2>
-
-            <ul class="error-summary-list">
-              <li><a href="#email">Re-enter email address</a></li>
-            </ul>
-
-          </div>
-{{/if}}
-
-
-        <div class="form-group">
-          <p>Enter the person’s email address and we’ll send them a link to create an account. This will give them access to view your licences.</p>
-
-          <label for="email">
-              <fieldset>
-                <span class="form-label-bold">Email address</span>
-                {{#if errors.email}}
-                <span data-parsely-id="email" class="error-message">Please enter a valid email address</span>
-                {{/if}}
-              </fieldset>
-          </label>
-          <input type="email" class="form-control" id="email" name="email" required="" autocomplete="off" value="{{email}}">
-        </div>
-
-
-          <input type="submit" value="Add user" class="button button-start" role="button">
-
-
+        <ul class="error-summary-list">
+          <li><a href="#email">Re-enter email address</a></li>
+        </ul>
+      </div>
+    {{/if}}
+    <div class="form-group">
+      <p>Enter the person’s email address and we’ll send them a link to create an account. This will give them access to view your licences.</p>
+      <label for="email">
+          <fieldset>
+            <span class="form-label-bold">Email address</span>
+            {{#if errors.email}}
+            <span data-parsely-id="email" class="error-message">Please enter a valid email address</span>
+            {{/if}}
+          </fieldset>
+      </label>
+      <input type="email" class="form-control" id="email" name="email" required="" autocomplete="off" value="{{email}}">
+    </div>
+    <input type="submit" value="Add user" class="button button-start" role="button">
   </form>
+</div>
 </div>
 </main>
 
-{{stringify licenceAccess}}
 
 {{> footerjs}}
 

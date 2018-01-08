@@ -59,7 +59,7 @@ async function postLicenceAdd(request, reply) {
 
   // Validate posted data
   const schema = {
-    licence_no : Joi.string().required().allow('').trim()
+    licence_no : Joi.string().required().allow('').trim().max(16384)
   };
   try {
       // Validate post data
@@ -115,7 +115,6 @@ async function postLicenceAdd(request, reply) {
   }
 
 }
-
 
 
 /**
@@ -187,6 +186,19 @@ async function postLicenceSelect(request, reply) {
     errorHandler(request, reply)(err);
   }
 
+}
+
+
+/**
+ * There has been an error uploading/selecting licences
+ * - show user contact information
+ * @param {Object} request - HAPI HTTP request instance
+ * @param {Object} reply - HAPI HTTP reply instance
+ */
+function getLicenceSelectError(request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Contact Us';
+  return reply.view('water/licences-add/select-licences-error', viewContext);
 }
 
 
@@ -394,6 +406,36 @@ async function _createVerification(entityId, companyEntityId, documentIds) {
 
 
 /**
+ * Gets a list of licences relating to outstanding verification
+ * codes for the user with the individual entity specified
+ * @param {String} entity_id - the individual entity ID
+ * @return {Promise} resolves with array of licence document_header data
+ */
+async function _getOutstandingLicenceRequests(entity_id) {
+  // Get outstanding verifications for current user
+  const res = await CRM.getOutstandingVerifications(entity_id);
+  if(res.error) {
+    throw res.error;
+  }
+
+  // Get array list of verification IDs
+  const verification_id = res.data.map(row => row.verification_id);
+
+  // Find licences with this ID
+  const {error, data} = await CRM.getLicences({
+    verification_id,
+    verified : null
+  }, null, false);
+  if(error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+
+/**
  * Verify licences with code received in post
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
@@ -405,30 +447,11 @@ async function getSecurityCode(request, reply) {
   const {entity_id} = request.auth.credentials;
 
   try {
-
-    // Get outstanding verifications for current user
-    const res = await CRM.getOutstandingVerifications(entity_id);
-    if(res.error) {
-      throw res.error;
-    }
-
-    // Get array list of verification IDs
-    const verification_id = res.data.map(row => row.verification_id);
-
-    // Find licences with this ID
-    const {error, data} = await CRM.getLicences({
-      verification_id,
-      verified : null
-    }, null, false);
-    if(error) {
-      throw error;
-    }
-
-    viewContext.licences = data;
-
+    viewContext.licences = await _getOutstandingLicenceRequests(entity_id);
     return reply.view('water/licences-add/security-code', viewContext);
   }
   catch(error) {
+    console.error(error);
     errorHandler(request, reply)(error);
   }
 
@@ -476,42 +499,43 @@ async function _verify(entityId, verificationCode) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-function postSecurityCode(request, reply) {
+async function postSecurityCode(request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
   const {entity_id} = request.auth.credentials;
 
-  const schema = {
-      verification_code : Joi.string().min(5).max(5)
-  };
+  try {
 
-  joiPromise(request.payload, schema)
-    .then((value) => {
-      // Verify
-      return _verify(entity_id, request.payload.verification_code);
-    })
-    .then((res) => {
-      // Licences have been verified
-      return reply.redirect('/licences');
-    })
-    .catch((err) => {
+    // Validate HTTP POST payload
+    const schema = {
+        verification_code : Joi.string().length(5).required()
+    };
+    const {error, value} = Joi.validate(request.payload, schema);
 
-      // Verification code invalid
-      if(err.name === 'VerificationNotFoundError') {
-        viewContext.error = err;
-        return reply.view('water/licences-add/security-code', viewContext);
-      }
+    if(error) {
+      throw error;
+    }
 
-      // Invalid security code
-      if(err.name === 'ValidationError') {
-        viewContext.error = err;
-        return reply.view('water/licences-add/security-code', viewContext);
-      }
-      throw err;
-    })
-    .catch(errorHandler(request, reply));
+    // Verify
+    const response = await _verify(entity_id, request.payload.verification_code);
 
+    // Licences have been verified if no error thrown
+    return reply.redirect('/licences');
+  }
+  catch(error) {
+
+    console.error(error);
+
+    // Verification code invalid
+    if(['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
+      viewContext.licences = await _getOutstandingLicenceRequests(entity_id);
+      viewContext.error = error;
+      return reply.view('water/licences-add/security-code', viewContext);
+    }
+
+    errorHandler(request, reply)(error);
+  }
 }
 
 
@@ -520,6 +544,7 @@ module.exports = {
   postLicenceAdd,
   getLicenceSelect,
   postLicenceSelect,
+  getLicenceSelectError,
   getAddressSelect,
   postAddressSelect,
   getSecurityCode,

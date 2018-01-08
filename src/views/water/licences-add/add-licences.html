@@ -9,54 +9,54 @@
     </div>
   </nav>
 
-
-  {{#equal error.name 'ValidationError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    We need more information
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#licence_no">Enter your licence number(s)</a></li>
-  </ul>
-</div>
-  {{/equal}}
-
-  {{#equal error.name 'LicenceNotFoundError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    This information doesn’t match our records
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#licence_no">Check your licence number(s)</a></li>
-  </ul>
- </div>
-  {{/equal}}
-
-  {{#equal error.name 'LicenceSimilarityError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    This information doesn’t match our records
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#licence_no">Check your licence number(s)</a></li>
-  </ul>
- </div>
-  {{/equal}}
-
-  {{#equal error.name 'LicenceMissingError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    Some information doesn’t match our records
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#licence_no">Check your licence number(s)</a></li>
-  </ul>
- </div>
-  {{/equal}}
-
-
   <div class="grid-row">
     <div class="column-two-thirds">
+
+
+      {{#equal error.name 'ValidationError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        We need more information
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Enter your licence number(s)</a></li>
+      </ul>
+    </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceNotFoundError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        This information doesn’t match our records
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence number(s)</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceSimilarityError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        This information doesn’t match our records
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence number(s)</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceMissingError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        Some information doesn’t match our records
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence number(s)</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
 
       <h1 class="heading-large">
         Which licences do you want to be able to view?

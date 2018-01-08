@@ -9,20 +9,19 @@
     </div>
   </nav>
 
-  {{#equal error.name 'AddressInvalidError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    We need more information
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#address">Please select an address.</a></li>
-  </ul>
- </div>
-  {{/equal}}
-
-
   <div class="grid-row">
     <div class="column-two-thirds">
+
+      {{#equal error.name 'AddressInvalidError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        We need more information
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#address">Please select an address.</a></li>
+      </ul>
+     </div>
+      {{/equal}}
 
       <h1 class="heading-large">
         Where should we send your security code?
@@ -72,9 +71,6 @@
 
       <br />
 
-      <p>
-        <a href="#">These aren't my licences, or some are missing</a>
-      </p>
 
 
     </div>

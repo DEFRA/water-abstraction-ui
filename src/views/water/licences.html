@@ -11,17 +11,14 @@
     </div>
   </nav>
 
-  <div class="column-full" style="margin-top:35px;margin-bottom:35px;">
+  <div style="margin-top:35px;margin-bottom:35px;">
         <nav class="tabs">
-            	  <ul>
-                  <li><span class="active">Licence list</span></li>
-            	    <li><a href="/manage_licences">Manage licence access</a></li>
-
-        </ul>
+      	  <ul>
+            <li><span class="active">Licence list</span></li>
+      	    <li><a href="/manage_licences">Manage licence access</a></li>
+          </ul>
         </nav>
-        </div>
-
-
+  </div>
 
   {{#equal error.name "ValidationError" }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">

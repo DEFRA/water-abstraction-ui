@@ -229,6 +229,9 @@ module.exports = [
       }
     }
   }},
+  { method : 'GET', path : '/select-licences-error', handler: LicencesAddController.getLicenceSelectError, config : {
+    description : 'Error uploading licences - show contact information'
+  }},
 
 
   { method : 'GET', path : '/select-address', handler: LicencesAddController.getAddressSelect, config : {
@@ -280,7 +283,7 @@ module.exports = [
     description : 'Enter auth code received by post',
     validate : {
       payload : {
-        verification_code : Joi.string().allow('')
+        verification_code : Joi.string()
       }
     }
   }},

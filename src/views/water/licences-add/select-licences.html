@@ -10,20 +10,20 @@
   </nav>
 
 
-  {{#equal error.name 'LicenceNotSelectedError' }}
-  <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
-  <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-    We need more information
-  </h2>
-  <ul class="error-summary-list">
-    <li><a href="#licences">Please select at least one licence.</a></li>
-  </ul>
- </div>
-  {{/equal}}
-
 
   <div class="grid-row">
     <div class="column-two-thirds">
+
+      {{#equal error.name 'LicenceNotSelectedError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        We need more information
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licences">Please select at least one licence.</a></li>
+      </ul>
+     </div>
+      {{/equal}}
 
       <h1 class="heading-large">
         Are these the licence numbers you want to be able to view?
@@ -55,7 +55,7 @@
       <br />
 
       <p>
-        <a href="#">These aren't my licences, or some are missing</a>
+        <a href="/select-licences-error">These aren't my licences, or some are missing</a>
       </p>
 
 

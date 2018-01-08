@@ -89,7 +89,7 @@ async function getLicences(request, reply) {
     }
 
     // Does user have no licences to view?
-    if(data.length < 1 && !filter.string) {
+    if(data.length < 1 && !filter.string && !filter.email) {
       // Does user have outstanding verification codes?
       const { data : verifications, error } = await CRM.getOutstandingVerifications(entity_id);
       if(error) {

@@ -17,6 +17,8 @@
 module.exports = function(request, reply) {
   return function(err) {
 
+    console.log('----- errorHandler -----');
+
     // Log with good
     request.log(err);
 
@@ -43,7 +45,13 @@ module.exports = function(request, reply) {
     }
     // Other error
     else {
-      reply.view('water/error.html', {session}).code(statusCode);
+      const viewContext = {
+        topOfPage : null,
+        bodyStart : null,
+        session,
+        pageTitle : 'Error'
+      };
+      reply.view('water/error.html', viewContext).code(statusCode);
     }
   }
 }

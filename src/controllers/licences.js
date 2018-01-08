@@ -27,7 +27,7 @@ const Joi = require('joi');
  * @param {Number} [request.query.direction] - sort direction +1 : asc, -1 : desc
  * @param {Object} reply - the HAPI HTTP response
  */
-function getLicences(request, reply) {
+async function getLicences(request, reply) {
 
   const viewContext = View.contextDefaults(request);
 
@@ -63,50 +63,63 @@ function getLicences(request, reply) {
     viewContext.error = error;
   }
 
-  // Look up user
-  const findUser = () => {
+  try {
+
+    // Look up user for email filter
     if(value.emailAddress && !error) {
-      return IDM.getUser(value.emailAddress);
+      try {
+          const user = await IDM.getUser(value.emailAddress);
+      }
+      catch(error) {
+        // User not found
+        if(error.statusCode === 404) {
+            viewContext.error = error;
+        }
+        else {
+          throw error;
+        }
+      }
     }
-    return Promise.resolve();
+
+    // Lookup licences
+    const { data, err, summary } = await CRM.getLicences(filter, sort);
+
+    if(err) {
+      throw Boom.badImplementation('CRM error', response);
+    }
+
+    // Does user have no licences to view?
+    if(data.length < 1 && !filter.string) {
+      // Does user have outstanding verification codes?
+      const { data : verifications, error } = await CRM.getOutstandingVerifications(entity_id);
+      if(error) {
+        throw error;
+      }
+      if(verifications.length > 0) {
+        return reply.redirect('/security-code');
+      }
+      else {
+        return reply.redirect('/add-licences');
+      }
+    }
+
+    // Render HTML page
+    viewContext.licenceData = data
+    viewContext.debug.licenceData = data
+    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
+
+    // Calculate whether to display email filter / search form depending on summary
+    const userRoles = licenceRoles(summary);
+    viewContext.licenceCount = licenceCount(summary);
+    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+    viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
+
+    return reply.view('water/licences', viewContext)
+
   }
-
-  findUser()
-    .catch((err) => {
-      // Handle user not found error - 404
-      if(err.statusCode === 404) {
-        viewContext.error = err;
-        return;
-      }
-      throw err;
-    })
-    .then(() => {
-      // Look up licences
-      return CRM.getLicences(filter, sort);
-    })
-    .then((response) => {
-
-      if(response.err) {
-        throw Boom.badImplementation('CRM error', response);
-      }
-
-      const { data, summary } = response;
-
-      // Render HTML page
-      viewContext.licenceData = data
-      viewContext.debug.licenceData = data
-      viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
-
-
-      // Calculate whether to display email filter / search form depending on summary
-      const userRoles = licenceRoles(summary);
-      viewContext.licenceCount = licenceCount(summary);
-      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-      viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
-
-      return reply.view('water/licences', viewContext)
-    })
-    .catch(errorHandler(request, reply));
+  catch(error) {
+    errorHandler(request, reply)(error);
+  }
 
 }
 
@@ -255,17 +268,28 @@ function postLicence(request, reply) {
 
 
 async function getAccessList(request, reply, context = {}) {
-  console.log('***** getAccessList ***')
   const { entity_id } = request.auth.credentials;
-  console.log(entity_id)
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  // Sorting
+  const sortFields= {entity_nm : 'entity_nm', created_at : 'created_at'};
+  const sortField = request.query.sort || 'entity_nm';
+  const direction = request.query.direction === -1 ? -1 : 1;
+  const sort = {};
+  sort[sortFields[sortField]] = direction;
+
+  // Set sort info on viewContext
+  viewContext.direction = direction;
+  viewContext.sort = sortField;
+
+
+
   viewContext.pageTitle = "Manage access to your licences"
   viewContext.entity_id=entity_id
   //get list of role  s in same org as current user
   //need to ensure that current user is admin...
 
 
-  const licenceAccess = await CRM.getEditableRoles(entity_id)
+  const licenceAccess = await CRM.getEditableRoles(entity_id,sortField,direction)
   viewContext.licenceAccess=JSON.parse(licenceAccess)
   return reply.view('water/manage_licences', viewContext)
 }
@@ -280,7 +304,6 @@ async function getAccessList(request, reply, context = {}) {
  */
 function getAddAccess(request, reply, context = {}) {
   const { entity_id } = request.auth.credentials;
-  console.log(request.query)
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
   //get list of roles in same org as current user
@@ -296,87 +319,92 @@ function getAddAccess(request, reply, context = {}) {
  */
 function postAddAccess(request, reply, context = {}) {
 
-  console.log('*** postAddAccess ***')
+
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = "Manage access to your licences"
   viewContext.email=request.payload.email
+  viewContext.errors={}
+  // Validate input data with Joi
+  const schema = {
+    email : Joi.string().trim().required().email()
+  };
 
-  IDM.createUserWithoutPassword(request.payload.email)
-  .then((response) => {
-      console.log('*** createUserWithoutPassword *** '+request.payload.email)
-    console.log(response)
-    if(response.error) {
-      console.log('notified not new user')
-      notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email})
-      .then((d)=>{
-        console.log(d)
-      }).catch((e)=>{
-        console.log(e)
-      })
-      //send notify email!!!
-//      throw Boom.badImplementation('IDM error', response.error);
-    } else {
-      console.log('notified new user')
-      notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email})      .then((d)=>{
-              console.log(d)
-            }).catch((e)=>{
-              console.log(e)
-            })
+  Joi.validate(request.payload, schema, function (err, value) {
+  // Value is the parsed and validated document.
+  if (err) {
+    // Gracefully handle any errors.
+    viewContext.errors.email=true
+    return reply.view('water/manage_licences_add_access_form', viewContext)
+  } else {
 
 
-    }
+    IDM.createUserWithoutPassword(request.payload.email)
+    .then((response) => {
+        console.log('*** createUserWithoutPassword *** '+request.payload.email)
+      if(response.error) {
+        notified=Notify.sendAccesseNotification({newUser:false,email:request.payload.email,sender:request.auth.credentials.username})
+        .then((d)=>{
+          console.log(d)
+        }).catch((e)=>{
+          console.log(e)
+        })
+        //send notify email!!!
+  //      throw Boom.badImplementation('IDM error', response.error);
+      } else {
+        notified=Notify.sendAccesseNotification({newUser:true,email:request.payload.email,sender:request.auth.credentials.username})      .then((d)=>{
+                console.log(d)
+              }).catch((e)=>{
+                console.log(e)
+              })
 
-  })
-  .then(() => {
-      console.log('*** createEntity *** '+request.payload.email)
-    // Create CRM entity
-    return CRM.createEntity(request.payload.email);
-  }).catch((error) => {
-    console.log(error)
-    console.log('entity exists')
-  }).then(async ()=>{
-      console.log('add role')
-      const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
-      return reply.view('water/manage_licences_added_access', viewContext)
-  })
+
+      }
+
+    })
+    .then(() => {
+        console.log('*** createEntity *** '+request.payload.email)
+      // Create CRM entity
+      return CRM.createEntity(request.payload.email);
+    }).catch((error) => {
+      console.log(error)
+      console.log('entity exists')
+    }).then(async ()=>{
+        console.log('add role')
+        const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
+        return reply.view('water/manage_licences_added_access', viewContext)
+    })
+
+
+
+  }
+});
+
+
+
 }
 
 /**
- * Renders form for user to unshare their licence
+ * unshare a licence
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
  * @param {Object} [context] - additional view context data
  */
-function getRemoveAccess(request, reply, context = {}) {
+async function getRemoveAccess(request, reply, context = {}) {
+
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.pageTitle = "Manage access to your licences"
-  viewContext.entity_role_id=request.query.entity_role_id
   viewContext.email=request.query.email
-  console.log(viewContext)
-
-  return reply.view('water/manage_licences_remove_access_form', viewContext)
-}
-
-/**
- * Renders form for user to share their licence
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
- * @param {string} email - the email of account to unshare with
- * @param {Object} [context] - additional view context data
- */
-async function postRemoveAccess(request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.email=request.payload.email
-  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.payload.entity_role_id)
+  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.query.entity_role_id)
   console.log('viewContext ',viewContext)
   viewContext.pageTitle = "Manage access to your licences"
   //get list of roles in same org as current user
   //call CRM and add role. CRM will call IDM if account does not exist...
   return reply.view('water/manage_licences_removed_access', viewContext)
+
+
 }
+
 
 
 module.exports = {
@@ -390,7 +418,6 @@ module.exports = {
   getAccessList,
   getAddAccess,
   postAddAccess,
-  getRemoveAccess,
-  postRemoveAccess,
+  getRemoveAccess
 
 };

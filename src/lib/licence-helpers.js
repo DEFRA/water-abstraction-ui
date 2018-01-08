@@ -32,9 +32,6 @@ function extractLicenceNumbers(str) {
  * @return {Boolean} - whether licences pass similarity test
  */
 function checkLicenceSimilarity(licences) {
-  if(licences.name < 2) {
-    return true;
-  }
   const sanitize = (x) => {
     x = x.trim();
     x = x.replace('&', 'AND');
@@ -43,16 +40,39 @@ function checkLicenceSimilarity(licences) {
     return x;
   };
   const names = uniq(licences.map((licence) => {
-    return sanitize(licence.document_original_name);
+    return sanitize(licence.metadata.Name || '');
   }));
   const postcodes = uniq(licences.map((licence) => {
-    return sanitize(licence.document_postcode);
+    return sanitize(licence.metadata.Postcode || '');
   }));
+  // All 1 name or all 1 postcode - OK
   if(names.length === 1 || postcodes.length === 1) {
     return true;
   }
+  // All either same name or same postcode
   return (names.length + postcodes.length) <= 3;
 }
+
+
+/**
+ * Get list of licences with unique addresses
+ * @param {Array} licences - a full list of licences
+ * @return {Array} a subset of licences containing only those with unique addresses (the first found)
+ */
+function uniqueAddresses(licences) {
+  const uniqueAddresses = [];
+  const filteredList = [];
+  licences.forEach((licence) => {
+    const {AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode } = licence;
+    const address = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode].join(', ').toUpperCase();
+    if(!uniqueAddresses.includes(address)) {
+      uniqueAddresses.push(address);
+      filteredList.push(licence);
+    }
+  });
+  return filteredList;
+}
+
 
 /**
  * A function to get role flags from
@@ -89,5 +109,6 @@ module.exports = {
   extractLicenceNumbers,
   checkLicenceSimilarity,
   licenceRoles,
-  licenceCount
+  licenceCount,
+  uniqueAddresses
 };

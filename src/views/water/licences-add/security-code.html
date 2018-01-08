@@ -29,7 +29,7 @@
         Enter your security code
       </h1>
 
-      <form method="POST" action="/security-code">
+      <form novalidate method="POST" action="/security-code">
 
         <!-- licence number field -->
         <div class="form-group {{#if error }}form-group-error{{/if}}">
@@ -49,12 +49,32 @@
 
         <input type="submit" value="Continue" class="button" role="button"/>
     </form>
-
-    <h2>Todo: add licences here</h2>
-
-
-    </div>
   </div>
+</div>
+
+    <br />
+
+
+    {{#if licences }}
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Licences you've asked to view</th>
+                <th style="width:50%;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+           {{#each licences}}
+           <tr>
+              <td>{{ this.system_external_id }}</td>
+              <td>Awaiting code</td>
+            </tr>
+           {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+
 
 
 

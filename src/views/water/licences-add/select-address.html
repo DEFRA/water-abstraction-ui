@@ -1,0 +1,83 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      <ol>
+        <li><a href="/?access=PB01">Your service</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      {{#equal error.name 'AddressInvalidError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        We need more information
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#address">Please select an address.</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+      <h1 class="heading-large">
+        Where should we send your security code?
+      </h1>
+
+      <details class="closeOnOpen">
+        <summary><span class="summary">Why do we need to post you a code?</span></summary>
+        <p>We post a security code to a registered address to make sure you’re the licence holder or an official representative.</p>
+      </details>
+
+
+
+
+      <form method="POST" action="/select-address">
+
+        <legend>
+          <p class="lede"> Choose one of your licence addresses:</p>
+        </legend>
+
+        <input type="hidden" name="token" value="{{ token }}" />
+
+        <fieldset id="address">
+
+        {{#each licences}}
+        <div class="multiple-choice">
+          <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
+          <label for="{{ this.document_id }}">
+{{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
+{{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
+{{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
+{{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
+{{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
+{{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
+{{ this.metadata.Postcode }}
+            <br />
+            <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
+          </label>
+        </div>
+        {{/each}}
+
+        </fieldset>
+
+        <br />
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+      </form>
+
+      <br />
+
+
+
+    </div>
+  </div>
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

@@ -4,6 +4,7 @@ const CRM = require('./connectors/crm')
 const IDM = require('./connectors/idm')
 const Water = require('./connectors/water')
 const Permit = require('./connectors/permit')
+const signIn = require('../lib/sign-in')
 
 function getRoot(request, reply) {
   reply.file('./staticindex.html')
@@ -116,6 +117,8 @@ function getResetPassword(request, reply) {
   return reply.view('water/reset_password', viewContext)
 }
 
+
+
 function getResetPasswordCheckEmail(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - reset your password - check your email'
@@ -140,19 +143,29 @@ function getResetPasswordLink(request, reply) {
   return reply.view('water/reset_password_get_link', viewContext)
 }
 
-function getResetPasswordChangePassword(request, reply) {
+async function getResetPasswordChangePassword(request, reply) {
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - update your password'
-  viewContext.resetGuid = request.query.resetGuid
+  viewContext.resetGuid = request.query.resetGuid;
 
-  if (request.query.forced) {
+  try {
 
-    // show forced reset message
-    viewContext.forced = true
+    // Check for valid reset GUID
+    const user = await IDM.getUserByResetGuid(request.query.resetGuid);
+    if(!user) {
+      throw {name : 'UserNotFoundError'};
+    }
+
+    if (request.query.forced) {
+      // show forced reset message
+      viewContext.forced = true
+    }
+
+    return reply.view('water/reset_password_change_password', viewContext)
   }
-
-
-  return reply.view('water/reset_password_change_password', viewContext)
+  catch(error) {
+    return reply.redirect('/reset_password?flash=resetLinkExpired');
+  }
 }
 
 
@@ -188,6 +201,7 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect)
     }).catch((err) => {
+      console.log(err);
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'GOV.UK - Error'
       return reply.view('water/error', viewContext)
@@ -244,26 +258,52 @@ function postResetPasswordLink(request, reply) {
   }
 }
 
-function postResetPasswordChangePassword(request, reply) {
-  var viewContext = View.contextDefaults(request)
-  viewContext.pageTitle = 'GOV.UK - update your password'
 
-  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
-  if (!errors) {
-    IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password).then((res) => {
-      return reply.redirect('signin?flash=password-reset');
-    }).catch((err) => {
-      viewContext.errors = err
-      viewContext.resetGuid = request.payload.resetGuid
-      return reply.view('water/reset_password_change_password', viewContext)
-    })
-  } else {
+async function postResetPasswordChangePassword(request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - update your password';
 
-    viewContext.errors = errors
-    viewContext.resetGuid = request.payload.resetGuid
-    return reply.view('water/reset_password_change_password', viewContext)
+  try {
+      // Check submitted password
+      const errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+      if(errors) {
+        throw errors;
+      }
+
+      // Find user in IDM
+      const user = await IDM.getUserByResetGuid(request.payload.resetGuid);
+      if(!user) {
+        throw {name : 'UserNotFoundError'};
+      }
+      console.log('user', user);
+
+      // Update password in IDM
+      const {error} = await IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
+      if(error) {
+        throw error;
+      }
+
+      // Log user in
+      const session = await signIn.auto(request, user.user_name);
+
+      reply.redirect('/licences');
+
   }
+  catch(error) {
+    console.log(error);
+    // User not found
+    if(error.statusCode === 404) {
+      return reply.redirect('/signin');
+    }
+    viewContext.errors = error;
+    viewContext.resetGuid = request.payload.resetGuid;
+    return reply.view('water/reset_password_change_password', viewContext);
+  }
+
 }
+
+
+
 
 function fourOhFour(request, reply) {
   var viewContext = View.contextDefaults(request)

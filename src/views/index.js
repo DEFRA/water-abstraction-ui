@@ -51,6 +51,13 @@ handlebars.registerHelper('concat', function () {
   return arg.join('')
 })
 
+handlebars.registerHelper('encode', function (value) {
+
+  console.log(value)
+  console.log(encodeURIComponent(value.hash.value))
+  return encodeURIComponent(value.hash.value)
+})
+
 handlebars.registerHelper('dynamicView', function () {
   /**
   The dynamicView helper loads javascript renderers from the views/partials/jsPartials directory
@@ -110,6 +117,14 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   }
   console.log('Future date:' +isFutureDate)
 
+  return date.isValid() ? date.format("D MMMM YYYY") : dateInput
+})
+
+handlebars.registerHelper('formatTS', function (dateInput) {
+  console.log('formatDate')
+
+  console.log(dateInput)
+  var date = moment(dateInput, "YYYY-MM-DD")
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 

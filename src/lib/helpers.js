@@ -1,11 +1,22 @@
 //contains generic functions unrelated to a specific component
-var rp = require('request-promise-native').defaults({
+const rp = require('request-promise-native').defaults({
     proxy:null,
     strictSSL :false
-  })
+  });
 
+const isArray = require('lodash/isArray');
 
-
+/**
+ * Force value to be array
+ * @param {Mixed} val - the value
+ * @return {Array} the value wrapped in array
+ */
+function forceArray(val) {
+  if(val === null || val === undefined) {
+    return [];
+  }
+  return isArray(val) ? val : [val];
+}
 
 
 //make a simple http request (without a body), uses promises
@@ -76,8 +87,8 @@ function createGUID() {
 module.exports = {
   createGUID: createGUID,
   makeURIRequest: makeURIRequest,
-  makeURIRequestWithBody: makeURIRequestWithBody
-
+  makeURIRequestWithBody: makeURIRequestWithBody,
+  forceArray
 
 
 }

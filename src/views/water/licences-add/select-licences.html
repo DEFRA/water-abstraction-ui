@@ -10,20 +10,31 @@
   </nav>
 
 
+
   <div class="grid-row">
     <div class="column-two-thirds">
 
+      {{#equal error.name 'LicenceNotSelectedError' }}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        We need more information
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licences">Please select at least one licence.</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
       <h1 class="heading-large">
-        Are these all of your water abstraction or impoundment licences?
+        Are these the licence numbers you want to be able to view?
       </h1>
 
-      <form method="POST" action="/confirm-licences">
-
+      <form novalidate method="POST" action="/select-licences">
         <input type="hidden" name="token" value="{{ token }}" />
 
-        <fieldset>
+        <fieldset id="licences">
           <legend>
-            <span class="body-text">Remove any licence serial numbers that do not apply:</span>
+            <span class="body-text">You can add more licences later.</span>
           </legend>
 
 
@@ -38,13 +49,13 @@
 
         <br />
 
-        <input type="submit" value="Continue" class="button" role="button"/>
+        <input type="submit" value="Yes" class="button" role="button"/>
       </form>
 
       <br />
 
       <p>
-        <a href="#">These aren't my licences, or some are missing</a>
+        <a href="/select-licences-error">These aren't my licences, or some are missing</a>
       </p>
 
 

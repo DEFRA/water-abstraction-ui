@@ -190,9 +190,6 @@ module.exports = [
   { method: 'GET', path: '/manage_licences/remove_access', handler: LicencesController.getRemoveAccess, config : {
     description : 'Manage licences - remove access form'
   }},
-  { method: 'POST', path: '/manage_licences/remove_access', handler: LicencesController.postRemoveAccess, config : {
-    description : 'Managfe licences - remove access process'
-  }},
   { method: 'GET', path: '/manage_licences/add_access', handler: LicencesController.getAddAccess, config : {
     description : 'Manage licences - add access form'
   }},
@@ -212,15 +209,73 @@ module.exports = [
       }
     }
   }},
-  { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
-    description : 'Confirm licences to add to account',
+
+  // Select licences
+  { method : 'GET', path : '/select-licences', handler: LicencesAddController.getLicenceSelect, config : {
+    description : 'Select the licences to add',
     validate : {
-      payload : {
+      query : {
         token : Joi.string().required(),
-        licences : Joi.array()
+        error : Joi.string()
       }
     }
   }},
+  { method: 'POST', path: '/select-licences', handler: LicencesAddController.postLicenceSelect, config : {
+    description : 'Post handler for licence select',
+    validate : {
+      payload : {
+        token : Joi.string().required(),
+        licences : [Joi.array(), Joi.string().allow('')]
+      }
+    }
+  }},
+  { method : 'GET', path : '/select-licences-error', handler: LicencesAddController.getLicenceSelectError, config : {
+    description : 'Error uploading licences - show contact information'
+  }},
+
+
+  { method : 'GET', path : '/select-address', handler: LicencesAddController.getAddressSelect, config : {
+    description : 'Select the address to send postal verification letter',
+    validate : {
+      query : {
+        token : Joi.string().required(),
+        error : Joi.string().allow('')
+      }
+    }
+  }},
+
+  { method : 'POST', path : '/select-address', handler: LicencesAddController.postAddressSelect, config : {
+    description : 'Post handler for select address form',
+    validate : {
+      payload : {
+        address : Joi.string(),
+        token : Joi.string().required()
+      }
+    }
+  }},
+
+  // { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
+  //   description : 'Confirm licences to add to account',
+  //   validate : {
+  //     payload : {
+  //       token : Joi.string().required(),
+  //       address : Joi.string().guid()
+  //     }
+  //   }
+  // }},
+
+
+  // {
+  //   method: 'POST', path : '/confirm-address', handler: LicencesAddController.postConfirmAddress, config : {
+  //     description : 'Select address for verification',
+  //     validate : {
+  //       payload : {
+  //         token : Joi.string().required(),
+  //         licences : [Joi.array(), Joi.string()]
+  //       }
+  //     }
+  //   }
+  // },
   { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
     description : 'Enter auth code received by post'
   }},
@@ -228,7 +283,7 @@ module.exports = [
     description : 'Enter auth code received by post',
     validate : {
       payload : {
-        verification_code : Joi.string().allow('')
+        verification_code : Joi.string()
       }
     }
   }},

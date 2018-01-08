@@ -140,10 +140,17 @@ handlebars.registerHelper('formatToDate', function (dateInput) {
 })
 
 handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
-  var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
-  var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
-  var periodStart = moment(tmp_inputStart, "DD/MMM/YYYY")
-  var periodEnd = moment(tmp_inputEnd, "DD/MMM/YYYY")
+  if(inputStart.indexOf('-') != -1){
+    var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
+    var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
+    var periodStart = moment(tmp_inputStart, "DD/MMM/YYYY")
+    var periodEnd = moment(tmp_inputEnd, "DD/MMM/YYYY")
+  } else {
+    var tmp_inputStart=inputStart+'/2000'
+    var tmp_inputEnd=inputEnd+'/2000'
+    var periodStart = moment(tmp_inputStart, "DD/MM/YYYY")
+    var periodEnd = moment(tmp_inputEnd, "DD/MM/YYYY")
+  }
   return 'From ' + periodStart.format("D MMMM") + ' until ' + periodEnd.format("D MMMM")
 })
 

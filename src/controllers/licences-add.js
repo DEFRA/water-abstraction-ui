@@ -135,7 +135,7 @@ async function getLicenceSelect(request, reply) {
 
   try {
     // Get unverified licences from DB
-    const {data, error} = await CRM.getLicences({ document_id : documentIds, verified : null, verification_id : null }, {}, false);
+    const {data, error} = await CRM.getLicences({ document_id : documentIds, verified : null, verification_id : null }, { system_external_id : +1}, false);
 
     if(error) {
       throw error;

@@ -53,10 +53,12 @@ function sendSecurityCode(licence, accesscode) {
   }
   // Mock a response
   else {
-    console.log(`Environment is ${process.env.NODE_ENV} - skipping sending security code letter`, {personalisation});
-    return Promise.resolve({
-      id : 'guid'
-    });
+    console.log(`Environment is ${process.env.NODE_ENV} - test sending security code letter`, {personalisation});
+    const notifyClient = new NotifyClient(process.env.TEST_NOTIFY_KEY);
+    return notifyClient
+      .sendLetter('d48d29cc-ed03-4a01-b496-5cce90beb889', {
+        personalisation
+      });
   }
 
 }

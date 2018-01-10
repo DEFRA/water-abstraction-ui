@@ -120,6 +120,16 @@ module.exports = [
       }
     }
   } },
+
+  { method: 'GET', path: '/licences/{licence_id}/conditions', handler: LicencesController.getLicenceConditions, config : {
+    description : 'View abstraction conditions info for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+
   { method: 'GET', path: '/licences/{licence_id}/rename', handler: LicencesController.getLicenceRename, config : {
     description : 'Set user-defined name for licence',
     validate : {

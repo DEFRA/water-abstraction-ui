@@ -165,6 +165,8 @@ function renderLicencePage(view, pageTitle, request, reply, context = {}) {
     })
     .then((response) => {
 
+      console.log(viewContext.licenceData);
+
       const data = JSON.parse(response.body)
       viewContext.licence_id = request.params.licence_id
       viewContext.licenceData = data.data
@@ -206,6 +208,11 @@ function getLicenceRename(request, reply, context = {}) {
   )
 }
 
+function getLicenceConditions(request, reply, context = {}) {
+  renderLicencePage(
+    'water/licences_conditions', 'GOV.UK - Your water abstraction licences - conditions', request, reply, context
+  )
+}
 
 /**
  * Update a licence name
@@ -415,6 +422,7 @@ module.exports = {
   getLicenceMap,
   getLicenceTerms,
   getLicenceRename,
+  getLicenceConditions,
   getAccessList,
   getAddAccess,
   postAddAccess,

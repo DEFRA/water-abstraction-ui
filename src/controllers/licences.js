@@ -5,6 +5,8 @@
 const Boom = require('boom');
 const BaseJoi = require('joi');
 
+
+
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
 const Notify = require('../lib/connectors/notify');
@@ -13,7 +15,7 @@ const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 
 
-const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
+const {licenceRoles, licenceCount, licenceConditions} = require('../lib/licence-helpers');
 const Joi = require('joi');
 
 /**
@@ -132,7 +134,7 @@ async function getLicences(request, reply) {
  * @param {Object} reply - the HAPI HTTP response
  * @param {Object} [context] - additional view context data
  */
-function renderLicencePage(view, pageTitle, request, reply, context = {}) {
+async function renderLicencePage(view, pageTitle, request, reply, context = {}) {
 
   const { entity_id } = request.auth.credentials;
 
@@ -146,35 +148,37 @@ function renderLicencePage(view, pageTitle, request, reply, context = {}) {
     document_id : request.params.licence_id
   };
 
-  CRM.getLicences(filter)
-    .then((response) => {
+  try {
 
-      if(response.error) {
-        throw Boom.badImplementation(`CRM error`, response);
-      }
-      if(response.data.length != 1) {
-        throw new Boom.notFound('Document not found in CRM', response);
-      }
+    // Get CRM data
+    const response = await CRM.getLicences(filter);
+    if(response.error) {
+      throw Boom.badImplementation(`CRM error`, response);
+    }
+    if(response.data.length != 1) {
+      throw new Boom.notFound('Document not found in CRM', response);
+    }
+    viewContext.crmData = response.data[0];
 
-      // Output CRM data in addition to permit repository data to view
-      viewContext.crmData = response.data[0];
+    // Get permit repo data
+    const response2 = await Permit.getLicence(response.data[0].system_internal_id);
 
-      // Get permit
-      return Permit.getLicence(response.data[0].system_internal_id);
+    const data = JSON.parse(response2.body);
+    viewContext.licence_id = request.params.licence_id;
+    viewContext.licenceData = data.data;
+    viewContext.debug.licenceData = viewContext.licenceData;
+    viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
 
-    })
-    .then((response) => {
 
-      console.log(viewContext.licenceData);
+    viewContext.conditions = await licenceConditions(data.data);
+    console.log(viewContext.conditions);
 
-      const data = JSON.parse(response.body)
-      viewContext.licence_id = request.params.licence_id
-      viewContext.licenceData = data.data
-      viewContext.debug.licenceData = viewContext.licenceData
-      viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
-      return reply.view(view, viewContext)
-    })
-    .catch(errorHandler(request, reply));
+    return reply.view(view, viewContext)
+
+  }
+  catch(error) {
+    errorHandler(request, reply)(error);
+  }
 }
 
 function getLicence(request, reply) {

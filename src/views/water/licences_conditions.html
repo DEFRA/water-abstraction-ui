@@ -32,6 +32,13 @@
         </strong>
         <p></p>
         </div>
+
+        {{#each conditions }}
+          <h2>Condition: {{ this.titles.displayTitle }}</h2>
+          {{ this.titles.parameter1Label }}
+          {{ this.condition.parameter1 }}
+        {{/each}}
+
       </div>
   </div>
 

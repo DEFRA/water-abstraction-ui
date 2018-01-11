@@ -1,0 +1,52 @@
+code,subCode,displayTitle,parameter1Label,parameter2Label
+AGG,LLL,Aggregate Condition Link between Licences,Linked Licence Number,Aggregate Quantity
+AGG,LLX,Aggregate condition cross regional link between licences,Linked Licence Number,Aggregate Quantity
+AGG,LPL,Aggregate condition licence to purpose between different Licences,Linked Licence Number,Aggregate Quantity
+AGG,PPL,Aggregate Condition purpose to purpose between different Licences,Linked Licence Number,Aggregate Quantity
+AGG,PP,Aggregate Condition purpose to purpose within a Licence,,Aggregate Quantity
+AGI,DIM,Additional groundwater Information dimensions,,
+BYPAS,FLOW,By-pass flow,Specify Flow (l/s),Where measured
+CES,FLOW,Flow Cessation condition,EA Gauging station ,Threshold flow
+CES,LEV,Level Cessation condition,EA Gauging station ,Threshold level
+CES,CHE,Chemical cessation condition,Control Sampling Site,Concentration
+CES,GWL,Groundwater level cessation condition,Control site number,Threshold Level
+CES,DEP,Cessation dependant on releases from schemes/ other Licences,Licence Number/scheme name,Threshold quantity
+CES,POL,Political cessation condition,Start Date,End Date
+COMB,LINK,Link between split Licences,Licence number and suffix linked to,
+COMP,GEN,Complex condition,,
+COMPR,FLOW,Flow compensation Release,Specify Flow (l/s),Where measured
+EEL,REGS,Fish Pass/Screen - Eel Regs SI3344,Type of Pass or Screen,Location of Pass or Screen
+FILL,FILL,Filling/Emptying to be notified to Agency,Number of days notice Agency to be given,
+FILL,SEAS,Filling/Emptying season limited,Filling season start date,Filling season end date
+INFLO,TYPE,Inflow control Type,Type,
+INFLR,RATE,Inflow Rate,Rate (l/s),Where measured
+LINTY,TYPE,Type of Lining,Type,
+LOK,OFF,Lockable structures required,Structure required ,Season to be locked
+MAINT,FLOW,Maintained Flow,Flow (l/s),Where measured
+MCOMP,MEANS,Means of compensation flow release,Means,
+NSQ,M3WK,Non Standard Quantities cubic metres per week,Volume m3,
+NSQ,M3MO,Non Standard Quantities cubic metres per month,Volume m3,
+NSQ,M3FN,Non Standard Quantities cubic metres per fortnight,Volume m3,
+NSQ,PER,Non Standard Quantities,,
+OTH,GEN,General conditions,,
+PTAK,PCENT,Proportional percentage take,Reference of PF site above which take occurs,Percentage e.g. 50%
+PTAK,COMP,Complex proportional take,,
+PWS,WSL,Public Water Supply Licensee,,
+RAT,LPS,Rates litres per second,Name of Reference Site,Rate l/s
+RAT,M3S,Rates m3 per second,Name of Reference Site,Rate m3/s
+RAT,M3D,Rates m3 per day,Name of Reference Site,Rate m3/d
+RAT,M3M,Rates m3 per month,Name of Reference Site,Rate m3/month
+S57,BANP,Spray Irrigation Ban proposed,Start Date,End Date
+S57,BANI,Spray Irrigation Ban imposed,Start Date,End Date
+TLTD,MINQ,Time Limited minimum quantity,Effective Date of licence plus 12 years,Minimum Abstraction Quantity
+TLTD,SD,Time Limited Self Destruct,Self destruct date,Indication whether whole or part licence expires
+TLTD,VAR,Time Limited Variation,Variation end date,
+TRA,TRAN,Transfer,From,To
+WLM,GW,Water Level Monitoring Groundwater,Name of reference Site,Level (mODN)or (mBD)
+WLM,SW,Water Level Monitoring Surface water,Name of reference Site,Level (mODN)or (mBD)
+WQM,GW,Water Quality Monitoring Groundwater,Name of reference Site,Full chemical name e.g. 'Manganese' not 'Mn'
+WQM,SW,Water Quality Monitoring Surface water,Name of reference Site,Full chemical name e.g. 'Manganese' not 'Mn'
+WRT,QTY,Water Rights Trade Quantity,Donor / Recipient  Licence Number,Volume m3
+WRT,PUR,Water Rights Trade Purpose,Donor / Recipient  Licence Number,Purpose code and description
+WRT,PNT,Water Rights Trade Point,Donor / Recipient  Licence Number,Grid Reference and local name
+XREG,PTS,Licensed Point Falls Within Another Region,National Grid Reference of appropriate abstraction point,Other Region

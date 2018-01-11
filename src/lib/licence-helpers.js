@@ -2,7 +2,57 @@
  * Helpers for checking/processing licence data
  * @module lib/licence-helpers
  */
- const uniq = require('lodash/uniq');
+const uniq = require('lodash/uniq');
+const fs = require('fs');
+const Promise = require('bluebird');
+const readFile = Promise.promisify(fs.readFile);
+const csvParse = Promise.promisify(require('csv-parse'));
+const find = require('lodash/find');
+const uniqBy = require('lodash/uniqBy');
+
+
+function findTitle(data, code, subCode) {
+    return find(data, (item) => {
+      return (item.code === code) && (item.subCode === subCode);
+    });
+}
+
+/**
+ * A function to get a list of licence conditions for display
+ * from the supplied licenceData which is loaded from the permit repo
+ * @param {Object} licenceData
+ * @return {Array} conditions
+ */
+async function licenceConditions(licenceData) {
+
+  // Read condition titles from CSV
+  const str = await readFile('./data/condition_titles.csv');
+  const data = await csvParse(str, {columns : true});
+
+  // Extract conditions from licence data and attach titles from CS
+  let conditions = [];
+  licenceData.attributes.licenceData.purposes.forEach((purpose) => {
+    purpose.conditions.forEach((condition) => {
+
+      // Lookup title
+      const titles = findTitle(data, condition.code, condition.subCode);
+      conditions.push({condition, titles});
+
+    });
+  });
+
+  // // De-duplicate
+  conditions = uniqBy(conditions, (item) => {
+    return Object.values(item.condition).join(';');
+  });
+
+  console.log(conditions);
+
+  return conditions;
+}
+
+
+
 
 /**
  * A function to extract an array of licence numbers from a user-supplied string
@@ -110,5 +160,6 @@ module.exports = {
   checkLicenceSimilarity,
   licenceRoles,
   licenceCount,
-  uniqueAddresses
+  uniqueAddresses,
+  licenceConditions
 };

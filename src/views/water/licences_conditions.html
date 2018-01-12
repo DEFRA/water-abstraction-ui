@@ -44,10 +44,10 @@
 
     {{#if this.condition.parameter1 }}
     <div class="data-row">
-      <div class="data-row__param">
+      <div class="data-row__param" id="label-{{@index}}-param1">
       {{ this.titles.parameter1Label }}
       </div>
-      <div class="data-row__value">
+      <div class="data-row__value" aria-labelledby="label-{{@index}}-param1">
       {{ this.condition.parameter1 }}
       </div>
     </div>
@@ -55,10 +55,10 @@
 
     {{#if this.condition.parameter2 }}
     <div class="data-row">
-      <div class="data-row__param">
+      <div class="data-row__param" id="label-{{@index}}-param2">
       {{ this.titles.parameter2Label }}
       </div>
-      <div class="data-row__value">
+      <div class="data-row__value" aria-labelledby="label-{{@index}}-param2">
       {{ this.condition.parameter2 }}
       </div>
     </div>
@@ -67,10 +67,10 @@
 
     {{#each this.points }}
     <div class="data-row">
-      <div class="data-row__param">
+      <div class="data-row__param" id="label-{{@index}}-points">
       Abstraction point
       </div>
-      <div class="data-row__value">
+      <div class="data-row__value" aria-labelledby="label-{{@index}}-points">
         {{ this }}
       </div>
     </div>
@@ -78,10 +78,10 @@
 
     {{#if this.condition.text }}
     <div class="data-row">
-      <div class="data-row__param">
+      <div class="data-row__param" id="label-{{@index}}-info">
       Other information
       </div>
-      <div class="data-row__value">
+      <div class="data-row__value" aria-labelledby="label-{{@index}}-info">
       {{ this.condition.text }}
       </div>
     </div>

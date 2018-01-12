@@ -2,7 +2,84 @@
  * Helpers for checking/processing licence data
  * @module lib/licence-helpers
  */
- const uniq = require('lodash/uniq');
+const uniq = require('lodash/uniq');
+const find = require('lodash/find');
+const uniqBy = require('lodash/uniqBy');
+const mapValues = require('lodash/mapValues');
+const LicenceTitleLoader = require('./licence-title-loader.js');
+const licenceTitleLoader = new LicenceTitleLoader();
+
+
+
+/**
+ * Finds the relevant title and parameter titles from the supplied
+ * CSV data, and returns that row object
+ * Also converts all titles to sentence case
+ * @param {Array} data - loaded from titles CSV doc
+ * @param {String} code - the licence condition code
+ * @param {String} subCode - the licence condition sub-code
+ * @return {Object|null} object corresponding to licence row (if found)
+ */
+function _findTitle(data, code, subCode) {
+   return find(data, (item) => {
+      return (item.code === code) && (item.subCode === subCode);
+   });
+}
+
+/**
+ * Formats an abstraction point into a string
+ * Example:  name, ngr1, ngr2
+ * @param {Object} point - abstraction point from licence data
+ * @return {String} abstraction point info formatted as String
+ */
+function _formatAbstractionPoint(point) {
+  const {name, ngr1, ngr2, ngr3, ngr4} = point;
+  const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
+  return parts.join(', ');
+}
+
+
+
+
+/**
+ * A function to get a list of licence conditions for display
+ * from the supplied licenceData which is loaded from the permit repo
+ * @param {Object} licenceData
+ * @return {Array} conditions
+ */
+async function licenceConditions(licenceData) {
+
+  // Read condition titles from CSV
+  const data = await licenceTitleLoader.load();
+
+  // Extract conditions from licence data and attach titles from CS
+  let conditions = [];
+  licenceData.attributes.licenceData.purposes.forEach((purpose) => {
+
+    purpose.conditions.forEach((condition) => {
+
+      if(!condition.code) {
+        return;
+      }
+
+      // Format abstraction points
+      const points = [];
+      purpose.points.forEach((point) => {
+        points.push(_formatAbstractionPoint(point));
+      });
+
+      // Lookup title in CSV data
+      const titles = _findTitle(data, condition.code, condition.subCode);
+      conditions.push({condition, titles, points});
+
+    });
+  });
+
+  return conditions;
+}
+
+
+
 
 /**
  * A function to extract an array of licence numbers from a user-supplied string
@@ -110,5 +187,6 @@ module.exports = {
   checkLicenceSimilarity,
   licenceRoles,
   licenceCount,
-  uniqueAddresses
+  uniqueAddresses,
+  licenceConditions
 };

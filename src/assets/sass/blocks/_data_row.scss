@@ -1,0 +1,21 @@
+/**
+ * Data row element - used in abstraction conditions view.
+ */
+.data-row {
+
+  padding: 0.5em 0;
+  border-top: 1px solid $border-colour;
+
+  @media screen and (min-width: 641px) {
+    display: flex;
+  }
+
+  &__param {
+    font-weight: bold;
+
+    @media screen and (min-width: 641px) {
+        flex: 0 0 33%;
+    }
+  }
+
+}

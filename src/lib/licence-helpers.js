@@ -18,6 +18,18 @@ function findTitle(data, code, subCode) {
 }
 
 /**
+ * Formats an abstraction point into a string
+ * Example:  name, ngr1, ngr2
+ * @param {Object} point - abstraction point from licence data
+ * @return {String} abstraction point info formatted as String
+ */
+function _formatAbstractionPoint(point) {
+  const {name, ngr1, ngr2, ngr3, ngr4} = point;
+  const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
+  return parts.join(', ');
+}
+
+/**
  * A function to get a list of licence conditions for display
  * from the supplied licenceData which is loaded from the permit repo
  * @param {Object} licenceData
@@ -32,21 +44,25 @@ async function licenceConditions(licenceData) {
   // Extract conditions from licence data and attach titles from CS
   let conditions = [];
   licenceData.attributes.licenceData.purposes.forEach((purpose) => {
+
     purpose.conditions.forEach((condition) => {
 
-      // Lookup title
+      if(!condition.code) {
+        return;
+      }
+
+      // Format abstraction points
+      const points = [];
+      purpose.points.forEach((point) => {
+        points.push(_formatAbstractionPoint(point));
+      });
+
+      // Lookup title in CSV data
       const titles = findTitle(data, condition.code, condition.subCode);
-      conditions.push({condition, titles});
+      conditions.push({condition, titles, points});
 
     });
   });
-
-  // // De-duplicate
-  conditions = uniqBy(conditions, (item) => {
-    return Object.values(item.condition).join(';');
-  });
-
-  console.log(conditions);
 
   return conditions;
 }

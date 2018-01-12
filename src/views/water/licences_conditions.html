@@ -16,7 +16,7 @@
 
   <div class="grid-row">
       <div class="column-two-thirds">
-        <h1 class="heading-large">Summary of the conditions held for
+        <h1 class="heading-large">Conditions held for
             {{#if crmData.document_custom_name }}
             {{ crmData.document_custom_name }}
             {{else}}
@@ -28,19 +28,70 @@
           <i class="icon icon-important">
             <span class="visually-hidden">Warning</span>
           </i>
-          <strong class="bold-small">This information may be incomplete because we are transferring records to our new system. You should check the paper copy of the licence for details of any conditions.
+          <strong class="bold-small">
+            We may not be able to show a full list of your conditions, because we don’t hold all of your licence information on our system yet. You must refer to the paper copy of your licence to view and comply with all of your conditions.
         </strong>
         <p></p>
         </div>
-
-        {{#each conditions }}
-          <h2>Condition: {{ this.titles.displayTitle }}</h2>
-          {{ this.titles.parameter1Label }}
-          {{ this.condition.parameter1 }}
-        {{/each}}
-
       </div>
   </div>
+
+  {{#each conditions }}
+  <div class="grid-row">
+    <div class="column-full">
+    <h2 class="heading-medium">{{ this.titles.displayTitle }}</h2>
+
+
+    {{#if this.condition.parameter1 }}
+    <div class="data-row">
+      <div class="data-row__param">
+      {{ this.titles.parameter1Label }}
+      </div>
+      <div class="data-row__value">
+      {{ this.condition.parameter1 }}
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if this.condition.parameter2 }}
+    <div class="data-row">
+      <div class="data-row__param">
+      {{ this.titles.parameter2Label }}
+      </div>
+      <div class="data-row__value">
+      {{ this.condition.parameter2 }}
+      </div>
+    </div>
+    {{/if}}
+
+
+    {{#each this.points }}
+    <div class="data-row">
+      <div class="data-row__param">
+      Abstraction point
+      </div>
+      <div class="data-row__value">
+        {{ this }}
+      </div>
+    </div>
+    {{/each}}
+
+    {{#if this.condition.text }}
+    <div class="data-row">
+      <div class="data-row__param">
+      Other information
+      </div>
+      <div class="data-row__value">
+      {{ this.condition.text }}
+      </div>
+    </div>
+    {{/if}}
+    </div>
+
+
+  </div>
+  <br />
+  {{/each}}
 
 
 </main>

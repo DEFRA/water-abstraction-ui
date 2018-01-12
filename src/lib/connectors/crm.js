@@ -243,6 +243,15 @@ function getLicences(filter, sort = {}, roleFilter = true) {
   else {
     const uri = process.env.CRM_URI + '/documentHeader';
 
+    // Format query params
+    const qs = {};
+    if(filter) {
+      qs.filter = JSON.stringify(filter);
+    };
+    if(sort) {
+      qs.sort =  JSON.stringify(sort);
+    }
+
     return rp({
       uri,
       method : 'GET',
@@ -250,7 +259,7 @@ function getLicences(filter, sort = {}, roleFilter = true) {
         Authorization : process.env.JWT_TOKEN
       },
       json : true,
-      qs : { filter : JSON.stringify(filter), sort : JSON.stringify(sort)}
+      qs
     });
   }
 }

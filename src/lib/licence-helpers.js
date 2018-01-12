@@ -9,12 +9,24 @@ const readFile = Promise.promisify(fs.readFile);
 const csvParse = Promise.promisify(require('csv-parse'));
 const find = require('lodash/find');
 const uniqBy = require('lodash/uniqBy');
+const mapValues = require('lodash/mapValues');
+const sentenceCase = require('sentence-case');
 
 
+/**
+ * Finds the relevant title and parameter titles from the supplied
+ * CSV data, and returns that row object
+ * Also converts all titles to sentence case
+ * @param {Array} data - loaded from titles CSV doc
+ * @param {String} code - the licence condition code
+ * @param {String} subCode - the licence condition sub-code
+ * @return {Object|null} object corresponding to licence row (if found)
+ */
 function findTitle(data, code, subCode) {
-    return find(data, (item) => {
+    const title = find(data, (item) => {
       return (item.code === code) && (item.subCode === subCode);
     });
+    return title ? mapValues(title, sentenceCase) : null;
 }
 
 /**

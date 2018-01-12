@@ -3,14 +3,12 @@
  * @module lib/licence-helpers
  */
 const uniq = require('lodash/uniq');
-const fs = require('fs');
-const Promise = require('bluebird');
-const readFile = Promise.promisify(fs.readFile);
-const csvParse = Promise.promisify(require('csv-parse'));
 const find = require('lodash/find');
 const uniqBy = require('lodash/uniqBy');
 const mapValues = require('lodash/mapValues');
-const sentenceCase = require('sentence-case');
+const LicenceTitleLoader = require('./licence-title-loader.js');
+const licenceTitleLoader = new LicenceTitleLoader();
+
 
 
 /**
@@ -22,11 +20,10 @@ const sentenceCase = require('sentence-case');
  * @param {String} subCode - the licence condition sub-code
  * @return {Object|null} object corresponding to licence row (if found)
  */
-function findTitle(data, code, subCode) {
-    const title = find(data, (item) => {
+function _findTitle(data, code, subCode) {
+   return find(data, (item) => {
       return (item.code === code) && (item.subCode === subCode);
-    });
-    return title ? mapValues(title, sentenceCase) : null;
+   });
 }
 
 /**
@@ -41,6 +38,9 @@ function _formatAbstractionPoint(point) {
   return parts.join(', ');
 }
 
+
+
+
 /**
  * A function to get a list of licence conditions for display
  * from the supplied licenceData which is loaded from the permit repo
@@ -50,8 +50,7 @@ function _formatAbstractionPoint(point) {
 async function licenceConditions(licenceData) {
 
   // Read condition titles from CSV
-  const str = await readFile('./data/condition_titles.csv');
-  const data = await csvParse(str, {columns : true});
+  const data = await licenceTitleLoader.load();
 
   // Extract conditions from licence data and attach titles from CS
   let conditions = [];
@@ -70,7 +69,7 @@ async function licenceConditions(licenceData) {
       });
 
       // Lookup title in CSV data
-      const titles = findTitle(data, condition.code, condition.subCode);
+      const titles = _findTitle(data, condition.code, condition.subCode);
       conditions.push({condition, titles, points});
 
     });

@@ -263,10 +263,14 @@ async function postAddressSelect(request, reply) {
         throw {name : 'InvalidAddressError'};
       }
 
-      // Get company entity ID for current user
-      const companyEntityId = await _getOrCreateCompanyEntity(entity_id);
+      // Find licences in CRM for selected documents
+      const { data : licenceData, error : licenceError } = await CRM.getLicences({document_id : selectedIds}, {}, false);
+      if(licenceError) {
+        throw licenceError;
+      }
 
-      console.log('companyEntityId', companyEntityId);
+      // Get company entity ID for current user
+      const companyEntityId = await _getOrCreateCompanyEntity(entity_id, licenceData[0].metadata.Name);
 
       // Create verification
       const verification = await _createVerification(entity_id, companyEntityId, selectedIds);
@@ -364,9 +368,10 @@ async function _getPrimaryCompany(entityId) {
  * Gets or creates a company entity for the supplied individual entity ID
  * where the user is the primary user
  * @param {String} entityId - the individual entity ID
+ * @param {String} companyName - the name of the company entity
  * @return {Promise} resolves with company entity ID found/created
  */
-async function _getOrCreateCompanyEntity(entityId) {
+async function _getOrCreateCompanyEntity(entityId, companyName) {
 
   const companyId = await _getPrimaryCompany(entityId);
 
@@ -375,7 +380,7 @@ async function _getOrCreateCompanyEntity(entityId) {
   }
 
   // No role found, create new entity
-  const { data } = await CRM.createEntity('', 'company');
+  const { data } = await CRM.createEntity(companyName, 'company');
 
   // Create entity role
   const res3 = await CRM.addEntityRole(entityId, data.entity_id, 'user', true);

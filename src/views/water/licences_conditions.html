@@ -24,17 +24,26 @@
             {{/if}}
         </h1>
 
-        <div class="notice">
+        <div class="notice" style="border: none; margin: 0; padding: 0;">
           <i class="icon icon-important">
             <span class="visually-hidden">Warning</span>
           </i>
           <strong class="bold-small">
             We may not be able to show a full list of your conditions, because we don’t hold all of your licence information on our system yet. You must refer to the paper copy of your licence to view and comply with all of your conditions.
         </strong>
-        <p></p>
         </div>
+
+        <br />
       </div>
   </div>
+
+  {{#equal conditions.length 0}}
+  <p>
+  Sorry, we don’t hold any information about your conditions on our system yet.
+  </p><p>
+  Please check the paper copy of your licence for this information.
+  </p>
+  {{/equal}}
 
   {{#each conditions }}
   <div class="grid-row">

@@ -45,6 +45,15 @@
   {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.attributes.licenceData.effectiveTo)}}
   {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
   {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.attributes.licenceData.purposes.0.periodStart licenceData.attributes.licenceData.purposes.0.periodEnd)}}
+
+  <div class="data-table">
+      <div class="sourceofsupplyq">Abstraction Conditions</div>
+      <div class="licenceAnswer">
+        <a href="/licences/{{ licence_id }}/conditions">Read all abstraction conditions</a>
+        <br />
+      </div>
+  </div>
+
   {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData.attributes.licenceData)}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>

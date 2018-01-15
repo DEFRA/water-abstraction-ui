@@ -282,7 +282,7 @@ async function postAddressSelect(request, reply) {
       }
 
       // Post letter
-      const result = await Notify.sendSecurityCode(data[0], verification.verification_code);
+      const result = await Notify.sendSecurityCode(data, verification.verification_code);
 
       // Get all licences - this is needed to determine whether to display link back to dashboard
       const { error: err2, data: licences} = await CRM.getLicences({verified : 1});

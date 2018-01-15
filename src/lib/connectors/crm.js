@@ -115,17 +115,17 @@ function getOutstandingVerifications(entity_id) {
  * @example updateDocumentHeaders({query : document_id : ['123', '456']}, {verification_id : 'xyx'})
  */
 function updateDocumentHeaders(query, set) {
-  var uri = process.env.CRM_URI + '/documentHeaders';
+  var uri = process.env.CRM_URI + '/documentHeader';
   return rp({
     uri,
     method : 'PATCH',
     headers : {
       Authorization : process.env.JWT_TOKEN
     },
-    body : {
-      query,
-      set
+    qs : {
+      filter : JSON.stringify(query)
     },
+    body : set,
     json : true
   });
 }

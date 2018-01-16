@@ -171,7 +171,7 @@ function addEntityRole(entity_id, company_entity_id, role, is_primary = false) {
       Authorization : process.env.JWT_TOKEN
     },
     body : {
-      company : company_entity_id,
+      company_entity_id,
       role,
       is_primary : is_primary ? 1 : 0
     },

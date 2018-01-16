@@ -60,24 +60,24 @@
       </h3>
 
       {{#each this.conditions }}
-      <div>
-        <h4 class="sr-only">Condition {{add @key 1 }}</h4>
+      <div class="data-row-group">
+        <h4 class="sr-only">Condition {{add @index 1 }}</h4>
 
         <div class="data-row data-row--section">
-          <div class="data-row__param" id="label-{{@index}}-param1">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-purpose">
          Purpose
           </div>
-          <div class="data-row__value" aria-labelledby="label-{{@index}}-param1">
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-purpose">
           {{ this.purpose.description }}
           </div>
         </div>
 
         {{#if this.parameter1 }}
         <div class="data-row">
-          <div class="data-row__param" id="label-{{@index}}-param1">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param1">
           {{ ../titles.parameter1Label }}
           </div>
-          <div class="data-row__value" aria-labelledby="label-{{@index}}-param1">
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param1">
           {{ this.parameter1 }}
           </div>
         </div>
@@ -85,10 +85,10 @@
 
         {{#if this.parameter2 }}
         <div class="data-row">
-          <div class="data-row__param" id="label-{{@index}}-param2">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param2">
           {{ ../titles.parameter2Label }}
           </div>
-          <div class="data-row__value" aria-labelledby="label-{{@index}}-param2">
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param2">
           {{ this.parameter2 }}
           </div>
         </div>
@@ -96,10 +96,10 @@
 
         {{#if this.text }}
         <div class="data-row">
-          <div class="data-row__param" id="label-{{@index}}-info">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-info">
           Other information
           </div>
-          <div class="data-row__value" aria-labelledby="label-{{@index}}-info">
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-info">
           {{ this.text }}
           </div>
         </div>
@@ -107,8 +107,10 @@
 
       </div>
       {{/each}}
-      <br />
+
     </div>
+
+    <br />
     {{/each}}
 
 </main>

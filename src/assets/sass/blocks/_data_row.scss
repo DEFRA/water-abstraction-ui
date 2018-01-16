@@ -1,6 +1,10 @@
 /**
  * Data row element - used in abstraction conditions view.
  */
+.data-row-group:last-child {
+  border-bottom: 1px solid $border-colour;
+}
+
 .data-row {
 
   padding: 0.5em 0;
@@ -29,6 +33,7 @@
   }
 
   &--heading {
+    border: none;
     .data-row__param, .data-row__value {
       font-weight: bold;
     }

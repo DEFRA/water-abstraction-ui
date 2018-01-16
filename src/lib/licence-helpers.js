@@ -6,6 +6,7 @@ const uniq = require('lodash/uniq');
 const find = require('lodash/find');
 const uniqBy = require('lodash/uniqBy');
 const mapValues = require('lodash/mapValues');
+const sortBy = require('lodash/sortBy');
 const LicenceTitleLoader = require('./licence-title-loader.js');
 const licenceTitleLoader = new LicenceTitleLoader();
 
@@ -39,7 +40,94 @@ function _formatAbstractionPoint(point) {
 }
 
 
+/**
+ * Convert points array to string of sorted IDs
+ * @param {Array} points
+ * @return {String}
+ */
+function _pointsToStr(points) {
+  return sortBy(points.map(_formatAbstractionPoint)).join('; ');
+}
 
+/**
+ * Compare 2 sets of points, returning true if identical IDs
+ * @param {Array} points1
+ * @param {Array} points2
+ * @return {Boolean}
+ */
+function _comparePoints(points1, points2) {
+  return pointsToStr(points1) === pointsToStr(points2);
+}
+
+/**
+ * Convert condition to string
+ * @param {Object} condition
+ * @return {String}
+ */
+function _conditionToStr(condition) {
+  const {code, subCode, parameter1, parameter2, description, purpose} = condition;
+  return [code, subCode, parameter1, parameter2, description, purpose.id].join(',');
+}
+
+/**
+ * Compare conditions
+ * @param {Object} cond1 - first condition
+ * @param {Object} cond2 - second condition
+ * @return {Boolean} true if the same
+ */
+function _compareConditions(cond1, cond2) {
+  return _conditionToStr(cond1) === _conditionToStr(cond2);
+}
+
+/**
+ * Creates a unique ID for a condition/point combination
+ * @param {Object} condition
+ * @param {Array} points
+ * @return {String} unique ID
+ */
+function _createId(condition, purpose) {
+  const {points} = purpose;
+  return condition.code + '-' + condition.subCode + '-' + sortBy(points.map(point => point.id)).join(',');
+}
+
+/**
+ * Find unique condition/points within conditions list
+ * @param {Array} data - existing list of categorised conditions
+ * @param {Object} condition - the condition to find
+ * @param {Object} purpose - the purpose
+ * @return {Object} container for grouped conditions
+ */
+async function _findCondition(data, condition, purpose) {
+
+  // Read condition titles from CSV
+  const titleData = await licenceTitleLoader.load();
+
+  const {points} = purpose;
+  const id = _createId(condition, purpose);
+  const item = find(data, item => item.id === id);
+
+  // Existing item found - return it
+  if(item) {
+    return item;
+  }
+
+  // Create new item
+  // Lookup title in CSV data
+  const titles = _findTitle(titleData, condition.code, condition.subCode);
+
+  const newItem = {
+      id,
+      code : condition.code,
+      subCode : condition.subCode,
+      points : points.map(_formatAbstractionPoint),
+      conditions : [],
+      titles
+  };
+
+  data.push(newItem);
+
+  return newItem;
+}
 
 /**
  * A function to get a list of licence conditions for display
@@ -49,31 +137,42 @@ function _formatAbstractionPoint(point) {
  */
 async function licenceConditions(licenceData) {
 
-  // Read condition titles from CSV
-  const data = await licenceTitleLoader.load();
+  console.log(JSON.stringify(licenceData, null, 2));
 
   // Extract conditions from licence data and attach titles from CS
-  let conditions = [];
+  const conditions = [];
+
   licenceData.attributes.licenceData.purposes.forEach((purpose) => {
 
-    purpose.conditions.forEach((condition) => {
+    purpose.conditions.forEach(async (condition) => {
 
       if(!condition.code) {
         return;
       }
 
-      // Format abstraction points
-      const points = [];
-      purpose.points.forEach((point) => {
-        points.push(_formatAbstractionPoint(point));
-      });
+      // Find/create condition container
+      const conditionContainer = await _findCondition(conditions, condition, purpose);
 
-      // Lookup title in CSV data
-      const titles = _findTitle(data, condition.code, condition.subCode);
-      conditions.push({condition, titles, points});
+
+      const newCondition = {
+        ...condition,
+        purpose : {
+          id : purpose.id,
+          description : purpose.description
+        }};
+
+      // Avoid duplicates
+      const found = find(conditionContainer.conditions, (item) => {
+        return _compareConditions(item, newCondition);
+      });
+      if(!found) {
+        conditionContainer.conditions.push(newCondition);
+      }
 
     });
   });
+
+  // console.log(JSON.stringify(conditions, null, 2));
 
   return conditions;
 }

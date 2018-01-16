@@ -4,10 +4,19 @@
 .data-row {
 
   padding: 0.5em 0;
-  border-top: 1px solid $border-colour;
+  border-top: 1px solid $panel-colour;
+
+  &--section {
+    border-color: $border-colour;
+  }
 
   @media screen and (min-width: 641px) {
     display: flex;
+  }
+
+  // Abstraction point heading
+  h3.heading-small {
+    margin: 0;
   }
 
   &__param {
@@ -15,6 +24,13 @@
 
     @media screen and (min-width: 641px) {
         flex: 0 0 33%;
+        font-weight: normal;
+    }
+  }
+
+  &--heading {
+    .data-row__param, .data-row__value {
+      font-weight: bold;
     }
   }
 

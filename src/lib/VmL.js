@@ -95,7 +95,7 @@ function postUpdatePassword(request, reply) {
   console.log(request.payload)
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
-  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  var errors = validatePassword(request.payload.password, request.payload.confirmPassword);
   console.log(errors)
   if (!errors) {
     IDM.updatePassword(request.auth.credentials.username, request.payload.password).then((res) => {
@@ -265,7 +265,7 @@ async function postResetPasswordChangePassword(request, reply) {
 
   try {
       // Check submitted password
-      const errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+      const errors = validatePassword(request.payload.password, request.payload.confirmPassword);
       if(errors) {
         throw errors;
       }

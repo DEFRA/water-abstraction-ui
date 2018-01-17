@@ -59,7 +59,7 @@ async function postLicenceAdd(request, reply) {
 
   // Validate posted data
   const schema = {
-    licence_no : Joi.string().required().allow('').trim().max(16384)
+    licence_no : Joi.string().required().allow('').trim().max(9000)
   };
   try {
       // Validate post data

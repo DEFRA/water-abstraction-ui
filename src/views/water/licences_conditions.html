@@ -45,63 +45,73 @@
   </p>
   {{/equal}}
 
+
   {{#each conditions }}
-  <div class="grid-row">
-    <div class="column-full">
-    <h2 class="heading-medium">{{ this.titles.displayTitle }}</h2>
+    <div class="grid-row">
 
+      <h2 class="heading-medium">{{ this.titles.displayTitle}}</h2>
+      <h3 class="data-row data-row--heading">
+        <span class="data-row__param">Abstraction point</span>
+        <span class="data-row__value">
+          {{#each this.points}}
+          {{ this }}<br />
+          {{/each}}
+        </span>
+      </h3>
 
-    {{#if this.condition.parameter1 }}
-    <div class="data-row">
-      <div class="data-row__param" id="label-{{@index}}-param1">
-      {{ this.titles.parameter1Label }}
+      {{#each this.conditions }}
+      <div class="data-row-group">
+        <h4 class="sr-only">Condition {{add @index 1 }}</h4>
+
+        <div class="data-row data-row--section">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-purpose">
+         Purpose
+          </div>
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-purpose">
+          {{ this.purpose.description }}
+          </div>
+        </div>
+
+        {{#if this.parameter1 }}
+        <div class="data-row">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param1">
+          {{ ../titles.parameter1Label }}
+          </div>
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param1">
+          {{ this.parameter1 }}
+          </div>
+        </div>
+        {{/if}}
+
+        {{#if this.parameter2 }}
+        <div class="data-row">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param2">
+          {{ ../titles.parameter2Label }}
+          </div>
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param2">
+          {{ this.parameter2 }}
+          </div>
+        </div>
+        {{/if}}
+
+        {{#if this.text }}
+        <div class="data-row">
+          <div class="data-row__param" id="label-{{@../index}}-{{@index}}-info">
+          Other information
+          </div>
+          <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-info">
+          {{ this.text }}
+          </div>
+        </div>
+        {{/if}}
+
       </div>
-      <div class="data-row__value" aria-labelledby="label-{{@index}}-param1">
-      {{ this.condition.parameter1 }}
-      </div>
+      {{/each}}
+
     </div>
-    {{/if}}
 
-    {{#if this.condition.parameter2 }}
-    <div class="data-row">
-      <div class="data-row__param" id="label-{{@index}}-param2">
-      {{ this.titles.parameter2Label }}
-      </div>
-      <div class="data-row__value" aria-labelledby="label-{{@index}}-param2">
-      {{ this.condition.parameter2 }}
-      </div>
-    </div>
-    {{/if}}
-
-
-    {{#each this.points }}
-    <div class="data-row">
-      <div class="data-row__param" id="label-{{@index}}-points">
-      Abstraction point
-      </div>
-      <div class="data-row__value" aria-labelledby="label-{{@index}}-points">
-        {{ this }}
-      </div>
-    </div>
+    <br />
     {{/each}}
-
-    {{#if this.condition.text }}
-    <div class="data-row">
-      <div class="data-row__param" id="label-{{@index}}-info">
-      Other information
-      </div>
-      <div class="data-row__value" aria-labelledby="label-{{@index}}-info">
-      {{ this.condition.text }}
-      </div>
-    </div>
-    {{/if}}
-    </div>
-
-
-  </div>
-  <br />
-  {{/each}}
-
 
 </main>
 {{> footerjs}}

@@ -171,7 +171,7 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
 
 
     viewContext.conditions = await licenceConditions(data.data);
-    console.log(viewContext.conditions);
+    // console.log(viewContext.conditions);
 
     return reply.view(view, viewContext)
 

@@ -2,7 +2,6 @@
  * Sign-in helpers
  */
 const CRM = require('./connectors/crm');
-const Helpers = require('./helpers');
 
 /**
  * Sign user in automatically
@@ -15,8 +14,12 @@ async function auto(request, emailAddress) {
 
   const entity_id = await CRM.getOrCreateIndividualEntity(emailAddress);
 
+  // Create session ID
+  const session_id = await request.sessionStore.create();
+
+  // Data to store in cookie
   const session = {
-    sid : Helpers.createGUID(),
+    sid : session_id,
     username : emailAddress.toLowerCase().trim(),
     entity_id
   };

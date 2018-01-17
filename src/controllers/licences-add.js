@@ -29,7 +29,11 @@ const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-function getLicenceAdd(request, reply) {
+async function getLicenceAdd(request, reply) {
+
+  const sessionData = await request.sessionStore.load();
+  console.log(sessionData);
+
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Add Licence';
   return reply.view('water/licences-add/add-licences', viewContext);

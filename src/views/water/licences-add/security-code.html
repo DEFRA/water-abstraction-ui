@@ -47,7 +47,7 @@
 
           </label>
 
-          <input value="{{ payload.verification_code }}" type="password" class="form-control" name="verification_code" id="verification_code" required="">
+          <input maxlength="5" value="{{ payload.verification_code }}" type="password" class="form-control" name="verification_code" id="verification_code" required="">
         </div>
 
         <input type="submit" value="Continue" class="button" role="button"/>

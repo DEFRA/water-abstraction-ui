@@ -31,7 +31,11 @@ module.exports = [
           }
 
 
-        },config: { auth: false },config: { auth: false }
+        },config: { auth: false, validate : {
+          query : {
+            access : Joi.string().max(4)
+          }
+        } },config: { auth: false }
     },
 
   { method: 'GET', path: '/robots.txt', handler: function(request,reply){return reply('exterminate').code(200)}, config:{auth: false,description:'Ooh. Robots'}},
@@ -50,23 +54,48 @@ module.exports = [
     auth : false,
     validate : {
       payload : {
-        user_id : Joi.string(),
-        password: Joi.string()
+        user_id : Joi.string().max(254),
+        password: Joi.string().max(128)
       }
     }
   }},
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
   { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
-  { method: 'POST', path: '/update_password', handler: VmL.postUpdatePassword },
+  { method: 'POST', path: '/update_password', config: {
+    validate : {
+      payload : {
+        password : Joi.string().max(128),
+        confirmPassword : Joi.string().max(128)
+      }
+    }
+  }, handler: VmL.postUpdatePassword },
   { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
-  { method: 'POST', path: '/reset_password', config: { auth: false }, handler: VmL.postResetPassword },
+  { method: 'POST', path: '/reset_password', config: { auth: false,
+    validate: {
+      payload : {
+        email_address : Joi.string().allow('').max(254)
+      }
+    }
+   }, handler: VmL.postResetPassword },
   { method: 'GET', path: '/reset_password_check_email', config: { auth: false }, handler: VmL.getResetPasswordCheckEmail },
   { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
-  { method: 'POST', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.postResetPasswordResendEmail },
+  { method: 'POST', path: '/reset_password_resend_email', config: { auth: false,
+    validate : {
+      payload : {
+        email_address : Joi.string().allow('').max(254)
+      }
+    }
+  }, handler: VmL.postResetPasswordResendEmail },
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
 
   { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
-  { method: 'POST', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.postResetPasswordChangePassword },
+  { method: 'POST', path: '/reset_password_change_password', config: { auth: false, validate : {
+    payload : {
+      resetGuid : Joi.string().guid().required(),
+      password : Joi.string().allow('').max(128),
+      confirmPassword : Joi.string().allow('').max(128)
+    }
+  } }, handler: VmL.postResetPasswordChangePassword },
 
   { method: 'GET', path: '/create-password', handler: VmL.getCreatePassword, config: {
     auth: false,
@@ -77,7 +106,15 @@ module.exports = [
     }}},
 
 
-  { method: 'POST', path: '/create-password', config: { auth: false }, handler: VmL.postCreatePassword },
+  { method: 'POST', path: '/create-password', config: { auth: false,
+    validate : {
+      payload : {
+        resetGuid : Joi.string().guid().required(),
+        password : Joi.string().allow('').max(128),
+        confirmPassword : Joi.string().allow('').max(128)
+      }
+    }
+  }, handler: VmL.postCreatePassword },
 
 
 
@@ -87,8 +124,8 @@ module.exports = [
          query: {
              sort: Joi.string().valid('licenceNumber', 'name'),
              direction : Joi.number().valid(1, -1),
-             emailAddress : Joi.string().allow(''),
-             licenceNumber : Joi.string().allow('')
+             emailAddress : Joi.string().allow('').max(254),
+             licenceNumber : Joi.string().allow('').max(32)
          }
      }
   }},
@@ -107,7 +144,7 @@ module.exports = [
           licence_id : Joi.string().required().guid()
         },
         payload : {
-          name : Joi.string()
+          name : Joi.string().max(32)
         }
       }
   }},
@@ -167,7 +204,7 @@ module.exports = [
     description : 'Register user account - email address form handler',
     validate : {
       payload : {
-        email : Joi.string().allow('')
+        email : Joi.string().allow('').max(254)
       }
     }
   }},
@@ -184,7 +221,7 @@ module.exports = [
     description : 'Register user account - resend email address form handler',
     validate : {
       payload : {
-        email : Joi.string().allow('')
+        email : Joi.string().allow('').max(254)
       }
     }
   }},
@@ -204,7 +241,12 @@ module.exports = [
     description : 'Manage licences - add access form'
   }},
   { method: 'POST', path: '/manage_licences/add_access', handler: LicencesController.postAddAccess, config : {
-    description : 'Managfe licences - add access process'
+    description : 'Manage licences - add access process',
+    validate : {
+      payload : {
+        email : Joi.string().max(254).allow('')
+      }
+    }
   }},
 
   // Add licence to account
@@ -215,7 +257,7 @@ module.exports = [
     description : 'Start flow to add licences',
     validate : {
       payload : {
-        licence_no : Joi.string().allow('')
+        licence_no : Joi.string().allow('').max(7000)
       }
     }
   }},
@@ -225,8 +267,9 @@ module.exports = [
     description : 'Select the licences to add',
     validate : {
       query : {
+        // Note: token does not have a max length, but will be replaced with session storage
         token : Joi.string().required(),
-        error : Joi.string()
+        error : Joi.string().max(32)
       }
     }
   }},
@@ -234,6 +277,7 @@ module.exports = [
     description : 'Post handler for licence select',
     validate : {
       payload : {
+        // Note: token does not have a max length, but will be replaced with session storage
         token : Joi.string().required(),
         licences : [Joi.array(), Joi.string().allow('')]
       }
@@ -248,8 +292,9 @@ module.exports = [
     description : 'Select the address to send postal verification letter',
     validate : {
       query : {
+        // Note: token does not have a max length, but will be replaced with session storage
         token : Joi.string().required(),
-        error : Joi.string().allow('')
+        error : Joi.string().allow('').max(32)
       }
     }
   }},
@@ -258,34 +303,12 @@ module.exports = [
     description : 'Post handler for select address form',
     validate : {
       payload : {
-        address : Joi.string(),
+        // Note: token does not have a max length, but will be replaced with session storage
+        address : Joi.string().allow('').guid(),
         token : Joi.string().required()
       }
     }
   }},
-
-  // { method: 'POST', path: '/confirm-licences', handler: LicencesAddController.postConfirmLicences, config : {
-  //   description : 'Confirm licences to add to account',
-  //   validate : {
-  //     payload : {
-  //       token : Joi.string().required(),
-  //       address : Joi.string().guid()
-  //     }
-  //   }
-  // }},
-
-
-  // {
-  //   method: 'POST', path : '/confirm-address', handler: LicencesAddController.postConfirmAddress, config : {
-  //     description : 'Select address for verification',
-  //     validate : {
-  //       payload : {
-  //         token : Joi.string().required(),
-  //         licences : [Joi.array(), Joi.string()]
-  //       }
-  //     }
-  //   }
-  // },
   { method: 'GET', path: '/security-code', handler: LicencesAddController.getSecurityCode, config : {
     description : 'Enter auth code received by post'
   }},
@@ -293,7 +316,7 @@ module.exports = [
     description : 'Enter auth code received by post',
     validate : {
       payload : {
-        verification_code : Joi.string()
+        verification_code : Joi.string().allow('').max(5)
       }
     }
   }},
@@ -308,8 +331,3 @@ module.exports = [
   }
 
 ]
-
-/**
-{ method: 'GET', path: '/reset_password_get_link', config: { auth: false }, handler: VmL.getResetPasswordLink },
-{ method: 'POST', path: '/reset_password_get_link', config: { auth: false }, handler: VmL.postResetPasswordLink },
-**/

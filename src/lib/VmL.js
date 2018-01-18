@@ -201,10 +201,8 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect)
     }).catch((err) => {
-      console.log(err);
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'GOV.UK - Error'
-      return reply.view('water/error', viewContext)
+      //Aways show OK
+      return reply.redirect(redirect)
     })
   } else {
     var viewContext = View.contextDefaults(request)

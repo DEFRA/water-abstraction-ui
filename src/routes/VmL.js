@@ -267,8 +267,6 @@ module.exports = [
     description : 'Select the licences to add',
     validate : {
       query : {
-        // Note: token does not have a max length, but will be replaced with session storage
-        token : Joi.string().required(),
         error : Joi.string().max(32)
       }
     }
@@ -277,8 +275,6 @@ module.exports = [
     description : 'Post handler for licence select',
     validate : {
       payload : {
-        // Note: token does not have a max length, but will be replaced with session storage
-        token : Joi.string().required(),
         licences : [Joi.array(), Joi.string().allow('')]
       }
     }
@@ -292,8 +288,6 @@ module.exports = [
     description : 'Select the address to send postal verification letter',
     validate : {
       query : {
-        // Note: token does not have a max length, but will be replaced with session storage
-        token : Joi.string().required(),
         error : Joi.string().allow('').max(32)
       }
     }
@@ -303,9 +297,7 @@ module.exports = [
     description : 'Post handler for select address form',
     validate : {
       payload : {
-        // Note: token does not have a max length, but will be replaced with session storage
         address : Joi.string().allow('').guid(),
-        token : Joi.string().required()
       }
     }
   }},

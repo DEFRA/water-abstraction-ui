@@ -50,6 +50,7 @@
     "hapi-auth-cookie": "^7.0.0",
     "hapi-cookie": "^0.1.0",
     "hapi-error": "^1.8.0",
+    "hapi-pg-rest-api": "git+https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-sanitize-payload": "^1.5.0",
     "hapi-server-session": "^3.0.2",
     "http-errors": "^1.6.2",

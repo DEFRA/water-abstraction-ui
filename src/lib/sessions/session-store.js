@@ -19,8 +19,9 @@ class SessionStore {
    */
   constructor(request) {
     this.request = request;
+    // @TODO
     this.apiClient = new APIClient(rp, {
-      endpoint: 'http://localhost:8001/water/1.0/sessions',
+      endpoint: `${ process.env.WATER_URI }/sessions`,
       headers: {
         Authorization: process.env.JWT_TOKEN,
       },

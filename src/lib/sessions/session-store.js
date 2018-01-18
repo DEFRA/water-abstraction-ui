@@ -34,9 +34,9 @@ class SessionStore {
    * resolves with the session data (including session_id)
    * @return {Promise} resolves with newly created session ID
    */
-  async create() {
+  async create(sessionData = {}) {
     const { data, error } = await this.apiClient.create({
-      session_data: JSON.stringify({}),
+      session_data: JSON.stringify(sessionData),
       ip: this.request.info.remoteAddress,
     });
     if (error) {

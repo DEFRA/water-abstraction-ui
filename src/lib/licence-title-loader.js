@@ -37,11 +37,13 @@ class LicenceTitleLoader {
       return {
         code,
         subCode,
-        displayTitle : sentenceCase(displayTitle),
-        parameter1Label : sentenceCase(parameter1Label),
-        parameter2Label : sentenceCase(parameter2Label)
+        displayTitle,
+        parameter1Label,
+        parameter2Label
       };
     });
+
+
 
     return dataTransformed;
   }

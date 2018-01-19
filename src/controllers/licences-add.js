@@ -258,7 +258,7 @@ async function getAddressSelect(request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postAddressSelect(request, reply) {
-    const { token, address } = request.payload;
+    const { address } = request.payload;
     const { entity_id } = request.auth.credentials;
 
     try {
@@ -294,7 +294,7 @@ async function postAddressSelect(request, reply) {
       const result = await Notify.sendSecurityCode(data, verification.verification_code);
 
       // Get all licences - this is needed to determine whether to display link back to dashboard
-      const { error: err2, data: licences} = await CRM.getLicences({verified : 1});
+      const { error: err2, data: licences} = await CRM.getLicences({verified : 1, entity_id});
       if(err2) {
         throw err2;
       }
@@ -306,7 +306,7 @@ async function postAddressSelect(request, reply) {
       const viewContext = View.contextDefaults(request);
       viewContext.pageTitle = 'GOV.UK - Security Code Sent';
       viewContext.verification = verification;
-      viewContext.licence = data[0];
+      viewContext.licence = data;
       viewContext.licenceCount = licences.length;
       viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
 

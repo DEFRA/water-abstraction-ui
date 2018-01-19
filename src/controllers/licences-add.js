@@ -7,8 +7,6 @@
  */
 const Boom = require('boom');
 const Joi = require('joi');
-const Iron = require('iron');
-const Bluebird = require('bluebird');
 const find = require('lodash/find');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
@@ -18,9 +16,6 @@ const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
-// Create promisified versions of Iron seal/unseal
-const ironSeal = Bluebird.promisify(Iron.seal);
-const ironUnseal = Bluebird.promisify(Iron.unseal);
 
 const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
 
@@ -30,10 +25,6 @@ const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getLicenceAdd(request, reply) {
-
-  const sessionData = await request.sessionStore.load();
-  console.log(sessionData);
-
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Add Licence';
   return reply.view('water/licences-add/add-licences', viewContext);

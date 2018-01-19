@@ -15,7 +15,9 @@ async function auto(request, emailAddress) {
   const entity_id = await CRM.getOrCreateIndividualEntity(emailAddress);
 
   // Create session ID
-  const session_id = await request.sessionStore.create();
+  const session_id = await request.sessionStore.create({
+    user : {emailAddress}
+  });
 
   // Data to store in cookie
   const session = {

@@ -376,10 +376,9 @@ function postAddAccess(request, reply, context = {}) {
     .then(() => {
         console.log('*** createEntity *** '+request.payload.email)
       // Create CRM entity
-      return CRM.createEntity(request.payload.email);
-    }).catch((error) => {
-      console.log(error)
-      console.log('entity exists')
+      //return CRM.createEntity(request.payload.email);
+      // Can't rely on POST as duplicates are now allowed
+      return CRM.getOrCreateIndividualEntity(request.payload.email);
     }).then(async ()=>{
         console.log('add role')
         const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)

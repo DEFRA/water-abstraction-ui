@@ -8,104 +8,7 @@ const rp = require('request-promise-native').defaults({
   });
 const moment = require('moment');
 
-
-/**
- * Enter verification code
- * @param {String} entity_id - the individual's entity ID
- * @param {String} company_entity_id - the company entity ID to verify licences for
- * @param {String} verification_code - the verification code supplied by the user
- * @return {Promise} - resolves with verification records if found
- */
-function checkVerification(entity_id, company_entity_id, verification_code) {
-  const uri = process.env.CRM_URI + '/verification';
-  return rp({
-    method: 'GET',
-    uri,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    },
-    qs : {
-      filter : JSON.stringify({
-        entity_id,
-        company_entity_id,
-        verification_code
-      })
-    },
-    json : true
-  });
-}
-
-
-/**
- * Enter verification code
- * @param {String} entity_id - the individual's entity ID
- * @param {String} company_entity_id - the company entity ID to verify licences for
- * @param {String} verification_code - the verification code supplied by the user
- * @return {Promise} - resolves if code OK
- */
-function completeVerification(verification_id) {
-  var uri = process.env.CRM_URI + '/verification/' + verification_id;
-  return rp({
-    method: 'PATCH',
-    uri,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    },
-    body: {
-      date_verified : moment().format()
-    },
-    json : true
-  });
-}
-
-
-/**
- * Create verification
- * @param {String} entity_id - the individual's entity ID
- * @param {String} company_entity_id - the company entity ID to verify licences for
- * @param {String} [method] - the verification method, e.g. post|phone
- * @return {Promise} resolves with user entity record
- */
-function createVerification(entity_id, company_entity_id, method = 'post') {
-  const uri = process.env.CRM_URI + '/verification';
-  return rp({
-    uri,
-    method : 'POST',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      entity_id,
-      company_entity_id,
-      method
-    },
-    json : true
-  });
-}
-
-/**
- * Get outstanding verifications for user
- * @param {String} entity_id - the individual's entity ID
- * @return {Promise} resolves with list of verifications that haven't been completed
- */
-function getOutstandingVerifications(entity_id) {
-  const uri = process.env.CRM_URI + '/verification';
-  const filter = JSON.stringify({
-    entity_id,
-    date_verified : null
-  });
-  return rp({
-    uri,
-    method : 'GET',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    qs : {
-      filter
-    },
-    json : true
-  });
-}
+const crmVerification = require('./crm-verification');
 
 /**
  * Bulk update document headers
@@ -115,17 +18,17 @@ function getOutstandingVerifications(entity_id) {
  * @example updateDocumentHeaders({query : document_id : ['123', '456']}, {verification_id : 'xyx'})
  */
 function updateDocumentHeaders(query, set) {
-  var uri = process.env.CRM_URI + '/documentHeaders';
+  var uri = process.env.CRM_URI + '/documentHeader';
   return rp({
     uri,
     method : 'PATCH',
     headers : {
       Authorization : process.env.JWT_TOKEN
     },
-    body : {
-      query,
-      set
+    qs : {
+      filter : JSON.stringify(query)
     },
+    body : set,
     json : true
   });
 }
@@ -171,7 +74,7 @@ function addEntityRole(entity_id, company_entity_id, role, is_primary = false) {
       Authorization : process.env.JWT_TOKEN
     },
     body : {
-      company : company_entity_id,
+      company_entity_id,
       role,
       is_primary : is_primary ? 1 : 0
     },
@@ -243,6 +146,15 @@ function getLicences(filter, sort = {}, roleFilter = true) {
   else {
     const uri = process.env.CRM_URI + '/documentHeader';
 
+    // Format query params
+    const qs = {};
+    if(filter) {
+      qs.filter = JSON.stringify(filter);
+    };
+    if(sort) {
+      qs.sort =  JSON.stringify(sort);
+    }
+
     return rp({
       uri,
       method : 'GET',
@@ -250,7 +162,7 @@ function getLicences(filter, sort = {}, roleFilter = true) {
         Authorization : process.env.JWT_TOKEN
       },
       json : true,
-      qs : { filter : JSON.stringify(filter), sort : JSON.stringify(sort)}
+      qs
     });
   }
 }
@@ -405,10 +317,7 @@ module.exports = {
   getEditableRoles,
   deleteColleagueRole,
   addColleagueRole,
-  createVerification,
-  checkVerification,
-  getOutstandingVerifications,
-  completeVerification,
+  ...crmVerification,
   updateDocumentHeaders,
   getOrCreateIndividualEntity
 }

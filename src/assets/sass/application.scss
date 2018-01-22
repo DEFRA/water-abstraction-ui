@@ -28,12 +28,16 @@ $path: "/public/images/";
 
 @import "blocks/licence_search";
 @import "blocks/licence_rename";
-
+@import "blocks/data_row";
 
 * {
 family: "nta", Arial, sans-serif;
 }
 
+
+.panel {
+  border-top: none;
+}
 
 .teststyle {
   color: green;
@@ -66,7 +70,7 @@ family: "nta", Arial, sans-serif;
 
     &-errors {
       margin-left: 0px;
-      padding-left: 0px;  
+      padding-left: 0px;
     }
 
     .validation-icon {

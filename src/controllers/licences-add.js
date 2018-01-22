@@ -7,8 +7,6 @@
  */
 const Boom = require('boom');
 const Joi = require('joi');
-const Iron = require('iron');
-const Bluebird = require('bluebird');
 const find = require('lodash/find');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
@@ -18,9 +16,6 @@ const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
-// Create promisified versions of Iron seal/unseal
-const ironSeal = Bluebird.promisify(Iron.seal);
-const ironUnseal = Bluebird.promisify(Iron.unseal);
 
 const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
 
@@ -29,7 +24,7 @@ const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-function getLicenceAdd(request, reply) {
+async function getLicenceAdd(request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Add Licence';
   return reply.view('water/licences-add/add-licences', viewContext);
@@ -59,7 +54,7 @@ async function postLicenceAdd(request, reply) {
 
   // Validate posted data
   const schema = {
-    licence_no : Joi.string().required().allow('').trim().max(16384)
+    licence_no : Joi.string().required().allow('').trim().max(9000)
   };
   try {
       // Validate post data
@@ -101,9 +96,13 @@ async function postLicenceAdd(request, reply) {
       // Seal the list of permitted licence numbers into a token
       // to prevent validation needing to be repeated on following step
       const documentIds = res.data.map(item => item.document_id);
-      const token =  await ironSeal({documentIds}, process.env.cookie_secret, Iron.defaults);
 
-      reply.redirect('/select-licences?token=' + token);
+      // Store document IDs in session
+      const sessionData = await request.sessionStore.load();
+      sessionData.addLicenceFlow = {documentIds};
+      await request.sessionStore.save(sessionData);
+
+      reply.redirect('/select-licences');
   }
   catch (err) {
     console.log(err);
@@ -124,7 +123,6 @@ async function postLicenceAdd(request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getLicenceSelect(request, reply) {
-  const { documentIds } = await ironUnseal(request.query.token, process.env.cookie_secret, Iron.defaults);
 
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Select Licences';
@@ -134,6 +132,10 @@ async function getLicenceSelect(request, reply) {
   }
 
   try {
+
+    const { addLicenceFlow } = await request.sessionStore.load();
+    const { documentIds } = addLicenceFlow;
+
     // Get unverified licences from DB
     const {data, error} = await CRM.getLicences({ document_id : documentIds, verified : null, verification_id : null }, { system_external_id : +1}, false);
 
@@ -147,8 +149,7 @@ async function getLicenceSelect(request, reply) {
 
   }
   catch (err) {
-    console.log(err);
-    reply.redirect('/add-licences?error=token');
+    reply.redirect('/add-licences?error=flow');
   }
 
 }
@@ -169,13 +170,19 @@ async function postLicenceSelect(request, reply) {
 
   try {
 
-    const { documentIds } = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
+    const sessionData = await request.sessionStore.load();
+    const { documentIds } = sessionData.addLicenceFlow;
 
-    const selectedIds = await _verifyTokenRequest(token, licences);
+    const selectedIds = verifySelectedLicences(documentIds, licences);
 
     // Create new token
-    const newToken = await ironSeal({documentIds, selectedIds}, process.env.cookie_secret, Iron.defaults);
-    reply.redirect('/select-address?token=' + newToken);
+    sessionData.addLicenceFlow = {
+      documentIds,
+      selectedIds
+    };
+    await request.sessionStore.save(sessionData);
+
+    reply.redirect('/select-address');
   }
   catch (err) {
 
@@ -220,16 +227,15 @@ async function getAddressSelect(request, reply) {
   }
 
   try {
-    // Decode the Iron token
-    const { token } = request.query;
-    const {documentIds, selectedIds} = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
+    // Load from session
+    const {addLicenceFlow} = await request.sessionStore.load();
+    const {documentIds, selectedIds} = addLicenceFlow;
 
     // Find licences in CRM for selected documents
     const { data } = await CRM.getLicences({document_id : selectedIds}, {}, false);
 
     const uniqueAddressLicences = uniqueAddresses(data);
 
-    viewContext.token = token;
     viewContext.licences = uniqueAddressLicences;
 
     return reply.view('water/licences-add/select-address', viewContext);
@@ -252,21 +258,28 @@ async function getAddressSelect(request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postAddressSelect(request, reply) {
-    const { token, address } = request.payload;
+    const { address } = request.payload;
     const { entity_id } = request.auth.credentials;
 
     try {
-      const {documentIds, selectedIds} = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
 
-      // Ensure address present in list of document IDs in token
+      // Load session data
+      const sessionData = await request.sessionStore.load();
+      const {documentIds, selectedIds} = sessionData.addLicenceFlow;
+
+      // Ensure address present in list of document IDs in data
       if(!selectedIds.includes(address)) {
         throw {name : 'InvalidAddressError'};
       }
 
-      // Get company entity ID for current user
-      const companyEntityId = await _getOrCreateCompanyEntity(entity_id);
+      // Find licences in CRM for selected documents
+      const { data : licenceData, error : licenceError } = await CRM.getLicences({document_id : selectedIds}, {}, false);
+      if(licenceError) {
+        throw licenceError;
+      }
 
-      console.log('companyEntityId', companyEntityId);
+      // Get company entity ID for current user
+      const companyEntityId = await _getOrCreateCompanyEntity(entity_id, licenceData[0].metadata.Name);
 
       // Create verification
       const verification = await _createVerification(entity_id, companyEntityId, selectedIds);
@@ -278,18 +291,22 @@ async function postAddressSelect(request, reply) {
       }
 
       // Post letter
-      const result = await Notify.sendSecurityCode(data[0], verification.verification_code);
+      const result = await Notify.sendSecurityCode(data, verification.verification_code);
 
       // Get all licences - this is needed to determine whether to display link back to dashboard
-      const { error: err2, data: licences} = await CRM.getLicences({verified : 1});
+      const { error: err2, data: licences} = await CRM.getLicences({verified : 1, entity_id});
       if(err2) {
         throw err2;
       }
 
+      // Delete data in session
+      delete sessionData.addLicenceFlow;
+      await request.sessionStore.save(sessionData);
+
       const viewContext = View.contextDefaults(request);
       viewContext.pageTitle = 'GOV.UK - Security Code Sent';
       viewContext.verification = verification;
-      viewContext.licence = data[0];
+      viewContext.licence = data;
       viewContext.licenceCount = licences.length;
       viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
 
@@ -314,12 +331,9 @@ async function postAddressSelect(request, reply) {
  * @param {Array|String} requestDocumentIds - a single licence doc ID or list of doc IDs
  * @return {Array} - list of doc IDs that were included in the token
  */
-async function _verifyTokenRequest(token, requestDocumentIds) {
+function verifySelectedLicences(documentIds, requestDocumentIds) {
 
   requestDocumentIds = forceArray(requestDocumentIds);
-
-  // Decode the Iron token
-  const { documentIds } = await ironUnseal(token, process.env.cookie_secret, Iron.defaults);
 
   if(requestDocumentIds.length < 1) {
     throw {name : 'NoLicencesSelectedError', details : [{ message : 'No licences selected'}]}
@@ -364,9 +378,10 @@ async function _getPrimaryCompany(entityId) {
  * Gets or creates a company entity for the supplied individual entity ID
  * where the user is the primary user
  * @param {String} entityId - the individual entity ID
+ * @param {String} companyName - the name of the company entity
  * @return {Promise} resolves with company entity ID found/created
  */
-async function _getOrCreateCompanyEntity(entityId) {
+async function _getOrCreateCompanyEntity(entityId, companyName) {
 
   const companyId = await _getPrimaryCompany(entityId);
 
@@ -375,7 +390,7 @@ async function _getOrCreateCompanyEntity(entityId) {
   }
 
   // No role found, create new entity
-  const { data } = await CRM.createEntity('', 'company');
+  const { data } = await CRM.createEntity(companyName, 'company');
 
   // Create entity role
   const res3 = await CRM.addEntityRole(entityId, data.entity_id, 'user', true);

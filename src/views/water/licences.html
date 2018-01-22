@@ -11,17 +11,14 @@
     </div>
   </nav>
 
-  <div class="column-full" style="margin-top:35px;margin-bottom:35px;">
+  <div style="margin-top:35px;margin-bottom:35px;">
         <nav class="tabs">
-            	  <ul>
-                  <li><span class="active">Licence list</span></li>
-            	    <li><a href="/manage_licences">Manage licence access</a></li>
-
-        </ul>
+      	  <ul>
+            <li><span class="active">Licence list</span></li>
+      	    <li><a href="/manage_licences">Manage licence access</a></li>
+          </ul>
         </nav>
-        </div>
-
-
+  </div>
 
   {{#equal error.name "ValidationError" }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -45,19 +42,7 @@
   </div>
   {{/equal}}
 
-<!--
-  {{>element-heading-large content='Register a licence'}}
-  Enter provided shortcode to register a new licence
 
-  <a tabindex="-1">
-    <div class="menubox" tabindex="0">
-      <input id='shortcode' type='text'/> &nbsp;
-      <button class='button button-start' onclick='sendShortcode()'>
-      Register Licence
-      </button>
-    </div>
-  </a>
--->
   {{>element-heading-large content='Your water abstraction licences'}}
 
 
@@ -72,7 +57,7 @@
       <div class="form-group form-group--horizontal {{#if error }}form-group-error{{/if}}">
         <label class="form-label form-label--bold" for="emailAddress">Search for an account holder</label>
         <span class="form-hint">Search by account email address.</span>
-        <input type="email" class="form-control form-control--block {{#if error}}form-control-error{{/if}}" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
+        <input maxlength="254" type="email" class="form-control form-control--block {{#if error}}form-control-error{{/if}}" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
     {{/if}}
@@ -81,7 +66,7 @@
       <div class="form-group form-group--horizontal">
         <label class="form-label form-label--bold" for="licenceNumber">Search your licences</label>
         <span class="form-hint">Enter a licence number or the name.</span>
-        <input type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
+        <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
     </div>
 

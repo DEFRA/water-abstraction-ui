@@ -13,6 +13,7 @@ handlebars.registerHelper('equal', require('handlebars-helper-equal'))
 
 
 
+
 /**
  * A handlebars helper to get a query string for sorting data
  */
@@ -36,14 +37,12 @@ handlebars.registerHelper('sortIcon',  function(context, options) {
 
 });
 
-
-
-// handlebars.registerHelper('sortLink', function () {
-//   var arg = Array.prototype.slice.call(arguments, 0)
-//   arg.pop()
-//   return arg.join('')
-// })
-
+/**
+ * A handlebars helper to add two numbers
+ */
+handlebars.registerHelper('add',  function() {
+  return arguments[0] + arguments[1];
+});
 
 handlebars.registerHelper('concat', function () {
   var arg = Array.prototype.slice.call(arguments, 0)

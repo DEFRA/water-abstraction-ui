@@ -95,7 +95,7 @@ function postUpdatePassword(request, reply) {
   console.log(request.payload)
   var viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
-  var errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+  var errors = validatePassword(request.payload.password, request.payload.confirmPassword);
   console.log(errors)
   if (!errors) {
     IDM.updatePassword(request.auth.credentials.username, request.payload.password).then((res) => {
@@ -201,10 +201,8 @@ function resetPasswordImpl(request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect)
     }).catch((err) => {
-      console.log(err);
-      var viewContext = View.contextDefaults(request)
-      viewContext.pageTitle = 'GOV.UK - Error'
-      return reply.view('water/error', viewContext)
+      //Aways show OK
+      return reply.redirect(redirect)
     })
   } else {
     var viewContext = View.contextDefaults(request)
@@ -265,7 +263,7 @@ async function postResetPasswordChangePassword(request, reply) {
 
   try {
       // Check submitted password
-      const errors = validatePassword(request.payload.password, request.payload['confirm-password']);
+      const errors = validatePassword(request.payload.password, request.payload.confirmPassword);
       if(errors) {
         throw errors;
       }

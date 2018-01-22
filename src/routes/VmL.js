@@ -257,7 +257,7 @@ module.exports = [
     description : 'Start flow to add licences',
     validate : {
       payload : {
-        licence_no : Joi.string().allow('').max(7000)
+        licence_no : Joi.string().allow('').max(9000)
       }
     }
   }},

@@ -1,5 +1,6 @@
 {{> styles}}
 <main id="content">
+
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
@@ -15,7 +16,9 @@
         <nav class="tabs">
       	  <ul>
             <li><span class="active">Licence list</span></li>
+            {{#if showManageFilter}}
       	    <li><a href="/manage_licences">Manage licence access</a></li>
+            {{/if}}
           </ul>
         </nav>
   </div>

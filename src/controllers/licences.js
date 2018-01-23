@@ -110,10 +110,17 @@ async function getLicences(request, reply) {
     viewContext.debug.licenceData = data
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licences'
 
+    viewContext.me=request.auth.credentials
+
     // Calculate whether to display email filter / search form depending on summary
     const userRoles = licenceRoles(summary);
+
     viewContext.licenceCount = licenceCount(summary);
     viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+    viewContext.showManageFilter = userRoles.primary_user;
+    if(userRoles.admin || userRoles.agent || userRoles.user){
+      viewContext.showManageFilter=false
+    }
     viewContext.enableSearch = viewContext.licenceCount  > 5; // @TODO confirm with design team
 
     return reply.view('water/licences', viewContext)

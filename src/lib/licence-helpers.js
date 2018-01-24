@@ -141,8 +141,9 @@ async function licenceConditions(licenceData) {
 
   // Extract conditions from licence data and attach titles from CS
   const conditions = [];
+  
 
-  licenceData.attributes.licenceData.purposes.forEach((purpose) => {
+  licenceData.purposes.forEach((purpose) => {
 
     purpose.conditions.forEach(async (condition) => {
 

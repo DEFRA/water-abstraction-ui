@@ -5,8 +5,6 @@
 const Boom = require('boom');
 const BaseJoi = require('joi');
 
-
-
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
 const Notify = require('../lib/connectors/notify');
@@ -168,17 +166,19 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
     viewContext.crmData = response.data[0];
 
     // Get permit repo data
-    const response2 = await Permit.getLicence(response.data[0].system_internal_id);
+    const {error : permitError, data : permitData} = await Permit.licences.findOne(response.data[0].system_internal_id);
 
-    const data = JSON.parse(response2.body);
+    if(permitError) {
+      throw permitError;
+    }
+
+    const data = JSON.parse(permitData.licence_data_value);
+
     viewContext.licence_id = request.params.licence_id;
-    viewContext.licenceData = data.data;
-    viewContext.debug.licenceData = viewContext.licenceData;
+    viewContext.licenceData = data;
+    viewContext.debug.licenceData = data;
     viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
-
-
-    viewContext.conditions = await licenceConditions(data.data);
-    // console.log(viewContext.conditions);
+    viewContext.conditions = await licenceConditions(data);
 
     return reply.view(view, viewContext)
 

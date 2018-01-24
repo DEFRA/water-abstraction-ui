@@ -6,14 +6,14 @@
       <ol>
         <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.licence_ref }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.id }}</a></li>
         {{>element-header-links}}
       </ol>
     </div>
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
-  <h1 class="heading-medium">Licence serial number {{ licenceData.licence_ref }}</h1>
+  <h1 class="heading-medium">Licence serial number {{ licenceData.id }}</h1>
 
   <p></p>
 
@@ -39,12 +39,12 @@
   </div>
 
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.attributes.licenceData.purposes.0.points)}}
-  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.attributes.licenceData.effectiveTo)}}
-  {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.attributes.licenceData.purposes.0.periodStart licenceData.attributes.licenceData.purposes.0.periodEnd)}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.purposes.0.points)}}
+  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveFrom)}}
+  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.effectiveTo)}}
+  {{>element-licence-row label='Source of supply' answer=licenceData.sourceOfSupply}}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.purposes.0.periodStart licenceData.purposes.0.periodEnd)}}
 
   <div class="data-table">
       <div class="sourceofsupplyq">Abstraction conditions</div>
@@ -54,7 +54,7 @@
       </div>
   </div>
 
-  {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData.attributes.licenceData)}}
+  {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData)}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>

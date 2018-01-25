@@ -127,10 +127,10 @@ handlebars.registerHelper('formatTS', function (dateInput) {
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
-handlebars.registerHelper('formatToDate', function (dateInput) {
-  console.log('formatDate')
-
-  console.log(dateInput)
+handlebars.registerHelper('formatToDate', function (dateInput, defaultValue) {
+  if(dateInput === null) {
+    return defaultValue;
+  }
   var date = moment(dateInput, "MM/DD/YYYY")
   if (!date.isValid()){
     var date = moment(dateInput, "DD/MM/YYYY")
@@ -138,7 +138,7 @@ handlebars.registerHelper('formatToDate', function (dateInput) {
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
-handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
+handlebars.registerHelper('formatPeriod', function (inputStart = '', inputEnd = '') {
   if(inputStart.indexOf('-') != -1){
     var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
     var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
@@ -196,6 +196,11 @@ handlebars.registerHelper('ngrPoint', function (points) {
 handlebars.registerHelper('maxQuantities', function (quantities) {
   return Number(quantities.maxDailyQuantity).toFixed(2) + ' cubic metres per day <br/>' + Number(quantities.maxAnnualQuantity).toFixed(2) + ' cubic metres per year'
 })
+
+handlebars.registerHelper('precision', function(value, dp) {
+  return Number(value).toFixed(dp);
+});
+
 
 handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:'

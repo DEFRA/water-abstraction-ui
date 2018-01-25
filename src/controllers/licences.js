@@ -82,7 +82,7 @@ async function getLicences(request, reply) {
     }
 
     // Lookup licences
-    const { data, err, summary } = await CRM.getLicences(filter, sort);
+    const { data, err, summary } = await CRM.documents.getLicences(filter, sort);
 
     if(err) {
       throw Boom.badImplementation('CRM error', response);
@@ -91,7 +91,7 @@ async function getLicences(request, reply) {
     // Does user have no licences to view?
     if(data.length < 1 && !filter.string && !filter.email) {
       // Does user have outstanding verification codes?
-      const { data : verifications, error } = await CRM.getOutstandingVerifications(entity_id);
+      const { data : verifications, error } = await CRM.verification.findMany({entity_id, date_verified : null});
       if(error) {
         throw error;
       }
@@ -156,7 +156,7 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
   try {
 
     // Get CRM data
-    const response = await CRM.getLicences(filter);
+    const response = await CRM.documents.getLicences(filter);
     if(response.error) {
       throw Boom.badImplementation(`CRM error`, response);
     }
@@ -251,7 +251,7 @@ function postLicence(request, reply) {
       return getLicenceRename(request, reply, {error, name : request.payload.name });
   }
 
-  CRM.getLicences(filter)
+  CRM.documents.getLicences(filter)
     .then((response) => {
 
       if(!response || response.err) {
@@ -266,7 +266,7 @@ function postLicence(request, reply) {
       const { document_id, system_internal_id } = response.data[0];
 
       // Udpate licence name in CRM
-      return CRM.setLicenceName(document_id, value.name);
+      return CRM.documents.setLicenceName(document_id, value.name);
     })
     .then((response) => {
       // Licence updated - redirect to licence view
@@ -307,7 +307,7 @@ async function getAccessList(request, reply, context = {}) {
   //need to ensure that current user is admin...
 
 
-  const licenceAccess = await CRM.getEditableRoles(entity_id,sortField,direction)
+  const licenceAccess = await CRM.entityRoles.getEditableRoles(entity_id,sortField,direction)
   viewContext.licenceAccess=JSON.parse(licenceAccess)
   return reply.view('water/manage_licences', viewContext)
 }
@@ -385,10 +385,10 @@ function postAddAccess(request, reply, context = {}) {
       // Create CRM entity
       //return CRM.createEntity(request.payload.email);
       // Can't rely on POST as duplicates are now allowed
-      return CRM.getOrCreateIndividualEntity(request.payload.email);
+      return CRM.entities.getOrCreateIndividual(request.payload.email);
     }).then(async ()=>{
         console.log('add role')
-        const licenceAccess = await CRM.addColleagueRole(entity_id,request.payload.email)
+        const licenceAccess = await CRM.entityRoles.addColleagueRole(entity_id,request.payload.email)
         return reply.view('water/manage_licences_added_access', viewContext)
     })
 
@@ -412,7 +412,7 @@ async function getRemoveAccess(request, reply, context = {}) {
   const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.email=request.query.email
-  const licenceAccess = await CRM.deleteColleagueRole(entity_id,request.query.entity_role_id)
+  const licenceAccess = await CRM.entitytRoles.deleteColleagueRole(entity_id,request.query.entity_role_id)
   console.log('viewContext ',viewContext)
   viewContext.pageTitle = "Manage access to your licences"
   //get list of roles in same org as current user

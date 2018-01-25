@@ -12,7 +12,9 @@ const CRM = require('./connectors/crm');
  */
 async function auto(request, emailAddress) {
 
-  const entity_id = await CRM.getOrCreateIndividualEntity(emailAddress);
+  const entity_id = await CRM.entities.getOrCreateIndividual(emailAddress);
+
+  console.log('Signing in as ' + entity_id);
 
   // Create session ID
   const session_id = await request.sessionStore.create({

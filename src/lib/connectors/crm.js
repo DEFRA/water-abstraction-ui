@@ -7,317 +7,176 @@ const rp = require('request-promise-native').defaults({
     strictSSL :false
   });
 const moment = require('moment');
+const find = require('lodash/find');
 
-const crmVerification = require('./crm-verification');
+const crmVerification = require('./crm/verification');
+const crmEntities = require('./crm/entities');
+const crmDocuments = require('./crm/documents');
+const crmEntityRoles = require('./crm/entity-roles');
+
 
 /**
- * Bulk update document headers
- * @param {Object} query - find the documents to update
- * @param {Object} set - specifies the fields to update
- * @return {Promise}
- * @example updateDocumentHeaders({query : document_id : ['123', '456']}, {verification_id : 'xyx'})
+ * Gets a list of licences relating to outstanding verification
+ * codes for the user with the individual entity specified
+ * @param {String} entity_id - the individual entity ID
+ * @return {Promise} resolves with array of licence document_header data
  */
-function updateDocumentHeaders(query, set) {
-  var uri = process.env.CRM_URI + '/documentHeader';
-  return rp({
-    uri,
-    method : 'PATCH',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    qs : {
-      filter : JSON.stringify(query)
-    },
-    body : set,
-    json : true
+async function getOutstandingLicenceRequests(entity_id) {
+  // Get outstanding verifications for current user
+  const res = await crmVerification.findMany({
+    entity_id,
+    date_verified : null
   });
-}
-
-
-/**
- * Create entity record
- * @param {String} entity_nm - entity name - the user's email address
- * @param {String} [entity_type] - entity type, individual|company etc.
- * @return {Promise} resolves with user entity record
- */
-function createEntity(entity_nm, entity_type = 'individual') {
-  var uri = process.env.CRM_URI + '/entity';
-  return rp({
-    uri,
-    method : 'POST',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      entity_nm,
-      entity_type
-    },
-    json : true
-  });
-}
-
-/**
- * Add entity role
- * Allows an entity to access a certain company
- * @param {String} entity_id - the individual entity being granted access
- * @param {String} company_entity_id - the company entity ID the individual is being granted access to
- * @param {String} role - the role can be user|agent|admin
- * @param {Boolean} is_primary - whether primary user for company
- * @return {Promise} resolves with role created on success
- */
-function addEntityRole(entity_id, company_entity_id, role, is_primary = false) {
-  var uri = process.env.CRM_URI + '/entity/' + entity_id + '/roles';
-  return rp({
-    uri,
-    method : 'POST',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      company_entity_id,
-      role,
-      is_primary : is_primary ? 1 : 0
-    },
-    json : true
-  });
-}
-
-
-
-/**
- * Get entity record
- * @param {String} user_name - the email address of the current user
- * @return {Promise} resolves with user entity record
- * @example getEntity('mail@example.com').then((response) => { // response.data });
- */
-function getEntity(user_name) {
-  var uri = process.env.CRM_URI + '/entity/' + user_name + '?token=' + process.env.JWT_TOKEN
-  return rp({
-    uri,
-    method : 'GET',
-    json : true
-  });
-}
-
-/**
- * Get entity roles
- * @param {String} entityId - the user's individual entity ID
- * @return {Promise} resolves with found roles
- */
-function getEntityRoles(entityId) {
-  const uri = process.env.CRM_URI + '/entity/' + entityId + '/roles';
-  return rp({
-    uri,
-    method : 'GET',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    json : true
-  });
-}
-
-/**
- * Get a list of licences based on the supplied options
- * @param {Object} filter - criteria to filter licence lisrt
- * @param {String} [filter.entity_id] - the current user's entity ID
- * @param {String} [filter.email] - the email address to search on
- * @param {String} [filter.string] - the search query, can be licence number, user-defined name etc.
- * @param {Object} [sort] - fields to sort on
- * @param {Number} [sort.licenceNumber] - sort on licence number, +1 : asc, -1 : desc
- * @param {Number} [sort.name] - sort on licence name, +1 : asc, -1 : desc
- * @param {Boolean} [roleFilter] - whether to include roll filtering (true) or search raw licence data (false)
- * @return {Promise} resolves with array of licence records
- * @example getLicences({entity_id : 'guid'})
- */
-function getLicences(filter, sort = {}, roleFilter = true) {
-
-  if(roleFilter) {
-    const uri = process.env.CRM_URI + '/documentHeader/filter';
-    return rp({
-      uri,
-      method : 'POST',
-      headers : {
-        Authorization : process.env.JWT_TOKEN
-      },
-      json : true,
-      body : { filter, sort }
-    });
+  if(res.error) {
+    throw res.error;
   }
-  else {
-    const uri = process.env.CRM_URI + '/documentHeader';
 
-    // Format query params
-    const qs = {};
-    if(filter) {
-      qs.filter = JSON.stringify(filter);
-    };
-    if(sort) {
-      qs.sort =  JSON.stringify(sort);
-    }
+  // Get array list of verification IDs
+  const verification_id = res.data.map(row => row.verification_id);
 
-    return rp({
-      uri,
-      method : 'GET',
-      headers : {
-        Authorization : process.env.JWT_TOKEN
-      },
-      json : true,
-      qs
-    });
-  }
-}
-
-
-/**
- * Get a licence by document ID
- * @param {String} documentId - the GUID for the licence document header
- * @return {Promise} resolves with licence if found
- */
-function getLicence(documentId) {
-
-  const uri = process.env.CRM_URI + '/documentHeader/' + documentId;
-  return rp({
-    uri,
-    method : 'GET',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    json : true
+  // Find licences with this ID
+  const {error, data} = await crmDocuments.findMany({
+    verification_id,
+    verified : null
   });
-}
-
-/**
- * Set licence name
- * @param {String} documentId - the CRM document ID identifying the permit
- * @param {String} name - the user-defined document name
- * @return {Promise} resolves when name updated
- */
-function setLicenceName(documentId, name) {
-  const uri = process.env.CRM_URI + '/documentHeader/' + documentId + '/entity/0/name?token=' + process.env.JWT_TOKEN;
-  return rp({
-    uri,
-    method : 'POST',
-    json : true,
-    body : { name }
-  });
-}
-
-
-
-function getLicenceInternalID(licences, document_id) {
-  /**this function gets the internal ID (i.e. the ID of the licence in the permit repository) from the document_id
-  (from the CRM document header record) which can then be used to retrieve the full licence from the repo **/
-  return new Promise((resolve, reject) => {
-    var thisLicence = licences.find(x => x.document_id === document_id)
-    if (thisLicence) {
-      resolve(thisLicence)
-    } else {
-      reject('Licence with ID ' + document_id + ' could not be found.')
-    }
-  })
-}
-
-
-async function getEditableRoles(entity_id,sort,direction) {
-  ///entity/{entity_id}/colleagues
-  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues?sort='+sort+'&direction='+direction+'&token=' + process.env.JWT_TOKEN
-  console.log(uri)
-  const options = {
-        method: `GET`,
-        uri: uri
-      };
-      try {
-        const response = await rp(options);
-        return Promise.resolve(response);
-      }
-      catch (error) {
-        Promise.reject(error);
-      }
-}
-
-async function deleteColleagueRole(entity_id,entity_role_id) {
-  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/'+entity_role_id+'?token=' + process.env.JWT_TOKEN
-  const options = {
-        method: `DELETE`,
-        uri: uri
-      };
-      try {
-        const response = await rp(options);
-        return Promise.resolve(response);
-      }
-      catch (error) {
-        Promise.reject(error);
-      }
-}
-
-async function addColleagueRole(entity_id,email) {
-
-  const uri=process.env.CRM_URI + '/entity/' + entity_id + '/colleagues/?token=' + process.env.JWT_TOKEN
-  var data={email:email}
-  const options = {
-        method: `POST`,
-        uri: uri,
-        json : true,
-        body : data
-      };
-      try {
-        const response = await rp(options);
-        return Promise.resolve(response);
-      }
-      catch (error) {
-        console.log(error)
-        return Promise.reject(error);
-      }
-}
-
-
-/**
- * Gets or creates an individual entity for an individual
- * with the supplied email address
- * @param {String} emailAddress
- * @return {Promise} resolves with entity ID
- */
-async function getOrCreateIndividualEntity(emailAddress) {
-
-  const entity_nm = emailAddress.toLowerCase().trim();
-
-  // Get existing entity
-  // @todo this should check for company entity type
-  const {error, data} = await getEntity(entity_nm);
-
-  // CRM error
   if(error) {
     throw error;
   }
 
-  // Entity was found
-  if(data && data.entity && data.entity.entity_id) {
-    console.log(`Existing CRM entity ${ data.entity.entity_id }`);
-    return data.entity.entity_id;
+  return data;
+}
+
+/**
+ * Creates a new verification for the supplied combination of
+ * individual, company, and a list of document header IDs
+ * @param {String} entityId - the individual entity ID
+ * @param {String} companyEntityId - the company entity ID
+ * @param {Array} documentIds - a list of document IDs to create the verification for
+ * @return {Promise} resolves with {verification_id, verification_code}
+ */
+async function createVerification(entityId, companyEntityId, documentIds) {
+
+  const verificationData = {
+    entity_id : entityId,
+    company_entity_id : companyEntityId,
+    method : 'post'
+  };
+
+  const res = await crmVerification.create(verificationData);
+
+  const {verification_id, verification_code} = res.data;
+
+  const res2 = await crmDocuments.updateMany({document_id : documentIds}, {verification_id});
+
+  return res.data;
+}
+
+
+
+/**
+ * Gets primary company for current user
+ * @TODO assumes on only 1 company per user - may not be the case
+ * @param {String} entityId - the individual entity ID
+ * @return {Promise} resolves with company entity ID found
+ */
+async function getPrimaryCompany(entityId) {
+
+  const res = await crmEntityRoles.setParams({entityId}).findMany({
+    role : 'primary_user'
+  });
+
+  // Find role in list
+  const role = find(res.data, (role) => {
+    return role.company_entity_id;
+  });
+
+  return role ? role.company_entity_id : null;
+
+}
+
+
+
+/**
+ * Gets or creates a company entity for the supplied individual entity ID
+ * where the user is the primary user
+ * @param {String} entityId - the individual entity ID
+ * @param {String} companyName - the name of the company entity
+ * @return {Promise} resolves with company entity ID found/created
+ */
+async function getOrCreateCompanyEntity(entityId, companyName) {
+
+  const companyId = await getPrimaryCompany(entityId);
+
+  if(companyId) {
+    return companyId;
   }
 
-  // Create new entity
-  const res = await createEntity(emailAddress.toLowerCase().trim(), 'individual');
+  // No role found, create new entity
+  const { data } = await crmEntities.create({entity_nm : companyName, entity_type : 'company'});
+
+  // Create entity role
+  const { data : roleData, error : roleError } = await crmEntityRoles.setParams({entityId}).create({
+    company_entity_id : data.entity_id,
+    role : 'primary_user'
+  });
+
+  if(roleError) {
+    throw roleError;
+  }
+
+  return data.entity_id;
+}
+
+
+/**
+ * Verification process
+ * @param {String} entityId - the individual entity ID
+ * @param {String} verificationCode - the code supplied by post
+ * @return {Promise} resolves if verification successful
+ */
+async function verify(entityId, verificationCode) {
+
+  // Get company ID for entity
+  const companyEntityId = await getPrimaryCompany(entityId);
+  if(!companyEntityId) {
+    throw {name : 'NoCompanyError'};
+  }
+
+  // Verify with code
+  const res = await crmVerification.findMany({
+    entity_id : entityId,
+    company_entity_id : companyEntityId,
+    verification_code : verificationCode,
+    date_verified : null,
+    method : 'post'
+  });
   if(res.error) {
     throw res.error;
   }
-  console.log(`Created CRM entity ${ res.data.entity_id }`);
-  return res.data.entity_id;
+  if(res.data.length !== 1) {
+    throw {name : 'VerificationNotFoundError'};
+  }
+  const { verification_id, company_entity_id } = res.data[0];
+
+  // Update document headers
+  const res2 = await crmDocuments.updateMany({verification_id}, {company_entity_id, verified : 1});
+
+  // Update verification record
+  const res3 = await crmVerification.updateOne(verification_id, {date_verified : moment().format()});
+
+  return {error: null, data : {verification_id}};
+
 }
 
+
 module.exports = {
-  getEntity,
-  getEntityRoles,
-  addEntityRole,
-  createEntity,
-  getLicence,
-  getLicences,
-  getLicenceInternalID,
-  setLicenceName,
-  getEditableRoles,
-  deleteColleagueRole,
-  addColleagueRole,
-  ...crmVerification,
-  updateDocumentHeaders,
-  getOrCreateIndividualEntity
+  verification : crmVerification,
+  documents : crmDocuments,
+  entities : crmEntities,
+  entityRoles : crmEntityRoles,
+  getOutstandingLicenceRequests,
+  createVerification,
+  getOrCreateCompanyEntity,
+  verify
+
 }

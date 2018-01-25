@@ -65,7 +65,7 @@ function postSignin(request, reply) {
         }
 
         // OK, sign in user
-        return signIn.auto(request, request.payload.user_id);
+        return signIn.auto(request, request.payload.user_id,getUser.body.user_data);
 
     })
     .then((session) => {

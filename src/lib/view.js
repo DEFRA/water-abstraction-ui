@@ -19,6 +19,9 @@ function viewContextDefaults(request) {
   viewContext.debug.request = request.info
   viewContext.debug.request.path = request.path
   //  viewContext.debug.session = request.yar.get('sessionTimestamp')
+
+  viewContext.user=request.auth.credentials
+
   return viewContext
 }
 

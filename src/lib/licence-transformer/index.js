@@ -6,8 +6,9 @@
  */
 const NALDTransformer = require('./nald-transformer');
 const FORMAT_NALD = 'NALD';
+
 class UnsupportedLicenceFormatError extends Error {
-  
+
 };
 
 class LicenceTransformer {
@@ -15,19 +16,20 @@ class LicenceTransformer {
   /**
    * Constructor
    * @param {Object} data - licence data
-   * @param {String} format - data format
    */
-  constructor(data, format = null) {
-    format = format || this.guessFormat(data);
+  async load(data) {
+    const format = this.guessFormat(data);
 
     switch (format) {
       case FORMAT_NALD:
-        this.transformer = new NALDTransformer(data);
+        this.transformer = new NALDTransformer();
         break;
 
       default:
         throw new UnsupportedLicenceFormatError();
     }
+
+    await this.transformer.load(data);
   }
 
   /**

@@ -3,29 +3,53 @@
  * @module lib/licence-transformer/nald-transformer
  */
 const deepMap = require('deep-map');
+const sortBy = require('lodash/sortBy');
+const find = require('lodash/find');
 const BaseTransformer = require('./base-transformer');
+const LicenceTitleLoader = require('../licence-title-loader');
+const licenceTitleLoader = new LicenceTitleLoader();
+
+const NALDHelpers = require('./nald-helpers');
+
 
 class NALDTransformer extends BaseTransformer {
-  constructor(data) {
-
-    super();
 
 
-    data = deepMap(data, (val) => {
+  /**
+   * Transform string 'null' values to real null
+   * @param {Object} data
+   * @return {Object}
+   */
+  transformNull(data) {
+    return deepMap(data, (val) => {
       // Convert string null to real null
       if(typeof(val) === 'string' && val === 'null') {
         return null;
       }
       return val;
     });
+  }
 
-    // const versionCount = data.versions.length;
 
-    const versions = data.data.versions.map(item => {
+  /**
+   * Load data into the transformer
+   */
+  async load(data) {
+    data = this.transformNull(data);
+
+    // Versions - sorted by issue number
+    const sortedVersions = sortBy(data.data.versions, (version) => {
+      return parseFloat(version.ISSUE_NO);
+    });
+
+    const versions = sortedVersions.map(item => {
       return {
         effectiveTo : item.EFF_END_DATE
       };
     });
+
+    // Group conditions by code, subcode > point
+    const conditions = await this.conditionFormatter(data.data.points);
 
     this.data = {
         licenceNumber : data.LIC_NO,
@@ -39,32 +63,104 @@ class NALDTransformer extends BaseTransformer {
         versionCount : data.data.versions.length,
         versions,
         currentVersion : versions[versions.length-1],
-        points : data.data.points.map(item => {
-
+        points : data.data.points.map(item =>
+          NALDHelpers.formatAbstractionPoint(item.point)
+        ),
+        purposes : data.data.purpose.map(purpose => {
           return {
-            ngr1 : this.formatNGRPoint(item.point.NGR1_SHEET, item.point.NGR1_EAST, item.point.NGR1_NORTH ),
-            ngr2 : this.formatNGRPoint(item.point.NGR2_SHEET, item.point.NGR2_EAST, item.point.NGR2_NORTH ),
-            ngr3 : this.formatNGRPoint(item.point.NGR3_SHEET, item.point.NGR3_EAST, item.point.NGR3_NORTH ),
-            ngr4 : this.formatNGRPoint(item.point.NGR4_SHEET, item.point.NGR4_EAST, item.point.NGR4_NORTH ),
-            localName : item.point.LOCAL_NAME
+            primary : {
+              code : purpose.purpose_primary.CODE,
+              description : purpose.purpose_primary.DESCR
+            },
+            secondary : {
+              code : purpose.purpose_secondary.CODE,
+              description : purpose.purpose_secondary.DESCR
+            },
+            tertiary : {
+              code : purpose.purpose_tertiary.CODE,
+              description : purpose.purpose_tertiary.DESCR
+            },
           }
-        })
+        }),
+        conditions
     };
+
+    console.log(JSON.stringify(this.data, null, 2));
+
+    return this.data;
   }
+
 
   /**
-   * Formats a NGR reference to string format
-   * @param {String} sheet - the sheet string, 2 chars
-   * @param {String} east - the eastings
-   * @param {String} north - the northings
-   * @return {String} - grid reg, eg SP 123 456
+   * Formats conditions in the NALD data into a form that can be used
+   * in the licence conditions screen
+   * @param {Object} points
+   * @return {Array} array of condition types / points / conditions
    */
-  formatNGRPoint(sheet, east, north) {
-    if(!sheet) {
-      return null;
+  async conditionFormatter(points) {
+
+    // Read condition titles from CSV
+    const titleData = await licenceTitleLoader.load();
+
+    /**
+     * Match a condition within the condition array
+     * @param {String} code - the condition code
+     * @param {String} subCode - the sub-condition code
+     * @return {Function} returns a predicate that can be used in lodash/find
+     */
+    const conditionMatcher = (code, subCode) => {
+      return (item) => (code === item.code) && (subCode === item.subCode);
+    };
+
+    /**
+     * Match a point within the condition points array
+     * @param {Object} point
+     * @return {Function} returns a predicate that can be used in lodash/find
+     */
+    const pointMatcher = (point) => {
+      return (item) => Object.values(point).join(',') === Object.values(item.point).join(',');
     }
-    return `${ sheet } ${ east.substr(0, 3)} ${ east.substr(0, 3) }`;
+
+    const conditionsArr = [];
+
+    points.forEach(item => {
+
+      item.abstraction_methods.forEach((method) => {
+        method.licenceConditions.forEach((condition) => {
+
+          const {CODE : code, SUBCODE : subCode} = condition.condition_type;
+          const {TEXT : text, PARAM1 : parameter1, PARAM2 : parameter2} = condition;
+
+          // Condition wrapper
+          let cWrapper = find(conditionsArr, conditionMatcher(code, subCode));
+          if(!cWrapper) {
+            const titles = find(titleData, conditionMatcher(code, subCode));
+            cWrapper = {...titles, code, subCode, points : []};
+            conditionsArr.push(cWrapper);
+          }
+
+          // Points wrapper
+          let point = NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(item.point));
+          let pWrapper = find(cWrapper.points, pointMatcher(point));
+          if(!pWrapper) {
+            pWrapper = { point, conditions : []}
+            cWrapper.points.push(pWrapper);
+          }
+
+          // Add condition
+          pWrapper.conditions.push({
+            parameter1,
+            parameter2,
+            text
+          });
+
+        });
+      });
+    });
+    return conditionsArr;
   }
+
+
 
 }
 

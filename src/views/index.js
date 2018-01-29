@@ -166,6 +166,8 @@ handlebars.registerHelper('formatAddress', function (address) {
 })
 
 handlebars.registerHelper('ngrPoint', function (points) {
+
+
   function formatGridReference(reference) {
     // The length of one of the numbers in the NGR is the length of the whole thing
     // minus the two letters at the start, then divided by two (as there are two numbers)
@@ -176,7 +178,8 @@ handlebars.registerHelper('ngrPoint', function (points) {
   }
 
   var response = ''
-  var point = points[0]
+
+  var point = 'ngr1' in points ? points : points[0];
 
   if (point.ngr4) {
     response = `Within the area formed by the straight lines running between National Grid References `

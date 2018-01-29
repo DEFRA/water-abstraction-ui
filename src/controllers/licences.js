@@ -175,11 +175,12 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
 
     const data = JSON.parse(permitData.licence_data_value);
 
-    // require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
+    require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
 
 
-    const transformer = new LicenceTransformer(data);
-    // console.log(transformer.export());
+    const transformer = new LicenceTransformer();
+    await transformer.load(data);
+    console.log('EXPORT', transformer.export());
     // console.log(transformer);
 
 
@@ -189,6 +190,8 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
     viewContext.debug.licenceData = data;
     viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
     // viewContext.conditions = await licenceConditions(data);
+
+    console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
     return reply.view(view, viewContext)
 

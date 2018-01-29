@@ -85,8 +85,6 @@ class NALDTransformer extends BaseTransformer {
         conditions
     };
 
-    console.log(JSON.stringify(this.data, null, 2));
-
     return this.data;
   }
 

@@ -6,7 +6,7 @@
       <ol>
         <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.id }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.licenceNumber }}</a></li>
         {{>element-header-links}}
       </ol>
     </div>
@@ -31,7 +31,7 @@
 
 
 
-  <h1 class="heading-medium">Licence serial number {{ licenceData.id }}</h1>
+  <h1 class="heading-medium">Licence serial number {{ licenceData.licenceNumber }}</h1>
 
   <p></p>
 
@@ -64,44 +64,12 @@
 
   </form>
 
-
-
-
-
-
-  <!-- User-defined licence name row -->
-<!--
-  <div class="data-table">
-    <label for="name" class="sourceofsupplyq">Licence name</label>
-    <div class="licenceAnswer">
-
-
-      <form name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
-
-        <div class="form-group form-group-error">
-          <label><span class="error-message">Your licence name cannot include a profanity</span></label>
-          <input type="text" class="form-control form-control-error" id="name" name="name" value="{{ crmData.document_custom_name }}" />
-
-
-        </div>
-        <button type="submit" class="button">Save</button>
-
-      </form>
-
-
-        <p style="margin-bottom: 0; margin-top: 1em;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
-
-
-    </div>
-  </div> -->
-
-
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.purposes.0.points)}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.points) }}
   {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveFrom)}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.effectiveTo)}}
+  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.currentVersion.effectiveTo 'No expiry' )}}
   {{>element-licence-row label='Source of supply' answer=licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.purposes.0.periodStart licenceData.purposes.0.periodEnd)}}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.periodStart licenceData.periodEnd) }}
   {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData)}}
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>

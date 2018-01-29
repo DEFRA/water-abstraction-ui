@@ -108,7 +108,7 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   console.log('formatDate')
 
   console.log(dateInput)
-  var date = moment(dateInput, "MM/DD/YYYY")
+  var date = moment(dateInput, "DD/MM/YYYY")
   console.log(date)
   var isFutureDate = moment().isBefore(date);
   if(isFutureDate){
@@ -166,6 +166,10 @@ handlebars.registerHelper('formatAddress', function (address) {
 })
 
 handlebars.registerHelper('ngrPoint', function (points) {
+
+  if(typeof(points) === 'undefined') {
+    return null;
+  }
 
 
   function formatGridReference(reference) {

@@ -45,68 +45,37 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
-    const points = this.pointsFormatter(data.data.purposes);
-
-
-
-    // Group conditions by code, subcode > point
-    const conditions = await this.conditionFormatter(data.data.purposes);
-
-
-    const abstractionPeriods = this.periodsFormatter(data.data.purposes);
-
-
-
     this.data = {
         licenceNumber : data.LIC_NO,
         licenceHolderName : licenceHolderParty.NAME,
         effectiveDate : data.ORIG_EFF_DATE,
         expiryDate: data.EXPIRY_DATE,
-        // periodStart : data.PERIOD_START,
-        // periodEnd : data.PERIOD_END,
-        // maxAnnualQuantity : data.AUTH_ANN_QTY,
-        // sourceOfSupply : data.ABS_POINT_LOCAL_NAME,
-        // maxDailyQuantity : 0,
         versionCount : data.data.versions.length,
-        // versions,
-        // currentVersion,
-        conditions,
-        points,
-
-
-        abstractionPeriods,
-
-        purposes : data.data.purposes.map(purpose => {
-          return {
-            annualQty : purpose.ANNUAL_QTY,
-            dailyQty : purpose.DAILY_QTY
-          }
-        })
-
-        // purposes : data.data.purposes.map(purpose => {
-        //
-        //   return {
-        //     primary : {
-        //       code : purpose.purpose.purpose_primary.CODE,
-        //       description : purpose.purpose.purpose_primary.DESCR
-        //     },
-        //     secondary : {
-        //       code : purpose.purpose.purpose_secondary.CODE,
-        //       description : purpose.purpose.purpose_secondary.DESCR
-        //     },
-        //     tertiary : {
-        //       code : purpose.purpose.purpose_tertiary.CODE,
-        //       description : purpose.purpose.purpose_tertiary.DESCR
-        //     },
-        //     periodStart : purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH,
-        //     periodEnd : purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH
-        //   };
-        //
-        // })
+        conditions : await this.conditionFormatter(data.data.purposes),
+        points : this.pointsFormatter(data.data.purposes),
+        abstractionPeriods : this.periodsFormatter(data.data.purposes),
+        quantities : this.maxQuantitiesFormatter(data.data.purposes)
     };
 
     return this.data;
   }
+
+  /**
+   * Max quantities formatter
+   * @param {Array} purposes
+   * @return {Array} array of quantities
+   */
+  maxQuantitiesFormatter(purposes) {
+    const quantities = purposes.map(purpose => {
+      return {
+        purposeTertiary : purpose.purpose.purpose_tertiary.DESCR,
+        annualQty : purpose.ANNUAL_QTY,
+        dailyQty : purpose.DAILY_QTY
+      }
+    });
+    return uniqBy(quantities, item => Object.values(item).join(','));
+  }
+
 
   /**
    * Create a unique list of abstraction periods
@@ -138,7 +107,7 @@ class NALDTransformer extends BaseTransformer {
         points.push(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
       });
     });
-    return points;
+    return uniqBy(points, item => Object.values(item).join(','));
   }
 
 

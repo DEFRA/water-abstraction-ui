@@ -48,7 +48,8 @@ class NALDTransformer extends BaseTransformer {
     });
 
     // Group conditions by code, subcode > point
-    const conditions = await this.conditionFormatter(data.data.points);
+    const conditions = await this.conditionFormatter(data.data.purposes);
+    //const conditions = [];
 
     this.data = {
         licenceNumber : data.LIC_NO,
@@ -62,6 +63,28 @@ class NALDTransformer extends BaseTransformer {
         versionCount : data.data.versions.length,
         versions,
         currentVersion : versions[versions.length-1],
+        conditions,
+        purposes : data.data.purposes.map(purpose => {
+
+          /*
+          return {
+            primary : {
+              code : purpose.purpose_primary.CODE,
+              description : purpose.purpose_primary.DESCR
+            },
+            secondary : {
+              code : purpose.purpose_secondary.CODE,
+              description : purpose.purpose_secondary.DESCR
+            },
+            tertiary : {
+              code : purpose.purpose_tertiary.CODE,
+              description : purpose.purpose_tertiary.DESCR
+            },
+          }
+          */
+        }),
+
+        /*
         points : data.data.points.map(item => {
           const point = NALDHelpers.formatAbstractionPoint(item.point);
           return {
@@ -92,7 +115,9 @@ class NALDTransformer extends BaseTransformer {
             },
           }
         }),
+
         conditions
+        */
     };
 
     return this.data;
@@ -102,10 +127,10 @@ class NALDTransformer extends BaseTransformer {
   /**
    * Formats conditions in the NALD data into a form that can be used
    * in the licence conditions screen
-   * @param {Object} points
+   * @param {Object} purposes - purposes array from NALD data
    * @return {Array} array of condition types / points / conditions
    */
-  async conditionFormatter(points) {
+  async conditionFormatter(purposes) {
 
     // Read condition titles from CSV
     const titleData = await licenceTitleLoader.load();
@@ -125,16 +150,19 @@ class NALDTransformer extends BaseTransformer {
      * @param {Object} point
      * @return {Function} returns a predicate that can be used in lodash/find
      */
-    const pointMatcher = (point) => {
-      return (item) => Object.values(point).join(',') === Object.values(item.point).join(',');
+    const pointMatcher = (points) => {
+      return (item) => item.points.join(',') === points.join(',');
     }
 
     const conditionsArr = [];
 
-    points.forEach(item => {
+    purposes.forEach((purpose) => {
 
-      item.abstraction_methods.forEach((method) => {
-        method.licenceConditions.forEach((condition) => {
+        const points = purpose.purposePoints.map((purposePoint) => {
+          return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
+        });
+
+        purpose.licenceConditions.forEach((condition) => {
 
           const {CODE : code, SUBCODE : subCode} = condition.condition_type;
           const {TEXT : text, PARAM1 : parameter1, PARAM2 : parameter2} = condition;
@@ -143,17 +171,19 @@ class NALDTransformer extends BaseTransformer {
           let cWrapper = find(conditionsArr, conditionMatcher(code, subCode));
           if(!cWrapper) {
             const titles = find(titleData, conditionMatcher(code, subCode));
-            cWrapper = {...titles, code, subCode, points : []};
+            cWrapper = {...titles, code, subCode, points : [],
+            purpose : purpose.purpose.purpose_tertiary.DESCR};
             conditionsArr.push(cWrapper);
           }
 
           // Points wrapper
-          let point = NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(item.point));
-          let pWrapper = find(cWrapper.points, pointMatcher(point));
+          let pWrapper = find(cWrapper.points, pointMatcher(points));
           if(!pWrapper) {
-            pWrapper = { point, conditions : []}
+            pWrapper = { points, conditions : []}
             cWrapper.points.push(pWrapper);
           }
+
+
 
           // Add condition
           pWrapper.conditions.push({
@@ -163,8 +193,10 @@ class NALDTransformer extends BaseTransformer {
           });
 
         });
-      });
-    });
+
+  });
+
+
     return conditionsArr;
   }
 

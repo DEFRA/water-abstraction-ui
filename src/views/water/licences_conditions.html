@@ -56,7 +56,9 @@
           <h3 class="data-row data-row--heading">
             <span class="data-row__param">Abstraction point</span>
             <span class="data-row__value">
-              {{ this.point }}
+              {{#each this.points }}
+              {{ this }}<br />
+              {{/each}}
             </span>
           </h3>
           {{#each this.conditions }}
@@ -68,7 +70,7 @@
              Purpose
               </div>
               <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-purpose">
-                {{ ../../../licenceData.purposes.0.tertiary.description }}
+                {{ ../../purpose }}
               </div>
             </div>
 
@@ -107,8 +109,10 @@
 
           </div>
           {{/each}}
+          <br />
         {{/each}}
       </div>
+      <br />
     </div>
     <br />
   {{/each}}

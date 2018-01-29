@@ -8,9 +8,7 @@ const find = require('lodash/find');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
-
 const NALDHelpers = require('./nald-helpers');
-
 
 class NALDTransformer extends BaseTransformer {
 
@@ -33,6 +31,7 @@ class NALDTransformer extends BaseTransformer {
 
   /**
    * Load data into the transformer
+   * @param {Object} data - data loaded from NALD
    */
   async load(data) {
     data = this.transformNull(data);

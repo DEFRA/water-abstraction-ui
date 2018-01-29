@@ -65,12 +65,43 @@
   </form>
 
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.points) }}
-  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveFrom)}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.currentVersion.effectiveTo 'No expiry' )}}
-  {{>element-licence-row label='Source of supply' answer=licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.periodStart licenceData.periodEnd) }}
-  {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData)}}
+
+
+  {{#each licenceData.points }}
+  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint this) }}
+  {{/each}}
+
+
+  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveDate )}}
+  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.expiryDate 'No expiry' )}}
+
+  {{#each licenceData.points }}
+  {{>element-licence-row label='Source of supply' answer=this.name}}
+  {{/each}}
+
+  {{#each licenceData.abstractionPeriods }}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod this.periodStart this.periodEnd) }}
+  {{/each}}
+
+
+  <div class="data-table">
+      <div class="sourceofsupplyq">Abstraction conditions</div>
+      <div class="licenceAnswer">
+        <a href="/licences/{{ licence_id }}/conditions">Read all abstraction conditions</a>
+        <br />
+      </div>
+  </div>
+
+  {{#each licenceData.purposes }}
+  <div class="data-table">
+      <div class="sourceofsupplyq">Maximum quantities before conditions</div>
+      <div class="licenceAnswer">
+        {{ precision this.dailyQty 2 }} cubic metres per day<br />
+        {{ precision this.annualQty 2 }} cubic metres per year
+      </div>
+  </div>
+  {{/each}}
+
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>

@@ -3,8 +3,7 @@
  * @module lib/licence-transformer/nald-transformer
  */
 const deepMap = require('deep-map');
-const sortBy = require('lodash/sortBy');
-const find = require('lodash/find');
+const {sortBy, find, uniqBy} = require('lodash');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
@@ -40,87 +39,106 @@ class NALDTransformer extends BaseTransformer {
     const sortedVersions = sortBy(data.data.versions, (version) => {
       return parseFloat(version.ISSUE_NO);
     });
+    const currentVersion = sortedVersions[sortedVersions.length-1];
 
-    const versions = sortedVersions.map(item => {
-      return {
-        effectiveTo : item.EFF_END_DATE
-      };
+    const licenceHolderParty = find(currentVersion.parties, (party) => {
+      return party.ID === currentVersion.ACON_APAR_ID;
     });
+
+    const points = this.pointsFormatter(data.data.purposes);
+
+
 
     // Group conditions by code, subcode > point
     const conditions = await this.conditionFormatter(data.data.purposes);
-    //const conditions = [];
+
+
+    const abstractionPeriods = this.periodsFormatter(data.data.purposes);
+
+
 
     this.data = {
         licenceNumber : data.LIC_NO,
-        licenceHolderName : data.LIC_HOLDERS_NAME,
-        effectiveFrom : data.ORIG_EFF_DATE,
-        periodStart : data.PERIOD_START,
-        periodEnd : data.PERIOD_END,
-        maxAnnualQuantity : data.AUTH_ANN_QTY,
-        sourceOfSupply : data.ABS_POINT_LOCAL_NAME,
-        maxDailyQuantity : 0,
+        licenceHolderName : licenceHolderParty.NAME,
+        effectiveDate : data.ORIG_EFF_DATE,
+        expiryDate: data.EXPIRY_DATE,
+        // periodStart : data.PERIOD_START,
+        // periodEnd : data.PERIOD_END,
+        // maxAnnualQuantity : data.AUTH_ANN_QTY,
+        // sourceOfSupply : data.ABS_POINT_LOCAL_NAME,
+        // maxDailyQuantity : 0,
         versionCount : data.data.versions.length,
-        versions,
-        currentVersion : versions[versions.length-1],
+        // versions,
+        // currentVersion,
         conditions,
+        points,
+
+
+        abstractionPeriods,
+
         purposes : data.data.purposes.map(purpose => {
-
-          /*
           return {
-            primary : {
-              code : purpose.purpose_primary.CODE,
-              description : purpose.purpose_primary.DESCR
-            },
-            secondary : {
-              code : purpose.purpose_secondary.CODE,
-              description : purpose.purpose_secondary.DESCR
-            },
-            tertiary : {
-              code : purpose.purpose_tertiary.CODE,
-              description : purpose.purpose_tertiary.DESCR
-            },
+            annualQty : purpose.ANNUAL_QTY,
+            dailyQty : purpose.DAILY_QTY
           }
-          */
-        }),
+        })
 
-        /*
-        points : data.data.points.map(item => {
-          const point = NALDHelpers.formatAbstractionPoint(item.point);
-          return {
-            ...point,
-            abstractionMethods : item.abstraction_methods.map((method) => {
-              return {
-                meansOfAbstraction : {
-                  code : method.means_of_abstraction.CODE,
-                  description : method.means_of_abstraction.DESCR
-                }
-              }
-            })
-          }
-        }),
-        purposes : data.data.purpose.map(purpose => {
-          return {
-            primary : {
-              code : purpose.purpose_primary.CODE,
-              description : purpose.purpose_primary.DESCR
-            },
-            secondary : {
-              code : purpose.purpose_secondary.CODE,
-              description : purpose.purpose_secondary.DESCR
-            },
-            tertiary : {
-              code : purpose.purpose_tertiary.CODE,
-              description : purpose.purpose_tertiary.DESCR
-            },
-          }
-        }),
-
-        conditions
-        */
+        // purposes : data.data.purposes.map(purpose => {
+        //
+        //   return {
+        //     primary : {
+        //       code : purpose.purpose.purpose_primary.CODE,
+        //       description : purpose.purpose.purpose_primary.DESCR
+        //     },
+        //     secondary : {
+        //       code : purpose.purpose.purpose_secondary.CODE,
+        //       description : purpose.purpose.purpose_secondary.DESCR
+        //     },
+        //     tertiary : {
+        //       code : purpose.purpose.purpose_tertiary.CODE,
+        //       description : purpose.purpose.purpose_tertiary.DESCR
+        //     },
+        //     periodStart : purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH,
+        //     periodEnd : purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH
+        //   };
+        //
+        // })
     };
 
     return this.data;
+  }
+
+  /**
+   * Create a unique list of abstraction periods
+   * @param {Array} purposes
+   * @return {Array} array of periods
+   */
+  periodsFormatter(purposes) {
+    const periods = purposes.map((purpose) => {
+      return {
+        purpose : purpose.purpose.purpose_tertiary.DESCR,
+        periodStart : purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH,
+        periodEnd : purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH
+      };
+    });
+
+    return uniqBy(periods, item => Object.values(item).join(','));
+  }
+
+
+  /**
+   * Format purposes to provide an array of points
+   * @param {Array} purposes
+   * @return {Array} array of points
+   */
+  pointsFormatter(purposes) {
+    const points = [];
+    purposes.forEach((purpose) => {
+      purpose.purposePoints.forEach((purposePoint) => {
+        points.push(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
+      });
+    });
+    return points;
   }
 
 
@@ -182,8 +200,6 @@ class NALDTransformer extends BaseTransformer {
             pWrapper = { points, conditions : []}
             cWrapper.points.push(pWrapper);
           }
-
-
 
           // Add condition
           pWrapper.conditions.push({

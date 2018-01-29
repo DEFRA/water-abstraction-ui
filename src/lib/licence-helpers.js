@@ -141,7 +141,7 @@ async function licenceConditions(licenceData) {
 
   // Extract conditions from licence data and attach titles from CS
   const conditions = [];
-  
+
 
   licenceData.purposes.forEach((purpose) => {
 
@@ -190,7 +190,7 @@ function extractLicenceNumbers(str) {
   // Return unique values
   // @see {@link https://stackoverflow.com/questions/1960473/get-all-unique-values-in-an-array-remove-duplicates}
   return str
-    .split(/[^a-z0-9\/]+/ig)
+    .split(/[ \n\r,\t;]+/ig)
     .filter(s => s)
     .filter((v, i, a) => a.indexOf(v) === i);
 }

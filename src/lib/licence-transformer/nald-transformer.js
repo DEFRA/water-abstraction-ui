@@ -62,9 +62,20 @@ class NALDTransformer extends BaseTransformer {
         versionCount : data.data.versions.length,
         versions,
         currentVersion : versions[versions.length-1],
-        points : data.data.points.map(item =>
-          NALDHelpers.formatAbstractionPoint(item.point)
-        ),
+        points : data.data.points.map(item => {
+          const point = NALDHelpers.formatAbstractionPoint(item.point);
+          return {
+            ...point,
+            abstractionMethods : item.abstraction_methods.map((method) => {
+              return {
+                meansOfAbstraction : {
+                  code : method.means_of_abstraction.CODE,
+                  description : method.means_of_abstraction.DESCR
+                }
+              }
+            })
+          }
+        }),
         purposes : data.data.purpose.map(purpose => {
           return {
             primary : {

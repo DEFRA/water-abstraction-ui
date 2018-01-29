@@ -9,7 +9,7 @@
       <ol >
         <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{licence_id}}">Licence number: {{ licenceData.id }}</a></li>
+        <li><a href="/licences/{{licence_id}}">Licence number: {{ licenceData.licenceNumber }}</a></li>
         {{>element-header-links}}
       </ol>
     </div>
@@ -23,7 +23,7 @@
     <div class="column-two-thirds">
       <div class="page-header">
         {{>element-heading-large content='Your water abstraction licence'}}
-        <p>Licence number: {{ licenceData.id }}</p>
+        <p>Licence number: {{ licenceData.licenceNumber }}</p>
       </div>
     </div>
   </div>
@@ -32,9 +32,9 @@
       <div class="js-hidden" data-module="accordion-with-descriptions">
         <div class="subsection-wrapper">
           {{>element-accordion-item accordion_title='Source of supply' accordion_content=licenceData.sourceOfSupply el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(ngrPoint licenceData.purposes.0.points) el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.purposes.0.description el_guid=(guid)}}
-          {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.purposes.0.points.0.meansOfAbstraction el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Point of abstraction' accordion_content=(ngrPoint licenceData.points) el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Purpose of abstraction' accordion_content=licenceData.purposes.0.tertiary.description el_guid=(guid)}}
+          {{>element-accordion-item accordion_title='Means of abstraction' accordion_content=licenceData.points.0.abstractionMethods.0.meansOfAbstraction.description el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Means of measurement' accordion_content=licenceData.purposes.0.meansOfMeasurement el_guid=(guid)}}
           {{>element-accordion-item accordion_title='Maximum quantities before conditions' accordion_content=(maxQuantities licenceData) el_guid=(guid)}}
         </div>

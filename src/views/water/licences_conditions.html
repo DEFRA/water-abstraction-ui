@@ -6,7 +6,7 @@
       <ol >
         <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.id }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
         {{>element-header-links}}
       </ol>
     </div>
@@ -20,7 +20,7 @@
             {{#if crmData.document_custom_name }}
             {{ crmData.document_custom_name }}
             {{else}}
-            {{ licenceData.licence_ref }}
+            {{ licenceData.licenceNumber }}
             {{/if}}
         </h1>
 
@@ -37,7 +37,7 @@
       </div>
   </div>
 
-  {{#equal conditions.length 0}}
+  {{#equal licenceData.conditions.length 0}}
   <p>
   Sorry, we don’t hold any information about your conditions on our system yet.
   </p><p>
@@ -46,72 +46,91 @@
   {{/equal}}
 
 
-  {{#each conditions }}
+
+  {{#each licenceData.conditions }}
     <div class="grid-row">
       <div class="column-full">
-        <h2 class="heading-medium">{{ this.titles.displayTitle}}</h2>
-        <h3 class="data-row data-row--heading">
-          <span class="data-row__param">Abstraction point</span>
-          <span class="data-row__value">
-            {{#each this.points}}
-            {{ this }}<br />
-            {{/each}}
-          </span>
-        </h3>
+        <h2 class="heading-medium">{{ this.displayTitle}}</h2>
 
-        {{#each this.conditions }}
-        <div class="data-row-group">
-          <h4 class="sr-only">Condition {{add @index 1 }}</h4>
+        {{#each this.points}}
+          <h3 class="data-row data-row--heading">
+            <span class="data-row__param">Abstraction point</span>
+            <span class="data-row__value">
 
-          <div class="data-row data-row--section">
-            <div class="data-row__param" id="label-{{@../index}}-{{@index}}-purpose">
-           Purpose
+              {{#greaterThan this.points.length 1 }}
+              <details>
+               <summary><span class="summary">{{ this.points.length }} points</span></summary>
+               <div>
+              {{/greaterThan}}
+
+              {{#each this.points }}
+              {{ this }}<br />
+              {{/each}}
+
+              {{#greaterThan this.points.length 3 }}
+              </div>
+              </details>
+              {{/greaterThan}}
+
+            </span>
+          </h3>
+          {{#each this.conditions }}
+          <div class="data-row-group">
+            <h4 class="sr-only">Condition {{add @index 1 }}</h4>
+
+            <div class="data-row data-row--section">
+              <div class="data-row__param" id="label-{{@../index}}-{{@index}}-purpose">
+             Purpose
+              </div>
+              <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-purpose">
+                {{ ../../purpose }}
+              </div>
             </div>
-            <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-purpose">
-            {{ this.purpose.description }}
+
+            {{#if this.parameter1 }}
+            <div class="data-row">
+              <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param1">
+              {{ ../../parameter1Label }}
+              </div>
+              <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param1">
+              {{ this.parameter1 }}
+              </div>
             </div>
+            {{/if}}
+
+            {{#if this.parameter2 }}
+            <div class="data-row">
+              <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param2">
+              {{ ../../parameter2Label }}
+              </div>
+              <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param2">
+              {{ this.parameter2 }}
+              </div>
+            </div>
+            {{/if}}
+
+            {{#if this.text }}
+            <div class="data-row">
+              <div class="data-row__param" id="label-{{@../index}}-{{@index}}-info">
+              Other information
+              </div>
+              <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-info">
+              {{ this.text }}
+              </div>
+            </div>
+            {{/if}}
+
           </div>
-
-          {{#if this.parameter1 }}
-          <div class="data-row">
-            <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param1">
-            {{ ../titles.parameter1Label }}
-            </div>
-            <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param1">
-            {{ this.parameter1 }}
-            </div>
-          </div>
-          {{/if}}
-
-          {{#if this.parameter2 }}
-          <div class="data-row">
-            <div class="data-row__param" id="label-{{@../index}}-{{@index}}-param2">
-            {{ ../titles.parameter2Label }}
-            </div>
-            <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-param2">
-            {{ this.parameter2 }}
-            </div>
-          </div>
-          {{/if}}
-
-          {{#if this.text }}
-          <div class="data-row">
-            <div class="data-row__param" id="label-{{@../index}}-{{@index}}-info">
-            Other information
-            </div>
-            <div class="data-row__value" aria-labelledby="label-{{@../index}}-{{@index}}-info">
-            {{ this.text }}
-            </div>
-          </div>
-          {{/if}}
-
-        </div>
+          {{/each}}
+          <br />
         {{/each}}
       </div>
+      <br />
     </div>
-
     <br />
-    {{/each}}
+  {{/each}}
+
+
 
 </main>
 {{> footerjs}}

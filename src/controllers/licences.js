@@ -11,6 +11,7 @@ const Notify = require('../lib/connectors/notify');
 const View = require('../lib/view');
 const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
+const LicenceTransformer = require('../lib/licence-transformer/');
 
 
 const {licenceRoles, licenceCount, licenceConditions} = require('../lib/licence-helpers');
@@ -174,11 +175,19 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
 
     const data = JSON.parse(permitData.licence_data_value);
 
+    require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
+
+
+    const transformer = new LicenceTransformer();
+    await transformer.load(data);
+
     viewContext.licence_id = request.params.licence_id;
-    viewContext.licenceData = data;
+    viewContext.licenceData = transformer.export();
     viewContext.debug.licenceData = data;
     viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
-    viewContext.conditions = await licenceConditions(data);
+    // viewContext.conditions = await licenceConditions(data);
+
+    console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
     return reply.view(view, viewContext)
 

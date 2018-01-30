@@ -12,6 +12,14 @@ handlebars.registerHelper('equal', require('handlebars-helper-equal'))
 
 
 
+handlebars.registerHelper('greaterThan', function(v1, v2, options) {
+  if(v1 > v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+
 
 
 /**
@@ -108,7 +116,7 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   console.log('formatDate')
 
   console.log(dateInput)
-  var date = moment(dateInput, "MM/DD/YYYY")
+  var date = moment(dateInput, "DD/MM/YYYY")
   console.log(date)
   var isFutureDate = moment().isBefore(date);
   if(isFutureDate){
@@ -127,10 +135,10 @@ handlebars.registerHelper('formatTS', function (dateInput) {
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
-handlebars.registerHelper('formatToDate', function (dateInput) {
-  console.log('formatDate')
-
-  console.log(dateInput)
+handlebars.registerHelper('formatToDate', function (dateInput, defaultValue) {
+  if(dateInput === null) {
+    return defaultValue;
+  }
   var date = moment(dateInput, "MM/DD/YYYY")
   if (!date.isValid()){
     var date = moment(dateInput, "DD/MM/YYYY")
@@ -138,7 +146,7 @@ handlebars.registerHelper('formatToDate', function (dateInput) {
   return date.isValid() ? date.format("D MMMM YYYY") : dateInput
 })
 
-handlebars.registerHelper('formatPeriod', function (inputStart, inputEnd) {
+handlebars.registerHelper('formatPeriod', function (inputStart = '', inputEnd = '') {
   if(inputStart.indexOf('-') != -1){
     var tmp_inputStart=inputStart.split('-')[0]+'/'+inputStart.split('-')[1]+'/2000'
     var tmp_inputEnd=inputEnd.split('-')[0]+'/'+inputEnd.split('-')[1]+'/2000'
@@ -166,6 +174,12 @@ handlebars.registerHelper('formatAddress', function (address) {
 })
 
 handlebars.registerHelper('ngrPoint', function (points) {
+
+  if(typeof(points) === 'undefined') {
+    return null;
+  }
+
+
   function formatGridReference(reference) {
     // The length of one of the numbers in the NGR is the length of the whole thing
     // minus the two letters at the start, then divided by two (as there are two numbers)
@@ -176,7 +190,8 @@ handlebars.registerHelper('ngrPoint', function (points) {
   }
 
   var response = ''
-  var point = points[0]
+
+  var point = 'ngr1' in points ? points : points[0];
 
   if (point.ngr4) {
     response = `Within the area formed by the straight lines running between National Grid References `
@@ -196,6 +211,11 @@ handlebars.registerHelper('ngrPoint', function (points) {
 handlebars.registerHelper('maxQuantities', function (quantities) {
   return Number(quantities.maxDailyQuantity).toFixed(2) + ' cubic metres per day <br/>' + Number(quantities.maxAnnualQuantity).toFixed(2) + ' cubic metres per year'
 })
+
+handlebars.registerHelper('precision', function(value, dp) {
+  return Number(value).toFixed(dp);
+});
+
 
 handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:'

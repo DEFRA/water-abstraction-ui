@@ -89,27 +89,42 @@ function validatePassword(password, confirmPassword) {
   return null;
 }
 
+
+
+/**
+ * Reset password form handler for signed-in user
+ * @todo consider Joi for password validation 
+ * @param {String} request.payload.password - new password
+ * @param {String} request.payload.confirmPassword - password again
+ */
 function postUpdatePassword(request, reply) {
-  console.log('*****postUpdatePassword*****')
-  console.log('request.payload')
-  console.log(request.payload)
-  var viewContext = View.contextDefaults(request)
+  const {username} = request.auth.credentials;
+  const {password, confirmPassword} = request.payload;
+
+  const viewContext = View.contextDefaults(request)
   viewContext.pageTitle = 'GOV.UK - change your password'
-  var errors = validatePassword(request.payload.password, request.payload.confirmPassword);
-  console.log(errors)
-  if (!errors) {
-    IDM.updatePassword(request.auth.credentials.username, request.payload.password).then((res) => {
-      console.log('password updated')
-      return reply.redirect('password_updated')
-    }).catch(() => {
-      return reply.view('water/update_password', viewContext)
-    })
-  } else {
-    viewContext.errors = errors
-    viewContext.debug.errors = errors
-    return reply.view('water/update_password', viewContext)
+
+  try {
+    const errors = validatePassword(password, confirmPassword);
+    if(errors) {
+      throw errors;
+    }
+
+    const {error, data} = IDM.updatePassword(username, password);
+    if(error) {
+      throw error;
+    }
+
+    return reply.redirect('password_updated');
+  }
+  catch(error) {
+    viewContext.errors = error
+    viewContext.debug.errors = error
+    return reply.view('water/update_password', viewContext);
   }
 }
+
+
 
 function getResetPassword(request, reply) {
   var viewContext = View.contextDefaults(request)

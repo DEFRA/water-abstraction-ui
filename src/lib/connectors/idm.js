@@ -3,6 +3,13 @@ const rp = require('request-promise-native').defaults({
     proxy:null,
     strictSSL :false
   });
+const { APIClient } = require('hapi-pg-rest-api');
+const client = new APIClient(rp, {
+  endpoint : process.env.IDM_URI + '/user',
+  headers : {
+    Authorization : process.env.JWT_TOKEN
+  }
+});
 
 
 
@@ -12,17 +19,10 @@ const rp = require('request-promise-native').defaults({
  * @return {Promise} resolves with user record if found or null otherwise
  */
 async function getUserByResetGuid(reset_guid) {
-  const data = await rp({
-    uri : process.env.IDM_URI + '/user',
-    method : 'GET',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    qs : {
-      filter : JSON.stringify({reset_guid})
-    }
-  });
+  const {error, data} = await client.findMany({reset_guid});
+  if(error) {
+    throw error;
+  }
   return data.length === 1 ? data[0] : null;
 }
 
@@ -31,28 +31,17 @@ async function getUserByResetGuid(reset_guid) {
  * Create user account in registration process
  * No password is supplied so a random GUID is used as a
  * temporary password, and the user is flagged for password reset
- * @param {String} email - the user email address
+ * @param {String} emailAddress - the user email address
  * @return {Promise} - resolves if user account created
  */
-function createUserWithoutPassword(email) {
-
-    // Generate password
-    const tempPassword = Helpers.createGUID();
-
-    return rp({
-      uri : process.env.IDM_URI + '/user',
-      method : 'POST',
-      json : true,
-      headers : {
-        Authorization : process.env.JWT_TOKEN
-      },
-      body : {
-        username : email,
-        password : tempPassword,
-        admin : 0,
-        user_data : '{}',
-        reset_required : 1
-      }
+function createUserWithoutPassword(emailAddress) {
+    return client.create({
+          user_name : emailAddress,
+          password : Helpers.createGUID(),
+          reset_guid : Helpers.createGUID(),
+          admin : 0,
+          user_data : '{}',
+          reset_required : 1
     });
 }
 
@@ -62,17 +51,7 @@ function createUserWithoutPassword(email) {
  * @return {Promise} resolves with user if found
  */
  function getUser(user_id) {
-   return rp({
-     uri : process.env.IDM_URI + '/user/' + user_id,
-     method : 'GET',
-     json : true,
-     headers : {
-       Authorization : process.env.JWT_TOKEN
-     },
-     qs : {
-       user_id
-     }
-   });
+   return client.findOne(user_id);
  }
 
 function login(user_name, password){
@@ -103,6 +82,7 @@ function login(user_name, password){
  * @return {Promise} - resolves with HTTP response
  */
 function resetPassword(emailAddress){
+  console.log('Depracated');
   return rp({
     uri : process.env.IDM_URI + '/resetPassword',
     method : 'POST',
@@ -121,17 +101,10 @@ function resetPassword(emailAddress){
  * @param {String} emailAddress - the user email address to send password reset email to
  * @return {Promise} - resolves with HTTP response
  */
-function resetPasswordQuiet(emailAddress){
-  return rp({
-    uri : process.env.IDM_URI + '/resetPasswordQuiet',
-    method : 'POST',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      emailAddress
-    }
+function resetPasswordQuiet(emailAddress) {
+  const reset_guid = Helpers.createGUID();
+  return client.updateOne(emailAddress, {
+    reset_guid : Helpers.createGUID()
   });
 }
 
@@ -149,25 +122,16 @@ function getPasswordResetLink (emailAddress) {
   });
 }
 
-function updatePassword (username, password, cb) {
 
-
-
-  return new Promise((resolve, reject) => {
-  console.log("Change password: " + username + " " + password)
-    var data = { username: username, password: password }
-    var uri = process.env.IDM_URI + '/user' + '?token=' + process.env.JWT_TOKEN
-    Helpers.makeURIRequestWithBody(uri,'PUT', data)
-    .then((response)=>{
-        resolve(response)
-    }).catch((response)=>{
-//      console.log('rejecting in idm.updatePassword')
-      reject(response)
-    })
-
+/**
+ * Updates user password
+ * @param {String} username - user's IDM email address
+ * @param {String} password - new password
+ */
+function updatePassword (username, password) {
+  return client.updateOne(username, {
+    password
   });
-
-
 }
 
 

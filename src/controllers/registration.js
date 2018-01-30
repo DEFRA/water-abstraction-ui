@@ -29,14 +29,13 @@ function getEmailAddress(request, reply) {
  * - creates user in IDM
  * - @TODO send notify email depending on whether last_login is null
  * - @TODO send password reset email
- * - @TODO create CRM entity
  *
  * @param {Object} request - HAPI HTTP request
  * @param {Object} request.payload - form post data
  * @param {String} request.payload.email - email address for user account
  * @param {Object} reply - HAPI HTTP reply
  */
-function postEmailAddress(request, reply, options = {}) {
+async function postEmailAddress(request, reply, options = {}) {
 
   const defaults = {
     template : 'water/register_email',
@@ -44,14 +43,9 @@ function postEmailAddress(request, reply, options = {}) {
   };
   const config = Object.assign(defaults, options);
 
-  // Validate input data with Joi
-  const schema = {
-    email : Joi.string().trim().required().email()
-  };
-
-  const _sendNotifyEmail = (res) => {
-    const {reset_guid, user_name} = res.data;
-    if(res.data.last_login) {
+  const _sendNotifyEmail = (user) => {
+    const {reset_guid, user_name, last_login} = user;
+    if(last_login) {
       return Notify.sendExistingUserPasswordReset(user_name, reset_guid);
     }
     else {
@@ -59,51 +53,96 @@ function postEmailAddress(request, reply, options = {}) {
     }
   }
 
+  try {
 
-  joiPromise(request.payload, schema)
-    .then((result) => {
-      return IDM.createUserWithoutPassword(result.email);
-    })
-    .then((response) => {
-      if(response.error) {
-        throw Boom.badImplementation('IDM error', response.error);
-      }
+    // Validate email
+    const {error, value} = Joi.validate(request.payload, {
+      email : Joi.string().trim().required().email().lowercase()
+    });
 
-      // Reset user password - user now exists
-      return IDM.resetPasswordQuiet(request.payload.email);
-    })
-    .then((res) => {
-      // Email them password reset guid
-      return _sendNotifyEmail(res);
-    })
-    .then((res) => {
-      // Redirect to success page
-      return reply.redirect(config.redirect);
-    })
-    .catch((error) => {
-
-      // User already exists - handle error
-      if(error.isBoom && error.data.code && (error.data.code == 23505)) {
-        return IDM.resetPasswordQuiet(request.payload.email)
-          .then((res) => {
-            return _sendNotifyEmail(res);
-          })
-          .then(() => {
-            // Redirect to success page
-            return reply.redirect(config.redirect)
-          });
-      }
-
-      // Email was invalid - handle error
-      if(error.name === 'ValidationError') {
-        var viewContext = View.contextDefaults(request);
-        viewContext.pageTitle = 'GOV.UK - Create Account';
-        viewContext.error = error;
-        return reply.view(config.template, viewContext);
-      }
+    if(error) {
       throw error;
-    })
-    .catch(errorHandler(request,reply));
+    }
+
+    // Try to create user
+    const {error : createError, data} = await IDM.createUserWithoutPassword(value.email);
+
+    if(createError) {
+      throw createError;
+    }
+
+    await _sendNotifyEmail(data);
+    return reply.redirect(config.redirect);
+
+  }
+  catch(error) {
+
+    // User exists
+    if(error.name == 'DBError' && error.code == 23505) {
+      console.log(`User ${request.payload.email} already exists, resetting password`)
+      const {data, error : resetError, rowCount} = await IDM.resetPasswordQuiet(request.payload.email);
+      if(!resetError) {
+        await _sendNotifyEmail(data);
+        return reply.redirect(config.redirect)
+      }
+    }
+
+    // Email was invalid - handle error
+    if(error.name === 'ValidationError') {
+      var viewContext = View.contextDefaults(request);
+      viewContext.pageTitle = 'GOV.UK - Create Account';
+      viewContext.error = error;
+      return reply.view(config.template, viewContext);
+    }
+
+    errorHandler(request,reply)(error);
+  }
+
+  //
+  // joiPromise(request.payload, schema)
+  //   .then((result) => {
+  //     return IDM.createUserWithoutPassword(result.email);
+  //   })
+  //   .then((response) => {
+  //     if(response.error) {
+  //       throw Boom.badImplementation('IDM error', response.error);
+  //     }
+  //
+  //     // Reset user password - user now exists
+  //     return IDM.resetPasswordQuiet(request.payload.email);
+  //   })
+  //   .then((res) => {
+  //     // Email them password reset guid
+  //     return _sendNotifyEmail(res);
+  //   })
+  //   .then((res) => {
+  //     // Redirect to success page
+  //     return reply.redirect(config.redirect);
+  //   })
+  //   .catch((error) => {
+  //
+  //     // User already exists - handle error
+  //     if(error.isBoom && error.data.code && (error.data.code == 23505)) {
+  //       return IDM.resetPasswordQuiet(request.payload.email)
+  //         .then((res) => {
+  //           return _sendNotifyEmail(res);
+  //         })
+  //         .then(() => {
+  //           // Redirect to success page
+  //           return reply.redirect(config.redirect)
+  //         });
+  //     }
+  //
+  //     // Email was invalid - handle error
+  //     if(error.name === 'ValidationError') {
+  //       var viewContext = View.contextDefaults(request);
+  //       viewContext.pageTitle = 'GOV.UK - Create Account';
+  //       viewContext.error = error;
+  //       return reply.view(config.template, viewContext);
+  //     }
+  //     throw error;
+  //   })
+  //   .catch(errorHandler(request,reply));
 
 
 }

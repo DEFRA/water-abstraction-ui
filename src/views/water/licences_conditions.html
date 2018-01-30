@@ -56,9 +56,22 @@
           <h3 class="data-row data-row--heading">
             <span class="data-row__param">Abstraction point</span>
             <span class="data-row__value">
+
+              {{#greaterThan this.points.length 1 }}
+              <details>
+               <summary><span class="summary">{{ this.points.length }} points</span></summary>
+               <div>
+              {{/greaterThan}}
+
               {{#each this.points }}
               {{ this }}<br />
               {{/each}}
+
+              {{#greaterThan this.points.length 3 }}
+              </div>
+              </details>
+              {{/greaterThan}}
+
             </span>
           </h3>
           {{#each this.conditions }}

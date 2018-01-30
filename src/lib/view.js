@@ -21,7 +21,7 @@ function viewContextDefaults(request) {
   //  viewContext.debug.session = request.yar.get('sessionTimestamp')
 
   viewContext.user=request.auth.credentials
-
+  viewContext.env=process.env.NODEENV
   return viewContext
 }
 

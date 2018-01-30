@@ -180,10 +180,6 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
 
     const transformer = new LicenceTransformer();
     await transformer.load(data);
-    console.log('EXPORT', transformer.export());
-    // console.log(transformer);
-
-
 
     viewContext.licence_id = request.params.licence_id;
     viewContext.licenceData = transformer.export();

@@ -8,6 +8,7 @@ const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
 const NALDHelpers = require('./nald-helpers');
+const sentenceCase = require('sentence-case');
 
 class NALDTransformer extends BaseTransformer {
 
@@ -54,10 +55,83 @@ class NALDTransformer extends BaseTransformer {
         conditions : await this.conditionFormatter(data.data.purposes),
         points : this.pointsFormatter(data.data.purposes),
         abstractionPeriods : this.periodsFormatter(data.data.purposes),
-        quantities : this.maxQuantitiesFormatter(data.data.purposes)
+        quantities : this.maxQuantitiesFormatter(data.data.purposes),
+        contacts : this.contactsFormatter(currentVersion, data.data.roles)
     };
 
     return this.data;
+  }
+
+
+  /**
+   * Formats contact address
+   * @param {Object} contactAddress - party/role address
+   * @return {Object} reformatted address
+   */
+  addressFormatter(contactAddress) {
+    const {ADDR_LINE1, ADDR_LINE2, ADDR_LINE3 } = contactAddress;
+    const {ADDR_LINE4, TOWN, COUNTY, POSTCODE, COUNTRY} = contactAddress;
+
+    return {
+      addressLine1 : ADDR_LINE1,
+      addressLine2 : ADDR_LINE2,
+      addressLine3 : ADDR_LINE3,
+      addressLine4 : ADDR_LINE4,
+      town : TOWN,
+      county : COUNTY,
+      postcode: POSTCODE,
+      country : COUNTRY
+    };
+  }
+
+  /**
+   * Formats a party name - whether person or organisation
+   * @param {Object} party - NALD party / role party
+   * @return {Object} contact name
+   */
+  nameFormatter(party) {
+    if(party.APAR_TYPE === 'PER') {
+      return {
+        contactType : 'Person',
+        name : `${ party.SALUTATION } ${ party.FORENAME } ${ party.NAME }`
+      }
+    }
+    if(party.APAR_TYPE === 'ORG') {
+      return {
+        contactType : 'Organisation',
+        name : party.NAME
+      }
+    }
+  }
+
+  /**
+   * Contacts formatter
+   * Creates a list of contacts from the roles/parties in the NALD data
+   */
+  contactsFormatter(currentVersion, roles) {
+    const contacts = [];
+
+    const licenceHolderParty = find(currentVersion.parties, (party) => {
+      return party.ID === currentVersion.ACON_APAR_ID;
+    });
+
+    licenceHolderParty.contacts.forEach((contact) => {
+      contacts.push({
+        type : 'Licence holder',
+        ...this.nameFormatter(licenceHolderParty),
+        ...this.addressFormatter(contact.party_address)
+      });
+    });
+
+    roles.forEach((role) => {
+      contacts.push({
+        type : sentenceCase(role.role_type.DESCR),
+        ...this.nameFormatter(role.role_party),
+        ...this.addressFormatter(role.role_address)
+      });
+    });
+
+    return contacts;
   }
 
   /**

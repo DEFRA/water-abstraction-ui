@@ -3,10 +3,10 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
         <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        {{>element-header-links}}
       </ol>
     </div>
   </nav>
@@ -53,7 +53,7 @@
     <div class="license-result">
       <h2 class="heading-medium license-result__column">No results found.</h2>
       <p class="license-result__column license-result__column--description"></p>
-      <div class="license-result__column license-result__column--view" aria-hidden="true"></div>
+      <div class="license-result__column license-result__column--view" aria-hidden="true" aria-label="Remove Access"></div>
     </div>
     {{/licenceAccess}}
 

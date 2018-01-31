@@ -22,6 +22,8 @@ function viewContextDefaults(request) {
 
   viewContext.user=request.auth.credentials
   viewContext.env=process.env.NODEENV
+  viewContext.crownCopyrightMessage='© Crown copyright'
+
   return viewContext
 }
 

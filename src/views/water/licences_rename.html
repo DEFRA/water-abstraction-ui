@@ -93,7 +93,7 @@
       </div>
   </div>
 
-  {{#each licenceData.purposes }}
+  {{#each licenceData.quantities }}
   <div class="data-table">
       <div class="sourceofsupplyq">Maximum quantities before conditions</div>
       <div class="licenceAnswer">
@@ -103,12 +103,12 @@
   </div>
   {{/each}}
 
+
   <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
   <p></p>
   <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
 </main>
 {{> footerjs}}
-
 
 {{> debug}}

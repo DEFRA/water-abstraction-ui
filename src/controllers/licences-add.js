@@ -191,7 +191,7 @@ async function postLicenceSelect(request, reply) {
 
     console.log(err);
     if(err.name === 'NoLicencesSelectedError') {
-      return reply.redirect('/select-licences?error=noLicenceSelected&token=' + token);
+      return reply.redirect('/select-licences?error=noLicenceSelected');
     }
     errorHandler(request, reply)(err);
   }

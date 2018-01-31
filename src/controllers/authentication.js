@@ -55,6 +55,8 @@ function postSignin(request, reply) {
       })
       .then((getUser) => {
 
+        console.log(getUser);
+
         // Check for password reset flag - if set don't log them in yet and force
         // password reset
         if (getUser.body.reset_required && getUser.body.reset_required == 1) {
@@ -76,6 +78,8 @@ function postSignin(request, reply) {
 
     })
     .catch((err) => {
+
+      console.log(err);
 
       // Forces password reset
       if(err.reset_guid) {

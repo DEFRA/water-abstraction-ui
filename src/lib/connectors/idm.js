@@ -58,7 +58,7 @@ async function getUserByResetGuid(reset_guid) {
  */
 function createUserWithoutPassword(emailAddress) {
     return client.create({
-          user_name : emailAddress,
+          user_name : emailAddress.toLowerCase(),
           password : Helpers.createGUID(),
           reset_guid : Helpers.createGUID(),
           admin : 0,
@@ -73,7 +73,7 @@ function createUserWithoutPassword(emailAddress) {
  * @return {Promise} resolves with user if found
  */
  function getUser(user_id) {
-   return client.findOne(user_id);
+   return client.findOne(user_id.toLowerCase());
  }
 
 function login(user_name, password){

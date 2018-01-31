@@ -43,16 +43,6 @@ async function postEmailAddress(request, reply, options = {}) {
   };
   const config = Object.assign(defaults, options);
 
-  const _sendNotifyEmail = (user) => {
-    const {reset_guid, user_name, last_login} = user;
-    if(last_login) {
-      return Notify.sendExistingUserPasswordReset(user_name, reset_guid);
-    }
-    else {
-      return Notify.sendNewUserPasswordReset(user_name, reset_guid);
-    }
-  }
-
   try {
 
     // Validate email
@@ -71,7 +61,7 @@ async function postEmailAddress(request, reply, options = {}) {
       throw createError;
     }
 
-    await _sendNotifyEmail(data);
+    await IDM.resetPassword(value.email, 'new');
     return reply.redirect(config.redirect);
 
   }
@@ -79,11 +69,13 @@ async function postEmailAddress(request, reply, options = {}) {
 
     // User exists
     if(error.name == 'DBError' && error.code == 23505) {
-      console.log(`User ${request.payload.email} already exists, resetting password`)
-      const {data, error : resetError, rowCount} = await IDM.resetPasswordQuiet(request.payload.email);
-      if(!resetError) {
-        await _sendNotifyEmail(data);
-        return reply.redirect(config.redirect)
+      const {error : resetError, data} = await IDM.resetPassword(request.payload.email, 'existing');
+      if(resetError) {
+        error = resetError;
+        console.error(resetError);
+      }
+      else {
+        return reply.redirect(config.redirect);
       }
     }
 
@@ -97,53 +89,6 @@ async function postEmailAddress(request, reply, options = {}) {
 
     errorHandler(request,reply)(error);
   }
-
-  //
-  // joiPromise(request.payload, schema)
-  //   .then((result) => {
-  //     return IDM.createUserWithoutPassword(result.email);
-  //   })
-  //   .then((response) => {
-  //     if(response.error) {
-  //       throw Boom.badImplementation('IDM error', response.error);
-  //     }
-  //
-  //     // Reset user password - user now exists
-  //     return IDM.resetPasswordQuiet(request.payload.email);
-  //   })
-  //   .then((res) => {
-  //     // Email them password reset guid
-  //     return _sendNotifyEmail(res);
-  //   })
-  //   .then((res) => {
-  //     // Redirect to success page
-  //     return reply.redirect(config.redirect);
-  //   })
-  //   .catch((error) => {
-  //
-  //     // User already exists - handle error
-  //     if(error.isBoom && error.data.code && (error.data.code == 23505)) {
-  //       return IDM.resetPasswordQuiet(request.payload.email)
-  //         .then((res) => {
-  //           return _sendNotifyEmail(res);
-  //         })
-  //         .then(() => {
-  //           // Redirect to success page
-  //           return reply.redirect(config.redirect)
-  //         });
-  //     }
-  //
-  //     // Email was invalid - handle error
-  //     if(error.name === 'ValidationError') {
-  //       var viewContext = View.contextDefaults(request);
-  //       viewContext.pageTitle = 'GOV.UK - Create Account';
-  //       viewContext.error = error;
-  //       return reply.view(config.template, viewContext);
-  //     }
-  //     throw error;
-  //   })
-  //   .catch(errorHandler(request,reply));
-
 
 }
 

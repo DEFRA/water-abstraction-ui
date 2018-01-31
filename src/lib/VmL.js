@@ -93,7 +93,7 @@ function validatePassword(password, confirmPassword) {
 
 /**
  * Reset password form handler for signed-in user
- * @todo consider Joi for password validation 
+ * @todo consider Joi for password validation
  * @param {String} request.payload.password - new password
  * @param {String} request.payload.confirmPassword - password again
  */
@@ -254,6 +254,7 @@ function postResetPasswordLink(request, reply) {
         return reply.redirect('reset_password_change_password' + '?resetGuid=' + data.reset_guid)
       }
     }).catch((err) => {
+      console.log(err);
       var viewContext = View.contextDefaults(request)
       viewContext.pageTitle = 'Debug page'
       viewContext.errors = {

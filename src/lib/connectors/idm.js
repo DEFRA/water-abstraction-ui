@@ -14,6 +14,28 @@ const client = new APIClient(rp, {
 
 
 /**
+ * Reset user's password in IDM
+ * Triggers notify message
+ * @param {String} email - user's email address
+ * @param {String} mode - can be reset|new|existing
+ * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
+ */
+function resetPassword(email, mode = 'reset') {
+    return rp({
+      uri : `${process.env.IDM_URI}/reset/${email}`,
+      qs : {
+        mode
+      },
+      method : 'PATCH',
+      json : true,
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      }
+    });
+}
+
+
+/**
  * Check reset guid
  * @param {String} resetGuid - the password reset GUID issued by email
  * @return {Promise} resolves with user record if found or null otherwise
@@ -76,37 +98,6 @@ function login(user_name, password){
 }
 
 
-/**
- * Send password reset email
- * @param {String} emailAddress - the user email address to send password reset email to
- * @return {Promise} - resolves with HTTP response
- */
-function resetPassword(emailAddress){
-  console.log('Depracated');
-  return rp({
-    uri : process.env.IDM_URI + '/resetPassword',
-    method : 'POST',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      emailAddress
-    }
-  });
-}
-
-/**
- * Resets user reset_guid without sending notify email
- * @param {String} emailAddress - the user email address to send password reset email to
- * @return {Promise} - resolves with HTTP response
- */
-function resetPasswordQuiet(emailAddress) {
-  const reset_guid = Helpers.createGUID();
-  return client.updateOne(emailAddress, {
-    reset_guid : Helpers.createGUID()
-  });
-}
 
 function getPasswordResetLink (emailAddress) {
   return new Promise((resolve, reject) => {
@@ -161,7 +152,6 @@ function updatePasswordWithGuid (resetGuid, password) {
 module.exports = {
 login:login,
 resetPassword,
-resetPasswordQuiet,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,

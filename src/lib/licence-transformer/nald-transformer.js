@@ -56,10 +56,23 @@ class NALDTransformer extends BaseTransformer {
         points : this.pointsFormatter(data.data.purposes),
         abstractionPeriods : this.periodsFormatter(data.data.purposes),
         quantities : this.maxQuantitiesFormatter(data.data.purposes),
-        contacts : this.contactsFormatter(currentVersion, data.data.roles)
+        contacts : this.contactsFormatter(currentVersion, data.data.roles),
+        purposes : this.purposesFormatter(data.data.purposes)
     };
 
     return this.data;
+  }
+
+  /**
+   * Format licence purposes
+   * @param {Array} purposes - from NALD data
+   * @return {Array} - formatted unique list of licences
+   */
+  purposesFormatter(purposes) {
+    const formatted = purposes.map(item => ({
+      name : item.purpose.purpose_tertiary.DESCR
+    }));
+    return uniqBy(formatted, (item => item.name));
   }
 
 

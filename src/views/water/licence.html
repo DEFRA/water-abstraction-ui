@@ -13,9 +13,15 @@
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
-  <h1 class="heading-medium">Licence serial number {{ licenceData.licenceNumber }}</h1>
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
 
-  <p></p>
+  <p>Starts {{ formatDate licenceData.effectiveDate }}
+     {{#if licenceData.expiryDate }}
+      and expires {{ formatToDate licenceData.expiryDate }}
+     {{else}}
+      and has no expiry
+     {{/if}}
+   </p>
 
   <!-- User-defined licence name row -->
   <div class="data-table">
@@ -39,20 +45,98 @@
   </div>
 
 
+  <!-- Licence holder -->
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
 
+  <!-- Abstraction period -->
+  {{#equal licenceData.abstractionPeriods.length 1 }}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd) }}
+  {{/equal}}
 
-  {{#each licenceData.points }}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint this) }}
-  {{/each}}
+  <!-- Purposes -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Purpose{{#greaterThan licenceData.purposes.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.purposes.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.purposes.length 6 }}
+        <ul class="list list-bullet">
+          {{#each licenceData.purposes }}
+          <li>{{this.name}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.purposes.length }} abstraction purposes<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
 
 
-  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveDate )}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.expiryDate 'No expiry' )}}
+      {{else}}
+        {{licenceData.purposes.0.name }}<br />
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purpose</a>
+      {{/greaterThan}}
 
-  {{#each licenceData.points }}
-  {{>element-licence-row label='Source of supply' answer=this.name}}
-  {{/each}}
+    </div>
+  </div>
+
+  <!-- Points -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.points.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.points.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.points }}
+          <li>{{ngrPoint this}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.points.length }} abstraction points<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction points</a>
+
+
+      {{else}}
+        {{ngrPoint licenceData.points }}<br />
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction point</a>
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
+  <!-- Conditions -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+      <!-- Multiple purposes -->
+      {{#greaterThan licenceData.points.length 5 }}
+      <details>
+        <summary><span class="summary">{{ licenceData.points.length }} points of abstraction</span></summary>
+        <div>
+          <ul class="sub-list">
+            {{#each licenceData.points }}
+            <li>{{ngrPoint this }}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </details>
+
+      {{else}}
+      <!-- Single purpose -->
+      {{ licenceData.purposes.0.name}}<br />
+      {{/greaterThan}}
+      <a href="/licences/{{ licence_id }}/points">View details of each point</a>
+    </div>
+  </div>
+
+
+
+
 
   {{#each licenceData.abstractionPeriods }}
   {{>element-licence-row label='Period of abstraction' answer=(formatPeriod this.periodStart this.periodEnd) }}

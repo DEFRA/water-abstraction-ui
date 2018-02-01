@@ -40,3 +40,14 @@
   }
 
 }
+
+
+
+
+/* Sub-list in data-table */
+.sub-list {
+  li {
+    padding: 0.25em 0;
+    border-bottom: 1px solid $panel-colour;
+  }
+}

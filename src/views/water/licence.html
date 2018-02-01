@@ -109,30 +109,37 @@
     </div>
   </div>
 
-  <!-- Conditions -->
+
+
+
+  <!-- Abstraction conditions -->
   <div class="data-table">
-    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="sourceofsupplyq">Abstraction condition{{#greaterThan licenceData.conditions.length 1}}s{{/greaterThan}}</div>
     <div class="licenceAnswer">
-      <!-- Multiple purposes -->
-      {{#greaterThan licenceData.points.length 5 }}
-      <details>
-        <summary><span class="summary">{{ licenceData.points.length }} points of abstraction</span></summary>
-        <div>
-          <ul class="sub-list">
-            {{#each licenceData.points }}
-            <li>{{ngrPoint this }}</li>
-            {{/each}}
-          </ul>
-        </div>
-      </details>
+
+      {{#greaterThan licenceData.conditions.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.conditions.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.conditions }}
+          <li>{{this.displayTitle}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.conditions.length }} abstraction conditions<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+
 
       {{else}}
-      <!-- Single purpose -->
-      {{ licenceData.purposes.0.name}}<br />
+        {{licenceData.conditions.0.displayTitle }}<br />
+        <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction condition</a>
       {{/greaterThan}}
-      <a href="/licences/{{ licence_id }}/points">View details of each point</a>
+
     </div>
   </div>
+
 
 
 
@@ -143,13 +150,6 @@
   {{/each}}
 
 
-  <div class="data-table">
-      <div class="sourceofsupplyq">Abstraction conditions</div>
-      <div class="licenceAnswer">
-        <a href="/licences/{{ licence_id }}/conditions">Read all abstraction conditions</a>
-        <br />
-      </div>
-  </div>
 
   {{#each licenceData.quantities }}
   <div class="data-table">

@@ -112,7 +112,11 @@ async function getOrCreateCompanyEntity(entityId, companyName) {
   }
 
   // No role found, create new entity
-  const { data } = await crmEntities.create({entity_nm : companyName, entity_type : 'company'});
+  const { data, error } = await crmEntities.create({entity_nm : companyName, entity_type : 'company'});
+
+  if(error) {
+    throw error;
+  }
 
   // Create entity role
   const { data : roleData, error : roleError } = await crmEntityRoles.setParams({entityId}).create({

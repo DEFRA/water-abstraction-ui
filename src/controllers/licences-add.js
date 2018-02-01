@@ -7,7 +7,7 @@
  */
 const Boom = require('boom');
 const Joi = require('joi');
-const find = require('lodash/find');
+const {difference, find} = require('lodash');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
 const joiPromise = require('../lib/joi-promise');
@@ -85,7 +85,8 @@ async function postLicenceAdd(request, reply) {
 
       // Check # of licences returned = that searched for
       if(res.data.length != licenceNumbers.length) {
-        throw {name : 'LicenceMissingError', details : [{message : 'Not all the licences could be found', path : 'licence_no'}]};
+        const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
+        throw {name : 'LicenceMissingError', details : [{message : `Not all the licences could be found (missing ${missingNumbers})`, path : 'licence_no'}]};
       }
 
       // Check licences are similar

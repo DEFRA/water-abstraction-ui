@@ -5,17 +5,28 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
       </ol>
     </div>
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
-  <h1 class="heading-medium">Licence serial number {{ licenceData.licenceNumber }}</h1>
 
-  <p></p>
+  {{#if crmData.document_custom_name }}
+  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
+  {{else}}
+  <h1 class="heading-large">Licence number: {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
+
+
+  <p>Starts {{ formatDate licenceData.effectiveDate }}
+     {{#if licenceData.expiryDate }}
+      and expires {{ formatToDate licenceData.expiryDate }}
+     {{else}}
+      and has no expiry
+     {{/if}}
+   </p>
 
   <!-- User-defined licence name row -->
   <div class="data-table">
@@ -39,48 +50,124 @@
   </div>
 
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
 
 
-  {{#each licenceData.points }}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint this) }}
-  {{/each}}
+  <!-- Abstraction period -->
+  {{#equal licenceData.abstractionPeriods.length 1 }}
+  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd) }}
+  {{/equal}}
 
-
-  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.effectiveDate )}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.expiryDate 'No expiry' )}}
-
-  {{#each licenceData.points }}
-  {{>element-licence-row label='Source of supply' answer=this.name}}
-  {{/each}}
-
-  {{#each licenceData.abstractionPeriods }}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod this.periodStart this.periodEnd) }}
-  {{/each}}
-
-
+  <!-- Points -->
   <div class="data-table">
-      <div class="sourceofsupplyq">Abstraction conditions</div>
-      <div class="licenceAnswer">
-        <a href="/licences/{{ licence_id }}/conditions">Read all abstraction conditions</a>
-        <br />
-      </div>
+    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.points.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.points.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.points }}
+          <li>{{ngrPoint this}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.points.length }} abstraction points<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/points">View details of your abstraction points</a>
+
+
+      {{else}}
+        {{ngrPoint licenceData.points }}<br />
+        <a href="/licences/{{ licence_id }}/points">View details of your abstraction point</a>
+      {{/greaterThan}}
+
+    </div>
   </div>
 
-  {{#each licenceData.quantities }}
+
+  <!-- Purposes -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Purpose{{#greaterThan licenceData.purposes.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.purposes.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.purposes.length 6 }}
+        <ul class="list list-bullet">
+          {{#each licenceData.purposes }}
+          <li>{{this.name}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.purposes.length }} abstraction purposes<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
+
+
+      {{else}}
+        {{licenceData.purposes.0.name }}<br />
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purpose</a>
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
+
+
+
+
+
+  <!-- Abstraction conditions -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Abstraction condition{{#greaterThan licenceData.conditions.length 1}}s{{/greaterThan}}</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.conditions.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.conditions.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.conditions }}
+          <li>{{this.displayTitle}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.conditions.length }} abstraction conditions<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+
+
+      {{else}}
+        {{licenceData.conditions.0.displayTitle }}<br />
+        <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction condition</a>
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
+
+
+  {{#if licenceData.aggregateQuantity }}
   <div class="data-table">
       <div class="sourceofsupplyq">Maximum quantities before conditions</div>
       <div class="licenceAnswer">
-        {{ precision this.dailyQty 2 }} cubic metres per day<br />
-        {{ precision this.annualQty 2 }} cubic metres per year
+        <ul class="sub-list">
+        {{#each licenceData.aggregateQuantity }}
+          <li>{{ precision this.value 2 }} {{ this.name }}</li>
+        {{/each}}
+        </ul>
       </div>
   </div>
-  {{/each}}
+  {{/if}}
 
 
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+
+
   <p></p>
-  <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
 </main>
 {{> footerjs}}

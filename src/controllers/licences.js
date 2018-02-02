@@ -187,7 +187,7 @@ async function renderLicencePage(view, pageTitle, request, reply, context = {}) 
     viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
     // viewContext.conditions = await licenceConditions(data);
 
-    console.log(JSON.stringify(viewContext.licenceData, null, 2));
+    // console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
     return reply.view(view, viewContext)
 

@@ -5,15 +5,20 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
       </ol>
     </div>
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
-  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+
+  {{#if crmData.document_custom_name }}
+  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
+  {{else}}
+  <h1 class="heading-large">Licence number: {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
+
 
   <p>Starts {{ formatDate licenceData.effectiveDate }}
      {{#if licenceData.expiryDate }}
@@ -46,12 +51,41 @@
 
 
   <!-- Licence holder -->
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
 
   <!-- Abstraction period -->
   {{#equal licenceData.abstractionPeriods.length 1 }}
   {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd) }}
   {{/equal}}
+
+  <!-- Points -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.points.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.points.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.points }}
+          <li>{{ngrPoint this}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.points.length }} abstraction points<br />
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/points">View details of your abstraction points</a>
+
+
+      {{else}}
+        {{ngrPoint licenceData.points }}<br />
+        <a href="/licences/{{ licence_id }}/points">View details of your abstraction point</a>
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
 
   <!-- Purposes -->
   <div class="data-table">
@@ -81,33 +115,7 @@
     </div>
   </div>
 
-  <!-- Points -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
-    <div class="licenceAnswer">
 
-      {{#greaterThan licenceData.points.length 1}}
-        <!-- Multiple purposes -->
-        {{#lessThan licenceData.points.length 6 }}
-        <ul class="sub-list">
-          {{#each licenceData.points }}
-          <li>{{ngrPoint this}}</li>
-          {{/each}}
-        </ul>
-        {{else}}
-        You have {{ licenceData.points.length }} abstraction points<br />
-        {{/lessThan}}
-
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction points</a>
-
-
-      {{else}}
-        {{ngrPoint licenceData.points }}<br />
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction point</a>
-      {{/greaterThan}}
-
-    </div>
-  </div>
 
 
 
@@ -142,29 +150,23 @@
 
 
 
-
-
-
-  {{#each licenceData.abstractionPeriods }}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod this.periodStart this.periodEnd) }}
-  {{/each}}
-
-
-
-  {{#each licenceData.quantities }}
+  {{#if licenceData.aggregateQuantity }}
   <div class="data-table">
       <div class="sourceofsupplyq">Maximum quantities before conditions</div>
       <div class="licenceAnswer">
-        {{ precision this.dailyQty 2 }} cubic metres per day<br />
-        {{ precision this.annualQty 2 }} cubic metres per year
+        <ul class="sub-list">
+        {{#each licenceData.aggregateQuantity }}
+          <li>{{ precision this.value 2 }} {{ this.name }}</li>
+        {{/each}}
+        </ul>
       </div>
   </div>
-  {{/each}}
+  {{/if}}
 
 
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+
+
   <p></p>
-  <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
   <p></p>
 </main>
 {{> footerjs}}

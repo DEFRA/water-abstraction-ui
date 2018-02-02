@@ -5,17 +5,21 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol >
-        <li><a href="/?access=PB01">Your service</a></li>
         <li><a href="/licences">Abstraction licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}/rename">Contact details</a></li>
+
       </ol>
     </div>
   </nav>
   <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
-  {{>element-heading-large content=(concat licenceData.LicenceName 'Your water abstraction licence')}}
-  <p>Licence number: {{ licenceData.licenceNumber }}</p>
-  <p></p>
-  <br/>
+
+
+  {{#if crmData.document_custom_name }}
+  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
+  {{else}}
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
 
   {{#each licenceData.contacts }}
     <h2 class="heading-medium">{{ this.type }}</h2>

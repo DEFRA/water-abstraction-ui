@@ -3,7 +3,7 @@
  * @module lib/licence-transformer/nald-transformer
  */
 const deepMap = require('deep-map');
-const {sortBy, find, uniqBy} = require('lodash');
+const {sortBy, find, uniqBy, filter} = require('lodash');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
@@ -55,7 +55,7 @@ class NALDTransformer extends BaseTransformer {
         conditions : await this.conditionFormatter(data.data.purposes),
         points : this.pointsFormatter(data.data.purposes),
         abstractionPeriods : this.periodsFormatter(data.data.purposes),
-        quantities : this.maxQuantitiesFormatter(data.data.purposes),
+        aggregateQuantity : this.aggregateQuantitiesFormatter(data.data.purposes),
         contacts : this.contactsFormatter(currentVersion, data.data.roles),
         purposes : this.purposesFormatter(data.data.purposes)
     };
@@ -147,20 +147,67 @@ class NALDTransformer extends BaseTransformer {
     return contacts;
   }
 
+
+  /**
+   * Converts a string, e.g 12,456 CMH 12,345 CMA to an array of quantities
+   * e.g. [{value : 12345, units : 'CMH'} ...]
+   * @param {String} str - quantities string
+   * @return {Array} - array of {value, units}
+   */
+  quantitiesStrToArray(str) {
+    const unitNames = {
+      CMA : 'cubic metres per year',
+      CMD : 'cubic metres per day',
+      CMH : 'cubic metres per hour',
+      'L/S' : 'litres per second'
+    };
+
+    const r = /([0-9,\.]+) ?([a-z\/]+)/ig;
+    let result, results = [];
+    while ((result = r.exec(str)) !== null) {
+      results.push({
+        value : parseFloat(result[1].replace(/[^0-9\.]/g, '')),
+        units : result[2],
+        name : unitNames[result[2]]
+      });
+    };
+    return results;
+  }
+
   /**
    * Max quantities formatter
+   * If a licence has a single AGG PP condition, i.e. purposes to purpose within
+   * a licence, this extracts the data
    * @param {Array} purposes
    * @return {Array} array of quantities
    */
-  maxQuantitiesFormatter(purposes) {
-    const quantities = purposes.map(purpose => {
-      return {
-        purposeTertiary : purpose.purpose.purpose_tertiary.DESCR,
-        annualQty : purpose.ANNUAL_QTY,
-        dailyQty : purpose.DAILY_QTY
-      }
+  aggregateQuantitiesFormatter(purposes) {
+
+    // Get all conditions as array
+    const conditions = purposes.reduce((memo, item) => {
+      return [...memo, ...item.licenceConditions]
+    }, []);
+
+    // Get AGG PP conditions
+    const agg = filter(conditions, (item) => {
+      return (item.condition_type.CODE === 'AGG') && (item.condition_type.SUBCODE === 'PP');
     });
-    return uniqBy(quantities, item => Object.values(item).join(','));
+
+    // Format
+    const formatted = agg.map(item => (
+      {
+        code : item.condition_type.CODE,
+        subCode : item.condition_type.SUBCODE,
+        text : item.TEXT,
+        parameter1 : item.PARAM1,
+        parameter2 : item.PARAM2
+      }
+    ));
+
+    // Get unique
+    const unique = uniqBy(formatted, item => Object.values(item).join(','));
+
+    return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
   }
 
 

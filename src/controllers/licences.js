@@ -241,6 +241,12 @@ function getLicencePoints(request, reply, context = {}) {
   )
 }
 
+function getLicencePurposes(request, reply, context = {}) {
+  renderLicencePage(
+    'water/licences_purposes', 'GOV.UK - Your water abstraction licences - purposes', request, reply, context
+  )
+}
+
 /**
  * Update a licence name
  * @param {Object} request - the HAPI HTTP request
@@ -450,6 +456,7 @@ module.exports = {
   getLicenceRename,
   getLicenceConditions,
   getLicencePoints,
+  getLicencePurposes,
   getAccessList,
   getAddAccess,
   postAddAccess,

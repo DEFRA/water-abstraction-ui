@@ -176,6 +176,15 @@ module.exports = [
     }
   } },
 
+  { method: 'GET', path: '/licences/{licence_id}/purposes', handler: LicencesController.getLicencePurposes, config : {
+    description : 'View abstraction purposes for licence',
+    validate : {
+      params : {
+        licence_id : Joi.string().required().guid()
+      }
+    }
+  } },
+
   { method: 'GET', path: '/licences/{licence_id}/rename', handler: LicencesController.getLicenceRename, config : {
     description : 'Set user-defined name for licence',
     validate : {

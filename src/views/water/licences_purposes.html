@@ -1,0 +1,106 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol >
+        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}/purposes">Abstraction purposes</a></li>
+
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
+
+
+  <div class="grid-row">
+      <div class="column-full">
+        <h1 class="heading-large">Abstraction purposes for
+            {{#if crmData.document_custom_name }}
+            licence name: {{ crmData.document_custom_name }}
+            {{else}}
+            licence number {{ licenceData.licenceNumber }}
+            {{/if}}
+        </h1>
+      </div>
+  </div>
+
+
+  {{#each licenceData.purposes }}
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-medium">{{ this.name }}</h2>
+
+      <div class="data-row">
+        <div class="data-row__param" id="points-{{@index}}">
+        Abstraction point{{#greaterThan this.points.length 1 }}s{{/greaterThan}}
+        </div>
+        <div class="data-row__value" aria-labelledby="points-{{@index}}">
+
+          {{#greaterThan this.points.length 1 }}
+          <details>
+           <summary><span class="summary">{{ this.points.length }} points</span></summary>
+           <div>
+            <ul class="sub-list">
+            {{#each this.points }}
+              <li>{{ngrPoint this }}</li>
+            {{/each}}
+            </ul>
+          </div>
+        </details>
+        {{ else }}
+        {{ ngrPoint this.points }}
+        {{/greaterThan}}
+
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="period-{{@index}}">
+        Period of abstraction
+        </div>
+        <div class="data-row__value" aria-labelledby="period-{{@index}}">
+        {{formatPeriod this.periodStart this.periodEnd }}
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="aqty-{{@index}}">
+        Abstaction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="aqty-{{@index}}">
+        {{precision this.annualQty 2}} cubic metres per year
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="dqty-{{@index}}">
+        Abstaction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="dqty-{{@index}}">
+        {{precision this.dailyQty 2}} cubic metres per day
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="hqty-{{@index}}">
+        Abstaction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="hqty-{{@index}}">
+        {{precision this.hourlyQty 2}} cubic metres per hour
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+  <br />
+  {{/each}}
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

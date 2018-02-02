@@ -59,7 +59,8 @@ class NALDTransformer extends BaseTransformer {
         abstractionPeriods : this.periodsFormatter(data.data.purposes),
         aggregateQuantity : this.aggregateQuantitiesFormatter(data.data.purposes),
         contacts : this.contactsFormatter(currentVersion, data.data.roles),
-        purposes : this.purposesFormatter(data.data.purposes)
+        purposes : this.purposesFormatter(data.data.purposes),
+        uniquePurposeNames : this.uniquePurposeNamesFormatter(data.data.purposes)
     };
 
     if(licenceHolderParty.INITIALS != 'null'){
@@ -70,7 +71,7 @@ class NALDTransformer extends BaseTransformer {
       this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
     }
 
-    console.log(this.data);
+    console.log(JSON.stringify(this.data, null, 2));
 
     return this.data;
   }
@@ -81,10 +82,26 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} - formatted unique list of licences
    */
   purposesFormatter(purposes) {
-    const formatted = purposes.map(item => ({
-      name : item.purpose.purpose_tertiary.DESCR
+    return purposes.map(item => ({
+      name : item.purpose.purpose_tertiary.DESCR,
+      periodStart : item.PERIOD_ST_DAY + '/' + item.PERIOD_ST_MONTH,
+      periodEnd : item.PERIOD_END_DAY + '/' + item.PERIOD_END_MONTH,
+      annualQty : item.ANNUAL_QTY,
+      dailyQty : item.DAILY_QTY,
+      hourlyQty : item.HOURLY_QTY,
+      instantaneousQty : item.INST_QTY,
+      points : item.purposePoints.map(item => NALDHelpers.formatAbstractionPoint(item.point_detail))
     }));
-    return uniqBy(formatted, (item => item.name));
+  }
+
+  /**
+   * Get a list of unique purpose names
+   * @param {Array} purposes from NALD data
+   * @return {Array} of purpose names
+   */
+  uniquePurposeNamesFormatter(purposes) {
+    const names = purposes.map(item => item.purpose.purpose_tertiary.DESCR);
+    return uniqBy(names, item => item);
   }
 
 

@@ -39,7 +39,7 @@
   </div>
 
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
 
 
   {{#each licenceData.points }}

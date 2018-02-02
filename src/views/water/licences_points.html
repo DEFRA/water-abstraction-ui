@@ -1,0 +1,63 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol >
+        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}/points">Abstraction points</a></li>
+
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
+
+
+  <div class="grid-row">
+      <div class="column-full">
+        <h1 class="heading-large">Abstraction points for
+            {{#if crmData.document_custom_name }}
+            licence name: {{ crmData.document_custom_name }}
+            {{else}}
+            licence number {{ licenceData.licenceNumber }}
+            {{/if}}
+        </h1>
+      </div>
+  </div>
+
+
+  {{#each licenceData.points }}
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-medium">{{ this.name }}</h2>
+
+      <div class="data-row">
+        <div class="data-row__param" id="ngr-{{@index}}">
+        Grid reference
+        </div>
+        <div class="data-row__value" aria-labelledby="ngr-{{@index}}">
+        {{ngrPoint this }}
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="moa-{{@index}}">
+        Means of abstraction
+        </div>
+        <div class="data-row__value" aria-labelledby="moa-{{@index}}">
+        {{this.meansOfAbstraction }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <br />
+  {{/each}}
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

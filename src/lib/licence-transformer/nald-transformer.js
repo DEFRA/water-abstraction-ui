@@ -70,6 +70,8 @@ class NALDTransformer extends BaseTransformer {
       this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
     }
 
+    console.log(this.data);
+
     return this.data;
   }
 
@@ -248,7 +250,10 @@ class NALDTransformer extends BaseTransformer {
     const points = [];
     purposes.forEach((purpose) => {
       purpose.purposePoints.forEach((purposePoint) => {
-        points.push(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
+        points.push({
+          meansOfAbstraction : purposePoint.means_of_abstraction.DESCR,
+          ...NALDHelpers.formatAbstractionPoint(purposePoint.point_detail)
+        });
       });
     });
     return uniqBy(points, item => Object.values(item).join(','));

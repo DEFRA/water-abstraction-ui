@@ -48,6 +48,8 @@ class NALDTransformer extends BaseTransformer {
 
     this.data = {
         licenceNumber : data.LIC_NO,
+        licenceHolderTitle: '',
+        licenceHolderInitials : '',
         licenceHolderName : licenceHolderParty.NAME,
         effectiveDate : data.ORIG_EFF_DATE,
         expiryDate: data.EXPIRY_DATE,
@@ -59,6 +61,14 @@ class NALDTransformer extends BaseTransformer {
         contacts : this.contactsFormatter(currentVersion, data.data.roles),
         purposes : this.purposesFormatter(data.data.purposes)
     };
+
+    if(licenceHolderParty.INITIALS != 'null'){
+      this.data.licenceHolderInitials = licenceHolderParty.INITIALS
+    }
+
+    if(licenceHolderParty.SALUTATION != 'null'){
+      this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
+    }
 
     return this.data;
   }

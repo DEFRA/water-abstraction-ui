@@ -246,6 +246,7 @@ async function getAddressSelect(request, reply) {
 
   }
   catch(err) {
+    console.log(err)
     errorHandler(request, reply)(err);
   }
 
@@ -319,7 +320,7 @@ async function postAddressSelect(request, reply) {
     catch (err) {
 
       if(err.name === 'InvalidAddressError') {
-        return reply.redirect('/select-address?error=invalidAddress&token=' + token);
+        return reply.redirect('/select-address?error=invalidAddress');
       }
 
       errorHandler(request, reply)(err);

@@ -92,6 +92,7 @@ class NALDTransformer extends BaseTransformer {
       instantaneousQty : item.INST_QTY,
       points : item.purposePoints.map(item => NALDHelpers.formatAbstractionPoint(item.point_detail))
     }));
+
   }
 
   /**
@@ -186,18 +187,20 @@ class NALDTransformer extends BaseTransformer {
   quantitiesStrToArray(str) {
     const unitNames = {
       CMA : 'cubic metres per year',
+      'M3/A' : 'cubic metres per year',
       CMD : 'cubic metres per day',
       CMH : 'cubic metres per hour',
       'L/S' : 'litres per second'
     };
 
-    const r = /([0-9,\.]+) ?([a-z\/]+)/ig;
+    const r = /([0-9,\.]+) ?([a-z3\/]+)/ig;
     let result, results = [];
     while ((result = r.exec(str)) !== null) {
+      console.log(result);
       results.push({
         value : parseFloat(result[1].replace(/[^0-9\.]/g, '')),
         units : result[2],
-        name : unitNames[result[2]]
+        name : unitNames[result[2].toUpperCase()]
       });
     };
     return results;
@@ -344,7 +347,7 @@ class NALDTransformer extends BaseTransformer {
           });
 
           // De-dedupe
-          // @TODO - remove duplication in original data 
+          // @TODO - remove duplication in original data
           pWrapper.conditions = uniqBy(pWrapper.conditions, item => Object.values(item).join(','));
 
         });

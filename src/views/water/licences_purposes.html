@@ -66,6 +66,7 @@
         </div>
       </div>
 
+      {{#notNull this.annualQty }}
       <div class="data-row">
         <div class="data-row__param" id="aqty-{{@index}}">
         Abstaction amount
@@ -74,7 +75,9 @@
         {{precision this.annualQty 2}} cubic metres per year
         </div>
       </div>
+      {{/notNull}}
 
+      {{#notNull this.dailyQty }}
       <div class="data-row">
         <div class="data-row__param" id="dqty-{{@index}}">
         Abstaction amount
@@ -83,7 +86,9 @@
         {{precision this.dailyQty 2}} cubic metres per day
         </div>
       </div>
+      {{/notNull}}
 
+      {{#notNull this.hourlyQty }}
       <div class="data-row">
         <div class="data-row__param" id="hqty-{{@index}}">
         Abstaction amount
@@ -92,6 +97,7 @@
         {{precision this.hourlyQty 2}} cubic metres per hour
         </div>
       </div>
+      {{/notNull}}
 
 
     </div>

@@ -189,6 +189,7 @@ class NALDTransformer extends BaseTransformer {
       CMA : 'cubic metres per year',
       'M3/A' : 'cubic metres per year',
       CMD : 'cubic metres per day',
+      'M3/D' : 'cubic metres per day',
       CMH : 'cubic metres per hour',
       'L/S' : 'litres per second'
     };

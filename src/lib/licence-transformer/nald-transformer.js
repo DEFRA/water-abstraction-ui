@@ -296,9 +296,20 @@ class NALDTransformer extends BaseTransformer {
      * Match a condition within the condition array
      * @param {String} code - the condition code
      * @param {String} subCode - the sub-condition code
+     * @param {String} purpose - the tertiary purpose description
      * @return {Function} returns a predicate that can be used in lodash/find
      */
-    const conditionMatcher = (code, subCode) => {
+    const conditionMatcher = (code, subCode, purpose) => {
+      return (item) => (code === item.code) && (subCode === item.subCode) && (purpose === item.purpose);
+    };
+
+    /**
+     * Match a title within the display titles array
+     * @param {String} code - the condition code
+     * @param {String} subCode - the sub-condition code
+     * @return {Function} returns a predicate that can be used in lodash/find
+     */
+    const titleMatcher = (code, subCode) => {
       return (item) => (code === item.code) && (subCode === item.subCode);
     };
 
@@ -323,13 +334,13 @@ class NALDTransformer extends BaseTransformer {
 
           const {CODE : code, SUBCODE : subCode} = condition.condition_type;
           const {TEXT : text, PARAM1 : parameter1, PARAM2 : parameter2} = condition;
+          const {DESCR : purposeText} = purpose.purpose.purpose_tertiary;
 
           // Condition wrapper
-          let cWrapper = find(conditionsArr, conditionMatcher(code, subCode));
+          let cWrapper = find(conditionsArr, conditionMatcher(code, subCode, purposeText));
           if(!cWrapper) {
-            const titles = find(titleData, conditionMatcher(code, subCode));
-            cWrapper = {...titles, code, subCode, points : [],
-            purpose : purpose.purpose.purpose_tertiary.DESCR};
+            const titles = find(titleData, titleMatcher(code, subCode));
+            cWrapper = {...titles, code, subCode, points : [], purpose : purposeText};
             conditionsArr.push(cWrapper);
           }
 

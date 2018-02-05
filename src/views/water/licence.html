@@ -90,26 +90,26 @@
 
   <!-- Purposes -->
   <div class="data-table">
-    <div class="sourceofsupplyq">Purpose{{#greaterThan licenceData.purposes.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="sourceofsupplyq">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
     <div class="licenceAnswer">
 
-      {{#greaterThan licenceData.purposes.length 1}}
+      {{#greaterThan licenceData.uniquePurposeNames.length 1}}
         <!-- Multiple purposes -->
-        {{#lessThan licenceData.purposes.length 6 }}
-        <ul class="list list-bullet">
-          {{#each licenceData.purposes }}
-          <li>{{this.name}}</li>
+        {{#lessThan licenceData.uniquePurposeNames.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.uniquePurposeNames }}
+          <li>{{this}}</li>
           {{/each}}
         </ul>
         {{else}}
-        You have {{ licenceData.purposes.length }} abstraction purposes<br />
+        You have {{ licenceData.uniquePurposeNames.length }} abstraction purposes<br />
         {{/lessThan}}
 
         <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
 
 
       {{else}}
-        {{licenceData.purposes.0.name }}<br />
+        {{licenceData.uniquePurposeNames }}<br />
         <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purpose</a>
       {{/greaterThan}}
 

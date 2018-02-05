@@ -343,6 +343,10 @@ class NALDTransformer extends BaseTransformer {
             text
           });
 
+          // De-dedupe
+          // @TODO - remove duplication in original data 
+          pWrapper.conditions = uniqBy(pWrapper.conditions, item => Object.values(item).join(','));
+
         });
 
   });

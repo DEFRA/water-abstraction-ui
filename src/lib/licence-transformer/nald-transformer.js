@@ -71,8 +71,6 @@ class NALDTransformer extends BaseTransformer {
       this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
     }
 
-    console.log(JSON.stringify(this.data, null, 2));
-
     return this.data;
   }
 

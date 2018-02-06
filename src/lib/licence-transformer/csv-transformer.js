@@ -196,8 +196,6 @@ class CSVTransformer extends BaseTransformer {
   async load(data) {
     data = this.transformNull(data);
 
-    // console.log(JSON.stringify(data, null, 2));
-
     this.data = {
         licenceNumber : data.id,
         licenceHolderTitle: data.salutation,
@@ -205,104 +203,110 @@ class CSVTransformer extends BaseTransformer {
         licenceHolderName : data.name,
         effectiveDate : data.effectiveFrom,
         expiryDate: data.effectiveTo == 'No expiry' ? null : data.effectiveTo,
-        conditions: await this.conditionFormatter(data.purposes)
+        conditions: await this.conditionFormatter(data.purposes),
+        points: this.pointsFormatter(data.purposes),
+        purposes : this.purposesFormatter(data.purposes),
+        uniquePurposeNames : this.uniquePurposeNamesFormatter(data.purposes),
+        abstractionPeriods : this.periodsFormatter(data.purposes),
+        contacts : this.contactsFormatter(data)
       };
+  }
 
-      console.log(JSON.stringify(this.data, null, 2));
+  /**
+   * Get list of contacts
+   * @param {Object} data - CSV licence data object
+   * @return {Array} contacts
+   */
+  contactsFormatter(data) {
+    const {salutation, initials, forename, name} = data;
+    const {addressLine1, addressLine2, addressLine3, addressLine4, town, county, postCode, country} = data;
 
-    /*
-
-    // Versions - sorted by issue number
-    const sortedVersions = sortBy(data.data.versions, (version) => {
-      return parseFloat(version.ISSUE_NO);
-    });
-    const currentVersion = sortedVersions[sortedVersions.length-1];
-
-    const licenceHolderParty = find(currentVersion.parties, (party) => {
-      return party.ID === currentVersion.ACON_APAR_ID;
-    });
-
-    this.data = {
-        licenceNumber : data.LIC_NO,
-        licenceHolderTitle: '',
-        licenceHolderInitials : '',
-        licenceHolderName : licenceHolderParty.NAME,
-        effectiveDate : data.ORIG_EFF_DATE,
-        expiryDate: data.EXPIRY_DATE,
-        versionCount : data.data.versions.length,
-        conditions : await this.conditionFormatter(data.data.purposes),
-        points : this.pointsFormatter(data.data.purposes),
-        abstractionPeriods : this.periodsFormatter(data.data.purposes),
-        aggregateQuantity : this.aggregateQuantitiesFormatter(data.data.purposes),
-        contacts : this.contactsFormatter(currentVersion, data.data.roles),
-        purposes : this.purposesFormatter(data.data.purposes),
-        uniquePurposeNames : this.uniquePurposeNamesFormatter(data.data.purposes)
-    };
-
-    if(licenceHolderParty.INITIALS != 'null'){
-      this.data.licenceHolderInitials = licenceHolderParty.INITIALS
-    }
-
-    if(licenceHolderParty.SALUTATION != 'null'){
-      this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
-    }
-
-    console.log(JSON.stringify(this.data, null, 2));
-
-    return this.data;
-    */
+    return [{
+      type : 'Licence Holder',
+      contactType : data.salutation ? 'Person' : 'Organisation',
+      name : [salutation, initials, forename, name].filter(x => x).join(' '),
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      addressLine4,
+      town,
+      county,
+      postCode,
+      country
+    }];
   }
 
 
+  /**
+   * Get unique list of abstraction periods
+   * @param {Array} purposes
+   * @return {Array}
+   */
+  periodsFormatter(purposes) {
+    const periods = purposes.map(item => ({
+      periodStart : item.periodStart,
+      periodEnd : item.periodEnd
+    }));
+    return uniqBy(periods, item => Object.values(item).join(','));
+  }
 
+
+  /**
+   * Get unique array of purpose names
+   * @param {Array} purposes
+   * @return {Array} of string names
+   */
+  uniquePurposeNamesFormatter(purposes) {
+    const purposeNames = purposes.map(item => item.description);
+    return uniqBy(purposeNames);
+  }
+
+
+  /**
+   * Format purposes into unique array with quantities and points data
+   * @param {Array} purposes
+   * @return {Array} formatted purposes
+   */
+  purposesFormatter(purposes) {
+    const formatted = purposes.map(purpose => ({
+        name : purpose.description,
+        points : purpose.points,
+        periodStart : purpose.periodStart,
+        periodEnd : purpose.periodEnd,
+        annualQty : purpose.annualQuantity,
+        dailyQty : purpose.dailyQuantity,
+        hourlyQty : purpose.hourlyQuantity
+    }));
+
+    // De-duplicate
+    return uniqBy(formatted, item => Object.values(item).join(','));
+  }
+
+  /**
+   * Get unique list of purpose names
+   * @param {}
+  uniquePurposeNames
 
 
 
   /**
-   * A function to get a list of licence conditions for display
-   * from the supplied licenceData which is loaded from the permit repo
-   * @param {Object} licenceData
-   * @return {Array} conditions
+   * Formats points within purposes to a unique list
+   * @param {Array} purposes
+   * @return {Array}
    */
-  // async conditionFormatter(licenceData) {
-  //
-  //   // Extract conditions from licence data and attach titles from CS
-  //   const conditions = [];
-  //
-  //
-  //   licenceData.purposes.forEach((purpose) => {
-  //
-  //     purpose.conditions.forEach(async (condition) => {
-  //
-  //       if(!condition.code) {
-  //         return;
-  //       }
-  //
-  //       // Find/create condition container
-  //       const conditionContainer = await _findCondition(conditions, condition, purpose);
-  //
-  //       const newCondition = {
-  //         ...condition,
-  //         purpose : {
-  //           id : purpose.id,
-  //           description : purpose.description
-  //         }};
-  //
-  //       // Avoid duplicates
-  //       const found = find(conditionContainer.conditions, (item) => {
-  //         return _compareConditions(item, newCondition);
-  //       });
-  //       if(!found) {
-  //         conditionContainer.conditions.push(newCondition);
-  //       }
-  //
-  //     });
-  //   });
-  //
-  //   console.log('-->',conditions);
-  //
-  //   return conditions;
-  // }
+  pointsFormatter(purposes) {
+
+    let points = [];
+
+    purposes.forEach(purpose => {
+      points = [...points, ...purpose.points];
+    });
+
+    // De-duplicate
+    return uniqBy(points, item => Object.values(item).join(','));
+  }
+
+
 
   /**
    * Formats conditions in the NALD data into a form that can be used
@@ -350,9 +354,6 @@ class CSVTransformer extends BaseTransformer {
     purposes.forEach((purpose) => {
 
         const points = purpose.points.map(_formatAbstractionPoint);
-
-        console.log(points);
-
 
         purpose.conditions.forEach((condition) => {
 

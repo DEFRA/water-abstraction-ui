@@ -1,4 +1,10 @@
 language: node_js
 node_js:
-  - "iojs"
   - "8"
+install:
+  - npm install
+# script:
+#  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/lab --report lcovonly  -- -l  && ./node_modules/.bin/codecov
+env:
+  - errbit_key=xyz
+  - errbit_server=http://localhost

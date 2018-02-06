@@ -413,7 +413,7 @@ async function postSecurityCode(request, reply) {
 
     // Verification code invalid
     if(['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
-      viewContext.licences = await _getOutstandingLicenceRequests(entity_id);
+      viewContext.licences = await CRM.getOutstandingLicenceRequests(entity_id);
       viewContext.error = error;
       return reply.view('water/licences-add/security-code', viewContext);
     }

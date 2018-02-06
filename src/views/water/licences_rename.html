@@ -67,7 +67,8 @@
 
 
   <!-- Licence holder -->
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
+  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
+
 
   <!-- Abstraction period -->
   {{#equal licenceData.abstractionPeriods.length 1 }}

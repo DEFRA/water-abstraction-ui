@@ -216,6 +216,9 @@ handlebars.registerHelper('ngrPoint', function (points) {
   } else {
     response = `At National Grid Reference ` + formatGridReference(point.ngr1)
   }
+  if (point.name && point.name.length != 0){
+    response+=` (${point.name})`
+  }
 
   return response
 })

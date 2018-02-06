@@ -5,10 +5,15 @@
  * @module lib/licence-transformer/index
  */
 const NALDTransformer = require('./nald-transformer');
+const CSVTransformer = require('./csv-transformer');
 const FORMAT_NALD = 'NALD';
+const FORMAT_CSV = 'CSV';
 
 class UnsupportedLicenceFormatError extends Error {
-
+  constructor(message) {
+    super(message);
+    this.name = 'UnsupportedLicenceFormatError';
+  }
 };
 
 class LicenceTransformer {
@@ -23,6 +28,10 @@ class LicenceTransformer {
     switch (format) {
       case FORMAT_NALD:
         this.transformer = new NALDTransformer();
+        break;
+
+      case FORMAT_CSV:
+        this.transformer = new CSVTransformer();
         break;
 
       default:
@@ -50,6 +59,7 @@ class LicenceTransformer {
     if('vmlVersion' in data && data.vmlVersion === 2) {
       return FORMAT_NALD;
     }
+    return FORMAT_CSV;
   }
 
 

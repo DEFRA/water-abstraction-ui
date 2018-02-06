@@ -231,7 +231,7 @@ class CSVTransformer extends BaseTransformer {
       addressLine4,
       town,
       county,
-      postCode,
+      postcode : postCode,
       country
     }];
   }

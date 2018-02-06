@@ -181,7 +181,7 @@ class CSVTransformer extends BaseTransformer {
   transformNull(data) {
     return deepMap(data, (val) => {
       // Convert string null to real null
-      if(typeof(val) === 'string' && val === 'null') {
+      if(typeof(val) === 'string' && (val === 'null' || val === '')) {
         return null;
       }
       return val;
@@ -277,7 +277,8 @@ class CSVTransformer extends BaseTransformer {
         periodEnd : purpose.periodEnd,
         annualQty : purpose.annualQuantity,
         dailyQty : purpose.dailyQuantity,
-        hourlyQty : purpose.hourlyQuantity
+        hourlyQty : purpose.hourlyQuantity,
+        instantaneousQty: purpose.instantQuantity
     }));
 
     // De-duplicate

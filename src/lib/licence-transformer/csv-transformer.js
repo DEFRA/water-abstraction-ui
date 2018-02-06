@@ -210,6 +210,8 @@ class CSVTransformer extends BaseTransformer {
         abstractionPeriods : this.periodsFormatter(data.purposes),
         contacts : this.contactsFormatter(data)
       };
+
+      console.log(JSON.stringify(this.data, null, 2));
   }
 
   /**
@@ -359,6 +361,10 @@ class CSVTransformer extends BaseTransformer {
 
           const {code, subCode, parameter1, parameter2, text} = condition;
           const {description : purposeText } = purpose;
+
+          if(!code) {
+            return;
+          }
 
           // Condition wrapper
           let cWrapper = find(conditionsArr, conditionMatcher(code, subCode, purposeText));

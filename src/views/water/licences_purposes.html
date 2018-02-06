@@ -69,7 +69,7 @@
       {{#notNull this.annualQty }}
       <div class="data-row">
         <div class="data-row__param" id="aqty-{{@index}}">
-        Abstaction amount
+        Abstraction amount
         </div>
         <div class="data-row__value" aria-labelledby="aqty-{{@index}}">
         {{precision this.annualQty 2}} cubic metres per year
@@ -80,7 +80,7 @@
       {{#notNull this.dailyQty }}
       <div class="data-row">
         <div class="data-row__param" id="dqty-{{@index}}">
-        Abstaction amount
+        Abstraction amount
         </div>
         <div class="data-row__value" aria-labelledby="dqty-{{@index}}">
         {{precision this.dailyQty 2}} cubic metres per day
@@ -91,7 +91,7 @@
       {{#notNull this.hourlyQty }}
       <div class="data-row">
         <div class="data-row__param" id="hqty-{{@index}}">
-        Abstaction amount
+        Abstraction amount
         </div>
         <div class="data-row__value" aria-labelledby="hqty-{{@index}}">
         {{precision this.hourlyQty 2}} cubic metres per hour
@@ -99,7 +99,16 @@
       </div>
       {{/notNull}}
 
-
+      {{#notNull this.instantaneousQty }}
+      <div class="data-row">
+        <div class="data-row__param" id="hqty-{{@index}}">
+        Abstraction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="hqty-{{@index}}">
+        {{precision this.instantaneousQty 2}} cubic metres (Instantaneous Quantity)
+        </div>
+      </div>
+      {{/notNull}}
     </div>
   </div>
   <br />

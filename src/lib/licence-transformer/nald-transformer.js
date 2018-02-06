@@ -46,9 +46,6 @@ class NALDTransformer extends BaseTransformer {
       return parseFloat(version.ISSUE_NO);
     });
     const currentVersion = sortedVersions[sortedVersions.length - 1];
-    if (!currentVersion.parties) {
-      currentVersion.parties = []
-    }
 
     const licenceHolderParty = find(currentVersion.parties, (party) => {
       return party.ID === currentVersion.ACON_APAR_ID;

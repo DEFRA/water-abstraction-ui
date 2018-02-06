@@ -137,8 +137,6 @@ async function _findCondition(data, condition, purpose) {
  */
 async function licenceConditions(licenceData) {
 
-  console.log(JSON.stringify(licenceData, null, 2));
-
   // Extract conditions from licence data and attach titles from CS
   const conditions = [];
 

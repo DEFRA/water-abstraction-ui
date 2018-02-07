@@ -41,19 +41,11 @@ class NALDTransformer extends BaseTransformer {
   async load(data) {
     data = this.transformNull(data);
 
-    // Versions - sorted by issue number
-    const sortedVersions = sortBy(data.data.versions, (version) => {
-      return parseFloat(version.ISSUE_NO);
-    });
-    const currentVersion = sortedVersions[sortedVersions.length - 1];
+    const currentVersion = find(data.data.versions, version => version.STATUS === 'CURR');
 
     const licenceHolderParty = find(currentVersion.parties, (party) => {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
-
-
-
-
 
     this.data = {
       licenceNumber: data.LIC_NO,
@@ -179,12 +171,14 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
-    licenceHolderParty.contacts.forEach((contact) => {
-      contacts.push({
-        type: 'Licence holder',
-        ...this.nameFormatter(licenceHolderParty),
-        ...this.addressFormatter(contact.party_address)
-      });
+    const licenceHolderAddress = find(licenceHolderParty.contacts, (contact) => {
+      return contact.AADD_ID === currentVersion.ACON_AADD_ID;
+    });
+
+    contacts.push({
+      type: 'Licence holder',
+      ...this.nameFormatter(licenceHolderParty),
+      ...this.addressFormatter(licenceHolderAddress.party_address)
     });
 
     roles.forEach((role) => {

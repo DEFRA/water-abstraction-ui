@@ -1,6 +1,8 @@
 
 # water-abstraction
 
+[![Build Status](https://travis-ci.org/DEFRA/water-abstraction-ui.svg?branch=master)](https://travis-ci.org/DEFRA/water-abstraction-ui)
+
 Project for the GOV.UK Water Abstraction service
 
 ## Installation

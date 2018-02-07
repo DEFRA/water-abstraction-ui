@@ -8,3 +8,4 @@ install:
 env:
   - errbit_key=xyz
   - errbit_server=http://localhost
+  - cookie_secret=somethingverysecrethere

@@ -3,15 +3,18 @@
  * @module controllers/authentication
  */
 const Joi = require('joi');
-const Boom = require('boom');
-const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
 const View = require('../lib/view');
-const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
-const Helpers = require('../lib/helpers');
 const joiPromise = require('../lib/joi-promise');
 const signIn = require('../lib/sign-in');
+
+class PasswordResetRequiredError extends Error {
+  constructor (message, resetGuid) {
+    super(message);
+    this.reset_guid = resetGuid;
+  }
+}
 
 /**
  * View signin page
@@ -53,15 +56,10 @@ function postSignin (request, reply) {
       return IDM.login(request.payload.user_id, request.payload.password);
     })
     .then((getUser) => {
-      console.log(getUser);
-
       // Check for password reset flag - if set don't log them in yet and force
       // password reset
-      if (getUser.body.reset_required && getUser.body.reset_required == 1) {
-        throw {
-          message: 'Password reset required',
-          reset_guid: getUser.body.reset_guid
-        };
+      if (getUser.body.reset_required && getUser.body.reset_required === 1) {
+        throw new PasswordResetRequiredError('Password reset required', getUser.body.reset_guid);
       }
 
       // OK, sign in user
@@ -78,9 +76,7 @@ function postSignin (request, reply) {
       // Forces password reset
       if (err.reset_guid) {
         reply.redirect('reset_password_change_password' + '?resetGuid=' + err.reset_guid + '&forced=1');
-      }
-      // Unauthorised status
-      else if ((err.statusCode && err.statusCode == 401) || (err.name && err.name == 'ValidationError')) {
+      } else if ((err.statusCode && err.statusCode === 401) || (err.name && err.name === 'ValidationError')) {
         var viewContext = View.contextDefaults(request);
         viewContext.payload = request.payload;
         viewContext.errors = {};

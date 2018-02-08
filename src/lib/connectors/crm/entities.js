@@ -40,7 +40,7 @@ client.getOrCreateIndividual = async function(emailAddress) {
   }
 
   if(data.length>1) {
-    throw new Error(`${ data.length } records found looking for entity with name ${ entity_nm }`);
+    throw new Error(`${ data.length } records found looking for entity with name ${ entityData.entity_nm }`);
   }
 
   if(data.length === 1) {

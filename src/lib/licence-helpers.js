@@ -10,8 +10,6 @@ const sortBy = require('lodash/sortBy');
 const LicenceTitleLoader = require('./licence-title-loader.js');
 const licenceTitleLoader = new LicenceTitleLoader();
 
-
-
 /**
  * Finds the relevant title and parameter titles from the supplied
  * CSV data, and returns that row object
@@ -21,10 +19,10 @@ const licenceTitleLoader = new LicenceTitleLoader();
  * @param {String} subCode - the licence condition sub-code
  * @return {Object|null} object corresponding to licence row (if found)
  */
-function _findTitle(data, code, subCode) {
-   return find(data, (item) => {
-      return (item.code === code) && (item.subCode === subCode);
-   });
+function _findTitle (data, code, subCode) {
+  return find(data, (item) => {
+    return (item.code === code) && (item.subCode === subCode);
+  });
 }
 
 /**
@@ -33,19 +31,18 @@ function _findTitle(data, code, subCode) {
  * @param {Object} point - abstraction point from licence data
  * @return {String} abstraction point info formatted as String
  */
-function _formatAbstractionPoint(point) {
+function _formatAbstractionPoint (point) {
   const {name, ngr1, ngr2, ngr3, ngr4} = point;
   const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
   return parts.join(', ');
 }
-
 
 /**
  * Convert points array to string of sorted IDs
  * @param {Array} points
  * @return {String}
  */
-function _pointsToStr(points) {
+function _pointsToStr (points) {
   return sortBy(points.map(_formatAbstractionPoint)).join('; ');
 }
 
@@ -55,7 +52,7 @@ function _pointsToStr(points) {
  * @param {Array} points2
  * @return {Boolean}
  */
-function _comparePoints(points1, points2) {
+function _comparePoints (points1, points2) {
   return pointsToStr(points1) === pointsToStr(points2);
 }
 
@@ -64,7 +61,7 @@ function _comparePoints(points1, points2) {
  * @param {Object} condition
  * @return {String}
  */
-function _conditionToStr(condition) {
+function _conditionToStr (condition) {
   const {code, subCode, parameter1, parameter2, description, purpose} = condition;
   return [code, subCode, parameter1, parameter2, description, purpose.id].join(',');
 }
@@ -75,7 +72,7 @@ function _conditionToStr(condition) {
  * @param {Object} cond2 - second condition
  * @return {Boolean} true if the same
  */
-function _compareConditions(cond1, cond2) {
+function _compareConditions (cond1, cond2) {
   return _conditionToStr(cond1) === _conditionToStr(cond2);
 }
 
@@ -85,7 +82,7 @@ function _compareConditions(cond1, cond2) {
  * @param {Array} points
  * @return {String} unique ID
  */
-function _createId(condition, purpose) {
+function _createId (condition, purpose) {
   const {points} = purpose;
   return condition.code + '-' + condition.subCode + '-' + sortBy(points.map(point => point.id)).join(',');
 }
@@ -97,8 +94,7 @@ function _createId(condition, purpose) {
  * @param {Object} purpose - the purpose
  * @return {Object} container for grouped conditions
  */
-async function _findCondition(data, condition, purpose) {
-
+async function _findCondition (data, condition, purpose) {
   // Read condition titles from CSV
   const titleData = await licenceTitleLoader.load();
 
@@ -107,7 +103,7 @@ async function _findCondition(data, condition, purpose) {
   const item = find(data, item => item.id === id);
 
   // Existing item found - return it
-  if(item) {
+  if (item) {
     return item;
   }
 
@@ -116,12 +112,12 @@ async function _findCondition(data, condition, purpose) {
   const titles = _findTitle(titleData, condition.code, condition.subCode);
 
   const newItem = {
-      id,
-      code : condition.code,
-      subCode : condition.subCode,
-      points : points.map(_formatAbstractionPoint),
-      conditions : [],
-      titles
+    id,
+    code: condition.code,
+    subCode: condition.subCode,
+    points: points.map(_formatAbstractionPoint),
+    conditions: [],
+    titles
   };
 
   data.push(newItem);
@@ -135,39 +131,33 @@ async function _findCondition(data, condition, purpose) {
  * @param {Object} licenceData
  * @return {Array} conditions
  */
-async function licenceConditions(licenceData) {
-
+async function licenceConditions (licenceData) {
   // Extract conditions from licence data and attach titles from CS
   const conditions = [];
 
-
   licenceData.purposes.forEach((purpose) => {
-
     purpose.conditions.forEach(async (condition) => {
-
-      if(!condition.code) {
+      if (!condition.code) {
         return;
       }
 
       // Find/create condition container
       const conditionContainer = await _findCondition(conditions, condition, purpose);
 
-
       const newCondition = {
         ...condition,
-        purpose : {
-          id : purpose.id,
-          description : purpose.description
+        purpose: {
+          id: purpose.id,
+          description: purpose.description
         }};
 
       // Avoid duplicates
       const found = find(conditionContainer.conditions, (item) => {
         return _compareConditions(item, newCondition);
       });
-      if(!found) {
+      if (!found) {
         conditionContainer.conditions.push(newCondition);
       }
-
     });
   });
 
@@ -176,15 +166,12 @@ async function licenceConditions(licenceData) {
   return conditions;
 }
 
-
-
-
 /**
  * A function to extract an array of licence numbers from a user-supplied string
  * @param {String} str - a string containing licence numbers
  * @return {Array} - array of unqiue matched licence numbers
  */
-function extractLicenceNumbers(str) {
+function extractLicenceNumbers (str) {
   // Return unique values
   // @see {@link https://stackoverflow.com/questions/1960473/get-all-unique-values-in-an-array-remove-duplicates}
   return str
@@ -192,7 +179,6 @@ function extractLicenceNumbers(str) {
     .filter(s => s)
     .filter((v, i, a) => a.indexOf(v) === i);
 }
-
 
 /**
  * A function to check whether an array of returned licences are similar
@@ -206,7 +192,7 @@ function extractLicenceNumbers(str) {
  * @param {Array} licences - array of licences returned from DB
  * @return {Boolean} - whether licences pass similarity test
  */
-function checkLicenceSimilarity(licences) {
+function checkLicenceSimilarity (licences) {
   const sanitize = (x) => {
     x = x.trim();
     x = x.replace('&', 'AND');
@@ -221,26 +207,25 @@ function checkLicenceSimilarity(licences) {
     return sanitize(licence.metadata.Postcode || '');
   }));
   // All 1 name or all 1 postcode - OK
-  if(names.length === 1 || postcodes.length === 1) {
+  if (names.length === 1 || postcodes.length === 1) {
     return true;
   }
   // All either same name or same postcode
   return (names.length + postcodes.length) <= 3;
 }
 
-
 /**
  * Get list of licences with unique addresses
  * @param {Array} licences - a full list of licences
  * @return {Array} a subset of licences containing only those with unique addresses (the first found)
  */
-function uniqueAddresses(licences) {
+function uniqueAddresses (licences) {
   const uniqueAddresses = [];
   const filteredList = [];
   licences.forEach((licence) => {
     const {AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode } = licence;
     const address = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode].join(', ').toUpperCase();
-    if(!uniqueAddresses.includes(address)) {
+    if (!uniqueAddresses.includes(address)) {
       uniqueAddresses.push(address);
       filteredList.push(licence);
     }
@@ -248,18 +233,17 @@ function uniqueAddresses(licences) {
   return filteredList;
 }
 
-
 /**
  * A function to get role flags from
  * supplied licences summary returned from CRM
  * @param {Array} summary - summary data from licences list call
  * @return {Object} with boolean flags for each user role and total licence count
  */
-function licenceRoles(summary) {
+function licenceRoles (summary) {
   const initial = {
-    user : false,
-    agent : false,
-    admin : false
+    user: false,
+    agent: false,
+    admin: false
   };
   return summary.reduce((memo, item) => {
     memo[item.role] = true;
@@ -273,12 +257,11 @@ function licenceRoles(summary) {
  * @param {Array} summary - summary data from licences list call
  * @return {Number} total licence count
  */
-function licenceCount(summary) {
+function licenceCount (summary) {
   return summary.reduce((memo, item) => {
     return memo + item.count;
   }, 0);
 }
-
 
 module.exports = {
   extractLicenceNumbers,

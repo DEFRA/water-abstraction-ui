@@ -5,18 +5,22 @@
  *
  * @module controllers/registration
  */
-const Boom = require('boom');
 const Joi = require('joi');
-const {difference, find} = require('lodash');
+const {difference} = require('lodash');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
-const joiPromise = require('../lib/joi-promise');
-const IDM = require('../lib/connectors/idm');
 const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
 const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
+
+const { LicenceNotFoundError,
+  LicenceMissingError,
+  LicenceSimilarityError,
+  InvalidAddressError,
+  NoLicencesSelectedError,
+  LicenceFlowError } = require('./licences-add-errors');
 
 /**
  * Render form to add licences to account
@@ -62,7 +66,7 @@ async function postLicenceAdd (request, reply) {
     // Get list of licence numbers from supplied data
     const licenceNumbers = extractLicenceNumbers(value.licence_no);
     if (licenceNumbers.length < 1) {
-      throw {name: 'ValidationError', details: [{message: 'No licence numbers submitted'}]};
+      throw new LicenceNotFoundError();
     }
 
     // Get unverified licences from DB
@@ -75,19 +79,19 @@ async function postLicenceAdd (request, reply) {
 
     // Check 1+ licences found
     if (res.data.length < 1) {
-      throw {name: 'LicenceNotFoundError', details: [{message: 'No licence numbers could be found', path: 'licence_no'}]};
+      throw new LicenceNotFoundError();
     }
 
     // Check # of licences returned = that searched for
-    if (res.data.length != licenceNumbers.length) {
+    if (res.data.length !== licenceNumbers.length) {
       const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
-      throw {name: 'LicenceMissingError', details: [{message: `Not all the licences could be found (missing ${missingNumbers})`, path: 'licence_no'}]};
+      throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
     }
 
     // Check licences are similar
     const similar = checkLicenceSimilarity(res.data);
     if (!similar) {
-      throw {name: 'LicenceSimilarityError', details: [{message: 'The licences failed an affinity check', path: 'licence_no'}]};
+      throw new LicenceSimilarityError();
     }
 
     viewContext.licences = res.data;
@@ -131,7 +135,7 @@ async function getLicenceSelect (request, reply) {
     const { documentIds } = addLicenceFlow;
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.findMany({ document_id: documentIds, verified: null, verification_id: null }, { system_external_id: +1});
+    const {data, error} = await CRM.documents.findMany({ document_id: documentIds, verified: null, verification_id: null }, { system_external_id: +1 });
 
     if (error) {
       throw error;
@@ -156,7 +160,7 @@ async function getLicenceSelect (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postLicenceSelect (request, reply) {
-  const { token, licences } = request.payload;
+  const { licences } = request.payload;
 
   try {
     const sessionData = await request.sessionStore.load();
@@ -211,7 +215,7 @@ async function getAddressSelect (request, reply) {
   try {
     // Load from session
     const {addLicenceFlow} = await request.sessionStore.load();
-    const {documentIds, selectedIds} = addLicenceFlow;
+    const {selectedIds} = addLicenceFlow;
 
     // Find licences in CRM for selected documents
     const { data } = await CRM.documents.findMany({document_id: selectedIds});
@@ -237,16 +241,16 @@ async function getAddressSelect (request, reply) {
  */
 async function postAddressSelect (request, reply) {
   const { address } = request.payload;
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
     // Load session data
     const sessionData = await request.sessionStore.load();
-    const {documentIds, selectedIds} = sessionData.addLicenceFlow;
+    const {selectedIds} = sessionData.addLicenceFlow;
 
     // Ensure address present in list of document IDs in data
     if (!selectedIds.includes(address)) {
-      throw {name: 'InvalidAddressError'};
+      throw new InvalidAddressError();
     }
 
     // Find licences in CRM for selected documents
@@ -256,10 +260,10 @@ async function postAddressSelect (request, reply) {
     }
 
     // Get company entity ID for current user
-    const companyEntityId = await CRM.getOrCreateCompanyEntity(entity_id, licenceData[0].metadata.Name);
+    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, licenceData[0].metadata.Name);
 
     // Create verification
-    const verification = await CRM.createVerification(entity_id, companyEntityId, selectedIds);
+    const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
 
     // Get the licence containing the selected verification address
     const { error, data } = await CRM.documents.findOne(address);
@@ -268,10 +272,10 @@ async function postAddressSelect (request, reply) {
     }
 
     // Post letter
-    const result = await Notify.sendSecurityCode(data, verification.verification_code);
+    await Notify.sendSecurityCode(data, verification.verification_code);
 
     // Get all licences - this is needed to determine whether to display link back to dashboard
-    const { error: err2, data: licences} = await CRM.documents.getLicences({verified: 1, entity_id});
+    const { error: err2, data: licences } = await CRM.documents.getLicences({verified: 1, entity_id: entityId});
     if (err2) {
       throw err2;
     }
@@ -310,13 +314,13 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
   requestDocumentIds = forceArray(requestDocumentIds);
 
   if (requestDocumentIds.length < 1) {
-    throw {name: 'NoLicencesSelectedError', details: [{ message: 'No licences selected'}]};
+    throw new NoLicencesSelectedError();
   };
 
   // Ensure all submitted licences are in token
   requestDocumentIds.forEach((documentId) => {
     if (!documentIds.includes(documentId)) {
-      throw {name: 'TokenError', details: [{ message: 'Licence/token mismatch'}]};
+      throw new LicenceFlowError();
     }
   });
 
@@ -333,10 +337,10 @@ async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
-  const {entity_id} = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
-    viewContext.licences = await CRM.getOutstandingLicenceRequests(entity_id);
+    viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
     return reply.view('water/licences-add/security-code', viewContext);
   } catch (error) {
     console.error(error);
@@ -353,21 +357,21 @@ async function postSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
-  const {entity_id} = request.auth.credentials;
+  const {entity_id: entityId} = request.auth.credentials;
 
   try {
     // Validate HTTP POST payload
     const schema = {
       verification_code: Joi.string().length(5).required()
     };
-    const {error, value} = Joi.validate(request.payload, schema);
+    const {error} = Joi.validate(request.payload, schema);
 
     if (error) {
       throw error;
     }
 
     // Verify
-    const response = await CRM.verify(entity_id, request.payload.verification_code);
+    await CRM.verify(entityId, request.payload.verification_code);
 
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
@@ -376,7 +380,7 @@ async function postSecurityCode (request, reply) {
 
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
-      viewContext.licences = await CRM.getOutstandingLicenceRequests(entity_id);
+      viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
       return reply.view('water/licences-add/security-code', viewContext);
     }

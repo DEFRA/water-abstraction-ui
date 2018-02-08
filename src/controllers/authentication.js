@@ -13,6 +13,7 @@ class PasswordResetRequiredError extends Error {
   constructor (message, resetGuid) {
     super(message);
     this.reset_guid = resetGuid;
+    this.name = 'PasswordResetRequiredError';
   }
 }
 

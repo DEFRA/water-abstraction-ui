@@ -2,9 +2,9 @@
  * HAPI Route handlers for viewing and managing licences
  * @module controllers/licences
  */
-const Boom = require('boom');
-const BaseJoi = require('joi');
 
+/* eslint "new-cap" : ["warn", { "newIsCap": true }] */
+const Boom = require('boom');
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
 const Notify = require('../lib/connectors/notify');
@@ -13,7 +13,7 @@ const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 const LicenceTransformer = require('../lib/licence-transformer/');
 
-const {licenceRoles, licenceCount, licenceConditions} = require('../lib/licence-helpers');
+const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
 const Joi = require('joi');
 
 /**
@@ -30,11 +30,11 @@ const Joi = require('joi');
 async function getLicences (request, reply) {
   const viewContext = View.contextDefaults(request);
 
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   // Get filtered list of licences
   const filter = {
-    entity_id,
+    entity_id: entityId,
     string: request.query.licenceNumber,
     email: request.query.emailAddress
   };
@@ -66,7 +66,7 @@ async function getLicences (request, reply) {
     // Look up user for email filter
     if (value.emailAddress && !error) {
       try {
-        const user = await IDM.getUser(value.emailAddress);
+        await IDM.getUser(value.emailAddress);
       } catch (error) {
         // User not found
         if (error.statusCode === 404) {
@@ -81,13 +81,13 @@ async function getLicences (request, reply) {
     const { data, err, summary } = await CRM.documents.getLicences(filter, sort);
 
     if (err) {
-      throw Boom.badImplementation('CRM error', response);
+      throw Boom.badImplementation('CRM error', err);
     }
 
     // Does user have no licences to view?
     if (data.length < 1 && !filter.string && !filter.email) {
       // Does user have outstanding verification codes?
-      const { data: verifications, error } = await CRM.verification.findMany({entity_id, date_verified: null});
+      const { data: verifications, error } = await CRM.verification.findMany({entity_id: entityId, date_verified: null});
       if (error) {
         throw error;
       }
@@ -131,7 +131,7 @@ async function getLicences (request, reply) {
  * @param {Object} [context] - additional view context data
  */
 async function renderLicencePage (view, pageTitle, request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
 
@@ -139,7 +139,7 @@ async function renderLicencePage (view, pageTitle, request, reply, context = {})
 
   // Get filtered list of licences
   const filter = {
-    entity_id,
+    entity_id: entityId,
     document_id: request.params.licence_id
   };
 
@@ -149,7 +149,7 @@ async function renderLicencePage (view, pageTitle, request, reply, context = {})
     if (response.error) {
       throw Boom.badImplementation(`CRM error`, response);
     }
-    if (response.data.length != 1) {
+    if (response.data.length !== 1) {
       throw new Boom.notFound('Document not found in CRM', response);
     }
     viewContext.crmData = response.data[0];
@@ -238,11 +238,11 @@ function getLicencePurposes (request, reply, context = {}) {
  */
 function postLicence (request, reply) {
   const { name } = request.payload;
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   // Prepare filter for filtering licence list from CRM
   const filter = {
-    entity_id,
+    entity_id: entityId,
     document_id: request.params.licence_id
   };
 
@@ -252,7 +252,7 @@ function postLicence (request, reply) {
   };
   const {error, value} = Joi.validate({name}, schema, {abortEarly: false});
   if (error) {
-    return getLicenceRename(request, reply, {error, name: request.payload.name });
+    return getLicenceRename(request, reply, { error, name: request.payload.name });
   }
 
   CRM.documents.getLicences(filter)
@@ -266,10 +266,10 @@ function postLicence (request, reply) {
       }
 
       // Get the document ID from the returned CRM data
-      const { document_id, system_internal_id } = response.data[0];
+      const { document_id: documentId } = response.data[0];
 
       // Udpate licence name in CRM
-      return CRM.documents.setLicenceName(document_id, value.name);
+      return CRM.documents.setLicenceName(documentId, value.name);
     })
     .then((response) => {
       // Licence updated - redirect to licence view
@@ -286,7 +286,7 @@ function postLicence (request, reply) {
  */
 
 async function getAccessList (request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   // Sorting
   const sortFields = {entity_nm: 'entity_nm', created_at: 'created_at'};
@@ -300,11 +300,11 @@ async function getAccessList (request, reply, context = {}) {
   viewContext.sort = sortField;
 
   viewContext.pageTitle = 'Manage access to your licences';
-  viewContext.entity_id = entity_id;
+  viewContext.entity_id = entityId;
   // get list of role  s in same org as current user
   // need to ensure that current user is admin...
 
-  const licenceAccess = await CRM.entityRoles.getEditableRoles(entity_id, sortField, direction);
+  const licenceAccess = await CRM.entityRoles.getEditableRoles(entityId, sortField, direction);
   viewContext.licenceAccess = JSON.parse(licenceAccess);
   return reply.view('water/manage_licences', viewContext);
 }
@@ -316,7 +316,6 @@ async function getAccessList (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 function getAddAccess (request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = 'Manage access to your licences';
   // get list of roles in same org as current user
@@ -331,7 +330,7 @@ function getAddAccess (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 function postAddAccess (request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.pageTitle = 'Manage access to your licences';
   viewContext.email = request.payload.email;
@@ -352,16 +351,14 @@ function postAddAccess (request, reply, context = {}) {
         .then((response) => {
           console.log('*** createUserWithoutPassword *** ' + request.payload.email);
           if (response.error) {
-            notified = Notify.sendAccesseNotification({newUser: false, email: request.payload.email, sender: request.auth.credentials.username})
+            Notify.sendAccesseNotification({newUser: false, email: request.payload.email, sender: request.auth.credentials.username})
               .then((d) => {
                 console.log(d);
               }).catch((e) => {
                 console.log(e);
               });
-            // send notify email!!!
-            //      throw Boom.badImplementation('IDM error', response.error);
           } else {
-            notified = Notify.sendAccesseNotification({newUser: true, email: request.payload.email, sender: request.auth.credentials.username}).then((d) => {
+            Notify.sendAccesseNotification({newUser: true, email: request.payload.email, sender: request.auth.credentials.username}).then((d) => {
               console.log(d);
             }).catch((e) => {
               console.log(e);
@@ -376,7 +373,7 @@ function postAddAccess (request, reply, context = {}) {
           return CRM.entities.getOrCreateIndividual(request.payload.email);
         }).then(async () => {
           console.log('add role');
-          const licenceAccess = await CRM.entityRoles.addColleagueRole(entity_id, request.payload.email);
+          await CRM.entityRoles.addColleagueRole(entityId, request.payload.email);
           return reply.view('water/manage_licences_added_access', viewContext);
         });
     }
@@ -390,10 +387,10 @@ function postAddAccess (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 async function getRemoveAccess (request, reply, context = {}) {
-  const { entity_id } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.email = request.query.email;
-  const licenceAccess = await CRM.entitytRoles.deleteColleagueRole(entity_id, request.query.entity_role_id);
+  await CRM.entitytRoles.deleteColleagueRole(entityId, request.query.entity_role_id);
   console.log('viewContext ', viewContext);
   viewContext.pageTitle = 'Manage access to your licences';
   // get list of roles in same org as current user

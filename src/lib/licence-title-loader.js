@@ -2,7 +2,6 @@ const fs = require('fs');
 const Promise = require('bluebird');
 const readFile = Promise.promisify(fs.readFile);
 const csvParse = Promise.promisify(require('csv-parse'));
-const sentenceCase = require('sentence-case');
 
 /**
  * Loads and transforms licence condition title data from

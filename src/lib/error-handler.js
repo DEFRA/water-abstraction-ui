@@ -36,13 +36,11 @@ module.exports = function (request, reply) {
     // Not found
     if (statusCode === 404) {
       reply.view('water/404.html', {session}).code(statusCode);
-    }
-    // Unauthorised
-    else if (statusCode >= 401 && statusCode <= 403) {
+    } else if (statusCode >= 401 && statusCode <= 403) {
+      // Unauthorised
       reply.redirect('/login');
-    }
-    // Other error
-    else {
+    } else {
+      // Other error
       const viewContext = {
         topOfPage: null,
         bodyStart: null,

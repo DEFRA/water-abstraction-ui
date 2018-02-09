@@ -1,17 +1,5 @@
-
-const pathToTemplates = __dirname + '/../views/partials/jsPartials/';
-
-/**
-dynamically require all .js files in views/partials/jsPartials/, for use in
-
-  {{#dynamicView viewType="example" viewData=this}}{{/dynamicView}}
-
-  Usage:
-
-    {{#dynamicView viewType="[name of .js file]" viewData=[data to send to function]}}{{/dynamicView}}
-
-handlebars templates
-**/
+const path = require('path');
+const pathToTemplates = path.join(__dirname, '/../views/partials/jsPartials/');
 
 require('fs').readdirSync(pathToTemplates).forEach(function (file) {
   if (file.match(/\.js$/) !== null && file !== 'index.js') {

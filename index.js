@@ -97,7 +97,7 @@ server.register([
 
   server.auth.strategy('standard', 'cookie', {
     password: process.env.cookie_secret, // cookie secret
-    isSecure: !!(process.env.NODE_ENV || '').match(/^preprod|production$/i), // use secure cookie in production/preprod
+    isSecure: !!process.env.NODE_ENV, // use secure cookie in dev/test/production/preprod
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',

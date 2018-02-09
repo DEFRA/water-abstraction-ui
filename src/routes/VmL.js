@@ -1,6 +1,6 @@
-
-const VmL = require('../lib/VmL');
 const Joi = require('joi');
+const path = require('path');
+const VmL = require('../lib/VmL');
 
 const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
@@ -18,9 +18,10 @@ module.exports = [
     path: '/',
     handler: function (request, reply) {
       console.log(request.query);
-      if (request.query.access && request.query.access == 'PB01') {
+      if (request.query.access && request.query.access === 'PB01') {
         var fs = require('fs');
-        fs.readFile(__dirname + '/../views/water/index.html', function (err, data) {
+        const indexPath = path.join(__dirname, '/../views/water/index.html');
+        fs.readFile(indexPath, function (err, data) {
           if (err) {
             throw err;
           }
@@ -35,11 +36,10 @@ module.exports = [
         query: {
           access: Joi.string().max(4)
         }
-      } },
-    config: { auth: false }
+      } }
   },
 
-  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: {auth: false, description: 'Ooh. Robots'}},
+  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },

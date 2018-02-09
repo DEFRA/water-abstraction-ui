@@ -1,9 +1,5 @@
-const Helpers = require('../lib/helpers');
 const View = require('../lib/view');
-const CRM = require('./connectors/crm');
 const IDM = require('./connectors/idm');
-const Water = require('./connectors/water');
-const Permit = require('./connectors/permit');
 const signIn = require('../lib/sign-in');
 
 function getRoot (request, reply) {
@@ -13,7 +9,7 @@ function getRoot (request, reply) {
 function getUpdatePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
   if (!request.auth.credentials) {
-    getSignin(request, reply);
+    reply.redirect('/signin');
   } else {
     viewContext.pageTitle = 'GOV.UK - change your password';
     return reply.view('water/update_password', viewContext);
@@ -71,7 +67,7 @@ function validatePassword (password, confirmPassword) {
     return passwordValidationFailures;
   }
 
-  if (password != confirmPassword) {
+  if (password !== confirmPassword) {
     console.log('Passwords dont match!');
     console.log(password);
     console.log(confirmPassword);
@@ -106,7 +102,7 @@ function postUpdatePassword (request, reply) {
       throw errors;
     }
 
-    const {error, data} = IDM.updatePassword(username, password);
+    const {error} = IDM.updatePassword(username, password);
     if (error) {
       throw error;
     }
@@ -149,6 +145,13 @@ function getResetPasswordLink (request, reply) {
   return reply.view('water/reset_password_get_link', viewContext);
 }
 
+class UserNotFoundError extends Error {
+  constructor (message) {
+    super(message);
+    this.name = 'UserNotFoundError';
+  }
+}
+
 async function getResetPasswordChangePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - update your password';
@@ -158,7 +161,7 @@ async function getResetPasswordChangePassword (request, reply) {
     // Check for valid reset GUID
     const user = await IDM.getUserByResetGuid(request.query.resetGuid);
     if (!user) {
-      throw {name: 'UserNotFoundError'};
+      throw new UserNotFoundError();
     }
 
     if (request.query.forced) {
@@ -184,7 +187,7 @@ function postCreatePassword (request, reply) {
 
 function validateEmailAddress (emailAddress) {
   // Regex taken from Stack Overflow, we may want to validate this properly at some point
-  var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (emailAddress === '' || !emailRegex.test(emailAddress)) {
     return {
       invalidEmailAddress: true
@@ -200,6 +203,7 @@ function resetPasswordImpl (request, reply, redirect, title, errorRedirect) {
     IDM.resetPassword(request.payload.email_address).then((res) => {
       return reply.redirect(redirect);
     }).catch((err) => {
+      console.error(err);
       // Aways show OK
       return reply.redirect(redirect);
     });
@@ -269,7 +273,7 @@ async function postResetPasswordChangePassword (request, reply) {
     // Find user in IDM
     const user = await IDM.getUserByResetGuid(request.payload.resetGuid);
     if (!user) {
-      throw {name: 'UserNotFoundError'};
+      throw new UserNotFoundError();
     }
     console.log('user', user);
 
@@ -280,7 +284,7 @@ async function postResetPasswordChangePassword (request, reply) {
     }
 
     // Log user in
-    const session = await signIn.auto(request, user.user_name);
+    await signIn.auto(request, user.user_name);
 
     reply.redirect('/licences');
   } catch (error) {

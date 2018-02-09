@@ -4,6 +4,7 @@ node_js:
 install:
   - npm install
 script:
+  - npm run lint
   - echo "Completed"
 env:
   global:

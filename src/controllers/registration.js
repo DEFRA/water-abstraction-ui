@@ -2,14 +2,10 @@
  * HAPI Route handlers for registering a user account
  * @module controllers/registration
  */
-const Boom = require('boom');
 const Joi = require('joi');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
-const joiPromise = require('../lib/joi-promise');
 const IDM = require('../lib/connectors/idm');
-const Notify = require('../lib/connectors/notify');
-const CRM = require('../lib/connectors/crm');
 
 /**
  * Render form to get user email address
@@ -52,7 +48,7 @@ async function postEmailAddress (request, reply, options = {}) {
     }
 
     // Try to create user
-    const {error: createError, data} = await IDM.createUserWithoutPassword(value.email);
+    const {error: createError} = await IDM.createUserWithoutPassword(value.email);
 
     if (createError) {
       throw createError;
@@ -62,11 +58,11 @@ async function postEmailAddress (request, reply, options = {}) {
     return reply.redirect(config.redirect);
   } catch (error) {
     // User exists
-    if (error.name == 'DBError' && error.code == 23505) {
-      const {error: resetError, data} = await IDM.resetPassword(request.payload.email, 'existing');
+    if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
+      const {error: resetError} = await IDM.resetPassword(request.payload.email, 'existing');
       if (resetError) {
-        error = resetError;
         console.error(resetError);
+        return errorHandler(request, reply)(resetError);
       } else {
         return reply.redirect(config.redirect);
       }

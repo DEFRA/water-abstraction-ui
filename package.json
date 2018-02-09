@@ -6,7 +6,7 @@
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
     "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
-    "test": "lab -t 60 -m 3000",
+    "test": "snyk test && lab -t 60 -m 3000",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix"
@@ -30,7 +30,8 @@
     "run-sequence": "^2.2.1",
     "sinon": "^4.2.2",
     "standard": "^10.0.3",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "snyk": "^1.69.7"
   },
   "dependencies": {
     "async-waterfall": "^0.1.5",
@@ -47,9 +48,6 @@
     "govuk-elements-sass": "^3.1.2",
     "govuk_frontend_toolkit": "^7.3.0",
     "govuk_template_mustache": "^0.22.3",
-    "gulp": "^3.9.1",
-    "gulp-run-sequence": "^0.3.2",
-    "gulp-sass": "^3.1.0",
     "handlebars": "^4.0.11",
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^16.6.2",

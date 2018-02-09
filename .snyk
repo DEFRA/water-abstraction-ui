@@ -1,0 +1,20 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.10.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:tunnel-agent:20170305':
+    - node-hapi-airbrake > airbrake > request > tunnel-agent:
+        reason: No update available
+        expires: '2018-03-11T12:25:29.787Z'
+  'npm:tough-cookie:20170905':
+    - node-hapi-airbrake > airbrake > request > tough-cookie:
+        reason: No update available
+        expires: '2018-03-11T12:25:29.787Z'
+    - notifications-node-client > request > tough-cookie:
+        reason: No update available
+        expires: '2018-03-11T12:25:29.788Z'
+  'npm:sync-exec:20160124':
+    - node-hapi-airbrake > airbrake > sync-exec:
+        reason: No update available
+        expires: '2018-03-11T12:25:29.788Z'
+patch: {}

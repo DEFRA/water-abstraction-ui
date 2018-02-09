@@ -3,6 +3,8 @@
 
 [![Build Status](https://travis-ci.org/DEFRA/water-abstraction-ui.svg?branch=master)](https://travis-ci.org/DEFRA/water-abstraction-ui)
 
+[![Known Vulnerabilities](https://snyk.io/test/github/DEFRA/water-abstraction-ui/badge.svg)](https://snyk.io/test/github/DEFRA/water-abstraction-ui)
+
 Project for the GOV.UK Water Abstraction service
 
 ## Installation

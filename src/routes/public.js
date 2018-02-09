@@ -42,7 +42,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/javascripts/{param*}',
-    config: { auth: false }, 
+    config: { auth: false },
     handler: {
       directory: {
         path: 'public/javascripts',
@@ -52,6 +52,4 @@ module.exports = [
     }
   }
 
-
-
-]
+];

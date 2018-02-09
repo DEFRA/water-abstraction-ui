@@ -5,33 +5,33 @@
  *
  * @module controllers/registration
  */
-const Boom = require('boom');
 const Joi = require('joi');
-const {difference, find} = require('lodash');
+const {difference} = require('lodash');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
-const joiPromise = require('../lib/joi-promise');
-const IDM = require('../lib/connectors/idm');
 const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
-
-
 const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
+
+const { LicenceNotFoundError,
+  LicenceMissingError,
+  LicenceSimilarityError,
+  InvalidAddressError,
+  NoLicencesSelectedError,
+  LicenceFlowError } = require('./licences-add-errors');
 
 /**
  * Render form to add licences to account
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-async function getLicenceAdd(request, reply) {
+async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Add Licence';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
-
-
 
 /**
  * Post handler for adding licences
@@ -46,8 +46,7 @@ async function getLicenceAdd(request, reply) {
  * @param {String} request.payload.licence_no - user-entered licence numbers
  * @param {Object} reply - HAPI HTTP reply
  */
-async function postLicenceAdd(request, reply) {
-
+async function postLicenceAdd (request, reply) {
   // @TODO relevant validation messages
 
   const viewContext = View.contextDefaults(request);
@@ -55,70 +54,67 @@ async function postLicenceAdd(request, reply) {
 
   // Validate posted data
   const schema = {
-    licence_no : Joi.string().required().allow('').trim().max(9000)
+    licence_no: Joi.string().required().allow('').trim().max(9000)
   };
   try {
-      // Validate post data
-      const {error, value} = Joi.validate(request.payload, schema);
-      if(error) {
-        throw error;
-      }
+    // Validate post data
+    const {error, value} = Joi.validate(request.payload, schema);
+    if (error) {
+      throw error;
+    }
 
-      // Get list of licence numbers from supplied data
-      const licenceNumbers = extractLicenceNumbers(value.licence_no);
-      if(licenceNumbers.length < 1) {
-        throw {name : 'ValidationError', details : [{message : 'No licence numbers submitted'}]};
-      }
+    // Get list of licence numbers from supplied data
+    const licenceNumbers = extractLicenceNumbers(value.licence_no);
+    if (licenceNumbers.length < 1) {
+      throw new LicenceNotFoundError();
+    }
 
-      // Get unverified licences from DB
-      const res = await CRM.documents.findMany({
-        system_external_id : licenceNumbers, verified : null, verification_id : null
-      });
-      if(res.error) {
-        throw res.error;
-      }
+    // Get unverified licences from DB
+    const res = await CRM.documents.findMany({
+      system_external_id: licenceNumbers, verified: null, verification_id: null
+    });
+    if (res.error) {
+      throw res.error;
+    }
 
-      // Check 1+ licences found
-      if(res.data.length < 1) {
-        throw {name : 'LicenceNotFoundError', details : [{message : 'No licence numbers could be found', path : 'licence_no'}]};
-      }
+    // Check 1+ licences found
+    if (res.data.length < 1) {
+      throw new LicenceNotFoundError();
+    }
 
-      // Check # of licences returned = that searched for
-      if(res.data.length != licenceNumbers.length) {
-        const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
-        throw {name : 'LicenceMissingError', details : [{message : `Not all the licences could be found (missing ${missingNumbers})`, path : 'licence_no'}]};
-      }
+    // Check # of licences returned = that searched for
+    if (res.data.length !== licenceNumbers.length) {
+      const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
+      throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
+    }
 
-      // Check licences are similar
-      const similar = checkLicenceSimilarity(res.data);
-      if(!similar) {
-        throw {name : 'LicenceSimilarityError', details : [{message : 'The licences failed an affinity check', path : 'licence_no'}]};
-      }
+    // Check licences are similar
+    const similar = checkLicenceSimilarity(res.data);
+    if (!similar) {
+      throw new LicenceSimilarityError();
+    }
 
-      viewContext.licences = res.data;
+    viewContext.licences = res.data;
 
-      // Seal the list of permitted licence numbers into a token
-      // to prevent validation needing to be repeated on following step
-      const documentIds = res.data.map(item => item.document_id);
+    // Seal the list of permitted licence numbers into a token
+    // to prevent validation needing to be repeated on following step
+    const documentIds = res.data.map(item => item.document_id);
 
-      // Store document IDs in session
-      const sessionData = await request.sessionStore.load();
-      sessionData.addLicenceFlow = {documentIds};
-      await request.sessionStore.save(sessionData);
+    // Store document IDs in session
+    const sessionData = await request.sessionStore.load();
+    sessionData.addLicenceFlow = {documentIds};
+    await request.sessionStore.save(sessionData);
 
-      reply.redirect('/select-licences');
-  }
-  catch (err) {
+    reply.redirect('/select-licences');
+  } catch (err) {
     console.log(err);
-    if(['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
+    if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
       return reply.view('water/licences-add/add-licences', viewContext);
     }
     errorHandler(request, reply)(err);
   }
-
 }
-
 
 /**
  * Select licences to add in this verification step
@@ -126,36 +122,31 @@ async function postLicenceAdd(request, reply) {
  * @param {String} request.query.token - the Iron encoded token
  * @param {Object} reply - HAPI HTTP reply
  */
-async function getLicenceSelect(request, reply) {
-
+async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Select Licences';
 
-  if(request.query.error === 'noLicenceSelected') {
-    viewContext.error = {name : 'LicenceNotSelectedError'};
+  if (request.query.error === 'noLicenceSelected') {
+    viewContext.error = {name: 'LicenceNotSelectedError'};
   }
 
   try {
-
     const { addLicenceFlow } = await request.sessionStore.load();
     const { documentIds } = addLicenceFlow;
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.findMany({ document_id : documentIds, verified : null, verification_id : null }, { system_external_id : +1});
+    const {data, error} = await CRM.documents.findMany({ document_id: documentIds, verified: null, verification_id: null }, { system_external_id: +1 });
 
-    if(error) {
+    if (error) {
       throw error;
     }
 
     viewContext.licences = data;
     viewContext.token = request.query.token;
     return reply.view('water/licences-add/select-licences', viewContext);
-
-  }
-  catch (err) {
+  } catch (err) {
     reply.redirect('/add-licences?error=flow');
   }
-
 }
 
 /**
@@ -168,12 +159,10 @@ async function getLicenceSelect(request, reply) {
  * @param {Array|String} request.payload.licences - array of licences selected (or string if 1)
  * @param {Object} reply - HAPI HTTP reply
  */
-async function postLicenceSelect(request, reply) {
-
-  const { token, licences } = request.payload;
+async function postLicenceSelect (request, reply) {
+  const { licences } = request.payload;
 
   try {
-
     const sessionData = await request.sessionStore.load();
     const { documentIds } = sessionData.addLicenceFlow;
 
@@ -187,18 +176,14 @@ async function postLicenceSelect(request, reply) {
     await request.sessionStore.save(sessionData);
 
     reply.redirect('/select-address');
-  }
-  catch (err) {
-
+  } catch (err) {
     console.log(err);
-    if(err.name === 'NoLicencesSelectedError') {
+    if (err.name === 'NoLicencesSelectedError') {
       return reply.redirect('/select-licences?error=noLicenceSelected');
     }
     errorHandler(request, reply)(err);
   }
-
 }
-
 
 /**
  * There has been an error uploading/selecting licences
@@ -206,13 +191,11 @@ async function postLicenceSelect(request, reply) {
  * @param {Object} request - HAPI HTTP request instance
  * @param {Object} reply - HAPI HTTP reply instance
  */
-function getLicenceSelectError(request, reply) {
+function getLicenceSelectError (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Contact Us';
   return reply.view('water/licences-add/select-licences-error', viewContext);
 }
-
-
 
 /**
  * Renders an HTML form for the user to select their address for postal
@@ -221,38 +204,32 @@ function getLicenceSelectError(request, reply) {
  * @param {Object} request.query - GET query params
  * @param {String} request.query.token - signed Iron token containing all and selected licence IDs
  */
-async function getAddressSelect(request, reply) {
-
+async function getAddressSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Choose Address';
 
-  if(request.query.error === 'invalidAddress') {
-    viewContext.error = {name : 'AddressInvalidError'};
+  if (request.query.error === 'invalidAddress') {
+    viewContext.error = {name: 'AddressInvalidError'};
   }
 
   try {
     // Load from session
     const {addLicenceFlow} = await request.sessionStore.load();
-    const {documentIds, selectedIds} = addLicenceFlow;
+    const {selectedIds} = addLicenceFlow;
 
     // Find licences in CRM for selected documents
-    const { data } = await CRM.documents.findMany({document_id : selectedIds});
+    const { data } = await CRM.documents.findMany({document_id: selectedIds});
 
     const uniqueAddressLicences = uniqueAddresses(data);
 
     viewContext.licences = uniqueAddressLicences;
 
     return reply.view('water/licences-add/select-address', viewContext);
-
-  }
-  catch(err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     errorHandler(request, reply)(err);
   }
-
 }
-
-
 
 /**
  * Post handler for select address form
@@ -262,69 +239,66 @@ async function getAddressSelect(request, reply) {
  * @param {String} request.payload.address - documentId for licence with address for post verify
  * @param {Object} reply - HAPI HTTP reply
  */
-async function postAddressSelect(request, reply) {
-    const { address } = request.payload;
-    const { entity_id } = request.auth.credentials;
+async function postAddressSelect (request, reply) {
+  const { address } = request.payload;
+  const { entity_id: entityId } = request.auth.credentials;
 
-    try {
+  try {
+    // Load session data
+    const sessionData = await request.sessionStore.load();
+    const {selectedIds} = sessionData.addLicenceFlow;
 
-      // Load session data
-      const sessionData = await request.sessionStore.load();
-      const {documentIds, selectedIds} = sessionData.addLicenceFlow;
-
-      // Ensure address present in list of document IDs in data
-      if(!selectedIds.includes(address)) {
-        throw {name : 'InvalidAddressError'};
-      }
-
-      // Find licences in CRM for selected documents
-      const { data : licenceData, error : licenceError } = await CRM.documents.findMany({document_id : selectedIds});
-      if(licenceError) {
-        throw licenceError;
-      }
-
-      // Get company entity ID for current user
-      const companyEntityId = await CRM.getOrCreateCompanyEntity(entity_id, licenceData[0].metadata.Name);
-
-      // Create verification
-      const verification = await CRM.createVerification(entity_id, companyEntityId, selectedIds);
-
-      // Get the licence containing the selected verification address
-      const { error, data } = await CRM.documents.findOne(address);
-      if(error) {
-        throw error;
-      }
-
-      // Post letter
-      const result = await Notify.sendSecurityCode(data, verification.verification_code);
-
-      // Get all licences - this is needed to determine whether to display link back to dashboard
-      const { error: err2, data: licences} = await CRM.documents.getLicences({verified : 1, entity_id});
-      if(err2) {
-        throw err2;
-      }
-
-      // Delete data in session
-      delete sessionData.addLicenceFlow;
-      await request.sessionStore.save(sessionData);
-
-      const viewContext = View.contextDefaults(request);
-      viewContext.pageTitle = 'GOV.UK - Security Code Sent';
-      viewContext.verification = verification;
-      viewContext.licence = data;
-      viewContext.licenceCount = licences.length;
-      viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
-
-      return reply.view('water/licences-add/verification-sent', viewContext);
+    // Ensure address present in list of document IDs in data
+    if (!selectedIds.includes(address)) {
+      throw new InvalidAddressError();
     }
-    catch (err) {
 
-      if(err.name === 'InvalidAddressError') {
-        return reply.redirect('/select-address?error=invalidAddress');
-      }
-
-      errorHandler(request, reply)(err);
+    // Find licences in CRM for selected documents
+    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({document_id: selectedIds});
+    if (licenceError) {
+      throw licenceError;
     }
+
+    // Get company entity ID for current user
+    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, licenceData[0].metadata.Name);
+
+    // Create verification
+    const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
+
+    // Get the licence containing the selected verification address
+    const { error, data } = await CRM.documents.findOne(address);
+    if (error) {
+      throw error;
+    }
+
+    // Post letter
+    await Notify.sendSecurityCode(data, verification.verification_code);
+
+    // Get all licences - this is needed to determine whether to display link back to dashboard
+    const { error: err2, data: licences } = await CRM.documents.getLicences({verified: 1, entity_id: entityId});
+    if (err2) {
+      throw err2;
+    }
+
+    // Delete data in session
+    delete sessionData.addLicenceFlow;
+    await request.sessionStore.save(sessionData);
+
+    const viewContext = View.contextDefaults(request);
+    viewContext.pageTitle = 'GOV.UK - Security Code Sent';
+    viewContext.verification = verification;
+    viewContext.licence = data;
+    viewContext.licenceCount = licences.length;
+    viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
+
+    return reply.view('water/licences-add/verification-sent', viewContext);
+  } catch (err) {
+    if (err.name === 'InvalidAddressError') {
+      return reply.redirect('/select-address?error=invalidAddress');
+    }
+
+    errorHandler(request, reply)(err);
+  }
 }
 
 /**
@@ -336,18 +310,17 @@ async function postAddressSelect(request, reply) {
  * @param {Array|String} requestDocumentIds - a single licence doc ID or list of doc IDs
  * @return {Array} - list of doc IDs that were included in the token
  */
-function verifySelectedLicences(documentIds, requestDocumentIds) {
-
+function verifySelectedLicences (documentIds, requestDocumentIds) {
   requestDocumentIds = forceArray(requestDocumentIds);
 
-  if(requestDocumentIds.length < 1) {
-    throw {name : 'NoLicencesSelectedError', details : [{ message : 'No licences selected'}]}
+  if (requestDocumentIds.length < 1) {
+    throw new NoLicencesSelectedError();
   };
 
   // Ensure all submitted licences are in token
   requestDocumentIds.forEach((documentId) => {
-    if(!documentIds.includes(documentId)) {
-      throw {name : 'TokenError', details : [{ message : 'Licence/token mismatch'}]};
+    if (!documentIds.includes(documentId)) {
+      throw new LicenceFlowError();
     }
   });
 
@@ -355,65 +328,59 @@ function verifySelectedLicences(documentIds, requestDocumentIds) {
   return requestDocumentIds;
 }
 
-
 /**
  * Verify licences with code received in post
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-async function getSecurityCode(request, reply) {
+async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
-  const {entity_id} = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
-    viewContext.licences = await CRM.getOutstandingLicenceRequests(entity_id);
+    viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
     return reply.view('water/licences-add/security-code', viewContext);
-  }
-  catch(error) {
+  } catch (error) {
     console.error(error);
     errorHandler(request, reply)(error);
   }
 }
-
 
 /**
  * Post handler for auth code form
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-async function postSecurityCode(request, reply) {
+async function postSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
-  const {entity_id} = request.auth.credentials;
+  const {entity_id: entityId} = request.auth.credentials;
 
   try {
-
     // Validate HTTP POST payload
     const schema = {
-        verification_code : Joi.string().length(5).required()
+      verification_code: Joi.string().length(5).required()
     };
-    const {error, value} = Joi.validate(request.payload, schema);
+    const {error} = Joi.validate(request.payload, schema);
 
-    if(error) {
+    if (error) {
       throw error;
     }
 
     // Verify
-    const response = await CRM.verify(entity_id, request.payload.verification_code);
+    await CRM.verify(entityId, request.payload.verification_code);
 
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
-  }
-  catch(error) {
-
+  } catch (error) {
     console.error(error);
 
     // Verification code invalid
-    if(['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
-      viewContext.licences = await CRM.getOutstandingLicenceRequests(entity_id);
+    if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
+      viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
       return reply.view('water/licences-add/security-code', viewContext);
     }
@@ -421,7 +388,6 @@ async function postSecurityCode(request, reply) {
     errorHandler(request, reply)(error);
   }
 }
-
 
 module.exports = {
   getLicenceAdd,

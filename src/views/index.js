@@ -47,7 +47,7 @@ handlebars.registerHelper('sortIcon', function (context, options) {
   const {direction, sort, field} = arguments[0].hash;
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
 
-  if (sort == field) {
+  if (sort === field) {
     return '<span class="sort-icon">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
   }
 });
@@ -146,22 +146,22 @@ handlebars.registerHelper('formatToDate', function (dateInput, defaultValue) {
   }
   var date = moment(dateInput, 'MM/DD/YYYY');
   if (!date.isValid()) {
-    var date = moment(dateInput, 'DD/MM/YYYY');
+    date = moment(dateInput, 'DD/MM/YYYY');
   }
   return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
 });
 
 handlebars.registerHelper('formatPeriod', function (inputStart = '', inputEnd = '') {
-  if (inputStart.indexOf('-') != -1) {
-    var tmp_inputStart = inputStart.split('-')[0] + '/' + inputStart.split('-')[1] + '/2000';
-    var tmp_inputEnd = inputEnd.split('-')[0] + '/' + inputEnd.split('-')[1] + '/2000';
-    var periodStart = moment(tmp_inputStart, 'DD/MMM/YYYY');
-    var periodEnd = moment(tmp_inputEnd, 'DD/MMM/YYYY');
+  if (inputStart.indexOf('-') !== -1) {
+    var tmpInputStart = inputStart.split('-')[0] + '/' + inputStart.split('-')[1] + '/2000';
+    var tmpInputEnd = inputEnd.split('-')[0] + '/' + inputEnd.split('-')[1] + '/2000';
+    var periodStart = moment(tmpInputStart, 'DD/MMM/YYYY');
+    var periodEnd = moment(tmpInputEnd, 'DD/MMM/YYYY');
   } else {
-    var tmp_inputStart = inputStart + '/2000';
-    var tmp_inputEnd = inputEnd + '/2000';
-    var periodStart = moment(tmp_inputStart, 'DD/MM/YYYY');
-    var periodEnd = moment(tmp_inputEnd, 'DD/MM/YYYY');
+    tmpInputStart = inputStart + '/2000';
+    tmpInputEnd = inputEnd + '/2000';
+    periodStart = moment(tmpInputStart, 'DD/MM/YYYY');
+    periodEnd = moment(tmpInputEnd, 'DD/MM/YYYY');
   }
   return 'From ' + periodStart.format('D MMMM') + ' until ' + periodEnd.format('D MMMM');
 });
@@ -207,7 +207,7 @@ handlebars.registerHelper('ngrPoint', function (points) {
   } else {
     response = `At National Grid Reference ` + formatGridReference(point.ngr1);
   }
-  if (point.name && point.name.length != 0) {
+  if (point.name && point.name.length !== 0) {
     response += ` (${point.name})`;
   }
 

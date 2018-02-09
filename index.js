@@ -16,14 +16,6 @@ server.connection({
   port: process.env.PORT
 });
 
-server.state('sessionCookie', {
-  ttl: 24 * 60 * 60 * 1000, // One day
-  isSecure: false,
-  isHttpOnly: false,
-  isSameSite: 'Lax',
-  encoding: 'base64json'
-});
-
 // logging options
 const goodOptions = {
   ops: {
@@ -97,13 +89,14 @@ server.register([
 
   server.auth.strategy('standard', 'cookie', {
     password: process.env.cookie_secret, // cookie secret
-    isSecure: !!process.env.NODE_ENV, // use secure cookie in dev/test/production/preprod
+    isSecure: process.env.NODE_ENV !== undefined, // use secure cookie in dev/test/production/preprod
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',
     isHttpOnly: true
   });
 
+  // server.auth.default('standard');
   server.auth.default({
     strategy: 'standard',
     mode: 'try'

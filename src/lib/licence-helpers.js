@@ -4,8 +4,6 @@
  */
 const uniq = require('lodash/uniq');
 const find = require('lodash/find');
-const uniqBy = require('lodash/uniqBy');
-const mapValues = require('lodash/mapValues');
 const sortBy = require('lodash/sortBy');
 const LicenceTitleLoader = require('./licence-title-loader.js');
 const licenceTitleLoader = new LicenceTitleLoader();
@@ -35,25 +33,6 @@ function _formatAbstractionPoint (point) {
   const {name, ngr1, ngr2, ngr3, ngr4} = point;
   const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
   return parts.join(', ');
-}
-
-/**
- * Convert points array to string of sorted IDs
- * @param {Array} points
- * @return {String}
- */
-function _pointsToStr (points) {
-  return sortBy(points.map(_formatAbstractionPoint)).join('; ');
-}
-
-/**
- * Compare 2 sets of points, returning true if identical IDs
- * @param {Array} points1
- * @param {Array} points2
- * @return {Boolean}
- */
-function _comparePoints (points1, points2) {
-  return pointsToStr(points1) === pointsToStr(points2);
 }
 
 /**
@@ -223,7 +202,7 @@ function uniqueAddresses (licences) {
   const uniqueAddresses = [];
   const filteredList = [];
   licences.forEach((licence) => {
-    const {AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode } = licence;
+    const { AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode } = licence;
     const address = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County, Postcode].join(', ').toUpperCase();
     if (!uniqueAddresses.includes(address)) {
       uniqueAddresses.push(address);

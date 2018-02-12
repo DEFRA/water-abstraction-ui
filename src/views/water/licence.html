@@ -53,7 +53,7 @@
 
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
 
-
+  {{#greaterThan licenceData.abstractionPeriods.length 0}}
   <!-- Periods -->
   <div class="data-table">
     <div class="sourceofsupplyq">Period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} of abstraction</div>
@@ -68,7 +68,7 @@
 
     </div>
   </div>
-
+  {{/greaterThan}}
 
 
   <!-- Points -->

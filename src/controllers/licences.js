@@ -29,6 +29,7 @@ const Joi = require('joi');
  */
 async function getLicences (request, reply) {
   const viewContext = View.contextDefaults(request);
+  viewContext.activeNavLink = 'view';
 
   const { entity_id: entityId } = request.auth.credentials;
 
@@ -134,6 +135,7 @@ async function renderLicencePage (view, pageTitle, request, reply, context = {})
   const { entity_id: entityId } = request.auth.credentials;
 
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  viewContext.activeNavLink = 'view';
 
   viewContext.pageTitle = pageTitle;
 

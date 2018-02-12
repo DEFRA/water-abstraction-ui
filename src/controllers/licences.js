@@ -83,7 +83,7 @@ async function getLicences (request, reply) {
     }
 
     // Lookup licences
-    const { data, err, summary, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 100});
+    const { data, err, summary, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 50});
 
     if (err) {
       throw Boom.badImplementation('CRM error', err);

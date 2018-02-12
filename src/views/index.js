@@ -47,6 +47,16 @@ handlebars.registerHelper('sortQuery', function (context, options) {
 });
 
 /**
+ * A handlebars helper to get a query string for sorting data
+ */
+handlebars.registerHelper('queryString', function (context, options) {
+  // const {direction, sort, field, ...params} = arguments[0].hash;
+  // const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
+  // const query = Object.assign(params, {sort: field, direction: newDirection});
+  return qs.stringify(arguments[0].hash);
+});
+
+/**
  * A handlebars helper to get a sort direction triangle
  */
 handlebars.registerHelper('sortIcon', function (context, options) {
@@ -63,6 +73,13 @@ handlebars.registerHelper('sortIcon', function (context, options) {
  */
 handlebars.registerHelper('add', function () {
   return arguments[0] + arguments[1];
+});
+
+/**
+ * A handlebars helper to subtract two numbers
+ */
+handlebars.registerHelper('subtract', function () {
+  return arguments[0] - arguments[1];
 });
 
 handlebars.registerHelper('concat', function () {

@@ -106,6 +106,15 @@
   </div>
 
 
+  {{#greaterThan pagination.pageCount 1}}
+    <ul class="pagination">
+    {{#for 0 pagination.pageCount 1 }}
+    <li><a href="/licences?{{{ sortQuery direction=../direction sort=../sort field=../sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&page={{add this 1 }}">Page {{add this 1 }}</a></li>
+    {{/for}}
+    </li>
+  {{/greaterThan}}
+
+
   <p></p>
 
 </main>

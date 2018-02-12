@@ -8,6 +8,12 @@ console.log(__dirname);
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
 
+handlebars.registerHelper('for', function (from, to, incr, block) {
+  var accum = '';
+  for (var i = from; i < to; i += incr) { accum += block.fn(i); }
+  return accum;
+});
+
 handlebars.registerHelper('equal', require('handlebars-helper-equal'));
 
 handlebars.registerHelper('notNull', function (param, options) {

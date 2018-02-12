@@ -6,18 +6,16 @@ const { APIClient } = require('hapi-pg-rest-api');
 const moment = require('moment');
 const rp = require('request-promise-native').defaults({
   proxy: null,
-  strictSSL: false,
+  strictSSL: false
 });
 
 // Create API client
 const client = new APIClient(rp, {
-  endpoint: `${ process.env.CRM_URI }/documentHeader`,
+  endpoint: `${process.env.CRM_URI}/documentHeader`,
   headers: {
-    Authorization: process.env.JWT_TOKEN,
-  },
+    Authorization: process.env.JWT_TOKEN
+  }
 });
-
-
 
 /**
  * Get a list of licences based on the supplied options
@@ -28,23 +26,24 @@ const client = new APIClient(rp, {
  * @param {Object} [sort] - fields to sort on
  * @param {Number} [sort.licenceNumber] - sort on licence number, +1 : asc, -1 : desc
  * @param {Number} [sort.name] - sort on licence name, +1 : asc, -1 : desc
+ * @param {Object} [pagination] - pagination controls
+ * @param {Number} [pagination.page] - the current page
+ * @param {Number} [pagination.perPage] - per page
  * @return {Promise} resolves with array of licence records
  * @example getLicences({entity_id : 'guid'})
  */
-client.getLicences = function(filter, sort = {}) {
+client.getLicences = function (filter, sort = {}, pagination = {page: 1, perPage: 100}) {
   const uri = process.env.CRM_URI + '/documentHeader/filter';
   return rp({
     uri,
-    method : 'POST',
-    headers : {
-      Authorization : process.env.JWT_TOKEN
+    method: 'POST',
+    headers: {
+      Authorization: process.env.JWT_TOKEN
     },
-    json : true,
-    body : { filter, sort }
+    json: true,
+    body: { filter, sort, pagination }
   });
-}
-
-
+};
 
 /**
  * Set licence name
@@ -52,28 +51,27 @@ client.getLicences = function(filter, sort = {}) {
  * @param {String} name - the user-defined document name
  * @return {Promise} resolves when name updated
  */
-client.setLicenceName = function(documentId, name) {
+client.setLicenceName = function (documentId, name) {
   const uri = process.env.CRM_URI + '/documentHeader/' + documentId + '/entity/0/name?token=' + process.env.JWT_TOKEN;
   return rp({
     uri,
-    method : 'POST',
-    json : true,
-    body : { name }
+    method: 'POST',
+    json: true,
+    body: { name }
   });
-}
+};
 
 /**
  * this function gets the internal ID (i.e. the ID of the licence in the permit repository)
  * from the document_id (from the CRM document header record) which can then be used to
  *  retrieve the full licence from the repo
  **/
-client.getLicenceInternalID = async function(licences, document_id) {
+client.getLicenceInternalID = async function (licences, document_id) {
   let licence;
-  if(licence = licences.find(x => x.document_id === document_id)) {
+  if (licence = licences.find(x => x.document_id === document_id)) {
     return licence;
   }
   throw new Error('Licence with ID ' + document_id + ' could not be found.');
-}
-
+};
 
 module.exports = client;

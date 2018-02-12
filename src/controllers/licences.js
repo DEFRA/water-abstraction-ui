@@ -39,6 +39,9 @@ async function getLicences (request, reply) {
     email: request.query.emailAddress
   };
 
+  // Current page of results - for paginated result set
+  const page = request.query.page || 1;
+
   // Sorting
   const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name'};
   const sortField = request.query.sort || 'licenceNumber';
@@ -55,12 +58,14 @@ async function getLicences (request, reply) {
     emailAddress: Joi.string().allow('').email(),
     licenceNumber: Joi.string().allow(''),
     sort: Joi.string().allow(''),
-    direction: Joi.number()
+    direction: Joi.number(),
+    page: Joi.number()
   };
   const {error, value} = Joi.validate(request.query, schema);
   if (error) {
     viewContext.error = error;
   }
+  console.log(error);
 
   try {
     // Look up user for email filter
@@ -78,7 +83,7 @@ async function getLicences (request, reply) {
     }
 
     // Lookup licences
-    const { data, err, summary } = await CRM.documents.getLicences(filter, sort);
+    const { data, err, summary, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 100});
 
     if (err) {
       throw Boom.badImplementation('CRM error', err);
@@ -102,7 +107,7 @@ async function getLicences (request, reply) {
     viewContext.licenceData = data;
     viewContext.debug.licenceData = data;
     viewContext.pageTitle = 'GOV.UK - Your water abstraction licences';
-
+    viewContext.pagination = pagination;
     viewContext.me = request.auth.credentials;
 
     // Calculate whether to display email filter / search form depending on summary

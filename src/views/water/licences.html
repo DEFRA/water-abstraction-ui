@@ -77,12 +77,12 @@
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">Licence serial number
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence serial number
           {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
         </a>
       </div>
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">Licence name
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence name
           {{{ sortIcon  direction=direction sort=sort field="name" }}}
         </a>
       </div>
@@ -111,7 +111,7 @@
     <ul class="pagination">
     <li class="pagination__item">
       {{#greaterThan pagination.page 1}}
-        <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{subtract pagination.page 1 }}" aria-label="Previous page">
+        <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
       {{/greaterThan}}
       	&larr; Previous page
       {{#greaterThan pagination.page 1}}
@@ -119,11 +119,11 @@
       {{/greaterThan}}
     </li>
     {{#for 0 pagination.pageCount 1 }}
-    <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/licences?{{{ queryString direction=../direction sort=../sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&page={{add this 1 }}" aria-label="Page {{add this 1 }}">{{add this 1 }}</a></li>
+    <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/licences?{{{ queryString direction=../direction sort=../sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&page={{add this 1 }}#results" aria-label="Page {{add this 1 }}">{{add this 1 }}</a></li>
     {{/for}}
     <li class="pagination__item">
       {{#lessThan pagination.page pagination.pageCount}}
-        <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{add pagination.page 1 }}" aria-label="Next page">
+        <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{add pagination.page 1 }}#results" aria-label="Next page">
       {{/lessThan}}
       Next page 	&rarr;
       {{#greaterThan pagination.page 1}}

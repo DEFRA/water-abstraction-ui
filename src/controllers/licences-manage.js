@@ -3,6 +3,7 @@ const Notify = require('../lib/connectors/notify');
 const View = require('../lib/view');
 const CRM = require('../lib/connectors/crm');
 const IDM = require('../lib/connectors/idm');
+const errorHandler = require('../lib/error-handler');
 
 /**
  * Renders list of emails with access to your licences
@@ -135,12 +136,23 @@ async function getRemoveAccess (request, reply, context = {}) {
  * @param {Object} reply - the HAPI HTTP response
  */
 async function getAddLicences (request, reply, context = {}) {
+  const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Access more licences';
-  // get list of roles in same org as current user
-  // call CRM and add role. CRM will call IDM if account does not exist...
-  return reply.view('water/manage_licences_add', viewContext);
+
+  try {
+    // Does user have outstanding verification codes?
+    const { data: verifications, error } = await CRM.verification.findMany({entity_id: entityId, date_verified: null});
+    if (error) {
+      throw error;
+    }
+
+    viewContext.verificationCount = verifications.length;
+    return reply.view('water/manage_licences_add', viewContext);
+  } catch (error) {
+    errorHandler(request, reply)(error);
+  }
 }
 
 module.exports = {

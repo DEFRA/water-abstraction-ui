@@ -60,11 +60,25 @@
     <div class="licenceAnswer">
 
       {{#greaterThan licenceData.abstractionPeriods.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.abstractionPeriods.length 6 }}
+        <ul class="sub-list">
+          {{#each licenceData.abstractionPeriods }}
+          <li>{{formatPeriod periodStart periodEnd }}</li>
+          {{/each}}
+        </ul>
+        {{else}}
         You have {{ licenceData.abstractionPeriods.length }} periods of abstraction<br />
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
+        {{/lessThan}}
+
+        <a href="/licences/{{ licence_id }}/purposes">View details of your periods of abstraction</a>
+
+
       {{else}}
-        {{ formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd }}
+        {{formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd  }}<br />
+        <a href="/licences/{{ licence_id }}/purposes">View details of your period of abstraction</a>
       {{/greaterThan}}
+
 
     </div>
   </div>

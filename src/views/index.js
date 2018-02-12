@@ -244,7 +244,18 @@ const defaultContext = {
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
 
-  propositionHeader: '<div class="header-proposition"><div class="content"><nav id="proposition-menu"><a href="/?access=PB01" id="proposition-name">Manage your water abstraction or impoundment licence</a></nav></div></div>',
+  propositionLinks: [{
+    id: 'view',
+    text: 'View your licences',
+    url: '/licences'
+  },
+  {
+    id: 'manage',
+    text: 'Manage your licences',
+    url: '/manage_licences'
+  }
+  ],
+
   afterHeader: '',
   footerTop: '',
   footerSupportLinks: '',

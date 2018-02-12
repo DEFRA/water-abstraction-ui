@@ -54,10 +54,22 @@
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
 
 
-  <!-- Abstraction period -->
-  {{#equal licenceData.abstractionPeriods.length 1 }}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd) }}
-  {{/equal}}
+  <!-- Periods -->
+  <div class="data-table">
+    <div class="sourceofsupplyq">Period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="licenceAnswer">
+
+      {{#greaterThan licenceData.abstractionPeriods.length 1}}
+        You have {{ licenceData.abstractionPeriods.length }} periods of abstraction<br />
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
+      {{else}}
+        {{ formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd }}
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
+
 
   <!-- Points -->
   <div class="data-table">

@@ -16,29 +16,26 @@ const NALDHelpers = require('./nald-helpers');
 const sentenceCase = require('sentence-case');
 
 class NALDTransformer extends BaseTransformer {
-
-
   /**
    * Transform string 'null' values to real null
    * @param {Object} data
    * @return {Object}
    */
-  transformNull(data) {
+  transformNull (data) {
     return deepMap(data, (val) => {
       // Convert string null to real null
-      if (typeof(val) === 'string' && val === 'null') {
+      if (typeof (val) === 'string' && val === 'null') {
         return null;
       }
       return val;
     });
   }
 
-
   /**
    * Load data into the transformer
    * @param {Object} data - data loaded from NALD
    */
-  async load(data) {
+  async load (data) {
     data = this.transformNull(data);
 
     const currentVersion = find(data.data.versions, version => version.STATUS === 'CURR');
@@ -65,11 +62,11 @@ class NALDTransformer extends BaseTransformer {
     };
 
     if (licenceHolderParty.INITIALS != 'null') {
-      this.data.licenceHolderInitials = licenceHolderParty.INITIALS
+      this.data.licenceHolderInitials = licenceHolderParty.INITIALS;
     }
 
     if (licenceHolderParty.SALUTATION != 'null') {
-      this.data.licenceHolderTitle = licenceHolderParty.SALUTATION
+      this.data.licenceHolderTitle = licenceHolderParty.SALUTATION;
     }
 
     return this.data;
@@ -80,8 +77,7 @@ class NALDTransformer extends BaseTransformer {
    * @param {Array} purposes - from NALD data
    * @return {Array} - formatted unique list of licences
    */
-  purposesFormatter(purposes) {
-
+  purposesFormatter (purposes) {
     purposes = purposes.map(item => ({
       name: item.purpose.purpose_tertiary.DESCR,
       periodStart: item.PERIOD_ST_DAY + '/' + item.PERIOD_ST_MONTH,
@@ -91,9 +87,9 @@ class NALDTransformer extends BaseTransformer {
       hourlyQty: item.HOURLY_QTY,
       instantaneousQty: item.INST_QTY,
       points: item.purposePoints.map(item => NALDHelpers.formatAbstractionPoint(item.point_detail))
-    }))
+    }));
 
-    purposes = _dedupe(purposes)
+    purposes = _dedupe(purposes);
 
     return purposes;
   }
@@ -103,18 +99,17 @@ class NALDTransformer extends BaseTransformer {
    * @param {Array} purposes from NALD data
    * @return {Array} of purpose names
    */
-  uniquePurposeNamesFormatter(purposes) {
+  uniquePurposeNamesFormatter (purposes) {
     const names = purposes.map(item => item.purpose.purpose_tertiary.DESCR);
     return uniqBy(names, item => item);
   }
-
 
   /**
    * Formats contact address
    * @param {Object} contactAddress - party/role address
    * @return {Object} reformatted address
    */
-  addressFormatter(contactAddress) {
+  addressFormatter (contactAddress) {
     const {
       ADDR_LINE1,
       ADDR_LINE2,
@@ -145,18 +140,18 @@ class NALDTransformer extends BaseTransformer {
    * @param {Object} party - NALD party / role party
    * @return {Object} contact name
    */
-  nameFormatter(party) {
+  nameFormatter (party) {
     if (party.APAR_TYPE === 'PER') {
       return {
         contactType: 'Person',
-        name: `${ party.SALUTATION } ${ party.FORENAME } ${ party.NAME }`
-      }
+        name: `${party.SALUTATION} ${party.FORENAME} ${party.NAME}`
+      };
     }
     if (party.APAR_TYPE === 'ORG') {
       return {
         contactType: 'Organisation',
         name: party.NAME
-      }
+      };
     }
   }
 
@@ -164,7 +159,7 @@ class NALDTransformer extends BaseTransformer {
    * Contacts formatter
    * Creates a list of contacts from the roles/parties in the NALD data
    */
-  contactsFormatter(currentVersion, roles) {
+  contactsFormatter (currentVersion, roles) {
     const contacts = [];
 
     const licenceHolderParty = find(currentVersion.parties, (party) => {
@@ -192,14 +187,13 @@ class NALDTransformer extends BaseTransformer {
     return contacts;
   }
 
-
   /**
    * Converts a string, e.g 12,456 CMH 12,345 CMA to an array of quantities
    * e.g. [{value : 12345, units : 'CMH'} ...]
    * @param {String} str - quantities string
    * @return {Array} - array of {value, units}
    */
-  quantitiesStrToArray(str) {
+  quantitiesStrToArray (str) {
     const unitNames = {
       CMA: 'cubic metres per year',
       'M3/A': 'cubic metres per year',
@@ -229,11 +223,10 @@ class NALDTransformer extends BaseTransformer {
    * @param {Array} purposes
    * @return {Array} array of quantities
    */
-  aggregateQuantitiesFormatter(purposes) {
-
+  aggregateQuantitiesFormatter (purposes) {
     // Get all conditions as array
     const conditions = purposes.reduce((memo, item) => {
-      return [...memo, ...item.licenceConditions]
+      return [...memo, ...item.licenceConditions];
     }, []);
 
     // Get AGG PP conditions
@@ -256,31 +249,42 @@ class NALDTransformer extends BaseTransformer {
     return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
   }
 
-
   /**
    * Create a unique list of abstraction periods
    * @param {Array} purposes
    * @return {Array} array of periods
    */
-  periodsFormatter(purposes) {
-    const periods = purposes.map((purpose) => {
-      return {
-        purpose: purpose.purpose.purpose_tertiary.DESCR,
-        periodStart: purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH,
-        periodEnd: purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH
-      };
+  periodsFormatter (purposes) {
+    const periods = [];
+
+    purposes.forEach((purpose) => {
+      const periodStart = purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH;
+      const periodEnd = purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH;
+      // Find existing period
+      let period = find(periods, (item) => item.periodStart === periodStart && item.periodEnd === periodEnd);
+      if (period) {
+        if (!period.purposes.includes(purpose.purpose.purpose_tertiary.DESCR)) {
+          period.purposes.push(purpose.purpose.purpose_tertiary.DESCR);
+        }
+      } else {
+        period = {
+          periodStart,
+          periodEnd,
+          purposes: [purpose.purpose.purpose_tertiary.DESCR]
+        };
+        periods.push(period);
+      }
     });
 
-    return uniqBy(periods, item => Object.values(item).join(','));
+    return periods;
   }
-
 
   /**
    * Format purposes to provide an array of points
    * @param {Array} purposes
    * @return {Array} array of points
    */
-  pointsFormatter(purposes) {
+  pointsFormatter (purposes) {
     const points = [];
     purposes.forEach((purpose) => {
       purpose.purposePoints.forEach((purposePoint) => {
@@ -293,15 +297,13 @@ class NALDTransformer extends BaseTransformer {
     return uniqBy(points, item => Object.values(item).join(','));
   }
 
-
   /**
    * Formats conditions in the NALD data into a form that can be used
    * in the licence conditions screen
    * @param {Object} purposes - purposes array from NALD data
    * @return {Array} array of condition types / points / conditions
    */
-  async conditionFormatter(purposes) {
-
+  async conditionFormatter (purposes) {
     // Read condition titles from CSV
     const titleData = await licenceTitleLoader.load();
 
@@ -333,18 +335,16 @@ class NALDTransformer extends BaseTransformer {
      */
     const pointMatcher = (points) => {
       return (item) => item.points.join(',') === points.join(',');
-    }
+    };
 
     const conditionsArr = [];
 
     purposes.forEach((purpose) => {
-
       const points = purpose.purposePoints.map((purposePoint) => {
         return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
       });
 
       purpose.licenceConditions.forEach((condition) => {
-
         const {
           CODE: code,
           SUBCODE: subCode
@@ -377,7 +377,7 @@ class NALDTransformer extends BaseTransformer {
           pWrapper = {
             points,
             conditions: []
-          }
+          };
           cWrapper.points.push(pWrapper);
         }
 
@@ -391,32 +391,26 @@ class NALDTransformer extends BaseTransformer {
         // De-dedupe
         // @TODO - remove duplication in original data
         pWrapper.conditions = uniqBy(pWrapper.conditions, item => Object.values(item).join(','));
-
       });
-
     });
-
 
     return conditionsArr;
   }
-
-
-
 }
 
-function _dedupe(arrayData) {
+function _dedupe (arrayData) {
   var deduped = [];
-  var hashes = []
+  var hashes = [];
   var crypto = require('crypto');
   var name = 'braitsch';
   for (var i in arrayData) {
     var hash = crypto.createHash('md5').update(JSON.stringify(arrayData[i])).digest('hex');
     if (hashes.indexOf(hash) == -1) {
-      hashes.push(hash)
-      deduped.push(arrayData[i])
+      hashes.push(hash);
+      deduped.push(arrayData[i]);
     }
   }
-  return deduped
+  return deduped;
 }
 
 module.exports = NALDTransformer;

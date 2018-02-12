@@ -6,6 +6,7 @@ const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
 const RegistrationController = require('../controllers/registration');
 const LicencesAddController = require('../controllers/licences-add');
+const LicencesManageController = require('../controllers/licences-manage');
 
 /**
 Note the workaround for path / to serve static file for root path (so as not to use a view and get extrab headers, footers, etc)
@@ -321,25 +322,25 @@ module.exports = [
   // Manage licences
   { method: 'GET',
     path: '/manage_licences',
-    handler: LicencesController.getAccessList,
+    handler: LicencesManageController.getAccessList,
     config: {
       description: 'Manage licences - main page'
     }},
   { method: 'GET',
     path: '/manage_licences/remove_access',
-    handler: LicencesController.getRemoveAccess,
+    handler: LicencesManageController.getRemoveAccess,
     config: {
       description: 'Manage licences - remove access form'
     }},
   { method: 'GET',
     path: '/manage_licences/add_access',
-    handler: LicencesController.getAddAccess,
+    handler: LicencesManageController.getAddAccess,
     config: {
       description: 'Manage licences - add access form'
     }},
   { method: 'POST',
     path: '/manage_licences/add_access',
-    handler: LicencesController.postAddAccess,
+    handler: LicencesManageController.postAddAccess,
     config: {
       description: 'Manage licences - add access process',
       validate: {
@@ -347,6 +348,12 @@ module.exports = [
           email: Joi.string().max(254).allow('')
         }
       }
+    }},
+  { method: 'GET',
+    path: '/manage_licences_add',
+    handler: LicencesManageController.getAddLicences,
+    config: {
+      description: 'Manage licences - add licences'
     }},
 
   // Add licence to account

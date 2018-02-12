@@ -252,7 +252,7 @@ const defaultContext = {
   {
     id: 'manage',
     text: 'Manage your licences',
-    url: '/licences'
+    url: '/manage_licences'
   }
   ],
 

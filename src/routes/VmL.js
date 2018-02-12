@@ -152,7 +152,8 @@ module.exports = [
           sort: Joi.string().valid('licenceNumber', 'name'),
           direction: Joi.number().valid(1, -1),
           emailAddress: Joi.string().allow('').max(254),
-          licenceNumber: Joi.string().allow('').max(32)
+          licenceNumber: Joi.string().allow('').max(32),
+          page: Joi.number().allow('').min(1)
         }
       }
     }},

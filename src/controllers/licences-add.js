@@ -154,6 +154,8 @@ async function getLicenceSelect (request, reply) {
  * User must select
  * - at least one licence
  * - licences must be from verified list
+ * - @todo if affinity with existing licences, add without verification
+ *
  * @param {Object} request - HAPI HTTP request
  * @param {String} request.payload.token - signed Iron token containing licence info
  * @param {Array|String} request.payload.licences - array of licences selected (or string if 1)
@@ -161,12 +163,55 @@ async function getLicenceSelect (request, reply) {
  */
 async function postLicenceSelect (request, reply) {
   const { licences } = request.payload;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
     const sessionData = await request.sessionStore.load();
     const { documentIds } = sessionData.addLicenceFlow;
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
+
+    // Is there affinity between the selected licences and licences already attached
+    // to this user's company where the user is the primary_user role?
+    // If so, add the licences to the account directly skipping address verification
+    const companyEntityId = await CRM.getPrimaryCompany(entityId);
+
+    if (companyEntityId) {
+      // Licences already in account
+      const { data: existingLicences, error } = await CRM.documents.findMany({
+        company_entity_id: companyEntityId,
+        verified: 1
+      });
+      if (error) {
+        throw error;
+      }
+      // Licences being added now
+      const {data: selectedLicences, error: error2 } = await CRM.documents.findMany({
+        document_id: documentIds,
+        verified: null,
+        verification_id: null
+      });
+      if (error2) {
+        throw error2;
+      }
+
+      // Check affinity between existing/selected licences
+      if (existingLicences.length > 0) {
+        const similar = checkLicenceSimilarity([...existingLicences, ...selectedLicences]);
+        if (similar) {
+          const {error: error3} = await CRM.documents.updateMany({document_id: documentIds}, {
+            verified: 1,
+            company_entity_id: companyEntityId
+          });
+
+          if (error3) {
+            throw error3;
+          }
+
+          return reply.redirect('/licences');
+        }
+      }
+    }
 
     // Create new token
     sessionData.addLicenceFlow = {

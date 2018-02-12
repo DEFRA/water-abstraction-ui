@@ -161,7 +161,9 @@ async function renderLicencePage (view, pageTitle, request, reply, context = {})
       throw permitError;
     }
 
-    const data = JSON.parse(permitData.licence_data_value);
+    // Handle object/JSON string
+    const {licence_data_value: licenceData} = permitData;
+    const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
 
     require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
 

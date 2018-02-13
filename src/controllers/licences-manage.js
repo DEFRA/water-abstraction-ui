@@ -122,7 +122,7 @@ async function getRemoveAccess (request, reply, context = {}) {
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
   viewContext.email = request.query.email;
-  await CRM.entitytRoles.deleteColleagueRole(entityId, request.query.entity_role_id);
+  await CRM.entityRoles.deleteColleagueRole(entityId, request.query.entity_role_id);
   console.log('viewContext ', viewContext);
   viewContext.pageTitle = 'Manage access to your licences';
   // get list of roles in same org as current user

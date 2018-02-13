@@ -186,7 +186,7 @@ async function postLicenceSelect (request, reply) {
         throw error;
       }
       // Licences being added now
-      const {data: selectedLicences, error: error2 } = await CRM.documents.findMany({
+      const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
         document_id: documentIds,
         verified: null,
         verification_id: null

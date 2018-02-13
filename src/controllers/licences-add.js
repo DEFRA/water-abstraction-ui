@@ -13,7 +13,7 @@ const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
 const {forceArray} = require('../lib/helpers');
 
-const {checkLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
+const {checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
 
 const { LicenceNotFoundError,
   LicenceMissingError,
@@ -197,7 +197,7 @@ async function postLicenceSelect (request, reply) {
 
       // Check affinity between existing/selected licences
       if (existingLicences.length > 0) {
-        const similar = checkLicenceSimilarity([...existingLicences, ...selectedLicences]);
+        const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
           const {error: error3} = await CRM.documents.updateMany({document_id: documentIds}, {
             verified: 1,

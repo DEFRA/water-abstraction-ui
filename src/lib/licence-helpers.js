@@ -2,9 +2,7 @@
  * Helpers for checking/processing licence data
  * @module lib/licence-helpers
  */
-const uniq = require('lodash/uniq');
-const find = require('lodash/find');
-const sortBy = require('lodash/sortBy');
+const {uniq, find, sortBy, intersection} = require('lodash');
 const LicenceTitleLoader = require('./licence-title-loader.js');
 const licenceTitleLoader = new LicenceTitleLoader();
 
@@ -160,18 +158,12 @@ function extractLicenceNumbers (str) {
 }
 
 /**
- * A function to check whether an array of returned licences are similar
- * this is defined for now as:
- * - if only 1 licence supplied, always passes
- * - names and postcodes are sanitized
- * - a unique list of names and postcodes is generated
- * - if all licences have same postcode or name, passes
- * - if there are no more than 3 unique names and postcodes
- * - otherwise fails
- * @param {Array} licences - array of licences returned from DB
- * @return {Boolean} - whether licences pass similarity test
+ * Get list of unique licence holder names and postcodes for
+ * supplied list of licences
+ * @param {Array} licences - list of licences loaded from CRM
+ * @return {Object} - {name, postcodes} lists of unique licence holder names/postcodes
  */
-function checkLicenceSimilarity (licences) {
+function getUniqueLicenceDetails (licences) {
   const sanitize = (x) => {
     x = x.trim();
     x = x.replace('&', 'AND');
@@ -185,12 +177,49 @@ function checkLicenceSimilarity (licences) {
   const postcodes = uniq(licences.map((licence) => {
     return sanitize(licence.metadata.Postcode || '');
   }));
+  return {names, postcodes};
+}
+
+/**
+ * A function to check whether an array of returned licences are similar
+ * this is defined for now as:
+ * - if only 1 licence supplied, always passes
+ * - names and postcodes are sanitized
+ * - a unique list of names and postcodes is generated
+ * - if all licences have same postcode or name, passes
+ * - if there are no more than 3 unique names and postcodes
+ * - otherwise fails
+ * @param {Array} licences - array of licences returned from DB
+ * @return {Boolean} - whether licences pass similarity test
+ */
+function checkLicenceSimilarity (licences) {
+  const {names, postcodes} = getUniqueLicenceDetails(licences);
+
   // All 1 name or all 1 postcode - OK
   if (names.length === 1 || postcodes.length === 1) {
     return true;
   }
   // All either same name or same postcode
   return (names.length + postcodes.length) <= 3;
+}
+
+/**
+ * A function to check a list of newly added licences against
+ * a list of existing licences in the user's account to determine whether
+ * a new postal verification code is necessary
+ * @param {Array} newLicences
+ * @param {Array} existingLicences
+ * @return {Boolean} return true if postcode/name match found
+ */
+function checkNewLicenceSimilarity (newLicences, existingLicences) {
+  const {names: n1, postcodes: p1} = getUniqueLicenceDetails(newLicences);
+  const {names: n2, postcodes: p2} = getUniqueLicenceDetails(existingLicences);
+
+  // Is there a match between new/existing names/postcodes
+  const names = intersection(n1, n2);
+  const postcodes = intersection(p1, p2);
+
+  return (names.length + postcodes.length) > 0;
 }
 
 /**
@@ -245,6 +274,7 @@ function licenceCount (summary) {
 module.exports = {
   extractLicenceNumbers,
   checkLicenceSimilarity,
+  checkNewLicenceSimilarity,
   licenceRoles,
   licenceCount,
   uniqueAddresses,

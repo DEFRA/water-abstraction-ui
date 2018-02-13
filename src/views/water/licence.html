@@ -68,15 +68,15 @@
           {{/each}}
         </ul>
         {{else}}
-        You have {{ licenceData.abstractionPeriods.length }} periods of abstraction<br />
+        You have {{ licenceData.abstractionPeriods.length }} abstraction periods<br />
         {{/lessThan}}
 
-        <a href="/licences/{{ licence_id }}/purposes">View details of your periods of abstraction</a>
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction periods</a>
 
 
       {{else}}
         {{formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd  }}<br />
-        <a href="/licences/{{ licence_id }}/purposes">View details of your period of abstraction</a>
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction period</a>
       {{/greaterThan}}
 
 

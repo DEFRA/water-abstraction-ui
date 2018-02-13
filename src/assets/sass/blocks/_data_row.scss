@@ -32,6 +32,12 @@
     }
   }
 
+  &__value {
+    @media screen and (min-width: 641px) {
+        flex: 0 0 67%;
+    }
+  }
+
   &--heading {
     border: none;
     .data-row__param {
@@ -46,8 +52,11 @@
 
 /* Sub-list in data-table */
 .sub-list {
+  width: 100%;
   li {
+    display: block;
     padding: 0.25em 0;
     border-bottom: 1px solid $panel-colour;
   }
+
 }

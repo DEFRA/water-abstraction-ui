@@ -29,9 +29,9 @@
    </p>
 
   <!-- User-defined licence name row -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Licence name</div>
-    <div class="licenceAnswer">
+  <div class="data-row">
+    <div class="data-row__param">Licence name</div>
+    <div class="data-row__value">
 
 
       <!-- Current licence name -->
@@ -55,9 +55,9 @@
 
   {{#greaterThan licenceData.abstractionPeriods.length 0}}
   <!-- Periods -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} of abstraction</div>
-    <div class="licenceAnswer">
+  <div class="data-row">
+    <div class="data-row__param">Period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="data-row__value">
 
       {{#greaterThan licenceData.abstractionPeriods.length 1}}
         <!-- Multiple purposes -->
@@ -86,9 +86,9 @@
 
 
   <!-- Points -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
-    <div class="licenceAnswer">
+  <div class="data-row">
+    <div class="data-row__param">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="data-row__value">
 
       {{#greaterThan licenceData.points.length 1}}
         <!-- Multiple purposes -->
@@ -115,9 +115,9 @@
 
 
   <!-- Purposes -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
-    <div class="licenceAnswer">
+  <div class="data-row">
+    <div class="data-row__param">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="data-row__value">
 
       {{#greaterThan licenceData.uniquePurposeNames.length 1}}
         <!-- Multiple purposes -->
@@ -142,15 +142,10 @@
     </div>
   </div>
 
-
-
-
-
-
   <!-- Abstraction conditions -->
-  <div class="data-table">
-    <div class="sourceofsupplyq">Abstraction condition{{#greaterThan licenceData.conditions.length 1}}s{{/greaterThan}}{{#equal licenceData.conditions.length 0}}s{{/equal}}</div>
-    <div class="licenceAnswer">
+  <div class="data-row">
+    <div class="data-row__param">Abstraction condition{{#greaterThan licenceData.conditions.length 1}}s{{/greaterThan}}{{#equal licenceData.conditions.length 0}}s{{/equal}}</div>
+    <div class="data-row__value">
 
       {{#greaterThan licenceData.conditions.length 1}}
         <!-- Multiple purposes -->
@@ -183,9 +178,9 @@
 
 
   {{#if licenceData.aggregateQuantity }}
-  <div class="data-table">
-      <div class="sourceofsupplyq">Maximum quantities before conditions</div>
-      <div class="licenceAnswer">
+  <div class="data-row">
+      <div class="data-row__param">Maximum quantities before conditions</div>
+      <div class="data-row__value">
         <ul class="sub-list">
         {{#each licenceData.aggregateQuantity }}
           <li>{{ precision this.value 2 }} {{ this.name }}</li>

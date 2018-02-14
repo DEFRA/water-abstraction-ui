@@ -34,17 +34,13 @@
   </div>
   {{/equal}}
 
-
   {{>element-heading-large content='Your licences'}}
-
 
   {{#if showVerificationAlert }}
   <div class="panel panel-border-wide alert-default medium-space">
-      Have your received a security code in the post?  <a href="/security-code">Click here to enter your security code</a>
+    Have you received a security code by post? <a href="/security-code">Enter your code here</a>
   </div>
   {{/if}}
-
-
 
   {{#if enableSearch}}
   <form novalidate method="GET" action="/licences" name="licenceSearch">

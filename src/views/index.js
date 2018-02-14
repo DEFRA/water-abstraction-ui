@@ -36,6 +36,13 @@ handlebars.registerHelper('lessThan', function (v1, v2, options) {
   return options.inverse(this);
 });
 
+handlebars.registerHelper('or', function (v1, v2, options) {
+  if (v1 || v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 /**
  * A handlebars helper to get a query string for sorting data
  */

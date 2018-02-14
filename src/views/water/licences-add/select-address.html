@@ -31,60 +31,61 @@
         Where should we send your security code?
       </h1>
 
-      <details class="closeOnOpen">
-        <summary><span class="summary">Why do we need to post you a code?</span></summary>
-        <p>We post a security code to a registered address to make sure you’re the licence holder or an official representative.</p>
-      </details>
-
-      <br />
 
 
       <form method="POST" action="/select-address">
 
         <fieldset id="address">
 
-          <legend>
-
-            <span class="form-label-bold">
-              Choose one of your licence addresses:
-            </span>
-            {{#if error }}
-            <span class="error-message">
-              You need to choose an address
-            </span>
-            {{/if}}
-
-          </legend>
-
           <div class="form-group {{#if error}}form-group-error{{/if}}">
 
-        {{#each licences}}
-        <div class="multiple-choice">
-          <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
-          <label for="{{ this.document_id }}">
-{{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
-{{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
-{{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
-{{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
-{{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
-{{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
-{{ this.metadata.Postcode }}
+            <legend>
+              <span class="form-label">
+                Choose one of your licence addresses:
+              </span>
+              {{#if error }}
+              <span class="error-message">
+                You need to choose an address
+              </span>
+              {{/if}}
+            </legend>
+
             <br />
-            <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
-          </label>
-        </div>
-        {{/each}}
+
+            {{#each licences}}
+            <div class="multiple-choice">
+              <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
+              <label for="{{ this.document_id }}">
+    {{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
+    {{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
+    {{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
+    {{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
+    {{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
+    {{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
+    {{ this.metadata.Postcode }}
+                <br />
+                <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
+              </label>
+            </div>
+            {{/each}}
 
           </div>
 
         </fieldset>
 
-        <br />
 
         <input type="submit" value="Continue" class="button" role="button"/>
       </form>
 
       <br />
+      <br />
+
+      <details class="closeOnOpen">
+        <summary><span class="summary">Why do we need to post you a code?</span></summary>
+        <p>We post a security code to a registered address to make sure you’re the licence holder or an official representative.</p>
+      </details>
+
+
 
 
 

@@ -4,7 +4,7 @@
   <nav>
     <div class="breadcrumbs">
       <ol>
-        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences">Your licences</a></li>
         <li><a href="/manage_licences_add">Manage your licences</a></li>
         <li><a href="/add-licences">Request access</a></li>
       </ol>
@@ -19,10 +19,10 @@
       {{#equal error.name 'AddressInvalidError' }}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        We need more information
+        You need to choose an address
       </h2>
       <ul class="error-summary-list">
-        <li><a href="#address">Please select an address.</a></li>
+        <li><a href="#address">Please choose which licence address we should post your security code to.</a></li>
       </ul>
      </div>
       {{/equal}}
@@ -36,16 +36,27 @@
         <p>We post a security code to a registered address to make sure you’re the licence holder or an official representative.</p>
       </details>
 
-
+      <br />
 
 
       <form method="POST" action="/select-address">
 
-        <legend>
-          <p class="lede"> Choose one of your licence addresses:</p>
-        </legend>
-
         <fieldset id="address">
+
+          <legend>
+
+            <span class="form-label-bold">
+              Choose one of your licence addresses:
+            </span>
+            {{#if error }}
+            <span class="error-message">
+              You need to choose an address
+            </span>
+            {{/if}}
+
+          </legend>
+
+          <div class="form-group {{#if error}}form-group-error{{/if}}">
 
         {{#each licences}}
         <div class="multiple-choice">
@@ -63,6 +74,8 @@
           </label>
         </div>
         {{/each}}
+
+          </div>
 
         </fieldset>
 

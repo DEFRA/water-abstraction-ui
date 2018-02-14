@@ -5,7 +5,7 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences">Your licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
       </ol>
     </div>
@@ -38,10 +38,10 @@
       {{#if crmData.document_custom_name }}
         {{ crmData.document_custom_name}}
         <br />
-        <a id="showForm" href="/licences/{{ licence_id }}/rename">Change name</a>
+        <a id="showForm" href="/licences/{{ licence_id }}/rename">Rename this licence</a>
       {{/if}}
       {{^crmData.document_custom_name }}
-        No licence name
+        No name chosen
         <br />
         <a id="nameLicence" href="/licences/{{ licence_id }}/rename">Name this licence</a>
       {{/crmData.document_custom_name}}

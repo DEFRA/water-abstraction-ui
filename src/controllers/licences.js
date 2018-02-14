@@ -103,6 +103,12 @@ async function getLicences (request, reply) {
       }
     }
 
+    // Does user have outstanding verification codes?
+    const { data: verifications, error: err2 } = await CRM.verification.findMany({entity_id: entityId, date_verified: null});
+    if (!err2 && verifications.length) {
+      viewContext.showVerificationAlert = true;
+    }
+
     // Render HTML page
     viewContext.licenceData = data;
     viewContext.debug.licenceData = data;

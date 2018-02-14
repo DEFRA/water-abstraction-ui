@@ -5,7 +5,7 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences">Your licences</a></li>
         <li><a href="/manage_licences">Manage licences</a></li>
         <li><a href="/manage_licences_add">Access more licences</a></li>
       </ol>
@@ -39,7 +39,11 @@
       <p>You can view more of your existing water abstraction or impoundment licences by requesting access to them here.</p>
       <p>Before we give you access, we need to do some security checks to confirm you’re the licence holder or their official representative.</p>
 
-      <a class="button medium-space" href="/add-licences" role="button">Request access</a>
+
+
+
+
+      <a {{#equal verificationCount 0}}class="button medium-space"{{/equal}} href="/add-licences" role="button">Request access</a>
     </div>
   </div>
 

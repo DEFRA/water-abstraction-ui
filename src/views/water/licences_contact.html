@@ -5,7 +5,7 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol >
-        <li><a href="/licences">Abstraction licences</a></li>
+        <li><a href="/licences">Your licences</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
         <li><a href="/licences/{{ licence_id }}/rename">Contact details</a></li>
 
@@ -23,20 +23,20 @@
 
   {{#each licenceData.contacts }}
     <h2 class="heading-medium">{{ this.type }}</h2>
-    <div class="data-table">
-        <div class="sourceofsupplyq">
+    <div class="data-row">
+        <div class="data-row__param">
           Name
         </div>
-        <div class="licenceAnswer">
+        <div class="data-row__value">
           {{ this.name }}
           <br>
         </div>
     </div>
-    <div class="data-table">
-        <div class="sourceofsupplyq">
+    <div class="data-row">
+        <div class="data-row__param">
           Address
         </div>
-        <div class="licenceAnswer">
+        <div class="data-row__value">
           {{#if this.addressLine1 }}{{ this.addressLine1 }}<br />{{/if}}
           {{#if this.addressLine2 }}{{ this.addressLine2 }}<br />{{/if}}
           {{#if this.addressLine3 }}{{ this.addressLine3 }}<br />{{/if}}

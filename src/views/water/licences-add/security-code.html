@@ -5,7 +5,7 @@
     <div class="breadcrumbs">
       <ol>
         <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/manage_licences_add">Manage licences</a></li>
+        <li><a href="/manage_licences_add">Manage your licences</a></li>
         <li><a href="/security-code">Security code</a></li>
       </ol>
     </div>
@@ -78,24 +78,7 @@
     <br />
 
 
-    {{#if licences }}
-    <table style="width: 100%;">
-        <thead>
-            <tr>
-                <th>Licences you've asked to view</th>
-                <th style="width:50%;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-           {{#each licences}}
-           <tr>
-              <td>{{ this.system_external_id }}</td>
-              <td>Awaiting code</td>
-            </tr>
-           {{/each}}
-        </tbody>
-      </table>
-      {{/if}}
+
 
 
 

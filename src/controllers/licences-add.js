@@ -382,10 +382,7 @@ async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'GOV.UK - Enter your security code';
 
-  const { entity_id: entityId } = request.auth.credentials;
-
   try {
-    viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
     return reply.view('water/licences-add/security-code', viewContext);
   } catch (error) {
     console.error(error);

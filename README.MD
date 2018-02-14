@@ -1,5 +1,7 @@
 
 # water-abstraction
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/DEFRA/water-abstraction-ui.svg)](https://greenkeeper.io/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/maintainability)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/test_coverage)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/test_coverage)
 

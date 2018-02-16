@@ -183,7 +183,9 @@
       <div class="data-row__value">
         <ul class="sub-list">
         {{#each licenceData.aggregateQuantity }}
+          {{#notNull this.value}}
           <li>{{ precision this.value 2 }} {{ this.name }}</li>
+          {{/notNull}}
         {{/each}}
         </ul>
       </div>

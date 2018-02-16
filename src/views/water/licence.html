@@ -179,7 +179,7 @@
 
   {{#if licenceData.aggregateQuantity }}
   <div class="data-row">
-      <div class="data-row__param">Maximum quantities before conditions</div>
+      <div class="data-row__param">Abstraction amounts</div>
       <div class="data-row__value">
         <ul class="sub-list">
         {{#each licenceData.aggregateQuantity }}
@@ -188,6 +188,7 @@
           {{/notNull}}
         {{/each}}
         </ul>
+        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction amounts</a>
       </div>
   </div>
   {{/if}}

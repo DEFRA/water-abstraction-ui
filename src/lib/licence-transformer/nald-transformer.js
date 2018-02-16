@@ -4,7 +4,6 @@
  */
 const deepMap = require('deep-map');
 const {
-  sortBy,
   find,
   uniqBy,
   filter
@@ -61,13 +60,15 @@ class NALDTransformer extends BaseTransformer {
       uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.purposes)
     };
 
-    if (licenceHolderParty.INITIALS != 'null') {
+    if (licenceHolderParty.INITIALS !== null) {
       this.data.licenceHolderInitials = licenceHolderParty.INITIALS;
     }
 
-    if (licenceHolderParty.SALUTATION != 'null') {
+    if (licenceHolderParty.SALUTATION !== null) {
       this.data.licenceHolderTitle = licenceHolderParty.SALUTATION;
     }
+
+    console.log(this.data);
 
     return this.data;
   }
@@ -203,12 +204,13 @@ class NALDTransformer extends BaseTransformer {
       'L/S': 'litres per second'
     };
 
-    const r = /([0-9,\.]+) ?([a-z3\/]+)/ig;
-    let result, results = [];
+    const r = /([0-9,.]+) ?([a-z3/]+)/ig;
+    let result;
+    let results = [];
     while ((result = r.exec(str)) !== null) {
       console.log(result);
       results.push({
-        value: parseFloat(result[1].replace(/[^0-9\.]/g, '')),
+        value: parseFloat(result[1].replace(/[^0-9.]/g, '')),
         units: result[2],
         name: unitNames[result[2].toUpperCase()]
       });
@@ -224,29 +226,60 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} array of quantities
    */
   aggregateQuantitiesFormatter (purposes) {
-    // Get all conditions as array
-    const conditions = purposes.reduce((memo, item) => {
-      return [...memo, ...item.licenceConditions];
-    }, []);
-
-    // Get AGG PP conditions
-    const agg = filter(conditions, (item) => {
-      return (item.condition_type.CODE === 'AGG') && (item.condition_type.SUBCODE === 'PP');
-    });
-
-    // Format
-    const formatted = agg.map(item => ({
-      code: item.condition_type.CODE,
-      subCode: item.condition_type.SUBCODE,
-      text: item.TEXT,
-      parameter1: item.PARAM1,
-      parameter2: item.PARAM2
+    const quantities = purposes.map(purpose => ({
+      annualQty: purpose.ANNUAL_QTY,
+      dailyQty: purpose.DAILY_QTY,
+      hourlyQty: purpose.HOURLY_QTY,
+      instantQty: purpose.INST_QTY
     }));
 
-    // Get unique
-    const unique = uniqBy(formatted, item => Object.values(item).join(','));
+    const uniqQuantities = uniqBy(quantities, item => Object.values(item).join(','));
 
-    return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
+    if (uniqQuantities.length === 1) {
+      return [
+        {
+          value: uniqQuantities[0].annualQty,
+          name: 'cubic metres per year'
+        },
+        {
+          value: uniqQuantities[0].dailyQty,
+          name: 'cubic metres per day'
+        },
+        {
+          value: uniqQuantities[0].hourlyQty,
+          name: 'cubic metres per hour'
+        },
+        {
+          value: uniqQuantities[0].instantQty,
+          name: 'litres per second'
+        }
+      ];
+    }
+
+    return [];
+    // // Get all conditions as array
+    // const conditions = purposes.reduce((memo, item) => {
+    //   return [...memo, ...item.licenceConditions];
+    // }, []);
+    //
+    // // Get AGG PP conditions
+    // const agg = filter(conditions, (item) => {
+    //   return (item.condition_type.CODE === 'AGG') && (item.condition_type.SUBCODE === 'PP');
+    // });
+    //
+    // // Format
+    // const formatted = agg.map(item => ({
+    //   code: item.condition_type.CODE,
+    //   subCode: item.condition_type.SUBCODE,
+    //   text: item.TEXT,
+    //   parameter1: item.PARAM1,
+    //   parameter2: item.PARAM2
+    // }));
+    //
+    // // Get unique
+    // const unique = uniqBy(formatted, item => Object.values(item).join(','));
+    //
+    // return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
   }
 
   /**
@@ -402,10 +435,9 @@ function _dedupe (arrayData) {
   var deduped = [];
   var hashes = [];
   var crypto = require('crypto');
-  var name = 'braitsch';
   for (var i in arrayData) {
     var hash = crypto.createHash('md5').update(JSON.stringify(arrayData[i])).digest('hex');
-    if (hashes.indexOf(hash) == -1) {
+    if (hashes.indexOf(hash) === -1) {
       hashes.push(hash);
       deduped.push(arrayData[i]);
     }

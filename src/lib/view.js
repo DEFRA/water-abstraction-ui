@@ -19,6 +19,29 @@ function viewContextDefaults (request) {
   viewContext.debug.connection = request.connection.info;
   viewContext.debug.request = request.info;
   viewContext.debug.request.path = request.path;
+
+  // Main nav links
+  viewContext.propositionLinks = [];
+
+  if (request.auth.isAuthenticated) {
+    // All authenticated users can view the 'View licences' link
+    viewContext.propositionLinks.push({
+      id: 'view',
+      text: 'View your licences',
+      url: '/licences'
+    });
+
+    // Only users who have primary_user role for a single org can use 'Manage licences' link
+    const { roles } = request.auth.credentials;
+    if (roles.length === 1 && roles[0].role === 'primary_user') {
+      viewContext.propositionLinks.push({
+        id: 'manage',
+        text: 'Manage your licences',
+        url: '/manage_licences'
+      });
+    }
+  }
+
   //  viewContext.debug.session = request.yar.get('sessionTimestamp')
 
   viewContext.user = request.auth.credentials;

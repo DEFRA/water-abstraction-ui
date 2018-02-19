@@ -13,7 +13,12 @@ const CRM = require('./connectors/crm');
 async function auto (request, emailAddress, userData) {
   const entityId = await CRM.entities.getOrCreateIndividual(emailAddress);
 
-  console.log('Signing in as ' + entityId);
+  // Get roles for user
+  const {error, data: roles} = await CRM.entityRoles.setParams({entityId}).findMany();
+
+  if (error) {
+    throw error;
+  }
 
   // Create session ID
   const sessionId = await request.sessionStore.create({
@@ -34,11 +39,13 @@ async function auto (request, emailAddress, userData) {
     sid: sessionId,
     username: emailAddress.toLowerCase().trim(),
     entity_id: entityId,
-    user_data: userData
+    user_data: userData,
+    roles
   };
 
   // Set user info in signed cookie
   request.cookieAuth.set(session);
+
   return session;
 }
 

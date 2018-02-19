@@ -274,17 +274,7 @@ const defaultContext = {
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
 
-  propositionLinks: [{
-    id: 'view',
-    text: 'View your licences',
-    url: '/licences'
-  },
-  {
-    id: 'manage',
-    text: 'Manage your licences',
-    url: '/manage_licences'
-  }
-  ],
+  propositionLinks: [],
 
   afterHeader: '',
   footerTop: '',

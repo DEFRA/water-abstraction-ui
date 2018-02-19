@@ -2,7 +2,6 @@ const fs = require('fs');
 const Promise = require('bluebird');
 const readFile = Promise.promisify(fs.readFile);
 const csvParse = Promise.promisify(require('csv-parse'));
-const sentenceCase = require('sentence-case');
 
 /**
  * Loads and transforms licence condition title data from
@@ -12,8 +11,7 @@ const sentenceCase = require('sentence-case');
  * @class LicenceTitleLoader
  */
 class LicenceTitleLoader {
-
-  constructor() {
+  constructor () {
     this.data = null;
   }
 
@@ -22,14 +20,14 @@ class LicenceTitleLoader {
    * Transforms titles to sentence case
    * @return {Array} array of data from CSV file
    */
-  async load() {
-    if(this.data) {
+  async load () {
+    if (this.data) {
       return this.data;
     }
 
     // Read condition titles from CSV
     const str = await readFile('./data/condition_titles.csv');
-    const data = await csvParse(str, {columns : true});
+    const data = await csvParse(str, {columns: true});
 
     // Sentence case all titles
     const dataTransformed = data.map((row) => {
@@ -43,11 +41,8 @@ class LicenceTitleLoader {
       };
     });
 
-
-
     return dataTransformed;
   }
-
 }
 
 module.exports = LicenceTitleLoader;

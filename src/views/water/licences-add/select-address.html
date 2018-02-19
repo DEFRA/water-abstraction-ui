@@ -3,11 +3,16 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/manage_licences_add">Manage your licences</a></li>
+        <li><a href="/add-licences">Request access</a></li>
       </ol>
     </div>
   </nav>
+
+  <a class="link-back" href="/select-licences">Back</a>
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -15,10 +20,10 @@
       {{#equal error.name 'AddressInvalidError' }}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        We need more information
+        You need to choose an address
       </h2>
       <ul class="error-summary-list">
-        <li><a href="#address">Please select an address.</a></li>
+        <li><a href="#address">Please choose which licence address we should post your security code to.</a></li>
       </ul>
      </div>
       {{/equal}}
@@ -27,47 +32,61 @@
         Where should we send your security code?
       </h1>
 
+
+
+      <form method="POST" action="/select-address">
+
+        <fieldset id="address">
+
+          <div class="form-group {{#if error}}form-group-error{{/if}}">
+
+            <legend>
+              <span class="form-label">
+                Choose one of your licence addresses:
+              </span>
+              {{#if error }}
+              <span class="error-message">
+                You need to choose an address
+              </span>
+              {{/if}}
+            </legend>
+
+            <br />
+
+            {{#each licences}}
+            <div class="multiple-choice">
+              <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
+              <label for="{{ this.document_id }}">
+    {{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
+    {{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
+    {{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
+    {{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
+    {{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
+    {{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
+    {{ this.metadata.Postcode }}
+                <br />
+                <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
+              </label>
+            </div>
+            {{/each}}
+
+          </div>
+
+        </fieldset>
+
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+      </form>
+
+      <br />
+      <br />
+
       <details class="closeOnOpen">
         <summary><span class="summary">Why do we need to post you a code?</span></summary>
         <p>We post a security code to a registered address to make sure you’re the licence holder or an official representative.</p>
       </details>
 
 
-
-
-      <form method="POST" action="/select-address">
-
-        <legend>
-          <p class="lede"> Choose one of your licence addresses:</p>
-        </legend>
-
-        <fieldset id="address">
-
-        {{#each licences}}
-        <div class="multiple-choice">
-          <input type="radio" name="address" value="{{ this.document_id }}" id="{{ this.document_id }}" />
-          <label for="{{ this.document_id }}">
-{{ this.metadata.AddressLine1 }}{{#if this.metadata.AddressLine2 }},{{/if}}
-{{ this.metadata.AddressLine2 }}{{#if this.metadata.AddressLine3 }},{{/if}}
-{{ this.metadata.AddressLine3 }}{{#if this.metadata.AddressLine4 }},{{/if}}
-{{ this.metadata.AddressLine4 }}{{#if this.metadata.Town }},{{/if}}
-{{ this.metadata.Town }}{{#if this.metadata.County }},{{/if}}
-{{ this.metadata.County }}{{#if this.metadata.Postcode }},{{/if}}
-{{ this.metadata.Postcode }}
-            <br />
-            <!-- <span style="font-size: 0.85em">Licence number {{ this.system_external_id }}</span> -->
-          </label>
-        </div>
-        {{/each}}
-
-        </fieldset>
-
-        <br />
-
-        <input type="submit" value="Continue" class="button" role="button"/>
-      </form>
-
-      <br />
 
 
 

@@ -14,9 +14,8 @@
  *   throw Boom.notFound('Page not found')
  * }).catch(errorHandler(request, reply))
  */
-module.exports = function(request, reply) {
-  return function(err) {
-
+module.exports = function (request, reply) {
+  return function (err) {
     console.log('----- errorHandler -----');
 
     // Log with good
@@ -25,10 +24,9 @@ module.exports = function(request, reply) {
     const statusCode = err.isBoom ? (err.output.statusCode || 500) : 500;
 
     // Log error
-    if(statusCode === 500) {
+    if (statusCode === 500) {
       console.error(err);
-    }
-    else {
+    } else {
       console.log(err);
     }
 
@@ -36,22 +34,20 @@ module.exports = function(request, reply) {
     const {session} = request;
 
     // Not found
-    if(statusCode === 404) {
+    if (statusCode === 404) {
       reply.view('water/404.html', {session}).code(statusCode);
-    }
-    // Unauthorised
-    else if(statusCode >= 401 && statusCode <= 403) {
+    } else if (statusCode >= 401 && statusCode <= 403) {
+      // Unauthorised
       reply.redirect('/login');
-    }
-    // Other error
-    else {
+    } else {
+      // Other error
       const viewContext = {
-        topOfPage : null,
-        bodyStart : null,
+        topOfPage: null,
+        bodyStart: null,
         session,
-        pageTitle : 'Error'
+        pageTitle: 'Error'
       };
       reply.view('water/error.html', viewContext).code(statusCode);
     }
-  }
-}
+  };
+};

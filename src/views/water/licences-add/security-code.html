@@ -3,12 +3,16 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
+        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/manage_licences_add">Manage your licences</a></li>
+        <li><a href="/security-code">Security code</a></li>
       </ol>
     </div>
   </nav>
 
+  <a class="link-back" href="/manage_licences_add">Back</a>
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -16,10 +20,10 @@
       {{#if error}}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        You need to enter the code we sent you
+        You need to enter the security code we posted to you
       </h2>
       <ul class="error-summary-list">
-        <li><a href="#verification_code">Re-enter your confirmation code</a></li>
+        <li><a href="#verification_code">Re-enter your security code</a></li>
       </ul>
     </div>
       {{/if}}
@@ -52,30 +56,30 @@
 
         <input type="submit" value="Continue" class="button" role="button"/>
     </form>
+
+
+    <br />
+
+    <details>
+      <summary><span class="summary">Haven’t received your code?</span></summary>
+      <div>
+        <p>
+          Please allow up to 5 working days to receive your code by post.
+        </p>
+        <p>
+          If it hasn’t arrived after that time, please email <a href="mailto:water_abstractiondigital@environment-agency.gov.uk">water_abstractiondigital@environment-agency.gov.uk</a> to request a new code.
+        </p>
+      </div>
+    </details>
+
+
   </div>
 </div>
 
     <br />
 
 
-    {{#if licences }}
-    <table style="width: 100%;">
-        <thead>
-            <tr>
-                <th>Licences you've asked to view</th>
-                <th style="width:50%;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-           {{#each licences}}
-           <tr>
-              <td>{{ this.system_external_id }}</td>
-              <td>Awaiting code</td>
-            </tr>
-           {{/each}}
-        </tbody>
-      </table>
-      {{/if}}
+
 
 
 

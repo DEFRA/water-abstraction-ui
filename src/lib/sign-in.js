@@ -10,24 +10,42 @@ const CRM = require('./connectors/crm');
  * @param {String} emailAddress - email address of user
  * @return {Object} returns object with data stored in secure cookie
  */
-async function auto(request, emailAddress) {
+async function auto (request, emailAddress, userData) {
+  const entityId = await CRM.entities.getOrCreateIndividual(emailAddress);
 
-  const entity_id = await CRM.getOrCreateIndividualEntity(emailAddress);
+  // Get roles for user
+  const {error, data: roles} = await CRM.entityRoles.setParams({entityId}).findMany();
+
+  if (error) {
+    throw error;
+  }
 
   // Create session ID
-  const session_id = await request.sessionStore.create({
-    user : {emailAddress}
+  const sessionId = await request.sessionStore.create({
+    user: {emailAddress}
   });
+
+  try {
+    userData = JSON.parse(userData);
+  } catch (e) {
+    userData = {};
+  }
+  if (!userData.usertype) {
+    userData.usertype = 'external';
+  }
 
   // Data to store in cookie
   const session = {
-    sid : session_id,
-    username : emailAddress.toLowerCase().trim(),
-    entity_id
+    sid: sessionId,
+    username: emailAddress.toLowerCase().trim(),
+    entity_id: entityId,
+    user_data: userData,
+    roles
   };
 
   // Set user info in signed cookie
   request.cookieAuth.set(session);
+
   return session;
 }
 

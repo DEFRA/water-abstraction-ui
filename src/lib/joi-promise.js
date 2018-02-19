@@ -12,15 +12,14 @@ const Joi = require('joi');
  * @param {Object} [options] - additional options - see Joi docs
  * @return {Promise} - resolves with value, or throws validation error
  */
-module.exports = function() {
+module.exports = function () {
   const args = arguments;
   return new Promise((resolve, reject) => {
     const {error, value} = Joi.validate.apply(this, args);
 
-    if(error) {
+    if (error) {
       throw error;
-    }
-    else {
+    } else {
       resolve(value);
     }
   });

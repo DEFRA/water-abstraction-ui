@@ -1,8 +1,8 @@
-//contains generic functions unrelated to a specific component
+// contains generic functions unrelated to a specific component
 const rp = require('request-promise-native').defaults({
-    proxy:null,
-    strictSSL :false
-  });
+  proxy: null,
+  strictSSL: false
+});
 
 const isArray = require('lodash/isArray');
 
@@ -11,41 +11,40 @@ const isArray = require('lodash/isArray');
  * @param {Mixed} val - the value
  * @return {Array} the value wrapped in array
  */
-function forceArray(val) {
-  if(val === null || val === undefined) {
+function forceArray (val) {
+  if (val === null || val === undefined) {
     return [];
   }
   return isArray(val) ? val : [val];
 }
 
-
-//make a simple http request (without a body), uses promises
-function makeURIRequest(uri) {
+// make a simple http request (without a body), uses promises
+function makeURIRequest (uri) {
   return new Promise((resolve, reject) => {
     var options = {
       method: 'get',
       uri: uri
     };
     rp(options)
-      .then(function(response) {
+      .then(function (response) {
         var responseData = {};
-        responseData.error = null
-        responseData.statusCode = 200
-        responseData.body = response
+        responseData.error = null;
+        responseData.statusCode = 200;
+        responseData.body = response;
         resolve(responseData);
       })
-      .catch(function(response) {
+      .catch(function (response) {
         var responseData = {};
-        responseData.error = response.error
-        responseData.statusCode = response.statusCode
-        responseData.body = response.body
+        responseData.error = response.error;
+        responseData.statusCode = response.statusCode;
+        responseData.body = response.body;
         reject(responseData);
       });
-  })
+  });
 }
 
-//make an http request (with a body), uses promises
-function makeURIRequestWithBody(uri, method, data) {
+// make an http request (with a body), uses promises
+function makeURIRequestWithBody (uri, method, data) {
   return new Promise((resolve, reject) => {
     var options = {
       method: method,
@@ -55,33 +54,31 @@ function makeURIRequestWithBody(uri, method, data) {
     };
 
     rp(options)
-      .then(function(response) {
+      .then(function (response) {
         var responseData = {};
-        responseData.error = null
-        responseData.statusCode = 200
-        responseData.body = response
+        responseData.error = null;
+        responseData.statusCode = 200;
+        responseData.body = response;
         resolve(responseData);
       })
-      .catch(function(response) {
+      .catch(function (response) {
         var responseData = {};
-        responseData.error = response.error
-        responseData.statusCode = response.statusCode
-        responseData.body = response.body
+        responseData.error = response.error;
+        responseData.statusCode = response.statusCode;
+        responseData.body = response.body;
         reject(responseData);
       });
-
-  })
-
+  });
 }
 
-//create a UUID
-function createGUID() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1)
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4()
+// create a UUID
+function createGUID () {
+  function s4 () {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 module.exports = {
@@ -90,5 +87,4 @@ module.exports = {
   makeURIRequestWithBody: makeURIRequestWithBody,
   forceArray
 
-
-}
+};

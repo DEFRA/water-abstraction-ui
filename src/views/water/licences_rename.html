@@ -3,11 +3,12 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
-        <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence serial number: {{ licenceData.licence_ref }}</a></li>
-        {{>element-header-links}}
+        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}/rename">Name this licence</a></li>
+
       </ol>
     </div>
   </nav>
@@ -18,20 +19,18 @@
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
 
     <h1 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-      Licence not saved
+      Check your licence name
     </h1>
 
     <ul class="error-summary-list">
-        <li><a href="#name">There was a problem with the licence name field</a></li>
+        <li><a href="#name">Choose a name that’s 2-32 characters long and doesn’t include symbols</a></li>
     </ul>
 
   </div>
   {{/if}}
 
 
-
-
-  <h1 class="heading-medium">Licence serial number {{ licenceData.licence_ref }}</h1>
+  <h1 class="heading-large">Licence number: {{ licenceData.licenceNumber }}</h1>
 
   <p></p>
 
@@ -41,16 +40,17 @@
     <div class="form-group {{#if error }}form-group-error{{/if}}">
       <label for="name" class="{{#if error }}form-label-error{{/if}}">
 
-        <span class="form-label-bold">Licence name</span>
+
+
+        <span class="form-label-bold">Name this licence</span>
+
+        <span class="form-hint">You can give this licence a name to help you search for it more easily.</span>
+
+        <span class="sr-only">(maximum 32 characters)</span>
       {{#if error }}
-        {{#each error.details }}
         <span class="error-message">
-          {{#equal this.type 'string.min' }}The name must be at least 2 characters long{{/equal}}
-          {{#equal this.type 'string.max' }}The name must be no more than 32 characters long{{/equal}}
-          {{#equal this.type 'string.regex.base' }}The name can only use alphanumeric characters (A-Z and 0-9), spaces or apostrophes{{/equal}}
-          {{#equal this.type 'any.required' }}The name field is required{{/equal}}
+          Choose a name that’s 2-32 characters long and doesn’t include symbols
         </span>
-        {{/each}}
       {{/if}}
 
       </label>
@@ -69,43 +69,149 @@
 
 
 
-  <!-- User-defined licence name row -->
-<!--
-  <div class="data-table">
-    <label for="name" class="sourceofsupplyq">Licence name</label>
-    <div class="licenceAnswer">
+    {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
+
+    {{#greaterThan licenceData.abstractionPeriods.length 0}}
+    <!-- Periods -->
+    <div class="data-row">
+      <div class="data-row__param">Period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} of abstraction</div>
+      <div class="data-row__value">
+
+        {{#greaterThan licenceData.abstractionPeriods.length 1}}
+          <!-- Multiple purposes -->
+          {{#lessThan licenceData.abstractionPeriods.length 6 }}
+          <ul class="sub-list">
+            {{#each licenceData.abstractionPeriods }}
+            <li>{{formatPeriod periodStart periodEnd }}</li>
+            {{/each}}
+          </ul>
+          {{else}}
+          You have {{ licenceData.abstractionPeriods.length }} abstraction periods<br />
+          {{/lessThan}}
+
+          <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction periods</a>
 
 
-      <form name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
-
-        <div class="form-group form-group-error">
-          <label><span class="error-message">Your licence name cannot include a profanity</span></label>
-          <input type="text" class="form-control form-control-error" id="name" name="name" value="{{ crmData.document_custom_name }}" />
-
-
-        </div>
-        <button type="submit" class="button">Save</button>
-
-      </form>
+        {{else}}
+          {{formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd  }}<br />
+          <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction period</a>
+        {{/greaterThan}}
 
 
-        <p style="margin-bottom: 0; margin-top: 1em;"><a href="/licences/{{ licence_id }}" id="cancel">Cancel</a></p>
-
-
+      </div>
     </div>
-  </div> -->
+    {{/greaterThan}}
 
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.attributes.licenceData.name '<br/><a href="/licences/' licence_id '/contact">Licence contact details</a>')}}
-  {{>element-licence-row label='Point of abstraction' answer=(ngrPoint licenceData.attributes.licenceData.purposes.0.points)}}
-  {{>element-licence-row label='Licence effective from' answer=(formatDate licenceData.attributes.licenceData.effectiveFrom)}}
-  {{>element-licence-row label='Licensed until' answer=(formatToDate licenceData.attributes.licenceData.effectiveTo)}}
-  {{>element-licence-row label='Source of supply' answer=licenceData.attributes.licenceData.sourceOfSupply}}
-  {{>element-licence-row label='Period of abstraction' answer=(formatPeriod licenceData.attributes.licenceData.purposes.0.periodStart licenceData.attributes.licenceData.purposes.0.periodEnd)}}
-  {{>element-licence-row label='Maximum quantities before conditions' answer=(maxQuantities licenceData.attributes.licenceData)}}
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
-  <p></p>
-  <p><a href="/licences/{{licence_id}}/terms">Read your full licence terms of use</a></p>
+    <!-- Points -->
+    <div class="data-row">
+      <div class="data-row__param">Point{{#greaterThan licenceData.points.length 1}}s{{/greaterThan}} of abstraction</div>
+      <div class="data-row__value">
+
+        {{#greaterThan licenceData.points.length 1}}
+          <!-- Multiple purposes -->
+          {{#lessThan licenceData.points.length 6 }}
+          <ul class="sub-list">
+            {{#each licenceData.points }}
+            <li>{{ngrPoint this}}</li>
+            {{/each}}
+          </ul>
+          {{else}}
+          You have {{ licenceData.points.length }} abstraction points<br />
+          {{/lessThan}}
+
+          <a href="/licences/{{ licence_id }}/points">View details of your abstraction points</a>
+
+
+        {{else}}
+          {{ngrPoint licenceData.points }}<br />
+          <a href="/licences/{{ licence_id }}/points">View details of your abstraction point</a>
+        {{/greaterThan}}
+
+      </div>
+    </div>
+
+
+    <!-- Purposes -->
+    <div class="data-row">
+      <div class="data-row__param">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
+      <div class="data-row__value">
+
+        {{#greaterThan licenceData.uniquePurposeNames.length 1}}
+          <!-- Multiple purposes -->
+          {{#lessThan licenceData.uniquePurposeNames.length 6 }}
+          <ul class="sub-list">
+            {{#each licenceData.uniquePurposeNames }}
+            <li>{{this}}</li>
+            {{/each}}
+          </ul>
+          {{else}}
+          You have {{ licenceData.uniquePurposeNames.length }} abstraction purposes<br />
+          {{/lessThan}}
+
+          <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
+
+
+        {{else}}
+          {{licenceData.uniquePurposeNames }}<br />
+          <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purpose</a>
+        {{/greaterThan}}
+
+      </div>
+    </div>
+
+    <!-- Abstraction conditions -->
+    <div class="data-row">
+      <div class="data-row__param">Abstraction condition{{#greaterThan licenceData.conditions.length 1}}s{{/greaterThan}}{{#equal licenceData.conditions.length 0}}s{{/equal}}</div>
+      <div class="data-row__value">
+
+        {{#greaterThan licenceData.conditions.length 1}}
+          <!-- Multiple purposes -->
+          {{#lessThan licenceData.conditions.length 6 }}
+          <ul class="sub-list">
+            {{#each licenceData.conditions }}
+            <li>{{this.displayTitle}}</li>
+            {{/each}}
+          </ul>
+          {{else}}
+          You have {{ licenceData.conditions.length }} abstraction conditions<br />
+          {{/lessThan}}
+
+          <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+
+
+        {{else}}
+          {{#greaterThan licenceData.conditions.length 0}}
+            {{licenceData.conditions.0.displayTitle }}<br />
+            <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction condition</a>
+          {{else}}
+            <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+          {{/greaterThan}}
+
+        {{/greaterThan}}
+
+      </div>
+    </div>
+
+
+
+    {{#if licenceData.aggregateQuantity }}
+    <div class="data-row">
+        <div class="data-row__param">Maximum quantities before conditions</div>
+        <div class="data-row__value">
+          <ul class="sub-list">
+          {{#each licenceData.aggregateQuantity }}
+            <li>{{ precision this.value 2 }} {{ this.name }}</li>
+          {{/each}}
+          </ul>
+        </div>
+    </div>
+    {{/if}}
+
+
+
+
+
   <p></p>
 </main>
 {{> footerjs}}

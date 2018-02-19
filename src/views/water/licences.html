@@ -4,24 +4,13 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
-        <li><a href="/licences">Abstraction licences</a></li>
-        {{>element-header-links}}
+        <li><a href="/licences">Your licences</a></li>
       </ol>
+
     </div>
   </nav>
-
-  <div style="margin-top:35px;margin-bottom:35px;">
-        <nav class="tabs">
-      	  <ul>
-            <li><span class="active">Licence list</span></li>
-            {{#if showManageFilter}}
-      	    <li><a href="/manage_licences">Manage licence access</a></li>
-            {{/if}}
-          </ul>
-        </nav>
-  </div>
 
   {{#equal error.name "ValidationError" }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -45,9 +34,13 @@
   </div>
   {{/equal}}
 
+  {{>element-heading-large content='Your licences'}}
 
-  {{>element-heading-large content='Your water abstraction licences'}}
-
+  {{#if showVerificationAlert }}
+  <div class="panel panel-border-wide alert-default medium-space">
+    Have you received a security code by post? <a href="/security-code">Enter your code here</a>
+  </div>
+  {{/if}}
 
   {{#if enableSearch}}
   <form novalidate method="GET" action="/licences" name="licenceSearch">
@@ -58,8 +51,8 @@
     {{#if showEmailFilter }}
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal {{#if error }}form-group-error{{/if}}">
-        <label class="form-label form-label--bold" for="emailAddress">Search for an account holder</label>
-        <span class="form-hint">Search by account email address.</span>
+        <label class="form-label form-label--bold" for="emailAddress">Search by licence holder</label>
+        <span class="form-hint">Enter their registered email address</span>
         <input maxlength="254" type="email" class="form-control form-control--block {{#if error}}form-control-error{{/if}}" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
@@ -68,7 +61,7 @@
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
         <label class="form-label form-label--bold" for="licenceNumber">Search your licences</label>
-        <span class="form-hint">Enter a licence number or the name.</span>
+        <span class="form-hint">Enter a licence number or name</span>
         <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
     </div>
@@ -88,12 +81,12 @@
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">Licence serial number
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence serial number
           {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
         </a>
       </div>
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}#results">Licence name
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence name
           {{{ sortIcon  direction=direction sort=sort field="name" }}}
         </a>
       </div>
@@ -115,6 +108,35 @@
     {{/each}}
 
   </div>
+
+
+  {{#greaterThan pagination.pageCount 1}}
+  <nav role="navigation" aria-label="Pagination navigation">
+    <ol class="pagination">
+      <li class="pagination__item" {{#equal pagination.page 1}}aria-hidden="true"{{/equal}}>
+        {{#greaterThan pagination.page 1}}
+          <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
+        {{/greaterThan}}
+        	&larr; Previous page
+        {{#greaterThan pagination.page 1}}
+          </a>
+        {{/greaterThan}}
+      </li>
+      {{#for 0 pagination.pageCount 1 }}
+      <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/licences?{{{ queryString direction=../direction sort=../sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&page={{add this 1 }}#results"><span class="sr-only">Page </span>{{add this 1 }}{{#equal (add this 1) ../pagination.page}}<span class="sr-only"> - current page</span>{{/equal}}</a></li>
+      {{/for}}
+      <li class="pagination__item" {{#equal pagination.page pagination.pageCount}}aria-hidden="true"{{/equal}}>
+        {{#lessThan pagination.page pagination.pageCount}}
+          <a class="pagination__link" href="/licences?{{{ queryString direction=direction sort=sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&page={{add pagination.page 1 }}#results" aria-label="Next page">
+        {{/lessThan}}
+        Next page 	&rarr;
+        {{#lessThan pagination.page pagination.pageCount}}
+          </a>
+        {{/lessThan}}
+      </li>
+    </ol>
+  </nav>
+  {{/greaterThan}}
 
 
   <p></p>

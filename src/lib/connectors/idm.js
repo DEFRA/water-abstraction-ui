@@ -3,7 +3,36 @@ const rp = require('request-promise-native').defaults({
     proxy:null,
     strictSSL :false
   });
+const { APIClient } = require('hapi-pg-rest-api');
+const client = new APIClient(rp, {
+  endpoint : process.env.IDM_URI + '/user',
+  headers : {
+    Authorization : process.env.JWT_TOKEN
+  }
+});
 
+
+
+/**
+ * Reset user's password in IDM
+ * Triggers notify message
+ * @param {String} email - user's email address
+ * @param {String} mode - can be reset|new|existing
+ * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
+ */
+function resetPassword(email, mode = 'reset') {
+    return rp({
+      uri : `${process.env.IDM_URI}/reset/${email}`,
+      qs : {
+        mode
+      },
+      method : 'PATCH',
+      json : true,
+      headers : {
+        Authorization : process.env.JWT_TOKEN
+      }
+    });
+}
 
 
 /**
@@ -12,17 +41,10 @@ const rp = require('request-promise-native').defaults({
  * @return {Promise} resolves with user record if found or null otherwise
  */
 async function getUserByResetGuid(reset_guid) {
-  const data = await rp({
-    uri : process.env.IDM_URI + '/user',
-    method : 'GET',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    qs : {
-      filter : JSON.stringify({reset_guid})
-    }
-  });
+  const {error, data} = await client.findMany({reset_guid});
+  if(error) {
+    throw error;
+  }
   return data.length === 1 ? data[0] : null;
 }
 
@@ -31,28 +53,17 @@ async function getUserByResetGuid(reset_guid) {
  * Create user account in registration process
  * No password is supplied so a random GUID is used as a
  * temporary password, and the user is flagged for password reset
- * @param {String} email - the user email address
+ * @param {String} emailAddress - the user email address
  * @return {Promise} - resolves if user account created
  */
-function createUserWithoutPassword(email) {
-
-    // Generate password
-    const tempPassword = Helpers.createGUID();
-
-    return rp({
-      uri : process.env.IDM_URI + '/user',
-      method : 'POST',
-      json : true,
-      headers : {
-        Authorization : process.env.JWT_TOKEN
-      },
-      body : {
-        username : email,
-        password : tempPassword,
-        admin : 0,
-        user_data : '{}',
-        reset_required : 1
-      }
+function createUserWithoutPassword(emailAddress) {
+    return client.create({
+          user_name : emailAddress.toLowerCase(),
+          password : Helpers.createGUID(),
+          reset_guid : Helpers.createGUID(),
+          admin : 0,
+          user_data : '{}',
+          reset_required : 1
     });
 }
 
@@ -62,17 +73,7 @@ function createUserWithoutPassword(email) {
  * @return {Promise} resolves with user if found
  */
  function getUser(user_id) {
-   return rp({
-     uri : process.env.IDM_URI + '/user/' + user_id,
-     method : 'GET',
-     json : true,
-     headers : {
-       Authorization : process.env.JWT_TOKEN
-     },
-     qs : {
-       user_id
-     }
-   });
+   return client.findOne(user_id.toLowerCase());
  }
 
 function login(user_name, password){
@@ -97,43 +98,6 @@ function login(user_name, password){
 }
 
 
-/**
- * Send password reset email
- * @param {String} emailAddress - the user email address to send password reset email to
- * @return {Promise} - resolves with HTTP response
- */
-function resetPassword(emailAddress){
-  return rp({
-    uri : process.env.IDM_URI + '/resetPassword',
-    method : 'POST',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      emailAddress
-    }
-  });
-}
-
-/**
- * Resets user reset_guid without sending notify email
- * @param {String} emailAddress - the user email address to send password reset email to
- * @return {Promise} - resolves with HTTP response
- */
-function resetPasswordQuiet(emailAddress){
-  return rp({
-    uri : process.env.IDM_URI + '/resetPasswordQuiet',
-    method : 'POST',
-    json : true,
-    headers : {
-      Authorization : process.env.JWT_TOKEN
-    },
-    body : {
-      emailAddress
-    }
-  });
-}
 
 function getPasswordResetLink (emailAddress) {
   return new Promise((resolve, reject) => {
@@ -149,55 +113,40 @@ function getPasswordResetLink (emailAddress) {
   });
 }
 
-function updatePassword (username, password, cb) {
 
-
-
-  return new Promise((resolve, reject) => {
-  console.log("Change password: " + username + " " + password)
-    var data = { username: username, password: password }
-    var uri = process.env.IDM_URI + '/user' + '?token=' + process.env.JWT_TOKEN
-    Helpers.makeURIRequestWithBody(uri,'PUT', data)
-    .then((response)=>{
-        resolve(response)
-    }).catch((response)=>{
-//      console.log('rejecting in idm.updatePassword')
-      reject(response)
-    })
-
+/**
+ * Updates user password
+ * @param {String} username - user's IDM email address
+ * @param {String} password - new password
+ */
+function updatePassword (username, password) {
+  return client.updateOne(username, {
+    password
   });
-
-
 }
 
 
 
-
+/**
+ * Update password in IDM
+ * @param {String} resetGuid - the reset GUID issues during reset password
+ * @param {String} password - new password
+ * @return {Promise} resolves when user updated
+ */
 function updatePasswordWithGuid (resetGuid, password) {
-
-
-  return new Promise((resolve, reject) => {
-    var data = { resetGuid: resetGuid, password: password }
-    var uri = process.env.IDM_URI + '/changePassword' + '?token=' + process.env.JWT_TOKEN
-    Helpers.makeURIRequestWithBody(uri,'POST', data)
-    .then((response)=>{
-        resolve(response)
-    }).catch((response)=>{
-//      console.log('rejecting in idm.updatePasswordWithGuid')
-      reject(response)
-    })
-
+  return client.updateMany({
+    reset_guid : resetGuid
+  }, {
+    password,
+    reset_required : 0,
+    reset_guid : null
   });
-
-
-
 }
 
 
 module.exports = {
 login:login,
 resetPassword,
-resetPasswordQuiet,
 getPasswordResetLink: getPasswordResetLink,
 updatePassword: updatePassword,
 updatePasswordWithGuid: updatePasswordWithGuid,

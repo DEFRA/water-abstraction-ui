@@ -1,4 +1,14 @@
 language: node_js
 node_js:
-  - "iojs"
   - "8"
+install:
+  - npm install
+  - snyk test
+script:
+  - npm run lint
+  - echo "Completed"
+env:
+  global:
+    - errbit_key=xyz
+    - errbit_server=http://localhost
+    - cookie_secret=somethingverysecrethere

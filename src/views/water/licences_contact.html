@@ -3,45 +3,56 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol >
-        <li><a href="/?access=PB01">Your service</a></li>
-        <li><a href="/licences">Abstraction licences</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licence_ref }}</a></li>
-        {{>element-header-links}}
+        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="/licences/{{ licence_id }}/rename">Contact details</a></li>
+
       </ol>
     </div>
   </nav>
   <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
-  {{>element-heading-large content=(concat licenceData.LicenceName 'Your water abstraction licence')}}
-  <p>Licence number: {{ licenceData.licence_ref }}</p>
-  <p></p>
-  <br/>
 
-  {{>element-heading-medium content='Registered licence holder details'}}
-  {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
-  {{>element-licence-row label='Address' answer=(formatAddress licenceData.attributes.licenceData)}}
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
-  <p></p>
-  <br/>
 
-  {{>element-heading-medium content='Site contact details'}}
-  {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
-  {{>element-licence-row label='Address' answer=(formatAddress licenceData.attributes.licenceData)}}
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
-  <p></p>
-  <br/>
+  {{#if crmData.document_custom_name }}
+  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
+  {{else}}
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
 
-  {{>element-heading-medium content='Billing contact details'}}
-  {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
-  {{>element-licence-row label='Address' answer=(formatAddress licenceData.attributes.licenceData)}}
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
-  <p></p>
-  <br/>
+  {{#each licenceData.contacts }}
+    <h2 class="heading-medium">{{ this.type }}</h2>
+    <div class="data-row">
+        <div class="data-row__param">
+          Name
+        </div>
+        <div class="data-row__value">
+          {{ this.name }}
+          <br>
+        </div>
+    </div>
+    <div class="data-row">
+        <div class="data-row__param">
+          Address
+        </div>
+        <div class="data-row__value">
+          {{#if this.addressLine1 }}{{ this.addressLine1 }}<br />{{/if}}
+          {{#if this.addressLine2 }}{{ this.addressLine2 }}<br />{{/if}}
+          {{#if this.addressLine3 }}{{ this.addressLine3 }}<br />{{/if}}
+          {{#if this.addressLine4 }}{{ this.addressLine4 }}<br />{{/if}}
+          {{#if this.town }}{{ this.town }}<br />{{/if}}
+          {{#if this.county }}{{ this.county }}<br />{{/if}}
+          {{#if this.postcode }}{{ this.postcode }}<br />{{/if}}
+          {{ this.country }}
+        </div>
+    </div>
+    <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+    <br />
+  {{/each }}
 
-  {{>element-heading-medium content='Abstraction return contact details'}}
-  {{>element-licence-row label='Name' answer=licenceData.attributes.licenceData.name}}
-  {{>element-licence-row label='Address' answer=(formatAddress licenceData.attributes.licenceData)}}
-  <div class="greyline" style="border-bottom: 1px solid #bfc1c3;"></div>
+
+
 </main>
 {{> footerjs}}
 {{> debug}}

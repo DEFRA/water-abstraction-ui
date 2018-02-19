@@ -1,59 +1,41 @@
 require('dotenv').config();
 
-
-/**
-request.cookieAuth.set(user);
-
-* */
-
 const serverOptions = {
   connections: {
     router: {
-      stripTrailingSlash: true,
-    },
-  },
+      stripTrailingSlash: true
+    }
+  }
 };
 const Hapi = require('hapi');
 
 const server = new Hapi.Server(serverOptions);
-const Disinfect = require('disinfect');
 const SanitizePayload = require('hapi-sanitize-payload');
 
-
 server.connection({
-  port: process.env.PORT,
+  port: process.env.PORT
 });
-
-server.state('sessionCookie', {
-  ttl: 24 * 60 * 60 * 1000, // One day
-  isSecure: false,
-  isHttpOnly: false,
-  isSameSite: 'Lax',
-  encoding: 'base64json',
-});
-
 
 // logging options
 const goodOptions = {
   ops: {
-    interval: 1000,
+    interval: 1000
   },
   reporters: {
     myConsoleReporter: [{
       module: 'good-squeeze',
       name: 'Squeeze',
-      args: [{ log: '*', response: '*' }],
+      args: [{ log: '*', response: '*' }]
     }, {
-      module: 'good-console',
-    }, 'stdout'],
-  },
+      module: 'good-console'
+    }, 'stdout']
+  }
 };
-
 
 server.register([
   {
     register: require('good'),
-    options: goodOptions,
+    options: goodOptions
   },
 
   {
@@ -62,17 +44,17 @@ server.register([
       templateName: 'water/error.html',
       statusCodes: {
         401: {
-          redirect: '/login',
-        },
-      },
-    },
+          redirect: '/login'
+        }
+      }
+    }
   },
   {
     register: require('node-hapi-airbrake'),
     options: {
       key: process.env.errbit_key,
-      host: process.env.errbit_server,
-    },
+      host: process.env.errbit_server
+    }
   },
 
   {
@@ -80,39 +62,44 @@ server.register([
     // See https://www.npmjs.com/package/blipp
     register: require('blipp'),
     options: {
-      showAuth: true,
-    },
+      showAuth: true
+    }
   }, {
-    register: require('hapi-auth-cookie'),
+    register: require('hapi-auth-cookie')
   },
   // Sessions via REST API in water service
   {
     register: require('./src/lib/sessions/hapi-plugin.js'),
-    options: {},
+    options: {}
   },
   {
     // Plugin to recursively sanitize or prune values in a request.payload object
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
     options: {
-      pruneMethod: 'delete',
-    },
+      pruneMethod: 'delete'
+    }
   },
 
-  require('inert'), require('vision'),
+  require('inert'), require('vision')
 ], (err) => {
+  if (err) {
+    console.error(err);
+  }
+
   server.auth.strategy('standard', 'cookie', {
     password: process.env.cookie_secret, // cookie secret
-    isSecure: !!(process.env.NODE_ENV || '').match(/^preprod|production$/i), // use secure cookie in production/preprod
+    isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/signin',
-    isHttpOnly: true,
+    isHttpOnly: true
   });
 
+  // server.auth.default('standard');
   server.auth.default({
     strategy: 'standard',
-    mode: 'try',
+    mode: 'try'
   });
 
   // load views
@@ -126,23 +113,20 @@ server.errorHandler = function (error) {
   throw error;
 };
 
-
 server.ext({
   type: 'onPreHandler',
-  method(request, reply) {
-    if (request.path.indexOf('public') != -1) {
+  method (request, reply) {
+    if (request.path.indexOf('public') !== -1) {
       // files in public dir are always online...
       return reply.continue();
-    }
-    else if (request.path == '/robots.txt') {
+    } else if (request.path === '/robots.txt') {
       // robots.txt is always online because it's used for ELB healthcheck...
       return reply.continue();
     }
     // removed s3 status file check since it's leaking memory...
     return reply.continue();
-  },
+  }
 });
-
 
 // Start the server if not testing with Lab
 if (!module.parent) {

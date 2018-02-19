@@ -3,10 +3,12 @@
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
+      {{>element-header-links}}
       <ol>
-        <li><a href="/?access=PB01">Your service</a></li>
-        <li><a href="/licences">Abstraction licences</a></li>
-        {{>element-header-links}}
+        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/manage_licences">Manage licences</a></li>
+        <li><a href="/manage_licences/add_access">Add access</a></li>
+
       </ol>
     </div>
   </nav>
@@ -29,10 +31,10 @@
       </div>
     {{/if}}
     <div class="form-group">
-      <p>Enter the person’s email address and we’ll send them a link to create an account. This will give them access to view your licences.</p>
+      <p>Enter the person’s email address and we’ll send them a link to view your licences.</p>
       <label for="email">
+        <span class="form-label-bold">Email address</span>
           <fieldset>
-            <span class="form-label-bold">Email address</span>
             {{#if errors.email}}
             <span data-parsely-id="email" class="error-message">Please enter a valid email address</span>
             {{/if}}

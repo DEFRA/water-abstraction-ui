@@ -29,6 +29,7 @@ $path: "/public/images/";
 @import "blocks/licence_search";
 @import "blocks/licence_rename";
 @import "blocks/data_row";
+@import "blocks/pagination";
 
 * {
 family: "nta", Arial, sans-serif;
@@ -38,6 +39,12 @@ family: "nta", Arial, sans-serif;
 .panel {
   border-top: none;
 }
+
+.alert-default {
+  border-color: #008EC9;
+  background-color: #E8F4FA;
+}
+
 
 .teststyle {
   color: green;
@@ -110,6 +117,11 @@ family: "nta", Arial, sans-serif;
   margin-top: 0.3em;
   margin-bottom: 0.5em;
 }
+
+.medium-space {
+    margin-bottom: 30px;
+}
+
 
 li {
   margin-bottom: 10px;

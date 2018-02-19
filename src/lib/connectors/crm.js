@@ -2,10 +2,6 @@
  * Provides convenience methods for HTTP API requests from the tactical CRM
  * @module lib/connectors/crm
  */
-const rp = require('request-promise-native').defaults({
-  proxy: null,
-  strictSSL: false
-});
 const moment = require('moment');
 const find = require('lodash/find');
 
@@ -20,10 +16,10 @@ const crmEntityRoles = require('./crm/entity-roles');
  * @param {String} entity_id - the individual entity ID
  * @return {Promise} resolves with array of licence document_header data
  */
-async function getOutstandingLicenceRequests (entity_id) {
+async function getOutstandingLicenceRequests (entityId) {
   // Get outstanding verifications for current user
   const res = await crmVerification.findMany({
-    entity_id,
+    entity_id: entityId,
     date_verified: null
   });
   if (res.error) {
@@ -31,11 +27,11 @@ async function getOutstandingLicenceRequests (entity_id) {
   }
 
   // Get array list of verification IDs
-  const verification_id = res.data.map(row => row.verification_id);
+  const verificationId = res.data.map(row => row.verification_id);
 
   // Find licences with this ID
   const {error, data} = await crmDocuments.findMany({
-    verification_id,
+    verification_id: verificationId,
     verified: null
   });
   if (error) {
@@ -62,9 +58,17 @@ async function createVerification (entityId, companyEntityId, documentIds) {
 
   const res = await crmVerification.create(verificationData);
 
-  const {verification_id, verification_code} = res.data;
+  if (res.error) {
+    throw res.error;
+  }
 
-  const res2 = await crmDocuments.updateMany({document_id: documentIds}, {verification_id});
+  const { verification_id: verificationId } = res.data;
+
+  const res2 = await crmDocuments.updateMany({document_id: documentIds}, {verification_id: verificationId});
+
+  if (res2.error) {
+    throw res2.error;
+  }
 
   return res.data;
 }
@@ -110,7 +114,7 @@ async function getOrCreateCompanyEntity (entityId, companyName) {
   }
 
   // Create entity role
-  const { data: roleData, error: roleError } = await crmEntityRoles.setParams({entityId}).create({
+  const { error: roleError } = await crmEntityRoles.setParams({entityId}).create({
     company_entity_id: data.entity_id,
     role: 'primary_user'
   });
@@ -123,6 +127,28 @@ async function getOrCreateCompanyEntity (entityId, companyName) {
 }
 
 /**
+ * Error class for when no company is found for the user during verification
+ * process
+ */
+class NoCompanyError extends Error {
+  constructor (message) {
+    super(message);
+    this.name = 'NoCompanyError';
+  }
+}
+
+/**
+ * Error class for when no company is found for the user during verification
+ * process
+ */
+class VerificationNotFoundError extends Error {
+  constructor (message) {
+    super(message);
+    this.name = 'VerificationNotFoundError';
+  }
+}
+
+/**
  * Verification process
  * @param {String} entityId - the individual entity ID
  * @param {String} verificationCode - the code supplied by post
@@ -132,7 +158,7 @@ async function verify (entityId, verificationCode) {
   // Get company ID for entity
   const companyEntityId = await getPrimaryCompany(entityId);
   if (!companyEntityId) {
-    throw {name: 'NoCompanyError'};
+    throw new NoCompanyError();
   }
 
   // Verify with code
@@ -147,17 +173,23 @@ async function verify (entityId, verificationCode) {
     throw res.error;
   }
   if (res.data.length !== 1) {
-    throw {name: 'VerificationNotFoundError'};
+    throw new VerificationNotFoundError();
   }
-  const { verification_id, company_entity_id } = res.data[0];
+  const { verification_id: verificationId } = res.data[0];
 
   // Update document headers
-  const res2 = await crmDocuments.updateMany({verification_id}, {company_entity_id, verified: 1});
+  const res2 = await crmDocuments.updateMany({verification_id: verificationId}, {company_entity_id: companyEntityId, verified: 1});
+  if (res2.error) {
+    throw res2.error;
+  }
 
   // Update verification record
-  const res3 = await crmVerification.updateOne(verification_id, {date_verified: moment().format()});
+  const res3 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  if (res3.error) {
+    throw res3.error;
+  }
 
-  return {error: null, data: {verification_id}};
+  return {error: null, data: {verification_id: verificationId}};
 }
 
 module.exports = {

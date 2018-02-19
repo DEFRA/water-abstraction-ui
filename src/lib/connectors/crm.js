@@ -64,7 +64,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
 
   const { verification_id: verificationId } = res.data;
 
-  const res2 = await crmDocuments.updateMany({document_id: documentIds}, {verification_id: verificationId});
+  const res2 = await crmDocuments.updateMany({document_id: {$or: documentIds}}, {verification_id: verificationId});
 
   if (res2.error) {
     throw res2.error;

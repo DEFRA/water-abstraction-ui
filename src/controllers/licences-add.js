@@ -71,7 +71,7 @@ async function postLicenceAdd (request, reply) {
 
     // Get unverified licences from DB
     const res = await CRM.documents.findMany({
-      system_external_id: licenceNumbers, verified: null, verification_id: null
+      system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null
     });
     if (res.error) {
       throw res.error;
@@ -135,7 +135,7 @@ async function getLicenceSelect (request, reply) {
     const { documentIds } = addLicenceFlow;
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.findMany({ document_id: documentIds, verified: null, verification_id: null }, { system_external_id: +1 });
+    const {data, error} = await CRM.documents.findMany({ document_id: {$or: documentIds}, verified: null, verification_id: null }, { system_external_id: +1 });
 
     if (error) {
       throw error;
@@ -187,7 +187,7 @@ async function postLicenceSelect (request, reply) {
       }
       // Licences being added now
       const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
-        document_id: documentIds,
+        document_id: {$or: documentIds},
         verified: null,
         verification_id: null
       });
@@ -199,7 +199,7 @@ async function postLicenceSelect (request, reply) {
       if (existingLicences.length > 0) {
         const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
-          const {error: error3} = await CRM.documents.updateMany({document_id: documentIds}, {
+          const {error: error3} = await CRM.documents.updateMany({document_id: {$or: documentIds}}, {
             verified: 1,
             company_entity_id: companyEntityId
           });
@@ -263,7 +263,7 @@ async function getAddressSelect (request, reply) {
     const {selectedIds} = addLicenceFlow;
 
     // Find licences in CRM for selected documents
-    const { data } = await CRM.documents.findMany({document_id: selectedIds});
+    const { data } = await CRM.documents.findMany({document_id: {$or: selectedIds}});
 
     const uniqueAddressLicences = uniqueAddresses(data);
 
@@ -299,7 +299,7 @@ async function postAddressSelect (request, reply) {
     }
 
     // Find licences in CRM for selected documents
-    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({document_id: selectedIds});
+    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({document_id: {$or: selectedIds}});
     if (licenceError) {
       throw licenceError;
     }

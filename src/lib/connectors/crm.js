@@ -138,8 +138,7 @@ class NoCompanyError extends Error {
 }
 
 /**
- * Error class for when no company is found for the user during verification
- * process
+ * Error class for when security code cannot be found in DB
  */
 class VerificationNotFoundError extends Error {
   constructor (message) {

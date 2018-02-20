@@ -63,7 +63,6 @@
     "lodash": "^4.17.5",
     "moment": "^2.20.1",
     "node-hapi-airbrake": "0.0.6",
-    "notifications-node-client": "^4.1.0",
     "path": "^0.12.7",
     "pg": "^7.4.1",
     "request-promise-native": "^1.0.5",

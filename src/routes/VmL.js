@@ -36,6 +36,9 @@ module.exports = [
       validate: {
         query: {
           access: Joi.string().max(4)
+        },
+        options: {
+          allowUnknown: true
         }
       } }
   },

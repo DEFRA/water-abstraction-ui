@@ -12,3 +12,29 @@
 
 <!--[if gt IE 8]><!--><link href="/public/stylesheets/application.css"  rel="stylesheet" type="text/css"><!--<![endif]-->
 <!--[if IE 8]><link href="/public/stylesheets/application-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<script language="javascript">
+  function sendEvent(eventConfig){
+    if(typeof ga != 'undefined'){
+      try{
+        if(!eventConfig.category){
+          throw "event category is required"
+        }
+        if(!eventConfig.action){
+          throw "event action is required"
+        }
+        if(!eventConfig.label){
+          eventConfig.label=null
+        }
+        if(!eventConfig.value){
+          eventConfig.value=null
+        }
+        ga('send', 'event', eventConfig.category, eventConfig.action, eventConfig.label, eventConfig.value);
+      }catch(e){
+        ga('send', 'event', 'tracking_script_error', e, JSON.stringify(eventConfig));
+      }
+    } else {
+      setTimeout(function(){sendEvent(eventConfig)},1000)
+    }
+  }
+</script>

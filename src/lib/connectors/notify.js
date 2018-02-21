@@ -76,7 +76,7 @@ function sendAccesseNotification(params) {
     } else {
       var message_ref = 'share_existing_user'
       var templateId = '725e399e-772b-4c91-835b-68f4995ab6ff'
-      var link = `${process.env.base_url}?access=PB01?utm_source=share_existing_user&utm_medium=email&utm_campaign=share_existing_user`
+      var link = `${process.env.base_url}?access=PB01&utm_source=share_existing_user&utm_medium=email&utm_campaign=share_existing_user`
       var personalisation = {
         link: link,
         email: params.email,

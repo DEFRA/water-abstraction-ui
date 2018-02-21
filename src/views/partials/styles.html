@@ -15,7 +15,7 @@
 
 <script language="javascript">
   function sendEvent(eventConfig){
-    if(typeof ga != 'undefined'){
+    if(typeof dataLayer != 'undefined'){
       try{
         if(!eventConfig.category){
           throw "event category is required"
@@ -29,11 +29,27 @@
         if(!eventConfig.value){
           eventConfig.value=null
         }
-        ga('send', 'event', eventConfig.category, eventConfig.action, eventConfig.label, eventConfig.value);
+      console.log('push event!')
+
+        r=dataLayer.push({
+         'event': 'event',
+          'category': eventConfig.category,
+          'action': eventConfig.action,
+          'label': eventConfig.label
+         });
+         console.log(r)
+
       }catch(e){
-        ga('send', 'event', 'tracking_script_error', e, JSON.stringify(eventConfig));
+      console.log('error')
+      console.log(e)
+        dataLayer.push({
+         'event': 'event',
+          'category': 'error',
+          'action': 'bah!'
+         });
       }
     } else {
+      console.log('retry')
       setTimeout(function(){sendEvent(eventConfig)},1000)
     }
   }

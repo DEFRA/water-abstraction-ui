@@ -35,10 +35,10 @@ module.exports = [
     config: { auth: false,
       validate: {
         query: {
-          access: Joi.string().max(4)
-        },
-        options: {
-          allowUnknown: true
+          access: Joi.string().max(4),
+          utm_source: Joi.string(),
+          utm_medium: Joi.string(),
+          utm_campaign: Joi.string()
         }
       } }
   },
@@ -53,7 +53,10 @@ module.exports = [
     config: { auth: false,
       validate: {
         query: {
-          flash: Joi.string().max(32)
+          flash: Joi.string().max(32),
+          utm_source: Joi.string(),
+          utm_medium: Joi.string(),
+          utm_campaign: Joi.string()
         }
       }
     } },
@@ -128,7 +131,10 @@ module.exports = [
       auth: false,
       validate: {
         query: {
-          resetGuid: Joi.string().guid().required()
+          resetGuid: Joi.string().guid().required(),
+          utm_source: Joi.string(),
+          utm_medium: Joi.string(),
+          utm_campaign: Joi.string()
         }
       }}},
 

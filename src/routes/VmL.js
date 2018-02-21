@@ -36,9 +36,9 @@ module.exports = [
       validate: {
         query: {
           access: Joi.string().max(4),
-          utm_source: Joi.string(),
-          utm_medium: Joi.string(),
-          utm_campaign: Joi.string()
+          utm_source: Joi.string().max(254),
+          utm_medium: Joi.string().max(254),
+          utm_campaign: Joi.string().max(254)
         }
       } }
   },
@@ -54,9 +54,9 @@ module.exports = [
       validate: {
         query: {
           flash: Joi.string().max(32),
-          utm_source: Joi.string(),
-          utm_medium: Joi.string(),
-          utm_campaign: Joi.string()
+          utm_source: Joi.string().max(254),
+          utm_medium: Joi.string().max(254),
+          utm_campaign: Joi.string().max(254)
         }
       }
     } },
@@ -132,9 +132,9 @@ module.exports = [
       validate: {
         query: {
           resetGuid: Joi.string().guid().required(),
-          utm_source: Joi.string(),
-          utm_medium: Joi.string(),
-          utm_campaign: Joi.string()
+          utm_source: Joi.string().max(254),
+          utm_medium: Joi.string().max(254),
+          utm_campaign: Joi.string().max(254)
         }
       }}},
 

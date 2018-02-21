@@ -1,13 +1,13 @@
 const Water = require('./water')
 
 function sendNewUserPasswordReset(emailAddress, resetGuid) {
-  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid;
+  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
   return Water.sendNotifyMessage('new_user_verification_email', emailAddress, {link});
 }
 
 function sendExistingUserPasswordReset(emailAddress, resetGuid) {
   const link = process.env.base_url + '/signin';
-  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid;
+  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=reset_password';
   return Water.sendNotifyMessage('existing_user_verification_email', emailAddress, {link,resetLink});
 }
 

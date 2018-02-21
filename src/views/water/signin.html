@@ -20,9 +20,11 @@
         {{#if errors}}
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
           {{#if errors.authentication}}
+
             <script>
-              sendEvent({category:'error'})
+              sendEvent({category:'error', action:'invalid_password'})
             </script>
+
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
               Your email address or password is incorrect
             </h2>

@@ -50,7 +50,7 @@ server.register([
     }
   },
   {
-    register: require('node-hapi-airbrake'),
+    register: require('node-hapi-airbrake-js'),
     options: {
       key: process.env.errbit_key,
       host: process.env.errbit_server

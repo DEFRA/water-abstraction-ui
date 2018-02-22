@@ -1,13 +1,13 @@
 const Water = require('./water')
 
 function sendNewUserPasswordReset(emailAddress, resetGuid) {
-  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid;
+  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
   return Water.sendNotifyMessage('new_user_verification_email', emailAddress, {link});
 }
 
 function sendExistingUserPasswordReset(emailAddress, resetGuid) {
   const link = process.env.base_url + '/signin';
-  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid;
+  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=reset_password';
   return Water.sendNotifyMessage('existing_user_verification_email', emailAddress, {link,resetLink});
 }
 
@@ -66,7 +66,7 @@ function sendAccesseNotification(params) {
     if (params.newUser) {
       var message_ref = 'share_new_user'
       var templateId = '145e2919-da41-4f4d-9570-17f5bb12f119'
-      var link = `${process.env.base_url}/reset_password`
+      var link = `${process.env.base_url}/reset_password?utm_source=system&utm_medium=email&utm_campaign=share_new_user`
       var personalisation = {
         link: link,
         email: params.email,
@@ -76,7 +76,7 @@ function sendAccesseNotification(params) {
     } else {
       var message_ref = 'share_existing_user'
       var templateId = '725e399e-772b-4c91-835b-68f4995ab6ff'
-      var link = `${process.env.base_url}?access=PB01`
+      var link = `${process.env.base_url}?access=PB01&utm_source=system&utm_medium=email&utm_campaign=share_existing_user`
       var personalisation = {
         link: link,
         email: params.email,

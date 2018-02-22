@@ -16,6 +16,9 @@
 
 
   {{#if error}}
+  <script>
+    sendEvent({category:'error', action:'rename_licence_invalid_name'})
+  </script>
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
 
     <h1 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">

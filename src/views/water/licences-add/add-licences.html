@@ -20,6 +20,9 @@
 
 
       {{#equal error.name 'ValidationError' }}
+      <script>
+        sendEvent({category:'error', action:'add_licence_validation_error'})
+      </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         We need more information
@@ -31,6 +34,9 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceNotFoundError' }}
+      <script>
+        sendEvent({category:'error', action:'add_licence_licence_not_found_error'})
+      </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         This information doesn’t match our records
@@ -42,6 +48,9 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceSimilarityError' }}
+      <script>
+        sendEvent({category:'error', action:'add_licence_licence_similarity_error'})
+      </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         This information doesn’t match our records
@@ -53,6 +62,10 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceMissingError' }}
+      <script>
+        sendEvent({category:'error', action:'add_licence_licence_missing_error'})
+      </script>
+
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         Some information doesn’t match our records

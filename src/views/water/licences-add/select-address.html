@@ -18,6 +18,10 @@
     <div class="column-two-thirds">
 
       {{#equal error.name 'AddressInvalidError' }}
+      <script>
+        sendEvent({category:'error', action:'select_address_address_not_selected'})
+      </script>
+
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         You need to choose an address

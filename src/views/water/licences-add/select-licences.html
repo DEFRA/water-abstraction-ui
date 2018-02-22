@@ -20,6 +20,10 @@
     <div class="column-two-thirds">
 
       {{#equal error.name 'LicenceNotSelectedError' }}
+      <script>
+        sendEvent({category:'error', action:'select_licence_licence_not_selected'})
+      </script>
+
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         We need more information

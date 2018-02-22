@@ -18,6 +18,10 @@
     <div class="column-two-thirds">
 
       {{#if error}}
+      <script>
+        sendEvent({category:'error', action:'security_code_not_entered'})
+      </script>
+
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
         You need to enter the security code we posted to you

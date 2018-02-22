@@ -45,6 +45,13 @@ function viewContextDefaults (request) {
   //  viewContext.debug.session = request.yar.get('sessionTimestamp')
 
   viewContext.user = request.auth.credentials;
+
+  if(request.auth.credentials){
+    viewContext.tracking=request.auth.credentials.user_data
+  } else {
+    viewContext.tracking={usertype:'not_logged_in'}
+  }
+
   viewContext.env = process.env.NODEENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
 

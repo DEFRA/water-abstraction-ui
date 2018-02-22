@@ -11,6 +11,10 @@
       <form novalidate action="/send-again" method="post" class="form">
 
           {{#if error}}
+          <script>
+            sendEvent({category:'error', action:'register_send_again_invalid_email_address'})
+          </script>
+
           <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
                 <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
                   That email address isn’t valid

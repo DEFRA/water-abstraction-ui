@@ -64,7 +64,7 @@ function postSignin (request, reply) {
       }
 
       // OK, sign in user
-      return signIn.auto(request, request.payload.user_id, getUser.body.user_data);
+      return signIn.auto(request, request.payload.user_id, getUser.body.user_data,getUser.body.last_login);
     })
     .then((session) => {
       // Resolves Chrome issue where it won't set cookie and redirect in same request
@@ -73,7 +73,6 @@ function postSignin (request, reply) {
     })
     .catch((err) => {
       console.log(err);
-
       // Forces password reset
       if (err.reset_guid) {
         reply.redirect('reset_password_change_password' + '?resetGuid=' + err.reset_guid + '&forced=1');

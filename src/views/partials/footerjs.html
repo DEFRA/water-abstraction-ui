@@ -21,10 +21,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <script>
 window.dataLayer = window.dataLayer || [];
-window.dataLayer.push({
+var ev={
   'event' : 'pageview',
   'userType' : '{{tracking.usertype}}',
-  'newUser' : '{{tracking.newuser}}'
-});
+  'newUser' : '{{tracking.newuser}}',
+  'lastlogin' : '{{tracking.lastlogin}}'
+}
+console.log(ev)
+window.dataLayer.push(ev);
 
 </script>

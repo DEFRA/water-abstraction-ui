@@ -456,6 +456,15 @@ module.exports = [
       }
     }},
 
+    { method: 'GET',
+      path: '/system/performance/dashboard/v1',
+      handler: VmL.dashboard,
+      config: {
+        description: 'Show the dashboard'
+      }},
+
+
+
   {
     method: '*',
     path: '/{p*}', // catch-all path

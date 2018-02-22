@@ -317,6 +317,12 @@ function getUpdatedPassword (request, reply) {
   return reply.view('water/updated_password', viewContext);
 }
 
+function dashboard (request, reply) {
+  var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Dashboard';
+  return reply.view('water/dashboard', viewContext);
+}
+
 module.exports = {
   getRoot: getRoot,
   getUpdatePassword: getUpdatePassword,
@@ -335,5 +341,6 @@ module.exports = {
   postCreatePassword,
   fourOhFour: fourOhFour,
   getFeedback: getFeedback,
-  getUpdatedPassword: getUpdatedPassword
+  getUpdatedPassword: getUpdatedPassword,
+  dashboard
 };

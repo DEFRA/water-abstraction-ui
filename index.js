@@ -39,17 +39,6 @@ server.register([
   },
 
   {
-    register: require('hapi-error'),
-    options: {
-      templateName: 'water/error.html',
-      statusCodes: {
-        401: {
-          redirect: '/login'
-        }
-      }
-    }
-  },
-  {
     register: require('node-hapi-airbrake-js'),
     options: {
       key: process.env.errbit_key,
@@ -69,7 +58,7 @@ server.register([
   },
   // Sessions via REST API in water service
   {
-    register: require('./src/lib/sessions/hapi-plugin.js'),
+    register: require('./src/lib/hapi-error-plugin.js'),
     options: {}
   },
   {

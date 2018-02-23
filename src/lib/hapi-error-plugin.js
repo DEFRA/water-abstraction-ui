@@ -19,7 +19,7 @@ const errorPlugin = {
 
           // Output error page
           const view = contextDefaults(request);
-          view.title = 'Something went wrong';
+          view.pageTitle = 'Something went wrong';
           return reply.view('water/error.html', view).code(res.output.statusCode);
         }
 

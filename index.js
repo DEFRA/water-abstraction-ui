@@ -56,8 +56,13 @@ server.register([
   }, {
     register: require('hapi-auth-cookie')
   },
-  // Sessions via REST API in water service
   {
+    // Session handling via water service
+    register: require('./src/lib/sessions/hapi-plugin.js'),
+    options: {}
+  },
+  {
+    // Custom error handling
     register: require('./src/lib/hapi-error-plugin.js'),
     options: {}
   },

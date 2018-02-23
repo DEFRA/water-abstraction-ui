@@ -45,7 +45,7 @@ module.exports = function (request, reply) {
         topOfPage: null,
         bodyStart: null,
         session,
-        pageTitle: 'Error'
+        pageTitle: 'Something went wrong'
       };
       reply.view('water/error.html', viewContext).code(statusCode);
     }

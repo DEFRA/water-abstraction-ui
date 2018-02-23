@@ -8,6 +8,17 @@ const View = require('../lib/view');
 const IDM = require('../lib/connectors/idm');
 
 /**
+ * Render initial page with information for users
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply
+ */
+function getRegisterStart (request, reply) {
+  var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'GOV.UK - Create Account';
+  return reply.view('water/register_start', viewContext);
+}
+
+/**
  * Render form to get user email address
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
@@ -128,6 +139,7 @@ function getResentSuccess (request, reply) {
 }
 
 module.exports = {
+  getRegisterStart,
   getEmailAddress,
   postEmailAddress,
   getRegisterSuccess,

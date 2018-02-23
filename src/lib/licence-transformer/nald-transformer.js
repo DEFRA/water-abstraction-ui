@@ -45,8 +45,8 @@ class NALDTransformer extends BaseTransformer {
 
     this.data = {
       licenceNumber: data.LIC_NO,
-      licenceHolderTitle: '',
-      licenceHolderInitials: '',
+      licenceHolderTitle: licenceHolderParty.SALUTATION,
+      licenceHolderInitials: licenceHolderParty.INITIALS,
       licenceHolderName: licenceHolderParty.NAME,
       effectiveDate: data.ORIG_EFF_DATE,
       expiryDate: data.EXPIRY_DATE,
@@ -59,16 +59,6 @@ class NALDTransformer extends BaseTransformer {
       purposes: this.purposesFormatter(data.data.purposes),
       uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.purposes)
     };
-
-    if (licenceHolderParty.INITIALS !== null) {
-      this.data.licenceHolderInitials = licenceHolderParty.INITIALS;
-    }
-
-    if (licenceHolderParty.SALUTATION !== null) {
-      this.data.licenceHolderTitle = licenceHolderParty.SALUTATION;
-    }
-
-    console.log(this.data);
 
     return this.data;
   }
@@ -143,9 +133,10 @@ class NALDTransformer extends BaseTransformer {
    */
   nameFormatter (party) {
     if (party.APAR_TYPE === 'PER') {
+      const parts = [party.SALUTATION, party.INITIALS, party.NAME];
       return {
         contactType: 'Person',
-        name: `${party.SALUTATION} ${party.FORENAME} ${party.NAME}`
+        name: parts.filter(s => s).join(' ')
       };
     }
     if (party.APAR_TYPE === 'ORG') {

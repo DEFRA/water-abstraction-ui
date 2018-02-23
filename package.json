@@ -67,7 +67,8 @@
     "request-promise-native": "^1.0.5",
     "sentence-case": "^2.1.1",
     "vision": "^4.1.1",
-    "yar": "^8.1.2"
+    "yar": "^8.1.2",
+    "xlsx": "0.12.2"
   },
   "standard": {
     "ignore": [

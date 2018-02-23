@@ -277,6 +277,13 @@ module.exports = [
 
   // Registration process
   { method: 'GET',
+    path: '/start',
+    handler: RegistrationController.getRegisterStart,
+    config: {
+      auth: false,
+      description: 'Register start page - information for users before registering'
+    }},
+  { method: 'GET',
     path: '/register',
     handler: RegistrationController.getEmailAddress,
     config: {
@@ -455,12 +462,12 @@ module.exports = [
         }
       }
     }},
-    { method: 'GET',
-          path: '/system/performance/dashboard/v1',
-          handler: VmL.dashboard,
-          config: {
-            description: 'Show the dashboard'
-          }},
+  { method: 'GET',
+    path: '/system/performance/dashboard/v1',
+    handler: VmL.dashboard,
+    config: {
+      description: 'Show the dashboard'
+    }},
 
   {
     method: '*',

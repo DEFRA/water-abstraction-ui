@@ -17,7 +17,7 @@
 
 module.exports = function (request, reply) {
   return function (err) {
-    console.error(`Calling error-handler.js is deprecated, use hapi-error-plugin instead`);
+    console.error(`Calling error-handler.js is deprecated, throw Boom error handled by hapi-error-plugin instead`, err.stack);
     reply(err);
   };
 };

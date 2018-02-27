@@ -31,17 +31,16 @@ async function auto (request, emailAddress, userData, lastlogin) {
     userData = {};
   }
   if (!userData.usertype) {
-    userData.usertype = 'external'
+    userData.usertype = 'external';
   }
 
-  if(lastlogin){
-    userData.newuser = false
-    userData.lastlogin = lastlogin
+  if (lastlogin) {
+    userData.newuser = false;
+    userData.lastlogin = lastlogin;
   } else {
-    userData.newuser = true
-    userData.lastlogin = null
+    userData.newuser = true;
+    userData.lastlogin = null;
   }
-
 
   // Data to store in cookie
   const session = {

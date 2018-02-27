@@ -341,19 +341,34 @@ module.exports = [
     path: '/manage_licences',
     handler: LicencesManageController.getAccessList,
     config: {
-      description: 'Manage licences - main page'
+      description: 'Manage licences - main page',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'GET',
     path: '/manage_licences/remove_access',
     handler: LicencesManageController.getRemoveAccess,
     config: {
-      description: 'Manage licences - remove access form'
+      description: 'Manage licences - remove access form',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'GET',
     path: '/manage_licences/add_access',
     handler: LicencesManageController.getAddAccess,
     config: {
-      description: 'Manage licences - add access form'
+      description: 'Manage licences - add access form',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'POST',
     path: '/manage_licences/add_access',
@@ -364,13 +379,23 @@ module.exports = [
         payload: {
           email: Joi.string().max(254).allow('')
         }
+      },
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
       }
     }},
   { method: 'GET',
     path: '/manage_licences_add',
     handler: LicencesManageController.getAddLicences,
     config: {
-      description: 'Manage licences - add licences'
+      description: 'Manage licences - add licences',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
 
   // Add licence to account

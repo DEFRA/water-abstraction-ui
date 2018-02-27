@@ -13,14 +13,29 @@ const errorPlugin = {
       type: 'onPreResponse',
       method: (request, reply) => {
         const res = request.response;
-        if (res.isBoom) {
-          // ALWAYS Log the error
-          server.log('error', res);
 
-          // Output error page
-          const view = contextDefaults(request);
+        // ALWAYS Log the error
+        server.log('error', res);
+
+        // Create view context
+        const view = contextDefaults(request);
+
+        // Boom errors
+        if (res.isBoom) {
+          const {statusCode} = res.output;
+
+          // Unauthorised
+          if (statusCode >= 401 && statusCode <= 403) {
+            return reply.redirect('/signin');
+          }
+          // Not found
+          if (statusCode === 404) {
+            view.pageTitle = "We can't find that page";
+            return reply.view('water/404.html', view).code(statusCode);
+          }
+          // Other errors
           view.pageTitle = 'Something went wrong';
-          return reply.view('water/error.html', view).code(res.output.statusCode);
+          return reply.view('water/error.html', view).code(statusCode);
         }
 
         // Continue processing request

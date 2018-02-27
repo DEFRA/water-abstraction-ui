@@ -14,40 +14,10 @@
  *   throw Boom.notFound('Page not found')
  * }).catch(errorHandler(request, reply))
  */
+
 module.exports = function (request, reply) {
   return function (err) {
-    console.log('----- errorHandler -----');
-
-    // Log with good
-    request.log(err);
-
-    const statusCode = err.isBoom ? (err.output.statusCode || 500) : 500;
-
-    // Log error
-    if (statusCode === 500) {
-      console.error(err);
-    } else {
-      console.log(err);
-    }
-
-    // Create view context
-    const {session} = request;
-
-    // Not found
-    if (statusCode === 404) {
-      reply.view('water/404.html', {session}).code(statusCode);
-    } else if (statusCode >= 401 && statusCode <= 403) {
-      // Unauthorised
-      reply.redirect('/login');
-    } else {
-      // Other error
-      const viewContext = {
-        topOfPage: null,
-        bodyStart: null,
-        session,
-        pageTitle: 'Something went wrong'
-      };
-      reply.view('water/error.html', viewContext).code(statusCode);
-    }
+    console.error(`Calling error-handler.js is deprecated, throw Boom error handled by hapi-error-plugin instead`, err.stack);
+    reply(err);
   };
 };

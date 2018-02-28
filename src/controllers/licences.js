@@ -31,13 +31,37 @@ async function getLicences (request, reply) {
   viewContext.activeNavLink = 'view';
 
   const { entity_id: entityId } = request.auth.credentials;
+  let filter = {}
 
-  // Get filtered list of licences
-  const filter = {
-    entity_id: entityId,
-    string: request.query.licenceNumber,
-    email: request.query.emailAddress
-  };
+  if (request.permissions && request.permissions.admin.defra) {
+    filter = {
+      entity_id: entityId,
+      string: request.query.licenceNumber,
+      email: request.query.emailAddress
+    };
+
+
+    if(!filter.string && !filter.email){
+      // if admin user and no search params entered, don't show search results
+      viewContext.showAdminIntro=true;
+      viewContext.showResults=false;
+      viewContext.licenceData=null;
+      viewContext.enableSearch=true;
+      viewContext.showEmailFilter=true;
+      return reply.view('water/licences_admin', viewContext);
+    } else {
+      viewContext.showAdminIntro=true;
+      viewContext.showResults=true;
+    }
+  } else {
+    viewContext.showResults=true;
+    // Get filtered list of licences
+    filter = {
+      entity_id: entityId,
+      string: request.query.licenceNumber,
+      email: request.query.emailAddress
+    };
+  }
 
   // Current page of results - for paginated result set
   const page = request.query.page || 1;
@@ -65,8 +89,6 @@ async function getLicences (request, reply) {
   if (error) {
     viewContext.error = error;
   }
-  console.log(error);
-
   try {
     // Look up user for email filter
     if (value.emailAddress && !error) {
@@ -84,7 +106,6 @@ async function getLicences (request, reply) {
 
     // Lookup licences
     const { data, err, summary, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 50});
-
     if (err) {
       throw Boom.badImplementation('CRM error', err);
     }
@@ -126,8 +147,12 @@ async function getLicences (request, reply) {
       viewContext.showManageFilter = false;
     }
     viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
-
+    if (request.permissions && request.permissions.admin.defra) {
+    return reply.view('water/licences_admin', viewContext);
+    } else {
     return reply.view('water/licences', viewContext);
+    }
+
   } catch (error) {
     errorHandler(request, reply)(error);
   }

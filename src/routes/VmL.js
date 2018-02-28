@@ -19,18 +19,26 @@ module.exports = [
     path: '/',
     handler: function (request, reply) {
       console.log(request.query);
-      if (request.query.access && request.query.access === 'PB01') {
-        var fs = require('fs');
-        const indexPath = path.join(__dirname, '/../views/water/index.html');
-        fs.readFile(indexPath, function (err, data) {
-          if (err) {
-            throw err;
-          }
-          reply(data.toString());
-        });
+      console.log('node env '+process.env.NODE_ENV);
+
+      if (process.env.NODE_ENV != 'PREPROD'){
+        console.log('redirect to licences')
+          return reply.redirect('/licences');
       } else {
-        reply('unauthorised').code(401);
+        if (request.query.access && request.query.access === 'PB01') {
+          var fs = require('fs');
+          const indexPath = path.join(__dirname, '/../views/water/index.html');
+          fs.readFile(indexPath, function (err, data) {
+            if (err) {
+              throw err;
+            }
+            reply(data.toString());
+          });
+        } else {
+          reply('unauthorised').code(401);
+        }
       }
+
     },
     config: { auth: false,
       validate: {
@@ -487,12 +495,17 @@ module.exports = [
         }
       }
     }},
-  { method: 'GET',
-    path: '/system/performance/dashboard/v1',
-    handler: VmL.dashboard,
-    config: {
-      description: 'Show the dashboard'
-    }},
+    { method: 'GET',
+      path: '/dashboard',
+      handler: VmL.dashboard,
+      config: {
+        description: 'System Dashboard',
+        plugins: {
+          hapiRouteAcl: {
+            permissions: ['admin:defra']
+          }
+        }
+      }},
 
   {
     method: '*',

@@ -43,6 +43,7 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
+
     this.data = {
       licenceNumber: data.LIC_NO,
       licenceHolderTitle: licenceHolderParty.SALUTATION,
@@ -51,13 +52,13 @@ class NALDTransformer extends BaseTransformer {
       effectiveDate: data.ORIG_EFF_DATE,
       expiryDate: data.EXPIRY_DATE,
       versionCount: data.data.versions.length,
-      conditions: await this.conditionFormatter(data.data.purposes),
-      points: this.pointsFormatter(data.data.purposes),
-      abstractionPeriods: this.periodsFormatter(data.data.purposes),
-      aggregateQuantity: this.aggregateQuantitiesFormatter(data.data.purposes),
+      conditions: await this.conditionFormatter(data.data.current_version.purposes),
+      points: this.pointsFormatter(data.data.current_version.purposes),
+      abstractionPeriods: this.periodsFormatter(data.data.current_version.purposes),
+      aggregateQuantity: this.aggregateQuantitiesFormatter(data.data.current_version.purposes),
       contacts: this.contactsFormatter(currentVersion, data.data.roles),
-      purposes: this.purposesFormatter(data.data.purposes),
-      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.purposes)
+      purposes: this.purposesFormatter(data.data.current_version.purposes),
+      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes)
     };
 
     return this.data;
@@ -70,7 +71,7 @@ class NALDTransformer extends BaseTransformer {
    */
   purposesFormatter (purposes) {
     purposes = purposes.map(item => ({
-      name: item.purpose.purpose_tertiary.DESCR,
+      name: item.purpose[0].purpose_tertiary.DESCR,
       periodStart: item.PERIOD_ST_DAY + '/' + item.PERIOD_ST_MONTH,
       periodEnd: item.PERIOD_END_DAY + '/' + item.PERIOD_END_MONTH,
       annualQty: item.ANNUAL_QTY,
@@ -91,7 +92,7 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} of purpose names
    */
   uniquePurposeNamesFormatter (purposes) {
-    const names = purposes.map(item => item.purpose.purpose_tertiary.DESCR);
+    const names = purposes.map(item => item.purpose[0].purpose_tertiary.DESCR);
     return uniqBy(names, item => item);
   }
 
@@ -199,7 +200,6 @@ class NALDTransformer extends BaseTransformer {
     let result;
     let results = [];
     while ((result = r.exec(str)) !== null) {
-      console.log(result);
       results.push({
         value: parseFloat(result[1].replace(/[^0-9.]/g, '')),
         units: result[2],
@@ -279,6 +279,7 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} array of periods
    */
   periodsFormatter (purposes) {
+
     const periods = [];
 
     purposes.forEach((purpose) => {
@@ -287,14 +288,14 @@ class NALDTransformer extends BaseTransformer {
       // Find existing period
       let period = find(periods, (item) => item.periodStart === periodStart && item.periodEnd === periodEnd);
       if (period) {
-        if (!period.purposes.includes(purpose.purpose.purpose_tertiary.DESCR)) {
-          period.purposes.push(purpose.purpose.purpose_tertiary.DESCR);
+        if (!period.purposes.includes(purpose.purpose[0].purpose_tertiary.DESCR)) {
+          period.purposes.push(purpose.purpose[0].purpose_tertiary.DESCR);
         }
       } else {
         period = {
           periodStart,
           periodEnd,
-          purposes: [purpose.purpose.purpose_tertiary.DESCR]
+          purposes: [purpose.purpose[0].purpose_tertiary.DESCR]
         };
         periods.push(period);
       }

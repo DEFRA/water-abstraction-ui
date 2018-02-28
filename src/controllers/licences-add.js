@@ -70,9 +70,11 @@ async function postLicenceAdd (request, reply) {
     }
 
     // Get unverified licences from DB
-    const res = await CRM.documents.findMany({
-      system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null
-    }, {system_external_id: +1}, {page: 1, perPage: 300});
+    const res = await CRM.documents.findMany(
+      { system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null },
+      { system_external_id: +1 },
+      { page: 1, perPage: 300 }
+    );
     if (res.error) {
       throw res.error;
     }
@@ -135,7 +137,11 @@ async function getLicenceSelect (request, reply) {
     const { documentIds } = addLicenceFlow;
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.findMany({ document_id: {$or: documentIds}, verified: null, verification_id: null }, { system_external_id: +1 });
+    const {data, error} = await CRM.documents.findMany(
+      { document_id: {$or: documentIds}, verified: null, verification_id: null },
+      { system_external_id: +1 },
+      {page: 1, perPage: 300}
+    );
 
     if (error) {
       throw error;

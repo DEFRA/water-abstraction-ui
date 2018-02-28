@@ -43,9 +43,6 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
-//console.log(JSON.stringify(data.data.current_version))
-
-
 
     this.data = {
       licenceNumber: data.LIC_NO,
@@ -203,7 +200,6 @@ class NALDTransformer extends BaseTransformer {
     let result;
     let results = [];
     while ((result = r.exec(str)) !== null) {
-      console.log(result);
       results.push({
         value: parseFloat(result[1].replace(/[^0-9.]/g, '')),
         units: result[2],
@@ -287,23 +283,15 @@ class NALDTransformer extends BaseTransformer {
     const periods = [];
 
     purposes.forEach((purpose) => {
-
-      console.log('******000')
-      console.log(purpose)
-
       const periodStart = purpose.PERIOD_ST_DAY + '/' + purpose.PERIOD_ST_MONTH;
       const periodEnd = purpose.PERIOD_END_DAY + '/' + purpose.PERIOD_END_MONTH;
       // Find existing period
       let period = find(periods, (item) => item.periodStart === periodStart && item.periodEnd === periodEnd);
       if (period) {
-        console.log('******BBB')
         if (!period.purposes.includes(purpose.purpose[0].purpose_tertiary.DESCR)) {
           period.purposes.push(purpose.purpose[0].purpose_tertiary.DESCR);
         }
       } else {
-        console.log('******AAA')
-        console.log(purpose.purpose)
-        console.log(purpose.purpose[0].purpose_tertiary)
         period = {
           periodStart,
           periodEnd,

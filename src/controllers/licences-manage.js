@@ -59,7 +59,7 @@ function getAddAccess (request, reply, context = {}) {
  * @param {string} email - the email of account to share with
  * @param {Object} [context] - additional view context data
  */
-function postAddAccess (request, reply, context = {}) {
+async function postAddAccess (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
@@ -68,47 +68,62 @@ function postAddAccess (request, reply, context = {}) {
   viewContext.errors = {};
   // Validate input data with Joi
   const schema = {
-    email: Joi.string().trim().required().email()
+    email: Joi.string().trim().required().email().lowercase().trim()
   };
 
-  Joi.validate(request.payload, schema, function (err, value) {
-  // Value is the parsed and validated document.
-    if (err) {
+  // Process:
+  // 1. Attempt to create IDM user
+  // 2. If new user, generate reset GUID URL to create password flow
+  // 3. Send new / existing access notification (new user requires reset GUID)
+  // 4. Get/create CRM entity
+  // 5. Add colleague role
+
+  try {
+    const {error: validationError, value} = Joi.validate(request.payload, schema);
+
     // Gracefully handle any errors.
+    if (validationError) {
       viewContext.errors.email = true;
       return reply.view('water/manage_licences_add_access_form', viewContext);
-    } else {
-      IDM.createUserWithoutPassword(request.payload.email)
-        .then((response) => {
-          console.log('*** createUserWithoutPassword *** ' + request.payload.email);
-          if (response.error) {
-            Notify.sendAccesseNotification({newUser: false, email: request.payload.email, sender: request.auth.credentials.username})
-              .then((d) => {
-                console.log(d);
-              }).catch((e) => {
-                console.log(e);
-              });
-          } else {
-            Notify.sendAccesseNotification({newUser: true, email: request.payload.email, sender: request.auth.credentials.username}).then((d) => {
-              console.log(d);
-            }).catch((e) => {
-              console.log(e);
-            });
-          }
-        })
-        .then(() => {
-          console.log('*** createEntity *** ' + request.payload.email);
-          // Create CRM entity
-          // return CRM.createEntity(request.payload.email);
-          // Can't rely on POST as duplicates are now allowed
-          return CRM.entities.getOrCreateIndividual(request.payload.email);
-        }).then(async () => {
-          console.log('add role');
-          await CRM.entityRoles.addColleagueRole(entityId, request.payload.email);
-          return reply.view('water/manage_licences_added_access', viewContext);
-        });
     }
-  });
+
+    // Notification details
+    const { username: sender } = request.auth.credentials;
+    const { email } = value;
+
+    const { error: createUserError } = await IDM.createUserWithoutPassword(email);
+
+    // User exists
+    if (createUserError) {
+      const { error: notifyError } = Notify.sendAccesseNotification({newUser: false, email, sender});
+      if (notifyError) {
+        throw notifyError;
+      }
+    } else {
+      // New user - reset password
+      const { error: resetError } = await IDM.resetPassword(request.payload.email, 'sharing', { sender });
+      if (resetError) {
+        throw resetError;
+      }
+    }
+
+    // Create CRM entity for invited user
+    const { error: crmEntityError } = await CRM.entities.getOrCreateIndividual(email);
+    if (crmEntityError) {
+      throw crmEntityError;
+    }
+
+    // Add role
+    const { error: crmRoleError } = await CRM.entityRoles.addColleagueRole(entityId, email);
+
+    if (crmRoleError) {
+      throw crmRoleError;
+    }
+
+    return reply.view('water/manage_licences_added_access', viewContext);
+  } catch (err) {
+    reply(err);
+  }
 }
 
 /**

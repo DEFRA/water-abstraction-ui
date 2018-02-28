@@ -72,7 +72,7 @@ async function postLicenceAdd (request, reply) {
     // Get unverified licences from DB
     const res = await CRM.documents.findMany({
       system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null
-    });
+    }, {system_external_id: +1}, {page: 1, perPage: 300});
     if (res.error) {
       throw res.error;
     }

@@ -27,7 +27,7 @@ async function getPermissions (credentials) {
     admin: {
       defra: false,
       project: false,
-      system : false
+      system: false
     }
   };
 
@@ -41,15 +41,15 @@ async function getPermissions (credentials) {
       permissions.licences.edit = true;
     }
     const isDefraAdmin = roles.find(r => r.role === 'admin');
-    if(isDefraAdmin){
+    if (isDefraAdmin) {
       permissions.admin.defra = true;
     }
     const isProjectAdmin = roles.find(r => r.role === 'project_admin');
-    if(isProjectAdmin){
+    if (isProjectAdmin) {
       permissions.admin.project = true;
     }
     const isSysAdmin = roles.find(r => r.role === 'system_admin');
-    if(isSysAdmin){
+    if (isSysAdmin) {
       permissions.admin.system = true;
     }
   }
@@ -92,7 +92,6 @@ const plugin = {
         });
       }
     });
-
     next();
   }
 };

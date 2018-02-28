@@ -34,7 +34,8 @@
   </div>
   {{/equal}}
 
-  {{>element-heading-large content='Your licences'}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
 
   {{#if showVerificationAlert }}
   <div class="panel panel-border-wide alert-default medium-space">
@@ -81,7 +82,7 @@
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence serial number
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence number
           {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
         </a>
       </div>

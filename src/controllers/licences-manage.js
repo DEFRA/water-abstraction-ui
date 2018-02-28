@@ -28,7 +28,7 @@ async function getAccessList (request, reply, context = {}) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  viewContext.pageTitle = 'Manage access to your licences';
+  viewContext.pageTitle = 'Manage your licences';
   viewContext.entity_id = entityId;
   // get list of role  s in same org as current user
   // need to ensure that current user is admin...
@@ -47,7 +47,8 @@ async function getAccessList (request, reply, context = {}) {
 function getAddAccess (request, reply, context = {}) {
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Manage access to your licences';
+  viewContext.pageTitle = 'Give access to view your licences';
+
   // get list of roles in same org as current user
   return reply.view('water/manage_licences_add_access_form', viewContext);
 }
@@ -154,7 +155,7 @@ async function getAddLicences (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Access more licences';
+  viewContext.pageTitle = 'Manage your licences';
 
   try {
     // Does user have outstanding verification codes?

@@ -14,14 +14,14 @@ const errorPlugin = {
       method: (request, reply) => {
         const res = request.response;
 
-        // ALWAYS Log the error
-        server.log('error', res);
-
         // Create view context
         const view = contextDefaults(request);
 
         // Boom errors
         if (res.isBoom) {
+          // ALWAYS Log the error
+          console.log('error', res);
+
           const {statusCode} = res.output;
 
           // Unauthorised

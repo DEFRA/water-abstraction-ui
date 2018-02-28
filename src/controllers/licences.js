@@ -31,7 +31,7 @@ async function getLicences (request, reply) {
   viewContext.activeNavLink = 'view';
 
   const { entity_id: entityId } = request.auth.credentials;
-  let filter = {}
+  let filter = {};
 
   if (request.permissions && request.permissions.admin.defra) {
     filter = {
@@ -40,21 +40,20 @@ async function getLicences (request, reply) {
       email: request.query.emailAddress
     };
 
-
-    if(!filter.string && !filter.email){
+    if (!filter.string && !filter.email) {
       // if admin user and no search params entered, don't show search results
-      viewContext.showAdminIntro=true;
-      viewContext.showResults=false;
-      viewContext.licenceData=null;
-      viewContext.enableSearch=true;
-      viewContext.showEmailFilter=true;
+      viewContext.showAdminIntro = true;
+      viewContext.showResults = false;
+      viewContext.licenceData = null;
+      viewContext.enableSearch = true;
+      viewContext.showEmailFilter = true;
       return reply.view('water/licences_admin', viewContext);
     } else {
-      viewContext.showAdminIntro=true;
-      viewContext.showResults=true;
+      viewContext.showAdminIntro = true;
+      viewContext.showResults = true;
     }
   } else {
-    viewContext.showResults=true;
+    viewContext.showResults = true;
     // Get filtered list of licences
     filter = {
       entity_id: entityId,
@@ -133,7 +132,8 @@ async function getLicences (request, reply) {
     // Render HTML page
     viewContext.licenceData = data;
     viewContext.debug.licenceData = data;
-    viewContext.pageTitle = 'GOV.UK - Your water abstraction licences';
+    viewContext.pageTitle = 'Your licences';
+    viewContext.customTitle = 'Your water abstraction or impoundment licences';
     viewContext.pagination = pagination;
     viewContext.me = request.auth.credentials;
 
@@ -148,125 +148,101 @@ async function getLicences (request, reply) {
     }
     viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
     if (request.permissions && request.permissions.admin.defra) {
-    return reply.view('water/licences_admin', viewContext);
+      return reply.view('water/licences_admin', viewContext);
     } else {
-    return reply.view('water/licences', viewContext);
+      return reply.view('water/licences', viewContext);
     }
-
   } catch (error) {
     errorHandler(request, reply)(error);
   }
 }
 
 /**
- * Renders a licence page with one of several different views
- * @param {String} view - the template to load
- * @param {String} pageTitle - custom page title for this view
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
- * @param {Object} [context] - additional view context data
+ * Gets the licence page title based on the view, licence number and custom title
+ * @param {String} view - the handlebars view
+ * @param {String} licenceNumber - the licence number
+ * @param {String} [customTitle] - if set, the custom name given by user to licence
+ * @return {String} page title
  */
-async function renderLicencePage (view, pageTitle, request, reply, context = {}) {
-  const { entity_id: entityId } = request.auth.credentials;
-
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.activeNavLink = 'view';
-
-  viewContext.pageTitle = pageTitle;
-
-  // Get filtered list of licences
-  const filter = {
-    entity_id: entityId,
-    document_id: request.params.licence_id
-  };
-
-  try {
-    // Get CRM data
-    const response = await CRM.documents.getLicences(filter);
-    if (response.error) {
-      throw Boom.badImplementation(`CRM error`, response);
-    }
-    if (response.data.length !== 1) {
-      throw new Boom.notFound('Document not found in CRM', response);
-    }
-    viewContext.crmData = response.data[0];
-
-    // Get permit repo data
-    const {error: permitError, data: permitData} = await Permit.licences.findOne(response.data[0].system_internal_id);
-
-    if (permitError) {
-      throw permitError;
-    }
-
-    // Handle object/JSON string
-    const {licence_data_value: licenceData} = permitData;
-    const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
-
-    require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
-
-    const transformer = new LicenceTransformer();
-    await transformer.load(data);
-
-    viewContext.licence_id = request.params.licence_id;
-    viewContext.licenceData = transformer.export();
-    viewContext.debug.licenceData = data;
-    viewContext.name = 'name' in viewContext ? viewContext.name : viewContext.crmData.document_custom_name;
-    // viewContext.conditions = await licenceConditions(data);
-
-    // console.log(JSON.stringify(viewContext.licenceData, null, 2));
-
-    return reply.view(view, viewContext);
-  } catch (error) {
-    errorHandler(request, reply)(error);
+function _getLicencePageTitle (view, licenceNumber, customName) {
+  if (view === 'water/licences_purposes') {
+    return `Abstraction purposes for ${customName || licenceNumber}`;
   }
+  if (view === 'water/licences_points') {
+    return `Abstraction points for ${customName || licenceNumber}`;
+  }
+  if (view === 'water/licences_conditions') {
+    return `Conditions held for ${customName || licenceNumber}`;
+  }
+  if (view === 'water/licences_contact') {
+    return 'Your licence contact details';
+  }
+  // Default view/rename
+  return customName ? `Licence name ${customName}` : `Licence number ${licenceNumber}`;
 }
 
-function getLicence (request, reply) {
-  renderLicencePage(
-    'water/licence', 'GOV.UK - Your water abstraction licences', request, reply
-  );
-}
+/**
+ * HOF to create a HAPI route handler for a licence with the
+ * specified view
+ * @param {String} view - the template to load
+ * @return {Function} HAPI route handler
+ */
+function createLicencePage (view) {
+  return async function (request, reply) {
+    const { entity_id: entityId } = request.auth.credentials;
 
-function getLicenceContact (request, reply) {
-  renderLicencePage(
-    'water/licences_contact', 'GOV.UK - Your water abstraction licences - contact details', request, reply
-  );
-}
+    const viewContext = View.contextDefaults(request);
+    viewContext.activeNavLink = 'view';
 
-function getLicenceMap (request, reply) {
-  renderLicencePage(
-    'water/licences_map', 'GOV.UK - Your water abstraction licences - Map', request, reply
-  );
-}
+    // Get filtered list of licences
+    const filter = {
+      entity_id: entityId,
+      document_id: request.params.licence_id
+    };
 
-function getLicenceTerms (request, reply) {
-  renderLicencePage(
-    'water/licences_terms', 'GOV.UK - Your water abstraction licences - Full Terms', request, reply
-  );
-}
+    try {
+      // Get CRM data
+      const response = await CRM.documents.getLicences(filter);
+      if (response.error) {
+        throw Boom.badImplementation(`CRM error`, response);
+      }
+      if (response.data.length !== 1) {
+        throw new Boom.notFound('Document not found in CRM', response);
+      }
+      viewContext.crmData = response.data[0];
 
-function getLicenceRename (request, reply, context = {}) {
-  renderLicencePage(
-    'water/licences_rename', 'GOV.UK - Your water abstraction licences - Rename', request, reply, context
-  );
-}
+      // Get permit repo data
+      const {error: permitError, data: permitData} = await Permit.licences.findOne(response.data[0].system_internal_id);
 
-function getLicenceConditions (request, reply, context = {}) {
-  renderLicencePage(
-    'water/licences_conditions', 'GOV.UK - Your water abstraction licences - conditions', request, reply, context
-  );
-}
+      if (permitError) {
+        throw permitError;
+      }
 
-function getLicencePoints (request, reply, context = {}) {
-  renderLicencePage(
-    'water/licences_points', 'GOV.UK - Your water abstraction licences - points', request, reply, context
-  );
-}
+      // Handle object/JSON string
+      const {licence_data_value: licenceData} = permitData;
 
-function getLicencePurposes (request, reply, context = {}) {
-  renderLicencePage(
-    'water/licences_purposes', 'GOV.UK - Your water abstraction licences - purposes', request, reply, context
-  );
+      const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
+
+      require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
+
+      const transformer = new LicenceTransformer();
+      await transformer.load(data);
+
+      viewContext.licence_id = request.params.licence_id;
+      viewContext.licenceData = transformer.export();
+      viewContext.debug.licenceData = data;
+
+      // Page title
+      const { document_custom_name: customName } = viewContext.crmData;
+      const { licenceNumber } = viewContext.licenceData;
+      viewContext.pageTitle = _getLicencePageTitle(view, licenceNumber, customName);
+      viewContext.name = 'name' in viewContext ? viewContext.name : customName;
+
+      return reply.view(view, viewContext);
+    } catch (error) {
+      errorHandler(request, reply)(error);
+    }
+  };
 }
 
 /**
@@ -319,13 +295,11 @@ function postLicence (request, reply) {
 
 module.exports = {
   getLicences,
-  getLicence,
+  getLicence: createLicencePage('water/licence'),
   postLicence,
-  getLicenceContact,
-  getLicenceMap,
-  getLicenceTerms,
-  getLicenceRename,
-  getLicenceConditions,
-  getLicencePoints,
-  getLicencePurposes
+  getLicenceContact: createLicencePage('water/licences_contact'),
+  getLicenceRename: createLicencePage('water/licences_rename'),
+  getLicenceConditions: createLicencePage('water/licences_conditions'),
+  getLicencePoints: createLicencePage('water/licences_points'),
+  getLicencePurposes: createLicencePage('water/licences_purposes')
 };

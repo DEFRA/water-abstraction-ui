@@ -20,6 +20,8 @@ function viewContextDefaults (request) {
   viewContext.debug.request = request.info;
   viewContext.debug.request.path = request.path;
 
+  viewContext.labels={}
+  viewContext.labels.licences='Your licences'
   // Main nav links
   viewContext.propositionLinks = [];
 
@@ -38,7 +40,19 @@ function viewContextDefaults (request) {
     });
   }
 
+
+  if (request.permissions && request.permissions.admin.defra) {
+    viewContext.labels.licences='Licences'
+    viewContext.propositionLinks.push({
+      id: 'dashboard',
+      text: 'Service Dashboard',
+      url: '/dashboard'
+    });
+  }
+
   viewContext.user = request.auth.credentials;
+
+  viewContext.permissions=request.permissions;
 
   if (request.auth.credentials) {
     viewContext.tracking = request.auth.credentials.user_data;

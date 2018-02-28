@@ -23,6 +23,11 @@ async function getPermissions (credentials) {
     licences: {
       read: false,
       edit: false
+    },
+    admin: {
+      defra: false,
+      project: false,
+      system : false
     }
   };
 
@@ -34,6 +39,18 @@ async function getPermissions (credentials) {
     }
     if (roles.length === 1 && roles[0].role === 'primary_user') {
       permissions.licences.edit = true;
+    }
+    const isDefraAdmin = roles.find(r => r.role === 'admin');
+    if(isDefraAdmin){
+      permissions.admin.defra = true;
+    }
+    const isProjectAdmin = roles.find(r => r.role === 'project_admin');
+    if(isProjectAdmin){
+      permissions.admin.project = true;
+    }
+    const isSysAdmin = roles.find(r => r.role === 'system_admin');
+    if(isSysAdmin){
+      permissions.admin.system = true;
     }
   }
 

@@ -14,7 +14,7 @@ const IDM = require('../lib/connectors/idm');
  */
 function getRegisterStart (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Create Account';
+  viewContext.pageTitle = 'Create an account to manage your water abstraction or impoundment licence online';
   return reply.view('water/register_start', viewContext);
 }
 
@@ -25,7 +25,7 @@ function getRegisterStart (request, reply) {
  */
 function getEmailAddress (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Create Account';
+  viewContext.pageTitle = 'Tell us your email address';
   return reply.view('water/register_email', viewContext);
 }
 
@@ -98,7 +98,7 @@ async function postEmailAddress (request, reply, options = {}) {
  */
 function getRegisterSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Account Created';
+  viewContext.pageTitle = 'Check your email';
   return reply.view('water/register_success', viewContext);
 }
 
@@ -109,7 +109,7 @@ function getRegisterSuccess (request, reply) {
  */
 function getSendAgain (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Resend Email';
+  viewContext.pageTitle = 'Ask for another email';
   return reply.view('water/register_send_again', viewContext);
 }
 
@@ -134,7 +134,7 @@ function postSendAgain (request, reply) {
  */
 function getResentSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Account Created';
+  viewContext.pageTitle = 'Check your email';
   return reply.view('water/register_resent_success', viewContext);
 }
 

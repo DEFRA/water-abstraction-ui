@@ -12,13 +12,7 @@
   </nav>
   <a class="link-back" href="/licences">Back</a>
 
-
-  {{#if crmData.document_custom_name }}
-  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
-  {{else}}
-  <h1 class="heading-large">Licence number: {{ licenceData.licenceNumber }}</h1>
-  {{/if}}
-
+  <h1 class="heading-large">{{ pageTitle }}</h1>
 
   <p>Starts {{ formatDate licenceData.effectiveDate }}
      {{#if licenceData.expiryDate }}

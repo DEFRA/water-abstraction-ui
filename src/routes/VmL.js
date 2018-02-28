@@ -19,11 +19,11 @@ module.exports = [
     path: '/',
     handler: function (request, reply) {
       console.log(request.query);
-      console.log('node env '+process.env.NODE_ENV);
+      console.log('node env ' + process.env.NODE_ENV);
 
-      if (process.env.NODE_ENV != 'PREPROD'){
-        console.log('redirect to licences')
-          return reply.redirect('/licences');
+      if (process.env.NODE_ENV != 'PREPROD') {
+        console.log('redirect to licences');
+        return reply.redirect('/licences');
       } else {
         if (request.query.access && request.query.access === 'PB01') {
           var fs = require('fs');
@@ -38,7 +38,6 @@ module.exports = [
           reply('unauthorised').code(401);
         }
       }
-
     },
     config: { auth: false,
       validate: {
@@ -259,30 +258,6 @@ module.exports = [
         }
       }
     } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/map_of_abstraction_point',
-    handler: LicencesController.getLicenceMap,
-    config: {
-      description: 'View abstraction point map for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    }},
-  { method: 'GET',
-    path: '/licences/{licence_id}/terms',
-    handler: LicencesController.getLicenceTerms,
-    config: {
-      description: 'View abstraction point terms for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    }},
-
   // Registration process
   { method: 'GET',
     path: '/start',
@@ -495,17 +470,17 @@ module.exports = [
         }
       }
     }},
-    { method: 'GET',
-      path: '/dashboard',
-      handler: VmL.dashboard,
-      config: {
-        description: 'System Dashboard',
-        plugins: {
-          hapiRouteAcl: {
-            permissions: ['admin:defra']
-          }
+  { method: 'GET',
+    path: '/dashboard',
+    handler: VmL.dashboard,
+    config: {
+      description: 'System Dashboard',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['admin:defra']
         }
-      }},
+      }
+    }},
 
   {
     method: '*',

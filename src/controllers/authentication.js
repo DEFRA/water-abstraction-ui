@@ -24,7 +24,8 @@ class PasswordResetRequiredError extends Error {
  */
 function getSignin (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Sign in to view your licence';
+  viewContext.pageTitle = 'Sign in';
+  viewContext.customTitle = 'Sign in - Manage your water abstraction or impoundment licence';
   return reply.view('water/signin', viewContext);
 }
 
@@ -64,7 +65,7 @@ function postSignin (request, reply) {
       }
 
       // OK, sign in user
-      return signIn.auto(request, request.payload.user_id, getUser.body.user_data,getUser.body.last_login);
+      return signIn.auto(request, request.payload.user_id, getUser.body.user_data, getUser.body.last_login);
     })
     .then((session) => {
       // Resolves Chrome issue where it won't set cookie and redirect in same request

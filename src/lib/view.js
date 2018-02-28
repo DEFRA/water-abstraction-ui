@@ -7,7 +7,10 @@ function viewContextDefaults (request) {
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
+  // H1 page title
   viewContext.pageTitle = 'Water Abstraction';
+  // Title tag - if different from page title
+  viewContext.customTitle = null;
   viewContext.insideHeader = '';
   viewContext.headerClass = 'with-proposition';
   viewContext.topOfPage = null;
@@ -20,8 +23,8 @@ function viewContextDefaults (request) {
   viewContext.debug.request = request.info;
   viewContext.debug.request.path = request.path;
 
-  viewContext.labels={}
-  viewContext.labels.licences='Your licences'
+  viewContext.labels = {};
+  viewContext.labels.licences = 'Your licences';
   // Main nav links
   viewContext.propositionLinks = [];
 
@@ -40,9 +43,8 @@ function viewContextDefaults (request) {
     });
   }
 
-
   if (request.permissions && request.permissions.admin.defra) {
-    viewContext.labels.licences='Licences'
+    viewContext.labels.licences = 'Licences';
     viewContext.propositionLinks.push({
       id: 'dashboard',
       text: 'Service Dashboard',
@@ -52,7 +54,7 @@ function viewContextDefaults (request) {
 
   viewContext.user = request.auth.credentials;
 
-  viewContext.permissions=request.permissions;
+  viewContext.permissions = request.permissions;
 
   if (request.auth.credentials) {
     viewContext.tracking = request.auth.credentials.user_data;

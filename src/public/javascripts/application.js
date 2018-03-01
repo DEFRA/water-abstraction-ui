@@ -16,7 +16,7 @@ $(document).ready(function () {
   GOVUK.shimLinksWithButtonRole.init();
 
   // Details/summary polyfill
-  GOVUK.details.init();
+  // GOVUK.details.init();
 });
 
 $(window).load(function () {

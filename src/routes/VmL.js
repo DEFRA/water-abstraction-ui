@@ -21,7 +21,7 @@ module.exports = [
       console.log(request.query);
       console.log('node env ' + process.env.NODE_ENV);
 
-      if (process.env.NODE_ENV != 'PREPROD') {
+      if (process.env.NODE_ENV !== 'PREPROD') {
         console.log('redirect to licences');
         return reply.redirect('/licences');
       } else {

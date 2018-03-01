@@ -188,10 +188,10 @@ function _getLicencePageTitle (view, licenceNumber, customName) {
  * @return {Function} HAPI route handler
  */
 function createLicencePage (view) {
-  return async function (request, reply) {
+  return async function (request, reply, context = {}) {
     const { entity_id: entityId } = request.auth.credentials;
 
-    const viewContext = View.contextDefaults(request);
+    const viewContext = Object.assign({}, View.contextDefaults(request), context);
     viewContext.activeNavLink = 'view';
 
     // Get filtered list of licences
@@ -245,6 +245,14 @@ function createLicencePage (view) {
   };
 }
 
+// Create specific view handlers
+const getLicence = createLicencePage('water/licence');
+const getLicenceContact = createLicencePage('water/licences_contact');
+const getLicenceRename = createLicencePage('water/licences_rename');
+const getLicenceConditions = createLicencePage('water/licences_conditions');
+const getLicencePoints = createLicencePage('water/licences_points');
+const getLicencePurposes = createLicencePage('water/licences_purposes');
+
 /**
  * Update a licence name
  * @param {Object} request - the HAPI HTTP request
@@ -295,11 +303,11 @@ function postLicence (request, reply) {
 
 module.exports = {
   getLicences,
-  getLicence: createLicencePage('water/licence'),
+  getLicence,
   postLicence,
-  getLicenceContact: createLicencePage('water/licences_contact'),
-  getLicenceRename: createLicencePage('water/licences_rename'),
-  getLicenceConditions: createLicencePage('water/licences_conditions'),
-  getLicencePoints: createLicencePage('water/licences_points'),
-  getLicencePurposes: createLicencePage('water/licences_purposes')
+  getLicenceContact,
+  getLicenceRename,
+  getLicenceConditions,
+  getLicencePoints,
+  getLicencePurposes
 };

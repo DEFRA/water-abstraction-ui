@@ -381,7 +381,7 @@ class NALDTransformer extends BaseTransformer {
         } = condition;
         const {
           DESCR: purposeText
-        } = purpose.purpose.purpose_tertiary;
+        } = purpose.purpose[0].purpose_tertiary;
 
         // Condition wrapper
         let cWrapper = find(conditionsArr, conditionMatcher(code, subCode, purposeText));

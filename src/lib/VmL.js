@@ -117,7 +117,7 @@ function postUpdatePassword (request, reply) {
 
 function getResetPassword (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - reset your password';
+  viewContext.pageTitle = 'Reset your password';
   return reply.view('water/reset_password', viewContext);
 }
 

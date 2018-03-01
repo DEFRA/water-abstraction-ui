@@ -47,7 +47,7 @@ function viewContextDefaults (request) {
     viewContext.labels.licences = 'Licences';
     viewContext.propositionLinks.push({
       id: 'dashboard',
-      text: 'Service Dashboard',
+      text: 'View service usage',
       url: '/dashboard'
     });
   }

@@ -126,7 +126,7 @@ async function postLicenceAdd (request, reply) {
  */
 async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Are these the licence numbers you want to be able to view?';
+  viewContext.pageTitle = 'Are these the licences you want to be able to view?';
 
   if (request.query.error === 'noLicenceSelected') {
     viewContext.error = {name: 'LicenceNotSelectedError'};

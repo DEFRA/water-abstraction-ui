@@ -3,7 +3,6 @@ node_js:
   - "8"
 install:
   - npm install
-  - snyk test
 script:
   - npm run lint
   - echo "Completed"

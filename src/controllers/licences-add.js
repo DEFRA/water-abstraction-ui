@@ -69,6 +69,8 @@ async function postLicenceAdd (request, reply) {
       throw new LicenceNotFoundError();
     }
 
+
+
     // Get unverified licences from DB
     const res = await CRM.documents.findMany(
       { system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null },
@@ -81,12 +83,18 @@ async function postLicenceAdd (request, reply) {
 
     // Check 1+ licences found
     if (res.data.length < 1) {
+      viewContext.missingNumbers={};
+      viewContext.missingNumbers.data=licenceNumbers
+      viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceNotFoundError();
     }
 
     // Check # of licences returned = that searched for
     if (res.data.length !== licenceNumbers.length) {
       const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
+      viewContext.missingNumbers={};
+      viewContext.missingNumbers.data=missingNumbers
+      viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
     }
 

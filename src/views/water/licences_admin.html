@@ -6,11 +6,14 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/licences">{{ labels.licences }}</a></li>
+
+        <li><a href="/licences">Licences</a></li>
       </ol>
 
     </div>
   </nav>
+
+
 
   {{#equal error.name "ValidationError" }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -34,16 +37,20 @@
   </div>
   {{/equal}}
 
-
-  <h1 class="heading-large">{{ pageTitle }}</h1>
-
-  {{#if showVerificationAlert }}
-  <div class="panel panel-border-wide alert-default medium-space">
-    Have you received a security code by post? <a href="/security-code">Enter your code here</a>
-  </div>
+  {{#if permissions.admin.defra}}
+  {{>element-heading-large content='Licences'}}
+  {{else}}
+  {{>element-heading-large content='Your licences'}}
   {{/if}}
 
+
+
+
   {{#if enableSearch}}
+  <p>
+    You can search for licences using user email, partial licence number or licence name
+  </p>
+
   <form novalidate method="GET" action="/licences" name="licenceSearch">
 
   <!-- Licence search form -->
@@ -61,7 +68,11 @@
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
+        {{#if permissions.admin.defra}}
+        <label class="form-label form-label--bold" for="licenceNumber">Search licences</label>
+        {{else}}
         <label class="form-label form-label--bold" for="licenceNumber">Search your licences</label>
+        {{/if}}
         <span class="form-hint">Enter a licence number or name</span>
         <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
@@ -77,12 +88,17 @@
   {{/if}}
 
 
+
+
+
+
+  {{#if showResults}}
   <!-- Results page goes here -->
   <div class="license-results" id="results">
 
     <div class="license-results-header">
       <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence number
+        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence serial number
           {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
         </a>
       </div>
@@ -109,6 +125,7 @@
     {{/each}}
 
   </div>
+  {{/if}}
 
 
   {{#greaterThan pagination.pageCount 1}}

@@ -6,7 +6,7 @@
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
     "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
-    "test": "snyk test && lab -t 60 -m 3000",
+    "test": "lab -t 60 -m 3000",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix"
@@ -52,8 +52,8 @@
     "hapi": "^16.6.2",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-cookie": "^0.1.0",
-    "hapi-error": "^1.8.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
+    "hapi-route-acl": "^1.0.3",
     "hapi-sanitize-payload": "^1.5.0",
     "hapi-server-session": "^3.0.2",
     "http-errors": "^1.6.2",

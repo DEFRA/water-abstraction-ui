@@ -1,40 +1,38 @@
-'use strict'
+'use strict';
 
-const Lab = require('lab')
-const lab = exports.lab = Lab.script()
+const Lab = require('lab');
+const lab = exports.lab = Lab.script();
 
-const Code = require('code')
-const DOMParser = require('xmldom').DOMParser
+const Code = require('code');
+const DOMParser = require('xmldom').DOMParser;
 
-const server = require('../../index')
+const server = require('../../index');
 
-//const CookieService = require('../../src/services/cookie.service')
+// const CookieService = require('../../src/services/cookie.service')
 
-//let validateCookieStub
+// let validateCookieStub
 
-const routePath = '/reset_password_change_password'
-
+const routePath = '/reset_password_change_password';
 
 lab.experiment('Check signout', () => {
-  lab.test('The page should have a links', async () => {
-    const request = {
-      method: 'POST',
-      url: routePath,
-      headers: {},
-      payload: {}
-    }
+  // lab.test('The page should have a links', async () => {
+  //   const request = {
+  //     method: 'POST',
+  //     url: routePath,
+  //     headers: {},
+  //     payload: {}
+  //   }
+  //
+  //
+  //
+  //   const res = await server.inject(request)
+  //   Code.expect(res.statusCode).to.equal(200)
+  //
+  //   const parser = new DOMParser()
+  //   const doc = parser.parseFromString(res.payload, 'text/html')
+  //
+  //   const elements = doc.getElementsByTagName('a')
+  //   Code.expect(elements).to.exist()
+  // })
 
-
-
-    const res = await server.inject(request)
-    Code.expect(res.statusCode).to.equal(200)
-
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(res.payload, 'text/html')
-
-    const elements = doc.getElementsByTagName('a')
-    Code.expect(elements).to.exist()
-  })
-
-
-})
+});

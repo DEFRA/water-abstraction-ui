@@ -51,7 +51,7 @@
           <label class="form-label-bold" for="user-id">Email address</label>
           <span class="form-hint">This is the email address used to create your account.</span>
           {{#if errors}}<span class="error-message">Please enter the email address you registered with us.</span>{{/if}}
-          <input maxlength="254" name="user_id" type="text" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}>
+          <input maxlength="254" name="user_id" type="email" class="form-control {{#if errors.authentication }}form-control-error{{/if}}" id="user-id" {{#if payload.user_id}}value="{{payload.user_id}}" {{/if}}>
 
         </div>
         <!-- Password -->
@@ -66,7 +66,8 @@
         <p></p>
       </form>
       <a href="/reset_password">Forgotten password?</a>
-      <br /><a href="/register">Create an account to use this service</a>
+      <br />
+      <br /><a href="/start">Create an account to use this service</a>
 
     </div>
   </div>
@@ -74,14 +75,5 @@
 {{> footerjs}}
 {{> debug}}
 
-{{#if errors}}
-<script>
-document.getElementById('signInButton').disabled = true;
-document.getElementById('signInButton').setAttribute('aria-disabled', 'true');
-window.setTimeout(function(){
-  console.log('unlock')
-  document.getElementById('signInButton').disabled = false;
-  document.getElementById('signInButton').setAttribute('aria-disabled', 'false');
-},5000)
-{{/if}}
+
 </script>

@@ -5,7 +5,7 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/licences">Your licences</a></li>
+        <li><a href="/licences">{{ labels.licences }}</a></li>
         <li><a href="/manage_licences_add">Manage your licences</a></li>
         <li><a href="/add-licences">Request access</a></li>
       </ol>
@@ -34,9 +34,7 @@
      </div>
       {{/equal}}
 
-      <h1 class="heading-large">
-        Are these the licence numbers you want to be able to view?
-      </h1>
+      <h1 class="heading-large">{{ pageTitle }}</h1>
 
       <form novalidate method="POST" action="/select-licences">
 

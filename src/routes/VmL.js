@@ -19,17 +19,24 @@ module.exports = [
     path: '/',
     handler: function (request, reply) {
       console.log(request.query);
-      if (request.query.access && request.query.access === 'PB01') {
-        var fs = require('fs');
-        const indexPath = path.join(__dirname, '/../views/water/index.html');
-        fs.readFile(indexPath, function (err, data) {
-          if (err) {
-            throw err;
-          }
-          reply(data.toString());
-        });
+      console.log('node env ' + process.env.NODE_ENV);
+
+      if (process.env.NODE_ENV !== 'PREPROD') {
+        console.log('redirect to licences');
+        return reply.redirect('/licences');
       } else {
-        reply('unauthorised').code(401);
+        if (request.query.access && request.query.access === 'PB01') {
+          var fs = require('fs');
+          const indexPath = path.join(__dirname, '/../views/water/index.html');
+          fs.readFile(indexPath, function (err, data) {
+            if (err) {
+              throw err;
+            }
+            reply(data.toString());
+          });
+        } else {
+          reply('unauthorised').code(401);
+        }
       }
     },
     config: { auth: false,
@@ -251,31 +258,14 @@ module.exports = [
         }
       }
     } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/map_of_abstraction_point',
-    handler: LicencesController.getLicenceMap,
-    config: {
-      description: 'View abstraction point map for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    }},
-  { method: 'GET',
-    path: '/licences/{licence_id}/terms',
-    handler: LicencesController.getLicenceTerms,
-    config: {
-      description: 'View abstraction point terms for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    }},
-
   // Registration process
+  { method: 'GET',
+    path: '/start',
+    handler: RegistrationController.getRegisterStart,
+    config: {
+      auth: false,
+      description: 'Register start page - information for users before registering'
+    }},
   { method: 'GET',
     path: '/register',
     handler: RegistrationController.getEmailAddress,
@@ -334,19 +324,34 @@ module.exports = [
     path: '/manage_licences',
     handler: LicencesManageController.getAccessList,
     config: {
-      description: 'Manage licences - main page'
+      description: 'Manage licences - main page',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'GET',
     path: '/manage_licences/remove_access',
     handler: LicencesManageController.getRemoveAccess,
     config: {
-      description: 'Manage licences - remove access form'
+      description: 'Manage licences - remove access form',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'GET',
     path: '/manage_licences/add_access',
     handler: LicencesManageController.getAddAccess,
     config: {
-      description: 'Manage licences - add access form'
+      description: 'Manage licences - add access form',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
   { method: 'POST',
     path: '/manage_licences/add_access',
@@ -357,13 +362,23 @@ module.exports = [
         payload: {
           email: Joi.string().max(254).allow('')
         }
+      },
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
       }
     }},
   { method: 'GET',
     path: '/manage_licences_add',
     handler: LicencesManageController.getAddLicences,
     config: {
-      description: 'Manage licences - add licences'
+      description: 'Manage licences - add licences',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
     }},
 
   // Add licence to account
@@ -452,6 +467,17 @@ module.exports = [
       validate: {
         payload: {
           verification_code: Joi.string().allow('').max(5)
+        }
+      }
+    }},
+  { method: 'GET',
+    path: '/dashboard',
+    handler: VmL.dashboard,
+    config: {
+      description: 'System Dashboard',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['admin:defra']
         }
       }
     }},

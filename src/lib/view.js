@@ -7,7 +7,10 @@ function viewContextDefaults (request) {
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
+  // H1 page title
   viewContext.pageTitle = 'Water Abstraction';
+  // Title tag - if different from page title
+  viewContext.customTitle = null;
   viewContext.insideHeader = '';
   viewContext.headerClass = 'with-proposition';
   viewContext.topOfPage = null;
@@ -20,36 +23,43 @@ function viewContextDefaults (request) {
   viewContext.debug.request = request.info;
   viewContext.debug.request.path = request.path;
 
+  viewContext.labels = {};
+  viewContext.labels.licences = 'Your licences';
   // Main nav links
   viewContext.propositionLinks = [];
 
-  if (request.auth.isAuthenticated) {
-    // All authenticated users can view the 'View licences' link
+  if (request.permissions && request.permissions.licences.read) {
     viewContext.propositionLinks.push({
       id: 'view',
       text: 'View your licences',
       url: '/licences'
     });
-
-    // Only users who have primary_user role for a single org can use 'Manage licences' link
-    const { roles } = request.auth.credentials;
-    if (roles.length === 1 && roles[0].role === 'primary_user') {
-      viewContext.propositionLinks.push({
-        id: 'manage',
-        text: 'Manage your licences',
-        url: '/manage_licences'
-      });
-    }
+  }
+  if (request.permissions && request.permissions.licences.edit) {
+    viewContext.propositionLinks.push({
+      id: 'manage',
+      text: 'Manage your licences',
+      url: '/manage_licences'
+    });
   }
 
-  //  viewContext.debug.session = request.yar.get('sessionTimestamp')
+  if (request.permissions && request.permissions.admin.defra) {
+    viewContext.labels.licences = 'Licences';
+    viewContext.propositionLinks.push({
+      id: 'dashboard',
+      text: 'View service usage',
+      url: '/dashboard'
+    });
+  }
 
   viewContext.user = request.auth.credentials;
 
-  if(request.auth.credentials){
-    viewContext.tracking=request.auth.credentials.user_data
+  viewContext.permissions = request.permissions;
+
+  if (request.auth.credentials) {
+    viewContext.tracking = request.auth.credentials.user_data;
   } else {
-    viewContext.tracking={usertype:'not_logged_in'}
+    viewContext.tracking = {usertype: 'not_logged_in'};
   }
 
   viewContext.env = process.env.NODEENV;

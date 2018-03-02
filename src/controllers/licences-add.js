@@ -29,7 +29,7 @@ const { LicenceNotFoundError,
  */
 async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Add Licence';
+  viewContext.pageTitle = 'Which licences do you want to be able to view?';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
 
@@ -50,7 +50,7 @@ async function postLicenceAdd (request, reply) {
   // @TODO relevant validation messages
 
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Add Licence';
+  viewContext.pageTitle = 'Which licences do you want to be able to view?';
 
   // Validate posted data
   const schema = {
@@ -69,16 +69,23 @@ async function postLicenceAdd (request, reply) {
       throw new LicenceNotFoundError();
     }
 
+
+
     // Get unverified licences from DB
-    const res = await CRM.documents.findMany({
-      system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null
-    });
+    const res = await CRM.documents.findMany(
+      { system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null },
+      { system_external_id: +1 },
+      { page: 1, perPage: 300 }
+    );
     if (res.error) {
       throw res.error;
     }
 
     // Check 1+ licences found
     if (res.data.length < 1) {
+      viewContext.missingNumbers={};
+      viewContext.missingNumbers.data=licenceNumbers.join(', ')
+      viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceNotFoundError();
     }
 
@@ -86,6 +93,9 @@ async function postLicenceAdd (request, reply) {
     // Check # of licences returned = that searched for
     if (res.data.length !== licenceNumbers.length) {
       const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
+      viewContext.missingNumbers={};
+      viewContext.missingNumbers.data=missingNumbers.join(', ')
+      viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
     }
 
@@ -126,7 +136,7 @@ async function postLicenceAdd (request, reply) {
  */
 async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Select Licences';
+  viewContext.pageTitle = 'Are these the licences you want to be able to view?';
 
   if (request.query.error === 'noLicenceSelected') {
     viewContext.error = {name: 'LicenceNotSelectedError'};
@@ -137,7 +147,11 @@ async function getLicenceSelect (request, reply) {
     const { documentIds } = addLicenceFlow;
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.findMany({ document_id: {$or: documentIds}, verified: null, verification_id: null }, { system_external_id: +1 });
+    const {data, error} = await CRM.documents.findMany(
+      { document_id: {$or: documentIds}, verified: null, verification_id: null },
+      { system_external_id: +1 },
+      {page: 1, perPage: 300}
+    );
 
     if (error) {
       throw error;
@@ -240,7 +254,8 @@ async function postLicenceSelect (request, reply) {
  */
 function getLicenceSelectError (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Contact Us';
+  viewContext.pageTitle = 'Sorry, we need to confirm your licence information with you';
+  viewContext.customTitle = 'We need to confirm your licence information';
   return reply.view('water/licences-add/select-licences-error', viewContext);
 }
 
@@ -253,7 +268,7 @@ function getLicenceSelectError (request, reply) {
  */
 async function getAddressSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Choose Address';
+  viewContext.pageTitle = 'Where should we send your security code?';
 
   if (request.query.error === 'invalidAddress') {
     viewContext.error = {name: 'AddressInvalidError'};
@@ -332,7 +347,7 @@ async function postAddressSelect (request, reply) {
     await request.sessionStore.save(sessionData);
 
     const viewContext = View.contextDefaults(request);
-    viewContext.pageTitle = 'GOV.UK - Security Code Sent';
+    viewContext.pageTitle = `We're sending you a letter`;
     viewContext.verification = verification;
     viewContext.licence = data;
     viewContext.licenceCount = licences.length;
@@ -382,7 +397,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  */
 async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Enter your security code';
+  viewContext.pageTitle = 'Enter your security code';
 
   try {
     return reply.view('water/licences-add/security-code', viewContext);
@@ -399,7 +414,7 @@ async function getSecurityCode (request, reply) {
  */
 async function postSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Enter your security code';
+  viewContext.pageTitle = 'Enter your security code';
 
   const {entity_id: entityId} = request.auth.credentials;
 

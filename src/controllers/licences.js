@@ -53,6 +53,8 @@ async function getLicences (request, reply) {
       viewContext.showEmailFilter = true;
       return reply.view('water/licences_admin', viewContext);
     } else {
+      viewContext.enableSearch = true;
+      viewContext.showEmailFilter = true;
       viewContext.showAdminIntro = true;
       viewContext.showResults = true;
     }
@@ -145,12 +147,20 @@ async function getLicences (request, reply) {
     const userRoles = licenceRoles(summary);
 
     viewContext.licenceCount = licenceCount(summary);
-    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
     viewContext.showManageFilter = userRoles.primary_user;
     if (userRoles.admin || userRoles.agent || userRoles.user) {
       viewContext.showManageFilter = false;
     }
+
+  if (request.permissions && request.permissions.admin.defra) {
+    //never restrict search box for admin users
+  } else {
     viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
+    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+
+  }
+
+
     if (request.permissions && request.permissions.admin.defra) {
       return reply.view('water/licences_admin', viewContext);
     } else {

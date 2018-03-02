@@ -40,6 +40,10 @@ async function getLicences (request, reply) {
       email: request.query.emailAddress
     };
 
+    if (filter.email){
+      delete filter.entity_id
+    }
+
     if (!filter.string && !filter.email) {
       // if admin user and no search params entered, don't show search results
       viewContext.showAdminIntro = true;

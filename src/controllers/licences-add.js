@@ -84,7 +84,7 @@ async function postLicenceAdd (request, reply) {
     // Check 1+ licences found
     if (res.data.length < 1) {
       viewContext.missingNumbers={};
-      viewContext.missingNumbers.data=licenceNumbers
+      viewContext.missingNumbers.data=licenceNumbers.join(', ')
       viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceNotFoundError();
     }
@@ -93,7 +93,7 @@ async function postLicenceAdd (request, reply) {
     if (res.data.length !== licenceNumbers.length) {
       const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
       viewContext.missingNumbers={};
-      viewContext.missingNumbers.data=missingNumbers
+      viewContext.missingNumbers.data=missingNumbers.join(', ')
       viewContext.missingNumbers.length=licenceNumbers.length
       throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
     }

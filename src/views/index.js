@@ -264,7 +264,7 @@ const defaultContext = {
   bodyClasses: 'some classes here',
   bodyStart: 'Body Start',
   skipLinkMessage: 'Skip to main content',
-  cookieMessage: 'Cookie Message',
+  cookieMessage: 'GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>',
   headerClass: 'some classes here',
   homepageUrl: 'http://page/url',
   logoLinkTitle: 'Logo Link Title',

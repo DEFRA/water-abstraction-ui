@@ -6,6 +6,18 @@ function getRoot (request, reply) {
   reply.file('./staticindex.html');
 }
 
+function getCookies (request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Cookies';
+  return reply.view('water/cookies', viewContext);
+}
+
+function getPrivacyPolicy (request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Privacy: how we use your personal information';
+  return reply.view('water/privacy_policy', viewContext);
+}
+
 function getUpdatePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
   if (!request.auth.credentials) {
@@ -297,6 +309,8 @@ function dashboard (request, reply) {
 
 module.exports = {
   getRoot: getRoot,
+  getCookies,
+  getPrivacyPolicy,
   getUpdatePassword: getUpdatePassword,
   postUpdatePassword: postUpdatePassword,
   getResetPassword: getResetPassword,

@@ -50,17 +50,14 @@ handlebars.registerHelper('sortQuery', function (context, options) {
   const {direction, sort, field, ...params} = arguments[0].hash;
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
   const query = Object.assign(params, {sort: field, direction: newDirection});
-  return qs.stringify(query);
+  return qs.stringify(query, '&amp;');
 });
 
 /**
  * A handlebars helper to get a query string for sorting data
  */
 handlebars.registerHelper('queryString', function (context, options) {
-  // const {direction, sort, field, ...params} = arguments[0].hash;
-  // const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
-  // const query = Object.assign(params, {sort: field, direction: newDirection});
-  return qs.stringify(arguments[0].hash);
+  return qs.stringify(arguments[0].hash, '&amp;');
 });
 
 /**

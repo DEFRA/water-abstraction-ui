@@ -275,7 +275,7 @@ const defaultContext = {
 
   afterHeader: '',
   footerTop: '',
-  footerSupportLinks: '',
+  footerSupportLinks: '<h2 class="sr-only">Support Links</h2><ul><li><a href="/cookies">Cookies</a></li><li><a href="/privacy-policy">Privacy</a></li></ul>',
   licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
   bodyEnd: ''
 };

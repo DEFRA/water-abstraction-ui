@@ -49,7 +49,7 @@
     "govuk_template_mustache": "^0.22.3",
     "handlebars": "^4.0.11",
     "handlebars-helper-equal": "^1.0.0",
-    "hapi": "^16.6.2",
+    "hapi": "^17.0.0",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-cookie": "^0.1.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",

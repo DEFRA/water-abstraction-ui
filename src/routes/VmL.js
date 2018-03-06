@@ -52,6 +52,8 @@ module.exports = [
 
   { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
+  { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information' }, handler: VmL.getCookies },
+  { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy' }, handler: VmL.getPrivacyPolicy },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },
   { method: 'GET',

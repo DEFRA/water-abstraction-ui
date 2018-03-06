@@ -29,3 +29,13 @@ var ev={
 }
 window.dataLayer.push(ev);
 </script>
+
+<script>
+if(!GOVUK){
+  GOVUK={details:{init:function(){return true}}}
+} else if(!GOVUK.details) {
+  GOVUK.details={init:function(){return true}}
+} else if(!GOVUK.details.init) {
+  GOVUK.details.init=function(){return true}
+}
+</script>

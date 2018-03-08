@@ -599,5 +599,29 @@
 
     <script>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
   <script src="https://assets.publishing.service.gov.uk/government-frontend/application-b6af057ac563794cd9a306086ff7e990546cebe83309153e4e2bb7763c141cd9.js" crossorigin="anonymous" integrity="sha256-tq8FesVjeUzZowYIb/fpkFRs6+gzCRU+Tiu3djwUHNk="></script>
-</body>
+
+  
+<!-- Google analytics embedded using GTM -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W64QRBS');</script>
+<!-- End Google Tag Manager -->
+
+<script>
+window.dataLayer = window.dataLayer || [];
+var ev={
+  'event' : 'pageview',
+  'userType' : '{{tracking.usertype}}',
+  'newUser' : '{{tracking.newuser}}',
+  'lastlogin' : '{{tracking.lastlogin}}'
+}
+window.dataLayer.push(ev);
+</script>
+  
+  </body>
 </html>
+

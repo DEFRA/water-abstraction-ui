@@ -35,6 +35,7 @@ function getSignin (request, reply) {
  * @param {Object} reply - the HAPI HTTP response
  */
 function getSignout (request, reply) {
+  request.sessionStore.destroy();
   request.cookieAuth.clear();
   return reply.redirect('/?access=PB01');
 }

@@ -109,9 +109,7 @@ async function postLicenceAdd (request, reply) {
     const documentIds = res.data.map(item => item.document_id);
 
     // Store document IDs in session
-    const sessionData = await request.sessionStore.load();
-    sessionData.addLicenceFlow = {documentIds};
-    await request.sessionStore.save(sessionData);
+    request.sessionStore.set('addLicenceFlow', {documentIds});
 
     reply.redirect('/select-licences');
   } catch (err) {
@@ -139,8 +137,7 @@ async function getLicenceSelect (request, reply) {
   }
 
   try {
-    const { addLicenceFlow } = await request.sessionStore.load();
-    const { documentIds } = addLicenceFlow;
+    const { documentIds } = request.sessionStore.get('addLicenceFlow');
 
     // Get unverified licences from DB
     const {data, error} = await CRM.documents.findMany(
@@ -178,8 +175,7 @@ async function postLicenceSelect (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
 
   try {
-    const sessionData = await request.sessionStore.load();
-    const { documentIds } = sessionData.addLicenceFlow;
+    const { documentIds } = request.sessionStore.get('addLicenceFlow');
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
 
@@ -226,11 +222,7 @@ async function postLicenceSelect (request, reply) {
     }
 
     // Create new token
-    sessionData.addLicenceFlow = {
-      documentIds,
-      selectedIds
-    };
-    await request.sessionStore.save(sessionData);
+    request.sessionStore.set('addLicenceFlow', {documentIds, selectedIds});
 
     reply.redirect('/select-address');
   } catch (err) {
@@ -272,8 +264,7 @@ async function getAddressSelect (request, reply) {
 
   try {
     // Load from session
-    const {addLicenceFlow} = await request.sessionStore.load();
-    const {selectedIds} = addLicenceFlow;
+    const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
     // Find licences in CRM for selected documents
     const { data } = await CRM.documents.findMany({document_id: {$or: selectedIds}});
@@ -303,8 +294,7 @@ async function postAddressSelect (request, reply) {
 
   try {
     // Load session data
-    const sessionData = await request.sessionStore.load();
-    const {selectedIds} = sessionData.addLicenceFlow;
+    const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
     // Ensure address present in list of document IDs in data
     if (!selectedIds.includes(address)) {
@@ -339,8 +329,7 @@ async function postAddressSelect (request, reply) {
     }
 
     // Delete data in session
-    delete sessionData.addLicenceFlow;
-    await request.sessionStore.save(sessionData);
+    request.sessionStore.delete('addLicenceFlow');
 
     const viewContext = View.contextDefaults(request);
     viewContext.pageTitle = `We're sending you a letter`;

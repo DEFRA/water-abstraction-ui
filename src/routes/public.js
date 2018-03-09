@@ -5,9 +5,9 @@ module.exports = [
     path: '/public/{param*}',
     config: {
       auth: false,
-        cache: {
-            expiresIn: 30 * 1000
-        }
+      cache: {
+        expiresIn: 30 * 1000
+      }
     },
     handler: {
       directory: {
@@ -21,9 +21,9 @@ module.exports = [
   {
     method: 'GET',
     path: '/images/{param*}',
-    config: { auth: false ,
+    config: { auth: false,
       cache: {
-          expiresIn: 30 * 1000
+        expiresIn: 30 * 1000
       }},
     handler: {
       directory: {
@@ -37,9 +37,9 @@ module.exports = [
   {
     method: 'GET',
     path: '/stylesheets/{param*}',
-    config: { auth: false ,
+    config: { auth: false,
       cache: {
-          expiresIn: 30 * 1000
+        expiresIn: 30 * 1000
       }},
     handler: {
       directory: {
@@ -53,9 +53,9 @@ module.exports = [
   {
     method: 'GET',
     path: '/javascripts/{param*}',
-    config: { auth: false ,
+    config: { auth: false,
       cache: {
-          expiresIn: 30 * 1000
+        expiresIn: 30 * 1000
       }},
     handler: {
       directory: {

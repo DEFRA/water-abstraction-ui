@@ -118,6 +118,8 @@ server.errorHandler = function (error) {
   throw error;
 };
 
+
+/**
 server.ext({
   type: 'onPreHandler',
   method (request, reply) {
@@ -127,9 +129,21 @@ server.ext({
     } else if (request.path === '/robots.txt') {
       // robots.txt is always online because it's used for ELB healthcheck...
       return reply.continue();
+    } else {
     }
-    // removed s3 status file check since it's leaking memory...
     return reply.continue();
+  }
+});
+**/
+
+server.ext({
+  type: 'onPostHandler',
+  method (request, reply) {
+      request.response.headers['X-Frame-Options']='DENY'
+      request.response.headers['X-Content-Type-Options']='nosniff'
+      request.response.headers['X-XSS-Protection']='1'
+      request.response.headers['Strict-Transport-Security']='max-age=86400; includeSubDomains'
+      return reply.continue();
   }
 });
 

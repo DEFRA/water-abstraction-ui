@@ -12,7 +12,7 @@ module.exports = [
     handler: {
       directory: {
         path: 'public/',
-        listing: true
+        listing: false
 
       }
     }
@@ -28,7 +28,7 @@ module.exports = [
     handler: {
       directory: {
         path: 'public/images',
-        listing: true
+        listing: false
 
       }
     }
@@ -44,7 +44,7 @@ module.exports = [
     handler: {
       directory: {
         path: 'public/stylesheets',
-        listing: true
+        listing: false
 
       }
     }
@@ -60,7 +60,7 @@ module.exports = [
     handler: {
       directory: {
         path: 'public/javascripts',
-        listing: true
+        listing: false
 
       }
     }

@@ -47,7 +47,17 @@ function getSignout (request, reply) {
  * @param {String} request.payload.password - the user password
  * @param {Object} reply - the HAPI HTTP response
  */
-function postSignin (request, reply) {
+async function postSignin (request, reply) {
+  const destroySession = async () => {
+    try {
+      await request.sessionStore.destroy();
+    } catch (err) {
+      if (err.name !== 'NotFoundError' && err.name !== 'NoSessionCookieError') {
+        throw err;
+      }
+    }
+  };
+
   // Validation schema for HTTP form post
   const schema = {
     user_id: Joi.string().email().required(),
@@ -57,6 +67,10 @@ function postSignin (request, reply) {
   joiPromise(request.payload, schema)
     .then(() => {
       return IDM.login(request.payload.user_id, request.payload.password);
+    })
+    .then(async (getUser) => {
+      await destroySession();
+      return getUser;
     })
     .then((getUser) => {
       // Check for password reset flag - if set don't log them in yet and force

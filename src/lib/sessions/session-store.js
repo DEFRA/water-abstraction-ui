@@ -9,6 +9,13 @@ const rp = require('request-promise-native').defaults({
   strictSSL: false
 });
 
+class NoSessionCookieError extends Error {
+  constructor (message) {
+    super(message);
+    this.name = 'NoSessionCookieError';
+  }
+}
+
 /**
   * @class SessionStore
   */
@@ -56,7 +63,7 @@ class SessionStore {
    * @return {Promise} resolves with session data
    */
   async load () {
-    const sessionId = this.request.auth.credentials.sid;
+    const sessionId = this.getSessionCookieId();
     const { data, error } = await this.apiClient.findOne(sessionId);
     if (error) {
       throw error;
@@ -105,7 +112,7 @@ class SessionStore {
     if (!this.isDirty) {
       return;
     }
-    const sessionId = this.request.auth.credentials.sid;
+    const sessionId = this.getSessionCookieId();
     const { error } = await this.apiClient.updateOne(sessionId, {
       session_data: JSON.stringify(this.data)
     });
@@ -115,11 +122,22 @@ class SessionStore {
   }
 
   /**
+   * Gets the session cookie ID - throws an error if not found
+   * @return {String}
+   */
+  getSessionCookieId () {
+    if ('sid' in this.request.state) {
+      return this.request.state.sid.sid;
+    }
+    throw new NoSessionCookieError('Session cookie not found');
+  }
+
+  /**
    * Destroy the current session
    * throws error if API error
    */
   async destroy () {
-    const sessionId = this.request.auth.credentials.sid;
+    const sessionId = this.getSessionCookieId();
     console.log(`Destroy session ${sessionId}`);
     const {error} = await this.apiClient.delete(sessionId);
     if (error) {

@@ -118,30 +118,6 @@ server.errorHandler = function (error) {
   throw error;
 };
 
-server.ext({
-  type: 'onPreHandler',
-  method (request, reply) {
-
-
-
-
-
-    if (request.path.indexOf('public') !== -1) {
-      // files in public dir are always online...
-      return reply.continue();
-    } else if (request.path === '/robots.txt') {
-      // robots.txt is always online because it's used for ELB healthcheck...
-      return reply.continue();
-    }
-
-
-
-
-    // removed s3 status file check since it's leaking memory...
-    return reply.continue();
-  }
-});
-
 
 /**
 server.ext({

@@ -90,7 +90,8 @@ module.exports = [
       validate: {
         payload: {
           password: Joi.string().max(128),
-          confirmPassword: Joi.string().max(128)
+          confirmPassword: Joi.string().max(128),
+          csrf_token: Joi.string().guid()
         }
       }
     },

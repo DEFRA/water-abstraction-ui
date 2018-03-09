@@ -118,7 +118,6 @@ server.errorHandler = function (error) {
   throw error;
 };
 
-
 /**
 server.ext({
   type: 'onPreHandler',
@@ -139,11 +138,13 @@ server.ext({
 server.ext({
   type: 'onPostHandler',
   method (request, reply) {
-      request.response.headers['X-Frame-Options']='DENY'
-      request.response.headers['X-Content-Type-Options']='nosniff'
-      request.response.headers['X-XSS-Protection']='1'
-      request.response.headers['Strict-Transport-Security']='max-age=86400; includeSubDomains'
-      return reply.continue();
+    if ('headers' in request.response) {
+      request.response.headers['X-Frame-Options'] = 'DENY';
+      request.response.headers['X-Content-Type-Options'] = 'nosniff';
+      request.response.headers['X-XSS-Protection'] = '1';
+      request.response.headers['Strict-Transport-Security'] = 'max-age=86400; includeSubDomains';
+    }
+    return reply.continue();
   }
 });
 

@@ -62,6 +62,11 @@ server.register([
     options: {}
   },
   {
+    // CSRF protection
+    register: require('./src/lib/hapi-csrf-plugin.js'),
+    options: {}
+  },
+  {
     register: require('hapi-route-acl'),
     options: {
       permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
@@ -118,7 +123,6 @@ server.errorHandler = function (error) {
   throw error;
 };
 
-
 /**
 server.ext({
   type: 'onPreHandler',
@@ -139,11 +143,11 @@ server.ext({
 server.ext({
   type: 'onPostHandler',
   method (request, reply) {
-      request.response.headers['X-Frame-Options']='DENY'
-      request.response.headers['X-Content-Type-Options']='nosniff'
-      request.response.headers['X-XSS-Protection']='1'
-      request.response.headers['Strict-Transport-Security']='max-age=86400; includeSubDomains'
-      return reply.continue();
+    request.response.headers['X-Frame-Options'] = 'DENY';
+    request.response.headers['X-Content-Type-Options'] = 'nosniff';
+    request.response.headers['X-XSS-Protection'] = '1';
+    request.response.headers['Strict-Transport-Security'] = 'max-age=86400; includeSubDomains';
+    return reply.continue();
   }
 });
 

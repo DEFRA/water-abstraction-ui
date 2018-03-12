@@ -52,8 +52,10 @@ module.exports = [
 
   { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
+  { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information' }, handler: VmL.getCookies },
+  { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy' }, handler: VmL.getPrivacyPolicy },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
-  { method: 'GET', path: '/signout', config: { auth: false }, handler: AuthController.getSignout },
+  { method: 'GET', path: '/signout', config: { }, handler: AuthController.getSignout },
   { method: 'GET',
     path: '/signin',
     handler: AuthController.getSignin,
@@ -81,18 +83,33 @@ module.exports = [
       }
     }},
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
-  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   { method: 'POST',
-    path: '/update_password',
+    path: '/update_password_verify_password',
+
     config: {
       validate: {
         payload: {
           password: Joi.string().max(128),
-          confirmPassword: Joi.string().max(128)
+          csrf_token: Joi.string().guid().required()
+        }
+      }
+    },
+
+    handler: VmL.postUpdatePasswordVerifyPassword },
+  { method: 'POST',
+    path: '/update_password_verified_password',
+    config: {
+      validate: {
+        payload: {
+          authtoken: Joi.string().max(128),
+          password: Joi.string().max(128),
+          confirmPassword: Joi.string().max(128),
+          csrf_token: Joi.string().guid().required()
         }
       }
     },
     handler: VmL.postUpdatePassword },
+  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
   { method: 'POST',
     path: '/reset_password',
@@ -194,7 +211,8 @@ module.exports = [
           licence_id: Joi.string().required().guid()
         },
         payload: {
-          name: Joi.string().max(32)
+          name: Joi.string().max(32),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -360,7 +378,8 @@ module.exports = [
       description: 'Manage licences - add access process',
       validate: {
         payload: {
-          email: Joi.string().max(254).allow('')
+          email: Joi.string().max(254).allow(''),
+          csrf_token: Joi.string().guid().required()
         }
       },
       plugins: {
@@ -395,7 +414,8 @@ module.exports = [
       description: 'Start flow to add licences',
       validate: {
         payload: {
-          licence_no: Joi.string().allow('').max(9000)
+          licence_no: Joi.string().allow('').max(9000),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -419,7 +439,8 @@ module.exports = [
       description: 'Post handler for licence select',
       validate: {
         payload: {
-          licences: [Joi.array(), Joi.string().allow('')]
+          licences: [Joi.array(), Joi.string().allow('')],
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -449,7 +470,8 @@ module.exports = [
       description: 'Post handler for select address form',
       validate: {
         payload: {
-          address: Joi.string().allow('').guid()
+          address: Joi.string().allow('').guid(),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -466,7 +488,8 @@ module.exports = [
       description: 'Enter auth code received by post',
       validate: {
         payload: {
-          verification_code: Joi.string().allow('').max(5)
+          verification_code: Joi.string().allow('').max(5),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},

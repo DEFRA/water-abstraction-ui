@@ -40,8 +40,8 @@ async function getLicences (request, reply) {
       email: request.query.emailAddress
     };
 
-    if (filter.email){
-      delete filter.entity_id
+    if (filter.email) {
+      delete filter.entity_id;
     }
 
     if (!filter.string && !filter.email) {
@@ -152,14 +152,12 @@ async function getLicences (request, reply) {
       viewContext.showManageFilter = false;
     }
 
-  if (request.permissions && request.permissions.admin.defra) {
-    //never restrict search box for admin users
-  } else {
-    viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
-    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-
-  }
-
+    if (request.permissions && request.permissions.admin.defra) {
+    // never restrict search box for admin users
+    } else {
+      viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
+      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+    }
 
     if (request.permissions && request.permissions.admin.defra) {
       return reply.view('water/licences_admin', viewContext);

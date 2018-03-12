@@ -7,11 +7,12 @@
 * @module lib/hapi-error-plugin
 */
 const {contextDefaults} = require('./view');
+
 const errorPlugin = {
   register (server, options, next) {
     server.ext({
       type: 'onPreResponse',
-      method: (request, reply) => {
+      method: async (request, reply) => {
         const res = request.response;
 
         // Create view context
@@ -23,6 +24,13 @@ const errorPlugin = {
           console.log('error', res);
 
           const {statusCode} = res.output;
+
+          // CSRF error detected - sign out user and redirect to login page
+          if (res.data.isCsrfError) {
+            await request.sessionStore.destroy();
+            request.cookieAuth.clear();
+            return reply.redirect('/signout');
+          }
 
           // Unauthorised
           if (statusCode >= 401 && statusCode <= 403) {

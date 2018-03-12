@@ -38,6 +38,8 @@
 
       <form novalidate method="POST" action="/select-licences">
 
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
         <fieldset id="licences">
           <legend>
             <span class="body-text">You can add more licences at any time.</span>

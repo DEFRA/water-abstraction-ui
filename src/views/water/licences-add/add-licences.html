@@ -94,6 +94,9 @@
 
       <h1 class="heading-large">{{ pageTitle }}</h1>
       <form method="POST" novalidate action="/add-licences">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
         <!-- licence number field -->
         <div class="form-group {{#if error }}form-group-error{{/if}}">
           <label for="licence_no">

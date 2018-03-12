@@ -1,5 +1,4 @@
-<a href="/licences/{{this.document_id}}" class="license-result">
-  <h2 class="heading-medium license-result__column">{{this.system_external_id}}</h2>
-  <p class="license-result__column license-result__column--description">{{^this.document_custom_name}}-{{/this.document_custom_name}}  {{this.document_custom_name}}</p>
-  <div class="license-result__column license-result__column--view" aria-hidden="true">View</div>
-</a>
+<div class="license-result">
+  <h2 class="heading-medium license-result__column license-result__column--number"><a href="/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a></h2>
+  <p class="license-result__column license-result__column--description">{{^this.document_custom_name}}<span aria-hidden="true">-</span>{{/this.document_custom_name}}  {{this.document_custom_name}}</p>
+</div>

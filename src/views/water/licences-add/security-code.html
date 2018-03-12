@@ -37,6 +37,8 @@
 
       <form novalidate method="POST" action="/security-code">
 
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
         <!-- licence number field -->
         <div class="form-group {{#if error }}form-group-error{{/if}}">
           <label for="verification_code">

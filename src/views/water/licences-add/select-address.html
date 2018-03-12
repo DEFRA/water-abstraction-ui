@@ -36,6 +36,8 @@
 
       <form method="POST" action="/select-address">
 
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
         <fieldset id="address">
 
           <div class="form-group {{#if error}}form-group-error{{/if}}">

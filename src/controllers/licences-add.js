@@ -54,7 +54,8 @@ async function postLicenceAdd (request, reply) {
 
   // Validate posted data
   const schema = {
-    licence_no: Joi.string().required().allow('').trim().max(9000)
+    licence_no: Joi.string().required().allow('').trim().max(9000),
+    csrf_token: Joi.string().guid()
   };
   try {
     // Validate post data
@@ -406,7 +407,8 @@ async function postSecurityCode (request, reply) {
   try {
     // Validate HTTP POST payload
     const schema = {
-      verification_code: Joi.string().length(5).required()
+      verification_code: Joi.string().length(5).required(),
+      csrf_token: Joi.string().guid()
     };
     const {error} = Joi.validate(request.payload, schema);
 

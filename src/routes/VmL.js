@@ -398,7 +398,8 @@ module.exports = [
       description: 'Start flow to add licences',
       validate: {
         payload: {
-          licence_no: Joi.string().allow('').max(9000)
+          licence_no: Joi.string().allow('').max(9000),
+          csrf_token: Joi.string().guid()
         }
       }
     }},
@@ -422,7 +423,8 @@ module.exports = [
       description: 'Post handler for licence select',
       validate: {
         payload: {
-          licences: [Joi.array(), Joi.string().allow('')]
+          licences: [Joi.array(), Joi.string().allow('')],
+          csrf_token: Joi.string().guid()
         }
       }
     }},
@@ -452,7 +454,8 @@ module.exports = [
       description: 'Post handler for select address form',
       validate: {
         payload: {
-          address: Joi.string().allow('').guid()
+          address: Joi.string().allow('').guid(),
+          csrf_token: Joi.string().guid()
         }
       }
     }},
@@ -469,7 +472,8 @@ module.exports = [
       description: 'Enter auth code received by post',
       validate: {
         payload: {
-          verification_code: Joi.string().allow('').max(5)
+          verification_code: Joi.string().allow('').max(5),
+          csrf_token: Joi.string().guid()
         }
       }
     }},

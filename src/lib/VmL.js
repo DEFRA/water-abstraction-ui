@@ -20,11 +20,29 @@ function getPrivacyPolicy (request, reply) {
 
 function getUpdatePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Change your password';
   if (!request.auth.credentials) {
     reply.redirect('/signin');
   } else {
     viewContext.pageTitle = 'Change your password';
     return reply.view('water/update_password', viewContext);
+  }
+}
+
+async function postUpdatePasswordVerifyPassword (request, reply) {
+  var viewContext = View.contextDefaults(request);
+  try{
+    console.log(request.auth.credentials.username)
+    console.log(request.payload.password)
+    const verification = await IDM.verifyCredentials(request.auth.credentials.username,request.payload.password)
+    viewContext.pageTitle = 'Change your password';
+    console.log('verified!!!')
+    return reply.view('water/update_password_verified_password', viewContext);
+  }catch(e){
+    console.log(e)
+    viewContext.errors = {incorrectPassword:1};
+    return reply.view('water/update_password', viewContext);
+
   }
 }
 
@@ -311,16 +329,17 @@ module.exports = {
   getRoot: getRoot,
   getCookies,
   getPrivacyPolicy,
-  getUpdatePassword: getUpdatePassword,
-  postUpdatePassword: postUpdatePassword,
-  getResetPassword: getResetPassword,
-  postResetPassword: postResetPassword,
-  getResetPasswordCheckEmail: getResetPasswordCheckEmail,
-  getResetPasswordResendEmail: getResetPasswordResendEmail,
-  postResetPasswordResendEmail: postResetPasswordResendEmail,
-  getResetPasswordResentEmail: getResetPasswordResentEmail,
-  getResetPasswordChangePassword: getResetPasswordChangePassword,
-  postResetPasswordChangePassword: postResetPasswordChangePassword,
+  getUpdatePassword,
+  postUpdatePasswordVerifyPassword,
+  postUpdatePassword,
+  getResetPassword,
+  postResetPassword,
+  getResetPasswordCheckEmail,
+  getResetPasswordResendEmail,
+  postResetPasswordResendEmail,
+  getResetPasswordResentEmail,
+  getResetPasswordChangePassword,
+  postResetPasswordChangePassword,
   getCreatePassword,
   postCreatePassword,
   fourOhFour: fourOhFour,

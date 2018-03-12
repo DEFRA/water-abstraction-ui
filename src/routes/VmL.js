@@ -83,7 +83,7 @@ module.exports = [
       }
     }},
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
-  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
+  { method: 'POST', path: '/update_password_verify_password', handler: VmL.postUpdatePasswordVerifyPassword },
   { method: 'POST',
     path: '/update_password',
     config: {
@@ -95,6 +95,7 @@ module.exports = [
       }
     },
     handler: VmL.postUpdatePassword },
+  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
   { method: 'POST',
     path: '/reset_password',

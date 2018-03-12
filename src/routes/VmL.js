@@ -83,18 +83,19 @@ module.exports = [
       }
     }},
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
-  { method: 'POST', path: '/update_password_verify_password',
+  { method: 'POST',
+    path: '/update_password_verify_password',
 
-  config: {
-    validate: {
-      payload: {
-        password: Joi.string().max(128),
-        csrf_token: Joi.string().guid().required()
+    config: {
+      validate: {
+        payload: {
+          password: Joi.string().max(128),
+          csrf_token: Joi.string().guid().required()
+        }
       }
-    }
-  },
+    },
 
-  handler: VmL.postUpdatePasswordVerifyPassword },
+    handler: VmL.postUpdatePasswordVerifyPassword },
   { method: 'POST',
     path: '/update_password_verified_password',
     config: {

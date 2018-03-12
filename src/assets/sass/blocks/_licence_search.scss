@@ -112,6 +112,8 @@ input[type=search] {
 }
 
 
+
+
 .license-result {
 
   display: block;
@@ -119,15 +121,13 @@ input[type=search] {
   padding: 15px 0 0 0;
   text-decoration: none;
 
-  &:hover {
-    background: $highlight-colour;
-    .license-result__column--view {
-      color: $link-hover-colour;
+  // If JS is enabled, user can click entire table row to view licence
+  // Hint to user this is possible by displaying hover state on table row
+  .js-enabled & {
+    &:hover {
+      cursor: pointer;
+      background: $highlight-colour;
     }
-  }
-  &:focus {
-    background: $focus-colour;
-    border-bottom-color: transparent;
   }
 
   @media screen and (min-width: 641px) {
@@ -145,11 +145,12 @@ input[type=search] {
       font-size: inherit;
       display: table-cell;
       border-bottom: 1px solid $border-colour;
-      width: 40%;
+      // width: 40%;
       padding: 15px;
       font-weight: normal;
 
       &:first-child {
+        width: 33%;
         padding-left: 0;
       }
     }
@@ -171,11 +172,11 @@ input[type=search] {
     }
   }
 
-  &:active, &:focus {
-    &>* {
-      border-bottom-color: transparent;
-    }
-  }
+  // &:active, &:focus {
+  //   &>* {
+  //     border-bottom-color: transparent;
+  //   }
+  // }
 
 }
 

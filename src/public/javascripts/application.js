@@ -33,3 +33,13 @@ $(window).load(function () {
     }
   }
 });
+
+// Custom
+$(function () {
+  // Click on licence list clicks inner link
+  $('.license-result').on('click', function (ev) {
+    window.location.href = $(this).find('a:first').attr('href');
+    $(this).addClass('license-result--active');
+    ev.preventDefault();
+  });
+});

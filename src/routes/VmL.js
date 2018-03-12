@@ -91,7 +91,7 @@ module.exports = [
         payload: {
           password: Joi.string().max(128),
           confirmPassword: Joi.string().max(128),
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid().required()
         }
       }
     },
@@ -197,7 +197,8 @@ module.exports = [
           licence_id: Joi.string().required().guid()
         },
         payload: {
-          name: Joi.string().max(32)
+          name: Joi.string().max(32),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -399,7 +400,7 @@ module.exports = [
       validate: {
         payload: {
           licence_no: Joi.string().allow('').max(9000),
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -424,7 +425,7 @@ module.exports = [
       validate: {
         payload: {
           licences: [Joi.array(), Joi.string().allow('')],
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -455,7 +456,7 @@ module.exports = [
       validate: {
         payload: {
           address: Joi.string().allow('').guid(),
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -473,7 +474,7 @@ module.exports = [
       validate: {
         payload: {
           verification_code: Joi.string().allow('').max(5),
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},

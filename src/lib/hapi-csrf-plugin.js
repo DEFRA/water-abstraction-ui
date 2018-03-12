@@ -13,7 +13,7 @@ const csrfPlugin = {
   register (server, options, next) {
     server.ext({
       type: 'onPreHandler',
-      method: (request, reply) => {
+      method: async (request, reply) => {
         // Ignore GET requests
         if (request.method === 'get') {
           return reply.continue();
@@ -30,14 +30,14 @@ const csrfPlugin = {
           const refererUrl = new URL(request.headers.referer);
 
           if (currentHost.hostname !== refererUrl.hostname) {
-            return reply(Boom.badRequest('CSRF protection: invalid HTTP referer header'));
+            return reply(Boom.badRequest('CSRF protection: invalid HTTP referer header', {isCsrfError: true}));
           }
         }
 
         // Check CSRF token
         const token = request.sessionStore.get('csrf_token');
         if (token !== request.payload.csrf_token) {
-          return reply(Boom.badRequest('CSRF protection: missing/invalid CSRF token'));
+          return reply(Boom.badRequest('CSRF protection: missing/invalid CSRF token', {isCsrfError: true}));
         }
 
         // Continue processing request

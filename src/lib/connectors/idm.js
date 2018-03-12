@@ -93,6 +93,20 @@ function login (user_name, password) {
   });
 }
 
+function verifyCredentials (user_name, password) {
+  return new Promise((resolve, reject) => {
+    var data = { user_name: user_name, password: password };
+    var uri = process.env.IDM_URI + '/user/login' + '?token=' + process.env.JWT_TOKEN;
+    var method = 'post';
+    Helpers.makeURIRequestWithBody(uri, method, data)
+      .then((response) => {
+        resolve(response);
+      }).catch((response) => {
+        reject(response);
+      });
+  });
+}
+
 function getPasswordResetLink (emailAddress) {
   return new Promise((resolve, reject) => {
     var uri = process.env.IDM_URI + '/resetPassword' + '?token=' + process.env.JWT_TOKEN + '&emailAddress=' + emailAddress;
@@ -141,6 +155,7 @@ module.exports = {
   updatePasswordWithGuid: updatePasswordWithGuid,
   createUserWithoutPassword,
   getUser,
-  getUserByResetGuid
+  getUserByResetGuid,
+  verifyCredentials
 
 };

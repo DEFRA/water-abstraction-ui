@@ -1,4 +1,5 @@
 const View = require('../lib/view');
+const helpers = require('../lib/helpers');
 const IDM = require('./connectors/idm');
 const signIn = require('../lib/sign-in');
 
@@ -20,11 +21,28 @@ function getPrivacyPolicy (request, reply) {
 
 function getUpdatePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Change your password';
   if (!request.auth.credentials) {
     reply.redirect('/signin');
   } else {
     viewContext.pageTitle = 'Change your password';
     return reply.view('water/update_password', viewContext);
+  }
+}
+
+async function postUpdatePasswordVerifyPassword (request, reply) {
+  var viewContext = View.contextDefaults(request);
+
+  try{
+    const verification = await IDM.verifyCredentials(request.auth.credentials.username,request.payload.password)
+    viewContext.pageTitle = 'Change your password';
+    viewContext.authtoken=helpers.createGUID()
+    request.sessionStore.set('authToken',viewContext.authToken)
+    return reply.view('water/update_password_verified_password', viewContext);
+  }catch(e){
+    viewContext.errors = {incorrectPassword:1};
+    return reply.view('water/update_password', viewContext);
+
   }
 }
 
@@ -52,9 +70,7 @@ function validatePasswordRules (password) {
 }
 
 function validatePassword (password, confirmPassword) {
-  console.log('confirm password');
-  console.log(password);
-  console.log(confirmPassword);
+
   if (!password && !confirmPassword) {
     return {
       noPassword: true,
@@ -104,8 +120,22 @@ function validatePassword (password, confirmPassword) {
 function postUpdatePassword (request, reply) {
   const {username} = request.auth.credentials;
   const {password, confirmPassword} = request.payload;
-
   const viewContext = View.contextDefaults(request);
+  var validated=false
+  if (request.payload.authtoken){
+    viewContext.authtoken=request.payload.authtoken
+    try{
+      let at = request.sessionStore.get('authToken')
+      if (at==request.payload.authtoken){
+        validated=true
+      }
+    } catch(e){
+        return reply.redirect('water/update_password');
+    }
+  } else {
+    return reply.redirect('water/update_password');
+  }
+
   viewContext.pageTitle = 'GOV.UK - change your password';
 
   try {
@@ -123,7 +153,7 @@ function postUpdatePassword (request, reply) {
   } catch (error) {
     viewContext.errors = error;
     viewContext.debug.errors = error;
-    return reply.view('water/update_password', viewContext);
+    return reply.view('water/update_password_verified_password', viewContext);
   }
 }
 
@@ -311,16 +341,17 @@ module.exports = {
   getRoot: getRoot,
   getCookies,
   getPrivacyPolicy,
-  getUpdatePassword: getUpdatePassword,
-  postUpdatePassword: postUpdatePassword,
-  getResetPassword: getResetPassword,
-  postResetPassword: postResetPassword,
-  getResetPasswordCheckEmail: getResetPasswordCheckEmail,
-  getResetPasswordResendEmail: getResetPasswordResendEmail,
-  postResetPasswordResendEmail: postResetPasswordResendEmail,
-  getResetPasswordResentEmail: getResetPasswordResentEmail,
-  getResetPasswordChangePassword: getResetPasswordChangePassword,
-  postResetPasswordChangePassword: postResetPasswordChangePassword,
+  getUpdatePassword,
+  postUpdatePasswordVerifyPassword,
+  postUpdatePassword,
+  getResetPassword,
+  postResetPassword,
+  getResetPasswordCheckEmail,
+  getResetPasswordResendEmail,
+  postResetPasswordResendEmail,
+  getResetPasswordResentEmail,
+  getResetPasswordChangePassword,
+  postResetPasswordChangePassword,
   getCreatePassword,
   postCreatePassword,
   fourOhFour: fourOhFour,

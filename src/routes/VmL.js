@@ -364,7 +364,8 @@ module.exports = [
       description: 'Manage licences - add access process',
       validate: {
         payload: {
-          email: Joi.string().max(254).allow('')
+          email: Joi.string().max(254).allow(''),
+          csrf_token: Joi.string().guid().required()
         }
       },
       plugins: {

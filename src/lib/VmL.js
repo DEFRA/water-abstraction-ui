@@ -33,15 +33,14 @@ function getUpdatePassword (request, reply) {
 async function postUpdatePasswordVerifyPassword (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Change your password';
-  try{
-    const verification = await IDM.verifyCredentials(request.auth.credentials.username,request.payload.password)
-    viewContext.authtoken=helpers.createGUID()
-    request.sessionStore.set('authToken',viewContext.authToken)
+  try {
+    await IDM.verifyCredentials(request.auth.credentials.username, request.payload.password);
+    viewContext.authtoken = helpers.createGUID();
+    request.sessionStore.set('authToken', viewContext.authToken);
     return reply.view('water/update_password_verified_password', viewContext);
-  }catch(e){
-    viewContext.errors = {incorrectPassword:1};
+  } catch (e) {
+    viewContext.errors = {incorrectPassword: 1};
     return reply.view('water/update_password', viewContext);
-
   }
 }
 
@@ -69,7 +68,6 @@ function validatePasswordRules (password) {
 }
 
 function validatePassword (password, confirmPassword) {
-
   if (!password && !confirmPassword) {
     return {
       noPassword: true,
@@ -120,16 +118,15 @@ function postUpdatePassword (request, reply) {
   const {username} = request.auth.credentials;
   const {password, confirmPassword} = request.payload;
   const viewContext = View.contextDefaults(request);
-  var validated=false
-  if (request.payload.authtoken){
-    viewContext.authtoken=request.payload.authtoken
-    try{
-      let at = request.sessionStore.get('authToken')
-      if (at==request.payload.authtoken){
-        validated=true
+  if (request.payload.authtoken) {
+    viewContext.authtoken = request.payload.authtoken;
+    try {
+      let at = request.sessionStore.get('authToken');
+      if (at === request.payload.authtoken) {
+        // Validated OK
       }
-    } catch(e){
-        return reply.redirect('water/update_password');
+    } catch (e) {
+      return reply.redirect('water/update_password');
     }
   } else {
     return reply.redirect('water/update_password');

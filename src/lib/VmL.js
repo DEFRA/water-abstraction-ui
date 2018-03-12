@@ -32,10 +32,9 @@ function getUpdatePassword (request, reply) {
 
 async function postUpdatePasswordVerifyPassword (request, reply) {
   var viewContext = View.contextDefaults(request);
-
+  viewContext.pageTitle = 'Change your password';
   try{
     const verification = await IDM.verifyCredentials(request.auth.credentials.username,request.payload.password)
-    viewContext.pageTitle = 'Change your password';
     viewContext.authtoken=helpers.createGUID()
     request.sessionStore.set('authToken',viewContext.authToken)
     return reply.view('water/update_password_verified_password', viewContext);

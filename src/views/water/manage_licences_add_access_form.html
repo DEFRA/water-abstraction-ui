@@ -19,6 +19,9 @@
         {{>element-heading-large content='Give access to view your licences'}}
 
   <form novalidate method="post" action="/manage_licences/add_access" class="form">
+
+    <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
     {{#if errors.email}}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
         <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">

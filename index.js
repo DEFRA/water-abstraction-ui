@@ -62,6 +62,11 @@ server.register([
     options: {}
   },
   {
+    // CSRF protection
+    register: require('./src/lib/hapi-csrf-plugin.js'),
+    options: {}
+  },
+  {
     register: require('hapi-route-acl'),
     options: {
       permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
@@ -138,6 +143,7 @@ server.ext({
 server.ext({
   type: 'onPostHandler',
   method (request, reply) {
+
     if ('headers' in request.response) {
       request.response.headers['X-Frame-Options'] = 'DENY';
       request.response.headers['X-Content-Type-Options'] = 'nosniff';

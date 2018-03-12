@@ -91,7 +91,8 @@ module.exports = [
         payload: {
           authtoken: Joi.string().max(128),
           password: Joi.string().max(128),
-          confirmPassword: Joi.string().max(128)
+          confirmPassword: Joi.string().max(128),
+          csrf_token: Joi.string().guid().required()
         }
       }
     },
@@ -198,7 +199,8 @@ module.exports = [
           licence_id: Joi.string().required().guid()
         },
         payload: {
-          name: Joi.string().max(32)
+          name: Joi.string().max(32),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -364,7 +366,8 @@ module.exports = [
       description: 'Manage licences - add access process',
       validate: {
         payload: {
-          email: Joi.string().max(254).allow('')
+          email: Joi.string().max(254).allow(''),
+          csrf_token: Joi.string().guid().required()
         }
       },
       plugins: {
@@ -399,7 +402,8 @@ module.exports = [
       description: 'Start flow to add licences',
       validate: {
         payload: {
-          licence_no: Joi.string().allow('').max(9000)
+          licence_no: Joi.string().allow('').max(9000),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -423,7 +427,8 @@ module.exports = [
       description: 'Post handler for licence select',
       validate: {
         payload: {
-          licences: [Joi.array(), Joi.string().allow('')]
+          licences: [Joi.array(), Joi.string().allow('')],
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -453,7 +458,8 @@ module.exports = [
       description: 'Post handler for select address form',
       validate: {
         payload: {
-          address: Joi.string().allow('').guid()
+          address: Joi.string().allow('').guid(),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},
@@ -470,7 +476,8 @@ module.exports = [
       description: 'Enter auth code received by post',
       validate: {
         payload: {
-          verification_code: Joi.string().allow('').max(5)
+          verification_code: Joi.string().allow('').max(5),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }},

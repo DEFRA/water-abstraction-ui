@@ -85,10 +85,11 @@ module.exports = [
   { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
   { method: 'POST', path: '/update_password_verify_password', handler: VmL.postUpdatePasswordVerifyPassword },
   { method: 'POST',
-    path: '/update_password',
+    path: '/update_password_verified_password',
     config: {
       validate: {
         payload: {
+          authtoken: Joi.string().max(128),
           password: Joi.string().max(128),
           confirmPassword: Joi.string().max(128)
         }

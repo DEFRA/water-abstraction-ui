@@ -87,29 +87,30 @@ input[type=search] {
 
     padding: 15px 0;
     font-weight: bold;
-
-    &:last-child {
-      display: none;
-    }
+    width: 33%;
 
     @media screen and (min-width: 641px) {
       display: table-cell;
       padding: 15px;
       border-bottom: 1px solid $border-colour;
 
+
       &:first-child {
-        width: 40%;
+        width: 33.33%;
         padding-left: 0;
       }
 
       &:last-child {
         display: table-cell;
+        width: 33.33%;
       }
     }
 
 
   }
 }
+
+
 
 
 .license-result {
@@ -119,15 +120,13 @@ input[type=search] {
   padding: 15px 0 0 0;
   text-decoration: none;
 
-  &:hover {
-    background: $highlight-colour;
-    .license-result__column--view {
-      color: $link-hover-colour;
+  // If JS is enabled, user can click entire table row to view licence
+  // Hint to user this is possible by displaying hover state on table row
+  .js-enabled & {
+    &:hover {
+      cursor: pointer;
+      background: $highlight-colour;
     }
-  }
-  &:focus {
-    background: $focus-colour;
-    border-bottom-color: transparent;
   }
 
   @media screen and (min-width: 641px) {
@@ -135,7 +134,13 @@ input[type=search] {
     padding: 0;
   }
 
-
+  // Don't bother showing hyphens in mobile view
+  &__hyphen {
+    display: none;
+    @media screen and (min-width: 641px) {
+      display: inline;
+    }
+  }
 
   &__column {
 
@@ -145,37 +150,26 @@ input[type=search] {
       font-size: inherit;
       display: table-cell;
       border-bottom: 1px solid $border-colour;
-      width: 40%;
+
       padding: 15px;
       font-weight: normal;
 
       &:first-child {
+        width: 33.33%;
         padding-left: 0;
       }
+      &:last-child {
+        width: 33.33%;
+      }
+
     }
 
     &--description {
       color: $text-colour;
     }
 
-    &--view {
-      display: none;
-
-      @media screen and (min-width: 641px) {
-        display: table-cell;
-        width: 20%;
-        color: $link-colour;
-        text-align: right;
-        text-decoration: underline;
-      }
-    }
   }
 
-  &:active, &:focus {
-    &>* {
-      border-bottom-color: transparent;
-    }
-  }
 
 }
 

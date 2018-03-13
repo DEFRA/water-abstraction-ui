@@ -39,20 +39,32 @@
         </div>
         <div class="data-row__value" aria-labelledby="points-{{@index}}">
 
-          {{#greaterThan this.points.length 1 }}
-          <details>
-           <summary><span class="summary">{{ this.points.length }} points</span></summary>
-           <div>
-            <ul class="sub-list">
-            {{#each this.points }}
-              <li>{{ngrPoint this }}</li>
-            {{/each}}
-            </ul>
-          </div>
-        </details>
-        {{ else }}
-        {{ ngrPoint this.points }}
-        {{/greaterThan}}
+          {{#equal this.points.length 1}}
+            {{ ngrPoint this.points.[0] }}
+          {{else }}
+
+            {{#lessThan this.points.length 6}}
+              <ul class="sub-list sub-list--no-bottom-border">
+              {{#each this.points}}
+                <li>{{ ngrPoint this }}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+
+              <details>
+                <summary>View your {{ this.points.length }} abstraction points for {{toLowerCase this.name }}</summary>
+                <div>
+                  <ul class="sub-list sub-list--no-bottom-border">
+                  {{#each this.points}}
+                    <li>{{ ngrPoint this }}</li>
+                  {{/each}}
+                  </ul>
+                </div>
+              </details>
+
+            {{/lessThan}}
+
+          {{/equal}}
 
         </div>
       </div>

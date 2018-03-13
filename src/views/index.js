@@ -113,6 +113,10 @@ handlebars.registerHelper('dynamicView', function () {
   }
 });
 
+handlebars.registerHelper('toLowerCase', function (str) {
+  return str.toLowerCase();
+});
+
 handlebars.registerHelper('stringify', function (variable) {
   var arg = JSON.stringify(variable);
   return arg;

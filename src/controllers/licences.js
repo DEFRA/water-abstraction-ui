@@ -235,7 +235,7 @@ function createLicencePage (view) {
 
       const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
 
-      require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
+      // require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
 
       const transformer = new LicenceTransformer();
       await transformer.load(data);
@@ -243,6 +243,8 @@ function createLicencePage (view) {
       viewContext.licence_id = request.params.licence_id;
       viewContext.licenceData = transformer.export();
       viewContext.debug.licenceData = data;
+
+      console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
       // Page title
       const { document_custom_name: customName } = viewContext.crmData;

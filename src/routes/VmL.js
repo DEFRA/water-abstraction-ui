@@ -182,7 +182,7 @@ module.exports = [
       description: 'View list of licences with facility to sort/filter',
       validate: {
         query: {
-          sort: Joi.string().valid('licenceNumber', 'name'),
+          sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate'),
           direction: Joi.number().valid(1, -1),
           emailAddress: Joi.string().allow('').max(254),
           licenceNumber: Joi.string().allow('').max(32),

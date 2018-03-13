@@ -1,4 +1,15 @@
 <div class="license-result">
-  <h2 class="heading-medium license-result__column license-result__column--number"><a href="/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a></h2>
-  <p class="license-result__column license-result__column--description">{{^this.document_custom_name}}<span aria-hidden="true">-</span>{{/this.document_custom_name}}  {{this.document_custom_name}}</p>
+  <h2 class="heading-medium license-result__column license-result__column--number">
+    <a href="/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a>
+  </h2>
+  <p class="license-result__column license-result__column--description">
+    {{^this.document_custom_name}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.document_custom_name}}
+    {{#if this.document_custom_name}}<span class="sr-only">Licence name </span>{{/if}}
+    {{this.document_custom_name}}
+  </p>
+  <p class="license-result__column license-result__column--expires">
+    {{^this.document_expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.document_expires}}
+    {{#if this.document_expires}}<span class="sr-only">Licence expires </span>{{/if}}
+    {{ formatSortableDate this.document_expires}}
+  </p>
 </div>

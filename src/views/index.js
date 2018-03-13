@@ -68,7 +68,9 @@ handlebars.registerHelper('sortIcon', function (context, options) {
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
 
   if (sort === field) {
-    return '<span class="sort-icon">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
+    const visual = '<span class="sort-icon" aria-hidden="true">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
+    const sr = `<span class="sr-only">${newDirection === -1 ? 'descending' : 'ascending'}`;
+    return visual + sr;
   }
 });
 
@@ -156,6 +158,11 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   }
   console.log('Future date:' + isFutureDate);
 
+  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+});
+
+handlebars.registerHelper('formatSortableDate', function (dateInput) {
+  const date = moment(dateInput, 'YYYYMMDD');
   return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
 });
 

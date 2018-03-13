@@ -72,7 +72,7 @@ async function getLicences (request, reply) {
   const page = request.query.page || 1;
 
   // Sorting
-  const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name'};
+  const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name', expiryDate: 'document_expires'};
   const sortField = request.query.sort || 'licenceNumber';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};

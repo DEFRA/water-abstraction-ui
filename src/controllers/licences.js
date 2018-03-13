@@ -178,7 +178,7 @@ async function getLicences (request, reply) {
  */
 function _getLicencePageTitle (view, licenceNumber, customName) {
   if (view === 'water/licences_purposes') {
-    return `Abstraction purposes for ${customName || licenceNumber}`;
+    return `Abstraction details for ${customName || licenceNumber}`;
   }
   if (view === 'water/licences_points') {
     return `Abstraction points for ${customName || licenceNumber}`;
@@ -244,7 +244,7 @@ function createLicencePage (view) {
       viewContext.licenceData = transformer.export();
       viewContext.debug.licenceData = data;
 
-      console.log(JSON.stringify(viewContext.licenceData, null, 2));
+      // console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
       // Page title
       const { document_custom_name: customName } = viewContext.crmData;

@@ -7,7 +7,7 @@
       <ol >
         <li><a href="/licences">{{ labels.licences }}</a></li>
         <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="/licences/{{ licence_id }}/purposes">Abstraction purposes</a></li>
+        <li><a href="/licences/{{ licence_id }}/purposes">Abstraction details</a></li>
 
       </ol>
     </div>
@@ -17,7 +17,7 @@
 
   <div class="grid-row">
       <div class="column-full">
-        <h1 class="heading-large">Abstraction purposes for
+        <h1 class="heading-large">Abstraction details for
             {{#if crmData.document_custom_name }}
             licence name: {{ crmData.document_custom_name }}
             {{else}}

@@ -55,25 +55,36 @@
 
         {{#each this.points}}
           <h3 class="data-row data-row--heading">
-            <span class="data-row__param">Abstraction point</span>
-            <span class="data-row__value">
+            <span class="data-row__param">Abstraction point{{#greaterThan this.points.length 1}}s{{/greaterThan}}</span>
+            <div class="data-row__value">
 
-              {{#greaterThan this.points.length 1 }}
-              <details>
-               <summary><span class="summary">{{ this.points.length }} points</span></summary>
-               <div>
-              {{/greaterThan}}
+              {{#equal this.points.length 1}}
+                {{ ngrPoint this.points.[0] }}
+              {{else }}
 
-              {{#each this.points }}
-              {{ this }}<br />
-              {{/each}}
+                {{#lessThan this.points.length 6}}
+                  <ul class="sub-list sub-list--no-bottom-border">
+                  {{#each this.points}}
+                    <li>{{ ngrPoint this }}</li>
+                  {{/each}}
+                  </ul>
+                {{else}}
 
-              {{#greaterThan this.points.length 3 }}
-              </div>
-              </details>
-              {{/greaterThan}}
+                  <details>
+                    <summary>View your {{ this.points.length }} abstraction points for {{#equal this.conditions.length 1}}this condition{{ else }}these conditions{{/equal}}</summary>
+                    <div>
+                      <ul class="sub-list sub-list--no-bottom-border">
+                      {{#each this.points}}
+                        <li>{{ ngrPoint this }}</li>
+                      {{/each}}
+                      </ul>
+                    </div>
+                  </details>
 
-            </span>
+                {{/lessThan}}
+
+              {{/equal}}
+            </div>
           </h3>
           {{#each this.conditions }}
           <div class="data-row-group">

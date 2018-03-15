@@ -42,4 +42,11 @@ $(function () {
     $(this).addClass('license-result--active');
     ev.preventDefault();
   });
+
+  // Back link uses browser history
+  $('.link-back').on('click', function (ev) {
+    window.history.back();
+    ev.preventDefault();
+    return false;
+  });
 });

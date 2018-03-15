@@ -1,5 +1,5 @@
 {{> styles}}
-<main id="content">
+<main id="content" tabindex="-1">
 
   {{>element-phase-tag}}
   <nav>
@@ -96,19 +96,7 @@
   <!-- Results page goes here -->
   <div class="license-results" id="results">
 
-    <div class="license-results-header">
-      <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence serial number
-          {{{ sortIcon  direction=direction sort=sort field="licenceNumber" }}}
-        </a>
-      </div>
-      <div class="license-results-header__column">
-        <a href="/licences?{{{ sortQuery direction=direction sort=sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">Licence name
-          {{{ sortIcon  direction=direction sort=sort field="name" }}}
-        </a>
-      </div>
-      <div class="license-results-header__column"></div>
-    </div>
+    {{#>element-licence-results-header this}}{{/element-licence-results-header}}
 
     {{^licenceData}}
     <!-- No results found -->
@@ -165,10 +153,3 @@
 
 
 {{> debug}}
-
-<script>
-  function sendShortcode(){
-    console.log($('#shortcode').val)
-    document.location='/shortcode/'+$('#shortcode').val()
-  }
-</script>

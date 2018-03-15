@@ -1,5 +1,5 @@
 {{> styles}}
-<main id="content">
+<main id="content" tabindex="-1">
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
@@ -39,6 +39,8 @@
 
   <!-- Set licence name form -->
   <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
+
+    <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
 
     <div class="form-group {{#if error }}form-group-error{{/if}}">
       <label for="name" class="{{#if error }}form-label-error{{/if}}">

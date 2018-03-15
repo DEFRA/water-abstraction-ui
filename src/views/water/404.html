@@ -1,5 +1,5 @@
 {{> styles}}
-<main id="content">
+<main id="content" tabindex="-1">
   {{>element-phase-tag}}
 
   {{>element-heading-large content='We can’t find that page'}}
@@ -9,7 +9,7 @@
         <p>Please check that the web address is correct, or you can:</p>
           <ul class="list list-bullet">
 
-{{#if session.user}}
+{{#if user}}
     <li class=""><a href="/licences">manage</a> your water abstraction or impoundment licence</li>
 {{else}}
     <li class=""><a href="/signin">sign in</a> to manage your water abstraction or impoundment licence</li>

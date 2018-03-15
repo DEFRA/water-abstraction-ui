@@ -23,6 +23,10 @@ function viewContextDefaults (request) {
   viewContext.debug.request = request.info;
   viewContext.debug.request.path = request.path;
 
+  if (request.sessionStore) {
+    viewContext.csrfToken = request.sessionStore.get('csrf_token');
+  }
+
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
   // Main nav links

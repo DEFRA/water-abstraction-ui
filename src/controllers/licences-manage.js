@@ -69,7 +69,8 @@ async function postAddAccess (request, reply, context = {}) {
   viewContext.errors = {};
   // Validate input data with Joi
   const schema = {
-    email: Joi.string().trim().required().email().lowercase().trim()
+    email: Joi.string().trim().required().email().lowercase().trim(),
+    csrf_token: Joi.string().guid().required()
   };
 
   // Process:

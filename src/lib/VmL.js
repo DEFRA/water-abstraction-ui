@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const View = require('../lib/view');
 const helpers = require('../lib/helpers');
 const IDM = require('./connectors/idm');
@@ -19,27 +20,46 @@ function getPrivacyPolicy (request, reply) {
   return reply.view('water/privacy_policy', viewContext);
 }
 
+/**
+ * Update password step 1 - enter current password
+ */
 function getUpdatePassword (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Change your password';
+  viewContext.pageTitle = 'Enter your current password';
   if (!request.auth.credentials) {
     reply.redirect('/signin');
   } else {
-    viewContext.pageTitle = 'Change your password';
     return reply.view('water/update_password', viewContext);
   }
 }
 
+/**
+ * Update password step 1 POST handler - enter current password
+ */
 async function postUpdatePasswordVerifyPassword (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Change your password';
   try {
-    await IDM.verifyCredentials(request.auth.credentials.username, request.payload.password);
+    // Validate posted data
+    const {password} = request.payload;
+    const schema = {
+      password: Joi.string().required()
+    };
+    const {error} = Joi.validate({password}, schema);
+    if (error) {
+      throw error;
+    }
+
+    await IDM.verifyCredentials(request.auth.credentials.username, password);
     viewContext.authtoken = helpers.createGUID();
     request.sessionStore.set('authToken', viewContext.authToken);
     return reply.view('water/update_password_verified_password', viewContext);
   } catch (e) {
-    viewContext.errors = {incorrectPassword: 1};
+    if (e.isJoi) {
+      viewContext.errors = {invalidPassword: true};
+    } else if (e.statusCode === 401) {
+      viewContext.errors = {incorrectPassword: true};
+    } else reply(e);
     return reply.view('water/update_password', viewContext);
   }
 }

@@ -69,7 +69,7 @@ handlebars.registerHelper('sortIcon', function (context, options) {
 
   if (sort === field) {
     const visual = '<span class="sort-icon" aria-hidden="true">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
-    const sr = `<span class="sr-only">${newDirection === -1 ? 'descending' : 'ascending'}`;
+    const sr = `<span class="sr-only">${newDirection === -1 ? 'descending' : 'ascending'}</span>`;
     return visual + sr;
   }
 });

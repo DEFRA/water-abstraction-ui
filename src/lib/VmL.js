@@ -152,7 +152,7 @@ function postUpdatePassword (request, reply) {
     return reply.redirect('water/update_password');
   }
 
-  viewContext.pageTitle = 'GOV.UK - change your password';
+  viewContext.pageTitle = 'Change your password';
 
   try {
     const errors = validatePassword(password, confirmPassword);
@@ -196,12 +196,6 @@ function getResetPasswordResentEmail (request, reply) {
   viewContext.pageTitle = 'Check your email';
   return reply.view('water/reset_password_resent_email', viewContext);
 }
-
-// function getResetPasswordLink (request, reply) {
-//   var viewContext = View.contextDefaults(request);
-//   viewContext.pageTitle = 'GOV.UK - reset your password - get link';
-//   return reply.view('water/reset_password_get_link', viewContext);
-// }
 
 class UserNotFoundError extends Error {
   constructor (message) {
@@ -282,16 +276,21 @@ function resetPasswordImpl (request, reply, redirect, title, errorRedirect) {
 }
 
 function postResetPassword (request, reply) {
-  resetPasswordImpl(request, reply, 'reset_password_check_email', 'GOV.UK - reset your password', 'water/reset_password');
+  resetPasswordImpl(request, reply, 'reset_password_check_email', 'Reset your password', 'water/reset_password');
 }
 
 function postResetPasswordResendEmail (request, reply) {
-  resetPasswordImpl(request, reply, 'reset_password_resent_email', 'GOV.UK - reset your password - resend email', 'water/reset_password_resend_email');
+  resetPasswordImpl(request, reply, 'reset_password_resent_email', 'Ask for another email', 'water/reset_password_resend_email');
 }
 
 async function postResetPasswordChangePassword (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - update your password';
+
+  if (request.query.create) {
+    viewContext.pageTitle = 'Create a password for your online account';
+  } else {
+    viewContext.pageTitle = 'Change your password';
+  }
 
   try {
     // Check submitted password
@@ -331,13 +330,13 @@ async function postResetPasswordChangePassword (request, reply) {
 
 function fourOhFour (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Not Found';
+  viewContext.pageTitle = "We can't find that page";
   return reply.view('water/404', viewContext).code(404);
 }
 
 function getFeedback (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Tell us what you think about this service';
+  viewContext.pageTitle = 'Tell us what you think about this service';
   return reply.view('water/feedback', viewContext);
 }
 
@@ -349,7 +348,7 @@ function getUpdatedPassword (request, reply) {
 
 function dashboard (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'GOV.UK - Dashboard';
+  viewContext.pageTitle = 'Dashboard';
   return reply.view('water/dashboard', viewContext);
 }
 

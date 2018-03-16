@@ -97,7 +97,7 @@ async function postSignin (request, reply) {
         viewContext.payload = request.payload;
         viewContext.errors = {};
         viewContext.errors['authentication'] = 1;
-        viewContext.pageTitle = 'GOV.UK - Sign in to view your licence';
+        viewContext.pageTitle = 'Sign in - Manage your water abstraction or impoundment licence';
         return reply.view('water/signin', viewContext).code(401);
       } else {
         errorHandler(request, reply)(err);

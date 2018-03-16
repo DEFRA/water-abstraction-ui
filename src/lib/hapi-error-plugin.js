@@ -34,7 +34,7 @@ const errorPlugin = {
 
           // Unauthorised
           if (statusCode >= 401 && statusCode <= 403) {
-            return reply.redirect('/signin');
+            return reply.redirect('/welcome');
           }
           // Not found
           if (statusCode === 404) {

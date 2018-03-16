@@ -56,6 +56,15 @@ module.exports = [
   { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: { }, handler: AuthController.getSignout },
+
+  { method: 'GET',
+    path: '/welcome',
+    handler: AuthController.getWelcome,
+    config: {
+      auth: false
+    }
+  },
+
   { method: 'GET',
     path: '/signin',
     handler: AuthController.getSignin,

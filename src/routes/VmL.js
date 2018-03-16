@@ -119,29 +119,29 @@ module.exports = [
     },
     handler: VmL.postUpdatePassword },
   { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
-  { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
-  { method: 'POST',
-    path: '/reset_password',
-    config: { auth: false,
-      validate: {
-        payload: {
-          email_address: Joi.string().allow('').max(254)
-        }
-      }
-    },
-    handler: VmL.postResetPassword },
-  { method: 'GET', path: '/reset_password_check_email', config: { auth: false }, handler: VmL.getResetPasswordCheckEmail },
-  { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
-  { method: 'POST',
-    path: '/reset_password_resend_email',
-    config: { auth: false,
-      validate: {
-        payload: {
-          email_address: Joi.string().allow('').max(254)
-        }
-      }
-    },
-    handler: VmL.postResetPasswordResendEmail },
+  // { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
+  // { method: 'POST',
+  //   path: '/reset_password',
+  //   config: { auth: false,
+  //     validate: {
+  //       payload: {
+  //         email_address: Joi.string().allow('').max(254)
+  //       }
+  //     }
+  //   },
+  //   handler: VmL.postResetPassword },
+  // { method: 'GET', path: '/reset_password_check_email', config: { auth: false }, handler: VmL.getResetPasswordCheckEmail },
+  // { method: 'GET', path: '/reset_password_resend_email', config: { auth: false }, handler: VmL.getResetPasswordResendEmail },
+  // { method: 'POST',
+  //   path: '/reset_password_resend_email',
+  //   config: { auth: false,
+  //     validate: {
+  //       payload: {
+  //         email_address: Joi.string().allow('').max(254)
+  //       }
+  //     }
+  //   },
+  //   handler: VmL.postResetPasswordResendEmail },
   { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
 
   { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },

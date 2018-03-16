@@ -83,6 +83,21 @@ server.register([
     options: {}
   },
   {
+    // View context plugin
+    register: require('./src/lib/hapi-view-context-plugin.js'),
+    options: {}
+  },
+  {
+    // Form validator plugin
+    register: require('./src/lib/hapi-form-validator-plugin.js'),
+    options: {}
+  },
+  {
+    // Config options plugin
+    register: require('./src/lib/hapi-config-plugin.js'),
+    options: {}
+  },
+  {
     // Plugin to recursively sanitize or prune values in a request.payload object
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
@@ -117,6 +132,10 @@ server.register([
   // load routes
   server.route(require('./src/routes/public'));
   server.route(require('./src/routes/VmL'));
+
+  const resetRoutes = require('./src/modules/reset/routes');
+  server.route(Object.values(resetRoutes));
+  // require('./src/modules/reset/routes'));
 });
 
 server.errorHandler = function (error) {

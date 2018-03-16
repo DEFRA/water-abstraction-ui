@@ -47,6 +47,7 @@ async function postEmailAddress (request, reply, options = {}) {
     redirect: '/success'
   };
   const config = Object.assign(defaults, options);
+  const pageTitle = config.template === 'water/register_email' ? 'Tell us your email address' : 'Ask for another email';
 
   try {
     // Validate email
@@ -82,7 +83,7 @@ async function postEmailAddress (request, reply, options = {}) {
     // Email was invalid - handle error
     if (error.name === 'ValidationError') {
       var viewContext = View.contextDefaults(request);
-      viewContext.pageTitle = 'GOV.UK - Create Account';
+      viewContext.pageTitle = pageTitle;
       viewContext.error = error;
       return reply.view(config.template, viewContext);
     }

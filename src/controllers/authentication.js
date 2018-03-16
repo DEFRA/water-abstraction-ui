@@ -18,6 +18,15 @@ class PasswordResetRequiredError extends Error {
 }
 
 /**
+ * Welcome page before routing to signin/register
+ */
+function getWelcome (request, reply) {
+  var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Choose an option to view your licences';
+  return reply.view('water/welcome', viewContext);
+}
+
+/**
  * View signin page
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
@@ -106,6 +115,7 @@ async function postSignin (request, reply) {
 }
 
 module.exports = {
+  getWelcome,
   getSignin,
   getSignout,
   postSignin

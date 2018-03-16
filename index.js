@@ -102,7 +102,7 @@ server.register([
     isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-    redirectTo: '/signin',
+    redirectTo: '/welcome',
     isHttpOnly: true
   });
 
@@ -143,7 +143,6 @@ server.ext({
 server.ext({
   type: 'onPostHandler',
   method (request, reply) {
-
     if ('headers' in request.response) {
       request.response.headers['X-Frame-Options'] = 'DENY';
       request.response.headers['X-Content-Type-Options'] = 'nosniff';

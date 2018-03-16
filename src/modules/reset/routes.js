@@ -108,5 +108,21 @@ module.exports = {
       }
     },
     handler: controller.postResetPassword
+  },
+  getResetPasswordResentEmail: {
+    method: 'GET',
+    path: '/reset_password_resent_email',
+    config: {
+      auth: false,
+      plugins: {
+        viewContext: {
+          pageTitle: 'Check your email'
+        },
+        config: {
+          view: 'water/reset_password_resent_email'
+        }
+      }
+    },
+    handler: controller.getResetSuccess
   }
 };

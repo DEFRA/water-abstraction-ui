@@ -142,20 +142,20 @@ module.exports = [
   //     }
   //   },
   //   handler: VmL.postResetPasswordResendEmail },
-  { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
+  // { method: 'GET', path: '/reset_password_resent_email', config: { auth: false }, handler: VmL.getResetPasswordResentEmail },
 
-  { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
-  { method: 'POST',
-    path: '/reset_password_change_password',
-    config: { auth: false,
-      validate: {
-        payload: {
-          resetGuid: Joi.string().guid().required(),
-          password: Joi.string().allow('').max(128),
-          confirmPassword: Joi.string().allow('').max(128)
-        }
-      } },
-    handler: VmL.postResetPasswordChangePassword },
+  // { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
+  // { method: 'POST',
+  //   path: '/reset_password_change_password',
+  //   config: { auth: false,
+  //     validate: {
+  //       payload: {
+  //         resetGuid: Joi.string().guid().required(),
+  //         password: Joi.string().allow('').max(128),
+  //         confirmPassword: Joi.string().allow('').max(128)
+  //       }
+  //     } },
+  //   handler: VmL.postResetPasswordChangePassword },
 
   { method: 'GET',
     path: '/create-password',

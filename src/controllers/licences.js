@@ -40,8 +40,8 @@ async function getLicences (request, reply) {
       email: request.query.emailAddress
     };
 
-    if (filter.email){
-      delete filter.entity_id
+    if (filter.email) {
+      delete filter.entity_id;
     }
 
     if (!filter.string && !filter.email) {
@@ -72,7 +72,7 @@ async function getLicences (request, reply) {
   const page = request.query.page || 1;
 
   // Sorting
-  const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name'};
+  const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name', expiryDate: 'document_expires'};
   const sortField = request.query.sort || 'licenceNumber';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};
@@ -152,14 +152,12 @@ async function getLicences (request, reply) {
       viewContext.showManageFilter = false;
     }
 
-  if (request.permissions && request.permissions.admin.defra) {
-    //never restrict search box for admin users
-  } else {
-    viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
-    viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
-
-  }
-
+    if (request.permissions && request.permissions.admin.defra) {
+    // never restrict search box for admin users
+    } else {
+      viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
+      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+    }
 
     if (request.permissions && request.permissions.admin.defra) {
       return reply.view('water/licences_admin', viewContext);
@@ -180,7 +178,7 @@ async function getLicences (request, reply) {
  */
 function _getLicencePageTitle (view, licenceNumber, customName) {
   if (view === 'water/licences_purposes') {
-    return `Abstraction purposes for ${customName || licenceNumber}`;
+    return `Abstraction details for ${customName || licenceNumber}`;
   }
   if (view === 'water/licences_points') {
     return `Abstraction points for ${customName || licenceNumber}`;
@@ -237,7 +235,7 @@ function createLicencePage (view) {
 
       const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
 
-      require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
+      // require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
 
       const transformer = new LicenceTransformer();
       await transformer.load(data);
@@ -245,6 +243,8 @@ function createLicencePage (view) {
       viewContext.licence_id = request.params.licence_id;
       viewContext.licenceData = transformer.export();
       viewContext.debug.licenceData = data;
+
+      // console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
       // Page title
       const { document_custom_name: customName } = viewContext.crmData;

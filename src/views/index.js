@@ -50,17 +50,14 @@ handlebars.registerHelper('sortQuery', function (context, options) {
   const {direction, sort, field, ...params} = arguments[0].hash;
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
   const query = Object.assign(params, {sort: field, direction: newDirection});
-  return qs.stringify(query);
+  return qs.stringify(query, '&amp;');
 });
 
 /**
  * A handlebars helper to get a query string for sorting data
  */
 handlebars.registerHelper('queryString', function (context, options) {
-  // const {direction, sort, field, ...params} = arguments[0].hash;
-  // const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
-  // const query = Object.assign(params, {sort: field, direction: newDirection});
-  return qs.stringify(arguments[0].hash);
+  return qs.stringify(arguments[0].hash, '&amp;');
 });
 
 /**
@@ -71,7 +68,9 @@ handlebars.registerHelper('sortIcon', function (context, options) {
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
 
   if (sort === field) {
-    return '<span class="sort-icon">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
+    const visual = '<span class="sort-icon" aria-hidden="true">' + (newDirection === -1 ? '&#x25B2;' : '&#x25BC;') + '</span>';
+    const sr = `<span class="sr-only">${newDirection === -1 ? 'descending' : 'ascending'}</span>`;
+    return visual + sr;
   }
 });
 
@@ -112,6 +111,10 @@ handlebars.registerHelper('dynamicView', function () {
   } else {
     return `Error: Unknown component: ${requestedFunction}`;
   }
+});
+
+handlebars.registerHelper('toLowerCase', function (str) {
+  return str.toLowerCase();
 });
 
 handlebars.registerHelper('stringify', function (variable) {
@@ -159,6 +162,11 @@ handlebars.registerHelper('formatDate', function (dateInput) {
   }
   console.log('Future date:' + isFutureDate);
 
+  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+});
+
+handlebars.registerHelper('formatSortableDate', function (dateInput) {
+  const date = moment(dateInput, 'YYYYMMDD');
   return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
 });
 
@@ -267,9 +275,9 @@ const defaultContext = {
   bodyClasses: 'some classes here',
   bodyStart: 'Body Start',
   skipLinkMessage: 'Skip to main content',
-  cookieMessage: 'Cookie Message',
+  cookieMessage: 'GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>',
   headerClass: 'some classes here',
-  homepageUrl: 'http://page/url',
+  homepageUrl: 'https://www.gov.uk/',
   logoLinkTitle: 'Logo Link Title',
   globalHeaderText: 'GOV.UK',
   insideHeader: '',
@@ -278,7 +286,7 @@ const defaultContext = {
 
   afterHeader: '',
   footerTop: '',
-  footerSupportLinks: '',
+  footerSupportLinks: '<h2 class="sr-only">Support Links</h2><ul><li><a href="/cookies">Cookies</a></li><li><a href="/privacy-policy">Privacy</a></li></ul>',
   licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
   bodyEnd: ''
 };

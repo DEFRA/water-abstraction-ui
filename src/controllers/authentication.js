@@ -18,6 +18,15 @@ class PasswordResetRequiredError extends Error {
 }
 
 /**
+ * Welcome page before routing to signin/register
+ */
+function getWelcome (request, reply) {
+  var viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Choose an option to view your licences';
+  return reply.view('water/welcome', viewContext);
+}
+
+/**
  * View signin page
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
@@ -34,7 +43,8 @@ function getSignin (request, reply) {
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
  */
-function getSignout (request, reply) {
+async function getSignout (request, reply) {
+  await request.sessionStore.destroy();
   request.cookieAuth.clear();
   return reply.redirect('/?access=PB01');
 }
@@ -46,7 +56,17 @@ function getSignout (request, reply) {
  * @param {String} request.payload.password - the user password
  * @param {Object} reply - the HAPI HTTP response
  */
-function postSignin (request, reply) {
+async function postSignin (request, reply) {
+  const destroySession = async () => {
+    try {
+      await request.sessionStore.destroy();
+    } catch (err) {
+      if (err.name !== 'NotFoundError' && err.name !== 'NoSessionCookieError') {
+        throw err;
+      }
+    }
+  };
+
   // Validation schema for HTTP form post
   const schema = {
     user_id: Joi.string().email().required(),
@@ -56,6 +76,10 @@ function postSignin (request, reply) {
   joiPromise(request.payload, schema)
     .then(() => {
       return IDM.login(request.payload.user_id, request.payload.password);
+    })
+    .then(async (getUser) => {
+      await destroySession();
+      return getUser;
     })
     .then((getUser) => {
       // Check for password reset flag - if set don't log them in yet and force
@@ -82,7 +106,7 @@ function postSignin (request, reply) {
         viewContext.payload = request.payload;
         viewContext.errors = {};
         viewContext.errors['authentication'] = 1;
-        viewContext.pageTitle = 'GOV.UK - Sign in to view your licence';
+        viewContext.pageTitle = 'Sign in - Manage your water abstraction or impoundment licence';
         return reply.view('water/signin', viewContext).code(401);
       } else {
         errorHandler(request, reply)(err);
@@ -91,6 +115,7 @@ function postSignin (request, reply) {
 }
 
 module.exports = {
+  getWelcome,
   getSignin,
   getSignout,
   postSignin

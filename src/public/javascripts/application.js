@@ -14,9 +14,6 @@ $(document).ready(function () {
   // Use GOV.UK shim-links-with-button-role.js to trigger a link styled to look like a button,
   // with role="button" when the space key is pressed.
   GOVUK.shimLinksWithButtonRole.init();
-
-  // Details/summary polyfill
-  GOVUK.details.init();
 });
 
 $(window).load(function () {
@@ -35,4 +32,21 @@ $(window).load(function () {
       $('.error input:first').focus();
     }
   }
+});
+
+// Custom
+$(function () {
+  // Click on licence list clicks inner link
+  $('.license-result').on('click', function (ev) {
+    window.location.href = $(this).find('a:first').attr('href');
+    $(this).addClass('license-result--active');
+    ev.preventDefault();
+  });
+
+  // Back link uses browser history
+  $('.link-back').on('click', function (ev) {
+    window.history.back();
+    ev.preventDefault();
+    return false;
+  });
 });

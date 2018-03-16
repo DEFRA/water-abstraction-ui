@@ -1,5 +1,5 @@
 {{> styles}}
-<main id="content">
+<main id="content" tabindex="-1">
   {{>element-phase-tag}}
   <nav>
     <div class="breadcrumbs">
@@ -35,6 +35,8 @@
       <h1 class="heading-large">{{ pageTitle }}</h1>
 
       <form method="POST" action="/select-address">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
 
         <fieldset id="address">
 

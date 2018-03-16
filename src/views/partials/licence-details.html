@@ -1,6 +1,53 @@
 
   {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
 
+  <!-- Purposes -->
+  <div class="data-row">
+    <div class="data-row__param">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
+    <div class="data-row__value">
+
+      {{#greaterThan licenceData.uniquePurposeNames.length 1}}
+        <!-- Multiple purposes -->
+        {{#lessThan licenceData.uniquePurposeNames.length 6 }}
+        <ul class="sub-list sub-list--no-bottom-border">
+          {{#each licenceData.uniquePurposeNames }}
+          <li>{{this}}</li>
+          {{/each}}
+        </ul>
+        {{else}}
+        You have {{ licenceData.uniquePurposeNames.length }} abstraction purposes<br />
+        {{/lessThan}}
+
+      {{else}}
+        {{licenceData.uniquePurposeNames }}<br />
+      {{/greaterThan}}
+
+    </div>
+  </div>
+
+  <!-- Amounts -->
+  {{#if licenceData.aggregateQuantity }}
+  <div class="data-row">
+      <div class="data-row__param">Abstraction amounts</div>
+      <div class="data-row__value">
+        <ul class="sub-list {{#greaterThan licenceData.abstractionPeriods.length 0 }}sub-list--no-bottom-border{{/greaterThan}}">
+        {{#each licenceData.aggregateQuantity }}
+          {{#notNull this.value}}
+          <li>{{ precision this.value 2 }} {{ this.name }}</li>
+          {{/notNull}}
+        {{/each}}
+        </ul>
+
+        {{#equal licenceData.abstractionPeriods.length 0}}
+          <a href="/licences/{{ licence_id }}/purposes">
+            View details of your purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}},
+            period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} and amounts
+          </a>
+        {{/equal}}
+      </div>
+  </div>
+  {{/if}}
+
   {{#greaterThan licenceData.abstractionPeriods.length 0}}
   <!-- Periods -->
   <div class="data-row">
@@ -19,18 +66,21 @@
         You have {{ licenceData.abstractionPeriods.length }} abstraction periods<br />
         {{/lessThan}}
 
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction periods</a>
-
-
       {{else}}
         {{formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd  }}<br />
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction period</a>
       {{/greaterThan}}
 
-
+      <a href="/licences/{{ licence_id }}/purposes">
+        View details of your purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}},
+        period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} and amounts
+      </a>
     </div>
   </div>
   {{/greaterThan}}
+
+
+
+
 
 
   <!-- Points -->
@@ -62,33 +112,7 @@
   </div>
 
 
-  <!-- Purposes -->
-  <div class="data-row">
-    <div class="data-row__param">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>
-    <div class="data-row__value">
 
-      {{#greaterThan licenceData.uniquePurposeNames.length 1}}
-        <!-- Multiple purposes -->
-        {{#lessThan licenceData.uniquePurposeNames.length 6 }}
-        <ul class="sub-list">
-          {{#each licenceData.uniquePurposeNames }}
-          <li>{{this}}</li>
-          {{/each}}
-        </ul>
-        {{else}}
-        You have {{ licenceData.uniquePurposeNames.length }} abstraction purposes<br />
-        {{/lessThan}}
-
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purposes</a>
-
-
-      {{else}}
-        {{licenceData.uniquePurposeNames }}<br />
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction purpose</a>
-      {{/greaterThan}}
-
-    </div>
-  </div>
 
   <!-- Abstraction conditions -->
   <div class="data-row">
@@ -125,21 +149,7 @@
 
 
 
-  {{#if licenceData.aggregateQuantity }}
-  <div class="data-row">
-      <div class="data-row__param">Abstraction amounts</div>
-      <div class="data-row__value">
-        <ul class="sub-list">
-        {{#each licenceData.aggregateQuantity }}
-          {{#notNull this.value}}
-          <li>{{ precision this.value 2 }} {{ this.name }}</li>
-          {{/notNull}}
-        {{/each}}
-        </ul>
-        <a href="/licences/{{ licence_id }}/purposes">View details of your abstraction amounts</a>
-      </div>
-  </div>
-  {{/if}}
+
 
 
 

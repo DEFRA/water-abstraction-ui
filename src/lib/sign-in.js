@@ -2,6 +2,7 @@
  * Sign-in helpers
  */
 const CRM = require('./connectors/crm');
+const { createGUID } = require('./helpers');
 
 /**
  * Sign user in automatically
@@ -22,7 +23,8 @@ async function auto (request, emailAddress, userData, lastlogin) {
 
   // Create session ID
   const sessionId = await request.sessionStore.create({
-    user: {emailAddress}
+    user: {emailAddress},
+    csrf_token: createGUID()
   });
 
   try {

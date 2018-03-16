@@ -43,7 +43,6 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
-
     this.data = {
       licenceNumber: data.LIC_NO,
       licenceHolderTitle: licenceHolderParty.SALUTATION,
@@ -279,7 +278,6 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} array of periods
    */
   periodsFormatter (purposes) {
-
     const periods = [];
 
     purposes.forEach((purpose) => {
@@ -366,7 +364,9 @@ class NALDTransformer extends BaseTransformer {
 
     purposes.forEach((purpose) => {
       const points = purpose.purposePoints.map((purposePoint) => {
-        return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
+        return NALDHelpers.formatAbstractionPoint(purposePoint.point_detail);
+        // console.log(purposePoint);
+        // return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
       });
 
       purpose.licenceConditions.forEach((condition) => {

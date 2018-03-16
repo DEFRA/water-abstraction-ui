@@ -10,8 +10,21 @@
   padding: 0.5em 0;
   border-top: 1px solid $panel-colour;
 
+  details {
+    summary {
+      margin-bottom: 0;
+    }
+    &>div {
+      margin-top: 0.5em;
+    }
+  }
+
   &--section {
     border-color: $border-colour;
+  }
+
+  &--no-top-border {
+    border-top: 0;
   }
 
   @media screen and (min-width: 641px) {
@@ -54,13 +67,17 @@
 /* Sub-list in data-table */
 .sub-list {
   width: 100%;
-
   margin-bottom: 0.5em;
 
-  @media screen and (min-width: 641px) {
-    position: relative;
-    top: -0.5em;
-    margin-bottom: 0;
+  &--no-bottom-border {
+    @media screen and (min-width: 641px) {
+      margin-bottom: -1px;
+    }
+
+    li:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
   }
 
   li {
@@ -68,6 +85,13 @@
     padding: 0.5em 0 0.4em 0;
     margin: 0;
     border-bottom: 1px solid $panel-colour;
+
+    &:first-child {
+      @media screen and (min-width: 641px) {
+        padding-top: 0;
+      }
+    }
+
   }
 
 }

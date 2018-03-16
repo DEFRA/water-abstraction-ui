@@ -35,6 +35,21 @@ $path: "/public/images/";
 family: "nta", Arial, sans-serif;
 }
 
+.cookies-table {
+  tr {
+    th:first-child,td:first-child {
+      @media screen and (min-width: 641px) {
+        width: 33%;
+      }
+    }
+    th:last-child, td:last-child {
+      @media screen and (min-width: 641px) {
+        width: 20%;
+      }
+    }
+  }
+}
+
 
 .panel {
   border-top: none;

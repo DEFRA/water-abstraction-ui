@@ -13,10 +13,12 @@ const formValidator = {
       type: 'onPreHandler',
       method: async (request, reply) => {
         if ('formValidator' in request.route.settings.plugins) {
-          const { payload: payloadSchema } = request.route.settings.plugins.formValidator;
+          const { payload: payloadSchema, options } = request.route.settings.plugins.formValidator;
+
+          console.log('payload', request.payload);
 
           if (payloadSchema) {
-            const { error, value } = Joi.validate(request.payload, payloadSchema);
+            const { error, value } = Joi.validate(request.payload, payloadSchema, options || {});
             request.formError = error;
             request.formValue = value;
           }

@@ -1,5 +1,6 @@
 const controller = require('./controller');
-const { VALID_EMAIL, VALID_FLASH } = require('./validators');
+const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('./validators');
+const Joi = require('joi');
 
 module.exports = {
   getResetPassword: {
@@ -9,7 +10,7 @@ module.exports = {
       auth: false,
       validate: {
         query: {
-          flash: VALID_FLASH.REQUEST
+          flash: VALID_FLASH
         }
       },
       plugins: {
@@ -30,7 +31,7 @@ module.exports = {
       auth: false,
       validate: {
         payload: {
-          email_address: VALID_EMAIL.REQUEST
+          email_address: Joi.string().allow('').max(254)
         }
       },
       plugins: {
@@ -39,7 +40,7 @@ module.exports = {
         },
         formValidator: {
           payload: {
-            email_address: VALID_EMAIL.DATA
+            email_address: VALID_EMAIL
           }
         },
         config: {
@@ -89,7 +90,7 @@ module.exports = {
       auth: false,
       validate: {
         payload: {
-          email_address: VALID_EMAIL.REQUEST
+          email_address: Joi.string().allow('').max(254)
         }
       },
       plugins: {
@@ -98,7 +99,7 @@ module.exports = {
         },
         formValidator: {
           payload: {
-            email_address: VALID_EMAIL.DATA
+            email_address: VALID_EMAIL
           }
         },
         config: {
@@ -124,5 +125,71 @@ module.exports = {
       }
     },
     handler: controller.getResetSuccess
+  },
+  getChangePassword: {
+    method: 'GET',
+    path: '/reset_password_change_password',
+    config: {
+      auth: false,
+      validate: {
+        query: {
+          resetGuid: VALID_GUID,
+          ...VALID_UTM
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Change your password'
+        }
+      }
+    },
+    handler: controller.getChangePassword
+    // { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
+    // { method: 'POST',
+    //   path: '/reset_password_change_password',
+    //   config: { auth: false,
+    //     validate: {
+    //       payload: {
+    //         resetGuid: Joi.string().guid().required(),
+    //         password: Joi.string().allow('').max(128),
+    //         confirmPassword: Joi.string().allow('').max(128)
+    //       }
+    //     } },
+    //   handler: VmL.postResetPasswordChangePassword },
+  },
+
+  postChangePassword: {
+    method: 'POST',
+    path: '/reset_password_change_password',
+    config: {
+      auth: false,
+      validate: {
+        payload: {
+          resetGuid: OPTIONAL_GUID,
+          password: Joi.string().allow('').max(128),
+          confirmPassword: Joi.string().allow('').max(128)
+        },
+        query: {
+          resetGuid: OPTIONAL_GUID
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Change your password'
+        },
+        formValidator: {
+          payload: {
+            resetGuid: VALID_GUID,
+            password: VALID_PASSWORD,
+            confirmPassword: VALID_CONFIRM_PASSWORD
+          },
+          options: {
+            abortEarly: false
+          }
+        }
+      }
+    },
+    handler: controller.postChangePassword
   }
+
 };

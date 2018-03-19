@@ -102,7 +102,8 @@ server.register([
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
     options: {
-      pruneMethod: 'delete'
+      pruneMethod: 'replace',
+      replaceValue: ''
     }
   },
 

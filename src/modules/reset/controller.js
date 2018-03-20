@@ -1,15 +1,7 @@
 const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
-
-const formatViewError = (error) => {
-  if (!error.isJoi) {
-    return error;
-  }
-  return error.details.reduce((memo, detail) => {
-    memo[detail.path.join('_') + '_' + detail.type.split('.')[1]] = true;
-    return memo;
-  }, {});
-};
+const { formatViewError } = require('../../lib/helpers');
+const signIn = require('../../lib/sign-in');
 
 /**
  * Renders form for reset password flow
@@ -52,25 +44,55 @@ async function getChangePassword (request, reply) {
   }
 }
 
+/**
+ * Map new-style error object to existing handlebars template
+ * @param {Object} error - Joi error
+ * @return {Object} error in format for existing change password template
+ */
+function mapJoiError (error) {
+  const viewErrors = formatViewError(error);
+
+  return {
+    hasValidationErrors: true,
+    passwordTooShort: viewErrors.password_min,
+    passwordHasNoSymbol: viewErrors.password_symbol,
+    passwordHasNoUpperCase: viewErrors.password_uppercase,
+    passwordsDontMatch: !viewErrors.confirmPassword_empty && viewErrors.confirmPassword_allowOnly,
+    noConfirmPassword: viewErrors.confirmPassword_empty
+  };
+}
+
+/**
+ * Reset password - POST handler
+ */
 async function postChangePassword (request, reply) {
-  if (request.formError) {
-    const viewErrors = formatViewError(request.formError);
+  try {
+    // Check for valid reset GUID
+    const user = await IDM.getUserByResetGuid(request.payload.resetGuid);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
 
-    // Map view errors to existing view
-    const mapped = {
-      hasValidationErrors: true,
-      passwordTooShort: viewErrors.password_min,
-      passwordHasNoSymbol: viewErrors.password_symbol,
-      passwordHasNoUpperCase: viewErrors.password_uppercase,
-      passwordsDontMatch: viewErrors.confirmPassword_allowOnly,
-      noConfirmPassword: viewErrors.confirmPassword_empty
-    };
+    // Check for form errors
+    if (request.formError) {
+      const errors = mapJoiError(request.formError);
+      return reply.view('water/reset_password_change_password', { ...request.view, errors });
+    }
 
-    // console.log(JSON.stringify(request.formError, null, 2));
-    console.log(JSON.stringify(formatViewError(request.formError)));
-    return reply.view('water/reset_password_change_password', {...request.view, errors: mapped });
+    // Validation OK - update password in IDM
+    const { error } = await IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
+    if (error) {
+      throw error;
+    }
+
+    // Log user in
+    await signIn.auto(request, user.user_name);
+
+    reply.redirect('/licences');
+  } catch (error) {
+    console.log(error);
+    return reply.redirect('/reset_password?flash=resetLinkExpired');
   }
-  reply('no form error!');
 }
 module.exports = {
   getResetPassword,

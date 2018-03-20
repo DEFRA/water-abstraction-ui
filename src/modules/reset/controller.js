@@ -90,7 +90,6 @@ async function postChangePassword (request, reply) {
 
     reply.redirect('/licences');
   } catch (error) {
-    console.log(error);
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }
 }

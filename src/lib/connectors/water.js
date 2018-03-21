@@ -1,5 +1,9 @@
 const Helpers = require('../helpers')
-
+const rp = require('request-promise-native').defaults({
+  proxy: null,
+  strictSSL: false
+});
+const { APIClient } = require('hapi-pg-rest-api');
 
 function sendNotifyMessage(message_ref, recipient, personalisation) {
   return new Promise((resolve, reject) => {
@@ -22,7 +26,14 @@ function sendNotifyMessage(message_ref, recipient, personalisation) {
   });
 }
 
+const pendingImport = new APIClient(rp, {
+  endpoint: `${ process.env.WATER_URI }/pending_import`,
+  headers : {
+    Authorization : process.env.JWT_TOKEN
+  }
+});
 
 module.exports = {
-  sendNotifyMessage
+  sendNotifyMessage,
+  pendingImport
 }

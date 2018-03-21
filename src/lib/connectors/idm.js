@@ -147,6 +147,15 @@ function updatePasswordWithGuid (resetGuid, password) {
   });
 }
 
+
+const usersClient = new APIClient(rp, {
+  endpoint: `${ process.env.IDM_URI }/user`,
+  headers : {
+    Authorization : process.env.JWT_TOKEN
+  }
+});
+
+
 module.exports = {
   login: login,
   resetPassword,
@@ -156,6 +165,7 @@ module.exports = {
   createUserWithoutPassword,
   getUser,
   getUserByResetGuid,
-  verifyCredentials
+  verifyCredentials,
+  usersClient
 
 };

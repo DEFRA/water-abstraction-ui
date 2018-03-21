@@ -50,6 +50,15 @@ module.exports = [
       } }
   },
 
+  { method: 'GET',
+    path: '/private-beta-closed',
+    config: {
+      auth: false,
+      description: 'Holding page for private beta'
+    },
+    handler: VmL.getHoldingPage
+  },
+
   { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },

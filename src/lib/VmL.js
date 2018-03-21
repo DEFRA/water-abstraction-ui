@@ -20,6 +20,12 @@ function getPrivacyPolicy (request, reply) {
   return reply.view('water/privacy_policy', viewContext);
 }
 
+function getHoldingPage (request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'The test version of this service is now closed';
+  return reply.view('water/holding_page', viewContext);
+}
+
 /**
  * Update password step 1 - enter current password
  */
@@ -356,6 +362,7 @@ module.exports = {
   getRoot: getRoot,
   getCookies,
   getPrivacyPolicy,
+  getHoldingPage,
   getUpdatePassword,
   postUpdatePasswordVerifyPassword,
   postUpdatePassword,

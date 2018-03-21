@@ -5,19 +5,21 @@
 *
 * @module lib/hapi-holding-page-plugin
 */
-const { contextDefaults } = require('./view');
-
 const holdingPagePlugin = {
   register (server, options, next) {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
-        if (process.env.holding_page && !request.url.path.match('/public/')) {
-          const viewContext = {
-            ...contextDefaults(request),
-            pageTitle: 'The test version of this service is now closed'
-          };
-          return reply.view('water/holding_page', viewContext);
+        // Is holding page enabled?
+        if (process.env.holding_page) {
+          const { path } = request.url;
+          const { ignore, redirect } = options;
+
+          // Check to see if we should redirect
+          if (!path.match(ignore) && !path.match(redirect)) {
+            console.log(`Holding page: redirect to ${redirect}`);
+            return reply.redirect(redirect);
+          }
         }
 
         // Continue processing request

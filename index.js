@@ -83,6 +83,11 @@ server.register([
     options: {}
   },
   {
+    // Holding page
+    register: require('./src/lib/hapi-holding-page-plugin.js'),
+    options: {}
+  },
+  {
     // Plugin to recursively sanitize or prune values in a request.payload object
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,

@@ -6,6 +6,7 @@
 * @module lib/hapi-view-context-plugin
 */
 const Joi = require('joi');
+const { formatViewError } = require('./helpers');
 
 const formValidator = {
   register (server, options, next) {
@@ -19,6 +20,9 @@ const formValidator = {
             const { error, value } = Joi.validate(request.payload, payloadSchema, options || {});
             request.formError = error;
             request.formValue = value;
+
+            // Attach to view automatically
+            request.view.errors = formatViewError(error);
           }
         }
 

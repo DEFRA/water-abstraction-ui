@@ -134,8 +134,9 @@ server.register([
   server.route(require('./src/routes/public'));
   server.route(require('./src/routes/VmL'));
 
-  const resetRoutes = require('./src/modules/reset/routes');
-  server.route(Object.values(resetRoutes));
+  // Import routes from modules
+  server.route(require('./src/modules/routes'));
+
   // require('./src/modules/reset/routes'));
 });
 

@@ -91,34 +91,34 @@ module.exports = [
         }
       }
     }},
-  { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
-  { method: 'POST',
-    path: '/update_password_verify_password',
-
-    config: {
-      validate: {
-        payload: {
-          password: Joi.string().max(128),
-          csrf_token: Joi.string().guid().required()
-        }
-      }
-    },
-
-    handler: VmL.postUpdatePasswordVerifyPassword },
-  { method: 'POST',
-    path: '/update_password_verified_password',
-    config: {
-      validate: {
-        payload: {
-          authtoken: Joi.string().max(128),
-          password: Joi.string().max(128),
-          confirmPassword: Joi.string().max(128),
-          csrf_token: Joi.string().guid().required()
-        }
-      }
-    },
-    handler: VmL.postUpdatePassword },
-  { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
+  // { method: 'GET', path: '/update_password', handler: VmL.getUpdatePassword },
+  // { method: 'POST',
+  //   path: '/update_password_verify_password',
+  //
+  //   config: {
+  //     validate: {
+  //       payload: {
+  //         password: Joi.string().max(128),
+  //         csrf_token: Joi.string().guid().required()
+  //       }
+  //     }
+  //   },
+  //
+  //   handler: VmL.postUpdatePasswordVerifyPassword },
+  // { method: 'POST',
+  //   path: '/update_password_verified_password',
+  //   config: {
+  //     validate: {
+  //       payload: {
+  //         authtoken: Joi.string().max(128),
+  //         password: Joi.string().max(128),
+  //         confirmPassword: Joi.string().max(128),
+  //         csrf_token: Joi.string().guid().required()
+  //       }
+  //     }
+  //   },
+  //   handler: VmL.postUpdatePassword },
+  // { method: 'GET', path: '/password_updated', handler: VmL.getUpdatedPassword },
   // { method: 'GET', path: '/reset_password', config: { auth: false }, handler: VmL.getResetPassword },
   // { method: 'POST',
   //   path: '/reset_password',

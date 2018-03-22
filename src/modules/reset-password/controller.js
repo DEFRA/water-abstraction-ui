@@ -1,10 +1,12 @@
 const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
-const { formatViewError } = require('../../lib/helpers');
 const signIn = require('../../lib/sign-in');
+const mapJoiPasswordError = require('./map-joi-password-error');
 
 /**
- * Renders form for reset password flow
+ * Renders form for start of reset password flow
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply interface
  */
 function getResetPassword (request, reply) {
   return reply.view(request.config.view, request.view);
@@ -12,6 +14,9 @@ function getResetPassword (request, reply) {
 
 /**
  * Post handler for reset password flow
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} request.payload.email_address - email address for IDM account
+ * @param {Object} reply - HAPI HTTP reply interface
  */
 async function postResetPassword (request, reply) {
   if (request.formError) {
@@ -23,6 +28,8 @@ async function postResetPassword (request, reply) {
 
 /**
  * Success page for reset password flow
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply interface
  */
 function getResetSuccess (request, reply) {
   return reply.view(request.config.view, request.view);
@@ -30,6 +37,9 @@ function getResetSuccess (request, reply) {
 
 /**
  * Reset password form - requires valid GUID
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} request.query.resetGuid - reset GUID sent via email
+ * @param {Object} reply - HAPI HTTP reply interface
  */
 async function getChangePassword (request, reply) {
   try {
@@ -38,32 +48,20 @@ async function getChangePassword (request, reply) {
     if (!user) {
       throw new UserNotFoundError();
     }
-    return reply.view('water/reset_password_change_password', request.view);
+    return reply.view('water/reset-password/reset_password_change_password', request.view);
   } catch (error) {
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }
 }
 
 /**
- * Map new-style error object to existing handlebars template
- * @param {Object} error - Joi error
- * @return {Object} error in format for existing change password template
- */
-function mapJoiError (error) {
-  const viewErrors = formatViewError(error);
-
-  return {
-    hasValidationErrors: true,
-    passwordTooShort: viewErrors.password_min,
-    passwordHasNoSymbol: viewErrors.password_symbol,
-    passwordHasNoUpperCase: viewErrors.password_uppercase,
-    passwordsDontMatch: !viewErrors.confirmPassword_empty && viewErrors.confirmPassword_allowOnly,
-    noConfirmPassword: viewErrors.confirmPassword_empty
-  };
-}
-
-/**
  * Reset password - POST handler
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} [request.query.resetGuid] - reset GUID sent via email - if initial render
+ * @param {String} [request.payload.resetGuid] - reset GUID sent via email - if resubmitting
+ * @param {String} request.query.password - new password
+ * @param {String} request.query.confirmPassword - new password again
+ * @param {Object} reply - HAPI HTTP reply interface
  */
 async function postChangePassword (request, reply) {
   try {
@@ -75,8 +73,8 @@ async function postChangePassword (request, reply) {
 
     // Check for form errors
     if (request.formError) {
-      const errors = mapJoiError(request.formError);
-      return reply.view('water/reset_password_change_password', { ...request.view, errors });
+      const errors = mapJoiPasswordError(request.formError);
+      return reply.view('water/reset-password/reset_password_change_password', { ...request.view, errors });
     }
 
     // Validation OK - update password in IDM
@@ -93,6 +91,7 @@ async function postChangePassword (request, reply) {
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }
 }
+
 module.exports = {
   getResetPassword,
   postResetPassword,

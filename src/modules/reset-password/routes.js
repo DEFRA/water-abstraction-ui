@@ -1,5 +1,5 @@
 const controller = require('./controller');
-const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('./validators');
+const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
 const Joi = require('joi');
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
           pageTitle: 'Reset your password'
         },
         config: {
-          view: 'water/reset_password'
+          view: 'water/reset-password/reset_password'
         }
       }
     },
@@ -44,7 +44,7 @@ module.exports = {
           }
         },
         config: {
-          view: 'water/reset_password',
+          view: 'water/reset-password/reset_password',
           redirect: '/reset_password_check_email'
         }
       }
@@ -61,7 +61,7 @@ module.exports = {
           pageTitle: 'Check your email'
         },
         config: {
-          view: 'water/reset_password_check_email'
+          view: 'water/reset-password/reset_password_check_email'
         }
       }
     },
@@ -77,7 +77,7 @@ module.exports = {
           pageTitle: 'Ask for another email'
         },
         config: {
-          view: 'water/reset_password_resend_email'
+          view: 'water/reset-password/reset_password_resend_email'
         }
       }
     },
@@ -103,7 +103,7 @@ module.exports = {
           }
         },
         config: {
-          view: 'water/reset_password_resend_email',
+          view: 'water/reset-password/reset_password_resend_email',
           redirect: '/reset_password_resent_email'
         }
       }
@@ -120,7 +120,7 @@ module.exports = {
           pageTitle: 'Check your email'
         },
         config: {
-          view: 'water/reset_password_resent_email'
+          view: 'water/reset-password/reset_password_resent_email'
         }
       }
     },
@@ -144,18 +144,6 @@ module.exports = {
       }
     },
     handler: controller.getChangePassword
-    // { method: 'GET', path: '/reset_password_change_password', config: { auth: false }, handler: VmL.getResetPasswordChangePassword },
-    // { method: 'POST',
-    //   path: '/reset_password_change_password',
-    //   config: { auth: false,
-    //     validate: {
-    //       payload: {
-    //         resetGuid: Joi.string().guid().required(),
-    //         password: Joi.string().allow('').max(128),
-    //         confirmPassword: Joi.string().allow('').max(128)
-    //       }
-    //     } },
-    //   handler: VmL.postResetPasswordChangePassword },
   },
 
   postChangePassword: {

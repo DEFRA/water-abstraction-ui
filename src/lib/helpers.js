@@ -17,6 +17,9 @@ const isArray = require('lodash/isArray');
  * @return {Object}
  */
 const formatViewError = (error) => {
+  if (!error) {
+    return null;
+  }
   if (!error.isJoi) {
     return error;
   }

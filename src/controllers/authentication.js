@@ -46,7 +46,7 @@ function getSignin (request, reply) {
 async function getSignout (request, reply) {
   await request.sessionStore.destroy();
   request.cookieAuth.clear();
-  return reply.redirect('/?access=PB01');
+  return reply.redirect('/');
 }
 
 /**

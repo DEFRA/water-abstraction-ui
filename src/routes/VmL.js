@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const path = require('path');
 const VmL = require('../lib/VmL');
 
 const LicencesController = require('../controllers/licences');
@@ -18,26 +17,7 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      console.log(request.query);
-      console.log('node env ' + process.env.NODE_ENV);
-
-      if (process.env.NODE_ENV !== 'PREPROD') {
-        console.log('redirect to licences');
-        return reply.redirect('/licences');
-      } else {
-        if (request.query.access && request.query.access === 'PB01') {
-          var fs = require('fs');
-          const indexPath = path.join(__dirname, '/../views/water/index.html');
-          fs.readFile(indexPath, function (err, data) {
-            if (err) {
-              throw err;
-            }
-            reply(data.toString());
-          });
-        } else {
-          reply('unauthorised').code(401);
-        }
-      }
+      return reply.redirect('/licences');
     },
     config: { auth: false,
       validate: {

@@ -39,7 +39,7 @@ module.exports = [
     handler: VmL.getHoldingPage
   },
 
-  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
+  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('User-agent: * Disallow: /').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
   { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },

@@ -51,8 +51,8 @@ module.exports = {
       validate: {
         payload: {
           authtoken: Joi.string().max(128),
-          password: Joi.string().max(128),
-          confirmPassword: Joi.string().max(128),
+          password: Joi.string().max(128).allow(''),
+          confirmPassword: Joi.string().max(128).allow(''),
           csrf_token: Joi.string().guid().required()
         }
       },
@@ -66,6 +66,9 @@ module.exports = {
             confirmPassword: VALID_CONFIRM_PASSWORD,
             csrf_token: VALID_GUID,
             authtoken: VALID_GUID
+          },
+          options: {
+            abortEarly: false
           }
         }
       }

@@ -44,7 +44,8 @@ function postSetPassword (request, reply) {
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
-    return reply.view('water/update-password/update_password_verified_password', {...request.view, errors});
+    const { authtoken } = request.payload;
+    return reply.view('water/update-password/update_password_verified_password', {...request.view, errors, authtoken});
   }
 
   try {

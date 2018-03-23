@@ -1,3 +1,5 @@
+const { formatViewError } = require('../../lib/helpers');
+
 /**
  * Map new-style error object to existing handlebars template
  * @param {Object} error - Joi error

@@ -178,6 +178,53 @@ module.exports = {
       }
     },
     handler: controller.postChangePassword
+  },
+
+  getCreatePassword: { method: 'GET',
+    path: '/create-password',
+    handler: controller.getChangePassword,
+    config: {
+      auth: false,
+      validate: {
+        query: {
+          resetGuid: VALID_GUID,
+          ...VALID_UTM
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Create a password for your online account',
+          create: true
+        }
+      }
+
+    }},
+
+  postCreatePassword: { method: 'POST',
+    path: '/create-password',
+    config: { auth: false,
+      validate: {
+        payload: {
+          resetGuid: VALID_GUID,
+          password: Joi.string().allow('').max(128),
+          confirmPassword: Joi.string().allow('').max(128)
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Create a password for your online account',
+          create: true
+        },
+        formValidator: {
+          payload: {
+            resetGuid: VALID_GUID,
+            password: VALID_PASSWORD,
+            confirmPassword: VALID_CONFIRM_PASSWORD
+          }
+        }
+      }
+    },
+    handler: controller.postChangePassword
   }
 
 };

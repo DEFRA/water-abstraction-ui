@@ -8,7 +8,7 @@ const mapJoiPasswordError = require('./map-joi-password-error');
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply interface
  */
-function getResetPassword (request, reply) {
+async function getResetPassword (request, reply) {
   return reply.view(request.config.view, request.view);
 }
 
@@ -31,7 +31,7 @@ async function postResetPassword (request, reply) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply interface
  */
-function getResetSuccess (request, reply) {
+async function getResetSuccess (request, reply) {
   return reply.view(request.config.view, request.view);
 }
 

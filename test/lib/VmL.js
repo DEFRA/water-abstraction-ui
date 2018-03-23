@@ -13,68 +13,47 @@ lab.experiment('vml.getRoot', () => {
     Code.expect(vml.getRoot).to.be.a.function();
   });
 });
-
-// lab.experiment('vml.getSignin', () => {
+//
+// lab.experiment('vml.getUpdatePassword', () => {
 //   lab.test('function exists', async () => {
-//   Code.expect(vml.getSignin).to.be.a.function()
-// })
-// })
-// lab.experiment('vml.getSignout', () => {
+//     Code.expect(vml.getUpdatePassword).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.postUpdatePassword', () => {
 //   lab.test('function exists', async () => {
-//   Code.expect(vml.getSignout).to.be.a.function()
-// })
-// })
-// lab.experiment('vml.postSignin', () => {
+//     Code.expect(vml.postUpdatePassword).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.getResetPassword', () => {
 //   lab.test('function exists', async () => {
-//   Code.expect(vml.postSignin).to.be.a.function()
-// })
-// })
-// lab.experiment('vml.getLicences', () => {
+//     Code.expect(vml.getResetPassword).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.postResetPassword', () => {
 //   lab.test('function exists', async () => {
-//   Code.expect(vml.getLicences).to.be.a.function()
-// })
-// })
-
-lab.experiment('vml.getUpdatePassword', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.getUpdatePassword).to.be.a.function();
-  });
-});
-lab.experiment('vml.postUpdatePassword', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.postUpdatePassword).to.be.a.function();
-  });
-});
-lab.experiment('vml.getResetPassword', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.getResetPassword).to.be.a.function();
-  });
-});
-lab.experiment('vml.postResetPassword', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.postResetPassword).to.be.a.function();
-  });
-});
-lab.experiment('vml.getResetPasswordCheckEmail', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.getResetPasswordCheckEmail).to.be.a.function();
-  });
-});
-lab.experiment('vml.getResetPasswordResendEmail', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.getResetPasswordResendEmail).to.be.a.function();
-  });
-});
-lab.experiment('vml.postResetPasswordResendEmail', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.postResetPasswordResendEmail).to.be.a.function();
-  });
-});
-lab.experiment('vml.getResetPasswordResentEmail', () => {
-  lab.test('function exists', async () => {
-    Code.expect(vml.getResetPasswordResentEmail).to.be.a.function();
-  });
-});
+//     Code.expect(vml.postResetPassword).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.getResetPasswordCheckEmail', () => {
+//   lab.test('function exists', async () => {
+//     Code.expect(vml.getResetPasswordCheckEmail).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.getResetPasswordResendEmail', () => {
+//   lab.test('function exists', async () => {
+//     Code.expect(vml.getResetPasswordResendEmail).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.postResetPasswordResendEmail', () => {
+//   lab.test('function exists', async () => {
+//     Code.expect(vml.postResetPasswordResendEmail).to.be.a.function();
+//   });
+// });
+// lab.experiment('vml.getResetPasswordResentEmail', () => {
+//   lab.test('function exists', async () => {
+//     Code.expect(vml.getResetPasswordResentEmail).to.be.a.function();
+//   });
+// });
 // lab.experiment('vml.getResetPasswordLink', () => {
 //   lab.test('function exists', async () => {
 //   Code.expect(vml.getResetPasswordLink).to.be.a.function()

@@ -4,7 +4,6 @@
 *
 * @module lib/hapi-config-plugin
 */
-const {contextDefaults} = require('./view');
 
 const configPlugin = {
   register (server, options, next) {

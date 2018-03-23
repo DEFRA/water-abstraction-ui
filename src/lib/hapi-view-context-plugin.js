@@ -15,7 +15,7 @@ const viewContextPlugin = {
 
         const viewData = request.route.settings.plugins.viewContext || {};
 
-        request.view = {...viewContext, ...viewData };
+        request.view = { ...viewContext, ...viewData };
 
         // Continue processing request
         return reply.continue();

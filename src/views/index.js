@@ -1,7 +1,6 @@
 const handlebars = require('handlebars');
 const moment = require('moment');
 const qs = require('querystring');
-const { find } = require('lodash');
 
 console.log('working dir for views');
 console.log(__dirname);

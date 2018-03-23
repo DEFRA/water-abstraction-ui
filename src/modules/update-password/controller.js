@@ -5,7 +5,7 @@ const { AuthTokenError } = require('./errors');
 /**
  * Update password step 1 - enter current password
  */
-function getConfirmPassword (request, reply) {
+async function getConfirmPassword (request, reply) {
   return reply.view('water/update-password/update_password', request.view);
 }
 
@@ -41,7 +41,7 @@ async function postConfirmPassword (request, reply) {
  * @param {String} request.payload.confirmPassword - password again
  * @param {String} request.payload.authtoken - token to ensure user verified identity in previous step in flow
  */
-function postSetPassword (request, reply) {
+async function postSetPassword (request, reply) {
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
@@ -81,7 +81,7 @@ function postSetPassword (request, reply) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply interface
  */
-function getPasswordUpdated (request, reply) {
+async function getPasswordUpdated (request, reply) {
   return reply.view('water/update-password/updated_password', request.view);
 }
 

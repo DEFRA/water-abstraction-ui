@@ -220,6 +220,9 @@ module.exports = {
             resetGuid: VALID_GUID,
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD
+          },
+          options: {
+            abortEarly: false
           }
         }
       }

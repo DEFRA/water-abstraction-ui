@@ -39,6 +39,7 @@ async function postConfirmPassword (request, reply) {
  * @todo consider Joi for password validation
  * @param {String} request.payload.password - new password
  * @param {String} request.payload.confirmPassword - password again
+ * @param {String} request.payload.authtoken - token to ensure user verified identity in previous step in flow
  */
 function postSetPassword (request, reply) {
   // Form validation error
@@ -75,6 +76,11 @@ function postSetPassword (request, reply) {
   }
 }
 
+/**
+ * Reset successful
+ * @param {Object} request - HAPI HTTP request
+ * @param {Object} reply - HAPI HTTP reply interface
+ */
 function getPasswordUpdated (request, reply) {
   return reply.view('water/update-password/updated_password', request.view);
 }

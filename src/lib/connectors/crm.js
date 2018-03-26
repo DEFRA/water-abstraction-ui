@@ -185,7 +185,7 @@ async function verify (entityId, verificationCode) {
 
   // Update document headers
   const res3 = await crmDocuments.updateMany(
-    {document_id: {$in: documentIds}},
+    {document_id: {$in: documentIds}, company_entity_id: null, verified: null},
     {verification_id: verificationId, company_entity_id: companyEntityId, verified: 1}
   );
   if (res3.error) {

@@ -87,7 +87,7 @@ server.register([
     register: require('./src/lib/hapi-holding-page-plugin.js'),
     options: {
       redirect: '/private-beta-closed',
-      ignore: /^\/public\//
+      ignore: /^\/(public\/|robots\.txt)/
     }
   },
   {

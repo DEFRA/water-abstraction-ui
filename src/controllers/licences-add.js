@@ -88,7 +88,6 @@ async function postLicenceAdd (request, reply) {
       throw new LicenceNotFoundError();
     }
 
-
     // Check # of licences returned = that searched for
     if (res.data.length !== licenceNumbers.length) {
       const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
@@ -97,7 +96,6 @@ async function postLicenceAdd (request, reply) {
       viewContext.missingNumbers.length = licenceNumbers.length;
       throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
     }
-
 
     // Check licences are similar
     const similar = checkLicenceSimilarity(res.data);
@@ -339,7 +337,7 @@ async function postAddressSelect (request, reply) {
     viewContext.verification = verification;
     viewContext.licence = data;
     viewContext.licenceCount = licences.length;
-    viewContext.showCode = !(process.env.NODE_ENV || '').match(/^production|preprod$/i);
+    viewContext.showCode = !(process.env.NODE_ENV || '').match(/^prod|preprod$/i);
 
     return reply.view('water/licences-add/verification-sent', viewContext);
   } catch (err) {

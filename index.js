@@ -98,6 +98,14 @@ server.register([
     options: {}
   },
   {
+    // Holding page
+    register: require('./src/lib/hapi-holding-page-plugin.js'),
+    options: {
+      redirect: '/private-beta-closed',
+      ignore: /^\/public\//
+    }
+  },
+  {
     // Plugin to recursively sanitize or prune values in a request.payload object
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
@@ -136,8 +144,7 @@ server.register([
 
   // Import routes from modules
   server.route(require('./src/modules/routes'));
-
-  // require('./src/modules/reset/routes'));
+  server.route(require('./src/routes/status'));
 });
 
 server.errorHandler = function (error) {

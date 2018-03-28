@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const path = require('path');
 const VmL = require('../lib/VmL');
 
 const LicencesController = require('../controllers/licences');
@@ -18,26 +17,7 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      console.log(request.query);
-      console.log('node env ' + process.env.NODE_ENV);
-
-      if (process.env.NODE_ENV !== 'PREPROD') {
-        console.log('redirect to licences');
-        return reply.redirect('/licences');
-      } else {
-        if (request.query.access && request.query.access === 'PB01') {
-          var fs = require('fs');
-          const indexPath = path.join(__dirname, '/../views/water/index.html');
-          fs.readFile(indexPath, function (err, data) {
-            if (err) {
-              throw err;
-            }
-            reply(data.toString());
-          });
-        } else {
-          reply('unauthorised').code(401);
-        }
-      }
+      return reply.redirect('/licences');
     },
     config: { auth: false,
       validate: {
@@ -50,7 +30,16 @@ module.exports = [
       } }
   },
 
-  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('exterminate').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
+  { method: 'GET',
+    path: '/private-beta-closed',
+    config: {
+      auth: false,
+      description: 'Holding page for private beta'
+    },
+    handler: VmL.getHoldingPage
+  },
+
+  { method: 'GET', path: '/robots.txt', handler: function (request, reply) { return reply('User-agent: * Disallow: /').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
   { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },

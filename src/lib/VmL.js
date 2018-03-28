@@ -34,11 +34,18 @@ function dashboard (request, reply) {
   return reply.view('water/dashboard', viewContext);
 }
 
+function getHoldingPage (request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'The test version of this service is now closed';
+  return reply.view('water/holding_page', viewContext);
+}
+
 module.exports = {
   getRoot: getRoot,
   getCookies,
   getPrivacyPolicy,
   fourOhFour: fourOhFour,
   getFeedback: getFeedback,
-  dashboard
+  dashboard,
+  getHoldingPage
 };

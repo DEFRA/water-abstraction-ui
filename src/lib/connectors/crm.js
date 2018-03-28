@@ -64,7 +64,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
 
   const { verification_id: verificationId } = res.data;
 
-  const res2 = await crmDocuments.updateMany({document_id: {$or: documentIds}}, {verification_id: verificationId});
+  const res2 = await crmVerification.addDocuments(verificationId, documentIds);
 
   if (res2.error) {
     throw res2.error;
@@ -176,16 +176,26 @@ async function verify (entityId, verificationCode) {
   }
   const { verification_id: verificationId } = res.data[0];
 
-  // Update document headers
-  const res2 = await crmDocuments.updateMany({verification_id: verificationId}, {company_entity_id: companyEntityId, verified: 1});
+  // Get list of documents for this verification
+  const res2 = await crmVerification.getDocuments(verificationId);
   if (res2.error) {
     throw res2.error;
   }
+  const documentIds = res2.data.map(row => row.document_id);
 
-  // Update verification record
-  const res3 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  // Update document headers
+  const res3 = await crmDocuments.updateMany(
+    {document_id: {$in: documentIds}, company_entity_id: null, verified: null},
+    {verification_id: verificationId, company_entity_id: companyEntityId, verified: 1}
+  );
   if (res3.error) {
     throw res3.error;
+  }
+
+  // Update verification record
+  const res4 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  if (res4.error) {
+    throw res4.error;
   }
 
   return {error: null, data: {verification_id: verificationId}};

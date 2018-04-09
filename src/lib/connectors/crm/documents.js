@@ -46,6 +46,34 @@ client.getLicences = function (filter, sort = {}, pagination = {page: 1, perPage
 };
 
 /**
+ * Get a list of unclaimed licences for use in reg process
+ * @param {Array} licenceNumbers - list of licence numbers to claim
+ * @return {Promise} resolves with list of licences from CRM
+ */
+client.getUnregisteredLicences = function (licenceNumbers) {
+  // Get unverified licences from DB
+  return this.findMany(
+    { system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null, 'metadata->IsCurrent': {$ne: 'false'} },
+    { system_external_id: +1 },
+    { page: 1, perPage: 300 }
+  );
+};
+
+/**
+ * Get a list of unclaimed licences for use in reg process
+ * @param {Array} documentIds - list of document header IDs to claim
+ * @return {Promise} resolves with list of licences from CRM
+ */
+client.getUnregisteredLicencesByIds = function (documentIds) {
+  // Get unverified licences from DB
+  return this.findMany(
+    { document_id: {$or: documentIds}, verified: null, verification_id: null, 'metadata->IsCurrent': {$ne: 'false'} },
+    { system_external_id: +1 },
+    {page: 1, perPage: 300}
+  );
+};
+
+/**
  * Set licence name
  * @param {String} documentId - the CRM document ID identifying the permit
  * @param {String} name - the user-defined document name

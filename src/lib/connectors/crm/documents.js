@@ -80,13 +80,7 @@ client.getUnregisteredLicencesByIds = function (documentIds) {
  * @return {Promise} resolves when name updated
  */
 client.setLicenceName = function (documentId, name) {
-  const uri = process.env.CRM_URI + '/documentHeader/' + documentId + '/entity/0/name?token=' + process.env.JWT_TOKEN;
-  return rp({
-    uri,
-    method: 'POST',
-    json: true,
-    body: { name }
-  });
+  return this.updateOne(documentId, {document_name: name});
 };
 
 /**

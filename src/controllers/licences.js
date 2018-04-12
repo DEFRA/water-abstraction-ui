@@ -12,7 +12,7 @@ const Permit = require('../lib/connectors/permit');
 const errorHandler = require('../lib/error-handler');
 const LicenceTransformer = require('../lib/licence-transformer/');
 
-const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
+// const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
 const Joi = require('joi');
 
 /**
@@ -72,7 +72,7 @@ async function getLicences (request, reply) {
   const page = request.query.page || 1;
 
   // Sorting
-  const sortFields = {licenceNumber: 'system_external_id', name: 'document_custom_name', expiryDate: 'document_expires'};
+  const sortFields = {licenceNumber: 'system_external_id', name: 'document_name', expiryDate: 'document_expires'};
   const sortField = request.query.sort || 'licenceNumber';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};
@@ -109,8 +109,13 @@ async function getLicences (request, reply) {
       }
     }
 
+    // Get total licence count for this user - this determines whether to show search box
+    const { pagination: { totalRows: licenceCount } } = await CRM.documents.getLicences({entity_id: entityId}, null, {page: 1, perPage: 1});
+
+    console.log('licenceCount', {entity_id: entityId});
+
     // Lookup licences
-    const { data, err, summary, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 50});
+    const { data, err, pagination } = await CRM.documents.getLicences(filter, sort, {page, perPage: 50});
     if (err) {
       throw Boom.badImplementation('CRM error', err);
     }
@@ -143,20 +148,23 @@ async function getLicences (request, reply) {
     viewContext.pagination = pagination;
     viewContext.me = request.auth.credentials;
 
-    // Calculate whether to display email filter / search form depending on summary
-    const userRoles = licenceRoles(summary);
+    viewContext.licenceCount = licenceCount;
 
-    viewContext.licenceCount = licenceCount(summary);
-    viewContext.showManageFilter = userRoles.primary_user;
-    if (userRoles.admin || userRoles.agent || userRoles.user) {
-      viewContext.showManageFilter = false;
-    }
+    const { roles } = request.auth.credentials;
+
+    // Count primary_user/user roles to determine if agent
+    const userRoleCount = roles.reduce((memo, role) => {
+      if (role.role === 'user' || role.role === 'primary_user') {
+        return memo + 1;
+      }
+      return memo;
+    }, 0);
 
     if (request.permissions && request.permissions.admin.defra) {
     // never restrict search box for admin users
     } else {
-      viewContext.enableSearch = viewContext.licenceCount > 5; // @TODO confirm with design team
-      viewContext.showEmailFilter = userRoles.admin || userRoles.agent;
+      viewContext.enableSearch = licenceCount > 5;
+      viewContext.showEmailFilter = request.permissions.admin.defra || userRoleCount > 1;
     }
 
     if (request.permissions && request.permissions.admin.defra) {
@@ -247,7 +255,7 @@ function createLicencePage (view) {
       // console.log(JSON.stringify(viewContext.licenceData, null, 2));
 
       // Page title
-      const { document_custom_name: customName } = viewContext.crmData;
+      const { document_name: customName } = viewContext.crmData;
       const { licenceNumber } = viewContext.licenceData;
       viewContext.pageTitle = _getLicencePageTitle(view, licenceNumber, customName);
       viewContext.name = 'name' in viewContext ? viewContext.name : customName;

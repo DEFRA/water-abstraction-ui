@@ -45,7 +45,12 @@ async function getLicences (request, reply) {
 
   // Check for verifications
   const { data: verifications } = await getOutstandingVerifications(entityId);
-  view.showVerificationAlert = verifications.length > 0;
+  if (verifications.length) {
+    if (licenceCount === 0) {
+      return reply.redirect('/security-code');
+    }
+    view.showVerificationAlert = true;
+  }
 
   return baseGetLicences(request, reply);
 

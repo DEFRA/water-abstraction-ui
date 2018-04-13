@@ -173,7 +173,7 @@ module.exports = {
     path: '/admin/licences',
     handler: admin.getLicences,
     config: {
-      description: 'View list of licences with facility to sort/filter',
+      description: 'Admin: view list of licences with facility to sort/filter',
       validate: {
         query: {
           sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),

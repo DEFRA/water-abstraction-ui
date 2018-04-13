@@ -1,12 +1,14 @@
 /**
-* HAPI form validator plugin
-* Allows validation logic to be part of route configuration, automatically placing
-* validation result on current request
-*
-* @module lib/hapi-view-context-plugin
-*/
+ * HAPI form validator plugin
+ * Allows validation logic to be part of route configuration, automatically placing
+ * validation result on current request
+ *
+ * @module lib/hapi-form-validator-plugin
+ */
 const Joi = require('joi');
-const { formatViewError } = require('./helpers');
+const {
+  formatViewError
+} = require('./helpers');
 
 const formValidator = {
   register (server, options, next) {
@@ -14,10 +16,19 @@ const formValidator = {
       type: 'onPreHandler',
       method: async (request, reply) => {
         if ('formValidator' in request.route.settings.plugins) {
-          const { payload: payloadSchema, options } = request.route.settings.plugins.formValidator;
+          const {
+            payload: payloadSchema,
+            query: querySchema,
+            options
+          } = request.route.settings.plugins.formValidator;
 
-          if (payloadSchema) {
-            const { error, value } = Joi.validate(request.payload, payloadSchema, options || {});
+          const schema = payloadSchema || querySchema;
+
+          if (schema) {
+            const {
+              error,
+              value
+            } = Joi.validate(request.payload, schema, options || {});
             request.formError = error;
             request.formValue = value;
 

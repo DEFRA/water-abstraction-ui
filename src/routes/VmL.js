@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const VmL = require('../lib/VmL');
 
-const LicencesController = require('../controllers/licences');
+// const LicencesController = require('../controllers/licences');
 const AuthController = require('../controllers/authentication');
 const RegistrationController = require('../controllers/registration');
 const LicencesAddController = require('../controllers/licences-add');
@@ -80,107 +80,7 @@ module.exports = [
         }
       }
     }},
-  { method: 'GET',
-    path: '/licences',
-    handler: LicencesController.getLicences,
-    config: {
-      description: 'View list of licences with facility to sort/filter',
-      validate: {
-        query: {
-          sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate'),
-          direction: Joi.number().valid(1, -1),
-          emailAddress: Joi.string().allow('').max(254),
-          licenceNumber: Joi.string().allow('').max(32),
-          page: Joi.number().allow('').min(1)
-        }
-      }
-    }},
-  { method: 'GET',
-    path: '/licences/{licence_id}',
-    handler: LicencesController.getLicence,
-    config: {
-      description: 'View a single licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    }},
-  { method: 'POST',
-    path: '/licences/{licence_id}',
-    handler: LicencesController.postLicence,
-    config: {
-      description: 'Update the user-defined licence name',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        },
-        payload: {
-          name: Joi.string().max(32),
-          csrf_token: Joi.string().guid().required()
-        }
-      }
-    }},
 
-  { method: 'GET',
-    path: '/licences/{licence_id}/contact',
-    handler: LicencesController.getLicenceContact,
-    config: {
-      description: 'View contact info for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/conditions',
-    handler: LicencesController.getLicenceConditions,
-    config: {
-      description: 'View abstraction conditions info for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/points',
-    handler: LicencesController.getLicencePoints,
-    config: {
-      description: 'View abstraction points for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/purposes',
-    handler: LicencesController.getLicencePurposes,
-    config: {
-      description: 'View abstraction purposes for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    } },
-
-  { method: 'GET',
-    path: '/licences/{licence_id}/rename',
-    handler: LicencesController.getLicenceRename,
-    config: {
-      description: 'Set user-defined name for licence',
-      validate: {
-        params: {
-          licence_id: Joi.string().required().guid()
-        }
-      }
-    } },
   // Registration process
   { method: 'GET',
     path: '/start',

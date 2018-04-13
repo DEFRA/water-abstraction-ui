@@ -2,7 +2,9 @@
  * Creates a client connector for the CRM verification API endpoint
  * @module lib/connectors/crm-verification
  */
-const { APIClient } = require('hapi-pg-rest-api');
+const {
+  APIClient
+} = require('hapi-pg-rest-api');
 const moment = require('moment');
 const rp = require('request-promise-native').defaults({
   proxy: null,
@@ -16,6 +18,18 @@ const client = new APIClient(rp, {
     Authorization: process.env.JWT_TOKEN
   }
 });
+
+/**
+ * Get outstanding verifications for the supplied entityId
+ * @param {String} entityId - the individual entity who claimed the licences
+ * @return {Promise} resolves with list of verifications
+ */
+client.getOutstandingVerifications = function (entityId) {
+  return client.findMany({
+    entity_id: entityId,
+    date_verified: null
+  });
+};
 
 /**
  * Create a list of documents for a verification
@@ -32,7 +46,9 @@ client.addDocuments = (verificationId, documentIds) => {
       Authorization: process.env.JWT_TOKEN
     },
     json: true,
-    body: { document_id: documentIds }
+    body: {
+      document_id: documentIds
+    }
   });
 };
 

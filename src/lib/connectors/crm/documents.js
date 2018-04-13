@@ -2,8 +2,9 @@
  * Creates a client connector for the CRM verification API endpoint
  * @module lib/connectors/crm-licences
  */
-const { APIClient } = require('hapi-pg-rest-api');
-const moment = require('moment');
+const {
+  APIClient
+} = require('hapi-pg-rest-api');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
@@ -32,7 +33,10 @@ const client = new APIClient(rp, {
  * @return {Promise} resolves with array of licence records
  * @example getLicences({entity_id : 'guid'})
  */
-client.getLicences = function (filter, sort = {}, pagination = {page: 1, perPage: 100}) {
+client.getLicences = function (filter, sort = {}, pagination = {
+  page: 1,
+  perPage: 100
+}) {
   const uri = process.env.CRM_URI + '/documentHeader/filter';
   return rp({
     uri,
@@ -41,8 +45,32 @@ client.getLicences = function (filter, sort = {}, pagination = {page: 1, perPage
       Authorization: process.env.JWT_TOKEN
     },
     json: true,
-    body: { filter, sort, pagination }
+    body: {
+      filter,
+      sort,
+      pagination
+    }
   });
+};
+
+/**
+ * Get licence count - gets total number of licences the supplied entity ID
+ * can view
+ * @param {String} entityId - the individual entity ID
+ * @return {Promise} resolves with integer number of licences available
+ */
+client.getLicenceCount = async function (entityId) {
+  const {
+    pagination: {
+      totalRows
+    }
+  } = await client.getLicences({
+    entity_id: entityId
+  }, null, {
+    page: 1,
+    perPage: 1
+  });
+  return totalRows;
 };
 
 /**
@@ -52,11 +80,21 @@ client.getLicences = function (filter, sort = {}, pagination = {page: 1, perPage
  */
 client.getUnregisteredLicences = function (licenceNumbers) {
   // Get unverified licences from DB
-  return this.findMany(
-    { system_external_id: {$or: licenceNumbers}, verified: null, verification_id: null, 'metadata->IsCurrent': {$ne: 'false'} },
-    { system_external_id: +1 },
-    { page: 1, perPage: 300 }
-  );
+  return this.findMany({
+    system_external_id: {
+      $or: licenceNumbers
+    },
+    verified: null,
+    verification_id: null,
+    'metadata->IsCurrent': {
+      $ne: 'false'
+    }
+  }, {
+    system_external_id: +1
+  }, {
+    page: 1,
+    perPage: 300
+  });
 };
 
 /**
@@ -66,11 +104,21 @@ client.getUnregisteredLicences = function (licenceNumbers) {
  */
 client.getUnregisteredLicencesByIds = function (documentIds) {
   // Get unverified licences from DB
-  return this.findMany(
-    { document_id: {$or: documentIds}, verified: null, verification_id: null, 'metadata->IsCurrent': {$ne: 'false'} },
-    { system_external_id: +1 },
-    {page: 1, perPage: 300}
-  );
+  return this.findMany({
+    document_id: {
+      $or: documentIds
+    },
+    verified: null,
+    verification_id: null,
+    'metadata->IsCurrent': {
+      $ne: 'false'
+    }
+  }, {
+    system_external_id: +1
+  }, {
+    page: 1,
+    perPage: 300
+  });
 };
 
 /**
@@ -80,7 +128,9 @@ client.getUnregisteredLicencesByIds = function (documentIds) {
  * @return {Promise} resolves when name updated
  */
 client.setLicenceName = function (documentId, name) {
-  return this.updateOne(documentId, {document_name: name});
+  return this.updateOne(documentId, {
+    document_name: name
+  });
 };
 
 /**

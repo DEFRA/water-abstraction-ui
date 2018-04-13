@@ -16,25 +16,23 @@ const formValidator = {
       type: 'onPreHandler',
       method: async (request, reply) => {
         if ('formValidator' in request.route.settings.plugins) {
-          const {
-            payload: payloadSchema,
-            query: querySchema,
-            options
-          } = request.route.settings.plugins.formValidator;
+          const { payload, query, options = {} } = request.route.settings.plugins.formValidator;
+          let data, schema;
 
-          const schema = payloadSchema || querySchema;
-
-          if (schema) {
-            const {
-              error,
-              value
-            } = Joi.validate(request.payload, schema, options || {});
-            request.formError = error;
-            request.formValue = value;
-
-            // Attach to view automatically
-            request.view.errors = formatViewError(error);
+          if (payload) {
+            schema = payload;
+            data = request.payload;
+          } else if (query) {
+            schema = query;
+            data = request.query;
+          } else {
+            return reply.continue();
           }
+
+          const { error, value } = Joi.validate(data, schema, options);
+          request.formError = error;
+          request.formValue = value;
+          request.view.errors = formatViewError(error);
         }
 
         // Continue processing request

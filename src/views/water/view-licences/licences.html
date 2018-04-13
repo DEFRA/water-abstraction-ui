@@ -12,7 +12,7 @@
     </div>
   </nav>
 
-  {{#equal error.name "ValidationError" }}
+  {{#if errors.emailAddress_email }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
       That email address isn't valid
@@ -21,7 +21,7 @@
       <li><a href="#emailAddress">Re-enter the email address</a></li>
     </ul>
   </div>
-  {{/equal}}
+  {{/if}}
 
   {{#equal error.statusCode 404 }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">

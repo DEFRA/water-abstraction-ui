@@ -34,7 +34,47 @@ function mapFilter (entityId, query) {
   return filter;
 }
 
+/**
+ * Gets user-type role count from roles array
+ * @param {Array} roles - array of roles loaded from CRM
+ * @param {String|Array} type - the role type or types to match
+ * @return {Number} number of roles of specified type
+ */
+function countRoles (roles, type) {
+  // Handle array or string
+  const types = typeof (type) === 'string' ? [type] : type;
+  return roles.reduce((memo, role) => {
+    return types.includes(role.role) ? memo + 1 : memo;
+  }, 0);
+}
+
+/**
+ * Gets the licence page title based on the view, licence number and custom title
+ * @param {String} view - the handlebars view
+ * @param {String} licenceNumber - the licence number
+ * @param {String} [customTitle] - if set, the custom name given by user to licence
+ * @return {String} page title
+ */
+function getLicencePageTitle (view, licenceNumber, customName) {
+  if (view === 'water/view-licences/purposes') {
+    return `Abstraction details for ${customName || licenceNumber}`;
+  }
+  if (view === 'water/view-licences/points') {
+    return `Abstraction points for ${customName || licenceNumber}`;
+  }
+  if (view === 'water/view-licences/conditions') {
+    return `Conditions held for ${customName || licenceNumber}`;
+  }
+  if (view === 'water/view-licences/contact') {
+    return 'Your licence contact details';
+  }
+  // Default view/rename
+  return customName ? `Licence name ${customName}` : `Licence number ${licenceNumber}`;
+}
+
 module.exports = {
   mapSort,
-  mapFilter
+  mapFilter,
+  countRoles,
+  getLicencePageTitle
 };

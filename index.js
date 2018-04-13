@@ -83,6 +83,21 @@ server.register([
     options: {}
   },
   {
+    // View context plugin
+    register: require('./src/lib/hapi-view-context-plugin.js'),
+    options: {}
+  },
+  {
+    // Form validator plugin
+    register: require('./src/lib/hapi-form-validator-plugin.js'),
+    options: {}
+  },
+  {
+    // Config options plugin
+    register: require('./src/lib/hapi-config-plugin.js'),
+    options: {}
+  },
+  {
     // Holding page
     register: require('./src/lib/hapi-holding-page-plugin.js'),
     options: {
@@ -95,7 +110,8 @@ server.register([
     // See https://www.npmjs.com/package/hapi-sanitize-payload
     register: SanitizePayload,
     options: {
-      pruneMethod: 'delete'
+      pruneMethod: 'replace',
+      replaceValue: ''
     }
   },
 
@@ -125,6 +141,9 @@ server.register([
   // load routes
   server.route(require('./src/routes/public'));
   server.route(require('./src/routes/VmL'));
+
+  // Import routes from modules
+  server.route(require('./src/modules/routes'));
   server.route(require('./src/routes/status'));
 });
 

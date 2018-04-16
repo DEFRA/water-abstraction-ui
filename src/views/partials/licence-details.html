@@ -1,5 +1,13 @@
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="{{#if isAdmin }}/admin{{/if}}/licences/' licence_id '/contact">View licence contact details</a>')}}
+ <!-- Contact -->
+ <div class="data-row">
+    <div class="data-row__param">Licence holder</div>
+    <div class="data-row__value">
+      {{ concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName }}
+      <br/><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/contact">View licence contact details</a>
+    </div>
+
+ </div>
 
   <!-- Purposes -->
   <div class="data-row">

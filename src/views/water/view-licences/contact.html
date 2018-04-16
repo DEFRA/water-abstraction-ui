@@ -5,14 +5,14 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol >
-        <li><a href="/licences">{{ labels.licences }}</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="/licences/{{ licence_id }}/rename">Contact details</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/rename">Contact details</a></li>
 
       </ol>
     </div>
   </nav>
-  <a class="link-back" href="/licences/{{ licence_id }}" >Back</a>
+  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}" >Back</a>
 
 
   {{#if crmData.document_custom_name }}

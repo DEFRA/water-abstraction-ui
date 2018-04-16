@@ -109,6 +109,5 @@ module.exports = {
   makeURIRequest: makeURIRequest,
   makeURIRequestWithBody: makeURIRequestWithBody,
   forceArray,
-  formatViewError,
-  countRoles
+  formatViewError
 };

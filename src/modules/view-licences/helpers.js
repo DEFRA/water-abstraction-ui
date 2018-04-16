@@ -1,3 +1,8 @@
+const { LicenceNotFoundError } = require('./errors');
+const CRM = require('../../lib/connectors/crm');
+const Permit = require('../../lib/connectors/permit');
+const LicenceTransformer = require('../../lib/licence-transformer/');
+
 /**
  * Maps the sort in the HTTP query to the field names used internally
  * @param {Object} sort - the sorting in query, field name and direction
@@ -58,8 +63,51 @@ function getLicencePageTitle (view, licenceNumber, customName) {
   return customName ? `Licence name ${customName}` : `Licence number ${licenceNumber}`;
 }
 
+/**
+ * Loads licence data for detail view from CRM and permit repo
+ * @param {String} entityId - GUID for current individual entity
+ * @param {String} documentId - GUID for the CRM document ID
+ * @return {Promise} - resolves with CRM, permit repo and transformed licence data
+ */
+async function loadLicenceData (entityId, documentId) {
+  const filter = {
+    entity_id: entityId,
+    document_id: documentId
+  };
+
+  // Get CRM data
+  const { error, data: [documentHeader] } = await CRM.documents.getLicences(filter);
+  if (error) {
+    throw error;
+  }
+
+  if (!documentHeader) {
+    throw new LicenceNotFoundError(`Licence with document ID ${documentId} missing in CRM`);
+  }
+
+  // Get permit repo data
+  const {
+    error: permitError,
+    data: permitData
+  } = await Permit.licences.findOne(documentHeader.system_internal_id);
+  if (permitError) {
+    throw permitError;
+  }
+
+  // Transform data using NALD data transformer
+  const transformer = new LicenceTransformer();
+  await transformer.load(permitData.licence_data_value);
+
+  return {
+    documentHeader,
+    permitData,
+    viewData: transformer.export()
+  };
+}
+
 module.exports = {
   mapSort,
   mapFilter,
-  getLicencePageTitle
+  getLicencePageTitle,
+  loadLicenceData
 };

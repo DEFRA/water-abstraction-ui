@@ -10,11 +10,7 @@ const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle } = require('./helpers');
-
-const Permit = require('../../lib/connectors/permit');
-const errorHandler = require('../../lib/error-handler');
-const LicenceTransformer = require('../../lib/licence-transformer/');
+const { getLicencePageTitle, loadLicenceData } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -29,7 +25,7 @@ const LicenceTransformer = require('../../lib/licence-transformer/');
  */
 async function getLicences (request, reply) {
   const { view } = request;
-  const { entity_id: entityId, roles } = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   // Check if user has any licences
   const licenceCount = await getLicenceCount(entityId);
@@ -59,57 +55,30 @@ async function getLicences (request, reply) {
  */
 async function getLicenceDetail (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
-
-  // Get filtered list of licences
-  const filter = {
-    entity_id: entityId,
-    document_id: request.params.licence_id
-  };
+  const { licence_id: documentHeaderId } = request.params;
 
   try {
-    // Get CRM data
-    const response = await CRM.documents.getLicences(filter);
-    if (response.error) {
-      throw Boom.badImplementation(`CRM error`, response);
-    }
-    if (response.data.length !== 1) {
-      throw new Boom.notFound('Document not found in CRM', response);
-    }
-    request.view.crmData = response.data[0];
-
-    // Get permit repo data
     const {
-      error: permitError,
-      data: permitData
-    } = await Permit.licences.findOne(response.data[0].system_internal_id);
+      documentHeader,
+      viewData
+    } = await loadLicenceData(entityId, documentHeaderId);
 
-    if (permitError) {
-      throw permitError;
-    }
+    const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
+    const { view } = request;
 
-    // Handle object/JSON string
-    const {
-      licence_data_value: licenceData
-    } = permitData;
-
-    const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
-
-    const transformer = new LicenceTransformer();
-    await transformer.load(data);
-
-    request.view.licence_id = request.params.licence_id;
-    request.view.licenceData = transformer.export();
-    request.view.debug.licenceData = data;
-
-    // Page title
-    const { document_name: customName } = request.view.crmData;
-    const { licenceNumber } = request.view.licenceData;
-    request.view.pageTitle = getLicencePageTitle(request.config.view, licenceNumber, customName);
-    request.view.name = 'name' in request.view ? request.view.name : customName;
-
-    return reply.view(request.config.view, request.view);
+    return reply.view(request.config.view, {
+      ...view,
+      licence_id: documentHeaderId,
+      name: 'name' in request.view ? request.view.name : customName,
+      licenceData: viewData,
+      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName)
+    });
   } catch (error) {
-    errorHandler(request, reply)(error);
+    if (error.name === 'LicenceNotFoundError') {
+      return reply(new Boom.notFound('Licence not found', error));
+    }
+
+    reply(new Boom.badImplementation(error));
   }
 };
 
@@ -148,7 +117,7 @@ async function postLicenceRename (request, reply) {
     return reply(new Boom.badImplementation('CRM error', error2));
   }
 
-  const { redirectBasePath = '/licences/' } = request.config;
+  const { redirectBasePath = '/licences' } = request.config;
   return reply.redirect(`${redirectBasePath}/${documentId}`);
 }
 

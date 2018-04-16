@@ -32,90 +32,94 @@ const goodOptions = {
   }
 };
 
-server.register([
-  {
-    register: require('good'),
-    options: goodOptions
-  },
+server.register([{
+  register: require('good'),
+  options: goodOptions
+},
 
-  {
-    register: require('node-hapi-airbrake-js'),
-    options: {
-      key: process.env.errbit_key,
-      host: process.env.errbit_server
-    }
-  },
+{
+  register: require('node-hapi-airbrake-js'),
+  options: {
+    key: process.env.errbit_key,
+    host: process.env.errbit_server
+  }
+},
 
-  {
-    // Plugin to display the routes table to console at startup
-    // See https://www.npmjs.com/package/blipp
-    register: require('blipp'),
-    options: {
-      showAuth: true
-    }
-  }, {
-    register: require('hapi-auth-cookie')
-  },
-  {
-    // Session handling via water service
-    register: require('./src/lib/sessions/hapi-plugin.js'),
-    options: {}
-  },
-  {
-    // CSRF protection
-    register: require('./src/lib/hapi-csrf-plugin.js'),
-    options: {}
-  },
-  {
-    register: require('hapi-route-acl'),
-    options: {
-      permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
-    }
-  },
-  {
-    // Permissions handling
-    register: require('./src/lib/permissions.js').plugin,
-    options: {}
-  },
-  {
-    // Custom error handling
-    register: require('./src/lib/hapi-error-plugin.js'),
-    options: {}
-  },
-  {
-    // View context plugin
-    register: require('./src/lib/hapi-view-context-plugin.js'),
-    options: {}
-  },
-  {
-    // Form validator plugin
-    register: require('./src/lib/hapi-form-validator-plugin.js'),
-    options: {}
-  },
-  {
-    // Config options plugin
-    register: require('./src/lib/hapi-config-plugin.js'),
-    options: {}
-  },
-  {
-    // Holding page
-    register: require('./src/lib/hapi-holding-page-plugin.js'),
-    options: {
-      redirect: '/private-beta-closed',
-      ignore: /^\/public\//
-    }
-  },
-  {
-    // Plugin to recursively sanitize or prune values in a request.payload object
-    // See https://www.npmjs.com/package/hapi-sanitize-payload
-    register: SanitizePayload,
-    options: {
-      pruneMethod: 'replace',
-      replaceValue: ''
-    }
-  },
+{
+  // Plugin to display the routes table to console at startup
+  // See https://www.npmjs.com/package/blipp
+  register: require('blipp'),
+  options: {
+    showAuth: true
+  }
+}, {
+  register: require('hapi-auth-cookie')
+},
+{
+  // Session handling via water service
+  register: require('./src/lib/sessions/hapi-plugin.js'),
+  options: {}
+},
+{
+  // CSRF protection
+  register: require('./src/lib/hapi-csrf-plugin.js'),
+  options: {}
+},
+{
+  register: require('hapi-route-acl'),
+  options: {
+    permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
+  }
+},
+{
+  // Permissions handling
+  register: require('./src/lib/permissions.js').plugin,
+  options: {}
+},
+{
+  // Custom error handling
+  register: require('./src/lib/hapi-error-plugin.js'),
+  options: {}
+},
+{
+  // View context plugin
+  register: require('./src/lib/hapi-view-context-plugin.js'),
+  options: {}
+},
+{
+  // Form validator plugin
+  register: require('./src/lib/hapi-form-validator-plugin.js'),
+  options: {}
+},
+{
+  // Config options plugin
+  register: require('./src/lib/hapi-config-plugin.js'),
+  options: {}
+},
+{
+  // Config options plugin
+  register: require('./src/lib/hapi-redirect-plugin.js'),
+  options: {}
+},
+{
+  // Holding page
+  register: require('./src/lib/hapi-holding-page-plugin.js'),
+  options: {
+    redirect: '/private-beta-closed',
+    ignore: /^\/public\//
+  }
+},
+{
+  // Plugin to recursively sanitize or prune values in a request.payload object
+  // See https://www.npmjs.com/package/hapi-sanitize-payload
+  register: SanitizePayload,
+  options: {
+    pruneMethod: 'replace',
+    replaceValue: ''
+  }
+},
 
-  require('inert'), require('vision')
+require('inert'), require('vision')
 ], (err) => {
   if (err) {
     console.error(err);

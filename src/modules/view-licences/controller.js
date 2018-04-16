@@ -32,7 +32,6 @@ const Joi = require('joi');
  */
 async function getLicences (request, reply) {
   const { view } = request;
-  // const { page } = request.query;
   const { entity_id: entityId, roles } = request.auth.credentials;
 
   // Check if user has any licences

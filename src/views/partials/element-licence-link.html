@@ -1,6 +1,6 @@
 <div class="license-result">
   <h2 class="heading-medium license-result__column license-result__column--number">
-    <a href="/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a>
+    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a>
   </h2>
   <p class="license-result__column license-result__column--description">
     {{^this.document_name}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.document_name}}

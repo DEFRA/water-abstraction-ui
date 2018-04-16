@@ -88,6 +88,8 @@
   {{#if showResults}}
   <div class="license-results" id="results">
 
+
+
     {{#>element-licence-results-header this}}{{/element-licence-results-header}}
 
     {{^licenceData}}
@@ -101,7 +103,7 @@
 
     <!-- Display list of clickable licence rows/tiles -->
     {{#each licenceData}}
-      {{#>element-licence-link this}}{{/element-licence-link}}
+      {{#>element-licence-link this  isAdmin=../isAdmin}}{{/element-licence-link}}
     {{/each}}
 
   </div>

@@ -32,28 +32,38 @@ function viewContextDefaults (request) {
   // Main nav links
   viewContext.propositionLinks = [];
 
-  if (request.permissions && request.permissions.licences.read) {
-    viewContext.propositionLinks.push({
-      id: 'view',
-      text: 'View your licences',
-      url: '/licences'
-    });
-  }
-  if (request.permissions && request.permissions.licences.edit) {
-    viewContext.propositionLinks.push({
-      id: 'manage',
-      text: 'Manage your licences',
-      url: '/manage_licences'
-    });
-  }
-
+  // Admin view
   if (request.permissions && request.permissions.admin.defra) {
-    viewContext.labels.licences = 'Licences';
-    viewContext.propositionLinks.push({
-      id: 'dashboard',
-      text: 'View service usage',
-      url: '/dashboard'
-    });
+    if (request.permissions && request.permissions.licences.read) {
+      viewContext.propositionLinks.push({
+        id: 'view',
+        text: 'View licences',
+        url: '/admin/licences'
+      });
+    }
+    if (request.permissions && request.permissions.admin.defra) {
+      viewContext.labels.licences = 'Licences';
+      viewContext.propositionLinks.push({
+        id: 'dashboard',
+        text: 'View service usage',
+        url: '/dashboard'
+      });
+    }
+  } else {
+    if (request.permissions && request.permissions.licences.read) {
+      viewContext.propositionLinks.push({
+        id: 'view',
+        text: 'View your licences',
+        url: '/licences'
+      });
+    }
+    if (request.permissions && request.permissions.licences.edit) {
+      viewContext.propositionLinks.push({
+        id: 'manage',
+        text: 'Manage your licences',
+        url: '/manage_licences'
+      });
+    }
   }
 
   viewContext.user = request.auth.credentials;
@@ -63,7 +73,7 @@ function viewContextDefaults (request) {
   if (request.auth.credentials) {
     viewContext.tracking = request.auth.credentials.user_data;
   } else {
-    viewContext.tracking = {usertype: 'not_logged_in'};
+    viewContext.tracking = { usertype: 'not_logged_in' };
   }
 
   viewContext.env = process.env.NODEENV;

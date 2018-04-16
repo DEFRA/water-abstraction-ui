@@ -74,7 +74,8 @@ async function getLicenceDetail (request, reply) {
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
-      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName)
+      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
+      crmData: documentHeader
     });
   } catch (error) {
     if (error.name === 'LicenceNotFoundError') {

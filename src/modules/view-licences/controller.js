@@ -10,7 +10,7 @@ const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 
 const { getLicences: baseGetLicences } = require('./base');
-const { countRoles, getLicencePageTitle } = require('./helpers');
+const { getLicencePageTitle } = require('./helpers');
 
 const Permit = require('../../lib/connectors/permit');
 const errorHandler = require('../../lib/error-handler');
@@ -49,8 +49,7 @@ async function getLicences (request, reply) {
 
   // Count primary_user/user roles to determine if agent
   // Agents have the ability to search by user email address
-  const roleCount = countRoles(roles, ['user', 'primary_user']);
-  view.showEmailFilter = roleCount > 1;
+  view.showEmailFilter = request.permissions.licences.multi;
 
   return baseGetLicences(request, reply);
 }

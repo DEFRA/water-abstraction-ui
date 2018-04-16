@@ -35,20 +35,6 @@ function mapFilter (entityId, query) {
 }
 
 /**
- * Gets user-type role count from roles array
- * @param {Array} roles - array of roles loaded from CRM
- * @param {String|Array} type - the role type or types to match
- * @return {Number} number of roles of specified type
- */
-function countRoles (roles, type) {
-  // Handle array or string
-  const types = typeof (type) === 'string' ? [type] : type;
-  return roles.reduce((memo, role) => {
-    return types.includes(role.role) ? memo + 1 : memo;
-  }, 0);
-}
-
-/**
  * Gets the licence page title based on the view, licence number and custom title
  * @param {String} view - the handlebars view
  * @param {String} licenceNumber - the licence number
@@ -75,6 +61,5 @@ function getLicencePageTitle (view, licenceNumber, customName) {
 module.exports = {
   mapSort,
   mapFilter,
-  countRoles,
   getLicencePageTitle
 };

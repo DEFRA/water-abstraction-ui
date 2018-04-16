@@ -13,6 +13,20 @@
  */
 
 /**
+ * Gets user-type role count from roles array
+ * @param {Array} roles - array of roles loaded from CRM
+ * @param {String|Array} type - the role type or types to match
+ * @return {Number} number of roles of specified type
+ */
+function countRoles (roles, type) {
+  // Handle array or string
+  const types = typeof (type) === 'string' ? [type] : type;
+  return roles.reduce((memo, role) => {
+    return types.includes(role.role) ? memo + 1 : memo;
+  }, 0);
+}
+
+/**
  * Gets permissions available to current user based on current HAPI request
  * @param {Object} credentials - credentials from HAPI request
  * @return {Object} permissions - permissions object
@@ -22,7 +36,11 @@ async function getPermissions (credentials) {
   const permissions = {
     licences: {
       read: false,
-      edit: false
+      edit: false,
+
+      // Agents can view licences for multiple licence holders
+      // this flag is set to true
+      multi: false
     },
     admin: {
       defra: false,
@@ -39,6 +57,9 @@ async function getPermissions (credentials) {
     }
     if (roles.length === 1 && roles[0].role === 'primary_user') {
       permissions.licences.edit = true;
+    }
+    if (countRoles(roles, ['user', 'primary_user']) > 1) {
+      permissions.licences.multi = true;
     }
     const isDefraAdmin = roles.find(r => r.role === 'admin');
     if (isDefraAdmin) {

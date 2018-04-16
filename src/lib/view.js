@@ -32,6 +32,9 @@ function viewContextDefaults (request) {
   // Main nav links
   viewContext.propositionLinks = [];
 
+  // Are we in admin view?  Add a flag for templates
+  viewContext.isAdmin = /^\/admin\//.test(request.url.path);
+
   // Admin view
   if (request.permissions && request.permissions.admin.defra) {
     if (request.permissions && request.permissions.licences.read) {

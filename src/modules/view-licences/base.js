@@ -22,7 +22,7 @@ async function getLicences (request, reply) {
 
   // Check if user exists
   if (emailAddress) {
-    const { error, data } = await getUser(emailAddress);
+    const { error } = await getUser(emailAddress);
     request.view.error = error;
   }
 

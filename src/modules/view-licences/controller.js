@@ -16,9 +16,6 @@ const Permit = require('../../lib/connectors/permit');
 const errorHandler = require('../../lib/error-handler');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 
-// const {licenceRoles, licenceCount} = require('../lib/licence-helpers');
-const Joi = require('joi');
-
 /**
  * Gets a list of licences with options to filter by email address,
  * Search by licence number, and sort by number/user defined name
@@ -62,14 +59,7 @@ async function getLicences (request, reply) {
  * View details for a single licence
  */
 async function getLicenceDetail (request, reply) {
-  const {
-    entity_id: entityId
-  } = request.auth.credentials;
-
-  request.view.activeNavLink = 'view';
-
-  // const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  // request.view.activeNavLink = 'view';
+  const { entity_id: entityId } = request.auth.credentials;
 
   // Get filtered list of licences
   const filter = {
@@ -105,8 +95,6 @@ async function getLicenceDetail (request, reply) {
 
     const data = typeof (licenceData) === 'string' ? JSON.parse(licenceData) : licenceData;
 
-    // require('fs').writeFileSync('../nald-licence.json', JSON.stringify(data, null, 2));
-
     const transformer = new LicenceTransformer();
     await transformer.load(data);
 
@@ -114,15 +102,9 @@ async function getLicenceDetail (request, reply) {
     request.view.licenceData = transformer.export();
     request.view.debug.licenceData = data;
 
-    // console.log(JSON.stringify(request.view.licenceData, null, 2));
-
     // Page title
-    const {
-      document_name: customName
-    } = request.view.crmData;
-    const {
-      licenceNumber
-    } = request.view.licenceData;
+    const { document_name: customName } = request.view.crmData;
+    const { licenceNumber } = request.view.licenceData;
     request.view.pageTitle = getLicencePageTitle(request.config.view, licenceNumber, customName);
     request.view.name = 'name' in request.view ? request.view.name : customName;
 
@@ -138,62 +120,37 @@ async function getLicenceDetail (request, reply) {
  * @param {String} request.payload.name - the new name for the licence
  * @param {Object} reply - the HAPI HTTP response
  */
-function postLicenceRename (request, reply) {
-  const {
-    name
-  } = request.payload;
-  const {
-    entity_id: entityId
-  } = request.auth.credentials;
+async function postLicenceRename (request, reply) {
+  if (request.formError) {
+    return getLicenceDetail(request, reply);
+  }
 
-  // Prepare filter for filtering licence list from CRM
+  const { name } = request.formValue;
+  const { entity_id: entityId } = request.auth.credentials;
+
+  // Check user has access to supplied document
   const filter = {
     entity_id: entityId,
     document_id: request.params.licence_id
   };
 
-  // Validate supplied licence name
-  const schema = {
-    name: Joi.string().trim().required().min(2).max(32).regex(/^[a-z0-9 ']+$/i)
-  };
-  const {
-    error,
-    value
-  } = Joi.validate({
-    name
-  }, schema, {
-    abortEarly: false
-  });
-  if (error) {
-    return getLicenceDetail(request, reply, {
-      error,
-      name: request.payload.name
-    });
+  const { data, error } = await CRM.documents.getLicences(filter);
+
+  if (error || data.length === 0) {
+    return reply(new Boom.notFound('Document not found', error));
   }
 
-  CRM.documents.getLicences(filter)
-    .then((response) => {
-      if (!response || response.err) {
-        throw new Boom.badImplementation('CRM error', response);
-      }
+  const { document_id: documentId } = data[0];
 
-      if (response.data.length !== 1) {
-        throw new Boom.notFound('Document not found in CRM');
-      }
+  // Rename licence
+  const { error: error2 } = CRM.documents.setLicenceName(documentId, name);
 
-      // Get the document ID from the returned CRM data
-      const {
-        document_id: documentId
-      } = response.data[0];
+  if (error2) {
+    return reply(new Boom.badImplementation('CRM error', error2));
+  }
 
-      // Udpate licence name in CRM
-      return CRM.documents.setLicenceName(documentId, value.name);
-    })
-    .then((response) => {
-      // Licence updated - redirect to licence view
-      reply.redirect(`/licences/${request.params.licence_id}`);
-    })
-    .catch(errorHandler(request, reply));
+  const { redirectBasePath = '/licences/' } = request.config;
+  return reply.redirect(`${redirectBasePath}/${documentId}`);
 }
 
 module.exports = {

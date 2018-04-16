@@ -102,6 +102,11 @@ server.register([{
   options: {}
 },
 {
+  // Config options plugin
+  register: require('./src/lib/hapi-redirect-plugin.js'),
+  options: {}
+},
+{
   // Holding page
   register: require('./src/lib/hapi-holding-page-plugin.js'),
   options: {

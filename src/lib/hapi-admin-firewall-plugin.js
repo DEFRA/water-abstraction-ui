@@ -3,6 +3,7 @@
  *
  * @module lib/hapi-admin-firewall-plugin
  */
+/* eslint "new-cap" : ["warn", { "newIsCap": true }] */
 const Boom = require('boom');
 
 const adminFirewallPlugin = {

@@ -52,6 +52,9 @@ async function getLicences (request, reply) {
 
 /**
  * View details for a single licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {String} request.params.licence_id - CRM document header GUID
+ * @param {Object} reply - HAPI reply interface
  */
 async function getLicenceDetail (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;

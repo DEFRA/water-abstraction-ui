@@ -77,6 +77,11 @@ server.register([{
   options: {}
 },
 {
+  // Admin firewall plugin
+  register: require('./src/lib/hapi-admin-firewall-plugin.js'),
+  options: {}
+},
+{
   // Custom error handling
   register: require('./src/lib/hapi-error-plugin.js'),
   options: {}

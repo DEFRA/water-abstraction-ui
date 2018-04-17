@@ -1,5 +1,13 @@
 
-  {{>element-licence-row label='Licence holder' answer=(concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName '<br/><a href="/licences/' licence_id '/contact">View licence contact details</a>')}}
+ <!-- Contact -->
+ <div class="data-row">
+    <div class="data-row__param">Licence holder</div>
+    <div class="data-row__value">
+      {{ concat licenceData.licenceHolderTitle ' ' licenceData.licenceHolderInitials ' ' licenceData.licenceHolderName }}
+      <br/><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/contact">View licence contact details</a>
+    </div>
+
+ </div>
 
   <!-- Purposes -->
   <div class="data-row">
@@ -39,7 +47,7 @@
         </ul>
 
         {{#equal licenceData.abstractionPeriods.length 0}}
-          <a href="/licences/{{ licence_id }}/purposes">
+          <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/purposes">
             View details of your purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}},
             period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} and amounts
           </a>
@@ -70,7 +78,7 @@
         {{formatPeriod licenceData.abstractionPeriods.0.periodStart licenceData.abstractionPeriods.0.periodEnd  }}<br />
       {{/greaterThan}}
 
-      <a href="/licences/{{ licence_id }}/purposes">
+      <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/purposes">
         View details of your purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}},
         period{{#greaterThan licenceData.abstractionPeriods.length 1}}s{{/greaterThan}} and amounts
       </a>
@@ -100,12 +108,12 @@
         You have {{ licenceData.points.length }} abstraction points<br />
         {{/lessThan}}
 
-        <a href="/licences/{{ licence_id }}/points">View details of your abstraction points</a>
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/points">View details of your abstraction points</a>
 
 
       {{else}}
         {{ngrPoint licenceData.points }}<br />
-        <a href="/licences/{{ licence_id }}/points">View details of your abstraction point</a>
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/points">View details of your abstraction point</a>
       {{/greaterThan}}
 
     </div>
@@ -131,15 +139,15 @@
         You have {{ licenceData.conditions.length }} abstraction conditions<br />
         {{/lessThan}}
 
-        <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
 
 
       {{else}}
         {{#greaterThan licenceData.conditions.length 0}}
           {{licenceData.conditions.0.displayTitle }}<br />
-          <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction condition</a>
+          <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/conditions">View details of your abstraction condition</a>
         {{else}}
-          <a href="/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
+          <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/conditions">View details of your abstraction conditions</a>
         {{/greaterThan}}
 
       {{/greaterThan}}

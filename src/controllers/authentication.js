@@ -8,6 +8,7 @@ const View = require('../lib/view');
 const errorHandler = require('../lib/error-handler');
 const joiPromise = require('../lib/joi-promise');
 const signIn = require('../lib/sign-in');
+const { getPermissions } = require('../lib/permissions');
 
 class PasswordResetRequiredError extends Error {
   constructor (message, resetGuid) {
@@ -87,14 +88,17 @@ async function postSignin (request, reply) {
       if (getUser.body.reset_required && getUser.body.reset_required === 1) {
         throw new PasswordResetRequiredError('Password reset required', getUser.body.reset_guid);
       }
-
       // OK, sign in user
       return signIn.auto(request, request.payload.user_id, getUser.body.user_data, getUser.body.last_login);
     })
-    .then((session) => {
+    .then(async (session) => {
+      // Calculate permissions based on roles
+      const permissions = await getPermissions({ roles: session.roles });
+      const redirectPath = permissions.admin.defra ? '/admin/licences' : '/licences';
+
       // Resolves Chrome issue where it won't set cookie and redirect in same request
       // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}
-      return reply('<meta http-equiv="refresh" content="0; url=/licences" /><script>location.href=\'/licences\'</script>');
+      return reply(`<meta http-equiv="refresh" content="0; url=${redirectPath}" /><script>location.href='${redirectPath}';</script>`);
     })
     .catch((err) => {
       console.log(err);

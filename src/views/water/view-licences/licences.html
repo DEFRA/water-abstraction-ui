@@ -12,7 +12,7 @@
     </div>
   </nav>
 
-  {{#equal error.name "ValidationError" }}
+  {{#if errors.emailAddress_email }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
       That email address isn't valid
@@ -21,9 +21,9 @@
       <li><a href="#emailAddress">Re-enter the email address</a></li>
     </ul>
   </div>
-  {{/equal}}
+  {{/if}}
 
-  {{#equal error.statusCode 404 }}
+  {{#if error }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
       That email address isn't registered with us
@@ -32,7 +32,7 @@
       <li><a href="#emailAddress">Re-enter the email address</a></li>
     </ul>
   </div>
-  {{/equal}}
+  {{/if}}
 
 
   <h1 class="heading-large">{{ pageTitle }}</h1>
@@ -44,7 +44,14 @@
   {{/if}}
 
   {{#if enableSearch}}
-  <form novalidate method="GET" action="/licences" name="licenceSearch">
+
+  {{#if isAdmin }}
+  <p>
+    You can search for licences using user email, partial licence number or licence name
+  </p>
+  {{/if}}
+
+  <form novalidate method="GET" action="{{#if isAdmin }}/admin{{/if}}/licences" name="licenceSearch">
 
   <!-- Licence search form -->
   <div class="grid-row">
@@ -61,7 +68,7 @@
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
-        <label class="form-label form-label--bold" for="licenceNumber">Search your licences</label>
+        <label class="form-label form-label--bold" for="licenceNumber">{{#if isAdmin }}Search licences{{else}}Search your licences{{/if}}</label>
         <span class="form-hint">Enter a licence number or name</span>
         <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
@@ -78,7 +85,10 @@
 
 
   <!-- Results page goes here -->
+  {{#if showResults}}
   <div class="license-results" id="results">
+
+
 
     {{#>element-licence-results-header this}}{{/element-licence-results-header}}
 
@@ -93,10 +103,11 @@
 
     <!-- Display list of clickable licence rows/tiles -->
     {{#each licenceData}}
-      {{#>element-licence-link this}}{{/element-licence-link}}
+      {{#>element-licence-link this  isAdmin=../isAdmin}}{{/element-licence-link}}
     {{/each}}
 
   </div>
+
 
 
   {{#greaterThan pagination.pageCount 1}}
@@ -127,6 +138,7 @@
   </nav>
   {{/greaterThan}}
 
+  {{/if}}
 
   <p></p>
 

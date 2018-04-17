@@ -16,5 +16,15 @@ module.exports = {
   },
 
   VALID_PASSWORD: Joi.string().requireUppercase().requireSymbol().min(8).max(128).required(),
-  VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')).required()
+  VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')).required(),
+
+  VALID_LICENCE_QUERY: {
+    sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),
+    direction: Joi.number().valid(1, -1).default(1),
+    emailAddress: Joi.string().allow('').max(254),
+    licenceNumber: Joi.string().allow('').max(32),
+    page: Joi.number().allow('').min(1).default(1)
+  },
+
+  VALID_LICENCE_NAME: Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ']+$/i)
 };

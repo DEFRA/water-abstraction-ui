@@ -5,17 +5,17 @@
     <div class="breadcrumbs">
       {{>element-header-links}}
       <ol>
-        <li><a href="/licences">{{ labels.licences }}</a></li>
-        <li><a href="/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="/licences/{{ licence_id }}/rename">Name this licence</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/rename">Name this licence</a></li>
 
       </ol>
     </div>
   </nav>
-  <a class="link-back" href="/licences">Back</a>
+  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences">Back</a>
 
 
-  {{#if error}}
+  {{#if errors }}
   <script>
     sendEvent({category:'error', action:'rename_licence_invalid_name'})
   </script>
@@ -38,12 +38,12 @@
   <p></p>
 
   <!-- Set licence name form -->
-  <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="/licences/{{ licence_id }}">
+  <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">
 
     <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
 
-    <div class="form-group {{#if error }}form-group-error{{/if}}">
-      <label for="name" class="{{#if error }}form-label-error{{/if}}">
+    <div class="form-group {{#if errors }}form-group-error{{/if}}">
+      <label for="name" class="{{#if errors }}form-label-error{{/if}}">
 
 
 
@@ -52,7 +52,7 @@
         <span class="form-hint">You can give this licence a name to help you search for it more easily.</span>
 
         <span class="sr-only">(maximum 32 characters)</span>
-      {{#if error }}
+      {{#if errors }}
         <span class="error-message">
           Choose a name that’s 2-32 characters long and doesn’t include symbols
         </span>
@@ -60,12 +60,12 @@
 
       </label>
 
-      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{ name }}" />
+      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{#if payload }}{{ payload.name }}{{ else }}{{ name }}{{/if}}" />
 
     </div>
 
     <button type="submit" class="button">Save</button>
-    <p class="form-cancel"><a href="/licences/{{ licence_id }}">Cancel</a></p>
+    <p class="form-cancel"><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Cancel</a></p>
 
   </form>
 

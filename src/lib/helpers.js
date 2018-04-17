@@ -110,5 +110,4 @@ module.exports = {
   makeURIRequestWithBody: makeURIRequestWithBody,
   forceArray,
   formatViewError
-
 };

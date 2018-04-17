@@ -27,21 +27,22 @@ async function getLicences (request, reply) {
   const { view } = request;
   const { entity_id: entityId } = request.auth.credentials;
 
+  // Check for verifications
+  const { data: verifications } = await getOutstandingVerifications(entityId);
+
   // Check if user has any licences
   const licenceCount = await getLicenceCount(entityId);
+
+  if (licenceCount === 0 && verifications.length > 0) {
+    return reply.redirect('/security-code');
+  }
   if (licenceCount === 0) {
     return reply.redirect('/add-licences');
   }
-  view.enableSearch = licenceCount > 5;
 
-  // Check for verifications
-  const { data: verifications } = await getOutstandingVerifications(entityId);
-  if (verifications.length) {
-    if (licenceCount === 0) {
-      return reply.redirect('/security-code');
-    }
-    view.showVerificationAlert = true;
-  }
+  // Set view flags
+  view.showVerificationAlert = verifications.length > 0;
+  view.enableSearch = licenceCount > 5;
 
   // Count primary_user/user roles to determine if agent
   // Agents have the ability to search by user email address

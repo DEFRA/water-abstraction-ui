@@ -47,19 +47,19 @@ function mapFilter (entityId, query) {
  * @return {String} page title
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
-  if (view === 'water/view-licences/purposes') {
-    return `Abstraction details for ${customName || licenceNumber}`;
+  const titles = {
+    purposes: `Abstraction details for ${customName || licenceNumber}`,
+    points: `Abstraction points for ${customName || licenceNumber}`,
+    conditions: `Conditions held for ${customName || licenceNumber}`,
+    contact: 'Your licence contact details'
+  };
+
+  const key = view.split('/').pop();
+
+  if (key in titles) {
+    return titles[key];
   }
-  if (view === 'water/view-licences/points') {
-    return `Abstraction points for ${customName || licenceNumber}`;
-  }
-  if (view === 'water/view-licences/conditions') {
-    return `Conditions held for ${customName || licenceNumber}`;
-  }
-  if (view === 'water/view-licences/contact') {
-    return 'Your licence contact details';
-  }
-  // Default view/rename
+
   return customName ? `Licence name ${customName}` : `Licence number ${licenceNumber}`;
 }
 

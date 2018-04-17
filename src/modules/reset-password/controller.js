@@ -20,9 +20,15 @@ async function getResetPassword (request, reply) {
  */
 async function postResetPassword (request, reply) {
   if (request.formError) {
-    return reply.view(request.config.view, {...request.view, error: request.formError});
+    return reply.view(request.config.view, { ...request.view, error: request.formError });
   }
-  await IDM.resetPassword(request.payload.email_address);
+  try {
+    await IDM.resetPassword(request.payload.email_address);
+  } catch (error) {
+    console.log(error);
+    // Note: we don't do anything differently as we don't wish to reveal if
+    // account exists
+  }
   return reply.redirect(request.config.redirect);
 }
 

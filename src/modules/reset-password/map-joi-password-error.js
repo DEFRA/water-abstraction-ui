@@ -8,8 +8,10 @@ const { formatViewError } = require('../../lib/helpers');
 function mapJoiPasswordError (error) {
   const viewErrors = formatViewError(error);
 
+  const hasValidationErrors = (viewErrors.password_min || viewErrors.password_symbol || viewErrors.password_uppercase);
+
   return {
-    hasValidationErrors: true,
+    hasValidationErrors,
     passwordTooShort: viewErrors.password_min,
     passwordHasNoSymbol: viewErrors.password_symbol,
     passwordHasNoUpperCase: viewErrors.password_uppercase,

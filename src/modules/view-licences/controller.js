@@ -67,6 +67,8 @@ async function getLicenceDetail (request, reply) {
       viewData
     } = await loadLicenceData(entityId, documentHeaderId);
 
+    documentHeader.verifications=await CRM.getDocumentVerifications(documentHeaderId);
+
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 

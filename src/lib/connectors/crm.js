@@ -9,6 +9,7 @@ const crmVerification = require('./crm/verification');
 const crmEntities = require('./crm/entities');
 const crmDocuments = require('./crm/documents');
 const crmEntityRoles = require('./crm/entity-roles');
+const crmDocumentVerification = require('./crm/document-verification');
 
 /**
  * Gets a list of licences relating to outstanding verification
@@ -201,6 +202,22 @@ async function verify (entityId, verificationCode) {
   return {error: null, data: {verification_id: verificationId}};
 }
 
+
+/**
+ * Gets a list of verification codes and entity_nm values relating to documents
+ * @param {String} document_id - the document header ID
+ * @return {Promise} resolves with array of verification data
+ */
+async function getDocumentVerifications (document_id) {
+  // Get verifications for document
+  const {error, data} =  await crmDocumentVerification.getDocumentVerifications(document_id);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
 module.exports = {
   verification: crmVerification,
   documents: crmDocuments,
@@ -210,6 +227,7 @@ module.exports = {
   createVerification,
   getOrCreateCompanyEntity,
   getPrimaryCompany,
-  verify
+  verify,
+  getDocumentVerifications
 
 };

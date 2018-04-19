@@ -6,7 +6,6 @@
  *
  * @module lib/hapi-redirect-plugin
  */
-const { URL } = require('url');
 
 const redirectPlugin = {
   register (server, options, next) {

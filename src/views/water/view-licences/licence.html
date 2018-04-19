@@ -22,13 +22,13 @@
               {{#equal crmData.verifications.length 1}}
               We’ve sent a security code by post.
               {{#each crmData.verifications }}
-                <br>The code is <strong class="bold-small">{{verification_code}}</strong>.
+                <br>The code is <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}
 
               {{else}}
               We've sent {{crmData.verifications.length}} security codes by post
               {{#each crmData.verifications }}
-                <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>.
+                <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}
               {{/equal}}
         </div>

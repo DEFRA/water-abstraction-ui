@@ -212,11 +212,42 @@ async function getDocumentVerifications (document_id) {
   // Get verifications for document
   const {error, data} =  await crmDocumentVerification.getDocumentVerifications(document_id);
 
+  //sort by date
+  data.sort(function(a,b){
+  return new Date(b.date_created) - new Date(a.date_created);
+  });
+
+  //kludge a unique key on entity_id and document
+  data.map((verification) => {
+      verification.key = verification.entity_id+'.'+verification.document_id;
+      return verification;
+  })
+
+  //dedupe on key
+const deduped=removeDuplicates(data,'key')
+
   if (error) {
     throw error;
   }
 
-  return data;
+  return deduped;
+}
+
+function removeDuplicates(arr, key) {
+    if (!(arr instanceof Array) || key && typeof key !== 'string') {
+        return false;
+    }
+
+    if (key && typeof key === 'string') {
+        return arr.filter((obj, index, arr) => {
+            return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+        });
+
+    } else {
+        return arr.filter(function(item, index, arr) {
+            return arr.indexOf(item) == index;
+        });
+    }
 }
 module.exports = {
   verification: crmVerification,

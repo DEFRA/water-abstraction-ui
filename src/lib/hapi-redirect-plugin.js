@@ -6,7 +6,6 @@
  *
  * @module lib/hapi-redirect-plugin
  */
-const { URL } = require('url');
 
 const redirectPlugin = {
   register (server, options, next) {
@@ -21,11 +20,7 @@ const redirectPlugin = {
 
           if (utmSource || utmMedium || utmCampaign) {
             // Build the URL being redirected to
-            const { location } = request.response.headers;
-            const redirectUrl = request.connection.info.protocol +
-              '://' +
-              request.info.host +
-              location;
+            const { location: redirectUrl } = request.response.headers;
 
             const { view } = request;
 

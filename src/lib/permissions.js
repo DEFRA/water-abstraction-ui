@@ -102,7 +102,7 @@ const plugin = {
       type: 'onPreHandler',
       method (request, reply) {
         // Get permissions for current user
-        getPermissionsCb(request.auth.credentials, (err, permissions) => {
+        getPermissionsCb(request.state.sid, (err, permissions) => {
           if (err) {
             reply(err);
           } else {

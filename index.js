@@ -150,7 +150,6 @@ require('inert'), require('vision')
   // load routes
   server.route(require('./src/routes/public'));
   server.route(require('./src/routes/VmL'));
-
   // Import routes from modules
   server.route(require('./src/modules/routes'));
   server.route(require('./src/routes/status'));

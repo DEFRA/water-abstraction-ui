@@ -264,6 +264,64 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:';
 });
 
+// Handlebars helper: iterable
+// check if a value is an iterable onjevt (i.e. array or object)
+handlebars.registerHelper("iterable", function( value, data, options ){
+	// fallback...
+  var isIterable=(typeof value == 'array' || typeof value == 'object')
+	return isIterable ;
+});
+
+//get the Abstraction reform value for a licence field
+handlebars.registerHelper('getValueAR', function (path,ARData,x) {
+
+  var datapoint=ARData;
+  var found=true
+  pathArray=path.split('.')
+  try{
+    for (var p in pathArray){
+      if (datapoint[pathArray[p]]){
+        datapoint=datapoint[pathArray[p]];
+      } else {
+        found=false
+      }
+    }
+    if (found){
+    return datapoint;
+    } else {
+      return '';
+    }
+  }catch(e){
+    return ""
+  }
+
+});
+
+//get the NALD value for a licence field
+handlebars.registerHelper('getValueNALD', function (path,NALDData) {
+  var datapoint=NALDData;
+  var found=true
+  pathArray=path.split('.')
+  for (var p in pathArray){
+    if (datapoint[pathArray[p]]){
+      datapoint=datapoint[pathArray[p]];
+    } else {
+      found=false
+    }
+  }
+  if (found){
+  return datapoint;
+  } else {
+    return '';
+  }
+});
+
+//trim 
+handlebars.registerHelper('trim', function (v) {
+    return v.toString().trim()
+});
+
+
 const Path = require('path');
 
 const defaultContext = {

@@ -1,0 +1,27 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol>
+        <li>Abstraction Reform</li>
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/licences">Back</a>
+
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+  <br><br>
+  "permissions":
+  {{stringify @root.permissions}}
+
+TODO: Add AR permissions to additional users
+<hr>
+{{stringify roleEntities}}
+
+</main>
+{{> footerjs}}
+
+{{> debug}}

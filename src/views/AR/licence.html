@@ -1,0 +1,363 @@
+<!--
+TODO:
+NALD column shading
+AR column shading
+-->
+
+{{> styles}}
+<style>
+.nald{
+  background-color:rgba(0,100,0,0.15);
+  padding:2px
+}
+.ar{
+  background-color:rgba(0,0,100,0.15);
+  padding:2px
+}
+</style>
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol>
+        <li><a href="/ar">Abstraction Reform</a></li>
+        <li><a href="/ar/licences">{{ labels.licences }}</a></li>
+        <li><a href="/ar/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/ar/licences">Back</a>
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+<style>
+td{
+  vertical-align:top
+}
+th, .biggy{
+  font-weight:bold% !IMPORTANT;
+  font-size:140% !IMPORTANT;
+}
+</style>
+
+<!--
+"permissions":
+{{stringify @root.permissions}}
+-->
+
+<form method="post" action="/ar/licences/{{licence_id}}">
+  <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+  <input type="hidden" name="licence_ref" value="{{licenceData.licenceNumber}}">
+  <input type="hidden" name="ar_licence_id" value="{{ar_licence_id}}">
+  <table>
+
+    <tr><th colspan=2>AR Status</th></tr>
+
+    {{#each licenceAR.AR_state}}
+        {{#equal this '[object Object]'}}
+        <tr>
+        <td colspan=10>{{@key}}</td>
+        </tr>
+        {{#>ar_node obj=this parent=(concat 'AR_state.' @key)}}{{/ar_node}}
+        {{else}}
+        <tr>
+          <td>{{@key}}</td>
+          <td>{{this}}</td>
+          <td><input name="AR_state.{{@key}}" value="{{this}}"></td>
+        </tr>
+        {{/equal}}
+    {{/each}}
+
+
+  <tr>
+    <th colspan=1>&nbsp;</th>
+    <th class="nald">NALD data</th>
+    <th class="ar">AR Data</th>
+  </tr>
+  <tr><th colspan=1>Licence</th>
+    <th class="nald">&nbsp;</th>
+    <th class="ar">&nbsp;</th>
+  </tr>
+
+
+  {{#each megalicence.data.current_version.licence}}
+      {{#equal this '[object Object]'}}
+      <tr>
+      <td colspan=10>{{@key}}</td>
+      </tr>
+      {{#>ar_node obj=this parent=(concat 'licence.' @key)}}{{/ar_node}}
+      {{else}}
+      <tr>
+        <td>{{@key}}</td>
+        <td class="nald">{{getValueNALD (concat 'licence.' @key) @root.licenceNALD.data.current_version}}</td>
+        <td class="ar"><input name="licence.{{@key}}" value="{{getValueAR (concat 'licence.' @key) @root.licenceAR.AR_data}}"></td>
+        <!--<td>root: licence.{{@key}}</td>-->
+      </tr>
+      {{/equal}}
+  {{/each}}
+  <tr><th colspan=2>Purposes</th></tr>
+<tr><td colspan=6>
+
+</td></tr>
+  {{#each megalicence.data.current_version.purposes}}
+  <tr>
+      {{#equal this '[object Object]'}}
+      <td colspan=10>{{@key}}</td></tr>
+      {{#>ar_node obj=this parent=(concat 'purposes.' @key)}}{{/ar_node}}
+      {{else}}
+
+        <td>{{@key}}</td>
+        <td class="nald">{{getValueNALD (concat 'purposes.' @key) @root.licenceNALD.data.current_version}}</td>
+        <td class="ar"><input name="purposes.{{@key}}" value="{{getValueAR (concat 'purposes.' @key) @root.licenceAR.AR_data}}"></td>
+      {{/equal}}
+  </tr>
+  {{/each}}
+
+  <tr><th colspan=2>Primary Party</th></tr>
+  {{#each megalicence.data.current_version.party}}
+  <tr>
+      {{#equal this '[object Object]'}}
+      <td colspan=10>{{@key}}</td></tr>
+
+      {{#>ar_node obj=this}}{{/ar_node}}
+      {{else}}
+
+        <td>{{@key}}</td>
+        <td class="nald">{{getValueNALD (concat 'party.' @key) @root.licenceNALD.data.current_version}}</td>
+        <td class="ar"><input name="party.{{@key}}" value="{{getValueAR (concat 'party.' @key) @root.licenceAR.AR_data}}"></td>
+      {{/equal}}
+  </tr>
+  {{/each}}
+
+
+  <tr><th colspan=2>Primary Address</th></tr>
+  {{#each megalicence.data.current_version.address}}
+  <tr>
+      {{#equal this '[object Object]'}}
+      <td colspan=10>{{@key}}</td>
+    </tr>
+      {{#>ar_node obj=this}}{{/ar_node}}
+      {{else}}
+
+        <td>{{@key}}</td>
+        <td class="nald">{{getValueNALD (concat 'address.' @key) @root.licenceNALD.data.current_version}}</td>
+        <td class="ar"><input name="address.{{@key}}" value="{{getValueAR (concat 'address.' @key) @root.licenceAR.AR_data}}"></td>
+<!--
+        <td>{{concat 'address.' @key}}
+
+          <hr>
+          {{stringify @root.licenceAR.AR_data}}
+        </td>
+-->
+      {{/equal}}
+  </tr>
+
+  {{/each}}
+
+  <tr><td colspan=10>
+    <button class="button" type="submit" >Save Changes</button>
+  </td></tr>
+
+  <tr><th colspan=2>History</th></tr>
+
+  {{#each licenceAR.AR_log}}
+      <tr>
+      <td>{{timestamp}}</td>
+      <td>{{type}} </td>
+      <td colspan=10>
+          {{#each data}}
+            {{#equal action 'add'}}
+              <br>ADD:
+              {{#if (iterable this.new )}}
+              <br>{{this.ref}}.
+              {{#each this.new}}
+                {{#each this}}
+                {{@key}} = {{stringify this}}
+                {{/each}}
+              {{/each}}
+              {{else}}
+              <br>{{this.ref}}={{this.new}}
+              {{/if}}
+            {{/equal}}
+            {{#equal action 'change'}}
+
+            <br>MODIFY:
+            {{#if (iterable this.new )}}
+            <br>{{this.ref}}.
+            {{#each this.new}}
+              {{#each this}}
+              {{@key}} = {{stringify this}}
+              {{/each}}
+            {{/each}}
+            {{else}}
+            <br>{{this.ref}}={{this.new}} (was "{{this.old}}")
+            {{/if}}
+
+            {{/equal}}
+            {{#equal action 'remove'}}
+              <br>DELETE:
+              {{#if (iterable this.old )}}
+              <br>{{this.ref}}.
+              {{#each this.old}}
+                {{#each this}}
+                {{@key}} ("{{stringify this}}")
+                {{/each}}
+              {{/each}}
+              {{else}}
+              <br>{{this.ref}} ("{{this.old}}")
+              {{/if}}
+            {{/equal}}
+          {{/each}}
+      </tr>
+  {{/each}}
+
+</table>
+
+
+
+
+
+</form>
+<!--
+<pre>
+JSON definition:
+
+{"attributes":[
+  {
+    "id":"licence",
+    "type":"object",
+    "alias":"Licence",
+    "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+    "attributes":[
+
+    {{#each megalicence.data.current_version.licence}}
+        {{#equal this '[object Object]'}}
+          {
+          "id":"{{trim @key}}",
+          "type":"object",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[
+            {{#>json_ar_node obj=this parent=(concat 'licence.' @key)}}{{/json_ar_node}}
+          ]
+          }
+        {{else}}
+          {
+          "id":"{{trim @key}}",
+          "type":"text",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[]
+          }
+        {{/equal}}
+        ,
+    {{/each}}
+    ]
+  },
+  {
+    "id":"purposes",
+    "type":"object",
+    "alias":"purposes",
+    "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+    "attributes":[
+
+  {{#each megalicence.data.current_version.purposes}}
+        {{#equal this '[object Object]'}}
+          {
+          "id":"{{trim @key}}",
+          "type":"object",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[
+            {{#>json_ar_node obj=this parent=(concat 'licence.' @key)}}{{/json_ar_node}}
+          ]
+          }
+        {{else}}
+          {
+          "id":"{{trim @key}}",
+          "type":"text",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[]
+          }
+        {{/equal}}
+        ,
+    {{/each}}
+    ]
+  }
+  ,
+  {
+    "id":"party",
+    "type":"object",
+    "alias":"party",
+    "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+    "attributes":[
+
+  {{#each megalicence.data.current_version.party}}
+        {{#equal this '[object Object]'}}
+          {
+          "id":"{{trim @key}}",
+          "type":"object",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[
+            {{#>json_ar_node obj=this parent=(concat 'licence.' @key)}}{{/json_ar_node}}
+          ]
+          }
+        {{else}}
+          {
+          "id":"{{trim @key}}",
+          "type":"text",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[]
+          }
+        {{/equal}}
+        ,
+    {{/each}}
+    ]
+  },
+  ,
+  {
+    "id":"address",
+    "type":"object",
+    "alias":"address",
+    "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+    "attributes":[
+
+  {{#each megalicence.data.current_version.address}}
+        {{#equal this '[object Object]'}}
+          {
+          "id":"{{trim @key}}",
+          "type":"object",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[
+            {{#>json_ar_node obj=this parent=(concat 'licence.' @key)}}{{/json_ar_node}}
+          ]
+          }
+        {{else}}
+          {
+          "id":"{{trim @key}}",
+          "type":"text",
+          "alias":"{{trim @key}}",
+          "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+          "attributes":[]
+          }
+        {{/equal}}
+        ,
+    {{/each}}
+    ]
+  },
+
+
+
+
+</pre>
+-->
+</main>
+{{> footerjs}}
+
+{{> debug}}

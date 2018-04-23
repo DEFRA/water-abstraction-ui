@@ -34,6 +34,7 @@ function viewContextDefaults (request) {
 
   // Are we in admin view?  Add a flag for templates
   viewContext.isAdmin = /^\/admin\//.test(request.url.path);
+  viewContext.isAbstractionReform = /^\/ar\//.test(request.url.path);
   viewContext.isTestMode = process.env.test_mode;
 
   // Admin view

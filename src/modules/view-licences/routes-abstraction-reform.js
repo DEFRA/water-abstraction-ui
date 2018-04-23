@@ -20,7 +20,7 @@ module.exports = {
       description: 'AR Menu',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction Reform',
+          pageTitle: 'Abstraction Reform'
         }
       }
     }

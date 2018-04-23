@@ -39,7 +39,10 @@ async function getLicences(request, reply) {
  * Main AR entry page
  */
 function menu(request, reply) {
-  return reply.view('ar/main');
+  const {
+    view
+  } = request;
+  return reply.view('ar/main',view);
 }
 
 async function updateLicence(request, reply) {

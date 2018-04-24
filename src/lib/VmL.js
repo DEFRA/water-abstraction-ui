@@ -31,6 +31,7 @@ function getFeedback (request, reply) {
 function dashboard (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Dashboard';
+  viewContext.activeNavLink = 'dashboard';
   return reply.view('water/dashboard', viewContext);
 }
 

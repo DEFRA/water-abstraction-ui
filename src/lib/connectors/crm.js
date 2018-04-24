@@ -9,6 +9,7 @@ const crmVerification = require('./crm/verification');
 const crmEntities = require('./crm/entities');
 const crmDocuments = require('./crm/documents');
 const crmEntityRoles = require('./crm/entity-roles');
+const crmDocumentVerification = require('./crm/document-verification');
 
 /**
  * Gets a list of licences relating to outstanding verification
@@ -64,7 +65,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
 
   const { verification_id: verificationId } = res.data;
 
-  const res2 = await crmDocuments.updateMany({document_id: {$or: documentIds}}, {verification_id: verificationId});
+  const res2 = await crmVerification.addDocuments(verificationId, documentIds);
 
   if (res2.error) {
     throw res2.error;
@@ -176,21 +177,78 @@ async function verify (entityId, verificationCode) {
   }
   const { verification_id: verificationId } = res.data[0];
 
-  // Update document headers
-  const res2 = await crmDocuments.updateMany({verification_id: verificationId}, {company_entity_id: companyEntityId, verified: 1});
+  // Get list of documents for this verification
+  const res2 = await crmVerification.getDocuments(verificationId);
   if (res2.error) {
     throw res2.error;
   }
+  const documentIds = res2.data.map(row => row.document_id);
 
-  // Update verification record
-  const res3 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  // Update document headers
+  const res3 = await crmDocuments.updateMany(
+    {document_id: {$in: documentIds}, company_entity_id: null, verified: null},
+    {verification_id: verificationId, company_entity_id: companyEntityId, verified: 1}
+  );
   if (res3.error) {
     throw res3.error;
+  }
+
+  // Update verification record
+  const res4 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  if (res4.error) {
+    throw res4.error;
   }
 
   return {error: null, data: {verification_id: verificationId}};
 }
 
+
+/**
+ * Gets a list of verification codes and entity_nm values relating to documents
+ * @param {String} document_id - the document header ID
+ * @return {Promise} resolves with array of verification data
+ */
+async function getDocumentVerifications (document_id) {
+  // Get verifications for document
+  const {error, data} =  await crmDocumentVerification.getDocumentVerifications(document_id);
+
+  //sort by date
+  data.sort(function(a,b){
+  return new Date(b.date_created) - new Date(a.date_created);
+  });
+
+  //kludge a unique key on entity_id and document
+  data.map((verification) => {
+      verification.key = verification.entity_id+'.'+verification.document_id;
+      return verification;
+  })
+
+  //dedupe on key
+const deduped=removeDuplicates(data,'key')
+
+  if (error) {
+    throw error;
+  }
+
+  return deduped;
+}
+
+function removeDuplicates(arr, key) {
+    if (!(arr instanceof Array) || key && typeof key !== 'string') {
+        return false;
+    }
+
+    if (key && typeof key === 'string') {
+        return arr.filter((obj, index, arr) => {
+            return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+        });
+
+    } else {
+        return arr.filter(function(item, index, arr) {
+            return arr.indexOf(item) == index;
+        });
+    }
+}
 module.exports = {
   verification: crmVerification,
   documents: crmDocuments,
@@ -200,6 +258,7 @@ module.exports = {
   createVerification,
   getOrCreateCompanyEntity,
   getPrimaryCompany,
-  verify
+  verify,
+  getDocumentVerifications
 
 };

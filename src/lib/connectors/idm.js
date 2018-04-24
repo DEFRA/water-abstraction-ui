@@ -3,7 +3,9 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const { APIClient } = require('hapi-pg-rest-api');
+const {
+  APIClient
+} = require('hapi-pg-rest-api');
 const client = new APIClient(rp, {
   endpoint: process.env.IDM_URI + '/user',
   headers: {
@@ -40,7 +42,12 @@ function resetPassword (email, mode = 'reset', params = {}) {
  * @return {Promise} resolves with user record if found or null otherwise
  */
 async function getUserByResetGuid (reset_guid) {
-  const {error, data} = await client.findMany({reset_guid});
+  const {
+    error,
+    data
+  } = await client.findMany({
+    reset_guid
+  });
   if (error) {
     throw error;
   }
@@ -70,24 +77,27 @@ function createUserWithoutPassword (emailAddress) {
  * @param {String|Number} numeric ID or string email address
  * @return {Promise} resolves with user if found
  */
-function getUser (user_id) {
-  return client.findOne(user_id.toLowerCase());
+function getUser (userId) {
+  return client.findOne(userId.toLowerCase());
 }
 
 function login (user_name, password) {
   return new Promise((resolve, reject) => {
-    var data = { user_name: user_name, password: password };
+    var data = {
+      user_name: user_name,
+      password: password
+    };
     var uri = process.env.IDM_URI + '/user/login' + '?token=' + process.env.JWT_TOKEN;
     var method = 'post';
     Helpers.makeURIRequestWithBody(uri, method, data)
       .then((response) => {
-      // console.log('login response')
-      // console.log(response.body)
+        // console.log('login response')
+        // console.log(response.body)
         response.body.sessionGUID = Helpers.createGUID();
         resolve(response);
       }).catch((response) => {
-      // console.log(response)
-      // console.log('rejecting in idm.login')
+        // console.log(response)
+        // console.log('rejecting in idm.login')
         reject(response);
       });
   });
@@ -95,7 +105,10 @@ function login (user_name, password) {
 
 function verifyCredentials (user_name, password) {
   return new Promise((resolve, reject) => {
-    var data = { user_name: user_name, password: password };
+    var data = {
+      user_name: user_name,
+      password: password
+    };
     var uri = process.env.IDM_URI + '/user/login' + '?token=' + process.env.JWT_TOKEN;
     var method = 'post';
     Helpers.makeURIRequestWithBody(uri, method, data)
@@ -147,14 +160,12 @@ function updatePasswordWithGuid (resetGuid, password) {
   });
 }
 
-
 const usersClient = new APIClient(rp, {
-  endpoint: `${ process.env.IDM_URI }/user`,
-  headers : {
-    Authorization : process.env.JWT_TOKEN
+  endpoint: `${process.env.IDM_URI}/user`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
   }
 });
-
 
 module.exports = {
   login: login,

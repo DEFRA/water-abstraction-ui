@@ -1,0 +1,79 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
+        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/licences">Back</a>
+
+{{#if isAdmin }}
+  {{#equal crmData.verified 1}}
+  {{else}}
+    {{#if crmData.verifications}}
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <div class="panel panel-border-wide alert-default big-space">
+              {{#equal crmData.verifications.length 1}}
+              We’ve sent a security code by post.
+              {{#each crmData.verifications }}
+                <br>The code is <strong class="bold-small">{{verification_code}}</strong>
+              {{/each}}
+
+              {{else}}
+              We've sent {{crmData.verifications.length}} security codes by post
+              {{#each crmData.verifications }}
+                <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>
+              {{/each}}
+              {{/equal}}
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  {{/equal}}
+{{/if}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+  <p>Starts {{ formatDate licenceData.effectiveDate }}
+     {{#if licenceData.expiryDate }}
+      and ends {{ formatToDate licenceData.expiryDate }}
+     {{else}}
+      and has no end date
+     {{/if}}
+   </p>
+
+  <!-- User-defined licence name row -->
+  <div class="data-row">
+    <div class="data-row__param">Licence name</div>
+    <div class="data-row__value">
+
+
+      <!-- Current licence name -->
+      {{#if crmData.document_name }}
+        {{ crmData.document_name}}
+        <br />
+        <a id="showForm" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/rename">Rename this licence</a>
+      {{/if}}
+      {{^crmData.document_name }}
+        No name chosen
+        <br />
+        <a id="nameLicence" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/rename">Name this licence</a>
+      {{/crmData.document_name}}
+
+    </div>
+  </div>
+
+
+  {{>licence-details }}
+
+
+</main>
+{{> footerjs}}
+
+{{> debug}}

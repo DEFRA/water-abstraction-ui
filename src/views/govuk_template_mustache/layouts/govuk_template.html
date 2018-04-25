@@ -74,8 +74,9 @@
 
              {{#if isAuthenticated}}
              <ul id="proposition-links">
-               <li><a href="/update_password">Change password</a></li>
-               <li><a href="/signout">Sign out</a></li>
+               {{#each propositionLinks }}
+               <li class="navlink"><a class="{{#equal this.id ../activeNavLink }}active{{/equal}}" href="{{ this.url }}">{{ this.text }}</a></li>
+               {{/each}}
              </ul>
              {{/if}}
            </nav>

@@ -1,21 +1,11 @@
 {{> styles}}
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
-  <nav>
-    <div class="breadcrumbs">
-      
-      <ol>
-        <li><a href="/licences">{{ labels.licences }}</a></li>
-        <li><a href="/manage_licences">Manage licences</a></li>
-        <li><a href="/manage_licences/add_access">Add access</a></li>
 
-      </ol>
-    </div>
-  </nav>
 
   <div class="grid-row">
       <div class="column-two-thirds">
-        <a href="#" class="link-back" onclick="history.go(-1)">Back</a>
+        <!-- <a href="#" class="link-back" onclick="history.go(-1)">Back</a> -->
         {{>element-heading-large content='Give access to view your licences'}}
 
   <form novalidate method="post" action="/manage_licences/add_access" class="form">

@@ -11,7 +11,8 @@ module.exports = {
       description: 'Update password: enter current password',
       plugins: {
         viewContext: {
-          pageTitle: 'Enter your current password'
+          pageTitle: 'Enter your current password',
+          activeNavLink: 'change-password'
         }
       }
     }
@@ -30,7 +31,8 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Change your password'
+          pageTitle: 'Change your password',
+          activeNavLink: 'change-password'
         },
         formValidator: {
           payload: {
@@ -58,7 +60,8 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Change your password'
+          pageTitle: 'Change your password',
+          activeNavLink: 'change-password'
         },
         formValidator: {
           payload: {
@@ -83,7 +86,8 @@ module.exports = {
       description: 'Update password: success',
       plugins: {
         viewContext: {
-          pageTitle: 'Your password has been changed'
+          pageTitle: 'Your password has been changed',
+          activeNavLink: 'change-password'
         }
       }
     },

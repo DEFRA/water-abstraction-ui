@@ -28,9 +28,9 @@ async function postConfirmPassword (request, reply) {
     const authtoken = createGUID();
     request.sessionStore.set('authToken', authtoken);
 
-    return reply.view('water/update-password/update_password_verified_password', {authtoken, ...request.view});
+    return reply.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });
   } catch (error) {
-    return reply.view('water/update-password/update_password', {error, ...request.view});
+    return reply.view('water/update-password/update_password', { error, ...request.view });
   }
 }
 
@@ -46,7 +46,7 @@ async function postSetPassword (request, reply) {
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
     const { authtoken } = request.payload;
-    return reply.view('water/update-password/update_password_verified_password', {...request.view, errors, authtoken});
+    return reply.view('water/update-password/update_password_verified_password', { ...request.view, errors, authtoken });
   }
 
   try {

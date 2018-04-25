@@ -174,9 +174,26 @@ module.exports = [
   {
     method: 'GET',
     path: '/manage_licences',
-    handler: LicencesManageController.getAccessList,
+    handler: LicencesManageController.getManage,
     config: {
       description: 'Manage licences - main page',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        },
+        viewContext: {
+          pageTitle: 'Manage your licences',
+          activeNavLink: 'manage'
+        }
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/manage_licences/access',
+    handler: LicencesManageController.getAccessList,
+    config: {
+      description: 'Manage licences - give/remove access',
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']

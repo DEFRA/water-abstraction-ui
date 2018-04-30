@@ -1,29 +1,20 @@
 {{> styles}}
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
-  <nav>
-    <div class="breadcrumbs">
-      
-      <ol >
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/points">Abstraction points</a></li>
 
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}" >Back</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ licenceData.licenceNumber }}</a>
 
 
   <div class="grid-row">
       <div class="column-full">
-        <h1 class="heading-large">Abstraction points for
-            {{#if crmData.document_custom_name }}
-            licence name: {{ crmData.document_custom_name }}
-            {{else}}
-            licence number {{ licenceData.licenceNumber }}
-            {{/if}}
+        {{#if crmData.document_name }}
+        <h1 class="heading-large heading-large--tight-above">
+          <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+          Abstraction points for licence name {{ crmData.document_name }}
         </h1>
+        {{else}}
+        <h1 class="heading-large heading-large--tight-above">Abstraction points for licence number {{ licenceData.licenceNumber }}</h1>
+        {{/if}}
       </div>
   </div>
 

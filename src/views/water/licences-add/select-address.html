@@ -1,18 +1,8 @@
 {{> styles}}
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
-  <!-- <nav>
-    <div class="breadcrumbs">
 
-      <ol>
-        <li><a href="/licences">{{ labels.licences }}</a></li>
-        <li><a href="/manage_licences_add">Manage your licences</a></li>
-        <li><a href="/add-licences">Request access</a></li>
-      </ol>
-    </div>
-  </nav>
-
-  <a class="link-back" href="/select-licences">Back</a> -->
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -32,7 +22,7 @@
      </div>
       {{/equal}}
 
-      <h1 class="heading-large">{{ pageTitle }}</h1>
+      <h1 class="heading-large heading-large--tight-above">{{ pageTitle }}</h1>
 
       <form method="POST" action="/select-address">
 

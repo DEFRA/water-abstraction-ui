@@ -1,16 +1,15 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
+  {{>element-phase-tag}}{{>element-main-nav}}
   <nav>
     <div class="breadcrumbs">
-      {{>element-header-links}}
+
       <ol>
         <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
         <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
       </ol>
     </div>
   </nav>
-  <a class="link-back" href="/licences">Back</a>
 
 {{#if isAdmin }}
   {{#equal crmData.verified 1}}

@@ -30,6 +30,7 @@ $path: "/public/images/";
 @import "blocks/licence_rename";
 @import "blocks/data_row";
 @import "blocks/pagination";
+@import "blocks/navbar";
 
 * {
 family: "nta", Arial, sans-serif;
@@ -492,6 +493,29 @@ nav.tabs {
 
       &:first-child a {
         margin-left: 0;
+      }
+    }
+  }
+}
+
+// Align title/utility nav right
+#global-header .header-proposition {
+  #proposition-menu {
+    #proposition-name {
+      @media screen and (min-width: 641px) {
+        float: right;
+      }
+    }
+    #proposition-links {
+      @media screen and (min-width: 641px) {
+        float: right;
+      }
+
+      li {
+        @media screen and (min-width: 641px) {
+          padding-left: 15px;
+          padding-right: 0;
+        }
       }
     }
   }

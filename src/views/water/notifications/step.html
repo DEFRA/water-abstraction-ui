@@ -1,0 +1,26 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ task.config.title }}</h1>
+
+  <p>{{ step.content }}</p>
+
+  <form method="POST" action="{{ formAction }}">
+
+    <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
+
+    {{#each step.widgets }}
+      {{#equal this.widget 'dropdown' }}
+        {{>widget-dropdown this }}
+      {{/equal}}
+    {{/each}}
+
+    <button type="submit" class="button">Continue</button>
+
+  </form>
+</main>
+
+
+{{> footerjs}}
+{{> debug}}

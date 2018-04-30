@@ -28,12 +28,12 @@ function getFeedback (request, reply) {
   return reply.view('water/feedback', viewContext);
 }
 
-function dashboard (request, reply) {
-  var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Dashboard';
-  viewContext.activeNavLink = 'dashboard';
-  return reply.view('water/dashboard', viewContext);
-}
+// function dashboard (request, reply) {
+//   var viewContext = View.contextDefaults(request);
+//   viewContext.pageTitle = 'Dashboard';
+//   viewContext.activeNavLink = 'dashboard';
+//   return reply.view('water/dashboard', viewContext);
+// }
 
 function getHoldingPage (request, reply) {
   const viewContext = View.contextDefaults(request);
@@ -47,6 +47,6 @@ module.exports = {
   getPrivacyPolicy,
   fourOhFour: fourOhFour,
   getFeedback: getFeedback,
-  dashboard,
+  // dashboard,
   getHoldingPage
 };

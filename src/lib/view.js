@@ -7,6 +7,7 @@ function viewContextDefaults (request) {
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
+
   // H1 page title
   viewContext.pageTitle = 'Water Abstraction';
   // Title tag - if different from page title
@@ -46,16 +47,19 @@ function viewContextDefaults (request) {
     }
     if (request.permissions && request.permissions.admin.defra) {
       viewContext.labels.licences = 'Licences';
-      viewContext.mainNavLinks.push({
-        id: 'notifications',
-        text: 'Reports and notifications',
-        url: '/admin/notifications'
-      });
-      viewContext.mainNavLinks.push({
-        id: 'dashboard',
-        text: 'View service usage',
-        url: '/dashboard'
-      });
+
+      if (process.env.test_mode) {
+        viewContext.mainNavLinks.push({
+          id: 'notifications',
+          text: 'Reports and notifications',
+          url: '/admin/notifications'
+        });
+      }
+      // viewContext.mainNavLinks.push({
+      //   id: 'dashboard',
+      //   text: 'View service usage',
+      //   url: '/dashboard'
+      // });
     }
   } else {
     if (request.permissions && request.permissions.licences.read) {

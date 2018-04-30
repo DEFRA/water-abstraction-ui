@@ -371,19 +371,19 @@ module.exports = [
       }
     }
   },
-  {
-    method: 'GET',
-    path: '/dashboard',
-    handler: VmL.dashboard,
-    config: {
-      description: 'System Dashboard',
-      plugins: {
-        hapiRouteAcl: {
-          permissions: ['admin:defra']
-        }
-      }
-    }
-  },
+  // {
+  //   method: 'GET',
+  //   path: '/dashboard',
+  //   handler: VmL.dashboard,
+  //   config: {
+  //     description: 'System Dashboard',
+  //     plugins: {
+  //       hapiRouteAcl: {
+  //         permissions: ['admin:defra']
+  //       }
+  //     }
+  //   }
+  // },
 
   {
     method: '*',

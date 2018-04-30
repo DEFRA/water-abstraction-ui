@@ -59,6 +59,10 @@ family: "nta", Arial, sans-serif;
 .alert-default {
   border-color: #008EC9;
   background-color: #E8F4FA;
+
+  @media screen and (min-width: 641px) {
+    width : 66%;
+  }
 }
 
 

@@ -19,11 +19,10 @@ const config = [{
       validation: null
     }],
     steps: [{
-      content: 'Add licences to this notification.',
       widgets: [{
-        name: 'licenceNumbers',
+        name: 'system_external_id',
         widget: 'textarea',
-        label: 'Area',
+        label: 'Add licences to this notification.',
         operator: '$in',
         mapper: 'licenceNumbers'
       }]
@@ -43,6 +42,17 @@ We are sending you a message about...
     title: 'Send an expiry notification',
     permissions: ['admin:defra'],
     formats: ['email', 'letter'],
+    steps: [{
+      widgets: [{
+        name: 'system_external_id',
+        widget: 'textarea',
+        label: 'Add licences to this notification.',
+        operator: '$in',
+        mapper: 'licenceNumbers'
+      }]
+    }]
+
+    /*
     steps: [{
       content: 'Choose an area to send this notification to.',
       widgets: [{
@@ -75,6 +85,7 @@ We are sending you a message about...
     }
 
     ]
+    */
   }
 }];
 
@@ -125,7 +136,9 @@ async function getStep (request, reply) {
     taskData.processRequest(request.payload, index - 1);
   }
 
-  console.log(taskData);
+  const formAction = index < task.config.steps.length - 1
+    ? `/admin/notifications/${id}?step=${index + 1}`
+    : `/admin/notifications/${id}/refine`;
 
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
@@ -144,12 +157,37 @@ async function getStep (request, reply) {
     task,
     index,
     step,
-    formAction: `/admin/notifications/${id}?step=${index + 1}`,
+    formAction,
     data: taskData.toJson()
   };
   return reply.view('water/notifications/step', view);
 }
+
+/**
+ * Refine audience step
+ * We retrieve the list of licences matching the search criteria from the
+ * previous steps, then allow the user to deselect some if desired
+ */
+async function postRefine (request, reply) {
+  const id = parseInt(request.params.id, 10);
+
+  // Find the requested task
+  const task = find(config, (row) => row.id === id);
+
+  const step = task.config.steps.length;
+
+  const taskData = new TaskData(task);
+
+  // Load data from previous step(s) and process current request
+  taskData.fromJson(request.payload.data);
+  taskData.processRequest(request.payload, step - 1);
+
+  // Build CRM query filter
+  const filter = taskData.getFilter();
+}
+
 module.exports = {
   getIndex,
-  getStep
+  getStep,
+  postRefine
 };

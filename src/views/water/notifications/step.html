@@ -2,9 +2,16 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
+  {{#if index }}
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  {{/if}}
+
+
   <h1 class="heading-large">{{ task.config.title }}</h1>
 
+  {{#if step.content }}
   <p>{{ step.content }}</p>
+  {{/if}}
 
   <form method="POST" action="{{ formAction }}">
 

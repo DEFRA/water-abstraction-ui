@@ -100,6 +100,26 @@ class TaskData {
       this.data[name] = this.mappers[mapper].import(name, payload);
     });
   }
+
+  /**
+   * Export mongo-sql style filter for use in query
+   * @return Object
+   */
+  getFilter () {
+    // Build query filter
+    const filter = {};
+    this.task.config.steps.forEach(step => {
+      step.widgets.forEach(widget => {
+        if (widget.operator === '=') {
+          filter[widget.name] = this.data[widget.name];
+        }
+        if (widget.operator === '$in') {
+          filter[widget.name] = { $in: this.data[widget.name] };
+        }
+      });
+    });
+    return filter;
+  }
 }
 
 module.exports = TaskData;

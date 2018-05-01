@@ -43,5 +43,19 @@ module.exports = {
   postStep: {
     ...getStep,
     method: 'POST'
+  },
+  postRefine: {
+    method: 'POST',
+    path: '/admin/notifications/{id}/refine',
+    config: {
+      description: 'Notification: refine audience',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.postRefine
   }
 };

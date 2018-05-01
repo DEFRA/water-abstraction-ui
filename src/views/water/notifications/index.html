@@ -18,7 +18,7 @@
       <h2 class="heading-medium">Send a notification</h2>
       <ul class="list list-bullet">
         {{#each tasks}}
-        <li><a href="/admin/notifications/{{ this.id }}">{{ this.config.name }}</a></li>
+        <li><a href="/admin/notifications/{{ this.task_config_id }}">{{ this.config.name }}</a></li>
         {{/each}}
       </ul>
     </div>

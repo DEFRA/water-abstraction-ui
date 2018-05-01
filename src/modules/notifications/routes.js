@@ -1,6 +1,29 @@
 const Joi = require('joi');
 const controller = require('./controller');
 
+const getStep = {
+  method: 'GET',
+  path: '/admin/notifications/{id}',
+  config: {
+    description: 'Admin view step of notification task',
+    validate: {
+      params: {
+        id: Joi.number()
+      },
+      query: {
+        step: Joi.number().default(0)
+      }
+    },
+    plugins: {
+      viewContext: {
+        pageTitle: 'Reports and notifications',
+        activeNavLink: 'notifications'
+      }
+    }
+  },
+  handler: controller.getStep
+};
+
 module.exports = {
   getResetPassword: {
     method: 'GET',
@@ -16,26 +39,9 @@ module.exports = {
     },
     handler: controller.getIndex
   },
-  getStep: {
-    method: 'GET',
-    path: '/admin/notifications/{id}',
-    config: {
-      description: 'Admin view step of notification task',
-      validate: {
-        params: {
-          id: Joi.number()
-        },
-        query: {
-          step: Joi.number().default(0)
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Reports and notifications',
-          activeNavLink: 'notifications'
-        }
-      }
-    },
-    handler: controller.getStep
+  getStep,
+  postStep: {
+    ...getStep,
+    method: 'POST'
   }
 };

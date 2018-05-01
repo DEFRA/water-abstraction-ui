@@ -8,11 +8,17 @@
 
   <form method="POST" action="{{ formAction }}">
 
-    <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+    <input type="hidden" name="step" value="{{ index }}" />
+    <input type="hidden" name="data" value="{{ data }}" />
 
     {{#each step.widgets }}
       {{#equal this.widget 'dropdown' }}
         {{>widget-dropdown this }}
+      {{/equal}}
+      {{#equal this.widget 'date' }}
+        {{>widget-date this }}
       {{/equal}}
     {{/each}}
 

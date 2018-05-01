@@ -186,8 +186,6 @@ async function postRefine (request, reply) {
   // Build CRM query filter
   const filter = taskData.getFilter();
 
-  console.log(filter);
-
   // Get documents data from CRM
   const { error, data, pagination } = await documents.findMany(filter, {}, {
     page: 1,
@@ -200,11 +198,17 @@ async function postRefine (request, reply) {
     return reply(error);
   }
 
+  const formAction = task.config.variables
+    ? `/admin/notifications/${id}/variables`
+    : `/admin/notifications/${id}/confirm`;
+
   const view = {
     ...request.view,
     pagination,
     results: data,
-    task
+    task,
+    formAction,
+    data: taskData.toJson()
   };
 
   return reply.view('water/notifications/refine', view);

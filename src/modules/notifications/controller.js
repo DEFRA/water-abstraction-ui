@@ -184,6 +184,9 @@ async function postRefine (request, reply) {
 
   // Build CRM query filter
   const filter = taskData.getFilter();
+
+  console.log(taskData);
+  console.log(filter);
 }
 
 module.exports = {

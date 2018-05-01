@@ -63,7 +63,14 @@ class TaskData {
     this.task = task;
 
     // Initialise data to empty state
-    this.data = {};
+    this.data = {
+      // The query data input by the user
+      query: {},
+      // List of licence numbers following refine audience step
+      licenceNumbers: [],
+      // Custom template parameter data
+      params: {}
+    };
 
     // Initialise available mappers
     this.mappers = {
@@ -97,7 +104,7 @@ class TaskData {
   processRequest (payload, step) {
     this.task.config.steps[step].widgets.forEach(widget => {
       const { name, mapper = 'default' } = widget;
-      this.data[name] = this.mappers[mapper].import(name, payload);
+      this.data.query[name] = this.mappers[mapper].import(name, payload);
     });
   }
 
@@ -111,10 +118,10 @@ class TaskData {
     this.task.config.steps.forEach(step => {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
-          filter[widget.name] = this.data[widget.name];
+          filter[widget.name] = this.data.query[widget.name];
         }
         if (widget.operator === '$in') {
-          filter[widget.name] = { $in: this.data[widget.name] };
+          filter[widget.name] = { $in: this.data.query[widget.name] };
         }
       });
     });

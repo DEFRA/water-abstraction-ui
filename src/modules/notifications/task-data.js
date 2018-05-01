@@ -110,6 +110,9 @@ class TaskData {
 
   /**
    * Export query data using mappers
+   * this returns an object with all the query fields the user has filled in,
+   * with the data mapped from the internal format (e.g. 2018-06-01) back to
+   * a form in which it was input {day :1, month : 6, year: 2018}
    * @return {Object}
    */
   exportQuery () {

@@ -217,6 +217,10 @@ async function postRefine (request, reply) {
   return reply.view('water/notifications/refine', view);
 }
 
+async function postConfirm (request, reply) {
+  console.log(request.payload);
+}
+
 // async function getRefineAudience (request, reply) {
 //   const { id } = request.params;
 //   const licence_numbers = ['03/28/03/0071', '7/35/03/*G/0025', '18/54/023/S/022'];
@@ -240,6 +244,7 @@ async function postRefine (request, reply) {
 module.exports = {
   getIndex,
   getStep,
-  postRefine
+  postRefine,
+  postConfirm
   // getRefineAudience
 };

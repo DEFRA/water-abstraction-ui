@@ -62,27 +62,14 @@ module.exports = {
       }
     },
     handler: controller.postRefine
+  },
+  postConfirm: {
+    method: 'POST',
+    path: '/admin/notifications/{id}/confirm',
+    config: {
+
+    },
+    handler: controller.postConfirm
   }
-  // getRefineAudience: {
-  //   method: 'GET',
-  //   path: '/admin/notifications/refine/{id}',
-  //   config: {
-  //     description: 'Licence list view of notifications task',
-  //     validate: {
-  //       params: {
-  //         id: Joi.number()
-  //       },
-  //       query: {
-  //         step: Joi.number().default(0)
-  //       }
-  //     },
-  //     plugins: {
-  //       viewContext: {
-  //         pageTitle: 'Reports and notifications',
-  //         activeNavLink: 'notifications'
-  //       }
-  //     }
-  //   },
-  //   handler: controller.getRefineAudience
-  // }
+
 };

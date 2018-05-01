@@ -31,7 +31,7 @@ const licenceNumbersMapper = {
     return extractLicenceNumbers(payload[fieldName]);
   },
   export: (value) => {
-    return value.join('\n');
+    return value.join(', ');
   }
 };
 
@@ -106,6 +106,21 @@ class TaskData {
       const { name, mapper = 'default' } = widget;
       this.data.query[name] = this.mappers[mapper].import(name, payload);
     });
+  }
+
+  /**
+   * Export query data using mappers
+   * @return {Object}
+   */
+  exportQuery () {
+    const query = {};
+    this.task.config.steps.forEach(step => {
+      step.widgets.forEach(widget => {
+        const { name, mapper = 'default' } = widget;
+        query[name] = this.mappers[mapper].export(this.data.query[name]);
+      });
+    });
+    return query;
   }
 
   /**

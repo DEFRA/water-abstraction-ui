@@ -25,7 +25,8 @@ const config = [{
         widget: 'textarea',
         label: 'Add licences to this notification.',
         operator: '$in',
-        mapper: 'licenceNumbers'
+        mapper: 'licenceNumbers',
+        replay: 'with licence number(s)'
       }]
     }],
     content: {
@@ -49,7 +50,8 @@ We are sending you a message about...
         widget: 'textarea',
         label: 'Add licences to this notification.',
         operator: '$in',
-        mapper: 'licenceNumbers'
+        mapper: 'licenceNumbers',
+        replay: 'with licence number(s) '
       }]
     }]
 
@@ -208,7 +210,8 @@ async function postRefine (request, reply) {
     results: data,
     task,
     formAction,
-    data: taskData.toJson()
+    data: taskData.toJson(),
+    query: taskData.exportQuery()
   };
 
   return reply.view('water/notifications/refine', view);

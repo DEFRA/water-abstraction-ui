@@ -37,5 +37,27 @@ module.exports = {
       }
     },
     handler: controller.getStep
+  },
+  getRefineAudience: {
+    method: 'GET',
+    path: '/admin/notifications/refine/{id}',
+    config: {
+      description: 'Licence list view of notifications task',
+      validate: {
+        params: {
+          id: Joi.number()
+        },
+        query: {
+          step: Joi.number().default(0)
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.getRefineAudience
   }
 };

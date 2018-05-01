@@ -1,4 +1,6 @@
 const { taskConfig } = require('../../lib/connectors/water');
+const crm = require('../../lib/connectors/crm/documents');
+
 
 // @TODO move this config data to API once schema is settled
 const config = [{
@@ -109,7 +111,32 @@ async function getStep (request, reply) {
   };
   return reply.view('water/notifications/step', view);
 }
+
+async function getRefineAudience (request, reply) {
+  const { id } = request.params;
+  const licence_numbers=["03/28/03/0071","7/35/03/*G/0025","18/54/023/S/022"]
+  const filter=`{"system_external_id" : {"$in" : ${JSON.stringify(licence_numbers)}}}`
+  console.log(filter)
+  const data=await crm.getFilteredLicences(
+    filter,
+    {},{
+    page: 1,
+    perPage: 300
+    }
+  )
+
+
+  const view = {
+    ...request.view,
+  };
+
+  view.results=JSON.parse(data).data
+  return reply.view('water/notifications/refine', view);
+}
+
+
 module.exports = {
   getIndex,
-  getStep
+  getStep,
+  getRefineAudience
 };

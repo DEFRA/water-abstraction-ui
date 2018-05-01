@@ -6,8 +6,7 @@
   <a class="link-back link-back--space-above" href="/select-licences">Back</a>
   {{/if}}
 
-
-  <h1 class="heading-large">{{ task.config.title }}</h1>
+  <h1 class="heading-large {{#if index}}heading-large--tight-above{{/if}}">{{ task.config.title }}</h1>
 
   {{#if step.content }}
   <p>{{ step.content }}</p>

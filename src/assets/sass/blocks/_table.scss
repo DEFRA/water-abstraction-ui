@@ -30,8 +30,11 @@
   border-bottom: 1px solid #bfc1c3;
   padding: 15px;
   padding-left: 0;
+
+
   @media (min-width: 768px) {
     display: table-cell;
+    vertical-align: middle;
   }
 }
 
@@ -41,7 +44,7 @@
 }
 
 .multiple-choice {
-  padding-top: 11px;
+  // padding-top: 11px;
   // padding-bottom: 0;
 }
 

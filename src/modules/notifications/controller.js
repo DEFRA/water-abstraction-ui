@@ -203,7 +203,8 @@ async function postRefine (request, reply) {
   const view = {
     ...request.view,
     pagination,
-    results: data
+    results: data,
+    task
   };
 
   return reply.view('water/notifications/refine', view);

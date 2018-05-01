@@ -2,7 +2,9 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <h1 class="heading-large">{{ task.config.title }}</h1>
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+
+  <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
   <form method="POST" action="{{ formAction }}">
     <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
     <fieldset class="small-space">
@@ -41,30 +43,29 @@
                     <div class="table-row medium-space">
                       <div class="table-cell">
                         <div class="multiple-choice">
-                          <input checked="" type="checkbox" name="system_external_id">
-                          <label>
+                          <input checked="" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
+                          <label for="checkbox-{{@index}}" >
                             <h2 class="bold-small">
                               {{system_external_id}}
-                            </h2><h2>
-
-                        </h2></label></div>
+                            </h2>
+                          </label></div>
                       </div>
                       <div class="table-cell">
-                        <label class="context">
+                        <span class="context">
                           Licence holder
-                        </label>
+                        </span>
                         {{metadata.Forename}} {{metadata.Initials}} {{metadata.Name}}
                       </div>
                       <div class="table-cell">
-                        <label class="context">
+                        <span class="context">
                           Licence end
-                        </label>
+                        </span>
                         {{Expires}}
                       </div>
                       <div class="table-cell">
-                        <label class="context">
+                        <span class="context">
                           Contact
-                        </label>
+                        </span>
 
                       </div>
                     </div>

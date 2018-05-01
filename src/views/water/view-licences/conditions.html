@@ -8,7 +8,7 @@
   {{#if crmData.document_name }}
   <h1 class="heading-large heading-large--tight-above">
     <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
-    Conditions held for licence name {{ crmData.document_name }}
+    Conditions held for {{ crmData.document_name }}
   </h1>
   {{else}}
   <h1 class="heading-large heading-large--tight-above">Conditions held for licence number {{ licenceData.licenceNumber }}</h1>
@@ -27,6 +27,8 @@
         </div>
       </div>
     </div>
+
+    <br />
 
 
   {{#equal licenceData.conditions.length 0}}

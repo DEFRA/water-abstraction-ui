@@ -1,6 +1,6 @@
 const { taskConfig } = require('../../lib/connectors/water');
-const crm = require('../../lib/connectors/crm/documents');
-
+const TaskData = require('./task-data');
+const documents = require('../../lib/connectors/crm/documents');
 
 // @TODO move this config data to API once schema is settled
 const config = [{
@@ -20,6 +20,41 @@ const config = [{
       validation: null
     }],
     steps: [{
+      widgets: [{
+        name: 'system_external_id',
+        widget: 'textarea',
+        label: 'Add licences to this notification.',
+        operator: '$in',
+        mapper: 'licenceNumbers'
+      }]
+    }],
+    content: {
+      default: `Dear ...
+
+We are sending you a message about...
+      `
+    }
+  }
+}, {
+  id: 2,
+  type: 'notification',
+  config: {
+    name: 'Expiry notice',
+    title: 'Send an expiry notification',
+    permissions: ['admin:defra'],
+    formats: ['email', 'letter'],
+    steps: [{
+      widgets: [{
+        name: 'system_external_id',
+        widget: 'textarea',
+        label: 'Add licences to this notification.',
+        operator: '$in',
+        mapper: 'licenceNumbers'
+      }]
+    }]
+
+    /*
+    steps: [{
       content: 'Choose an area to send this notification to.',
       widgets: [{
         name: 'area',
@@ -38,13 +73,20 @@ const config = [{
           filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
         }
       }]
-    }],
-    content: {
-      default: `Dear ...
-
-We are sending you a message about...
-      `
+    },
+    {
+      content: 'Find licences that will expire before:',
+      widgets: [{
+        name: 'expires',
+        widget: 'date',
+        mapper: 'date',
+        label: '',
+        operator: '<='
+      }]
     }
+
+    ]
+    */
   }
 }];
 
@@ -83,10 +125,23 @@ async function getStep (request, reply) {
   // Find the requested task
   const task = find(config, (row) => row.id === id);
 
-  // Populate lookup data
   const { step: index } = request.query;
   let step = task.config.steps[index];
 
+  const taskData = new TaskData(task);
+
+  if (index > 0) {
+    // Load data from previous step(s)
+    taskData.fromJson(request.payload.data);
+    // Load data from the current form POST request
+    taskData.processRequest(request.payload, index - 1);
+  }
+
+  const formAction = index < task.config.steps.length - 1
+    ? `/admin/notifications/${id}?step=${index + 1}`
+    : `/admin/notifications/${id}/refine`;
+
+  // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
     if (widget.lookup) {
       const { data, error } = await lookup.findMany(widget.lookup.filter);
@@ -98,45 +153,90 @@ async function getStep (request, reply) {
     return widget;
   });
 
-  // Determine form action
-  const formAction = index < (request.query.step - 1)
-    ? `/admin/notifications/${id}?step=${index + 1}`
-    : `/admin/notifications/complete/${id}`;
-
   const view = {
     ...request.view,
     task,
+    index,
     step,
-    formAction
+    formAction,
+    data: taskData.toJson()
   };
   return reply.view('water/notifications/step', view);
 }
 
-async function getRefineAudience (request, reply) {
-  const { id } = request.params;
-  const licence_numbers=["03/28/03/0071","7/35/03/*G/0025","18/54/023/S/022"]
-  const filter=`{"system_external_id" : {"$in" : ${JSON.stringify(licence_numbers)}}}`
-  console.log(filter)
-  const data=await crm.getFilteredLicences(
-    filter,
-    {},{
+/**
+ * Refine audience step
+ * We retrieve the list of licences matching the search criteria from the
+ * previous steps, then allow the user to deselect some if desired
+ */
+async function postRefine (request, reply) {
+  const id = parseInt(request.params.id, 10);
+
+  // Find the requested task
+  const task = find(config, (row) => row.id === id);
+
+  const step = task.config.steps.length;
+
+  const taskData = new TaskData(task);
+
+  // Load data from previous step(s) and process current request
+  taskData.fromJson(request.payload.data);
+  taskData.processRequest(request.payload, step - 1);
+
+  // Build CRM query filter
+  const filter = taskData.getFilter();
+
+  // Get documents data from CRM
+  const { error, data, pagination } = await documents.findMany(filter, {}, {
     page: 1,
     perPage: 300
-    }
-  )
+  });
 
+  console.log(pagination);
+
+  if (error) {
+    return reply(error);
+  }
+
+  const formAction = task.config.variables
+    ? `/admin/notifications/${id}/variables`
+    : `/admin/notifications/${id}/confirm`;
 
   const view = {
     ...request.view,
+    pagination,
+    results: data,
+    task,
+    formAction,
+    data: taskData.toJson()
   };
 
-  view.results=JSON.parse(data).data
   return reply.view('water/notifications/refine', view);
 }
 
+// async function getRefineAudience (request, reply) {
+//   const { id } = request.params;
+//   const licence_numbers = ['03/28/03/0071', '7/35/03/*G/0025', '18/54/023/S/022'];
+//   const filter = `{"system_external_id" : {"$in" : ${JSON.stringify(licence_numbers)}}}`;
+//   console.log(filter);
+//   const data = await crm.getFilteredLicences(
+//     filter, {}, {
+//       page: 1,
+//       perPage: 300
+//     }
+//   );
+//
+//   const view = {
+//     ...request.view
+//   };
+//
+//   view.results = JSON.parse(data).data;
+//   return reply.view('water/notifications/refine', view);
+// }
 
 module.exports = {
   getIndex,
   getStep,
-  getRefineAudience
+  postRefine
+  // getRefineAudience
 };

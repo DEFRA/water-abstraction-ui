@@ -2,17 +2,32 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <h1 class="heading-large">{{ task.config.title }}</h1>
+  {{#if index }}
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  {{/if}}
 
+  <h1 class="heading-large {{#if index}}heading-large--tight-above{{/if}}">{{ task.config.title }}</h1>
+
+  {{#if step.content }}
   <p>{{ step.content }}</p>
+  {{/if}}
 
   <form method="POST" action="{{ formAction }}">
 
-    <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+    <input type="hidden" name="step" value="{{ index }}" />
+    <input type="hidden" name="data" value="{{ data }}" />
 
     {{#each step.widgets }}
       {{#equal this.widget 'dropdown' }}
         {{>widget-dropdown this }}
+      {{/equal}}
+      {{#equal this.widget 'date' }}
+        {{>widget-date this }}
+      {{/equal}}
+      {{#equal this.widget 'textarea' }}
+        {{>widget-textarea this }}
       {{/equal}}
     {{/each}}
 

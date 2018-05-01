@@ -62,6 +62,25 @@ module.exports = {
       }
     },
     handler: controller.postRefine
+  },
+  getVariableData: {
+    method: 'GET',
+    path: '/admin/notifications/{id}/data',
+    config: {
+      description: 'Notification: add custom data',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.getVariableData
   }
   // getRefineAudience: {
   //   method: 'GET',

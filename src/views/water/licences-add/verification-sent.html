@@ -1,16 +1,16 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
+  {{>element-phase-tag}}{{>element-main-nav}}
+  <!-- <nav>
     <div class="breadcrumbs">
-      {{>element-header-links}}
+
       <ol>
         <li><a href="/licences">{{ labels.licences }}</a></li>
         <li><a href="/manage_licences_add">Manage your licences</a></li>
         <li><a href="/add-licences">Request access</a></li>
       </ol>
     </div>
-  </nav>
+  </nav> -->
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -42,7 +42,7 @@
           <a href="/signout">Sign out</a>
         </p>
 
-        {{#if showCode}}
+        {{#if isTestMode}}
         <p>
           Your code is <code><b>{{ verification.verification_code }}</b></code>
         </p>

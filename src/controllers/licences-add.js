@@ -1,4 +1,3 @@
-
 /**
  * HAPI Route handlers for registering a user account
  * @TODO give user choice of addresses if multiple returned
@@ -6,21 +5,23 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const {difference} = require('lodash');
+const { difference } = require('lodash');
 const errorHandler = require('../lib/error-handler');
 const View = require('../lib/view');
 const CRM = require('../lib/connectors/crm');
 const Notify = require('../lib/connectors/notify');
-const {forceArray} = require('../lib/helpers');
+const { forceArray } = require('../lib/helpers');
 
-const {checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses} = require('../lib/licence-helpers');
+const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../lib/licence-helpers');
 
-const { LicenceNotFoundError,
+const {
+  LicenceNotFoundError,
   LicenceMissingError,
   LicenceSimilarityError,
   InvalidAddressError,
   NoLicencesSelectedError,
-  LicenceFlowError } = require('./licences-add-errors');
+  LicenceFlowError
+} = require('./licences-add-errors');
 
 /**
  * Render form to add licences to account
@@ -29,6 +30,7 @@ const { LicenceNotFoundError,
  */
 async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
+  viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Which licences do you want to be able to view?';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
@@ -51,6 +53,7 @@ async function postLicenceAdd (request, reply) {
 
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Which licences do you want to be able to view?';
+  viewContext.activeNavLink = 'manage';
 
   // Validate posted data
   const schema = {
@@ -59,7 +62,7 @@ async function postLicenceAdd (request, reply) {
   };
   try {
     // Validate post data
-    const {error, value} = Joi.validate(request.payload, schema);
+    const { error, value } = Joi.validate(request.payload, schema);
     if (error) {
       throw error;
     }
@@ -106,7 +109,7 @@ async function postLicenceAdd (request, reply) {
     const documentIds = res.data.map(item => item.document_id);
 
     // Store document IDs in session
-    request.sessionStore.set('addLicenceFlow', {documentIds});
+    request.sessionStore.set('addLicenceFlow', { documentIds });
 
     reply.redirect('/select-licences');
   } catch (err) {
@@ -128,16 +131,17 @@ async function postLicenceAdd (request, reply) {
 async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Are these the licences you want to be able to view?';
+  viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'noLicenceSelected') {
-    viewContext.error = {name: 'LicenceNotSelectedError'};
+    viewContext.error = { name: 'LicenceNotSelectedError' };
   }
 
   try {
     const { documentIds } = request.sessionStore.get('addLicenceFlow');
 
     // Get unverified licences from DB
-    const {data, error} = await CRM.documents.getUnregisteredLicencesByIds(documentIds);
+    const { data, error } = await CRM.documents.getUnregisteredLicencesByIds(documentIds);
 
     if (error) {
       throw error;
@@ -188,7 +192,7 @@ async function postLicenceSelect (request, reply) {
       }
       // Licences being added now
       const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
-        document_id: {$or: documentIds},
+        document_id: { $or: documentIds },
         verified: null,
         verification_id: null
       });
@@ -200,7 +204,7 @@ async function postLicenceSelect (request, reply) {
       if (existingLicences.length > 0) {
         const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
-          const {error: error3} = await CRM.documents.updateMany({document_id: {$or: documentIds}}, {
+          const { error: error3 } = await CRM.documents.updateMany({ document_id: { $or: documentIds } }, {
             verified: 1,
             company_entity_id: companyEntityId
           });
@@ -215,7 +219,7 @@ async function postLicenceSelect (request, reply) {
     }
 
     // Create new token
-    request.sessionStore.set('addLicenceFlow', {documentIds, selectedIds});
+    request.sessionStore.set('addLicenceFlow', { documentIds, selectedIds });
 
     reply.redirect('/select-address');
   } catch (err) {
@@ -237,6 +241,7 @@ function getLicenceSelectError (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Sorry, we need to confirm your licence information with you';
   viewContext.customTitle = 'We need to confirm your licence information';
+  viewContext.activeNavLink = 'manage';
   return reply.view('water/licences-add/select-licences-error', viewContext);
 }
 
@@ -250,9 +255,10 @@ function getLicenceSelectError (request, reply) {
 async function getAddressSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Where should we send your security code?';
+  viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'invalidAddress') {
-    viewContext.error = {name: 'AddressInvalidError'};
+    viewContext.error = { name: 'AddressInvalidError' };
   }
 
   try {
@@ -260,7 +266,7 @@ async function getAddressSelect (request, reply) {
     const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
     // Find licences in CRM for selected documents
-    const { data } = await CRM.documents.findMany({document_id: {$or: selectedIds}});
+    const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
 
     const uniqueAddressLicences = uniqueAddresses(data);
 
@@ -295,7 +301,7 @@ async function postAddressSelect (request, reply) {
     }
 
     // Find licences in CRM for selected documents
-    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({document_id: {$or: selectedIds}});
+    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
     if (licenceError) {
       throw licenceError;
     }
@@ -316,7 +322,7 @@ async function postAddressSelect (request, reply) {
     await Notify.sendSecurityCode(data, verification.verification_code);
 
     // Get all licences - this is needed to determine whether to display link back to dashboard
-    const { error: err2, data: licences } = await CRM.documents.getLicences({verified: 1, entity_id: entityId});
+    const { error: err2, data: licences } = await CRM.documents.getLicences({ verified: 1, entity_id: entityId });
     if (err2) {
       throw err2;
     }
@@ -326,10 +332,10 @@ async function postAddressSelect (request, reply) {
 
     const viewContext = View.contextDefaults(request);
     viewContext.pageTitle = `We're sending you a letter`;
+    viewContext.activeNavLink = 'manage';
     viewContext.verification = verification;
     viewContext.licence = data;
     viewContext.licenceCount = licences.length;
-    viewContext.showCode = !(process.env.NODE_ENV || '').match(/^prod|preprod$/i);
 
     return reply.view('water/licences-add/verification-sent', viewContext);
   } catch (err) {
@@ -376,6 +382,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
 async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Enter your security code';
+  viewContext.activeNavLink = 'manage';
 
   try {
     return reply.view('water/licences-add/security-code', viewContext);
@@ -393,8 +400,9 @@ async function getSecurityCode (request, reply) {
 async function postSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Enter your security code';
+  viewContext.activeNavLink = 'manage';
 
-  const {entity_id: entityId} = request.auth.credentials;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
     // Validate HTTP POST payload
@@ -402,7 +410,7 @@ async function postSecurityCode (request, reply) {
       verification_code: Joi.string().length(5).required(),
       csrf_token: Joi.string().guid()
     };
-    const {error} = Joi.validate(request.payload, schema);
+    const { error } = Joi.validate(request.payload, schema);
 
     if (error) {
       throw error;

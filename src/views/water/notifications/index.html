@@ -1,0 +1,33 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  <div class="grid-row">
+
+    <div class="column-one-third">
+      <h2 class="heading-medium">View a report</h2>
+      <ul class="list list-bullet">
+        <li><a target="_blank" href="https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N">View service performance (opens in a new tab)</a></li>
+      </ul>
+    </div>
+
+    <div class="column-one-third">
+      <h2 class="heading-medium">Send a notification</h2>
+      <ul class="list list-bullet">
+        {{#each tasks}}
+        <li><a href="/admin/notifications/{{ this.task_config_id }}">{{ this.config.name }}</a></li>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

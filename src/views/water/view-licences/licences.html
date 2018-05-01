@@ -1,16 +1,8 @@
 {{> styles}}
 <main id="content" tabindex="-1">
 
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-      </ol>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
-    </div>
-  </nav>
 
   {{#if errors.emailAddress_email }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -90,7 +82,7 @@
 
 
 
-    {{#>element-licence-results-header this}}{{/element-licence-results-header}}
+    {{#>element-licence-results-header this isAdmin=isAdmin}}{{/element-licence-results-header}}
 
     {{^licenceData}}
     <!-- No results found -->

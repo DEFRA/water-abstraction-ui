@@ -1,0 +1,74 @@
+// flextable
+// flextable styles
+
+.table {
+  padding-bottom: 15px;
+  @media (min-width: 768px) {
+    display: table;
+    width: 100%;
+  }
+}
+
+.table-row {
+  cursor: pointer;
+  margin-bottom: 30px;
+  @media (min-width: 768px) {
+    display: table-row;
+  }
+}
+
+.table-head {
+  display: none;
+  @media (min-width: 768px) {
+    display: table-row;
+  }
+}
+
+.table-cell {
+  font-size: inherit;
+
+  border-bottom: 1px solid #bfc1c3;
+  padding: 15px;
+  padding-left: 0;
+
+
+  @media (min-width: 768px) {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
+.table-cell .multiple-choice {
+  white-space:nowrap;
+  float: none;
+}
+
+.multiple-choice {
+  // padding-top: 11px;
+  // padding-bottom: 0;
+}
+
+// .last-row div {
+//   border-bottom: 1px solid #bfc1c3;
+//   @media (min-width: 768px) {
+//     border-bottom: none;
+//   }
+// }
+//
+// .top {
+//   border-bottom: none;
+//   // background-color: red;
+// }
+
+.context {
+  color: $grey-1;
+  display: block;
+  display: auto;
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.full {
+  width: 100%;
+}

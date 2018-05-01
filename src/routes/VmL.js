@@ -17,9 +17,15 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      return reply.redirect('/licences');
+      const { permissions } = request;
+      if (permissions && permissions.admin.defra) {
+        return reply.redirect('/admin/licences');
+      } else {
+        return reply.redirect('/licences');
+      }
     },
-    config: { auth: false,
+    config: {
+      auth: false,
       validate: {
         query: {
           access: Joi.string().max(4),
@@ -27,10 +33,12 @@ module.exports = [
           utm_medium: Joi.string().max(254),
           utm_campaign: Joi.string().max(254)
         }
-      } }
+      }
+    }
   },
 
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/private-beta-closed',
     config: {
       auth: false,
@@ -44,9 +52,10 @@ module.exports = [
   { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
   { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
-  { method: 'GET', path: '/signout', config: { }, handler: AuthController.getSignout },
+  { method: 'GET', path: '/signout', config: {}, handler: AuthController.getSignout },
 
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/welcome',
     handler: AuthController.getWelcome,
     config: {
@@ -54,10 +63,12 @@ module.exports = [
     }
   },
 
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/signin',
     handler: AuthController.getSignin,
-    config: { auth: false,
+    config: {
+      auth: false,
       validate: {
         query: {
           flash: Joi.string().max(32),
@@ -66,8 +77,10 @@ module.exports = [
           utm_campaign: Joi.string().max(254)
         }
       }
-    } },
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/signin',
     handler: AuthController.postSignin,
     config: {
@@ -79,24 +92,30 @@ module.exports = [
           password: Joi.string().max(128)
         }
       }
-    }},
+    }
+  },
 
   // Registration process
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/start',
     handler: RegistrationController.getRegisterStart,
     config: {
       auth: false,
       description: 'Register start page - information for users before registering'
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/register',
     handler: RegistrationController.getEmailAddress,
     config: {
       auth: false,
       description: 'Register user account - get email address'
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/register',
     handler: RegistrationController.postEmailAddress,
     config: {
@@ -107,22 +126,28 @@ module.exports = [
           email: Joi.string().allow('').max(254)
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/success',
     handler: RegistrationController.getRegisterSuccess,
     config: {
       auth: false,
       description: 'Register user account - success page'
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/send-again',
     handler: RegistrationController.getSendAgain,
     config: {
       auth: false,
       description: 'Register user account - resend email form'
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/send-again',
     handler: RegistrationController.postSendAgain,
     config: {
@@ -133,28 +158,51 @@ module.exports = [
           email: Joi.string().allow('').max(254)
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/resent-success',
     handler: RegistrationController.getResentSuccess,
     config: {
       auth: false,
       description: 'Register user account - email resent success page'
-    }},
+    }
+  },
 
   // Manage licences
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/manage_licences',
-    handler: LicencesManageController.getAccessList,
+    handler: LicencesManageController.getManage,
     config: {
       description: 'Manage licences - main page',
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']
+        },
+        viewContext: {
+          pageTitle: 'Manage your licences',
+          activeNavLink: 'manage'
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
+    path: '/manage_licences/access',
+    handler: LicencesManageController.getAccessList,
+    config: {
+      description: 'Manage licences - give/remove access',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      }
+    }
+  },
+  {
+    method: 'GET',
     path: '/manage_licences/remove_access',
     handler: LicencesManageController.getRemoveAccess,
     config: {
@@ -164,8 +212,10 @@ module.exports = [
           permissions: ['licences:edit']
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/manage_licences/add_access',
     handler: LicencesManageController.getAddAccess,
     config: {
@@ -175,8 +225,10 @@ module.exports = [
           permissions: ['licences:edit']
         }
       }
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/manage_licences/add_access',
     handler: LicencesManageController.postAddAccess,
     config: {
@@ -192,8 +244,10 @@ module.exports = [
           permissions: ['licences:edit']
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/manage_licences_add',
     handler: LicencesManageController.getAddLicences,
     config: {
@@ -203,16 +257,20 @@ module.exports = [
           permissions: ['licences:edit']
         }
       }
-    }},
+    }
+  },
 
   // Add licence to account
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/add-licences',
     handler: LicencesAddController.getLicenceAdd,
     config: {
       description: 'Start flow to add licences'
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/add-licences',
     handler: LicencesAddController.postLicenceAdd,
     config: {
@@ -223,10 +281,12 @@ module.exports = [
           csrf_token: Joi.string().guid().required()
         }
       }
-    }},
+    }
+  },
 
   // Select licences
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/select-licences',
     handler: LicencesAddController.getLicenceSelect,
     config: {
@@ -236,8 +296,10 @@ module.exports = [
           error: Joi.string().max(32)
         }
       }
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/select-licences',
     handler: LicencesAddController.postLicenceSelect,
     config: {
@@ -248,15 +310,19 @@ module.exports = [
           csrf_token: Joi.string().guid().required()
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/select-licences-error',
     handler: LicencesAddController.getLicenceSelectError,
     config: {
       description: 'Error uploading licences - show contact information'
-    }},
+    }
+  },
 
-  { method: 'GET',
+  {
+    method: 'GET',
     path: '/select-address',
     handler: LicencesAddController.getAddressSelect,
     config: {
@@ -266,9 +332,11 @@ module.exports = [
           error: Joi.string().allow('').max(32)
         }
       }
-    }},
+    }
+  },
 
-  { method: 'POST',
+  {
+    method: 'POST',
     path: '/select-address',
     handler: LicencesAddController.postAddressSelect,
     config: {
@@ -279,14 +347,18 @@ module.exports = [
           csrf_token: Joi.string().guid().required()
         }
       }
-    }},
-  { method: 'GET',
+    }
+  },
+  {
+    method: 'GET',
     path: '/security-code',
     handler: LicencesAddController.getSecurityCode,
     config: {
       description: 'Enter auth code received by post'
-    }},
-  { method: 'POST',
+    }
+  },
+  {
+    method: 'POST',
     path: '/security-code',
     handler: LicencesAddController.postSecurityCode,
     config: {
@@ -297,18 +369,21 @@ module.exports = [
           csrf_token: Joi.string().guid().required()
         }
       }
-    }},
-  { method: 'GET',
-    path: '/dashboard',
-    handler: VmL.dashboard,
-    config: {
-      description: 'System Dashboard',
-      plugins: {
-        hapiRouteAcl: {
-          permissions: ['admin:defra']
-        }
-      }
-    }},
+    }
+  },
+  // {
+  //   method: 'GET',
+  //   path: '/dashboard',
+  //   handler: VmL.dashboard,
+  //   config: {
+  //     description: 'System Dashboard',
+  //     plugins: {
+  //       hapiRouteAcl: {
+  //         permissions: ['admin:defra']
+  //       }
+  //     }
+  //   }
+  // },
 
   {
     method: '*',

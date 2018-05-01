@@ -1,16 +1,6 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="/licences">Back</a>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
 {{#if isAdmin }}
   {{#equal crmData.verified 1}}
@@ -38,7 +28,17 @@
   {{/equal}}
 {{/if}}
 
-  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  {{#if crmData.document_name }}
+  <h1 class="heading-large">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    {{ crmData.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
+
 
   <p>Starts {{ formatDate licenceData.effectiveDate }}
      {{#if licenceData.expiryDate }}

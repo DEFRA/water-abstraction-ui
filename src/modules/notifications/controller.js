@@ -19,23 +19,13 @@ const config = [{
       validation: null
     }],
     steps: [{
-      content: 'Choose an area to send this notification to.',
+      content: 'Add licences to this notification.',
       widgets: [{
-        name: 'area',
-        widget: 'dropdown',
+        name: 'licenceNumbers',
+        widget: 'textarea',
         label: 'Area',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
-      }, {
-        name: 'catchment',
-        widget: 'dropdown',
-        label: 'Catchment area (optional)',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
+        operator: '$in',
+        mapper: 'licenceNumbers'
       }]
     }],
     content: {
@@ -134,6 +124,8 @@ async function getStep (request, reply) {
     // Load data from the current form POST request
     taskData.processRequest(request.payload, index - 1);
   }
+
+  console.log(taskData);
 
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {

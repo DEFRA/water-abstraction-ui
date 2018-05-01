@@ -8,9 +8,10 @@
  * @module src/modules/notifications/task-data
  */
 const moment = require('moment');
+const { extractLicenceNumbers } = require('../../lib/licence-helpers');
 
 /**
- * Default mapper - simply extracts the value of the named d
+ * Default mapper - simply extracts the value of the named field
  */
 const defaultMapper = {
   import: (fieldName, payload) => {
@@ -21,6 +22,23 @@ const defaultMapper = {
   }
 };
 
+/**
+ * Delimited mapper - for a pasted set of licence numbers, splits string on common
+ * delimiters , newlines, tabs, semicolon
+ */
+const licenceNumbersMapper = {
+  import: (fieldName, payload) => {
+    return extractLicenceNumbers(payload[fieldName]);
+  },
+  export: (value) => {
+    return value.join('\n');
+  }
+};
+
+/**
+ * Date mapper - combines the day month and year form values to a single
+ * string formatted as YYYY-MM-DD
+ */
 const dateMapper = {
   import: (fieldName, payload) => {
     const day = payload[fieldName + '-day'];
@@ -50,7 +68,8 @@ class TaskData {
     // Initialise available mappers
     this.mappers = {
       default: defaultMapper,
-      date: dateMapper
+      date: dateMapper,
+      licenceNumbers: licenceNumbersMapper
     };
   }
 
@@ -76,7 +95,6 @@ class TaskData {
    * @param {Number} step - the index of the step to process
    */
   processRequest (payload, step) {
-    console.log(this.config);
     this.task.config.steps[step].widgets.forEach(widget => {
       const { name, mapper = 'default' } = widget;
       this.data[name] = this.mappers[mapper].import(name, payload);

@@ -20,6 +20,9 @@
       {{#equal this.widget 'date' }}
         {{>widget-date this }}
       {{/equal}}
+      {{#equal this.widget 'textarea' }}
+        {{>widget-textarea this }}
+      {{/equal}}
     {{/each}}
 
     <button type="submit" class="button">Continue</button>

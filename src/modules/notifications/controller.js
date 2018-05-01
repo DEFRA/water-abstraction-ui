@@ -234,9 +234,25 @@ async function postRefine (request, reply) {
 //   return reply.view('water/notifications/refine', view);
 // }
 
+ async function getVariableData (request, reply) {
+   const { id } = request.params;
+
+   // Find the requested task
+   const task = find(config, (row) => row.id === id);
+
+   const view = {
+     ...request.view,
+     taskData: task.config
+   };
+
+
+   return reply.view('water/notifications/data', view);
+}
+
 module.exports = {
   getIndex,
   getStep,
-  postRefine
+  postRefine,
+  getVariableData
   // getRefineAudience
 };

@@ -1,0 +1,53 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+
+  <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
+
+    <div class="grid-row medium-space">
+      <div class="column-two-thirds">
+        <h1  class="heading-large">
+          {{taskData.title}}
+        </h1>
+      </div>
+    </div>
+    <div class="grid-row medium-space">
+      <div class="column-two-thirds">
+
+        <div class="form-group">
+          <form>
+        {{#each taskData.variables}}
+        <div class="form-group">
+          <label class="form-label-bold">{{label}}</label>
+
+          {{#equal this.widget 'dropdown' }}
+            {{>widget-dropdown this }}
+          {{/equal}}
+          {{#equal this.widget 'date' }}
+            {{>widget-date this }}
+          {{/equal}}
+          {{#equal this.widget 'textarea' }}
+            {{>widget-textarea this }}
+          {{/equal}}
+          {{#equal this.widget 'text' }}
+            <input class="form-control" type="text">
+          {{/equal}}
+
+          </div>
+        {{/each}}
+        <button type="submit" class="button">Continue</button>
+        </form>
+
+        </div>
+
+      </div>
+    </div>
+</main>
+
+
+
+
+{{> footerjs}}
+{{> debug}}

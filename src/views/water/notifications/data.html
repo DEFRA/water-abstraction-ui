@@ -4,34 +4,39 @@
 
   <a class="link-back link-back--space-above" href="/select-licences">Back</a>
 
-  <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
+  <div class="grid-row">
+    <div class="column-two-thirds">
 
-  <form method="POST" action="{{ formAction }}">
-    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-    <input type="hidden" name="data" value="{{ data }}" />
+      <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
 
-    <div class="grid-row medium-space">
-      <div class="column-two-thirds">
+      <form method="POST" action="{{ formAction }}">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        <input type="hidden" name="data" value="{{ data }}" />
 
-        {{#each task.config.variables}}
-          {{#equal this.widget 'dropdown' }}
-            {{>widget-dropdown this }}
-          {{/equal}}
-          {{#equal this.widget 'date' }}
-            {{>widget-date this }}
-          {{/equal}}
-          {{#equal this.widget 'textarea' }}
-            {{>widget-textarea this }}
-          {{/equal}}
-          {{#equal this.widget 'text' }}
-            {{>widget-text this }}
-          {{/equal}}
-        {{/each}}
+        <div class="grid-row medium-space">
+          <div class="column-two-thirds">
+
+            {{#each task.config.variables}}
+              {{#equal this.widget 'dropdown' }}
+                {{>widget-dropdown this }}
+              {{/equal}}
+              {{#equal this.widget 'date' }}
+                {{>widget-date this }}
+              {{/equal}}
+              {{#equal this.widget 'textarea' }}
+                {{>widget-textarea this }}
+              {{/equal}}
+              {{#equal this.widget 'text' }}
+                {{>widget-text this }}
+              {{/equal}}
+            {{/each}}
+          </div>
+        </div>
+
+        <button type="submit" class="button">Continue</button>
+        </form>
       </div>
     </div>
-    
-    <button type="submit" class="button">Continue</button>
-    </form>
 
 </main>
 

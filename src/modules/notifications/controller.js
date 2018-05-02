@@ -262,30 +262,64 @@ async function postRefine (request, reply) {
   taskData.addLicenceNumbers(licenceNumbers);
 
   // Redirect to next step - either confirm or template variable entry
-  const redirectUrl = task.variables && task.variables.length
-    ? `/admin/notifications/${id}/variables?data=${taskData.toJson()})`
-    : `/admin/notifications/${id}/confirm?data=${taskData.toJson()})`;
+  const redirectUrl = task.config.variables && task.config.variables.length
+    ? `/admin/notifications/${id}/data?data=${taskData.toJson()}`
+    : `/admin/notifications/${id}/confirm?data=${taskData.toJson()}`;
 
   return reply.redirect(redirectUrl);
 }
 
-async function postConfirm (request, reply) {
-  console.log(request.query, request.payload);
+// async function postConfirm (request, reply) {
+//   console.log(request.query, request.payload);
+// }
+
+/**
+ * Allow user to input custom variables/params which are passed through to
+ * the message template
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.data - JSON for task state
+ */
+async function getVariableData (request, reply) {
+  const { id } = request.params;
+
+  // Find the requested task
+  const task = find(config, (row) => row.id === id);
+
+  // Load data from previous step(s)
+  const taskData = new TaskData(task);
+  taskData.fromJson(request.query.data);
+
+  const view = {
+    ...request.view,
+    task,
+    data: taskData.toJson(),
+    formAction: `/admin/notifications/${id}/data`
+  };
+
+  return reply.view('water/notifications/data', view);
 }
 
- async function getVariableData (request, reply) {
-   const { id } = request.params;
+/**
+ * Post handler for custom template variable data
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.payload.data - current task state JSON
+ * @param {Object} request.payload - contains additional custom fields as defined in task config
+ */
+async function postVariableData (request, reply) {
+  const id = parseInt(request.params.id, 10);
 
-   // Find the requested task
-   const task = find(config, (row) => row.id === id);
+  // Find the requested task
+  const task = find(config, (row) => row.id === id);
 
-   const view = {
-     ...request.view,
-     taskData: task.config
-   };
+  console.log('id', id, 'task', task);
 
+  // Load data from previous step(s)
+  const taskData = new TaskData(task);
+  taskData.fromJson(request.payload.data);
+  taskData.processParameterRequest(request.payload);
 
-   return reply.view('water/notifications/data', view);
+  // Redirect
+  return reply.redirect(`/admin/notifications/${id}/preview?data=${taskData.toJson()}`);
 }
 
 async function getPreview (request, reply) {
@@ -293,29 +327,28 @@ async function getPreview (request, reply) {
 
   // Find the requested task
   const task = find(config, (row) => row.id === id);
-  //todo: generate who and why section content
-  const whoAndWhy=`
+  // todo: generate who and why section content
+  const whoAndWhy = `
     <span class="bold-small">6 licence holders</span>
     regarding
     <span class="bold-small">8 licences</span>
     in
-    <span class="bold-small">Avon, Little Avon</span>.`
-  //todo: generate notification content
-  const notificationContent=`
+    <span class="bold-small">Avon, Little Avon</span>.`;
+  // todo: generate notification content
+  const notificationContent = `
     <p class="lede">
       The river at the <span class="bold-medium">Little Spanton</span> gauging station has daily mean flow of <span class="bold-medium">128m³/s</span>.
     </p>
     <p class="lede">
       Please refer to the paper copy of your licence to check this flow against your relevant conditions.
     </p>
-  `
+  `;
   const view = {
     ...request.view,
     taskData: task.config,
     whoAndWhy,
     notificationContent
   };
-
 
   return reply.view('water/notifications/preview', view);
 }
@@ -325,7 +358,7 @@ module.exports = {
   postStep,
   getRefine,
   postRefine,
-  postConfirm,
   getVariableData,
+  postVariableData,
   getPreview
 };

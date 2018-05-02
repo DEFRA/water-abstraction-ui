@@ -84,14 +84,14 @@ module.exports = {
     },
     handler: controller.postRefine
   },
-  postConfirm: {
-    method: 'POST',
-    path: '/admin/notifications/{id}/confirm',
-    config: {
-
-    },
-    handler: controller.postConfirm
-  },
+  // postConfirm: {
+  //   method: 'POST',
+  //   path: '/admin/notifications/{id}/confirm',
+  //   config: {
+  //
+  //   },
+  //   handler: controller.postConfirm
+  // },
   getVariableData: {
     method: 'GET',
     path: '/admin/notifications/{id}/data',
@@ -111,6 +111,26 @@ module.exports = {
     },
     handler: controller.getVariableData
   },
+  postVariableData: {
+    method: 'POST',
+    path: '/admin/notifications/{id}/data',
+    config: {
+      description: 'Notification: add custom data',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.postVariableData
+  },
+
   getPreview: {
     method: 'GET',
     path: '/admin/notifications/{id}/preview',

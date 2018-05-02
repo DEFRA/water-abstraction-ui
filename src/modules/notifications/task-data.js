@@ -106,6 +106,17 @@ class TaskData {
   }
 
   /**
+   * Set custom template parameter data
+   * @param {Object} payload - from HAPI request interface
+   */
+  processParameterRequest (payload) {
+    this.task.config.variables.forEach(widget => {
+      const { name, mapper = 'default' } = widget;
+      this.data.params[name] = this.mappers[mapper].import(name, payload);
+    });
+  }
+
+  /**
    * Parse a form payload
    * @param {Object} payload - from HAPI request.payload
    * @param {Number} step - the index of the step to process

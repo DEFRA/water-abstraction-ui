@@ -147,9 +147,10 @@ class TaskData {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
           filter[widget.name] = this.data.query[widget.name];
-        }
-        if (widget.operator === '$in') {
-          filter[widget.name] = { $in: this.data.query[widget.name] };
+        } else {
+          filter[widget.name] = {
+            [widget.operator]: this.data.query[widget.name]
+          };
         }
       });
     });

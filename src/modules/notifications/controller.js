@@ -55,36 +55,49 @@ We are sending you a message about...
     //     replay: 'with licence number(s) '
     //   }]
     // }]
-    steps: [{
-      content: 'Choose an area to send this notification to.',
-      widgets: [{
-        name: 'area',
-        widget: 'dropdown',
-        label: 'Area',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
-      }, {
-        name: 'catchment',
-        widget: 'dropdown',
-        label: 'Catchment area (optional)',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
-      }]
-    },
-    {
-      content: 'Find licences that will expire before:',
-      widgets: [{
-        name: 'expires',
-        widget: 'date',
-        mapper: 'date',
-        label: '',
-        operator: '<='
-      }]
-    }
+    steps: [
+
+      //   {
+      //   content: 'Choose an area to send this notification to.',
+      //   widgets: [{
+      //     name: 'area',
+      //     widget: 'dropdown',
+      //     label: 'Area',
+      //     operator: '=',
+      //     lookup: {
+      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+      //     }
+      //   }, {
+      //     name: 'catchment',
+      //     widget: 'dropdown',
+      //     label: 'Catchment area (optional)',
+      //     operator: '=',
+      //     lookup: {
+      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+      //     }
+      //   }]
+      // },
+
+      {
+        widgets: [{
+          name: 'system_external_id',
+          widget: 'textarea',
+          label: 'Add licences to this notification.',
+          operator: '$in',
+          mapper: 'licenceNumbers',
+          replay: 'with licence number(s)'
+        }]
+      },
+      {
+        content: 'Find licences that will expire before:',
+        widgets: [{
+          name: 'metadata->>Expiry',
+          widget: 'date',
+          mapper: 'date',
+          label: '',
+          operator: '$lte'
+        }]
+      }
 
     ]
 
@@ -202,6 +215,8 @@ async function getRefine (request, reply) {
 
   // Build CRM query filter
   const filter = taskData.getFilter();
+
+  console.log(filter);
 
   // Get documents data from CRM
   const { error, data, pagination } = await documents.findMany(filter, {}, {

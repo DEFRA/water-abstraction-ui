@@ -31,7 +31,7 @@ const licenceNumbersMapper = {
     return extractLicenceNumbers(payload[fieldName]);
   },
   export: (value) => {
-    return value.join('\n');
+    return value.join(', ');
   }
 };
 
@@ -44,16 +44,15 @@ const dateMapper = {
     const day = payload[fieldName + '-day'];
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
-    const m = moment().date(day).month(month).year(year);
-    return m.format('YYYY-MM-DD');
+    const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
+    return m.isValid() ? m.format('YYYYMMDD') : undefined;
   },
   export: (value) => {
-    const m = moment(value, 'YYYY-MM-DD');
-    return {
-      day: m.date(),
-      month: m.month(),
-      year: m.year()
-    };
+    if (value) {
+      const m = moment(value, 'YYYYMMDD');
+      return m.format('D MMM YYYY');
+    }
+    return null;
   }
 };
 
@@ -85,7 +84,9 @@ class TaskData {
    * @param {String} str
    */
   fromJson (str) {
-    this.data = JSON.parse(str);
+    if (str) {
+      this.data = JSON.parse(str);
+    }
   }
 
   /**
@@ -94,6 +95,14 @@ class TaskData {
    */
   toJson () {
     return JSON.stringify(this.data);
+  }
+
+  /**
+   * Add licence number list to data
+   * @param {Array} licenceNumbers
+   */
+  addLicenceNumbers (licenceNumbers) {
+    this.data.licenceNumbers = licenceNumbers;
   }
 
   /**
@@ -109,6 +118,24 @@ class TaskData {
   }
 
   /**
+   * Export query data using mappers
+   * this returns an object with all the query fields the user has filled in,
+   * with the data mapped from the internal format (e.g. 2018-06-01) back to
+   * a form in which it was input {day :1, month : 6, year: 2018}
+   * @return {Object}
+   */
+  exportQuery () {
+    const query = {};
+    this.task.config.steps.forEach(step => {
+      step.widgets.forEach(widget => {
+        const { name, mapper = 'default' } = widget;
+        query[name] = this.mappers[mapper].export(this.data.query[name]);
+      });
+    });
+    return query;
+  }
+
+  /**
    * Export mongo-sql style filter for use in query
    * @return Object
    */
@@ -119,9 +146,17 @@ class TaskData {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
           filter[widget.name] = this.data.query[widget.name];
+          // } else {
+          //   filter[widget.name] = {
+          //     [widget.operator]: this.data.query[widget.name]
+          //   };
+          // }
         }
-        if (widget.operator === '$in') {
+        if (widget.operator === '$in' && this.data.query[widget.name].length) {
           filter[widget.name] = { $in: this.data.query[widget.name] };
+        }
+        if (widget.operator === '$lte') {
+          filter[widget.name] = { $lte: this.data.query[widget.name] };
         }
       });
     });

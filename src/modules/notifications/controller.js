@@ -1,6 +1,7 @@
 const { taskConfig } = require('../../lib/connectors/water');
 const TaskData = require('./task-data');
 const documents = require('../../lib/connectors/crm/documents');
+const { forceArray } = require('../../lib/helpers');
 
 // @TODO move this config data to API once schema is settled
 const config = [{
@@ -25,7 +26,8 @@ const config = [{
         widget: 'textarea',
         label: 'Add licences to this notification.',
         operator: '$in',
-        mapper: 'licenceNumbers'
+        mapper: 'licenceNumbers',
+        replay: 'with licence number(s)'
       }]
     }],
     content: {
@@ -43,50 +45,63 @@ We are sending you a message about...
     title: 'Send an expiry notification',
     permissions: ['admin:defra'],
     formats: ['email', 'letter'],
-    steps: [{
-      widgets: [{
-        name: 'system_external_id',
-        widget: 'textarea',
-        label: 'Add licences to this notification.',
-        operator: '$in',
-        mapper: 'licenceNumbers'
-      }]
-    }]
+    // steps: [{
+    //   widgets: [{
+    //     name: 'system_external_id',
+    //     widget: 'textarea',
+    //     label: 'Add licences to this notification.',
+    //     operator: '$in',
+    //     mapper: 'licenceNumbers',
+    //     replay: 'with licence number(s) '
+    //   }]
+    // }]
+    steps: [
 
-    /*
-    steps: [{
-      content: 'Choose an area to send this notification to.',
-      widgets: [{
-        name: 'area',
-        widget: 'dropdown',
-        label: 'Area',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
-      }, {
-        name: 'catchment',
-        widget: 'dropdown',
-        label: 'Catchment area (optional)',
-        operator: '=',
-        lookup: {
-          filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-        }
-      }]
-    },
-    {
-      content: 'Find licences that will expire before:',
-      widgets: [{
-        name: 'expires',
-        widget: 'date',
-        mapper: 'date',
-        label: '',
-        operator: '<='
-      }]
-    }
+      //   {
+      //   content: 'Choose an area to send this notification to.',
+      //   widgets: [{
+      //     name: 'area',
+      //     widget: 'dropdown',
+      //     label: 'Area',
+      //     operator: '=',
+      //     lookup: {
+      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+      //     }
+      //   }, {
+      //     name: 'catchment',
+      //     widget: 'dropdown',
+      //     label: 'Catchment area (optional)',
+      //     operator: '=',
+      //     lookup: {
+      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+      //     }
+      //   }]
+      // },
+
+      {
+        widgets: [{
+          name: 'system_external_id',
+          widget: 'textarea',
+          label: 'Add licences to this notification.',
+          operator: '$in',
+          mapper: 'licenceNumbers',
+          replay: 'with licence number(s)'
+        }]
+      },
+      {
+        content: 'Find licences that will expire before:',
+        widgets: [{
+          name: 'metadata->>Expires',
+          widget: 'date',
+          mapper: 'date',
+          label: '',
+          operator: '$lte',
+          replay: 'with end date before '
+        }]
+      }
 
     ]
-    */
+
   }
 }];
 
@@ -125,21 +140,13 @@ async function getStep (request, reply) {
   // Find the requested task
   const task = find(config, (row) => row.id === id);
 
-  const { step: index } = request.query;
+  const { step: index, data } = request.query;
   let step = task.config.steps[index];
 
   const taskData = new TaskData(task);
-
-  if (index > 0) {
-    // Load data from previous step(s)
-    taskData.fromJson(request.payload.data);
-    // Load data from the current form POST request
-    taskData.processRequest(request.payload, index - 1);
+  if (data) {
+    taskData.fromJson(data);
   }
-
-  const formAction = index < task.config.steps.length - 1
-    ? `/admin/notifications/${id}?step=${index + 1}`
-    : `/admin/notifications/${id}/refine`;
 
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
@@ -158,33 +165,59 @@ async function getStep (request, reply) {
     task,
     index,
     step,
-    formAction,
+    formAction: `/admin/notifications/${id}?step=${index}`,
     data: taskData.toJson()
   };
   return reply.view('water/notifications/step', view);
 }
 
 /**
- * Refine audience step
- * We retrieve the list of licences matching the search criteria from the
- * previous steps, then allow the user to deselect some if desired
+ * POST handler for saving step
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.step - step in the task
+ * @param {String} request.payload.data - JSON payload storing flow state
  */
-async function postRefine (request, reply) {
+async function postStep (request, reply) {
+  // Get selected task config
   const id = parseInt(request.params.id, 10);
-
-  // Find the requested task
+  const step = parseInt(request.query.step, 10);
   const task = find(config, (row) => row.id === id);
 
-  const step = task.config.steps.length;
+  const { data } = request.payload;
 
+  // Update task data
   const taskData = new TaskData(task);
+  taskData.fromJson(data);
+  taskData.processRequest(request.payload, step);
 
-  // Load data from previous step(s) and process current request
-  taskData.fromJson(request.payload.data);
-  taskData.processRequest(request.payload, step - 1);
+  // Redirect to next step
+  const nextAction = step < task.config.steps.length - 1
+    ? `/admin/notifications/${id}?step=${step + 1}&data=${taskData.toJson()}`
+    : `/admin/notifications/${id}/refine?data=${taskData.toJson()}`;
+
+  return reply.redirect(nextAction);
+}
+
+/**
+ * View refine page
+ * We retrieve the list of licences matching the search criteria from the
+ * previous steps, then allow the user to deselect some if desired
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.data - JSON data for current task state
+ */
+async function getRefine (request, reply) {
+  // Get selected task config
+  const id = parseInt(request.params.id, 10);
+  const task = find(config, (row) => row.id === id);
+
+  // Load data from previous step(s)
+  const taskData = new TaskData(task);
+  taskData.fromJson(request.query.data);
 
   // Build CRM query filter
   const filter = taskData.getFilter();
+
+  console.log(filter);
 
   // Get documents data from CRM
   const { error, data, pagination } = await documents.findMany(filter, {}, {
@@ -192,47 +225,53 @@ async function postRefine (request, reply) {
     perPage: 300
   });
 
-  console.log(pagination);
-
   if (error) {
     return reply(error);
   }
-
-  const formAction = task.config.variables
-    ? `/admin/notifications/${id}/variables`
-    : `/admin/notifications/${id}/confirm`;
 
   const view = {
     ...request.view,
     pagination,
     results: data,
     task,
-    formAction,
-    data: taskData.toJson()
+    formAction: `/admin/notifications/${id}/refine?data=${taskData.toJson()}`,
+    data: taskData.toJson(),
+    query: taskData.exportQuery()
   };
 
   return reply.view('water/notifications/refine', view);
 }
 
-// async function getRefineAudience (request, reply) {
-//   const { id } = request.params;
-//   const licence_numbers = ['03/28/03/0071', '7/35/03/*G/0025', '18/54/023/S/022'];
-//   const filter = `{"system_external_id" : {"$in" : ${JSON.stringify(licence_numbers)}}}`;
-//   console.log(filter);
-//   const data = await crm.getFilteredLicences(
-//     filter, {}, {
-//       page: 1,
-//       perPage: 300
-//     }
-//   );
-//
-//   const view = {
-//     ...request.view
-//   };
-//
-//   view.results = JSON.parse(data).data;
-//   return reply.view('water/notifications/refine', view);
-// }
+/**
+ * Post handler for refine audience step
+ * add the array of selected licences to the task data and redirect
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.data - JSON task state
+ */
+async function postRefine (request, reply) {
+  // Get selected task config
+  const id = parseInt(request.params.id, 10);
+  const task = find(config, (row) => row.id === id);
+
+  // Load data from previous step(s)
+  const taskData = new TaskData(task);
+  taskData.fromJson(request.query.data);
+
+  // Set selected licences
+  const licenceNumbers = forceArray(request.payload.system_external_id);
+  taskData.addLicenceNumbers(licenceNumbers);
+
+  // Redirect to next step - either confirm or template variable entry
+  const redirectUrl = task.variables && task.variables.length
+    ? `/admin/notifications/${id}/variables?data=${taskData.toJson()})`
+    : `/admin/notifications/${id}/confirm?data=${taskData.toJson()})`;
+
+  return reply.redirect(redirectUrl);
+}
+
+async function postConfirm (request, reply) {
+  console.log(request.query, request.payload);
+}
 
  async function getVariableData (request, reply) {
    const { id } = request.params;
@@ -283,8 +322,10 @@ async function getPreview (request, reply) {
 module.exports = {
   getIndex,
   getStep,
+  postStep,
+  getRefine,
   postRefine,
+  postConfirm,
   getVariableData,
   getPreview
-  // getRefineAudience
 };

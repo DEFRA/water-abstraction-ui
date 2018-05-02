@@ -1,21 +1,23 @@
 <fieldset>
       <legend>
         <span class="form-label-bold">
-          What is your date of birth?
+            {{ this.label }}
         </span>
       </legend>
       <div class="form-date">
         <div class="form-group form-group-day">
-          <label class="form-label" for="dob-day">Day</label>
-          <input class="form-control" id="dob-day" name="{{ this.name }}-day" type="number" pattern="[0-9]*">
+          <label class="form-label" for="{{ this.name }}-day">Day</label>
+          <input class="form-control" id="{{ this.name }}-day" name="{{ this.name }}-day" type="number" pattern="[0-9]*">
         </div>
         <div class="form-group form-group-month">
-          <label class="form-label" for="dob-month">Month</label>
-          <input class="form-control" id="dob-month" name="{{ this.name }}-month" type="number" pattern="[0-9]*">
+          <label class="form-label" for="{{ this.name }}-month">Month</label>
+          <input class="form-control" id="{{ this.name }}-month" name="{{ this.name }}-month" type="number" pattern="[0-9]*">
         </div>
         <div class="form-group form-group-year">
-          <label class="form-label" for="dob-year">Year</label>
-          <input class="form-control" id="dob-year" name="{{ this.name }}-year" type="number" pattern="[0-9]*">
+          <label class="form-label" for="{{ this.name }}-year">Year</label>
+          <input class="form-control" id="{{ this.name }}-year" name="{{ this.name }}-year" type="number" pattern="[0-9]*">
         </div>
       </div>
-    </fieldset>
+</fieldset>
+
+<br />

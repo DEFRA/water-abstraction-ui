@@ -5,16 +5,28 @@
   <a class="link-back link-back--space-above" href="/select-licences">Back</a>
 
   <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
-  <form method="POST" action="{{ formAction }}">
-    <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
 
-    <input  name="data" value="{{ data }}" />
+  {{#greaterThan pagination.pageCount 1 }}
+  <div class="panel panel-border-wide alert-default medium-space">
+    Your search returned more than {{ pagination.perPage }} licences.
+    Only the first {{ pagination.perPage }} licences can be selected below.
+  </div>
+  {{/greaterThan}}
+
+  {{#greaterThan results.length 0 }}
+
+  <form method="POST" action="{{ formAction }}">
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+    <input type="hidden" name="data" value="{{ data }}" />
 
     <fieldset class="small-space">
               <legend class="small-space">
                 <p>
                   <span class="body-text">You selected all licences
-                  <span class="bold-small">insert descriptive reason here</span>.</span>
+
+                  {{#each task.config.steps}}
+                    {{#each this.widgets}}
+                      {{ this.replay }} <span class="bold-small">{{lookup ../../query this.name }}</span>{{/each}}{{/each}}.
                 </p>
                 <p>You can remove any licences you want to exclude from this notification below.</p>
               </legend>
@@ -46,8 +58,8 @@
                     <div class="table-row medium-space">
                       <div class="table-cell">
                         <div class="multiple-choice">
-                          <input checked="" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
-                          <label for="checkbox-{{@index}}" >
+                          <input checked value="{{ system_external_id }}" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
+                          <label for="checkbox-{{@index}}">
                             <h2 class="bold-small">
                               {{system_external_id}}
                             </h2>
@@ -63,7 +75,7 @@
                         <span class="context">
                           Licence end
                         </span>
-                        {{Expires}}
+                        {{formatSortableDate metadata.Expires }}
                       </div>
                       <div class="table-cell">
                         <span class="context">
@@ -77,6 +89,12 @@
             <button type="submit" class="button">Continue</button>
 
           </form>
+
+          {{else}}
+          <p>Your search did not match any licences.</p>
+          {{/greaterThan}}
+
+
         </main>
 
 

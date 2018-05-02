@@ -249,10 +249,42 @@ async function postRefine (request, reply) {
    return reply.view('water/notifications/data', view);
 }
 
+async function getPreview (request, reply) {
+  const { id } = request.params;
+
+  // Find the requested task
+  const task = find(config, (row) => row.id === id);
+  //todo: generate who and why section content
+  const whoAndWhy=`
+    <span class="bold-small">6 licence holders</span>
+    regarding
+    <span class="bold-small">8 licences</span>
+    in
+    <span class="bold-small">Avon, Little Avon</span>.`
+  //todo: generate notification content
+  const notificationContent=`
+    <p class="lede">
+      The river at the <span class="bold-medium">Little Spanton</span> gauging station has daily mean flow of <span class="bold-medium">128m³/s</span>.
+    </p>
+    <p class="lede">
+      Please refer to the paper copy of your licence to check this flow against your relevant conditions.
+    </p>
+  `
+  const view = {
+    ...request.view,
+    taskData: task.config,
+    whoAndWhy,
+    notificationContent
+  };
+
+
+  return reply.view('water/notifications/preview', view);
+}
 module.exports = {
   getIndex,
   getStep,
   postRefine,
-  getVariableData
+  getVariableData,
+  getPreview
   // getRefineAudience
 };

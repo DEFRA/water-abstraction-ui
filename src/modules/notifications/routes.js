@@ -81,6 +81,25 @@ module.exports = {
       }
     },
     handler: controller.getVariableData
+  },
+  getPreview: {
+    method: 'GET',
+    path: '/admin/notifications/{id}/preview',
+    config: {
+      description: 'Notification: preiew',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.getPreview
   }
   // getRefineAudience: {
   //   method: 'GET',

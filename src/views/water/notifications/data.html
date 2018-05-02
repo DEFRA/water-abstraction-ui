@@ -6,22 +6,14 @@
 
   <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
 
-    <div class="grid-row medium-space">
-      <div class="column-two-thirds">
-        <h1  class="heading-large">
-          {{taskData.title}}
-        </h1>
-      </div>
-    </div>
+  <form method="POST" action="{{ formAction }}">
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+    <input type="hidden" name="data" value="{{ data }}" />
+
     <div class="grid-row medium-space">
       <div class="column-two-thirds">
 
-        <div class="form-group">
-          <form>
-        {{#each taskData.variables}}
-        <div class="form-group">
-          <label class="form-label-bold">{{label}}</label>
-
+        {{#each task.config.variables}}
           {{#equal this.widget 'dropdown' }}
             {{>widget-dropdown this }}
           {{/equal}}
@@ -32,18 +24,15 @@
             {{>widget-textarea this }}
           {{/equal}}
           {{#equal this.widget 'text' }}
-            <input class="form-control" type="text">
+            {{>widget-text this }}
           {{/equal}}
-
-          </div>
         {{/each}}
-        <button type="submit" class="button">Continue</button>
-        </form>
-
-        </div>
-
       </div>
     </div>
+    
+    <button type="submit" class="button">Continue</button>
+    </form>
+
 </main>
 
 

@@ -10,13 +10,13 @@
         <div class="column-two-thirds">
             <div class="panel panel-border-wide alert-default big-space">
               {{#equal crmData.verifications.length 1}}
-              We’ve sent a security code by post.
+              We have sent a security code by post.
               {{#each crmData.verifications }}
                 <br>The code is <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}
 
               {{else}}
-              We've sent {{crmData.verifications.length}} security codes by post
+              We have sent {{crmData.verifications.length}} security codes by post
               {{#each crmData.verifications }}
                 <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}

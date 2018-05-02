@@ -24,7 +24,8 @@ const config = [{
       widgets: [{
         name: 'system_external_id',
         widget: 'textarea',
-        label: 'Add licences to this notification.',
+        label: 'Enter the licence number(s) you want to send a notification about',
+        hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
         operator: '$in',
         mapper: 'licenceNumbers',
         replay: 'with licence number(s)'
@@ -82,7 +83,8 @@ We are sending you a message about...
         widgets: [{
           name: 'system_external_id',
           widget: 'textarea',
-          label: 'Add licences to this notification.',
+          label: 'Enter the licence number(s) you want to send a notification about',
+          hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
           operator: '$in',
           mapper: 'licenceNumbers',
           replay: 'with licence number(s)'
@@ -264,7 +266,7 @@ async function postRefine (request, reply) {
   // Redirect to next step - either confirm or template variable entry
   const redirectUrl = task.config.variables && task.config.variables.length
     ? `/admin/notifications/${id}/data?data=${taskData.toJson()}`
-    : `/admin/notifications/${id}/confirm?data=${taskData.toJson()}`;
+    : `/admin/notifications/${id}/preview?data=${taskData.toJson()}`;
 
   return reply.redirect(redirectUrl);
 }

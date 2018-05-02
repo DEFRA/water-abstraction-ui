@@ -85,7 +85,9 @@ class TaskData {
    * @param {String} str
    */
   fromJson (str) {
-    this.data = JSON.parse(str);
+    if (str) {
+      this.data = JSON.parse(str);
+    }
   }
 
   /**
@@ -94,6 +96,14 @@ class TaskData {
    */
   toJson () {
     return JSON.stringify(this.data);
+  }
+
+  /**
+   * Add licence number list to data
+   * @param {Array} licenceNumbers
+   */
+  addLicenceNumbers (licenceNumbers) {
+    this.data.licenceNumbers = licenceNumbers;
   }
 
   /**

@@ -14,8 +14,7 @@
   {{/greaterThan}}
 
   <form method="POST" action="{{ formAction }}">
-    <input type="hidden" name="crsf_token" value="{{ csrfToken }}" />
-
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
     <input type="hidden" name="data" value="{{ data }}" />
 
     <fieldset class="small-space">
@@ -57,8 +56,8 @@
                     <div class="table-row medium-space">
                       <div class="table-cell">
                         <div class="multiple-choice">
-                          <input checked="" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
-                          <label for="checkbox-{{@index}}" >
+                          <input checked value="{{ system_external_id }}" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
+                          <label for="checkbox-{{@index}}">
                             <h2 class="bold-small">
                               {{system_external_id}}
                             </h2>

@@ -11,7 +11,8 @@ const getStep = {
         id: Joi.number()
       },
       query: {
-        step: Joi.number().default(0)
+        step: Joi.number().default(0),
+        data: Joi.string()
       }
     },
     plugins: {
@@ -41,8 +42,28 @@ module.exports = {
   },
   getStep,
   postStep: {
-    ...getStep,
-    method: 'POST'
+    path: '/admin/notifications/{id}',
+    method: 'POST',
+    handler: controller.postStep
+  },
+  getRefine: {
+    method: 'GET',
+    path: '/admin/notifications/{id}/refine',
+    config: {
+      description: 'Notification: refine audience',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.getRefine
   },
   postRefine: {
     method: 'POST',

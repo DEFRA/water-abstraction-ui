@@ -71,13 +71,13 @@ gulp.task('combine-minify-js', [], () => {
     './public/javascripts/vendor/polyfills/bind.js',
     './public/javascripts/govuk/shim-links-with-button-role.js',
     './public/javascripts/govuk/show-hide-content.js',
-    './public/javascripts/govuk/details.polyfill.js',
-    './public/javascripts/application.js'
+    './src/public/javascripts/govuk/details.polyfill.js',
+    './src/public/javascripts/application.js'
   ];
 
   return gulp.src(files)
     .pipe(concat('application.all.min.js'))
-    .pipe(uglify({ie8: true}))
+    .pipe(uglify({ ie8: true }))
     .pipe(gulp.dest('./public/javascripts'));
 });
 

@@ -13,6 +13,8 @@
   </div>
   {{/greaterThan}}
 
+  {{#greaterThan results.length 0 }}
+
   <form method="POST" action="{{ formAction }}">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
     <input type="hidden" name="data" value="{{ data }}" />
@@ -73,7 +75,7 @@
                         <span class="context">
                           Licence end
                         </span>
-                        {{Expires}}
+                        {{formatSortableDate metadata.Expires }}
                       </div>
                       <div class="table-cell">
                         <span class="context">
@@ -87,6 +89,12 @@
             <button type="submit" class="button">Continue</button>
 
           </form>
+
+          {{else}}
+          <p>Your search did not match any licences.</p>
+          {{/greaterThan}}
+
+
         </main>
 
 

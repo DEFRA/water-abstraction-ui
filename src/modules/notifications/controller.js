@@ -91,11 +91,12 @@ We are sending you a message about...
       {
         content: 'Find licences that will expire before:',
         widgets: [{
-          name: 'metadata->>Expiry',
+          name: 'metadata->>Expires',
           widget: 'date',
           mapper: 'date',
           label: '',
-          operator: '$lte'
+          operator: '$lte',
+          replay: 'with end date before '
         }]
       }
 

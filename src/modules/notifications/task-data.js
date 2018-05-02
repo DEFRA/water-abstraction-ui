@@ -44,16 +44,15 @@ const dateMapper = {
     const day = payload[fieldName + '-day'];
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
-    const m = moment().date(day).month(month).year(year);
-    return m.format('YYYY-MM-DD');
+    const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
+    return m.isValid() ? m.format('YYYYMMDD') : undefined;
   },
   export: (value) => {
-    const m = moment(value, 'YYYY-MM-DD');
-    return {
-      day: m.date(),
-      month: m.month(),
-      year: m.year()
-    };
+    if (value) {
+      const m = moment(value, 'YYYYMMDD');
+      return m.format('D MMM YYYY');
+    }
+    return null;
   }
 };
 
@@ -147,10 +146,17 @@ class TaskData {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
           filter[widget.name] = this.data.query[widget.name];
-        } else {
-          filter[widget.name] = {
-            [widget.operator]: this.data.query[widget.name]
-          };
+          // } else {
+          //   filter[widget.name] = {
+          //     [widget.operator]: this.data.query[widget.name]
+          //   };
+          // }
+        }
+        if (widget.operator === '$in' && this.data.query[widget.name].length) {
+          filter[widget.name] = { $in: this.data.query[widget.name] };
+        }
+        if (widget.operator === '$lte') {
+          filter[widget.name] = { $lte: this.data.query[widget.name] };
         }
       });
     });

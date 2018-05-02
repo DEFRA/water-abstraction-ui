@@ -50,9 +50,9 @@
                       <div class="table-cell bold-small">
                         Licence end
                       </div>
-                      <div class="table-cell bold-small">
+                      <!-- <div class="table-cell bold-small">
                         Contact
-                      </div>
+                      </div> -->
                     </div>
                     {{#each results}}
                     <div class="table-row medium-space">
@@ -71,18 +71,20 @@
                         </span>
                         {{metadata.Forename}} {{metadata.Initials}} {{metadata.Name}}
                       </div>
-                      <div class="table-cell">
+                      <div class="table-cell table-cell--date">
                         <span class="context">
                           Licence end
                         </span>
-                        {{formatSortableDate metadata.Expires }}
+                        {{^this.metadata.Expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.metadata.Expires}}
+                        {{#if this.metadata.Expires}}<span class="sr-only">Licence expires </span>{{/if}}
+                        {{ formatSortableDate this.metadata.Expires}}
                       </div>
-                      <div class="table-cell">
+                      <!-- <div class="table-cell">
                         <span class="context">
                           Contact
                         </span>
 
-                      </div>
+                      </div> -->
                     </div>
                     {{/each}}
             </fieldset>

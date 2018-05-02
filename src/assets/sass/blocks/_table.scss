@@ -36,6 +36,12 @@
     display: table-cell;
     vertical-align: middle;
   }
+
+  &--date {
+    @media (min-width: 768px) {
+      min-width: 170px;
+    }
+  }
 }
 
 .table-cell .multiple-choice {

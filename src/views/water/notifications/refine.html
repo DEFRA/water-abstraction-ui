@@ -21,13 +21,19 @@
 
     <fieldset class="small-space">
               <legend class="small-space">
-                <p>
-                  <span class="body-text">You selected all licences
 
-                  {{#each task.config.steps}}
-                    {{#each this.widgets}}
-                      {{ this.replay }} <span class="bold-small">{{lookup ../../query this.name }}</span>{{/each}}{{/each}}.
+                {{#if replay.length }}
+                <p>
+                  You selected all licences
+                    {{#each replay }}
+
+                      {{#if @index}}
+                      and
+                      {{/if}}
+
+                      {{ this.label }} <span class="bold-small">{{ this.value }}</span>{{/each }}.
                 </p>
+                {{/if}}
                 <p>You can remove any licences you want to exclude from this notification below.</p>
               </legend>
 

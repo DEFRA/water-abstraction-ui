@@ -27,8 +27,7 @@ const config = [{
         label: 'Enter the licence number(s) you want to send a notification about',
         hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
         operator: '$in',
-        mapper: 'licenceNumbers',
-        replay: 'with licence number(s)'
+        mapper: 'licenceNumbers'
       }]
     }],
     content: {
@@ -86,8 +85,7 @@ We are sending you a message about...
           label: 'Enter the licence number(s) you want to send a notification about',
           hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
           operator: '$in',
-          mapper: 'licenceNumbers',
-          replay: 'with licence number(s)'
+          mapper: 'licenceNumbers'
         }]
       },
       {
@@ -168,7 +166,8 @@ async function getStep (request, reply) {
     index,
     step,
     formAction: `/admin/notifications/${id}?step=${index}`,
-    data: taskData.toJson()
+    data: taskData.toJson(),
+    pageTitle: task.config.title
   };
   return reply.view('water/notifications/step', view);
 }
@@ -231,6 +230,21 @@ async function getRefine (request, reply) {
     return reply(error);
   }
 
+  const query = taskData.exportQuery();
+
+  // Format replay data
+  const replay = [];
+  task.config.steps.forEach(step => {
+    step.widgets.forEach(widget => {
+      if (widget.replay && query[widget.name]) {
+        replay.push({
+          label: widget.replay,
+          value: query[widget.name]
+        });
+      }
+    });
+  });
+
   const view = {
     ...request.view,
     pagination,
@@ -238,7 +252,9 @@ async function getRefine (request, reply) {
     task,
     formAction: `/admin/notifications/${id}/refine?data=${taskData.toJson()}`,
     data: taskData.toJson(),
-    query: taskData.exportQuery()
+    query,
+    replay,
+    pageTitle: task.config.title
   };
 
   return reply.view('water/notifications/refine', view);
@@ -347,9 +363,10 @@ async function getPreview (request, reply) {
   `;
   const view = {
     ...request.view,
-    taskData: task.config,
+    task,
     whoAndWhy,
-    notificationContent
+    notificationContent,
+    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
   };
 
   return reply.view('water/notifications/preview', view);

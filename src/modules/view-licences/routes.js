@@ -92,6 +92,9 @@ const getLicenceContact = {
     plugins: {
       config: {
         view: 'water/view-licences/contact'
+      },
+      viewContext: {
+        activeNavLink: 'view'
       }
     }
   }
@@ -111,6 +114,9 @@ const getLicencePurposes = {
     plugins: {
       config: {
         view: 'water/view-licences/purposes'
+      },
+      viewContext: {
+        activeNavLink: 'view'
       }
     }
   }
@@ -130,6 +136,9 @@ const getLicencePoints = {
     plugins: {
       config: {
         view: 'water/view-licences/points'
+      },
+      viewContext: {
+        activeNavLink: 'view'
       }
     }
   }
@@ -149,6 +158,9 @@ const getLicenceConditions = {
     plugins: {
       config: {
         view: 'water/view-licences/conditions'
+      },
+      viewContext: {
+        activeNavLink: 'view'
       }
     }
   }

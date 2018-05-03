@@ -1,16 +1,6 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="/licences">Back</a>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
 {{#if isAdmin }}
   {{#equal crmData.verified 1}}
@@ -20,13 +10,13 @@
         <div class="column-two-thirds">
             <div class="panel panel-border-wide alert-default big-space">
               {{#equal crmData.verifications.length 1}}
-              We’ve sent a security code by post.
+              We have sent a security code by post.
               {{#each crmData.verifications }}
                 <br>The code is <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}
 
               {{else}}
-              We've sent {{crmData.verifications.length}} security codes by post
+              We have sent {{crmData.verifications.length}} security codes by post
               {{#each crmData.verifications }}
                 <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>
               {{/each}}
@@ -38,7 +28,17 @@
   {{/equal}}
 {{/if}}
 
-  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  {{#if crmData.document_name }}
+  <h1 class="heading-large">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    {{ crmData.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
+
 
   <p>Starts {{ formatDate licenceData.effectiveDate }}
      {{#if licenceData.expiryDate }}

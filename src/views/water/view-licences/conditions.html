@@ -1,46 +1,39 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol >
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/conditions">Abstraction conditions</a></li>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}" >Back</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ licenceData.licenceNumber }}</a>
+
+
+  {{#if crmData.document_name }}
+  <h1 class="heading-large heading-large--tight-above">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    Conditions held for {{ crmData.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large heading-large--tight-above">Conditions held for licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
 
 
   <div class="grid-row">
-      <div class="column-two-thirds">
-        <h1 class="heading-large">Conditions held for
-            {{#if crmData.document_custom_name }}
-            {{ crmData.document_custom_name }}
-            {{else}}
-            {{ licenceData.licenceNumber }}
-            {{/if}}
-        </h1>
-
+    <div class="column-two-thirds">
         <div class="notice" style="border: none; margin: 0; padding: 0;">
           <i class="icon icon-important">
             <span class="visually-hidden">Warning</span>
           </i>
           <strong class="bold-small">
-            We may not be able to show a full list of your conditions, because we don’t hold all of your licence information on our system yet. You must refer to the paper copy of your licence to view and comply with all of your conditions.
+            We may not be able to show a full list of your conditions, because we do not hold all of your licence information on our system yet. You must refer to the paper copy of your licence to view and comply with all of your conditions.
         </strong>
         </div>
-
-        <br />
       </div>
-  </div>
+    </div>
+
+    <br />
+
 
   {{#equal licenceData.conditions.length 0}}
   <p>
-  Sorry, we don’t hold any information about your conditions on our system yet.
+  Sorry, we do not hold any information about your conditions on our system yet.
   </p><p>
   Please check the paper copy of your licence for this information.
   </p>

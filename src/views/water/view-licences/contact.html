@@ -1,24 +1,17 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol >
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/contact">Contact details</a></li>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}" >Back</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ licenceData.licenceNumber }}</a>
 
 
-  {{#if crmData.document_custom_name }}
-  <h1 class="heading-large">Licence name: {{ crmData.document_custom_name }}</h1>
+  {{#if crmData.document_name }}
+  <h1 class="heading-large heading-large--tight-above">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    Licence contact details: {{ crmData.document_name }}
+  </h1>
   {{else}}
-  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  <h1 class="heading-large heading-large--tight-above">Contact details for licence number {{ licenceData.licenceNumber }}</h1>
   {{/if}}
 
   {{#each licenceData.contacts }}

@@ -30,6 +30,7 @@ const {
  */
 async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
+  viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Which licences do you want to be able to view?';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
@@ -52,6 +53,7 @@ async function postLicenceAdd (request, reply) {
 
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Which licences do you want to be able to view?';
+  viewContext.activeNavLink = 'manage';
 
   // Validate posted data
   const schema = {
@@ -129,6 +131,7 @@ async function postLicenceAdd (request, reply) {
 async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Are these the licences you want to be able to view?';
+  viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'noLicenceSelected') {
     viewContext.error = { name: 'LicenceNotSelectedError' };
@@ -238,6 +241,7 @@ function getLicenceSelectError (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Sorry, we need to confirm your licence information with you';
   viewContext.customTitle = 'We need to confirm your licence information';
+  viewContext.activeNavLink = 'manage';
   return reply.view('water/licences-add/select-licences-error', viewContext);
 }
 
@@ -251,6 +255,7 @@ function getLicenceSelectError (request, reply) {
 async function getAddressSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Where should we send your security code?';
+  viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'invalidAddress') {
     viewContext.error = { name: 'AddressInvalidError' };
@@ -326,7 +331,8 @@ async function postAddressSelect (request, reply) {
     request.sessionStore.delete('addLicenceFlow');
 
     const viewContext = View.contextDefaults(request);
-    viewContext.pageTitle = `We're sending you a letter`;
+    viewContext.pageTitle = `We are sending you a letter`;
+    viewContext.activeNavLink = 'manage';
     viewContext.verification = verification;
     viewContext.licence = data;
     viewContext.licenceCount = licences.length;
@@ -376,6 +382,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
 async function getSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Enter your security code';
+  viewContext.activeNavLink = 'manage';
 
   try {
     return reply.view('water/licences-add/security-code', viewContext);
@@ -393,6 +400,7 @@ async function getSecurityCode (request, reply) {
 async function postSecurityCode (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Enter your security code';
+  viewContext.activeNavLink = 'manage';
 
   const { entity_id: entityId } = request.auth.credentials;
 

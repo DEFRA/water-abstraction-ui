@@ -1,18 +1,7 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Licence number: {{ licenceData.licenceNumber }}</a></li>
-        <li><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/rename">Name this licence</a></li>
+  {{>element-phase-tag}}{{>element-main-nav }}
 
-      </ol>
-    </div>
-  </nav>
-  <a class="link-back" href="{{#if isAdmin }}/admin{{/if}}/licences">Back</a>
 
 
   {{#if errors }}
@@ -26,14 +15,21 @@
     </h1>
 
     <ul class="error-summary-list">
-        <li><a href="#name">Choose a name that’s 2-32 characters long and doesn’t include symbols</a></li>
+        <li><a href="#name">Choose a name that is 2-32 characters long and does not include symbols</a></li>
     </ul>
 
   </div>
   {{/if}}
 
 
-  <h1 class="heading-large">{{ pageTitle }}</h1>
+  {{#if crmData.document_name }}
+  <h1 class="heading-large">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    {{ crmData.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
 
   <p></p>
 
@@ -54,7 +50,7 @@
         <span class="sr-only">(maximum 32 characters)</span>
       {{#if errors }}
         <span class="error-message">
-          Choose a name that’s 2-32 characters long and doesn’t include symbols
+          Choose a name that is 2-32 characters long and does not include symbols
         </span>
       {{/if}}
 

@@ -1,26 +1,26 @@
 {{> styles}}
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}
-  <nav>
+  {{>element-phase-tag}}{{>element-main-nav}}
+  <!-- <nav>
     <div class="breadcrumbs">
-      {{>element-header-links}}
+
       <ol>
         <li><a href="/licences">{{ labels.licences }}</a></li>
         <li><a href="/manage_licences">Manage licences</a></li>
         <li><a href="/manage_licences/add_access">Add access</a></li>
       </ol>
     </div>
-  </nav>
+  </nav> -->
 
   <div class="grid-row">
       <div class="column-two-thirds">
-<div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div>
+<!-- <div><a href="#" class="link-back" onclick="history.go(-1)">Back</a></div> -->
 
 
   {{>element-heading-large content=(concat 'Access email sent to ' email)}}
 
 
-  <p class="lede">We’ve sent instructions about how to view your licences.</p>
+  <p class="lede">We have sent instructions about how to view your licences.</p>
 
   <a href="/manage_licences">Return to licences</a>
   <p>You can remove access to your licences on this page.</p>

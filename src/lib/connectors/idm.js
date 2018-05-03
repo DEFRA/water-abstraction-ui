@@ -13,6 +13,9 @@ const client = new APIClient(rp, {
   }
 });
 
+
+const idmKPI = require('./idm/kpi');
+
 /**
  * Reset user's password in IDM
  * Triggers notify message
@@ -177,6 +180,6 @@ module.exports = {
   getUser,
   getUserByResetGuid,
   verifyCredentials,
-  usersClient
-
+  usersClient,
+  kpi: idmKPI
 };

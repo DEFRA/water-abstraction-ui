@@ -7,6 +7,7 @@ function viewContextDefaults (request) {
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
+
   // H1 page title
   viewContext.pageTitle = 'Water Abstraction';
   // Title tag - if different from page title
@@ -29,17 +30,16 @@ function viewContextDefaults (request) {
 
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
-  // Main nav links
-  viewContext.propositionLinks = [];
 
   // Are we in admin view?  Add a flag for templates
   viewContext.isAdmin = /^\/admin\//.test(request.url.path);
   viewContext.isTestMode = process.env.test_mode;
 
-  // Admin view
+  // Main nav links
+  viewContext.mainNavLinks = [];
   if (request.permissions && request.permissions.admin.defra) {
     if (request.permissions && request.permissions.licences.read) {
-      viewContext.propositionLinks.push({
+      viewContext.mainNavLinks.push({
         id: 'view',
         text: 'View licences',
         url: '/admin/licences'
@@ -47,28 +47,46 @@ function viewContextDefaults (request) {
     }
     if (request.permissions && request.permissions.admin.defra) {
       viewContext.labels.licences = 'Licences';
-      viewContext.propositionLinks.push({
-        id: 'dashboard',
-        text: 'View service usage',
-        url: '/dashboard'
+
+      viewContext.mainNavLinks.push({
+        id: 'notifications',
+        text: 'Reports and notifications',
+        url: '/admin/notifications'
       });
+
+      // viewContext.mainNavLinks.push({
+      //   id: 'dashboard',
+      //   text: 'View service usage',
+      //   url: '/dashboard'
+      // });
     }
   } else {
     if (request.permissions && request.permissions.licences.read) {
-      viewContext.propositionLinks.push({
+      viewContext.mainNavLinks.push({
         id: 'view',
         text: 'View your licences',
         url: '/licences'
       });
     }
     if (request.permissions && request.permissions.licences.edit) {
-      viewContext.propositionLinks.push({
+      viewContext.mainNavLinks.push({
         id: 'manage',
         text: 'Manage your licences',
         url: '/manage_licences'
       });
     }
   }
+
+  // Utility links - change password and sign out
+  viewContext.propositionLinks = [{
+    id: 'change-password',
+    text: 'Change password',
+    url: '/update_password'
+  }, {
+    id: 'signout',
+    text: 'Sign out',
+    url: '/signout'
+  }];
 
   viewContext.user = request.auth.credentials;
 

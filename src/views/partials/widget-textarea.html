@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label class="form-label" for="{{ this.name }}">
+    <span class="form-label-bold">{{ this.label }}</span>
+    {{#if this.hint }}
+    <span class="form-hint">{{ this.hint }}</span>
+    {{/if}}
+  </label>
+  <textarea maxlength="8000" class="form-control form-control-3-4" name="{{ this.name }}" id="{{ this.name }}" rows="5"></textarea>
+</div>

@@ -1,0 +1,48 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+
+    <a href="#" class="link-back medium-space" onclick="history.go(-1)">Back</a>
+          <form>
+    <!-- page title -->
+    <div class="grid-row">
+      <div class="column-two-thirds">
+        <h1 class="heading-large tight">
+          Check and confirm your {{ toLowerCase task.config.name }}
+        </h1>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="column-two-thirds">
+
+        <div class="medium-space">
+          <p>
+            <!-- todo: who and why section -->
+            You’re about to send this notification to
+            {{{whoAndWhy}}}
+          </p>
+        </div>
+
+
+        <div class="medium-space">
+          <div class="notification">
+            <!-- todo: preview content -->
+            {{{notificationContent}}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="column-one-third">
+        <div>
+          <button type="submit" class="button">Send notification</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </main>
+{{> footerjs}}
+{{> debug}}

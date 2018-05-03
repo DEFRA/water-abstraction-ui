@@ -13,6 +13,23 @@
  */
 
 /**
+ * Get permissions as an array of strings
+ * @param {Object} permissions object
+ * @return {Array} array of strings, e.g. ['licences:view', 'admin:defra']
+ */
+function permissionsToArray (permissions) {
+  const arr = [];
+  for (let key in permissions) {
+    for (let subKey in permissions[key]) {
+      if (permissions[key][subKey]) {
+        arr.push(`${key}:${subKey}`);
+      }
+    }
+  }
+  return arr;
+}
+
+/**
  * Gets user-type role count from roles array
  * @param {Array} roles - array of roles loaded from CRM
  * @param {String|Array} type - the role type or types to match
@@ -144,5 +161,6 @@ plugin.register.attributes = {
 module.exports = {
   getPermissions,
   getPermissionsCb,
-  plugin
+  plugin,
+  permissionsToArray
 };

@@ -3,6 +3,7 @@ const updatePasswordRoutes = require('./update-password/routes');
 const viewLicenceRoutes = require('./view-licences/routes');
 const viewLicenceAdminRoutes = require('./view-licences/routes-admin');
 const viewAbstractionReformRoutes = require('./view-licences/routes-abstraction-reform');
+const notificationsRoutes = require('./notifications/routes');
 
 module.exports = [
   ...Object.values(resetPasswordRoutes),
@@ -10,4 +11,5 @@ module.exports = [
   ...Object.values(viewLicenceRoutes),
   ...Object.values(viewLicenceAdminRoutes),
   ...Object.values(viewAbstractionReformRoutes)
+  ...Object.values(notificationsRoutes)
 ];

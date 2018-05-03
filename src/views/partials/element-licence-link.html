@@ -8,8 +8,8 @@
     {{this.document_name}}
   </p>
   <p class="license-result__column license-result__column--expires">
-    {{^this.document_expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.document_expires}}
-    {{#if this.document_expires}}<span class="sr-only">Licence expires </span>{{/if}}
-    {{ formatSortableDate this.document_expires}}
+    {{^this.metadata.Expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.metadata.Expires}}
+    {{#if this.metadata.Expires}}<span class="sr-only">Licence expires </span>{{/if}}
+    {{ formatSortableDate this.metadata.Expires}}
   </p>
 </div>

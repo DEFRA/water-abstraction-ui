@@ -99,7 +99,7 @@ async function postEmailAddress (request, reply, options = {}) {
  */
 function getRegisterSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = "We've sent you an email with a new link to use";
+  viewContext.pageTitle = "We have sent you an email with a new link to use";
   return reply.view('water/register_success', viewContext);
 }
 

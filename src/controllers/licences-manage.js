@@ -6,6 +6,16 @@ const IDM = require('../lib/connectors/idm');
 const errorHandler = require('../lib/error-handler');
 
 /**
+ * Index page for manage licences
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} reply - the HAPI HTTP response
+ */
+async function getManage (request, reply) {
+  const { view } = request;
+  return reply.view('water/manage_licences', view);
+}
+
+/**
  * Renders list of emails with access to your licences
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
@@ -18,7 +28,7 @@ async function getAccessList (request, reply, context = {}) {
   viewContext.activeNavLink = 'manage';
 
   // Sorting
-  const sortFields = {entity_nm: 'entity_nm', created_at: 'created_at'};
+  const sortFields = { entity_nm: 'entity_nm', created_at: 'created_at' };
   const sortField = request.query.sort || 'entity_nm';
   const direction = request.query.direction === -1 ? -1 : 1;
   const sort = {};
@@ -28,14 +38,14 @@ async function getAccessList (request, reply, context = {}) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  viewContext.pageTitle = 'Manage your licences';
+  viewContext.pageTitle = 'Give access to view your licences';
   viewContext.entity_id = entityId;
   // get list of role  s in same org as current user
   // need to ensure that current user is admin...
 
   const licenceAccess = await CRM.entityRoles.getEditableRoles(entityId, sortField, direction);
   viewContext.licenceAccess = JSON.parse(licenceAccess);
-  return reply.view('water/manage_licences', viewContext);
+  return reply.view('water/manage_licences_access', viewContext);
 }
 
 /**
@@ -81,7 +91,7 @@ async function postAddAccess (request, reply, context = {}) {
   // 5. Add colleague role
 
   try {
-    const {error: validationError, value} = Joi.validate(request.payload, schema);
+    const { error: validationError, value } = Joi.validate(request.payload, schema);
 
     // Gracefully handle any errors.
     if (validationError) {
@@ -97,7 +107,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     // User exists
     if (createUserError) {
-      const { error: notifyError } = Notify.sendAccesseNotification({newUser: false, email, sender});
+      const { error: notifyError } = Notify.sendAccesseNotification({ newUser: false, email, sender });
       if (notifyError) {
         throw notifyError;
       }
@@ -160,7 +170,7 @@ async function getAddLicences (request, reply, context = {}) {
 
   try {
     // Does user have outstanding verification codes?
-    const { data: verifications, error } = await CRM.verification.findMany({entity_id: entityId, date_verified: null});
+    const { data: verifications, error } = await CRM.verification.findMany({ entity_id: entityId, date_verified: null });
     if (error) {
       throw error;
     }
@@ -173,6 +183,7 @@ async function getAddLicences (request, reply, context = {}) {
 }
 
 module.exports = {
+  getManage,
   getAccessList,
   getAddAccess,
   postAddAccess,

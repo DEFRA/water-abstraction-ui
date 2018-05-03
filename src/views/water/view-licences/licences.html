@@ -1,21 +1,12 @@
 {{> styles}}
 <main id="content" tabindex="-1">
 
-  {{>element-phase-tag}}
-  <nav>
-    <div class="breadcrumbs">
-      {{>element-header-links}}
-      <ol>
-        <li><a href="{{#if isAbstractionReform}}/ar{{/if}}{{#if isAdmin }}/admin{{/if}}/licences">{{ labels.licences }}</a></li>
-      </ol>
-
-    </div>
-  </nav>
+  {{>element-phase-tag}}{{>element-main-nav}}
 
   {{#if errors.emailAddress_email }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-      That email address isn't valid
+      That email address is not valid
     </h2>
     <ul class="error-summary-list">
       <li><a href="#emailAddress">Re-enter the email address</a></li>
@@ -26,7 +17,7 @@
   {{#if error }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-      That email address isn't registered with us
+      That email address is not registered with us
     </h2>
     <ul class="error-summary-list">
       <li><a href="#emailAddress">Re-enter the email address</a></li>
@@ -47,7 +38,7 @@
 
   {{#if isAdmin }}
   <p>
-    You can search for licences using user email, partial licence number or licence name
+    Search for licences using user email, partial licence number or licence name
   </p>
   {{/if}}
   {{#if isAbstractionReform}}

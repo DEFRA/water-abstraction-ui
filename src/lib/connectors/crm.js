@@ -7,6 +7,7 @@ const find = require('lodash/find');
 
 const crmVerification = require('./crm/verification');
 const crmEntities = require('./crm/entities');
+const crmKPI = require('./crm/kpi');
 const crmDocuments = require('./crm/documents');
 const crmEntityRoles = require('./crm/entity-roles');
 const crmDocumentVerification = require('./crm/document-verification');
@@ -253,6 +254,7 @@ module.exports = {
   verification: crmVerification,
   documents: crmDocuments,
   entities: crmEntities,
+  kpi: crmKPI,
   entityRoles: crmEntityRoles,
   getOutstandingLicenceRequests,
   createVerification,

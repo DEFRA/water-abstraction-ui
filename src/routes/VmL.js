@@ -88,8 +88,8 @@ module.exports = [
       auth: false,
       validate: {
         payload: {
-          user_id: Joi.string().max(254),
-          password: Joi.string().max(128)
+          user_id: Joi.string().max(254).allow(''),
+          password: Joi.string().max(128).allow('')
         }
       }
     }

@@ -48,13 +48,12 @@ function viewContextDefaults (request) {
     if (request.permissions && request.permissions.admin.defra) {
       viewContext.labels.licences = 'Licences';
 
-      if (process.env.test_mode) {
-        viewContext.mainNavLinks.push({
-          id: 'notifications',
-          text: 'Reports and notifications',
-          url: '/admin/notifications'
-        });
-      }
+      viewContext.mainNavLinks.push({
+        id: 'notifications',
+        text: 'Reports and notifications',
+        url: '/admin/notifications'
+      });
+
       // viewContext.mainNavLinks.push({
       //   id: 'dashboard',
       //   text: 'View service usage',

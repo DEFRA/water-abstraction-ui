@@ -51,7 +51,7 @@ async function getPermissions (credentials) {
       admin: false,
       approver: false,
       user: false
-     }
+    }
   };
 
   if (credentials) {
@@ -93,9 +93,6 @@ async function getPermissions (credentials) {
       permissions.ar.user = true;
     }
   }
-
-
-
 
   return permissions;
 }

@@ -331,7 +331,7 @@ async function postAddressSelect (request, reply) {
     request.sessionStore.delete('addLicenceFlow');
 
     const viewContext = View.contextDefaults(request);
-    viewContext.pageTitle = `We're sending you a letter`;
+    viewContext.pageTitle = `We are sending you a letter`;
     viewContext.activeNavLink = 'manage';
     viewContext.verification = verification;
     viewContext.licence = data;

@@ -254,7 +254,10 @@ async function getRefine (request, reply) {
     data: taskData.toJson(),
     query,
     replay,
-    pageTitle: task.config.title
+    pageTitle: task.config.title,
+    errors: {
+      [request.query.flash]: true
+    }
   };
 
   return reply.view('water/notifications/refine', view);
@@ -278,6 +281,11 @@ async function postRefine (request, reply) {
   // Set selected licences
   const licenceNumbers = forceArray(request.payload.system_external_id);
   taskData.addLicenceNumbers(licenceNumbers);
+
+  // If no licences selected, display same screen again with error message
+  if (licenceNumbers.length === 0) {
+    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected&data=${taskData.toJson()}`);
+  }
 
   // Redirect to next step - either confirm or template variable entry
   const redirectUrl = task.config.variables && task.config.variables.length

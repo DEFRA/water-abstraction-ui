@@ -4,6 +4,27 @@
 
   <a class="link-back link-back--space-above" href="/select-licences">Back</a>
 
+  {{#if errors.noLicencesSelected }}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+        We need more information
+      </h2>
+
+      <ul class="error-summary-list">
+        <li><a href="#checkbox-0">Please select at least one licence.</a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+  {{/if}}
+
+
+
+
   <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
 
   {{#greaterThan pagination.pageCount 1 }}
@@ -64,7 +85,7 @@
                     <div class="table-row medium-space">
                       <div class="table-cell">
                         <div class="multiple-choice">
-                          <input checked value="{{ system_external_id }}" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
+                          <input {{#unless ../errors.noLicencesSelected }}checked{{/unless}} value="{{ system_external_id }}" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
                           <label for="checkbox-{{@index}}">
                             <h2 class="bold-small">
                               {{system_external_id}}
@@ -85,12 +106,7 @@
                         {{#if this.metadata.Expires}}<span class="sr-only">Licence expires </span>{{/if}}
                         {{ formatSortableDate this.metadata.Expires}}
                       </div>
-                      <!-- <div class="table-cell">
-                        <span class="context">
-                          Contact
-                        </span>
 
-                      </div> -->
                     </div>
                     {{/each}}
             </fieldset>

@@ -5,7 +5,7 @@ const { forceArray } = require('../../lib/helpers');
 
 // @TODO move this config data to API once schema is settled
 const config = [{
-  id: 1,
+  task_config_id: 1,
   type: 'notification',
   config: {
     name: 'Hands off flow warning',
@@ -18,16 +18,20 @@ const config = [{
       helptext: 'The EA gauging station name',
       default: '',
       widget: 'text',
-      validation: null
+      validation: {
+        required: true
+      }
     }],
     steps: [{
       widgets: [{
         name: 'system_external_id',
         widget: 'textarea',
         label: 'Enter the licence number(s) you want to send a notification about',
+        error_label: 'licence number(s)',
         hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
         operator: '$in',
-        mapper: 'licenceNumbers'
+        mapper: 'licenceNumbers',
+        validation: ['array', 'min:1']
       }]
     }],
     content: {
@@ -38,7 +42,7 @@ We are sending you a message about...
     }
   }
 }, {
-  id: 2,
+  task_config_id: 2,
   type: 'notification',
   config: {
     name: 'Expiry notice',
@@ -83,9 +87,11 @@ We are sending you a message about...
           name: 'system_external_id',
           widget: 'textarea',
           label: 'Enter the licence number(s) you want to send a notification about',
+          error_label: 'licence number(s)',
           hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
           operator: '$in',
-          mapper: 'licenceNumbers'
+          mapper: 'licenceNumbers',
+          validation: ['array', 'min:1']
         }]
       },
       {
@@ -135,18 +141,33 @@ async function getIndex (request, reply) {
  * @param {Object} reply - HAPI HTTP reply interface
  */
 async function getStep (request, reply) {
-  const { id } = request.params;
+  // Get selected task config
+  const id = parseInt(request.params.id, 10);
+  const step = parseInt(request.query.step, 10);
+  const task = find(config, (row) => row.task_config_id === id);
 
-  // Find the requested task
-  const task = find(config, (row) => row.id === id);
+  const { data } = request.query;
 
-  const { step: index, data } = request.query;
-  let step = task.config.steps[index];
-
+  // Update task data
   const taskData = new TaskData(task);
   if (data) {
     taskData.fromJson(data);
   }
+  return renderStep(request, reply, taskData, step);
+}
+
+/**
+ * Generic renderStep handler - used by both the GET handler, and the POST
+ * handler if there is a validation issue
+ * @param {Object} request - HAPI request interface
+ * @param {Object} reply - HAPI reply interface
+ * @param {Object} taskData - the current task state object
+ * @param {Number} index - the step to show (index of the steps array)
+ */
+async function renderStep (request, reply, taskData, index) {
+  const { task } = taskData;
+
+  const step = task.config.steps[index];
 
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
@@ -165,7 +186,7 @@ async function getStep (request, reply) {
     task,
     index,
     step,
-    formAction: `/admin/notifications/${id}?step=${index}`,
+    formAction: `/admin/notifications/${task.task_config_id}?step=${index}`,
     data: taskData.toJson(),
     pageTitle: task.config.title
   };
@@ -182,14 +203,20 @@ async function postStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
   const step = parseInt(request.query.step, 10);
-  const task = find(config, (row) => row.id === id);
+  const task = find(config, (row) => row.task_config_id === id);
 
   const { data } = request.payload;
 
   // Update task data
   const taskData = new TaskData(task);
   taskData.fromJson(data);
-  taskData.processRequest(request.payload, step);
+  const { error } = taskData.processRequest(request.payload, step);
+
+  // If validation error, re-render current step
+  if (error) {
+    request.view.error = error;
+    return renderStep(request, reply, taskData, step);
+  }
 
   // Redirect to next step
   const nextAction = step < task.config.steps.length - 1
@@ -209,7 +236,7 @@ async function postStep (request, reply) {
 async function getRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.id === id);
+  const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task);
@@ -217,8 +244,6 @@ async function getRefine (request, reply) {
 
   // Build CRM query filter
   const filter = taskData.getFilter();
-
-  console.log(filter);
 
   // Get documents data from CRM
   const { error, data, pagination } = await documents.findMany(filter, {}, {
@@ -272,7 +297,7 @@ async function getRefine (request, reply) {
 async function postRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.id === id);
+  const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task);
@@ -295,10 +320,6 @@ async function postRefine (request, reply) {
   return reply.redirect(redirectUrl);
 }
 
-// async function postConfirm (request, reply) {
-//   console.log(request.query, request.payload);
-// }
-
 /**
  * Allow user to input custom variables/params which are passed through to
  * the message template
@@ -309,7 +330,7 @@ async function getVariableData (request, reply) {
   const { id } = request.params;
 
   // Find the requested task
-  const task = find(config, (row) => row.id === id);
+  const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task);
@@ -335,9 +356,7 @@ async function postVariableData (request, reply) {
   const id = parseInt(request.params.id, 10);
 
   // Find the requested task
-  const task = find(config, (row) => row.id === id);
-
-  console.log('id', id, 'task', task);
+  const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task);
@@ -352,7 +371,7 @@ async function getPreview (request, reply) {
   const { id } = request.params;
 
   // Find the requested task
-  const task = find(config, (row) => row.id === id);
+  const task = find(config, (row) => row.task_config_id === id);
   // todo: generate who and why section content
   const whoAndWhy = `
     <span class="bold-small">6 licence holders</span>

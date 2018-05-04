@@ -17,7 +17,7 @@ const getStep = {
     },
     plugins: {
       viewContext: {
-        pageTitle: 'Reports and notifications',
+        // pageTitle: 'Reports and notifications',
         activeNavLink: 'notifications'
       }
     }
@@ -44,7 +44,15 @@ module.exports = {
   postStep: {
     path: '/admin/notifications/{id}',
     method: 'POST',
-    handler: controller.postStep
+    handler: controller.postStep,
+    config: {
+      description: 'Post handler for single step of notification query flow',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      }
+    }
   },
   getRefine: {
     method: 'GET',

@@ -1,17 +1,19 @@
 /**
-* HAPI error plugin
-* allows us to switch on a holding page using environment variable
-* e.g. holding_page=1
-*
-* @module lib/hapi-holding-page-plugin
-*/
+ * HAPI error plugin
+ * allows us to switch on a holding page using environment variable
+ * e.g. holding_page=1
+ *
+ * @module lib/hapi-holding-page-plugin
+ */
 const holdingPagePlugin = {
   register (server, options, next) {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
+        const enabled = !!parseInt(process.env.holding_page, 10);
+
         // Is holding page enabled?
-        if (process.env.holding_page) {
+        if (enabled) {
           const { path } = request.url;
           const { ignore, redirect } = options;
 

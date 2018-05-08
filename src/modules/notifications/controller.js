@@ -340,7 +340,8 @@ async function getVariableData (request, reply) {
     ...request.view,
     task,
     data: taskData.toJson(),
-    formAction: `/admin/notifications/${id}/data`
+    formAction: `/admin/notifications/${id}/data`,
+    pageTitle: task.config.title
   };
 
   return reply.view('water/notifications/data', view);

@@ -9,6 +9,8 @@
  */
 const moment = require('moment');
 const { extractLicenceNumbers } = require('../../lib/licence-helpers');
+const Joi = require('joi');
+const { find } = require('lodash');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -110,22 +112,126 @@ class TaskData {
    * @param {Object} payload - from HAPI request interface
    */
   processParameterRequest (payload) {
-    this.task.config.variables.forEach(widget => {
+    const { variables: widgets } = this.task.config;
+
+    // Create Joi schema for validating parameters
+    const schema = this.createJoiSchema(widgets);
+
+    widgets.forEach(widget => {
       const { name, mapper = 'default' } = widget;
       this.data.params[name] = this.mappers[mapper].import(name, payload);
     });
+
+    const { error } = Joi.validate(this.data.params, schema, { allowUnknown: true });
+
+    return { error: this.mapJoiError(error, widgets) };
+  }
+
+  /**
+   * Creates a Joi schema for the supplied array of widgets
+   * @param {Array} widgets
+   * @return {Object} Joi schema
+   */
+  createJoiSchema (widgets) {
+    return widgets.reduce((acc, widget) => {
+      if (widget.validation) {
+        let validator = Joi;
+
+        // The validation represents Joi validation config as an array, e.g.
+        // ['string', 'min:1']
+        widget.validation.forEach(str => {
+          const parts = str.split(':');
+          const cmd = parts[0];
+          const value = parts.length ? parts[1] : null;
+
+          if (cmd === 'array') {
+            validator = validator.array();
+          }
+          if (cmd === 'string') {
+            validator = validator.string();
+          }
+          if (cmd === 'required') {
+            validator = validator.required();
+          }
+          if (cmd === 'min') {
+            validator = validator.min(parseInt(value, 10));
+          }
+        });
+
+        acc[widget.name] = validator;
+      }
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Finds a widget within one of the steps by the fieldname
+   * @param {String} name - the field name
+   * @param {Array} widgets - list of widgets to search in
+   * @return {Object} widget definition
+   */
+  findWidgetByName (name, widgets) {
+    return find(widgets, { name });
+  }
+
+  /**
+   * Map Joi errors into an easily consumable form
+   * @param {Object} error - Joi errors
+   * @param {Array} widgets - list of widgets for the current step/variables
+   * @return {Object} errors in a simple boolean form simple to consume in the view
+   */
+  mapJoiError (error, widgets) {
+    if (!error) {
+      return error;
+    }
+
+    return error.details.reduce((acc, detail) => {
+      const field = detail.path[0];
+      const widget = this.findWidgetByName(field, widgets);
+
+      const label = widget.error_label || widget.label;
+      const messages = {
+        'any.required': `The ${label} field is required`,
+        'array.min': `At least ${detail.context.limit} value is required in the ${label} field`,
+        'any.empty': `The ${label} field is required`
+      };
+
+      acc.push({
+        message: messages[detail.type],
+        field
+      });
+
+      return acc;
+    }, []);
   }
 
   /**
    * Parse a form payload
    * @param {Object} payload - from HAPI request.payload
    * @param {Number} step - the index of the step to process
+   * @return {error} - Joi validation errors
    */
   processRequest (payload, step) {
-    this.task.config.steps[step].widgets.forEach(widget => {
+    const { widgets } = this.task.config.steps[step];
+
+    // Use mappers to build the query as the result of the POST data from the
+    // current step
+    const query = widgets.reduce((acc, widget) => {
       const { name, mapper = 'default' } = widget;
-      this.data.query[name] = this.mappers[mapper].import(name, payload);
-    });
+      return {
+        ...acc,
+        [name]: this.mappers[mapper].import(name, payload)
+      };
+    }, {});
+    // Merge with existing query from previous steps
+    this.data.query = {
+      ...this.data.query,
+      ...query
+    };
+
+    const { error } = Joi.validate(query, this.createJoiSchema(widgets), { allowUnknown: true });
+
+    return { error: this.mapJoiError(error, widgets) };
   }
 
   /**
@@ -157,11 +263,6 @@ class TaskData {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
           filter[widget.name] = this.data.query[widget.name];
-          // } else {
-          //   filter[widget.name] = {
-          //     [widget.operator]: this.data.query[widget.name]
-          //   };
-          // }
         }
         if (widget.operator === '$in' && this.data.query[widget.name].length) {
           filter[widget.name] = { $in: this.data.query[widget.name] };

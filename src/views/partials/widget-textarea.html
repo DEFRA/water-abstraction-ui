@@ -1,6 +1,7 @@
-<div class="form-group">
+<div class="form-group {{#hasWidgetErrors this.name error }}form-group-error{{/hasWidgetErrors}}">
   <label class="form-label" for="{{ this.name }}">
     <span class="form-label-bold">{{ this.label }}</span>
+    {{{ widgetErrors this.name error }}}
     {{#if this.hint }}
     <span class="form-hint">{{ this.hint }}</span>
     {{/if}}

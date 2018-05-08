@@ -244,7 +244,9 @@ async function getRefine (request, reply) {
   const filter = taskData.getFilter();
 
   // Get documents data from CRM
-  const { error, data, pagination } = await documents.findMany(filter, {}, {
+  const { error, data, pagination } = await documents.findMany(filter, {
+    system_external_id: +1
+  }, {
     page: 1,
     perPage: 300
   });

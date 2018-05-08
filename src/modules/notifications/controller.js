@@ -18,9 +18,7 @@ const config = [{
       helptext: 'The EA gauging station name',
       default: '',
       widget: 'text',
-      validation: {
-        required: true
-      }
+      validation: ['string', 'required']
     }],
     steps: [{
       widgets: [{
@@ -321,6 +319,28 @@ async function postRefine (request, reply) {
 }
 
 /**
+ * Render variable handler - used by both the GET handler, and the POST
+ * handler if there is a validation issue
+ * @param {Object} request - HAPI request interface
+ * @param {Object} reply - HAPI reply interface
+ * @param {Object} taskData - the current task state object
+ * @param {Number} index - the step to show (index of the steps array)
+ */
+async function renderVariableData (request, reply, taskData) {
+  const { task } = taskData;
+
+  const view = {
+    ...request.view,
+    task,
+    data: taskData.toJson(),
+    formAction: `/admin/notifications/${task.task_config_id}/data`,
+    pageTitle: task.config.title
+  };
+
+  return reply.view('water/notifications/data', view);
+}
+
+/**
  * Allow user to input custom variables/params which are passed through to
  * the message template
  * @param {String} request.params.id - task config ID
@@ -336,6 +356,8 @@ async function getVariableData (request, reply) {
   const taskData = new TaskData(task);
   taskData.fromJson(request.query.data);
 
+  return renderVariableData(request, reply, taskData);
+  /*
   const view = {
     ...request.view,
     task,
@@ -345,6 +367,7 @@ async function getVariableData (request, reply) {
   };
 
   return reply.view('water/notifications/data', view);
+  */
 }
 
 /**
@@ -362,10 +385,16 @@ async function postVariableData (request, reply) {
   // Load data from previous step(s)
   const taskData = new TaskData(task);
   taskData.fromJson(request.payload.data);
-  taskData.processParameterRequest(request.payload);
+  const { error } = taskData.processParameterRequest(request.payload);
 
-  // Redirect
-  return reply.redirect(`/admin/notifications/${id}/preview?data=${taskData.toJson()}`);
+  // Re-render variable screen
+  if (error) {
+    request.view.error = error;
+    return renderVariableData(request, reply, taskData);
+  } else {
+    // Redirect to next step
+    return reply.redirect(`/admin/notifications/${id}/preview?data=${taskData.toJson()}`);
+  }
 }
 
 async function getPreview (request, reply) {

@@ -103,8 +103,16 @@ class TaskData {
    * Add licence number list to data
    * @param {Array} licenceNumbers
    */
-  addLicenceNumbers (licenceNumbers) {
+  setLicenceNumbers (licenceNumbers) {
     this.data.licenceNumbers = licenceNumbers;
+  }
+
+  /**
+   * Get licence numbers
+   * @return {Array}
+   */
+  getLicenceNumbers () {
+    return this.data.licenceNumbers;
   }
 
   /**
@@ -125,6 +133,14 @@ class TaskData {
     const { error } = Joi.validate(this.data.params, schema, { allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
+  }
+
+  /**
+   * Get parameter data
+   * @return {Object} template variable params
+   */
+  getParameters () {
+    return this.data.params;
   }
 
   /**

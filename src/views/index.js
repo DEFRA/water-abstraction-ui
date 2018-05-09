@@ -1,12 +1,17 @@
 const handlebars = require('handlebars');
 const moment = require('moment');
 const qs = require('querystring');
+const markdown = require('markdown').markdown;
 
 console.log('working dir for views');
 console.log(__dirname);
 
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
+
+handlebars.registerHelper('markdown', function (param, options) {
+  return markdown.toHTML(param);
+});
 
 handlebars.registerHelper('for', function (from, to, incr, block) {
   var accum = '';

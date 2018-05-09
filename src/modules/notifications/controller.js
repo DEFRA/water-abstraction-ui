@@ -2,6 +2,7 @@ const { taskConfig } = require('../../lib/connectors/water');
 const TaskData = require('./task-data');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
+const { sendNotification } = require('../../lib/connectors/water');
 
 // @TODO move this config data to API once schema is settled
 const config = [{
@@ -303,7 +304,7 @@ async function postRefine (request, reply) {
 
   // Set selected licences
   const licenceNumbers = forceArray(request.payload.system_external_id);
-  taskData.addLicenceNumbers(licenceNumbers);
+  taskData.setLicenceNumbers(licenceNumbers);
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
@@ -324,7 +325,6 @@ async function postRefine (request, reply) {
  * @param {Object} request - HAPI request interface
  * @param {Object} reply - HAPI reply interface
  * @param {Object} taskData - the current task state object
- * @param {Number} index - the step to show (index of the steps array)
  */
 async function renderVariableData (request, reply, taskData) {
   const { task } = taskData;
@@ -357,17 +357,6 @@ async function getVariableData (request, reply) {
   taskData.fromJson(request.query.data);
 
   return renderVariableData(request, reply, taskData);
-  /*
-  const view = {
-    ...request.view,
-    task,
-    data: taskData.toJson(),
-    formAction: `/admin/notifications/${id}/data`,
-    pageTitle: task.config.title
-  };
-
-  return reply.view('water/notifications/data', view);
-  */
 }
 
 /**
@@ -397,11 +386,52 @@ async function postVariableData (request, reply) {
   }
 }
 
+/**
+ * Counts licences in preview data
+ * @param {Array} previewData
+ * @return {Number} number of licences
+ */
+function countPreviewLicences (previewData) {
+  return previewData.reduce((acc, row) => {
+    return acc + row.contact.licences.length;
+  }, 0);
+};
+
 async function getPreview (request, reply) {
   const { id } = request.params;
+  const { data } = request.query;
 
   // Find the requested task
   const task = find(config, (row) => row.task_config_id === id);
+
+  // Load data from previous step(s)
+  const taskData = new TaskData(task);
+  taskData.fromJson(data);
+
+  // Generate preview
+  const licenceNumbers = taskData.getLicenceNumbers();
+  const params = taskData.getParameters();
+  const { error, data: previewData } = await sendNotification(id, licenceNumbers, params);
+
+  // Get summary data
+  const summary = {
+    messageCount: previewData.length,
+    licenceCount: countPreviewLicences(previewData),
+    sampleMessage: previewData[0].output
+  };
+
+  const view = {
+    ...request.view,
+    task,
+    summary,
+    // notificationContent,
+    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
+  };
+
+  return reply.view('water/notifications/preview', view);
+
+  // console.log(summary);
+  /*
   // todo: generate who and why section content
   const whoAndWhy = `
     <span class="bold-small">6 licence holders</span>
@@ -418,15 +448,16 @@ async function getPreview (request, reply) {
       Please refer to the paper copy of your licence to check this flow against your relevant conditions.
     </p>
   `;
-  const view = {
-    ...request.view,
-    task,
-    whoAndWhy,
-    notificationContent,
-    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
-  };
-
-  return reply.view('water/notifications/preview', view);
+  */
+  // const view = {
+  //   ...request.view,
+  //   task,
+  //   whoAndWhy,
+  //   notificationContent,
+  //   pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
+  // };
+  //
+  // return reply.view('water/notifications/preview', view);
 }
 module.exports = {
   getIndex,

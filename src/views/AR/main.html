@@ -1,0 +1,26 @@
+{{> styles}}
+<main id="content">
+  {{>element-phase-tag}}
+  <nav>
+    <div class="breadcrumbs">
+      {{>element-header-links}}
+      <ol>
+        <li>Abstraction Reform</li>
+      </ol>
+    </div>
+  </nav>
+  <a class="link-back" href="/admin/licences">Back</a>
+
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+  
+
+  <ol>
+    <li><a class="link" href="/ar/licences">Find a Licence</a></li>
+  <li><a class="link" href="/ar/data">Data Admin</a></li>
+  <li><a class="link" href="/ar/users">Users</a></li>
+  </ol>
+</main>
+{{> footerjs}}
+
+{{> debug}}

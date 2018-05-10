@@ -3,7 +3,6 @@
 
   {{>element-phase-tag}}{{>element-main-nav}}
 
-
   {{#if errors.emailAddress_email }}
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
     <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
@@ -42,8 +41,11 @@
     Search for licences using user email, partial licence number or licence name
   </p>
   {{/if}}
+  {{#if isAbstractionReform}}
 
-  <form novalidate method="GET" action="{{#if isAdmin }}/admin{{/if}}/licences" name="licenceSearch">
+  {{/if}}
+
+  <form novalidate method="GET" action="{{#if isAbstractionReform}}/ar{{/if}}{{#if isAdmin }}/admin{{/if}}/licences" name="licenceSearch">
 
   <!-- Licence search form -->
   <div class="grid-row">
@@ -60,7 +62,7 @@
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
-        <label class="form-label form-label--bold" for="licenceNumber">{{#if isAdmin }}Search licences{{else}}Search your licences{{/if}}</label>
+        <label class="form-label form-label--bold" for="licenceNumber">{{#if isAdmin }}Search licences{{else}}{{#if isAbstractionReform}}Search licences{{else}}Search your licences{{/if}}{{/if}}</label>
         <span class="form-hint">Enter a licence number or name</span>
         <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
@@ -82,7 +84,7 @@
 
 
 
-    {{#>element-licence-results-header this isAdmin=isAdmin}}{{/element-licence-results-header}}
+    {{#>element-licence-results-header this isAdmin=isAdmin isAbstractionReform=isAbstractionReform}}{{/element-licence-results-header}}
 
     {{^licenceData}}
     <!-- No results found -->
@@ -95,7 +97,7 @@
 
     <!-- Display list of clickable licence rows/tiles -->
     {{#each licenceData}}
-      {{#>element-licence-link this  isAdmin=../isAdmin}}{{/element-licence-link}}
+      {{#>element-licence-link this  isAdmin=../isAdmin isAbstractionReform=../isAbstractionReform}}{{/element-licence-link}}
     {{/each}}
 
   </div>
@@ -106,7 +108,7 @@
     <ol class="pagination">
       <li class="pagination__item" {{#equal pagination.page 1}}aria-hidden="true"{{/equal}}>
         {{#greaterThan pagination.page 1}}
-          <a class="pagination__link" href="{{#if isAdmin }}/admin{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
+          <a class="pagination__link" href="{{#if isAbstractionReform}}/ar{{/if}}{{#if isAdmin }}/admin{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
         {{/greaterThan}}
         	&larr; Previous page
         {{#greaterThan pagination.page 1}}
@@ -118,7 +120,7 @@
       {{/for}}
       <li class="pagination__item" {{#equal pagination.page pagination.pageCount}}aria-hidden="true"{{/equal}}>
         {{#lessThan pagination.page pagination.pageCount}}
-          <a class="pagination__link" href="{{#if isAdmin }}/admin{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
+          <a class="pagination__link" href="{{#if isAbstractionReform}}/ar{{/if}}{{#if isAdmin }}/admin{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
         {{/lessThan}}
         Next page 	&rarr;
         {{#lessThan pagination.page pagination.pageCount}}
@@ -128,6 +130,16 @@
     </ol>
   </nav>
   {{/greaterThan}}
+  {{ else }}
+    {{#if permissions.ar.admin}}
+    {{#if isAbstractionReform}}
+    {{else}}
+    <p>
+      <A href="/ar">I’m here to do abstraction reform</a>
+    </p>
+    {{/if}}
+    {{/if}}
+
 
   <div class="grid-row">
     <div class="column-two-thirds">

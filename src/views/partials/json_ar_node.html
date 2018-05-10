@@ -1,0 +1,28 @@
+{{#each obj}}
+
+
+      {{#if (iterable this )}}
+
+{
+  "id":"{{trim @key}}",
+  "type":"object",
+  "alias":"{{trim @key}}",
+  "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+  "attributes":[
+    {{#>json_ar_node  obj=this parent=(concat ../parent '.' @key)}}{{/json_ar_node}},{}
+
+    ],
+    "path":"{{parent}}.{{trim @key}}"
+}
+{{else}}
+{
+  "id":"{{trim @key}}",
+  "type":"object",
+  "alias":"{{trim @key}}",
+  "rules":{"validation":[],"display":[],"permissions":[],"values":[]},
+  "attributes":[],
+  "path":"{{parent}}.{{trim @key}}"
+}
+      {{/if}}
+      ,
+  {{/each}}

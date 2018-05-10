@@ -1,0 +1,25 @@
+<tr><td colspan=10>
+<b>{{parent}}</b>
+</td></tr>
+  {{#each obj}}
+      {{#if (iterable this )}}
+      <tr>
+        <td colspan=10 width="33%">
+          <b>{{@key}}</b>
+        </td>
+<!--        <td><input name="{{../parent}}.{{@key}}"></td> -->
+      </tr>
+      {{#>ar_node obj=this parent=(concat ../parent '.' @key)}}{{/ar_node}}
+      {{else}}
+      <tr>
+        <td>
+          <b>{{@key}}</b>
+        </td>
+        <td class="nald">{{getValueNALD (concat ../parent '.' @key) @root.licenceNALD.data.current_version}}</td>
+        <td class="ar"><input name="{{../parent}}.{{@key}}" value="{{getValueAR (concat ../parent '.' @key) @root.licenceAR.AR_data}}"></td>
+        <!--
+        <td>{{concat ../parent '.' @key}}</td>
+        -->
+      </tr>
+      {{/if}}
+  {{/each}}

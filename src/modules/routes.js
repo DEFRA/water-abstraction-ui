@@ -10,6 +10,6 @@ module.exports = [
   ...Object.values(updatePasswordRoutes),
   ...Object.values(viewLicenceRoutes),
   ...Object.values(viewLicenceAdminRoutes),
-  ...Object.values(viewAbstractionReformRoutes)
+  ...Object.values(viewAbstractionReformRoutes),
   ...Object.values(notificationsRoutes)
 ];

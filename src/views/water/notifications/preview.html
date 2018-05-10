@@ -21,15 +21,19 @@
           <p>
             <!-- todo: who and why section -->
             You’re about to send this notification to
-            {{{whoAndWhy}}}
+            <span class="bold-small">{{ summary.messageCount }} licence holders</span>
+            regarding
+            <span class="bold-small">{{ summary.licenceCount }} licences</span>.
           </p>
         </div>
 
 
         <div class="medium-space">
-          <div class="notification">
-            <!-- todo: preview content -->
-            {{{notificationContent}}}
+          <div class="notification-preview">
+
+
+            {{{ markdown summary.sampleMessage }}}
+
           </div>
         </div>
       </div>

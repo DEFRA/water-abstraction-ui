@@ -399,10 +399,13 @@ function countPreviewLicences (previewData) {
   }, 0);
 };
 
-async function getPreview (request, reply) {
-  const { id } = request.params;
-  const { data } = request.query;
-
+/**
+ * A shared function for use by getPreview / postSend
+ * @param {Number} id - the task config ID
+ * @param {String} JSON encoded task state
+ * @return {Object} view context data
+ */
+async function getSendViewContext (id, data, sender) {
   // Find the requested task
   const task = find(config, (row) => row.task_config_id === id);
 
@@ -413,7 +416,7 @@ async function getPreview (request, reply) {
   // Generate preview
   const licenceNumbers = taskData.getLicenceNumbers();
   const params = taskData.getParameters();
-  const { error, data: previewData } = await sendNotification(id, licenceNumbers, params);
+  const { error, data: previewData } = await sendNotification(id, licenceNumbers, params, sender);
 
   // Get summary data
   const summary = {
@@ -422,45 +425,55 @@ async function getPreview (request, reply) {
     sampleMessage: previewData[0].output
   };
 
-  const view = {
-    ...request.view,
+  return {
     task,
     summary,
-    // notificationContent,
+    error,
+    data: taskData.toJson(),
+    formAction: `/admin/notifications/${id}/send`,
     pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
   };
-
-  return reply.view('water/notifications/preview', view);
-
-  // console.log(summary);
-  /*
-  // todo: generate who and why section content
-  const whoAndWhy = `
-    <span class="bold-small">6 licence holders</span>
-    regarding
-    <span class="bold-small">8 licences</span>
-    in
-    <span class="bold-small">Avon, Little Avon</span>.`;
-  // todo: generate notification content
-  const notificationContent = `
-    <p class="lede">
-      The river at the <span class="bold-medium">Little Spanton</span> gauging station has daily mean flow of <span class="bold-medium">128m³/s</span>.
-    </p>
-    <p class="lede">
-      Please refer to the paper copy of your licence to check this flow against your relevant conditions.
-    </p>
-  `;
-  */
-  // const view = {
-  //   ...request.view,
-  //   task,
-  //   whoAndWhy,
-  //   notificationContent,
-  //   pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
-  // };
-  //
-  // return reply.view('water/notifications/preview', view);
 }
+
+/**
+ * Preview message for sending
+ * Sends request to water service as if message is being sent
+ * Displays licence/contact count and sample message
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.data - JSON encoded string of task state
+ */
+async function getPreview (request, reply) {
+  const { id } = request.params;
+  const { data } = request.query;
+
+  const view = {
+    ...request.view,
+    ...await getSendViewContext(id, data)
+  };
+  return reply.view('water/notifications/preview', view);
+}
+
+/**
+ * Send message
+ * Sends request to water service
+ * Displays licence/contact count and sample message
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.payload.data - JSON encoded string of task state
+ */
+async function postSend (request, reply) {
+  const { id } = request.params;
+  const { data } = request.payload;
+
+  // Get email address of current user
+  const { username } = request.auth.credentials;
+
+  const view = {
+    ...request.view,
+    ...await getSendViewContext(id, data, username)
+  };
+  return reply.view('water/notifications/sent', view);
+}
+
 module.exports = {
   getIndex,
   getStep,
@@ -469,5 +482,6 @@ module.exports = {
   postRefine,
   getVariableData,
   postVariableData,
-  getPreview
+  getPreview,
+  postSend
 };

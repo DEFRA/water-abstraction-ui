@@ -92,14 +92,6 @@ module.exports = {
     },
     handler: controller.postRefine
   },
-  // postConfirm: {
-  //   method: 'POST',
-  //   path: '/admin/notifications/{id}/confirm',
-  //   config: {
-  //
-  //   },
-  //   handler: controller.postConfirm
-  // },
   getVariableData: {
     method: 'GET',
     path: '/admin/notifications/{id}/data',
@@ -143,7 +135,7 @@ module.exports = {
     method: 'GET',
     path: '/admin/notifications/{id}/preview',
     config: {
-      description: 'Notification: preiew',
+      description: 'Notification: preview',
       validate: {
         params: {
           id: Joi.number()
@@ -157,6 +149,26 @@ module.exports = {
       }
     },
     handler: controller.getPreview
+  },
+
+  postSend: {
+    method: 'POST',
+    path: '/admin/notifications/{id}/send',
+    config: {
+      description: 'Notification: send messages',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.postSend
   }
 
 };

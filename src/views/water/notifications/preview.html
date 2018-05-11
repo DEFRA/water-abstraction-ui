@@ -4,7 +4,7 @@
 
 
     <a href="#" class="link-back medium-space" onclick="history.go(-1)">Back</a>
-          <form>
+
     <!-- page title -->
     <div class="grid-row">
       <div class="column-two-thirds">
@@ -41,10 +41,11 @@
 
     <div class="grid-row">
       <div class="column-one-third">
-        <div>
+        <form method="POST" action="{{ formAction }}">
+          <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+          <input type="hidden" name="data" value="{{ data }}" />
           <button type="submit" class="button">Send notification</button>
-        </div>
-      </form>
+        </form>
       </div>
     </div>
   </main>

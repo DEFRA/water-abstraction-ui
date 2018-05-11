@@ -52,12 +52,12 @@ const taskConfig = new APIClient(rp, {
  * @param {Number} taskConfigId - the task ID in the water service task_config table
  * @param {Array} licenceNumbers - an array of licence numbers
  * @param {Object} params - user-entered template parameters
- * @param {Boolean} isPreview - if true, generates preview data but does not send
+ * @param {String} sender - email address of sender.  If not supplied, reverts to preview mode
  * @return {Promise} resolves with an array of contacts, each with licence numbers and rendered templates attached
  */
-const sendNotification = function (taskConfigId, licenceNumbers, params = {}, isPreview = true) {
+const sendNotification = function (taskConfigId, licenceNumbers, params = {}, sender = null) {
   const options = {
-    uri: `${process.env.WATER_URI}/notification/${isPreview ? 'preview' : 'send'}`,
+    uri: `${process.env.WATER_URI}/notification/${sender ? 'send' : 'preview'}`,
     method: 'POST',
     headers: {
       Authorization: process.env.JWT_TOKEN
@@ -69,7 +69,8 @@ const sendNotification = function (taskConfigId, licenceNumbers, params = {}, is
         }
       },
       taskConfigId,
-      params
+      params,
+      sender
     },
     json: true
   };

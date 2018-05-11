@@ -2,7 +2,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  <a class="link-back link-back--space-above" href="{{ back }}">Back</a>
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -27,7 +27,6 @@
 
       <form method="POST" action="{{ formAction }}">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-        <input type="hidden" name="data" value="{{ data }}" />
 
         <div class="grid-row medium-space">
           <div class="column-two-thirds">

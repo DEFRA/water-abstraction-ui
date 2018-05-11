@@ -148,10 +148,10 @@ async function getStep (request, reply) {
   const { data } = request.query;
 
   // Update task data
-  const taskData = new TaskData(task);
-  if (data) {
-    taskData.fromJson(data);
-  }
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  // if (data) {
+  //   taskData.fromJson(data);
+  // }
   return renderStep(request, reply, taskData, step);
 }
 
@@ -186,7 +186,6 @@ async function renderStep (request, reply, taskData, index) {
     index,
     step,
     formAction: `/admin/notifications/${task.task_config_id}?step=${index}`,
-    data: taskData.toJson(),
     pageTitle: task.config.title
   };
   return reply.view('water/notifications/step', view);
@@ -207,9 +206,12 @@ async function postStep (request, reply) {
   const { data } = request.payload;
 
   // Update task data
-  const taskData = new TaskData(task);
-  taskData.fromJson(data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  // taskData.fromJson(data);
   const { error } = taskData.processRequest(request.payload, step);
+
+  // Update
+  request.sessionStore.set('notificationsFlow', taskData.getData());
 
   // If validation error, re-render current step
   if (error) {
@@ -219,8 +221,8 @@ async function postStep (request, reply) {
 
   // Redirect to next step
   const nextAction = step < task.config.steps.length - 1
-    ? `/admin/notifications/${id}?step=${step + 1}&data=${taskData.toJson()}`
-    : `/admin/notifications/${id}/refine?data=${taskData.toJson()}`;
+    ? `/admin/notifications/${id}?step=${step + 1}`
+    : `/admin/notifications/${id}/refine`;
 
   return reply.redirect(nextAction);
 }
@@ -238,8 +240,8 @@ async function getRefine (request, reply) {
   const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  // taskData.fromJson(request.query.data);
 
   // Build CRM query filter
   const filter = taskData.getFilter();
@@ -276,8 +278,8 @@ async function getRefine (request, reply) {
     pagination,
     results: data,
     task,
-    formAction: `/admin/notifications/${id}/refine?data=${taskData.toJson()}`,
-    data: taskData.toJson(),
+    formAction: `/admin/notifications/${id}/refine`,
+    back: `/admin/notifications/${id}/step?step=${task.config.steps.length - 1}`,
     query,
     replay,
     pageTitle: task.config.title,
@@ -301,22 +303,24 @@ async function postRefine (request, reply) {
   const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
 
   // Set selected licences
   const licenceNumbers = forceArray(request.payload.system_external_id);
   taskData.setLicenceNumbers(licenceNumbers);
 
+  // Update session
+  request.sessionStore.set('notificationsFlow', taskData.getData());
+
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
-    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected&data=${taskData.toJson()}`);
+    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected`);
   }
 
   // Redirect to next step - either confirm or template variable entry
   const redirectUrl = task.config.variables && task.config.variables.length
-    ? `/admin/notifications/${id}/data?data=${taskData.toJson()}`
-    : `/admin/notifications/${id}/preview?data=${taskData.toJson()}`;
+    ? `/admin/notifications/${id}/data`
+    : `/admin/notifications/${id}/preview`;
 
   return reply.redirect(redirectUrl);
 }
@@ -334,9 +338,9 @@ async function renderVariableData (request, reply, taskData) {
   const view = {
     ...request.view,
     task,
-    data: taskData.toJson(),
     formAction: `/admin/notifications/${task.task_config_id}/data`,
-    pageTitle: task.config.title
+    pageTitle: task.config.title,
+    back: `/admin/notifications/${task.task_config_id}/refine`
   };
 
   return reply.view('water/notifications/data', view);
@@ -355,8 +359,7 @@ async function getVariableData (request, reply) {
   const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
 
   return renderVariableData(request, reply, taskData);
 }
@@ -374,9 +377,11 @@ async function postVariableData (request, reply) {
   const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.payload.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
   const { error } = taskData.processParameterRequest(request.payload);
+
+  // Save to session
+  request.sessionStore.set('notificationsFlow', taskData.getData());
 
   // Re-render variable screen
   if (error) {
@@ -384,7 +389,7 @@ async function postVariableData (request, reply) {
     return renderVariableData(request, reply, taskData);
   } else {
     // Redirect to next step
-    return reply.redirect(`/admin/notifications/${id}/preview?data=${taskData.toJson()}`);
+    return reply.redirect(`/admin/notifications/${id}/preview`);
   }
 }
 
@@ -402,7 +407,7 @@ function countPreviewLicences (previewData) {
 /**
  * A shared function for use by getPreview / postSend
  * @param {Number} id - the task config ID
- * @param {String} JSON encoded task state
+ * @param {Object} data - state from session store
  * @return {Object} view context data
  */
 async function getSendViewContext (id, data, sender) {
@@ -410,8 +415,7 @@ async function getSendViewContext (id, data, sender) {
   const task = find(config, (row) => row.task_config_id === id);
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(data);
+  const taskData = new TaskData(task, data);
 
   // Generate preview
   const licenceNumbers = taskData.getLicenceNumbers();
@@ -431,7 +435,8 @@ async function getSendViewContext (id, data, sender) {
     error,
     data: taskData.toJson(),
     formAction: `/admin/notifications/${id}/send`,
-    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
+    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`,
+    back: `/admin/notification/${id}/${task.config.variables ? 'data' : 'refine'}`
   };
 }
 
@@ -448,7 +453,7 @@ async function getPreview (request, reply) {
 
   const view = {
     ...request.view,
-    ...await getSendViewContext(id, data)
+    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'))
   };
   return reply.view('water/notifications/preview', view);
 }
@@ -469,7 +474,7 @@ async function postSend (request, reply) {
 
   const view = {
     ...request.view,
-    ...await getSendViewContext(id, data, username)
+    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'), username)
   };
   return reply.view('water/notifications/sent', view);
 }

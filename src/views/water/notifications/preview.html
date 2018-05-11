@@ -2,8 +2,8 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
+    <a href="{{ back }}" class="link-back link-back--space-above">Back</a>
 
-    <a href="#" class="link-back medium-space" onclick="history.go(-1)">Back</a>
 
     <!-- page title -->
     <div class="grid-row">
@@ -20,10 +20,10 @@
         <div class="medium-space">
           <p>
             <!-- todo: who and why section -->
-            You’re about to send this notification to
-            <span class="bold-small">{{ summary.messageCount }} licence holders</span>
+            You are about to send this notification to
+            <span class="bold-small">{{ summary.messageCount }} licence holder{{#greaterThan summary.messageCount 1}}s{{/greaterThan}}</span>
             regarding
-            <span class="bold-small">{{ summary.licenceCount }} licences</span>.
+            <span class="bold-small">{{ summary.licenceCount }} licence{{#greaterThan summary.licenceCount 1}}s{{/greaterThan}}</span>.
           </p>
         </div>
 

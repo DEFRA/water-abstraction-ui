@@ -15,12 +15,12 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
-      <div class="govuk-box-highlight">
+      <div class="govuk-box-highlight govuk-box-highlight--accessible">
         <h2 class="heading-large tight">
           Notification sent
         </h2>
         <p class="font-medium">
-          You sent this notification to <span class="bold-medium">{{ summary.messageCount }} licence holders</span>.<br>
+          You sent this notification to <span class="bold-medium">{{ summary.messageCount }} licence holder{{#greaterThan summary.messageCount 1}}s{{/greaterThan}}</span>.<br>
         </p>
       </div>
 

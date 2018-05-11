@@ -59,19 +59,25 @@ const dateMapper = {
 };
 
 class TaskData {
-  constructor (task) {
+  constructor (task, state) {
+    console.log('state', state);
+
     // Task config data
     this.task = task;
 
-    // Initialise data to empty state
-    this.data = {
-      // The query data input by the user
-      query: {},
-      // List of licence numbers following refine audience step
-      licenceNumbers: [],
-      // Custom template parameter data
-      params: {}
-    };
+    if (state) {
+      this.data = state;
+    } else {
+      // Initialise data to empty state
+      this.data = {
+        // The query data input by the user
+        query: {},
+        // List of licence numbers following refine audience step
+        licenceNumbers: [],
+        // Custom template parameter data
+        params: {}
+      };
+    }
 
     // Initialise available mappers
     this.mappers = {
@@ -82,14 +88,22 @@ class TaskData {
   }
 
   /**
+   * Returns the current task data
+   * @return {Object}
+   */
+  getData () {
+    return this.data;
+  }
+
+  /**
    * Loads task data as string
    * @param {String} str
    */
-  fromJson (str) {
-    if (str) {
-      this.data = JSON.parse(str);
-    }
-  }
+  // fromJson (str) {
+  //   if (str) {
+  //     this.data = JSON.parse(str);
+  //   }
+  // }
 
   /**
    * Get data as JSON string

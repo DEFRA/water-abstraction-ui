@@ -35,7 +35,7 @@
       <form method="POST" action="{{ formAction }}">
 
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-        <input type="hidden" name="data" value="{{ data }}" />
+
 
         {{#each step.widgets }}
         {{#equal this.widget 'dropdown' }}

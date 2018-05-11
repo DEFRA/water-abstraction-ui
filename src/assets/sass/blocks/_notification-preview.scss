@@ -2,4 +2,12 @@
   background-color: $govuk-blue;
   color: $page-colour;
   padding: 30px;
+  word-wrap: break-word;
+}
+
+
+.govuk-box-highlight {
+  &--accessible {
+    background: #208070;
+  }
 }

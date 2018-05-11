@@ -2,7 +2,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  <a href="{{ back }}" class="link-back link-back--space-above">Back</a>
 
   {{#if errors.noLicencesSelected }}
   <div class="grid-row">
@@ -38,7 +38,6 @@
 
   <form method="POST" action="{{ formAction }}">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-    <input type="hidden" name="data" value="{{ data }}" />
 
     <fieldset class="small-space">
               <legend class="small-space">

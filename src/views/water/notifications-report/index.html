@@ -1,0 +1,73 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  <div class="grid-row">
+    <div class="column-full">
+
+      <table>
+              <tbody><tr class="clickable">
+                  <td class="text" scope="col">
+                    <a href="#">
+                      Date
+                      <span class="sort-icon"> ▾</span>
+                    </a>
+
+                  </td><td scope="col">
+                    <a href="#">
+                      Notification
+                      <!-- <span class="sort-icon"> &#x25be;</span> -->
+                    </a>
+
+                  </td><td class="text" scope="col">
+                    <a href="#">
+                      Sent by
+                      <!-- <span class="sort-icon"> &#x25be;</span> -->
+                    </a>
+
+                  </td><td class="numeric" scope="col">
+                    <a href="#">
+                      Recipients
+                      <!-- <span class="sort-icon"> &#x25be;</span> -->
+                    </a>
+
+                  </td><td class="text text-right" scope="col">
+                    <a href="#">
+                      Status
+                      <!-- <span class="sort-icon"> &#x25be;</span> -->
+                    </a>
+
+                </td></tr>
+
+
+              </tbody><tbody>
+
+                {{#each events}}
+                <tr class="clickable">
+                  <td class="text">{{ formatISODate this.created }}</td>
+                  <td scope="row"><a href="notice-log">{{ this.subtype }}</a>
+                  </td><td class="text">{{ this.issuer }}</td>
+                  <td class="numeric"></td>
+                  <td class="centext">
+                  </td>
+                </tr>
+                {{/each}}
+
+
+              </tbody>
+            </table>
+
+
+    </div>
+  </div>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

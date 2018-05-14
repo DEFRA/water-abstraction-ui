@@ -175,6 +175,11 @@ handlebars.registerHelper('guid', function () {
   return Helpers.createGUID();
 });
 
+handlebars.registerHelper('formatISODate', function (dateInput) {
+  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
+  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+});
+
 handlebars.registerHelper('formatDate', function (dateInput) {
   console.log('formatDate');
 

@@ -47,6 +47,13 @@ const taskConfig = new APIClient(rp, {
   }
 });
 
+const events = new APIClient(rp, {
+  endpoint: `${process.env.WATER_URI}/event`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
+  }
+});
+
 /**
  * Send/preview notifications.  Builds de-duped contact list and renders templates
  * @param {Number} taskConfigId - the task ID in the water service task_config table
@@ -82,5 +89,6 @@ module.exports = {
   pendingImport,
   lookup,
   taskConfig,
-  sendNotification
+  sendNotification,
+  events
 };

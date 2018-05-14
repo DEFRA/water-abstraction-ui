@@ -4,14 +4,19 @@ const { events } = require('../../lib/connectors/water');
  * View list of notifications sent
  */
 async function getNotificationsList (request, reply) {
+  const { sort, direction } = request.query;
+
+  // Map URL to API fields
+  const field = sort.replace('notification', 'subtype').replace('status', 'metadata->>error').replace('recipients', 'metadata->>recipients');
+
   const filter = {
     type: 'notification'
   };
-  const sort = {
-    created: -1
+  const sortParams = {
+    [field]: direction
   };
 
-  const { data, error, pagination } = await events.findMany(filter, sort);
+  const { data, error, pagination } = await events.findMany(filter, sortParams);
 
   if (error) {
     return reply(error);
@@ -19,6 +24,7 @@ async function getNotificationsList (request, reply) {
 
   return reply.view('water/notifications-report/index', {
     ...request.view,
+    pagination,
     events: data
   });
 }

@@ -2,6 +2,8 @@ const { events } = require('../../lib/connectors/water');
 
 /**
  * View list of notifications sent
+ * @param {String} request.query.sort - the field to sort on
+ * @param {Number} request.query.direction - +1 ascending, -1 descending
  */
 async function getNotificationsList (request, reply) {
   const { sort, direction } = request.query;

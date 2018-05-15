@@ -1,4 +1,4 @@
-const { events } = require('../../lib/connectors/water');
+const { events, taskConfig, notifications } = require('../../lib/connectors/water');
 
 /**
  * View list of notifications sent
@@ -31,8 +31,41 @@ async function getNotificationsList (request, reply) {
   });
 }
 
-async function getNotification (request, response) {
+/**
+ * View messages for a single event (batch of messages)
+ * @param {request.params.id} the event ID
+ */
+async function getNotification (request, reply) {
+  const { id } = request.params;
+  const { sort, direction } = request.query;
 
+  // Load event
+  const { error, data: event } = await events.findOne(id);
+
+  if (error) {
+    reply(error);
+  }
+
+  // Load task config
+  const { metadata: { taskConfigId } } = event;
+  const { error: taskError, data: task } = await taskConfig.findOne(taskConfigId);
+
+  if (taskError) {
+    return reply(taskError);
+  }
+
+  // Load scheduled notifications
+  const { error: notificationError, data: messages } = await notifications.findMany({ event_id: event.event_id });
+  if (notificationError) {
+    return reply(notificationError);
+  }
+
+  return reply.view('water/notifications-report/view', {
+    ...request.view,
+    event,
+    task,
+    messages
+  });
 }
 
 module.exports = {

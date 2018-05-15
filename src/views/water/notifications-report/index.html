@@ -48,7 +48,7 @@
                 {{#each events}}
                 <tr class="clickable">
                   <td class="text">{{ formatISODate this.created }}</td>
-                  <td scope="row"><a href="notice-log">{{ this.metadata.name }}</a>
+                  <td scope="row"><a href="/admin/notifications/report/{{ this.event_id }}">{{ this.metadata.name }}</a>
                   </td><td class="text">{{ this.issuer }}</td>
                   <td class="numeric">{{ this.metadata.recipients }}</td>
                   <td class="centext">

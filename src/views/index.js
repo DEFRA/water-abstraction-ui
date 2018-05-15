@@ -1,16 +1,20 @@
+/* eslint camelcase: "warn" */
+
 const handlebars = require('handlebars');
 const moment = require('moment');
 const qs = require('querystring');
 const markdown = require('markdown').markdown;
-
-console.log('working dir for views');
-console.log(__dirname);
+const sentenceCase = require('sentence-case');
 
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
 
 handlebars.registerHelper('markdown', function (param, options) {
   return markdown.toHTML(param);
+});
+
+handlebars.registerHelper('sentenceCase', function (value) {
+  return sentenceCase(value);
 });
 
 handlebars.registerHelper('for', function (from, to, incr, block) {
@@ -119,6 +123,10 @@ handlebars.registerHelper('concat', function () {
   return arg.join('');
 });
 
+handlebars.registerHelper('join', function (values, separator = ',') {
+  return values.join(separator);
+});
+
 handlebars.registerHelper('encode', function (value) {
   console.log(value);
   console.log(encodeURIComponent(value.hash.value));
@@ -178,6 +186,11 @@ handlebars.registerHelper('guid', function () {
 handlebars.registerHelper('formatISODate', function (dateInput) {
   const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
   return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+});
+
+handlebars.registerHelper('formatISOTime', function (dateInput) {
+  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
+  return date.isValid() ? date.format('HH:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
@@ -244,6 +257,13 @@ handlebars.registerHelper('formatAddress', function (address) {
   formattedAddress += address.country ? address.country + '<br/>' : '';
   formattedAddress += address.postCode;
   return formattedAddress;
+});
+
+handlebars.registerHelper('formatNotifyAddress', function (address) {
+  const { address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode } = address;
+  const lines = [address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode];
+  const filtered = lines.filter(x => x);
+  return filtered.join('<br />');
 });
 
 handlebars.registerHelper('ngrPoint', function (points) {

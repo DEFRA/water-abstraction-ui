@@ -37,7 +37,7 @@
                   </td><td class="text text-right" scope="col">
                     <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="status"}}}#results">
                       <span class="sr-only">Sort by number of errors</span>
-                      <span aria-hidden="true">Status</span>
+                      <span aria-hidden="true">Problems</span>
                       {{{ sortIcon  direction=query.direction sort=query.sort field="status" }}}
                     </a>
                 </td></tr>
@@ -57,6 +57,7 @@
                       {{ this.metadata.error}}
                     </strong>
                     {{/if}}
+          
                   </td>
                 </tr>
                 {{/each}}

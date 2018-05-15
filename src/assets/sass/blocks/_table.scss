@@ -1,6 +1,13 @@
-// flextable
-// flextable styles
+// Table styles
+table {
+  .numeric {
+    text-align: right;
+  }
+}
 
+
+
+// Flextable
 .table {
   padding-bottom: 15px;
   @media (min-width: 768px) {
@@ -49,22 +56,6 @@
   float: none;
 }
 
-.multiple-choice {
-  // padding-top: 11px;
-  // padding-bottom: 0;
-}
-
-// .last-row div {
-//   border-bottom: 1px solid #bfc1c3;
-//   @media (min-width: 768px) {
-//     border-bottom: none;
-//   }
-// }
-//
-// .top {
-//   border-bottom: none;
-//   // background-color: red;
-// }
 
 .context {
   color: $grey-1;

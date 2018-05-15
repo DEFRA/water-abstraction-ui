@@ -63,6 +63,16 @@
                       Failed
                       </strong>
                       {{/equal}}
+
+                      {{#equal status ''}}
+                      Pending
+                      {{/equal }}
+
+                      {{#equal status 'sent'}}
+                      Sent
+                      {{/equal }}
+
+
                     </td>
                   </tr>
                   {{/each}}

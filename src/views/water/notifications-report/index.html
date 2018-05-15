@@ -24,8 +24,8 @@
                     </a>
                   </td><td class="text" scope="col">
                     <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="issuer"}}}#results">
-                      <span class="sr-only">Sort by issuer</span>
-                      <span aria-hidden="true">Issuer</span>
+                      <span class="sr-only">Sort by sender</span>
+                      <span aria-hidden="true">Sent by</span>
                       {{{ sortIcon  direction=query.direction sort=query.sort field="issuer" }}}
                     </a>
                   </td><td class="numeric" scope="col">
@@ -57,7 +57,7 @@
                       {{ this.metadata.error}}
                     </strong>
                     {{/if}}
-          
+
                   </td>
                 </tr>
                 {{/each}}

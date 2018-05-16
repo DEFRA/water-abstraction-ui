@@ -53,12 +53,6 @@ function viewContextDefaults (request) {
         text: 'Reports and notifications',
         url: '/admin/notifications'
       });
-
-      // viewContext.mainNavLinks.push({
-      //   id: 'dashboard',
-      //   text: 'View service usage',
-      //   url: '/dashboard'
-      // });
     }
   } else {
     if (request.permissions && request.permissions.licences.read) {

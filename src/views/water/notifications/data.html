@@ -32,18 +32,18 @@
           <div class="column-two-thirds">
 
             {{#each task.config.variables}}
-            {{#equal this.widget 'dropdown' }}
-              {{>widget-dropdown this error=../error }}
-            {{/equal}}
-            {{#equal this.widget 'date' }}
-              {{>widget-date this error=../error }}
-            {{/equal}}
-            {{#equal this.widget 'textarea' }}
-              {{>widget-textarea this error=../error }}
-            {{/equal}}
-            {{#equal this.widget 'text' }}
-              {{>widget-text this error=../error }}
-            {{/equal}}
+              {{#equal this.widget 'dropdown' }}
+                {{>widget-dropdown this error=../error value=(lookup ../values this.name)  }}
+              {{/equal}}
+              {{#equal this.widget 'date' }}
+                {{>widget-date this error=../error value=(lookup ../values this.name)  }}
+              {{/equal}}
+              {{#equal this.widget 'textarea' }}
+                {{>widget-textarea this error=../error  value=(lookup ../values this.name)  }}
+              {{/equal}}
+              {{#equal this.widget 'text' }}
+                {{>widget-text this error=../error value=(lookup ../values this.name)  }}
+              {{/equal}}
             {{/each}}
           </div>
         </div>

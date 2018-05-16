@@ -346,6 +346,7 @@ async function renderVariableData (request, reply, taskData) {
   const view = {
     ...request.view,
     task,
+    values: taskData.data.params,
     formAction: `/admin/notifications/${task.task_config_id}/data`,
     pageTitle: task.config.title,
     back: `/admin/notifications/${task.task_config_id}/refine`

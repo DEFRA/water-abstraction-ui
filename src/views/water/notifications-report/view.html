@@ -12,6 +12,10 @@
             <span class="heading-secondary">{{ pageTitle }}</span>
             {{ event.metadata.name }}
         </h1>
+
+        <h2 class="heading-small" style="margin-top: 0; padding-top: 8px; color: #6f777b;">
+          {{ event.reference_code  }}
+        </h2>
         <h2 class="heading-small" style="margin-top: 0; padding-top: 8px;">
           {{ formatISODate event.created  }},
           {{ formatISOTime event.created  }}

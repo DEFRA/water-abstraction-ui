@@ -4,113 +4,112 @@ const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
 const { sendNotification } = require('../../lib/connectors/water');
 
-// @TODO move this config data to API once schema is settled
-const config = [{
-  task_config_id: 1,
-  type: 'notification',
-  config: {
-    name: 'Hands off flow warning',
-    title: 'Send a hands off flow warning',
-    permissions: ['admin:defra'],
-    formats: ['email', 'letter'],
-    variables: [{
-      name: 'gauging_station',
-      label: 'Gauging station',
-      helptext: 'The EA gauging station name',
-      default: '',
-      widget: 'text',
-      validation: ['string', 'required']
-    }],
-    steps: [{
-      widgets: [{
-        name: 'system_external_id',
-        widget: 'textarea',
-        label: 'Enter the licence number(s) you want to send a notification about',
-        error_label: 'licence number(s)',
-        hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-        operator: '$in',
-        mapper: 'licenceNumbers',
-        validation: ['array', 'min:1']
-      }]
-    }],
-    content: {
-      default: `Dear ...
+// // @TODO move this config data to API once schema is settled
+// const config = [{
+//   task_config_id: 1,
+//   type: 'notification',
+//   config: {
+//     name: 'Hands off flow warning',
+//     title: 'Send a hands off flow warning',
+//     permissions: ['admin:defra'],
+//     formats: ['email', 'letter'],
+//     variables: [{
+//       name: 'gauging_station',
+//       label: 'Gauging station',
+//       helptext: 'The EA gauging station name',
+//       default: '',
+//       widget: 'text',
+//       validation: ['string', 'required']
+//     }],
+//     steps: [{
+//       widgets: [{
+//         name: 'system_external_id',
+//         widget: 'textarea',
+//         label: 'Enter the licence number(s) you want to send a notification about',
+//         error_label: 'licence number(s)',
+//         hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
+//         operator: '$in',
+//         mapper: 'licenceNumbers',
+//         validation: ['array', 'min:1']
+//       }]
+//     }],
+//     content: {
+//       default: `Dear ...
+//
+// We are sending you a message about...
+//       `
+//     }
+//   }
+// }, {
+//   task_config_id: 2,
+//   type: 'notification',
+//   config: {
+//     name: 'Expiry notice',
+//     title: 'Send an expiry notification',
+//     permissions: ['admin:defra'],
+//     formats: ['email', 'letter'],
+//     // steps: [{
+//     //   widgets: [{
+//     //     name: 'system_external_id',
+//     //     widget: 'textarea',
+//     //     label: 'Add licences to this notification.',
+//     //     operator: '$in',
+//     //     mapper: 'licenceNumbers',
+//     //     replay: 'with licence number(s) '
+//     //   }]
+//     // }]
+//     steps: [
+//
+//       //   {
+//       //   content: 'Choose an area to send this notification to.',
+//       //   widgets: [{
+//       //     name: 'area',
+//       //     widget: 'dropdown',
+//       //     label: 'Area',
+//       //     operator: '=',
+//       //     lookup: {
+//       //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+//       //     }
+//       //   }, {
+//       //     name: 'catchment',
+//       //     widget: 'dropdown',
+//       //     label: 'Catchment area (optional)',
+//       //     operator: '=',
+//       //     lookup: {
+//       //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
+//       //     }
+//       //   }]
+//       // },
+//
+//       {
+//         widgets: [{
+//           name: 'system_external_id',
+//           widget: 'textarea',
+//           label: 'Enter the licence number(s) you want to send a notification about',
+//           error_label: 'licence number(s)',
+//           hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
+//           operator: '$in',
+//           mapper: 'licenceNumbers',
+//           validation: ['array', 'min:1']
+//         }]
+//       },
+//       {
+//         content: 'Find licences that will expire before:',
+//         widgets: [{
+//           name: 'metadata->>Expires',
+//           widget: 'date',
+//           mapper: 'date',
+//           label: '',
+//           operator: '$lte',
+//           replay: 'with end date before '
+//         }]
+//       }
+//
+//     ]
+//
+//   }
+// }];
 
-We are sending you a message about...
-      `
-    }
-  }
-}, {
-  task_config_id: 2,
-  type: 'notification',
-  config: {
-    name: 'Expiry notice',
-    title: 'Send an expiry notification',
-    permissions: ['admin:defra'],
-    formats: ['email', 'letter'],
-    // steps: [{
-    //   widgets: [{
-    //     name: 'system_external_id',
-    //     widget: 'textarea',
-    //     label: 'Add licences to this notification.',
-    //     operator: '$in',
-    //     mapper: 'licenceNumbers',
-    //     replay: 'with licence number(s) '
-    //   }]
-    // }]
-    steps: [
-
-      //   {
-      //   content: 'Choose an area to send this notification to.',
-      //   widgets: [{
-      //     name: 'area',
-      //     widget: 'dropdown',
-      //     label: 'Area',
-      //     operator: '=',
-      //     lookup: {
-      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-      //     }
-      //   }, {
-      //     name: 'catchment',
-      //     widget: 'dropdown',
-      //     label: 'Catchment area (optional)',
-      //     operator: '=',
-      //     lookup: {
-      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-      //     }
-      //   }]
-      // },
-
-      {
-        widgets: [{
-          name: 'system_external_id',
-          widget: 'textarea',
-          label: 'Enter the licence number(s) you want to send a notification about',
-          error_label: 'licence number(s)',
-          hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-          operator: '$in',
-          mapper: 'licenceNumbers',
-          validation: ['array', 'min:1']
-        }]
-      },
-      {
-        content: 'Find licences that will expire before:',
-        widgets: [{
-          name: 'metadata->>Expires',
-          widget: 'date',
-          mapper: 'date',
-          label: '',
-          operator: '$lte',
-          replay: 'with end date before '
-        }]
-      }
-
-    ]
-
-  }
-}];
-
-const { find } = require('lodash');
 const { lookup } = require('../../lib/connectors/water');
 const { Promise } = require('bluebird');
 
@@ -143,9 +142,11 @@ async function getStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
   const step = parseInt(request.query.step, 10);
-  const task = find(config, (row) => row.task_config_id === id);
 
-  const { data } = request.query;
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Update task data
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -201,9 +202,10 @@ async function postStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
   const step = parseInt(request.query.step, 10);
-  const task = find(config, (row) => row.task_config_id === id);
-
-  const { data } = request.payload;
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Update task data
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -237,7 +239,10 @@ async function postStep (request, reply) {
 async function getRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.task_config_id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -300,7 +305,10 @@ async function getRefine (request, reply) {
 async function postRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.task_config_id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -356,7 +364,10 @@ async function getVariableData (request, reply) {
   const { id } = request.params;
 
   // Find the requested task
-  const task = find(config, (row) => row.task_config_id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -374,7 +385,10 @@ async function postVariableData (request, reply) {
   const id = parseInt(request.params.id, 10);
 
   // Find the requested task
-  const task = find(config, (row) => row.task_config_id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
@@ -412,7 +426,10 @@ function countPreviewLicences (previewData) {
  */
 async function getSendViewContext (id, data, sender) {
   // Find the requested task
-  const task = find(config, (row) => row.task_config_id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    throw taskConfigError;
+  }
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, data);
@@ -449,7 +466,6 @@ async function getSendViewContext (id, data, sender) {
  */
 async function getPreview (request, reply) {
   const { id } = request.params;
-  const { data } = request.query;
 
   const view = {
     ...request.view,
@@ -467,7 +483,6 @@ async function getPreview (request, reply) {
  */
 async function postSend (request, reply) {
   const { id } = request.params;
-  const { data } = request.payload;
 
   // Get email address of current user
   const { username } = request.auth.credentials;

@@ -3,14 +3,16 @@
 const handlebars = require('handlebars');
 const moment = require('moment');
 const qs = require('querystring');
-const markdown = require('markdown').markdown;
+// const markdown = require('markdown').markdown;
 const sentenceCase = require('sentence-case');
+const marked = require('marked');
 
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
 
 handlebars.registerHelper('markdown', function (param, options) {
-  return markdown.toHTML(param);
+  return marked(param);
+  // return markdown.toHTML(param);
 });
 
 handlebars.registerHelper('sentenceCase', function (value) {

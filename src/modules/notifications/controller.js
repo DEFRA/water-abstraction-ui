@@ -4,112 +4,6 @@ const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
 const { sendNotification } = require('../../lib/connectors/water');
 
-// // @TODO move this config data to API once schema is settled
-// const config = [{
-//   task_config_id: 1,
-//   type: 'notification',
-//   config: {
-//     name: 'Hands off flow warning',
-//     title: 'Send a hands off flow warning',
-//     permissions: ['admin:defra'],
-//     formats: ['email', 'letter'],
-//     variables: [{
-//       name: 'gauging_station',
-//       label: 'Gauging station',
-//       helptext: 'The EA gauging station name',
-//       default: '',
-//       widget: 'text',
-//       validation: ['string', 'required']
-//     }],
-//     steps: [{
-//       widgets: [{
-//         name: 'system_external_id',
-//         widget: 'textarea',
-//         label: 'Enter the licence number(s) you want to send a notification about',
-//         error_label: 'licence number(s)',
-//         hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-//         operator: '$in',
-//         mapper: 'licenceNumbers',
-//         validation: ['array', 'min:1']
-//       }]
-//     }],
-//     content: {
-//       default: `Dear ...
-//
-// We are sending you a message about...
-//       `
-//     }
-//   }
-// }, {
-//   task_config_id: 2,
-//   type: 'notification',
-//   config: {
-//     name: 'Expiry notice',
-//     title: 'Send an expiry notification',
-//     permissions: ['admin:defra'],
-//     formats: ['email', 'letter'],
-//     // steps: [{
-//     //   widgets: [{
-//     //     name: 'system_external_id',
-//     //     widget: 'textarea',
-//     //     label: 'Add licences to this notification.',
-//     //     operator: '$in',
-//     //     mapper: 'licenceNumbers',
-//     //     replay: 'with licence number(s) '
-//     //   }]
-//     // }]
-//     steps: [
-//
-//       //   {
-//       //   content: 'Choose an area to send this notification to.',
-//       //   widgets: [{
-//       //     name: 'area',
-//       //     widget: 'dropdown',
-//       //     label: 'Area',
-//       //     operator: '=',
-//       //     lookup: {
-//       //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-//       //     }
-//       //   }, {
-//       //     name: 'catchment',
-//       //     widget: 'dropdown',
-//       //     label: 'Catchment area (optional)',
-//       //     operator: '=',
-//       //     lookup: {
-//       //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-//       //     }
-//       //   }]
-//       // },
-//
-//       {
-//         widgets: [{
-//           name: 'system_external_id',
-//           widget: 'textarea',
-//           label: 'Enter the licence number(s) you want to send a notification about',
-//           error_label: 'licence number(s)',
-//           hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-//           operator: '$in',
-//           mapper: 'licenceNumbers',
-//           validation: ['array', 'min:1']
-//         }]
-//       },
-//       {
-//         content: 'Find licences that will expire before:',
-//         widgets: [{
-//           name: 'metadata->>Expires',
-//           widget: 'date',
-//           mapper: 'date',
-//           label: '',
-//           operator: '$lte',
-//           replay: 'with end date before '
-//         }]
-//       }
-//
-//     ]
-//
-//   }
-// }];
-
 const { lookup } = require('../../lib/connectors/water');
 const { Promise } = require('bluebird');
 
@@ -141,6 +35,7 @@ async function getIndex (request, reply) {
 async function getStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
+  const start = parseInt(request.query.start, 10); // Are we starting the flow?
   const step = parseInt(request.query.step, 10);
 
   const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
@@ -148,11 +43,13 @@ async function getStep (request, reply) {
     return reply(taskConfigError);
   }
 
+  if (start) {
+    request.sessionStore.delete('notificationsFlow');
+  }
+
   // Update task data
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
-  // if (data) {
-  //   taskData.fromJson(data);
-  // }
+
   return renderStep(request, reply, taskData, step);
 }
 
@@ -492,6 +389,10 @@ async function postSend (request, reply) {
     ...request.view,
     ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'), username)
   };
+
+  // Flow is completed - delete state in session store
+  request.sessionStore.delete('notificationsFlow');
+
   return reply.view('water/notifications/sent', view);
 }
 

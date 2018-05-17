@@ -12,7 +12,8 @@ const getStep = {
       },
       query: {
         step: Joi.number().default(0),
-        data: Joi.string()
+        data: Joi.string(),
+        start: Joi.number().default(0).allow(0, 1)
       }
     },
     plugins: {

@@ -47,12 +47,12 @@ const dateMapper = {
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
     const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
-    return m.isValid() ? m.format('YYYYMMDD') : undefined;
+    return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
   },
   export: (value) => {
     if (value) {
-      const m = moment(value, 'YYYYMMDD');
-      return m.format('D MMM YYYY');
+      const m = moment(value, 'YYYY-MM-DD');
+      return m.format('D MMMM YYYY');
     }
     return null;
   }
@@ -94,16 +94,6 @@ class TaskData {
   getData () {
     return this.data;
   }
-
-  /**
-   * Loads task data as string
-   * @param {String} str
-   */
-  // fromJson (str) {
-  //   if (str) {
-  //     this.data = JSON.parse(str);
-  //   }
-  // }
 
   /**
    * Get data as JSON string
@@ -154,7 +144,15 @@ class TaskData {
    * @return {Object} template variable params
    */
   getParameters () {
-    return this.data.params;
+    const { variables } = this.task.config;
+    return variables.reduce((acc, variable) => {
+      const { name, mapper = 'default' } = variable;
+      console.log(name, mapper, this.mappers[mapper].export(this.data.params[name]));
+      return {
+        ...acc,
+        [variable.name]: this.mappers[mapper].export(this.data.params[name])
+      };
+    }, {});
   }
 
   /**

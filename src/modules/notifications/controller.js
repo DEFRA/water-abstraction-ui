@@ -320,6 +320,7 @@ function countPreviewLicences (previewData) {
  * A shared function for use by getPreview / postSend
  * @param {Number} id - the task config ID
  * @param {Object} data - state from session store
+ * @param {String} sender - the sender email address if sending, if omitted previews
  * @return {Object} view context data
  */
 async function getSendViewContext (id, data, sender) {
@@ -344,13 +345,16 @@ async function getSendViewContext (id, data, sender) {
     sampleMessage: previewData[0].output
   };
 
+  const sentTitle = 'Notification sent';
+  const previewTitle = `Check and confirm your ${task.config.name.toLowerCase()}`;
+
   return {
     task,
     summary,
     error,
     data: taskData.toJson(),
     formAction: `/admin/notifications/${id}/send`,
-    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`,
+    pageTitle: sender ? sentTitle : previewTitle,
     back: `/admin/notification/${id}/${task.config.variables ? 'data' : 'refine'}`
   };
 }

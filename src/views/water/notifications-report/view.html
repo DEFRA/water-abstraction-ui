@@ -38,7 +38,7 @@
                     <th class="text" scope="col">
                         Method
                     </th>
-                    <th class="numeric" scope="col">
+                    <th class="numeric" scope="col" style="text-align: center;">
                       Status
                     </th>
                   </tr>
@@ -61,19 +61,23 @@
                     <td class="text">
                       {{ sentenceCase message_type }}
                     </td>
-                    <td class="text">
+                    <td class="text" style="text-align: center;">
                       {{#equal status 'error'}}
-                      <strong class="task-completed task-error">
+                      <span class="badge badge--error">
                       Failed
-                      </strong>
+                      </span>
                       {{/equal}}
 
                       {{#equal status ''}}
+                      <span class="badge">
                       Pending
+                      </span>
                       {{/equal }}
 
                       {{#equal status 'sent'}}
+                      <span class="badge">
                       Sent
+                      </span>
                       {{/equal }}
 
 

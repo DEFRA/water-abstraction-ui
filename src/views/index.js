@@ -191,7 +191,7 @@ handlebars.registerHelper('formatISODate', function (dateInput) {
 });
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {
-  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
+  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
   return date.isValid() ? date.format('HH:mma') : dateInput;
 });
 

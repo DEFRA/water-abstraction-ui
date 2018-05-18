@@ -3,6 +3,12 @@ table {
   .numeric {
     text-align: right;
   }
+
+  td {
+    &--centred {
+      text-align: center;
+    }
+  }
 }
 
 

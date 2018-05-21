@@ -62,25 +62,7 @@
                       {{ sentenceCase message_type }}
                     </td>
                     <td class="text" style="text-align: center;">
-                      {{#equal status 'error'}}
-                      <span class="badge badge--error">
-                      Failed
-                      </span>
-                      {{/equal}}
-
-                      {{#equal status ''}}
-                      <span class="badge">
-                      Pending
-                      </span>
-                      {{/equal }}
-
-                      {{#equal status 'sent'}}
-                      <span class="badge">
-                      Sent
-                      </span>
-                      {{/equal }}
-
-
+                      {{>notify-status-badge notify_status }}
                     </td>
                   </tr>
                   {{/each}}

@@ -40,7 +40,7 @@
   "dependencies": {
     "async-waterfall": "^0.1.5",
     "aws-sdk": "^2.190.0",
-    "blipp": "^2.3.0",
+    "blipp": "^3.0.0",
     "bluebird": "^3.5.1",
     "csv-parse": "^2.0.2",
     "deep-map": "^1.5.0",

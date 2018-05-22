@@ -9,6 +9,8 @@
  */
 const moment = require('moment');
 const { extractLicenceNumbers } = require('../../lib/licence-helpers');
+const Joi = require('joi');
+const { find } = require('lodash');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -45,31 +47,37 @@ const dateMapper = {
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
     const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
-    return m.isValid() ? m.format('YYYYMMDD') : undefined;
+    return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
   },
   export: (value) => {
     if (value) {
-      const m = moment(value, 'YYYYMMDD');
-      return m.format('D MMM YYYY');
+      const m = moment(value, 'YYYY-MM-DD');
+      return m.format('D MMMM YYYY');
     }
     return null;
   }
 };
 
 class TaskData {
-  constructor (task) {
+  constructor (task, state) {
+    console.log('state', state);
+
     // Task config data
     this.task = task;
 
-    // Initialise data to empty state
-    this.data = {
-      // The query data input by the user
-      query: {},
-      // List of licence numbers following refine audience step
-      licenceNumbers: [],
-      // Custom template parameter data
-      params: {}
-    };
+    if (state) {
+      this.data = state;
+    } else {
+      // Initialise data to empty state
+      this.data = {
+        // The query data input by the user
+        query: {},
+        // List of licence numbers following refine audience step
+        licenceNumbers: [],
+        // Custom template parameter data
+        params: {}
+      };
+    }
 
     // Initialise available mappers
     this.mappers = {
@@ -80,13 +88,11 @@ class TaskData {
   }
 
   /**
-   * Loads task data as string
-   * @param {String} str
+   * Returns the current task data
+   * @return {Object}
    */
-  fromJson (str) {
-    if (str) {
-      this.data = JSON.parse(str);
-    }
+  getData () {
+    return this.data;
   }
 
   /**
@@ -101,8 +107,16 @@ class TaskData {
    * Add licence number list to data
    * @param {Array} licenceNumbers
    */
-  addLicenceNumbers (licenceNumbers) {
+  setLicenceNumbers (licenceNumbers) {
     this.data.licenceNumbers = licenceNumbers;
+  }
+
+  /**
+   * Get licence numbers
+   * @return {Array}
+   */
+  getLicenceNumbers () {
+    return this.data.licenceNumbers;
   }
 
   /**
@@ -110,22 +124,142 @@ class TaskData {
    * @param {Object} payload - from HAPI request interface
    */
   processParameterRequest (payload) {
-    this.task.config.variables.forEach(widget => {
+    const { variables: widgets } = this.task.config;
+
+    // Create Joi schema for validating parameters
+    const schema = this.createJoiSchema(widgets);
+
+    widgets.forEach(widget => {
       const { name, mapper = 'default' } = widget;
       this.data.params[name] = this.mappers[mapper].import(name, payload);
     });
+
+    const { error } = Joi.validate(this.data.params, schema, { allowUnknown: true });
+
+    return { error: this.mapJoiError(error, widgets) };
+  }
+
+  /**
+   * Get parameter data
+   * @return {Object} template variable params
+   */
+  getParameters () {
+    const { variables } = this.task.config;
+    return variables.reduce((acc, variable) => {
+      const { name, mapper = 'default' } = variable;
+      console.log(name, mapper, this.mappers[mapper].export(this.data.params[name]));
+      return {
+        ...acc,
+        [variable.name]: this.mappers[mapper].export(this.data.params[name])
+      };
+    }, {});
+  }
+
+  /**
+   * Creates a Joi schema for the supplied array of widgets
+   * @param {Array} widgets
+   * @return {Object} Joi schema
+   */
+  createJoiSchema (widgets) {
+    return widgets.reduce((acc, widget) => {
+      if (widget.validation) {
+        let validator = Joi;
+
+        // The validation represents Joi validation config as an array, e.g.
+        // ['string', 'min:1']
+        widget.validation.forEach(str => {
+          const parts = str.split(':');
+          const cmd = parts[0];
+          const value = parts.length ? parts[1] : null;
+
+          if (cmd === 'array') {
+            validator = validator.array();
+          }
+          if (cmd === 'string') {
+            validator = validator.string();
+          }
+          if (cmd === 'required') {
+            validator = validator.required();
+          }
+          if (cmd === 'min') {
+            validator = validator.min(parseInt(value, 10));
+          }
+        });
+
+        acc[widget.name] = validator;
+      }
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Finds a widget within one of the steps by the fieldname
+   * @param {String} name - the field name
+   * @param {Array} widgets - list of widgets to search in
+   * @return {Object} widget definition
+   */
+  findWidgetByName (name, widgets) {
+    return find(widgets, { name });
+  }
+
+  /**
+   * Map Joi errors into an easily consumable form
+   * @param {Object} error - Joi errors
+   * @param {Array} widgets - list of widgets for the current step/variables
+   * @return {Object} errors in a simple boolean form simple to consume in the view
+   */
+  mapJoiError (error, widgets) {
+    if (!error) {
+      return error;
+    }
+
+    return error.details.reduce((acc, detail) => {
+      const field = detail.path[0];
+      const widget = this.findWidgetByName(field, widgets);
+
+      const label = widget.error_label || widget.label;
+      const messages = {
+        'any.required': `The ${label} field is required`,
+        'array.min': `At least ${detail.context.limit} value is required in the ${label} field`,
+        'any.empty': `The ${label} field is required`
+      };
+
+      acc.push({
+        message: messages[detail.type],
+        field
+      });
+
+      return acc;
+    }, []);
   }
 
   /**
    * Parse a form payload
    * @param {Object} payload - from HAPI request.payload
    * @param {Number} step - the index of the step to process
+   * @return {error} - Joi validation errors
    */
   processRequest (payload, step) {
-    this.task.config.steps[step].widgets.forEach(widget => {
+    const { widgets } = this.task.config.steps[step];
+
+    // Use mappers to build the query as the result of the POST data from the
+    // current step
+    const query = widgets.reduce((acc, widget) => {
       const { name, mapper = 'default' } = widget;
-      this.data.query[name] = this.mappers[mapper].import(name, payload);
-    });
+      return {
+        ...acc,
+        [name]: this.mappers[mapper].import(name, payload)
+      };
+    }, {});
+    // Merge with existing query from previous steps
+    this.data.query = {
+      ...this.data.query,
+      ...query
+    };
+
+    const { error } = Joi.validate(query, this.createJoiSchema(widgets), { allowUnknown: true });
+
+    return { error: this.mapJoiError(error, widgets) };
   }
 
   /**
@@ -157,11 +291,6 @@ class TaskData {
       step.widgets.forEach(widget => {
         if (widget.operator === '=') {
           filter[widget.name] = this.data.query[widget.name];
-          // } else {
-          //   filter[widget.name] = {
-          //     [widget.operator]: this.data.query[widget.name]
-          //   };
-          // }
         }
         if (widget.operator === '$in' && this.data.query[widget.name].length) {
           filter[widget.name] = { $in: this.data.query[widget.name] };

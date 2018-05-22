@@ -1,0 +1,29 @@
+.notification-preview {
+  background-color: $govuk-blue;
+  color: $page-colour;
+  padding: 30px;
+  word-wrap: break-word;
+
+  h1 {
+    font-size: 1.15em;
+    font-weight: bold;
+  }
+
+  li {
+    list-style: disc;
+    margin-left: 1em;
+    padding-left: 1em;
+
+  }
+
+  a {
+    color: #fff;
+  }
+}
+
+
+.govuk-box-highlight {
+  &--accessible {
+    background: #208070;
+  }
+}

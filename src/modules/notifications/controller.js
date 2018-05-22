@@ -2,110 +2,8 @@ const { taskConfig } = require('../../lib/connectors/water');
 const TaskData = require('./task-data');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
+const { sendNotification } = require('../../lib/connectors/water');
 
-// @TODO move this config data to API once schema is settled
-const config = [{
-  id: 1,
-  type: 'notification',
-  config: {
-    name: 'Hands off flow warning',
-    title: 'Send a hands off flow warning',
-    permissions: ['admin:defra'],
-    formats: ['email', 'letter'],
-    variables: [{
-      name: 'gauging_station',
-      label: 'Gauging station',
-      helptext: 'The EA gauging station name',
-      default: '',
-      widget: 'text',
-      validation: null
-    }],
-    steps: [{
-      widgets: [{
-        name: 'system_external_id',
-        widget: 'textarea',
-        label: 'Enter the licence number(s) you want to send a notification about',
-        hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-        operator: '$in',
-        mapper: 'licenceNumbers'
-      }]
-    }],
-    content: {
-      default: `Dear ...
-
-We are sending you a message about...
-      `
-    }
-  }
-}, {
-  id: 2,
-  type: 'notification',
-  config: {
-    name: 'Expiry notice',
-    title: 'Send an expiry notification',
-    permissions: ['admin:defra'],
-    formats: ['email', 'letter'],
-    // steps: [{
-    //   widgets: [{
-    //     name: 'system_external_id',
-    //     widget: 'textarea',
-    //     label: 'Add licences to this notification.',
-    //     operator: '$in',
-    //     mapper: 'licenceNumbers',
-    //     replay: 'with licence number(s) '
-    //   }]
-    // }]
-    steps: [
-
-      //   {
-      //   content: 'Choose an area to send this notification to.',
-      //   widgets: [{
-      //     name: 'area',
-      //     widget: 'dropdown',
-      //     label: 'Area',
-      //     operator: '=',
-      //     lookup: {
-      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-      //     }
-      //   }, {
-      //     name: 'catchment',
-      //     widget: 'dropdown',
-      //     label: 'Catchment area (optional)',
-      //     operator: '=',
-      //     lookup: {
-      //       filter: { type: 'NALD_REP_UNITS', 'metadata->>ARUT_CODE': 'CAMS' }
-      //     }
-      //   }]
-      // },
-
-      {
-        widgets: [{
-          name: 'system_external_id',
-          widget: 'textarea',
-          label: 'Enter the licence number(s) you want to send a notification about',
-          hint: 'You can separate licence numbers using spaces, commas, or by entering them on different lines.',
-          operator: '$in',
-          mapper: 'licenceNumbers'
-        }]
-      },
-      {
-        content: 'Find licences that will expire before:',
-        widgets: [{
-          name: 'metadata->>Expires',
-          widget: 'date',
-          mapper: 'date',
-          label: '',
-          operator: '$lte',
-          replay: 'with end date before '
-        }]
-      }
-
-    ]
-
-  }
-}];
-
-const { find } = require('lodash');
 const { lookup } = require('../../lib/connectors/water');
 const { Promise } = require('bluebird');
 
@@ -135,18 +33,38 @@ async function getIndex (request, reply) {
  * @param {Object} reply - HAPI HTTP reply interface
  */
 async function getStep (request, reply) {
-  const { id } = request.params;
+  // Get selected task config
+  const id = parseInt(request.params.id, 10);
+  const start = parseInt(request.query.start, 10); // Are we starting the flow?
+  const step = parseInt(request.query.step, 10);
 
-  // Find the requested task
-  const task = find(config, (row) => row.id === id);
-
-  const { step: index, data } = request.query;
-  let step = task.config.steps[index];
-
-  const taskData = new TaskData(task);
-  if (data) {
-    taskData.fromJson(data);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
   }
+
+  if (start) {
+    request.sessionStore.delete('notificationsFlow');
+  }
+
+  // Update task data
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+
+  return renderStep(request, reply, taskData, step);
+}
+
+/**
+ * Generic renderStep handler - used by both the GET handler, and the POST
+ * handler if there is a validation issue
+ * @param {Object} request - HAPI request interface
+ * @param {Object} reply - HAPI reply interface
+ * @param {Object} taskData - the current task state object
+ * @param {Number} index - the step to show (index of the steps array)
+ */
+async function renderStep (request, reply, taskData, index) {
+  const { task } = taskData;
+
+  const step = task.config.steps[index];
 
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
@@ -165,8 +83,7 @@ async function getStep (request, reply) {
     task,
     index,
     step,
-    formAction: `/admin/notifications/${id}?step=${index}`,
-    data: taskData.toJson(),
+    formAction: `/admin/notifications/${task.task_config_id}?step=${index}`,
     pageTitle: task.config.title
   };
   return reply.view('water/notifications/step', view);
@@ -182,19 +99,29 @@ async function postStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
   const step = parseInt(request.query.step, 10);
-  const task = find(config, (row) => row.id === id);
-
-  const { data } = request.payload;
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Update task data
-  const taskData = new TaskData(task);
-  taskData.fromJson(data);
-  taskData.processRequest(request.payload, step);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  // taskData.fromJson(data);
+  const { error } = taskData.processRequest(request.payload, step);
+
+  // Update
+  request.sessionStore.set('notificationsFlow', taskData.getData());
+
+  // If validation error, re-render current step
+  if (error) {
+    request.view.error = error;
+    return renderStep(request, reply, taskData, step);
+  }
 
   // Redirect to next step
   const nextAction = step < task.config.steps.length - 1
-    ? `/admin/notifications/${id}?step=${step + 1}&data=${taskData.toJson()}`
-    : `/admin/notifications/${id}/refine?data=${taskData.toJson()}`;
+    ? `/admin/notifications/${id}?step=${step + 1}`
+    : `/admin/notifications/${id}/refine`;
 
   return reply.redirect(nextAction);
 }
@@ -209,19 +136,22 @@ async function postStep (request, reply) {
 async function getRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  // taskData.fromJson(request.query.data);
 
   // Build CRM query filter
   const filter = taskData.getFilter();
 
-  console.log(filter);
-
   // Get documents data from CRM
-  const { error, data, pagination } = await documents.findMany(filter, {}, {
+  const { error, data, pagination } = await documents.findMany(filter, {
+    system_external_id: +1
+  }, {
     page: 1,
     perPage: 300
   });
@@ -250,8 +180,8 @@ async function getRefine (request, reply) {
     pagination,
     results: data,
     task,
-    formAction: `/admin/notifications/${id}/refine?data=${taskData.toJson()}`,
-    data: taskData.toJson(),
+    formAction: `/admin/notifications/${id}/refine`,
+    back: `/admin/notifications/${id}/step?step=${task.config.steps.length - 1}`,
     query,
     replay,
     pageTitle: task.config.title,
@@ -272,32 +202,55 @@ async function getRefine (request, reply) {
 async function postRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const task = find(config, (row) => row.id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
 
   // Set selected licences
   const licenceNumbers = forceArray(request.payload.system_external_id);
-  taskData.addLicenceNumbers(licenceNumbers);
+  taskData.setLicenceNumbers(licenceNumbers);
+
+  // Update session
+  request.sessionStore.set('notificationsFlow', taskData.getData());
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
-    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected&data=${taskData.toJson()}`);
+    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected`);
   }
 
   // Redirect to next step - either confirm or template variable entry
   const redirectUrl = task.config.variables && task.config.variables.length
-    ? `/admin/notifications/${id}/data?data=${taskData.toJson()}`
-    : `/admin/notifications/${id}/preview?data=${taskData.toJson()}`;
+    ? `/admin/notifications/${id}/data`
+    : `/admin/notifications/${id}/preview`;
 
   return reply.redirect(redirectUrl);
 }
 
-// async function postConfirm (request, reply) {
-//   console.log(request.query, request.payload);
-// }
+/**
+ * Render variable handler - used by both the GET handler, and the POST
+ * handler if there is a validation issue
+ * @param {Object} request - HAPI request interface
+ * @param {Object} reply - HAPI reply interface
+ * @param {Object} taskData - the current task state object
+ */
+async function renderVariableData (request, reply, taskData) {
+  const { task } = taskData;
+
+  const view = {
+    ...request.view,
+    task,
+    values: taskData.data.params,
+    formAction: `/admin/notifications/${task.task_config_id}/data`,
+    pageTitle: task.config.title,
+    back: `/admin/notifications/${task.task_config_id}/refine`
+  };
+
+  return reply.view('water/notifications/data', view);
+}
 
 /**
  * Allow user to input custom variables/params which are passed through to
@@ -309,20 +262,15 @@ async function getVariableData (request, reply) {
   const { id } = request.params;
 
   // Find the requested task
-  const task = find(config, (row) => row.id === id);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.query.data);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
 
-  const view = {
-    ...request.view,
-    task,
-    data: taskData.toJson(),
-    formAction: `/admin/notifications/${id}/data`
-  };
-
-  return reply.view('water/notifications/data', view);
+  return renderVariableData(request, reply, taskData);
 }
 
 /**
@@ -335,50 +283,123 @@ async function postVariableData (request, reply) {
   const id = parseInt(request.params.id, 10);
 
   // Find the requested task
-  const task = find(config, (row) => row.id === id);
-
-  console.log('id', id, 'task', task);
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    return reply(taskConfigError);
+  }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task);
-  taskData.fromJson(request.payload.data);
-  taskData.processParameterRequest(request.payload);
+  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const { error } = taskData.processParameterRequest(request.payload);
 
-  // Redirect
-  return reply.redirect(`/admin/notifications/${id}/preview?data=${taskData.toJson()}`);
+  // Save to session
+  request.sessionStore.set('notificationsFlow', taskData.getData());
+
+  // Re-render variable screen
+  if (error) {
+    request.view.error = error;
+    return renderVariableData(request, reply, taskData);
+  } else {
+    // Redirect to next step
+    return reply.redirect(`/admin/notifications/${id}/preview`);
+  }
 }
 
+/**
+ * Counts licences in preview data
+ * @param {Array} previewData
+ * @return {Number} number of licences
+ */
+function countPreviewLicences (previewData) {
+  return previewData.reduce((acc, row) => {
+    return acc + row.contact.licences.length;
+  }, 0);
+};
+
+/**
+ * A shared function for use by getPreview / postSend
+ * @param {Number} id - the task config ID
+ * @param {Object} data - state from session store
+ * @param {String} sender - the sender email address if sending, if omitted previews
+ * @return {Object} view context data
+ */
+async function getSendViewContext (id, data, sender) {
+  // Find the requested task
+  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  if (taskConfigError) {
+    throw taskConfigError;
+  }
+
+  // Load data from previous step(s)
+  const taskData = new TaskData(task, data);
+
+  // Generate preview
+  const licenceNumbers = taskData.getLicenceNumbers();
+  const params = taskData.getParameters();
+  const { error, data: previewData } = await sendNotification(id, licenceNumbers, params, sender);
+
+  // Get summary data
+  const summary = {
+    messageCount: previewData.length,
+    licenceCount: countPreviewLicences(previewData),
+    sampleMessage: previewData[0].output
+  };
+
+  const sentTitle = 'Notification sent';
+  const previewTitle = `Check and confirm your ${task.config.name.toLowerCase()}`;
+
+  return {
+    task,
+    summary,
+    error,
+    data: taskData.toJson(),
+    formAction: `/admin/notifications/${id}/send`,
+    pageTitle: sender ? sentTitle : previewTitle,
+    back: `/admin/notification/${id}/${task.config.variables ? 'data' : 'refine'}`
+  };
+}
+
+/**
+ * Preview message for sending
+ * Sends request to water service as if message is being sent
+ * Displays licence/contact count and sample message
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.query.data - JSON encoded string of task state
+ */
 async function getPreview (request, reply) {
   const { id } = request.params;
 
-  // Find the requested task
-  const task = find(config, (row) => row.id === id);
-  // todo: generate who and why section content
-  const whoAndWhy = `
-    <span class="bold-small">6 licence holders</span>
-    regarding
-    <span class="bold-small">8 licences</span>
-    in
-    <span class="bold-small">Avon, Little Avon</span>.`;
-  // todo: generate notification content
-  const notificationContent = `
-    <p class="lede">
-      The river at the <span class="bold-medium">Little Spanton</span> gauging station has daily mean flow of <span class="bold-medium">128m³/s</span>.
-    </p>
-    <p class="lede">
-      Please refer to the paper copy of your licence to check this flow against your relevant conditions.
-    </p>
-  `;
   const view = {
     ...request.view,
-    task,
-    whoAndWhy,
-    notificationContent,
-    pageTitle: `Check and confirm your ${task.config.name.toLowerCase()}`
+    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'))
   };
-
   return reply.view('water/notifications/preview', view);
 }
+
+/**
+ * Send message
+ * Sends request to water service
+ * Displays licence/contact count and sample message
+ * @param {String} request.params.id - task config ID
+ * @param {String} request.payload.data - JSON encoded string of task state
+ */
+async function postSend (request, reply) {
+  const { id } = request.params;
+
+  // Get email address of current user
+  const { username } = request.auth.credentials;
+
+  const view = {
+    ...request.view,
+    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'), username)
+  };
+
+  // Flow is completed - delete state in session store
+  request.sessionStore.delete('notificationsFlow');
+
+  return reply.view('water/notifications/sent', view);
+}
+
 module.exports = {
   getIndex,
   getStep,
@@ -387,5 +408,6 @@ module.exports = {
   postRefine,
   getVariableData,
   postVariableData,
-  getPreview
+  getPreview,
+  postSend
 };

@@ -2,9 +2,9 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
+    <a href="{{ back }}" class="link-back link-back--space-above">Back</a>
 
-    <a href="#" class="link-back medium-space" onclick="history.go(-1)">Back</a>
-          <form>
+
     <!-- page title -->
     <div class="grid-row">
       <div class="column-two-thirds">
@@ -20,16 +20,20 @@
         <div class="medium-space">
           <p>
             <!-- todo: who and why section -->
-            You’re about to send this notification to
-            {{{whoAndWhy}}}
+            You are about to send this notification to
+            <span class="bold-small">{{ summary.messageCount }} recipient{{#greaterThan summary.messageCount 1}}s{{/greaterThan}}</span>
+            regarding
+            <span class="bold-small">{{ summary.licenceCount }} licence{{#greaterThan summary.licenceCount 1}}s{{/greaterThan}}</span>.
           </p>
         </div>
 
 
         <div class="medium-space">
-          <div class="notification">
-            <!-- todo: preview content -->
-            {{{notificationContent}}}
+          <div class="notification-preview">
+
+
+            {{{ markdown summary.sampleMessage }}}
+
           </div>
         </div>
       </div>
@@ -37,10 +41,11 @@
 
     <div class="grid-row">
       <div class="column-one-third">
-        <div>
+        <form method="POST" action="{{ formAction }}">
+          <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+          <input type="hidden" name="data" value="{{ data }}" />
           <button type="submit" class="button">Send notification</button>
-        </div>
-      </form>
+        </form>
       </div>
     </div>
   </main>

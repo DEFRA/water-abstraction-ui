@@ -1,12 +1,23 @@
+/* eslint camelcase: "warn" */
+
 const handlebars = require('handlebars');
 const moment = require('moment');
 const qs = require('querystring');
-
-console.log('working dir for views');
-console.log(__dirname);
+// const markdown = require('markdown').markdown;
+const sentenceCase = require('sentence-case');
+const marked = require('marked');
 
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
+
+handlebars.registerHelper('markdown', function (param, options) {
+  return marked(param);
+  // return markdown.toHTML(param);
+});
+
+handlebars.registerHelper('sentenceCase', function (value) {
+  return sentenceCase(value);
+});
 
 handlebars.registerHelper('for', function (from, to, incr, block) {
   var accum = '';
@@ -20,6 +31,26 @@ handlebars.registerHelper('notNull', function (param, options) {
   if (param !== null) {
     return options.fn(this);
   }
+});
+
+handlebars.registerHelper('hasWidgetErrors', function (fieldName, errors = [], options) {
+  const hasError = errors.reduce((acc, error) => {
+    if (error.field === fieldName) {
+      return true;
+    }
+    return acc;
+  }, false);
+  return hasError ? options.fn(this) : options.inverse(this);
+});
+
+handlebars.registerHelper('widgetErrors', function (fieldName, errors = [], options) {
+  let str = '';
+  errors.forEach((error) => {
+    if (error.field === fieldName) {
+      str += `<span class="error-message">${error.message}</span>`;
+    }
+  });
+  return str;
 });
 
 handlebars.registerHelper('greaterThan', function (v1, v2, options) {
@@ -47,9 +78,9 @@ handlebars.registerHelper('or', function (v1, v2, options) {
  * A handlebars helper to get a query string for sorting data
  */
 handlebars.registerHelper('sortQuery', function (context, options) {
-  const {direction, sort, field, ...params} = arguments[0].hash;
+  const { direction, sort, field, ...params } = arguments[0].hash;
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
-  const query = Object.assign(params, {sort: field, direction: newDirection});
+  const query = Object.assign(params, { sort: field, direction: newDirection });
   return qs.stringify(query, '&amp;');
 });
 
@@ -64,7 +95,7 @@ handlebars.registerHelper('queryString', function (context, options) {
  * A handlebars helper to get a sort direction triangle
  */
 handlebars.registerHelper('sortIcon', function (context, options) {
-  const {direction, sort, field} = arguments[0].hash;
+  const { direction, sort, field } = arguments[0].hash;
   const newDirection = (direction === 1) && (sort === field) ? -1 : 1;
 
   if (sort === field) {
@@ -92,6 +123,10 @@ handlebars.registerHelper('concat', function () {
   var arg = Array.prototype.slice.call(arguments, 0);
   arg.pop();
   return arg.join('');
+});
+
+handlebars.registerHelper('join', function (values, separator = ',') {
+  return values.join(separator);
 });
 
 handlebars.registerHelper('encode', function (value) {
@@ -148,6 +183,16 @@ handlebars.registerHelper('showhide', function () {
 
 handlebars.registerHelper('guid', function () {
   return Helpers.createGUID();
+});
+
+handlebars.registerHelper('formatISODate', function (dateInput) {
+  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
+  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+});
+
+handlebars.registerHelper('formatISOTime', function (dateInput) {
+  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
+  return date.isValid() ? date.format('HH:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
@@ -216,6 +261,13 @@ handlebars.registerHelper('formatAddress', function (address) {
   return formattedAddress;
 });
 
+handlebars.registerHelper('formatNotifyAddress', function (address) {
+  const { address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode } = address;
+  const lines = [address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode];
+  const filtered = lines.filter(x => x);
+  return filtered.join('<br />');
+});
+
 handlebars.registerHelper('ngrPoint', function (points) {
   if (typeof (points) === 'undefined') {
     return null;
@@ -226,8 +278,8 @@ handlebars.registerHelper('ngrPoint', function (points) {
     // minus the two letters at the start, then divided by two (as there are two numbers)
     var accuracy = (reference.length - 2) / 2;
     return reference.substring(0, 2) + ' ' +
-         reference.substring(2, 2 + accuracy) + ' ' +
-         reference.substring(2 + accuracy);
+      reference.substring(2, 2 + accuracy) + ' ' +
+      reference.substring(2 + accuracy);
   }
 
   var response = '';

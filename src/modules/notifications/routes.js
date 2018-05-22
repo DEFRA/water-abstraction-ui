@@ -12,12 +12,13 @@ const getStep = {
       },
       query: {
         step: Joi.number().default(0),
-        data: Joi.string()
+        data: Joi.string(),
+        start: Joi.number().default(0).allow(0, 1)
       }
     },
     plugins: {
       viewContext: {
-        pageTitle: 'Reports and notifications',
+        // pageTitle: 'Reports and notifications',
         activeNavLink: 'notifications'
       }
     }
@@ -44,7 +45,15 @@ module.exports = {
   postStep: {
     path: '/admin/notifications/{id}',
     method: 'POST',
-    handler: controller.postStep
+    handler: controller.postStep,
+    config: {
+      description: 'Post handler for single step of notification query flow',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      }
+    }
   },
   getRefine: {
     method: 'GET',
@@ -84,14 +93,6 @@ module.exports = {
     },
     handler: controller.postRefine
   },
-  // postConfirm: {
-  //   method: 'POST',
-  //   path: '/admin/notifications/{id}/confirm',
-  //   config: {
-  //
-  //   },
-  //   handler: controller.postConfirm
-  // },
   getVariableData: {
     method: 'GET',
     path: '/admin/notifications/{id}/data',
@@ -135,7 +136,7 @@ module.exports = {
     method: 'GET',
     path: '/admin/notifications/{id}/preview',
     config: {
-      description: 'Notification: preiew',
+      description: 'Notification: preview',
       validate: {
         params: {
           id: Joi.number()
@@ -149,6 +150,26 @@ module.exports = {
       }
     },
     handler: controller.getPreview
+  },
+
+  postSend: {
+    method: 'POST',
+    path: '/admin/notifications/{id}/send',
+    config: {
+      description: 'Notification: send messages',
+      validate: {
+        params: {
+          id: Joi.number()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reports and notifications',
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.postSend
   }
 
 };

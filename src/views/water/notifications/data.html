@@ -2,32 +2,47 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  <a class="link-back link-back--space-above" href="{{ back }}">Back</a>
 
   <div class="grid-row">
     <div class="column-two-thirds">
+
+      {{#if error}}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+        <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+          There was a problem with some of the information entered
+        </h2>
+
+        <ul class="error-summary-list">
+          {{#each error}}
+          <li><a href="#{{ this.field }}">{{ this.message}}</a></li>
+          {{/each}}
+        </ul>
+
+      </div>
+      {{/if}}
 
       <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
 
       <form method="POST" action="{{ formAction }}">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-        <input type="hidden" name="data" value="{{ data }}" />
 
         <div class="grid-row medium-space">
           <div class="column-two-thirds">
 
             {{#each task.config.variables}}
               {{#equal this.widget 'dropdown' }}
-                {{>widget-dropdown this }}
+                {{>widget-dropdown this error=../error value=(lookup ../values this.name)  }}
               {{/equal}}
               {{#equal this.widget 'date' }}
-                {{>widget-date this }}
+                {{>widget-date this error=../error value=(lookup ../values this.name)  }}
               {{/equal}}
               {{#equal this.widget 'textarea' }}
-                {{>widget-textarea this }}
+                {{>widget-textarea this error=../error  value=(lookup ../values this.name)  }}
               {{/equal}}
               {{#equal this.widget 'text' }}
-                {{>widget-text this }}
+                {{>widget-text this error=../error value=(lookup ../values this.name)  }}
               {{/equal}}
             {{/each}}
           </div>

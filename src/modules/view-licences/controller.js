@@ -8,7 +8,7 @@ const Boom = require('boom');
 const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
-
+const { getRiverLevel } = require('../../lib/connectors/water');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData } = require('./helpers');
 
@@ -59,7 +59,7 @@ async function getLicences (request, reply) {
  */
 async function getLicenceDetail (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
-  const { licence_id: documentHeaderId } = request.params;
+  const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
   try {
     const {
@@ -67,13 +67,17 @@ async function getLicenceDetail (request, reply) {
       viewData
     } = await loadLicenceData(entityId, documentHeaderId);
 
-    documentHeader.verifications=await CRM.getDocumentVerifications(documentHeaderId);
+    documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 
+    // Load river level data
+    const riverLevel = gaugingStation ? await getRiverLevel(gaugingStation) : null;
+
     return reply.view(request.config.view, {
       ...view,
+      riverLevel,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,

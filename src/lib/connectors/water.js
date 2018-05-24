@@ -91,6 +91,23 @@ const sendNotification = function (taskConfigId, licenceNumbers, params = {}, se
   return rp(options);
 };
 
+/**
+ * Get gauging station data
+ * @param {String} gaugingStation - the gauging station ID
+ * @return {Promise} resolves with gauging station data
+ */
+const getRiverLevel = function (gaugingStation) {
+  const options = {
+    uri: `${process.env.WATER_URI}/river-levels/station/${gaugingStation}`,
+    method: 'GET',
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    json: true
+  };
+  return rp(options);
+};
+
 module.exports = {
   sendNotifyMessage,
   pendingImport,
@@ -98,5 +115,6 @@ module.exports = {
   taskConfig,
   sendNotification,
   events,
-  notifications
+  notifications,
+  getRiverLevel
 };

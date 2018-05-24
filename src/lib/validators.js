@@ -4,6 +4,8 @@ const Joi = BaseJoi.extend(joiPasswordValidator);
 
 module.exports = {
 
+  VALID_GAUGING_STATION: Joi.string(),
+
   VALID_EMAIL: Joi.string().email().required(),
   VALID_GUID: Joi.string().guid().required(),
   OPTIONAL_GUID: Joi.string().guid(),

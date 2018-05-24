@@ -1,0 +1,86 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ licenceData.licenceNumber }}</a>
+
+  <div class="grid-row">
+      <div class="column-full">
+        <h1 class="heading-large heading-large--tight-above">
+            <span class="heading-secondary">At National Grid Reference {{ riverLevel.ngr }}</span>
+            Data from {{ riverLevel.label }}
+          </h1>
+
+          <div class="data">
+              <span class="data-item bold-xxlarge">{{ riverLevel.latestReading.value }} {{{ gsUnits riverLevel.unitName }}}</span>
+              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime riverLevel.latestReading.dateTime }} on {{ formatISODate riverLevel.latestReading.dateTime }}
+          </div>
+          <!--
+        <p>Source of supply: {{ riverLevel.riverName }} in {{ riverLevel.catchmentName }}</p>
+-->
+      </div>
+  </div>
+
+<!--
+  <div class="grid-row">
+    <div class="column-full">
+      <details role="group">
+    <summary role="button" aria-controls="details-content-0" aria-expanded="false"><span class="summary">When will this reading be updated?</span></summary>
+    <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
+      <p>
+        Readings from this gauging station are updated each day at 7:00am
+      </p>
+    </div>
+  </details>
+  </div>
+</div>
+-->
+
+  <div class="grid-row big-space">
+      <div class="column-two-thirds">
+        <div class="notice" style="border: none;">
+          <i class="icon icon-important">
+            <span class="visually-hidden">Warning</span>
+          </i>
+          <strong class="bold-small">
+            This data is for reference only. You should continue to use your current monitoring methods to make abstraction decisions.
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="column-two-thirds">
+        <h2 class="small-space">
+          <span class="bold-medium">Details of the hands off flow condition related to this gauging station</span>
+        </h2>
+      </div>
+    </div>
+
+
+  {{#equal licenceData.conditions.length 0}}
+  <p>
+  Sorry, we do not hold any information about your conditions on our system yet.
+  </p><p>
+  Please check the paper copy of your licence for this information.
+  </p>
+  {{/equal}}
+
+
+  <div class="panel panel-border-wide">
+    {{#each licenceData.conditions }}
+      {{#isHof this.code this.subCode }}
+        {{>licence-condition this}}
+      {{/isHof}}
+    {{/each}}
+  </div>
+
+  <p>
+    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}/conditions">
+      View all conditions information held for this licence
+    </a>
+  </p>
+
+</main>
+{{> footerjs}}
+{{> debug}}

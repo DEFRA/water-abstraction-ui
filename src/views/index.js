@@ -53,6 +53,28 @@ handlebars.registerHelper('widgetErrors', function (fieldName, errors = [], opti
   return str;
 });
 
+/**
+ * Converts gauging station units to human-readable form
+ */
+handlebars.registerHelper('gsUnits', function (value, options) {
+  if (value === 'm3/s') {
+    return 'm³/s';
+  }
+  return value;
+});
+
+/**
+ * Tests whether given condition code and subcode is a hands-off flow (HOF)
+ * @param {String} code - condition code
+ * @param {String} subCode - condition subcode
+ */
+handlebars.registerHelper('isHof', function (code, subCode, options) {
+  if (code === 'CES' && (subCode === 'FLOW' || subCode === 'LEV')) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 handlebars.registerHelper('greaterThan', function (v1, v2, options) {
   if (v1 > v2) {
     return options.fn(this);
@@ -192,7 +214,7 @@ handlebars.registerHelper('formatISODate', function (dateInput) {
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {
   const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
-  return date.isValid() ? date.format('HH:mma') : dateInput;
+  return date.isValid() ? date.format('H:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
@@ -267,6 +289,15 @@ handlebars.registerHelper('formatNotifyAddress', function (address) {
   const filtered = lines.filter(x => x);
   return filtered.join('<br />');
 });
+
+/**
+ * Format NGR point string, e.g. ST123456 so it has spaces, e.g. ST 123 456
+ */
+// handlebars.registerHelper('ngrPointStr', function (str) {
+//   const prefix = str.substr(0, 2);
+//   const length = (str.length - 2) / 2;
+//   return prefix + ' ' + str.substr(2, length) + ' ' + str.substr(2 + length, length);
+// });
 
 handlebars.registerHelper('ngrPoint', function (points) {
   if (typeof (points) === 'undefined') {

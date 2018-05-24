@@ -51,7 +51,8 @@ function getLicencePageTitle (view, licenceNumber, customName) {
     purposes: `Abstraction details for ${customName || licenceNumber}`,
     points: `Abstraction points for ${customName || licenceNumber}`,
     conditions: `Conditions held for ${customName || licenceNumber}`,
-    contact: 'Your licence contact details'
+    contact: 'Your licence contact details',
+    'gauging-station': `Gauging station for ${customName || licenceNumber}`
   };
 
   const key = view.split('/').pop();

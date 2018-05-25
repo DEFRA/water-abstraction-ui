@@ -64,7 +64,8 @@ async function getLicenceDetail (request, reply) {
   try {
     const {
       documentHeader,
-      viewData
+      viewData,
+      gaugingStations
     } = await loadLicenceData(entityId, documentHeaderId);
 
     documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
@@ -78,11 +79,7 @@ async function getLicenceDetail (request, reply) {
     return reply.view(request.config.view, {
       ...view,
       riverLevel,
-      gaugingStations: [{
-        label: 'Kings Mill',
-        ngr: 'SP526066',
-        stationReference: '1491TH'
-      }],
+      gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
@@ -93,6 +90,8 @@ async function getLicenceDetail (request, reply) {
     if (error.name === 'LicenceNotFoundError') {
       return reply(new Boom.notFound('Licence not found', error));
     }
+
+    console.log(error);
 
     reply(new Boom.badImplementation(error));
   }

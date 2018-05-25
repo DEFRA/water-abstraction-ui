@@ -91,6 +91,13 @@ const sendNotification = function (taskConfigId, licenceNumbers, params = {}, se
   return rp(options);
 };
 
+const gaugingStations = new APIClient(rp, {
+  endpoint: `${process.env.WATER_URI}/gaugingStations`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
+  }
+});
+
 /**
  * Get gauging station data
  * @param {String} gaugingStation - the gauging station ID
@@ -116,5 +123,6 @@ module.exports = {
   sendNotification,
   events,
   notifications,
-  getRiverLevel
+  getRiverLevel,
+  gaugingStations
 };

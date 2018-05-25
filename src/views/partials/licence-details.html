@@ -130,14 +130,14 @@
       {{#greaterThan gaugingStations.length 1}}
       <ul class="sub-list">
         {{#each gaugingStations }}
-        <li>At National Grid Reference {{ ngrPointStr ngr }}<br />
-            <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ ../licence_id }}/station/{{ stationReference }}">View data from {{ label }}</a>
+        <li>At National Grid Reference {{ ngrPointStr grid_reference }}<br />
+            <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ ../licence_id }}/station/{{ station_reference }}">View data from {{ label }}</a>
         </li>
         {{/each}}
       </ul>
       {{else}}
-        At National Grid Reference {{ ngrPointStr gaugingStations.0.ngr }}<br />
-        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/station/{{ gaugingStations.0.stationReference }}">View data from {{ gaugingStations.0.label }}</a>
+        At National Grid Reference {{ ngrPointStr gaugingStations.0.grid_reference }}<br />
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/station/{{ gaugingStations.0.station_reference }}">View data from {{ gaugingStations.0.label }}</a>
       {{/greaterThan }}
 
     </div>

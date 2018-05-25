@@ -2,6 +2,7 @@ const { LicenceNotFoundError } = require('./errors');
 const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
+const { gaugingStations } = require('../../lib/connectors/water');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -65,6 +66,25 @@ function getLicencePageTitle (view, licenceNumber, customName) {
 }
 
 /**
+ * Loads a list of gauging stations from the water service based on the
+ * station references that are stored in the permit repo metadata
+ * @param {Object} metadata - from permit repo licence record
+ * @return {Promise} resolves with list of gauging stations
+ */
+function loadGaugingStations (metadata) {
+  if (!(metadata && metadata.gaugingStations)) {
+    return [];
+  }
+  // Load gauging station data
+  const filter = {
+    station_reference: {
+      $in: (metadata.gaugingStations || []).map(row => row.stationReference)
+    }
+  };
+  return gaugingStations.findMany(filter);
+}
+
+/**
  * Loads licence data for detail view from CRM and permit repo
  * @param {String} entityId - GUID for current individual entity
  * @param {String} documentId - GUID for the CRM document ID
@@ -95,6 +115,15 @@ async function loadLicenceData (entityId, documentId) {
     throw permitError;
   }
 
+  // Get gauging station data
+  const {
+    error: gaugingStationError,
+    data: gaugingStations
+  } = await loadGaugingStations(permitData.metadata);
+  if (gaugingStationError) {
+    throw gaugingStationError;
+  }
+
   // Transform data using NALD data transformer
   const transformer = new LicenceTransformer();
   await transformer.load(permitData.licence_data_value);
@@ -102,7 +131,8 @@ async function loadLicenceData (entityId, documentId) {
   return {
     documentHeader,
     permitData,
-    viewData: transformer.export()
+    viewData: transformer.export(),
+    gaugingStations
   };
 }
 

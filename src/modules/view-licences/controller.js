@@ -78,6 +78,11 @@ async function getLicenceDetail (request, reply) {
     return reply.view(request.config.view, {
       ...view,
       riverLevel,
+      gaugingStations: [{
+        label: 'Kings Mill',
+        ngr: 'SP526066',
+        stationReference: '1491TH'
+      }],
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,

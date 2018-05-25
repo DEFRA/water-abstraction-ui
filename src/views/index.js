@@ -214,7 +214,7 @@ handlebars.registerHelper('formatISODate', function (dateInput) {
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {
   const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
-  return date.isValid() ? date.format('H:mma') : dateInput;
+  return date.isValid() ? date.format('h:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
@@ -293,11 +293,11 @@ handlebars.registerHelper('formatNotifyAddress', function (address) {
 /**
  * Format NGR point string, e.g. ST123456 so it has spaces, e.g. ST 123 456
  */
-// handlebars.registerHelper('ngrPointStr', function (str) {
-//   const prefix = str.substr(0, 2);
-//   const length = (str.length - 2) / 2;
-//   return prefix + ' ' + str.substr(2, length) + ' ' + str.substr(2 + length, length);
-// });
+handlebars.registerHelper('ngrPointStr', function (str) {
+  const prefix = str.substr(0, 2);
+  const length = (str.length - 2) / 2;
+  return prefix + ' ' + str.substr(2, length) + ' ' + str.substr(2 + length, length);
+});
 
 handlebars.registerHelper('ngrPoint', function (points) {
   if (typeof (points) === 'undefined') {

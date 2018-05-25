@@ -7,7 +7,7 @@
   <div class="grid-row">
       <div class="column-full">
         <h1 class="heading-large heading-large--tight-above">
-            <span class="heading-secondary">At National Grid Reference {{ riverLevel.ngr }}</span>
+            <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
             Data from {{ riverLevel.label }}
           </h1>
 
@@ -15,26 +15,9 @@
               <span class="data-item bold-xxlarge">{{ riverLevel.latestReading.value }} {{{ gsUnits riverLevel.unitName }}}</span>
               <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime riverLevel.latestReading.dateTime }} on {{ formatISODate riverLevel.latestReading.dateTime }}
           </div>
-          <!--
-        <p>Source of supply: {{ riverLevel.riverName }} in {{ riverLevel.catchmentName }}</p>
--->
+
       </div>
   </div>
-
-<!--
-  <div class="grid-row">
-    <div class="column-full">
-      <details role="group">
-    <summary role="button" aria-controls="details-content-0" aria-expanded="false"><span class="summary">When will this reading be updated?</span></summary>
-    <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-      <p>
-        Readings from this gauging station are updated each day at 7:00am
-      </p>
-    </div>
-  </details>
-  </div>
-</div>
--->
 
   <div class="grid-row big-space">
       <div class="column-two-thirds">

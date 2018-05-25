@@ -121,6 +121,28 @@
 
 
 
+  <!-- Gauging stations -->
+  {{#if gaugingStations.length }}
+  <div class="data-row">
+    <div class="data-row__param">Gauging station{{#greaterThan guagingStations.length 1}}s{{/greaterThan}}</div>
+    <div class="data-row__value">
+
+      {{#greaterThan gaugingStations.length 1}}
+      <ul class="sub-list">
+        {{#each gaugingStations }}
+        <li>At National Grid Reference {{ ngrPointStr ngr }}<br />
+            <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ ../licence_id }}/station/{{ stationReference }}">View data from {{ label }}</a>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+        At National Grid Reference {{ ngrPointStr gaugingStations.0.ngr }}<br />
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/station/{{ gaugingStations.0.stationReference }}">View data from {{ gaugingStations.0.label }}</a>
+      {{/greaterThan }}
+
+    </div>
+  </div>
+  {{/if}}
 
   <!-- Abstraction conditions -->
   <div class="data-row">

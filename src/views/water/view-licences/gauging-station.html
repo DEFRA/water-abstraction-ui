@@ -11,10 +11,19 @@
             Data from {{ riverLevel.label }}
           </h1>
 
+          {{#if riverLevel.active }}
           <div class="data">
               <span class="data-item bold-xxlarge">{{ riverLevel.latestReading.value }} {{{ gsUnits riverLevel.unitName }}}</span>
               <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime riverLevel.latestReading.dateTime }} on {{ formatISODate riverLevel.latestReading.dateTime }}
           </div>
+          {{ else }}
+          <div class="data">
+                    <span class="data-item bold-xxlarge">Sorry, there is no data available</span>
+                    <span class="data-item">
+                      Please contact your <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening" target="_blank">local Environment Agency office</a> (link opens in a new tab) for the latest information.
+                    </span>
+                  </div>
+          {{/if}}
 
       </div>
   </div>
@@ -57,6 +66,7 @@
       {{/isHof}}
     {{/each}}
   </div>
+
 
   <p>
     <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}/conditions">

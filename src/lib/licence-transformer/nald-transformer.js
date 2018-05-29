@@ -5,8 +5,7 @@
 const deepMap = require('deep-map');
 const {
   find,
-  uniqBy,
-  filter
+  uniqBy
 } = require('lodash');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
@@ -43,6 +42,8 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
+    const conditions = await this.conditionFormatter(data.data.current_version.purposes);
+
     this.data = {
       licenceNumber: data.LIC_NO,
       licenceHolderTitle: licenceHolderParty.SALUTATION,
@@ -51,14 +52,17 @@ class NALDTransformer extends BaseTransformer {
       effectiveDate: data.ORIG_EFF_DATE,
       expiryDate: data.EXPIRY_DATE,
       versionCount: data.data.versions.length,
-      conditions: await this.conditionFormatter(data.data.current_version.purposes),
+      conditions: conditions,
       points: this.pointsFormatter(data.data.current_version.purposes),
       abstractionPeriods: this.periodsFormatter(data.data.current_version.purposes),
       aggregateQuantity: this.aggregateQuantitiesFormatter(data.data.current_version.purposes),
       contacts: this.contactsFormatter(currentVersion, data.data.roles),
       purposes: this.purposesFormatter(data.data.current_version.purposes),
-      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes)
+      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes),
+      gaugingSations: this.gaugingStationFormatter(conditions)
     };
+
+    console.log(JSON.stringify(this.data, null, 2));
 
     return this.data;
   }
@@ -226,23 +230,22 @@ class NALDTransformer extends BaseTransformer {
     const uniqQuantities = uniqBy(quantities, item => Object.values(item).join(','));
 
     if (uniqQuantities.length === 1) {
-      return [
-        {
-          value: uniqQuantities[0].annualQty,
-          name: 'cubic metres per year'
-        },
-        {
-          value: uniqQuantities[0].dailyQty,
-          name: 'cubic metres per day'
-        },
-        {
-          value: uniqQuantities[0].hourlyQty,
-          name: 'cubic metres per hour'
-        },
-        {
-          value: uniqQuantities[0].instantQty,
-          name: 'litres per second'
-        }
+      return [{
+        value: uniqQuantities[0].annualQty,
+        name: 'cubic metres per year'
+      },
+      {
+        value: uniqQuantities[0].dailyQty,
+        name: 'cubic metres per day'
+      },
+      {
+        value: uniqQuantities[0].hourlyQty,
+        name: 'cubic metres per hour'
+      },
+      {
+        value: uniqQuantities[0].instantQty,
+        name: 'litres per second'
+      }
       ];
     }
 
@@ -420,6 +423,31 @@ class NALDTransformer extends BaseTransformer {
     });
 
     return conditionsArr;
+  }
+
+  /**
+   * Get a unique list of gauging stations from the conditions array.
+   * Return an array of objects, so that each object can hopefully support
+   * e.g. whiskiID in future to link to flood data
+   * @param {Array} conditions - data from conditions formatter above
+   * @return {Array} unique list of guaging stations for this licence
+   */
+  gaugingStationFormatter (conditions) {
+    const names = [];
+    for (let condition of conditions) {
+      if (condition.code === 'CES' && (condition.subCode === 'FLOW' || condition.subCode === 'LEV')) {
+        for (let point of condition.points) {
+          for (let pointCondition of point.conditions) {
+            names.push(pointCondition.parameter1);
+          }
+        }
+      }
+    }
+    return uniqBy(names).map(name => {
+      return {
+        name: name
+      };
+    });
   }
 }
 

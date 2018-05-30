@@ -426,7 +426,7 @@ class NALDTransformer extends BaseTransformer {
     return conditionsArr;
   }
 
-  /**
+  /*
    * Get conditions from list matching code and subcode
    * @param {Array} conditions
    * @param {Array|String} code - the condition code
@@ -448,6 +448,7 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} unique list of guaging stations for this licence
    */
   gaugingStationFormatter (conditions) {
+
     const filtered = this.filterConditions(conditions, 'CES', ['FLOW', 'LEV']);
 
     const names = filtered.reduce((acc, condition) => {

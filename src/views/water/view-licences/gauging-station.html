@@ -44,7 +44,7 @@
     <div class="grid-row">
       <div class="column-two-thirds">
         <h2 class="small-space">
-          <span class="bold-medium">Details of the hands off flow condition related to this gauging station</span>
+          <span class="bold-medium">Details of your hands off flow condition(s)</span>
         </h2>
       </div>
     </div>
@@ -59,7 +59,6 @@
   {{/equal}}
 
 
-  {{#equal licenceData.gaugingStations.length 1 }}
   <div class="panel panel-border-wide">
     {{#each licenceData.conditions }}
       {{#isHof this.code this.subCode }}
@@ -67,7 +66,7 @@
       {{/isHof}}
     {{/each}}
   </div>
-  {{/equal}}
+
 
 
   <p>

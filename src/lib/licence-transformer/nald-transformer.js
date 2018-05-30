@@ -448,17 +448,16 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} unique list of guaging stations for this licence
    */
   gaugingStationFormatter (conditions) {
-    const names = [];
-
     const filtered = this.filterConditions(conditions, 'CES', ['FLOW', 'LEV']);
 
-    for (let condition of filtered) {
+    const names = filtered.reduce((acc, condition) => {
       for (let point of condition.points) {
         for (let pointCondition of point.conditions) {
-          names.push(pointCondition.parameter1);
+          acc.push(pointCondition.parameter1);
         }
       }
-    }
+      return acc;
+    }, []);
 
     return uniqBy(names).map(name => {
       return {

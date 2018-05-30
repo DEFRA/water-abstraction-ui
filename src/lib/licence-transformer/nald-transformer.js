@@ -5,7 +5,8 @@
 const deepMap = require('deep-map');
 const {
   find,
-  uniqBy
+  uniqBy,
+  isArray
 } = require('lodash');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
@@ -425,6 +426,20 @@ class NALDTransformer extends BaseTransformer {
     return conditionsArr;
   }
 
+  /*
+   * Get conditions from list matching code and subcode
+   * @param {Array} conditions
+   * @param {Array|String} code - the condition code
+   * @param {Array|String} subCode - the condition subcode
+   */
+  filterConditions (conditions, code, subCode) {
+    const arrCode = isArray(code) ? code : [code];
+    const arrSubCode = isArray(subCode) ? subCode : [subCode];
+    return conditions.filter(row => {
+      return arrCode.includes(row.code) && arrSubCode.includes(row.subCode);
+    });
+  }
+
   /**
    * Get a unique list of gauging stations from the conditions array.
    * Return an array of objects, so that each object can hopefully support
@@ -433,16 +448,18 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} unique list of guaging stations for this licence
    */
   gaugingStationFormatter (conditions) {
-    const names = [];
-    for (let condition of conditions) {
-      if (condition.code === 'CES' && (condition.subCode === 'FLOW' || condition.subCode === 'LEV')) {
-        for (let point of condition.points) {
-          for (let pointCondition of point.conditions) {
-            names.push(pointCondition.parameter1);
-          }
+
+    const filtered = this.filterConditions(conditions, 'CES', ['FLOW', 'LEV']);
+
+    const names = filtered.reduce((acc, condition) => {
+      for (let point of condition.points) {
+        for (let pointCondition of point.conditions) {
+          acc.push(pointCondition.parameter1);
         }
       }
-    }
+      return acc;
+    }, []);
+
     return uniqBy(names).map(name => {
       return {
         name: name

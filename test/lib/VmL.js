@@ -13,6 +13,12 @@ lab.experiment('vml.getRoot', () => {
     Code.expect(vml.getRoot).to.be.a.function();
   });
 });
+
+lab.experiment('vml.getAccessibility', () => {
+  lab.test('function exists', async () => {
+    Code.expect(vml.getAccessibility).to.be.a.function();
+  });
+});
 //
 // lab.experiment('vml.getUpdatePassword', () => {
 //   lab.test('function exists', async () => {

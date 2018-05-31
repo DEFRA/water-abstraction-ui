@@ -1,7 +1,13 @@
-const View = require('../lib/view');
+const View = require('./view');
 
 function getRoot (request, reply) {
   reply.file('./staticindex.html');
+}
+
+function getAccessibility (request, reply) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'Accessibility';
+  return reply.view('water/accessibility', viewContext);
 }
 
 function getCookies (request, reply) {
@@ -42,11 +48,12 @@ function getHoldingPage (request, reply) {
 }
 
 module.exports = {
-  getRoot: getRoot,
+  getRoot,
   getCookies,
+  getAccessibility,
   getPrivacyPolicy,
-  fourOhFour: fourOhFour,
-  getFeedback: getFeedback,
+  fourOhFour,
+  getFeedback,
   // dashboard,
   getHoldingPage
 };

@@ -77,8 +77,8 @@ function loadGaugingStations (metadata) {
   }
   // Load gauging station data
   const filter = {
-    wiski_id: {
-      $in: (metadata.gaugingStations || []).map(row => row.wiskiId)
+    station_reference: {
+      $in: (metadata.gaugingStations || []).map(row => row.stationReference)
     }
   };
   return gaugingStations.findMany(filter);

@@ -9,7 +9,9 @@
     "test": "./node_modules/lab/bin/lab -t 55 -m 0 --coverage-path ./src/ --ignore version -r lcov -o lcov.info -r console -o stdout",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
-    "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix"
+    "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix",
+    "sass": "gulp sass",
+    "sass:watch": "gulp sass:watch"
   },
   "author": "",
   "license": "ISC",

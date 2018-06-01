@@ -92,7 +92,7 @@ gulp.task('copy-static-assets', sequence('copy-static-assets-orig', 'combine-min
 
 // Build the sass-proto
 gulp.task('sass', function () {
-  return gulp.src('src/assets/' + 'sass/*.scss')
+  return gulp.src('src/assets/sass/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass({
       outputStyle: 'expanded',
@@ -106,6 +106,10 @@ gulp.task('sass', function () {
     }).on('error', sass.logError))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(paths.public + 'stylesheets/'));
+});
+
+gulp.task('sass:watch', function () {
+  return gulp.watch('src/assets/sass/**/*.scss', ['sass']);
 });
 
 // Run StardardJS checks

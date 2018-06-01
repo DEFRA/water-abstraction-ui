@@ -68,6 +68,7 @@
     "lodash": "^4.17.5",
     "marked": "^0.3.19",
     "moment": "^2.20.1",
+    "moment-timezone": "^0.5.17",
     "node-hapi-airbrake-js": "https://github.com/DEFRA/node-hapi-airbrake-js.git",
     "path": "^0.12.7",
     "pg": "^7.4.1",

@@ -2,6 +2,7 @@
 
 const handlebars = require('handlebars');
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 const qs = require('querystring');
 // const markdown = require('markdown').markdown;
 const sentenceCase = require('sentence-case');
@@ -9,6 +10,8 @@ const marked = require('marked');
 
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
+
+const timezone = 'Europe/London';
 
 handlebars.registerHelper('markdown', function (param, options) {
   return marked(param);
@@ -68,7 +71,7 @@ handlebars.registerHelper('gsValue', function (measure, stageScale, options) {
 
   // Levels in mASD - convert to level in m
   if (unitName === 'mASD') {
-    return `${(value + stageScale.datum).toFixed(2)}m`;
+    return `${(value).toFixed(2)}m`;
   }
 
   // Unknown unit - return as is
@@ -220,13 +223,13 @@ handlebars.registerHelper('guid', function () {
 });
 
 handlebars.registerHelper('formatISODate', function (dateInput) {
-  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
-  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+  const date = momentTimezone(dateInput);
+  return date.isValid() ? date.tz(timezone).format('D MMMM YYYY') : dateInput;
 });
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {
-  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
-  return date.isValid() ? date.format('h:mma') : dateInput;
+  const date = momentTimezone(dateInput);
+  return date.isValid() ? date.tz(timezone).format('h:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {

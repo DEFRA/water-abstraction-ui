@@ -2,7 +2,7 @@ const { LicenceNotFoundError } = require('./errors');
 const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
-const { gaugingStations } = require('../../lib/connectors/water');
+const { gaugingStations, getRiverLevel } = require('../../lib/connectors/water');
 const { find } = require('lodash');
 
 /**
@@ -162,10 +162,28 @@ function selectRiverLevelMeasure (riverLevel, hofTypes) {
   return flow;
 }
 
+/**
+ * Loads river level data for gauging station, and selects measure based
+ * on hof types
+ * @param {String} stationReference - reference for flood level API
+ * @param {Object} contains booleans {cesFlow, cesLev}
+ * @return {Promise} resolves with {riverLevel, measure}
+ */
+async function loadRiverLevelData (stationReference, hofTypes) {
+  // Load river level data
+  const riverLevel = stationReference ? await getRiverLevel(stationReference) : null;
+
+  let measure = null;
+  if (riverLevel) {
+    measure = selectRiverLevelMeasure(riverLevel, hofTypes);
+  }
+  return { riverLevel, measure };
+}
+
 module.exports = {
   mapSort,
   mapFilter,
   getLicencePageTitle,
   loadLicenceData,
-  selectRiverLevelMeasure
+  loadRiverLevelData
 };

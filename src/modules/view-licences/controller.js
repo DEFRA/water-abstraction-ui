@@ -8,9 +8,8 @@ const Boom = require('boom');
 const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
-const { getRiverLevel } = require('../../lib/connectors/water');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, selectRiverLevelMeasure } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -74,13 +73,7 @@ async function getLicenceDetail (request, reply) {
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 
-    // Load river level data
-    const riverLevel = gaugingStation ? await getRiverLevel(gaugingStation) : null;
-
-    let measure = null;
-    if (riverLevel) {
-      measure = selectRiverLevelMeasure(riverLevel, viewData.hofTypes);
-    }
+    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, viewData.hofTypes);
 
     return reply.view(request.config.view, {
       ...view,

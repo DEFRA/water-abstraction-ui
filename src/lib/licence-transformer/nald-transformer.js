@@ -60,10 +60,9 @@ class NALDTransformer extends BaseTransformer {
       contacts: this.contactsFormatter(currentVersion, data.data.roles),
       purposes: this.purposesFormatter(data.data.current_version.purposes),
       uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes),
-      gaugingSations: this.gaugingStationFormatter(conditions)
+      gaugingSations: this.gaugingStationFormatter(conditions),
+      hofTypes: this.getHofTypes(conditions)
     };
-
-    console.log(JSON.stringify(this.data, null, 2));
 
     return this.data;
   }
@@ -251,29 +250,6 @@ class NALDTransformer extends BaseTransformer {
     }
 
     return [];
-    // // Get all conditions as array
-    // const conditions = purposes.reduce((memo, item) => {
-    //   return [...memo, ...item.licenceConditions];
-    // }, []);
-    //
-    // // Get AGG PP conditions
-    // const agg = filter(conditions, (item) => {
-    //   return (item.condition_type.CODE === 'AGG') && (item.condition_type.SUBCODE === 'PP');
-    // });
-    //
-    // // Format
-    // const formatted = agg.map(item => ({
-    //   code: item.condition_type.CODE,
-    //   subCode: item.condition_type.SUBCODE,
-    //   text: item.TEXT,
-    //   parameter1: item.PARAM1,
-    //   parameter2: item.PARAM2
-    // }));
-    //
-    // // Get unique
-    // const unique = uniqBy(formatted, item => Object.values(item).join(','));
-    //
-    // return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
   }
 
   /**
@@ -369,8 +345,6 @@ class NALDTransformer extends BaseTransformer {
     purposes.forEach((purpose) => {
       const points = purpose.purposePoints.map((purposePoint) => {
         return NALDHelpers.formatAbstractionPoint(purposePoint.point_detail);
-        // console.log(purposePoint);
-        // return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
       });
 
       purpose.licenceConditions.forEach((condition) => {
@@ -448,7 +422,6 @@ class NALDTransformer extends BaseTransformer {
    * @return {Array} unique list of guaging stations for this licence
    */
   gaugingStationFormatter (conditions) {
-
     const filtered = this.filterConditions(conditions, 'CES', ['FLOW', 'LEV']);
 
     const names = filtered.reduce((acc, condition) => {
@@ -464,6 +437,26 @@ class NALDTransformer extends BaseTransformer {
       return {
         name: name
       };
+    });
+  }
+
+  /**
+   * Gets HOF types in the licence
+   * @param {Object} viewData
+   * @return {Object} contains booleans for cesFlow and cesLev
+   */
+  getHofTypes (conditions) {
+    return conditions.reduce((acc, condition) => {
+      if (condition.code === 'CES' && condition.subCode === 'LEV') {
+        acc.cesLev = true;
+      }
+      if (condition.code === 'CES' && condition.subCode === 'FLOW') {
+        acc.cesFlow = true;
+      }
+      return acc;
+    }, {
+      cesFlow: false,
+      cesLev: false
     });
   }
 }

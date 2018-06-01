@@ -8,9 +8,8 @@ const Boom = require('boom');
 const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
-const { getRiverLevel } = require('../../lib/connectors/water');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -55,6 +54,7 @@ async function getLicences (request, reply) {
  * View details for a single licence
  * @param {Object} request - the HAPI HTTP request
  * @param {String} request.params.licence_id - CRM document header GUID
+ * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
  * @param {Object} reply - HAPI reply interface
  */
 async function getLicenceDetail (request, reply) {
@@ -73,12 +73,12 @@ async function getLicenceDetail (request, reply) {
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 
-    // Load river level data
-    const riverLevel = gaugingStation ? await getRiverLevel(gaugingStation) : null;
+    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, viewData.hofTypes);
 
     return reply.view(request.config.view, {
       ...view,
       riverLevel,
+      measure,
       gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,

@@ -54,13 +54,25 @@ handlebars.registerHelper('widgetErrors', function (fieldName, errors = [], opti
 });
 
 /**
- * Converts gauging station units to human-readable form
+ * Gets gauging station value with units
+ * - For flows, converts m3/s to m3/day
+ * - For levels, adds mASD to datum and returns in m
  */
-handlebars.registerHelper('gsUnits', function (value, options) {
-  if (value === 'm3/s') {
-    return 'm³/s';
+handlebars.registerHelper('gsValue', function (measure, stageScale, options) {
+  const { unitName, latestReading: { value } } = measure;
+
+  // Flows - convert to m3/day
+  if (unitName === 'm3/s') {
+    return `${(value * 86400).toFixed(1)}m³/day`;
   }
-  return value;
+
+  // Levels in mASD - convert to level in m
+  if (unitName === 'mASD') {
+    return `${(value + stageScale.datum).toFixed(2)}m`;
+  }
+
+  // Unknown unit - return as is
+  return `${value}${unitName}`;
 });
 
 /**

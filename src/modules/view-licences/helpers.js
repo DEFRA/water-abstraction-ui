@@ -3,6 +3,7 @@ const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const { gaugingStations } = require('../../lib/connectors/water');
+const { find } = require('lodash');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -136,9 +137,35 @@ async function loadLicenceData (entityId, documentId) {
   };
 }
 
+/**
+ * Logic for selecting which measure to display:
+ * - if only 1 measure from station, show that
+ * - if 2 measures, and 1 hof type, show the matching one
+ * - if 2 measures, and 2 hof types, show flow
+ * @param {Object} riverLevel - data returned from water river level API
+ * @param {Object} hofTypes - contains flags for cesFlow and cesLevel
+ * @return {Object} measure the selected measure - level/flow
+ */
+function selectRiverLevelMeasure (riverLevel, hofTypes) {
+  if (riverLevel.measures.length === 1) {
+    return riverLevel.measures[0];
+  }
+  const flow = find(riverLevel.measures, { parameter: 'flow' });
+  const level = find(riverLevel.measures, { parameter: 'level' });
+
+  if (hofTypes.cesLevel && !hofTypes.cesFlow) {
+    return level;
+  }
+  if (!hofTypes.cesLevel && hofTypes.cesFlow) {
+    return flow;
+  }
+  return flow;
+}
+
 module.exports = {
   mapSort,
   mapFilter,
   getLicencePageTitle,
-  loadLicenceData
+  loadLicenceData,
+  selectRiverLevelMeasure
 };

@@ -13,8 +13,8 @@
 
           {{#if riverLevel.active }}
           <div class="data">
-              <span class="data-item bold-xxlarge">{{ riverLevel.latestReading.value }} {{{ gsUnits riverLevel.unitName }}}</span>
-              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime riverLevel.latestReading.dateTime }} on {{ formatISODate riverLevel.latestReading.dateTime }}
+              <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
+              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}
           </div>
           {{ else }}
           <div class="data">

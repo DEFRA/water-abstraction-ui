@@ -64,8 +64,6 @@ class NALDTransformer extends BaseTransformer {
       hofTypes: this.getHofTypes(conditions)
     };
 
-    console.log(JSON.stringify(this.data, null, 2));
-
     return this.data;
   }
 

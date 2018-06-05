@@ -84,16 +84,16 @@ async function getLicenceDetail (request, reply) {
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
-      crmData: documentHeader
+      crmData: documentHeader,
+      hasGaugingStationMeasurement: !!(riverLevel && riverLevel.active && measure)
     });
   } catch (error) {
     if (error.name === 'LicenceNotFoundError') {
-      return reply(new Boom.notFound('Licence not found', error));
+      return reply(Boom.notFound('Licence not found', error));
     }
 
     console.log(error);
-
-    reply(new Boom.badImplementation(error));
+    reply(Boom.badImplementation(error));
   }
 };
 
@@ -120,7 +120,7 @@ async function postLicenceRename (request, reply) {
   const { data, error } = await CRM.documents.getLicences(filter);
 
   if (error || data.length === 0) {
-    return reply(new Boom.notFound('Document not found', error));
+    return reply(Boom.notFound('Document not found', error));
   }
 
   const { document_id: documentId } = data[0];
@@ -129,7 +129,7 @@ async function postLicenceRename (request, reply) {
   const { error: error2 } = CRM.documents.setLicenceName(documentId, name);
 
   if (error2) {
-    return reply(new Boom.badImplementation('CRM error', error2));
+    return reply(Boom.badImplementation('CRM error', error2));
   }
 
   const { redirectBasePath = '/licences' } = request.config;

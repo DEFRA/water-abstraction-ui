@@ -3,7 +3,7 @@ const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const { gaugingStations, getRiverLevel } = require('../../lib/connectors/water');
-const { find } = require('lodash');
+const { find, has } = require('lodash');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -137,6 +137,8 @@ async function loadLicenceData (entityId, documentId) {
   };
 }
 
+const hasLatestReading = measure => has(measure, 'latestReading.id');
+
 /**
  * Logic for selecting which measure to display:
  * - if only 1 measure from station, show that
@@ -148,17 +150,22 @@ async function loadLicenceData (entityId, documentId) {
  */
 function selectRiverLevelMeasure (riverLevel, hofTypes) {
   if (riverLevel.measures.length === 1) {
-    return riverLevel.measures[0];
+    const measure = riverLevel.measures[0];
+    return hasLatestReading(measure) ? measure : undefined;
   }
-  const flow = find(riverLevel.measures, { parameter: 'flow' });
-  const level = find(riverLevel.measures, { parameter: 'level' });
+
+  const flow = find(riverLevel.measures, measure => {
+    return measure.parameter === 'flow' && hasLatestReading(measure);
+  });
+
+  const level = find(riverLevel.measures, measure => {
+    return measure.parameter === 'level' && hasLatestReading(measure);
+  });
 
   if (hofTypes.cesLevel && !hofTypes.cesFlow) {
     return level;
   }
-  if (!hofTypes.cesLevel && hofTypes.cesFlow) {
-    return flow;
-  }
+
   return flow;
 }
 
@@ -185,5 +192,6 @@ module.exports = {
   mapFilter,
   getLicencePageTitle,
   loadLicenceData,
-  loadRiverLevelData
+  loadRiverLevelData,
+  selectRiverLevelMeasure
 };

@@ -12,10 +12,12 @@ const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
 
 const timezone = 'Europe/London';
+const { pick, reduce } = require('lodash');
 
-handlebars.registerHelper('markdown', function (param, options) {
-  return marked(param);
-  // return markdown.toHTML(param);
+handlebars.registerHelper('markdown', function (param = '') {
+  // Replace ^ with > because notify represents a blockquote using the carat.
+  const updated = param.replace(/\^/g, '>');
+  return marked(updated);
 });
 
 handlebars.registerHelper('sentenceCase', function (value) {
@@ -299,10 +301,15 @@ handlebars.registerHelper('formatAddress', function (address) {
 });
 
 handlebars.registerHelper('formatNotifyAddress', function (address) {
-  const { address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode } = address;
-  const lines = [address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode];
-  const filtered = lines.filter(x => x);
-  return filtered.join('<br />');
+  const addressParts = pick(address, [
+    'address_line_1', 'address_line_2', 'address_line_3',
+    'address_line_4', 'address_line_5', 'address_line_6',
+    'postcode'
+  ]);
+
+  return reduce(addressParts, (acc, part) => {
+    return part ? `${acc}${part}<br />` : acc;
+  }, '');
 });
 
 /**

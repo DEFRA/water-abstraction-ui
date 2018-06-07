@@ -58,6 +58,15 @@ const dateMapper = {
   }
 };
 
+/**
+ * Replaces the text so that each part of the address is displayed
+ * on the next line. Swaps \r for a double space ('  ')
+ */
+const addressMapper = {
+  import: (fieldName, payload) => payload[fieldName],
+  export: (value = '') => value.replace(/\r/g, '  ')
+};
+
 class TaskData {
   constructor (task, state) {
     console.log('state', state);
@@ -83,6 +92,7 @@ class TaskData {
     this.mappers = {
       default: defaultMapper,
       date: dateMapper,
+      address: addressMapper,
       licenceNumbers: licenceNumbersMapper
     };
   }

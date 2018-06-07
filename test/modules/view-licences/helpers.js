@@ -9,7 +9,7 @@ const { selectRiverLevelMeasure } = require('../../../src/modules/view-licences/
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
   const latestReading = hasLatestReading
-    ? { id: 'test-reading', value: 0.321 }
+    ? { value: 0.321 }
     : 'http://example.com';
 
   return {
@@ -24,62 +24,62 @@ lab.experiment('selectRiverLevelMeasure', () => {
     const riverLevel = {
       measures: [getTestMeasure()]
     };
-    const hofTypes = { cesFlow: true, cesLevel: false };
+    const hofTypes = { cesFlow: true, cesLev: false };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure.id).to.equal('test-flow');
   });
 
   lab.test('returns undefined if the measure does not contain a latest reading', async () => {
     const riverLevel = { measures: [getTestMeasure('flow', false)] };
-    const hofTypes = { cesFlow: true, cesLevel: false };
+    const hofTypes = { cesFlow: true, cesLev: false };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure).to.be.undefined();
   });
 
-  lab.test('returns level if cesLevel is true and cesFlow is false', async () => {
+  lab.test('returns level if cesLev is true and cesFlow is false', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow'),
         getTestMeasure('level')
       ]
     };
-    const hofTypes = { cesFlow: false, cesLevel: true };
+    const hofTypes = { cesFlow: false, cesLev: true };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure.id).to.equal('test-level');
   });
 
-  lab.test('returns undefined if cesLevel is true and cesFlow is false, but no latest reading', async () => {
+  lab.test('returns undefined if cesLev is true and cesFlow is false, but no latest reading', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow', false),
         getTestMeasure('level', false)
       ]
     };
-    const hofTypes = { cesFlow: false, cesLevel: true };
+    const hofTypes = { cesFlow: false, cesLev: true };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure).to.be.undefined();
   });
 
-  lab.test('returns flow if cesLevel is false and cesFlow is true', async () => {
+  lab.test('returns flow if cesLev is false and cesFlow is true', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow'),
         getTestMeasure('level')
       ]
     };
-    const hofTypes = { cesFlow: true, cesLevel: false };
+    const hofTypes = { cesFlow: true, cesLev: false };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure.id).to.equal('test-flow');
   });
 
-  lab.test('returns undefined if cesLevel is false and cesFlow is true, but no latest reading', async () => {
+  lab.test('returns undefined if cesLev is false and cesFlow is true, but no latest reading', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow', false),
         getTestMeasure('level', false)
       ]
     };
-    const hofTypes = { cesFlow: true, cesLevel: false };
+    const hofTypes = { cesFlow: true, cesLev: false };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure).to.be.undefined();
   });

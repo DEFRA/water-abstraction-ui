@@ -137,7 +137,9 @@ async function loadLicenceData (entityId, documentId) {
   };
 }
 
-const hasLatestReading = measure => has(measure, 'latestReading.id');
+const hasLatestReading = measure => has(measure, 'latestReading.value');
+const isLevelMeasure = measure => measure.parameter === 'level';
+const isFlowMeasure = measure => measure.parameter === 'flow';
 
 /**
  * Logic for selecting which measure to display:
@@ -145,28 +147,19 @@ const hasLatestReading = measure => has(measure, 'latestReading.id');
  * - if 2 measures, and 1 hof type, show the matching one
  * - if 2 measures, and 2 hof types, show flow
  * @param {Object} riverLevel - data returned from water river level API
- * @param {Object} hofTypes - contains flags for cesFlow and cesLevel
+ * @param {Object} hofTypes - contains flags for cesFlow and cesLev
  * @return {Object} measure the selected measure - level/flow
  */
 function selectRiverLevelMeasure (riverLevel, hofTypes) {
-  if (riverLevel.measures.length === 1) {
-    const measure = riverLevel.measures[0];
-    return hasLatestReading(measure) ? measure : undefined;
-  }
-
   const flow = find(riverLevel.measures, measure => {
-    return measure.parameter === 'flow' && hasLatestReading(measure);
+    return isFlowMeasure(measure) && hasLatestReading(measure);
   });
 
   const level = find(riverLevel.measures, measure => {
-    return measure.parameter === 'level' && hasLatestReading(measure);
+    return isLevelMeasure(measure) && hasLatestReading(measure);
   });
 
-  if (hofTypes.cesLevel && !hofTypes.cesFlow) {
-    return level;
-  }
-
-  return flow;
+  return (hofTypes.cesLev && !hofTypes.cesFlow) ? level : flow;
 }
 
 /**

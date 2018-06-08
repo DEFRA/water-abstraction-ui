@@ -2,7 +2,7 @@ const { LicenceNotFoundError } = require('./errors');
 const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
-const { gaugingStations, getRiverLevel } = require('../../lib/connectors/water');
+const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
 
 /**
@@ -82,7 +82,7 @@ function loadGaugingStations (metadata) {
       $in: (metadata.gaugingStations || []).map(row => row.stationReference)
     }
   };
-  return gaugingStations.findMany(filter);
+  return waterConnector.gaugingStations.findMany(filter);
 }
 
 /**
@@ -170,14 +170,22 @@ function selectRiverLevelMeasure (riverLevel, hofTypes) {
  * @return {Promise} resolves with {riverLevel, measure}
  */
 async function loadRiverLevelData (stationReference, hofTypes) {
-  // Load river level data
-  const riverLevel = stationReference ? await getRiverLevel(stationReference) : null;
+  const response = { riverLevel: null, measure: null };
 
-  let measure = null;
-  if (riverLevel) {
-    measure = selectRiverLevelMeasure(riverLevel, hofTypes);
+  try {
+    if (stationReference) {
+      response.riverLevel = await waterConnector.getRiverLevel(stationReference);
+    }
+
+    if (response.riverLevel) {
+      response.measure = selectRiverLevelMeasure(response.riverLevel, hofTypes);
+    }
+  } catch (e) {
+    if (e.statusCode !== 404) {
+      throw (e);
+    }
   }
-  return { riverLevel, measure };
+  return response;
 }
 
 module.exports = {

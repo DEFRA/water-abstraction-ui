@@ -6,15 +6,17 @@
 
   <div class="grid-row">
       <div class="column-full">
-        <h1 class="heading-large heading-large--tight-above">
-            <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
-            Data from {{ riverLevel.label }}
+          {{#if riverLevel}}
+          <h1 class="heading-large heading-large--tight-above">
+              <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
+              Data from {{ riverLevel.label }}
           </h1>
+          {{/if}}
 
           {{#if hasGaugingStationMeasurement}}
           <div class="data">
               <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
-              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}
+              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
           </div>
           {{ else }}
           <div class="data">

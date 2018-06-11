@@ -15,7 +15,41 @@
 
           {{#if hasGaugingStationMeasurement}}
           <div class="data">
+
+              {{#equal measure.unitName 'm3/s' }}
+              <div class="grid-row">
+                <div class="column-one-third" data-unit="cms">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'second' }}</span>
+                  <span data-unit-label>Cubic metres per second</span>
+                </div>
+
+                <div class="column-one-third" data-unit="mld">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'megalitre' 'day' }}</span>
+                  <span data-unit-label>Megalitres per day</span>
+                </div>
+
+                <div class="column-one-third" data-unit="cmd">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'day' }}</span>
+                  <span data-unit-label>Cubic metres per day</span>
+                </div>
+
+                <div style="display: none;">
+                  <select id="unit-selector" class="form-control unit-dropper" name="unit-selector">
+                      <option selected value="cms">Cubic metres per second</option>
+                      <option value="mld">Megalitres per day</option>
+                      <option value="cmd">Cubic metres per day</option>
+                  </select>
+                </div>
+              </div>
+
+
+
+
+              {{else}}
               <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
+              {{/equal}}
+
+              <br />
               <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
           </div>
           {{ else }}
@@ -78,3 +112,32 @@
 </main>
 {{> footerjs}}
 {{> debug}}
+
+<script>
+
+$(function() {
+
+  // Refresh which units are displayed
+  function refreshUnits() {
+    var unit = $('#unit-selector').val();
+    $('[data-unit=' + unit + ']').show().siblings('[data-unit]').hide();
+  }
+
+  // Do an initial refresh
+  refreshUnits();
+
+  // Update when selector changed
+  $('#unit-selector').on('change', refreshUnits).parent().show();
+
+  // With JS enabled, we don't need labels except for screen readers
+  $('[data-unit-label]').addClass('sr-only');
+
+  // Set up different CSS classes for rendering flex layout
+  var $container = $('[data-unit]').parent();
+  $container.removeClass('grid-row').addClass('flex');
+  $container.find('.column-one-third').removeClass('column-one-third').addClass('flex__item--static');
+  $container.children('div').addClass('flex__item');
+
+});
+
+</script>

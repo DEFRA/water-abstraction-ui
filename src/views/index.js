@@ -13,6 +13,7 @@ const DynamicView = require('../lib/dynamicview');
 
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
+const Joi = require('joi');
 
 handlebars.registerHelper('markdown', function (param = '') {
   // Replace ^ with > because notify represents a blockquote using the carat.
@@ -59,16 +60,62 @@ handlebars.registerHelper('widgetErrors', function (fieldName, errors = [], opti
 });
 
 /**
+ * 1 megalitre = 1,000,000 litres = 1,000 cubic metres
+ * @param {float} value - the value in cubic metres per second
+ * @param {String} unit - can be cm|litre|megalitre
+ * @param {String} period - can be second|day
+ */
+handlebars.registerHelper('flowConverter', function (value, unit = 'litre', period = 'second', options) {
+  let val = value;
+
+  // Validate
+  const { error } = Joi.validate({ unit, period }, {
+    unit: Joi.string().allow('cm', 'litre', 'megalitre'),
+    period: Joi.string().allow('second', 'day')
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  if (unit === 'litre') {
+    val = val * 1000;
+  }
+  if (unit === 'megalitre') {
+    val = val / 1000;
+  }
+  if (period === 'day') {
+    val = val * 86400;
+  }
+
+  return parseFloat(val).toFixed(1);
+});
+
+/*
+handlebars.registerHelper('toFixed', function (value, dp) {
+  return parseFloat(value).toFixed(dp);
+});
+
+handlebars.registerHelper('toMega')
+*/
+
+/**
  * Gets gauging station value with units
  * - For flows, converts m3/s to m3/day
  * - For levels, adds mASD to datum and returns in m
  */
-handlebars.registerHelper('gsValue', function (measure, stageScale, options) {
+handlebars.registerHelper('gsValue', function (measure, convertTo, options) {
   const { unitName, latestReading: { value } } = measure;
 
   // Flows - convert to m3/day
   if (unitName === 'm3/s') {
-    return `${(value * 86400).toFixed(1)}m³/day`;
+    if (convertTo === 'm3/day') {
+      return `${(value * 86400).toFixed(1)}m³/day`;
+    }
+
+    return `${(value).toFixed(1)}m³/s`;
+
+    // return `${(value * 86400).toFixed(1)}m³/day`;
   }
 
   // Levels in mASD - convert to level in m

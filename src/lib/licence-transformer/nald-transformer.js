@@ -51,6 +51,7 @@ class NALDTransformer extends BaseTransformer {
       licenceHolderInitials: licenceHolderParty.INITIALS,
       licenceHolderName: licenceHolderParty.NAME,
       effectiveDate: data.ORIG_EFF_DATE,
+      currentVersionEffectiveStartDate: currentVersion.EFF_ST_DATE,
       expiryDate: data.EXPIRY_DATE,
       versionCount: data.data.versions.length,
       conditions: conditions,

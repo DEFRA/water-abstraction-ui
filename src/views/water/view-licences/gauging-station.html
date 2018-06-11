@@ -2,7 +2,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}">Licence number {{ licenceData.licenceNumber }}</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">Licence number {{ viewData.licenceNumber }}</a>
 
   <div class="grid-row">
       <div class="column-full">
@@ -52,7 +52,7 @@
     </div>
 
 
-  {{#equal licenceData.conditions.length 0}}
+  {{#equal viewData.conditions.length 0}}
   <p>
   Sorry, we do not hold any information about your conditions on our system yet.
   </p><p>
@@ -62,7 +62,7 @@
 
 
   <div class="panel panel-border-wide">
-    {{#each licenceData.conditions }}
+    {{#each viewData.conditions }}
       {{#isHof this.code this.subCode }}
         {{>licence-condition this}}
       {{/isHof}}
@@ -70,7 +70,7 @@
   </div>
 
   <p>
-    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}/conditions">
+    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/conditions">
       View all conditions information held for this licence
     </a>
   </p>

@@ -59,7 +59,7 @@ async function getLicences (request, reply) {
  */
 async function getLicenceDetail (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
-  const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
+  const { licence_id: documentHeaderId } = request.params;
 
   try {
     const {
@@ -73,27 +73,25 @@ async function getLicenceDetail (request, reply) {
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 
-    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, viewData.hofTypes);
-
     return reply.view(request.config.view, {
       ...view,
-      riverLevel,
-      measure,
       gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
-      crmData: documentHeader,
-      hasGaugingStationMeasurement: !!(riverLevel && riverLevel.active && measure)
+      crmData: documentHeader
     });
   } catch (error) {
+    if (error.statusCode === 404) {
+      return reply(Boom.notFound(error));
+    }
+
     if (error.name === 'LicenceNotFoundError') {
       return reply(Boom.notFound('Licence not found', error));
     }
 
-    console.log(error);
-    reply(Boom.badImplementation(error));
+    reply(error);
   }
 };
 
@@ -136,8 +134,59 @@ async function postLicenceRename (request, reply) {
   return reply.redirect(`${redirectBasePath}/${documentId}`);
 }
 
+/**
+ * Displays a gauging station flow/level data, along with HoF conditions
+ * for the selected licence
+ */
+async function getLicenceGaugingStation (request, reply) {
+  const { entity_id: entityId } = request.auth.credentials;
+  const { measure: mode } = request.query;
+  const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
+
+  try {
+    // Load licence data
+    const licenceData = await loadLicenceData(entityId, documentHeaderId);
+
+    // Load river level data
+    const { hofTypes } = licenceData.viewData;
+    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+
+    // Validate - check that the requested station reference is in licence metadata
+    const stationReferences = licenceData.permitData.metadata.gaugingStations.map(row => {
+      return row.stationReference;
+    });
+    if (!stationReferences.includes(gaugingStation)) {
+      throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
+    }
+
+    const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
+
+    const viewContext = {
+      ...request.view,
+      ...licenceData,
+      riverLevel,
+      measure,
+      hasGaugingStationMeasurement: !!(riverLevel && riverLevel.active && measure),
+      pageTitle: `Gauging station for ${customName || licenceNumber}`
+    };
+
+    return reply.view('water/view-licences/gauging-station', viewContext);
+  } catch (error) {
+    if (error.statusCode === 404) {
+      return reply(Boom.notFound(error));
+    }
+
+    if (error.name === 'LicenceNotFoundError') {
+      return reply(Boom.notFound('Licence not found', error));
+    }
+
+    reply(error);
+  }
+};
+
 module.exports = {
   getLicences,
   getLicenceDetail,
-  postLicenceRename
+  postLicenceRename,
+  getLicenceGaugingStation
 };

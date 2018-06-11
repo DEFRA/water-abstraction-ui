@@ -147,10 +147,11 @@ const isFlowMeasure = measure => measure.parameter === 'flow';
  * - if 2 measures, and 1 hof type, show the matching one
  * - if 2 measures, and 2 hof types, show flow
  * @param {Object} riverLevel - data returned from water river level API
- * @param {Object} hofTypes - contains flags for cesFlow and cesLev
+ * @param {Object} hofTypes - HOF types in licence
+ * @param {String} mode - can be flow|level|auto.  If auto, determined by hof types
  * @return {Object} measure the selected measure - level/flow
  */
-function selectRiverLevelMeasure (riverLevel, hofTypes) {
+function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
   const flow = find(riverLevel.measures, measure => {
     return isFlowMeasure(measure) && hasLatestReading(measure);
   });
@@ -159,32 +160,53 @@ function selectRiverLevelMeasure (riverLevel, hofTypes) {
     return isLevelMeasure(measure) && hasLatestReading(measure);
   });
 
-  return (hofTypes.cesLev && !hofTypes.cesFlow) ? level : flow;
+  if (mode === 'auto') {
+    if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
+      return flow;
+    }
+    if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
+      return level;
+    }
+    return flow || level;
+  }
+
+  if (mode === 'level' && level) {
+    return level;
+  }
+  if (mode === 'flow' && flow) {
+    return flow;
+  }
 }
 
 /**
  * Loads river level data for gauging station, and selects measure based
  * on hof types
  * @param {String} stationReference - reference for flood level API
- * @param {Object} contains booleans {cesFlow, cesLev}
+ * @param {Object} hofTypes
+ * @param {Boolean} hofTypes.cesFlow - whether CES FLOW condition in licence
+ * @param {Boolean} hofTypes.cesLev - whether CES LEV condition in licence
+ * @param {String} mode - flow|level|auto
  * @return {Promise} resolves with {riverLevel, measure}
  */
-async function loadRiverLevelData (stationReference, hofTypes) {
+async function loadRiverLevelData (stationReference, hofTypes, mode) {
   const response = { riverLevel: null, measure: null };
 
-  try {
-    if (stationReference) {
+  if (stationReference) {
+    try {
       response.riverLevel = await waterConnector.getRiverLevel(stationReference);
-    }
-
-    if (response.riverLevel) {
-      response.measure = selectRiverLevelMeasure(response.riverLevel, hofTypes);
-    }
-  } catch (e) {
-    if (e.statusCode !== 404) {
-      throw (e);
+    } catch (err) {
+      // Don't throw error for 404.  A valid station ID may return 404
+      // because it is disabled
+      if (err.statusCode !== 404) {
+        throw err;
+      }
     }
   }
+
+  if (response.riverLevel) {
+    response.measure = selectRiverLevelMeasure(response.riverLevel, hofTypes, mode);
+  }
+
   return response;
 }
 

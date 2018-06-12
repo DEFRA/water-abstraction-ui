@@ -142,6 +142,22 @@ const isLevelMeasure = measure => measure.parameter === 'level';
 const isFlowMeasure = measure => measure.parameter === 'flow';
 
 /**
+ * Automatically select flow/level depending on the HoF types in the licence
+ * @param {Object} flow - flow measure from API data
+ * @param {Object} level - level measure from API data
+ * @param {Object} hofTypes - HoF types with booleans for cesLev and cesFlow
+ */
+function autoSelectRiverLevelMeasure (flow, level, hofTypes) {
+  if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
+    return flow;
+  }
+  if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
+    return level;
+  }
+  return flow || level;
+}
+
+/**
  * Logic for selecting which measure to display:
  * - if only 1 measure from station, show that
  * - if 2 measures, and 1 hof type, show the matching one
@@ -162,13 +178,7 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
 
   switch (mode) {
     case 'auto':
-      if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
-        return flow;
-      }
-      if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
-        return level;
-      }
-      return flow || level;
+      return autoSelectRiverLevelMeasure(flow, level, hofTypes);
 
     case 'level':
       return level;

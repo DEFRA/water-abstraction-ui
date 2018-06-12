@@ -196,16 +196,17 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
  * @return {Object} flags
  */
 function riverLevelFlags (riverLevel, measure, hofTypes) {
-  if (riverLevel && riverLevel.active && measure) {
+  const hasGaugingStationMeasurement = riverLevel && riverLevel.active && measure;
+  if (hasGaugingStationMeasurement) {
     const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
     return {
-      hasGaugingStationMeasurement: true,
+      hasGaugingStationMeasurement,
       showFlowLink: showFlowAndLevel && measure.parameter === 'level',
       showLevelLink: showFlowAndLevel && measure.parameter === 'flow'
     };
   }
   return {
-    hasGaugingStationMeasurement: false,
+    hasGaugingStationMeasurement,
     showFlowLink: false,
     showLevelLink: false
   };

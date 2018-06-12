@@ -147,27 +147,21 @@ async function getLicenceGaugingStation (request, reply) {
     // Load licence data
     const licenceData = await loadLicenceData(entityId, documentHeaderId);
 
-    // Load river level data
-    const { hofTypes } = licenceData.viewData;
-    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
-
     // Validate - check that the requested station reference is in licence metadata
     if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
       throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
     }
 
-    const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
+    // Load river level data
+    const { hofTypes } = licenceData.viewData;
+    const riverData = await loadRiverLevelData(gaugingStation, hofTypes, mode);
 
-    const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
+    const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
     const viewContext = {
       ...request.view,
       ...licenceData,
-      riverLevel,
-      measure,
-      hasGaugingStationMeasurement: !!(riverLevel && riverLevel.active && measure),
-      showFlowLink: showFlowAndLevel && measure.parameter === 'level',
-      showLevelLink: showFlowAndLevel && measure.parameter === 'flow',
+      ...riverData,
       stationReference: gaugingStation,
       pageTitle: `Gauging station for ${customName || licenceNumber}`
     };

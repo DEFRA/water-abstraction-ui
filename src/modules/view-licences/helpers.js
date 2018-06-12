@@ -199,14 +199,18 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
  * @return {Promise} resolves with {riverLevel, measure}
  */
 async function loadRiverLevelData (stationReference, hofTypes, mode) {
-  const response = { riverLevel: null, measure: null };
+  let riverLevel = null;
+  let measure = null;
+  let hasGaugingStationMeasurement = false;
+  let showFlowLink = false;
+  let showLevelLink = false;
 
   if (!stationReference) {
-    return response;
+    return { riverLevel, measure, hasGaugingStationMeasurement, showFlowLink, showLevelLink };
   }
 
   try {
-    response.riverLevel = await waterConnector.getRiverLevel(stationReference);
+    riverLevel = await waterConnector.getRiverLevel(stationReference);
   } catch (err) {
     // Don't throw error for 404.  A valid station ID may return 404
     // because it is disabled
@@ -215,11 +219,20 @@ async function loadRiverLevelData (stationReference, hofTypes, mode) {
     }
   }
 
-  if (response.riverLevel) {
-    response.measure = selectRiverLevelMeasure(response.riverLevel, hofTypes, mode);
+  if (riverLevel) {
+    // Select measure to display measure
+    measure = selectRiverLevelMeasure(riverLevel, hofTypes, mode);
+
+    // Calculate additional view flags
+    if (riverLevel && riverLevel.active && measure) {
+      hasGaugingStationMeasurement = true;
+      const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
+      showFlowLink = showFlowAndLevel && measure.parameter === 'level';
+      showLevelLink = showFlowAndLevel && measure.parameter === 'flow';
+    }
   }
 
-  return response;
+  return { riverLevel, measure, hasGaugingStationMeasurement, showFlowLink, showLevelLink };
 }
 
 /**

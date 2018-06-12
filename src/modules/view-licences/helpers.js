@@ -186,25 +186,6 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
     case 'flow':
       return flow;
   }
-
-  /*
-  if (mode === 'auto') {
-    if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
-      return flow;
-    }
-    if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
-      return level;
-    }
-    return flow || level;
-  }
-
-  if (mode === 'level' && level) {
-    return level;
-  }
-  if (mode === 'flow' && flow) {
-    return flow;
-  }
-  */
 }
 
 /**
@@ -220,15 +201,17 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
 async function loadRiverLevelData (stationReference, hofTypes, mode) {
   const response = { riverLevel: null, measure: null };
 
-  if (stationReference) {
-    try {
-      response.riverLevel = await waterConnector.getRiverLevel(stationReference);
-    } catch (err) {
-      // Don't throw error for 404.  A valid station ID may return 404
-      // because it is disabled
-      if (err.statusCode !== 404) {
-        throw err;
-      }
+  if (!stationReference) {
+    return response;
+  }
+
+  try {
+    response.riverLevel = await waterConnector.getRiverLevel(stationReference);
+  } catch (err) {
+    // Don't throw error for 404.  A valid station ID may return 404
+    // because it is disabled
+    if (err.statusCode !== 404) {
+      throw err;
     }
   }
 

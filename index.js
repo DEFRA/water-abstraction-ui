@@ -154,9 +154,10 @@ require('inert'), require('vision')
   server.route(require('./src/routes/status'));
 });
 
-// server.errorHandler = function (error) {
-//   throw error;
-// };
+server.errorHandler = function (error) {
+  logger.error(error);
+  throw error;
+};
 
 /**
 server.ext({

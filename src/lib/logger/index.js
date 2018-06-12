@@ -9,6 +9,17 @@ const Airbrake = require('./vendor/winston-airbrake').Airbrake;
 
 const logger = new (winston.Logger)();
 
+// Setup transports
+const defaults = {
+  colorize: true,
+  silent: false,
+  timestamp: true,
+  json: false,
+  showLevel: true,
+  handleExceptions: true,
+  humanReadableUnhandledException: true
+};
+
 const init = (config = {}) => {
   // Validate the provided config object
   const schema = {
@@ -24,20 +35,8 @@ const init = (config = {}) => {
     throw new Error('Invalid log configuration', error);
   }
 
-  // Setup transports
-  const commonLoggingOptions = {
-    level: options.level,
-    colorize: true,
-    silent: false,
-    timestamp: true,
-    json: false,
-    showLevel: true,
-    handleExceptions: true,
-    humanReadableUnhandledException: true
-  };
-
   // Default console transport
-  logger.add(winston.transports.Console, commonLoggingOptions);
+  logger.add(winston.transports.Console, { ...defaults, level: options.level });
 
   // Optional Airbrake transport
   if (options.airbrakeKey && options.airbrakeHost) {

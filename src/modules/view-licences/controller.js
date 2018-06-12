@@ -9,7 +9,7 @@ const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -83,15 +83,7 @@ async function getLicenceDetail (request, reply) {
       crmData: documentHeader
     });
   } catch (error) {
-    if (error.statusCode === 404) {
-      return reply(Boom.notFound(error));
-    }
-
-    if (error.name === 'LicenceNotFoundError') {
-      return reply(Boom.notFound('Licence not found', error));
-    }
-
-    reply(error);
+    reply(errorMapper(error));
   }
 };
 
@@ -170,15 +162,7 @@ async function getLicenceGaugingStation (request, reply) {
 
     return reply.view('water/view-licences/gauging-station', viewContext);
   } catch (error) {
-    if (error.statusCode === 404) {
-      return reply(Boom.notFound(error));
-    }
-
-    if (error.name === 'LicenceNotFoundError') {
-      return reply(Boom.notFound('Licence not found', error));
-    }
-
-    reply(error);
+    reply(errorMapper(error));
   }
 };
 

@@ -4,6 +4,7 @@ const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
+const Boom = require('boom');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -263,6 +264,21 @@ function validateStationReference (gaugingStations, stationReference) {
   return stationReferences.includes(stationReference);
 }
 
+/**
+ * Generates Boom error if required
+ * @param {Object} error
+ * @return {Object} error
+ */
+function errorMapper (error) {
+  if (error.statusCode === 404) {
+    return Boom.notFound(error);
+  }
+  if (error.name === 'LicenceNotFoundError') {
+    return Boom.notFound('Licence not found', error);
+  }
+  return error;
+}
+
 module.exports = {
   mapSort,
   mapFilter,
@@ -271,5 +287,6 @@ module.exports = {
   loadRiverLevelData,
   selectRiverLevelMeasure,
   validateStationReference,
-  riverLevelFlags
+  riverLevelFlags,
+  errorMapper
 };

@@ -222,11 +222,27 @@ async function loadRiverLevelData (stationReference, hofTypes, mode) {
   return response;
 }
 
+/**
+ * Checks the station reference provided is present in the array of station
+ * references provided
+ * @param {Array} gaugingStations - stored in permit metadata
+ * @param {String} stationReference - provided as URL param
+ * @return {Boolean} - true if valid
+ */
+function validateStationReference (gaugingStations, stationReference) {
+  // Validate - check that the requested station reference is in licence metadata
+  const stationReferences = gaugingStations.map(row => {
+    return row.stationReference;
+  });
+  return stationReferences.includes(stationReference);
+}
+
 module.exports = {
   mapSort,
   mapFilter,
   getLicencePageTitle,
   loadLicenceData,
   loadRiverLevelData,
-  selectRiverLevelMeasure
+  selectRiverLevelMeasure,
+  validateStationReference
 };

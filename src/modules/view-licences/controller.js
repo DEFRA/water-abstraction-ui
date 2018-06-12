@@ -9,7 +9,7 @@ const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, loadRiverLevelData } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -152,10 +152,7 @@ async function getLicenceGaugingStation (request, reply) {
     const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
 
     // Validate - check that the requested station reference is in licence metadata
-    const stationReferences = licenceData.permitData.metadata.gaugingStations.map(row => {
-      return row.stationReference;
-    });
-    if (!stationReferences.includes(gaugingStation)) {
+    if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
       throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
     }
 

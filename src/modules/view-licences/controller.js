@@ -9,7 +9,7 @@ const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -154,14 +154,16 @@ async function getLicenceGaugingStation (request, reply) {
 
     // Load river level data
     const { hofTypes } = licenceData.viewData;
-    const riverData = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
 
     const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
     const viewContext = {
       ...request.view,
       ...licenceData,
-      ...riverData,
+      riverLevel,
+      measure,
+      ...riverLevelFlags(riverLevel, measure, hofTypes),
       stationReference: gaugingStation,
       pageTitle: `Gauging station for ${customName || licenceNumber}`
     };

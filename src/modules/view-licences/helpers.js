@@ -189,6 +189,29 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
 }
 
 /**
+ * Calculate flags for river levels view
+ * @param {Object} riverLevel
+ * @param {Object} measure - the selected measure - either the flow or level
+ * @param {Object} hofTypes - contains flags for cesFlow and cesLev
+ * @return {Object} flags
+ */
+function riverLevelFlags (riverLevel, measure, hofTypes) {
+  if (riverLevel && riverLevel.active && measure) {
+    const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
+    return {
+      hasGaugingStationMeasurement: true,
+      showFlowLink: showFlowAndLevel && measure.parameter === 'level',
+      showLevelLink: showFlowAndLevel && measure.parameter === 'flow'
+    };
+  }
+  return {
+    hasGaugingStationMeasurement: false,
+    showFlowLink: false,
+    showLevelLink: false
+  };
+}
+
+/**
  * Loads river level data for gauging station, and selects measure based
  * on hof types
  * @param {String} stationReference - reference for flood level API
@@ -201,12 +224,9 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
 async function loadRiverLevelData (stationReference, hofTypes, mode) {
   let riverLevel = null;
   let measure = null;
-  let hasGaugingStationMeasurement = false;
-  let showFlowLink = false;
-  let showLevelLink = false;
 
   if (!stationReference) {
-    return { riverLevel, measure, hasGaugingStationMeasurement, showFlowLink, showLevelLink };
+    return { riverLevel, measure };
   }
 
   try {
@@ -222,17 +242,9 @@ async function loadRiverLevelData (stationReference, hofTypes, mode) {
   if (riverLevel) {
     // Select measure to display measure
     measure = selectRiverLevelMeasure(riverLevel, hofTypes, mode);
-
-    // Calculate additional view flags
-    if (riverLevel && riverLevel.active && measure) {
-      hasGaugingStationMeasurement = true;
-      const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
-      showFlowLink = showFlowAndLevel && measure.parameter === 'level';
-      showLevelLink = showFlowAndLevel && measure.parameter === 'flow';
-    }
   }
 
-  return { riverLevel, measure, hasGaugingStationMeasurement, showFlowLink, showLevelLink };
+  return { riverLevel, measure };
 }
 
 /**
@@ -257,5 +269,6 @@ module.exports = {
   loadLicenceData,
   loadRiverLevelData,
   selectRiverLevelMeasure,
-  validateStationReference
+  validateStationReference,
+  riverLevelFlags
 };

@@ -161,12 +161,17 @@ async function getLicenceGaugingStation (request, reply) {
 
     const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
+    const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
+
     const viewContext = {
       ...request.view,
       ...licenceData,
       riverLevel,
       measure,
       hasGaugingStationMeasurement: !!(riverLevel && riverLevel.active && measure),
+      showFlowLink: showFlowAndLevel && measure.parameter === 'level',
+      showLevelLink: showFlowAndLevel && measure.parameter === 'flow',
+      stationReference: gaugingStation,
       pageTitle: `Gauging station for ${customName || licenceNumber}`
     };
 

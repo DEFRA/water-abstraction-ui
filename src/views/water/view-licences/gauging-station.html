@@ -64,6 +64,18 @@
 
               <span class="data-item">Instantaneous {{ measure.parameter }} recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
 
+              {{# if showFlowLink }}
+              <p>
+                <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
+              </p>
+              {{/if}}
+              {{# if showLevelLink }}
+              <p>
+                <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
+              </p>
+              {{/if}}
+
+
               {{#equal measure.unitName 'm3/s' }}
               <div class="panel panel-border-wide column-two-thirds medium-space">
               <p>

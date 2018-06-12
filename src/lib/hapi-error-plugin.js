@@ -1,12 +1,13 @@
 /**
-* HAPI error plugin
-* allows us to handle Joi errors and display an error page to the user
-* this is based on the hapi-error plugin: https://github.com/dwyl/hapi-error
-* however we needed a method to alter the view context being sent to the template
-*
-* @module lib/hapi-error-plugin
-*/
-const {contextDefaults} = require('./view');
+ * HAPI error plugin
+ * allows us to handle Joi errors and display an error page to the user
+ * this is based on the hapi-error plugin: https://github.com/dwyl/hapi-error
+ * however we needed a method to alter the view context being sent to the template
+ *
+ * @module lib/hapi-error-plugin
+ */
+const { contextDefaults } = require('./view');
+const logger = require('./logger');
 
 const errorPlugin = {
   register (server, options, next) {
@@ -21,9 +22,9 @@ const errorPlugin = {
         // Boom errors
         if (res.isBoom) {
           // ALWAYS Log the error
-          console.log('error', res);
+          logger.error(res);
 
-          const {statusCode} = res.output;
+          const { statusCode } = res.output;
 
           // CSRF error detected - sign out user and redirect to login page
           if (res.data && res.data.isCsrfError) {

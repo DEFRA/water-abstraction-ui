@@ -2,8 +2,9 @@ const { LicenceNotFoundError } = require('./errors');
 const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
-const { gaugingStations, getRiverLevel } = require('../../lib/connectors/water');
+const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
+const Boom = require('boom');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -82,7 +83,7 @@ function loadGaugingStations (metadata) {
       $in: (metadata.gaugingStations || []).map(row => row.stationReference)
     }
   };
-  return gaugingStations.findMany(filter);
+  return waterConnector.gaugingStations.findMany(filter);
 }
 
 /**
@@ -142,15 +143,32 @@ const isLevelMeasure = measure => measure.parameter === 'level';
 const isFlowMeasure = measure => measure.parameter === 'flow';
 
 /**
+ * Automatically select flow/level depending on the HoF types in the licence
+ * @param {Object} flow - flow measure from API data
+ * @param {Object} level - level measure from API data
+ * @param {Object} hofTypes - HoF types with booleans for cesLev and cesFlow
+ */
+function autoSelectRiverLevelMeasure (flow, level, hofTypes) {
+  if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
+    return flow;
+  }
+  if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
+    return level;
+  }
+  return flow || level;
+}
+
+/**
  * Logic for selecting which measure to display:
  * - if only 1 measure from station, show that
  * - if 2 measures, and 1 hof type, show the matching one
  * - if 2 measures, and 2 hof types, show flow
  * @param {Object} riverLevel - data returned from water river level API
- * @param {Object} hofTypes - contains flags for cesFlow and cesLev
+ * @param {Object} hofTypes - HOF types in licence
+ * @param {String} mode - can be flow|level|auto.  If auto, determined by hof types
  * @return {Object} measure the selected measure - level/flow
  */
-function selectRiverLevelMeasure (riverLevel, hofTypes) {
+function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
   const flow = find(riverLevel.measures, measure => {
     return isFlowMeasure(measure) && hasLatestReading(measure);
   });
@@ -159,25 +177,106 @@ function selectRiverLevelMeasure (riverLevel, hofTypes) {
     return isLevelMeasure(measure) && hasLatestReading(measure);
   });
 
-  return (hofTypes.cesLev && !hofTypes.cesFlow) ? level : flow;
+  switch (mode) {
+    case 'auto':
+      return autoSelectRiverLevelMeasure(flow, level, hofTypes);
+
+    case 'level':
+      return level;
+
+    case 'flow':
+      return flow;
+  }
+}
+
+/**
+ * Calculate flags for river levels view
+ * @param {Object} riverLevel
+ * @param {Object} measure - the selected measure - either the flow or level
+ * @param {Object} hofTypes - contains flags for cesFlow and cesLev
+ * @return {Object} flags
+ */
+function riverLevelFlags (riverLevel, measure, hofTypes) {
+  const hasGaugingStationMeasurement = riverLevel && riverLevel.active && measure;
+  if (hasGaugingStationMeasurement) {
+    const showFlowAndLevel = (riverLevel.measures.length > 1) && hofTypes.cesLev && hofTypes.cesFlow;
+    return {
+      hasGaugingStationMeasurement,
+      showFlowLink: showFlowAndLevel && measure.parameter === 'level',
+      showLevelLink: showFlowAndLevel && measure.parameter === 'flow'
+    };
+  }
+  return {
+    hasGaugingStationMeasurement,
+    showFlowLink: false,
+    showLevelLink: false
+  };
 }
 
 /**
  * Loads river level data for gauging station, and selects measure based
  * on hof types
  * @param {String} stationReference - reference for flood level API
- * @param {Object} contains booleans {cesFlow, cesLev}
+ * @param {Object} hofTypes
+ * @param {Boolean} hofTypes.cesFlow - whether CES FLOW condition in licence
+ * @param {Boolean} hofTypes.cesLev - whether CES LEV condition in licence
+ * @param {String} mode - flow|level|auto
  * @return {Promise} resolves with {riverLevel, measure}
  */
-async function loadRiverLevelData (stationReference, hofTypes) {
-  // Load river level data
-  const riverLevel = stationReference ? await getRiverLevel(stationReference) : null;
-
+async function loadRiverLevelData (stationReference, hofTypes, mode) {
+  let riverLevel = null;
   let measure = null;
-  if (riverLevel) {
-    measure = selectRiverLevelMeasure(riverLevel, hofTypes);
+
+  if (!stationReference) {
+    return { riverLevel, measure };
   }
+
+  try {
+    riverLevel = await waterConnector.getRiverLevel(stationReference);
+  } catch (err) {
+    // Don't throw error for 404.  A valid station ID may return 404
+    // because it is disabled
+    if (err.statusCode !== 404) {
+      throw err;
+    }
+  }
+
+  if (riverLevel) {
+    // Select measure to display measure
+    measure = selectRiverLevelMeasure(riverLevel, hofTypes, mode);
+  }
+
   return { riverLevel, measure };
+}
+
+/**
+ * Checks the station reference provided is present in the array of station
+ * references provided
+ * @param {Array} gaugingStations - stored in permit metadata
+ * @param {String} stationReference - provided as URL param
+ * @return {Boolean} - true if valid
+ */
+function validateStationReference (gaugingStations, stationReference) {
+  // Validate - check that the requested station reference is in licence metadata
+  const stationReferences = gaugingStations.map(row => {
+    return row.stationReference;
+  });
+  return stationReferences.includes(stationReference);
+}
+
+/**
+ * Generates Boom error if required
+ * @param {Object} error
+ * @return {Object} error
+ */
+function errorMapper (error) {
+  if (error.statusCode === 404) {
+    return Boom.notFound(error);
+  }
+  if (error.name === 'LicenceNotFoundError') {
+    return Boom.notFound('Licence not found', error);
+  }
+  return error;
 }
 
 module.exports = {
@@ -186,5 +285,8 @@ module.exports = {
   getLicencePageTitle,
   loadLicenceData,
   loadRiverLevelData,
-  selectRiverLevelMeasure
+  selectRiverLevelMeasure,
+  validateStationReference,
+  riverLevelFlags,
+  errorMapper
 };

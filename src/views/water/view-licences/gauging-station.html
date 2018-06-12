@@ -2,19 +2,88 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}">Licence number {{ licenceData.licenceNumber }}</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">Licence number {{ viewData.licenceNumber }}</a>
 
-  <div class="grid-row">
+  <div class="grid-row small-space">
       <div class="column-full">
-        <h1 class="heading-large heading-large--tight-above">
-            <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
-            Data from {{ riverLevel.label }}
+          {{#if riverLevel}}
+          <h1 class="heading-large heading-large--tight-above">
+              <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
+              Data from {{ riverLevel.label }}
           </h1>
+
+          <div class="grid-row">
+              <div class="column-two-thirds">
+                <div class="notice" style="border: none; margin: 0 0 15px 0; padding: 0;">
+                  <i class="icon icon-important">
+                    <span class="visually-hidden">Warning</span>
+                  </i>
+                  <strong class="bold-small">
+                    This data is for reference only. You should continue to use your current monitoring methods to make abstraction decisions.
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+          {{/if}}
 
           {{#if hasGaugingStationMeasurement}}
           <div class="data">
+
+              {{#equal measure.unitName 'm3/s' }}
+
+              <!-- unit converter for flows -->
+              <div class="grid-row">
+                <div class="column-one-third small-space" data-unit="cms">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'second' }}</span>
+                  <span data-unit-label>Cubic metres per second</span>
+                </div>
+
+                <div class="column-one-third small-space" data-unit="mld">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'megalitre' 'day' }}</span>
+                  <span data-unit-label>Megalitres per day</span>
+                </div>
+
+                <div class="column-one-third small-space" data-unit="cmd">
+                  <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'day' }}</span>
+                  <span data-unit-label>Cubic metres per day</span>
+                </div>
+
+                <div style="display: none;">
+                  <select id="unit-selector" class="form-control unit-selector" name="unit-selector">
+                      <option selected value="cms">Cubic metres per second</option>
+                      <option value="mld">Megalitres per day</option>
+                      <option value="cmd">Cubic metres per day</option>
+                  </select>
+                </div>
+              </div>
+
+              {{else}}
               <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
-              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}
+              {{/equal}}
+
+              <span class="data-item">Instantaneous {{ measure.parameter }} recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
+
+              {{# if showFlowLink }}
+              <p>
+                <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
+              </p>
+              {{/if}}
+              {{# if showLevelLink }}
+              <p>
+                <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
+              </p>
+              {{/if}}
+
+
+              {{#equal measure.unitName 'm3/s' }}
+              <div class="panel panel-border-wide column-two-thirds medium-space">
+              <p>
+                Please convert this reading if your condition is based on a different unit of measurement.
+              </p>
+            </div>
+            {{/equal}}
+
           </div>
           {{ else }}
           <div class="data">
@@ -25,32 +94,25 @@
                   </div>
           {{/if}}
 
+
+
+
+
       </div>
   </div>
 
-  <div class="grid-row big-space">
-      <div class="column-two-thirds">
-        <div class="notice" style="border: none;">
-          <i class="icon icon-important">
-            <span class="visually-hidden">Warning</span>
-          </i>
-          <strong class="bold-small">
-            This data is for reference only. You should continue to use your current monitoring methods to make abstraction decisions.
-          </strong>
-        </div>
-      </div>
-    </div>
+
 
     <div class="grid-row">
       <div class="column-two-thirds">
-        <h2 class="small-space">
+        <h2>
           <span class="bold-medium">Details of your hands off flow condition(s)</span>
         </h2>
       </div>
     </div>
 
 
-  {{#equal licenceData.conditions.length 0}}
+  {{#equal viewData.conditions.length 0}}
   <p>
   Sorry, we do not hold any information about your conditions on our system yet.
   </p><p>
@@ -60,7 +122,7 @@
 
 
   <div class="panel panel-border-wide">
-    {{#each licenceData.conditions }}
+    {{#each viewData.conditions }}
       {{#isHof this.code this.subCode }}
         {{>licence-condition this}}
       {{/isHof}}
@@ -68,7 +130,7 @@
   </div>
 
   <p>
-    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ crmData.document_id }}/conditions">
+    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}/conditions">
       View all conditions information held for this licence
     </a>
   </p>
@@ -76,3 +138,32 @@
 </main>
 {{> footerjs}}
 {{> debug}}
+
+<script>
+
+$(function() {
+
+  // Refresh which units are displayed
+  function refreshUnits() {
+    var unit = $('#unit-selector').val();
+    $('[data-unit=' + unit + ']').show().siblings('[data-unit]').hide();
+  }
+
+  // Do an initial refresh
+  refreshUnits();
+
+  // Update when selector changed
+  $('#unit-selector').on('change', refreshUnits).parent().show();
+
+  // With JS enabled, we don't need labels except for screen readers
+  $('[data-unit-label]').addClass('sr-only');
+
+  // Set up different CSS classes for rendering flex layout
+  var $container = $('[data-unit]').parent();
+  $container.removeClass('grid-row').addClass('flex');
+  $container.find('.column-one-third').removeClass('column-one-third').addClass('flex__item--static');
+  $container.children('div').addClass('flex__item');
+
+});
+
+</script>

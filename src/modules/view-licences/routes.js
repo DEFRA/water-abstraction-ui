@@ -169,13 +169,16 @@ const getLicenceConditions = {
 const getLicenceGaugingStation = {
   method: 'GET',
   path: '/licences/{licence_id}/station/{gauging_station}',
-  handler: controller.getLicenceDetail,
+  handler: controller.getLicenceGaugingStation,
   config: {
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
         licence_id: VALID_GUID,
         gauging_station: VALID_GAUGING_STATION
+      },
+      query: {
+        measure: Joi.string().allow('level', 'flow', 'auto').default('auto')
       }
     },
     plugins: {
@@ -223,5 +226,4 @@ module.exports = {
   getLicencePoints,
   getLicencePurposes,
   getLicenceGaugingStation
-
 };

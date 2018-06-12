@@ -1,0 +1,15 @@
+.flex {
+  
+  @media screen and (min-width: 641px) {
+    display: flex;
+  }
+
+  &__item {
+    flex-grow: 1;
+
+    &--static {
+      flex-grow: 0;
+      padding-right: 15px;
+    }
+  }
+}

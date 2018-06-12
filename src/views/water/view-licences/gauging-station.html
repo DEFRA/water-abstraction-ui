@@ -4,7 +4,7 @@
 
   <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">Licence number {{ viewData.licenceNumber }}</a>
 
-  <div class="grid-row">
+  <div class="grid-row small-space">
       <div class="column-full">
           {{#if riverLevel}}
           <h1 class="heading-large heading-large--tight-above">
@@ -12,9 +12,9 @@
               Data from {{ riverLevel.label }}
           </h1>
 
-          <div class="grid-row big-space">
+          <div class="grid-row">
               <div class="column-two-thirds">
-                <div class="notice" style="border: none; margin-bottom: 0;">
+                <div class="notice" style="border: none; margin: 0 0 15px 0; padding: 0;">
                   <i class="icon icon-important">
                     <span class="visually-hidden">Warning</span>
                   </i>
@@ -34,17 +34,17 @@
 
               <!-- unit converter for flows -->
               <div class="grid-row">
-                <div class="column-one-third" data-unit="cms">
+                <div class="column-one-third small-space" data-unit="cms">
                   <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'second' }}</span>
                   <span data-unit-label>Cubic metres per second</span>
                 </div>
 
-                <div class="column-one-third" data-unit="mld">
+                <div class="column-one-third small-space" data-unit="mld">
                   <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'megalitre' 'day' }}</span>
                   <span data-unit-label>Megalitres per day</span>
                 </div>
 
-                <div class="column-one-third" data-unit="cmd">
+                <div class="column-one-third small-space" data-unit="cmd">
                   <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'day' }}</span>
                   <span data-unit-label>Cubic metres per day</span>
                 </div>
@@ -62,11 +62,10 @@
               <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
               {{/equal}}
 
-              <br />
               <span class="data-item">Instantaneous {{ measure.parameter }} recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
 
               {{#equal measure.unitName 'm3/s' }}
-              <div class="panel panel-border-wide column-two-thirds">
+              <div class="panel panel-border-wide column-two-thirds medium-space">
               <p>
                 Please convert this reading if your condition is based on a different unit of measurement.
               </p>
@@ -94,7 +93,7 @@
 
     <div class="grid-row">
       <div class="column-two-thirds">
-        <h2 class="small-space">
+        <h2>
           <span class="bold-medium">Details of your hands off flow condition(s)</span>
         </h2>
       </div>

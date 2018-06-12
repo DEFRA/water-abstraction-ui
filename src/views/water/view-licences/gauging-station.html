@@ -11,12 +11,28 @@
               <span class="heading-secondary">At National Grid Reference {{ ngrPointStr riverLevel.ngr }}</span>
               Data from {{ riverLevel.label }}
           </h1>
+
+          <div class="grid-row big-space">
+              <div class="column-two-thirds">
+                <div class="notice" style="border: none; margin-bottom: 0;">
+                  <i class="icon icon-important">
+                    <span class="visually-hidden">Warning</span>
+                  </i>
+                  <strong class="bold-small">
+                    This data is for reference only. You should continue to use your current monitoring methods to make abstraction decisions.
+                  </strong>
+                </div>
+              </div>
+            </div>
+
           {{/if}}
 
           {{#if hasGaugingStationMeasurement}}
           <div class="data">
 
               {{#equal measure.unitName 'm3/s' }}
+
+              <!-- unit converter for flows -->
               <div class="grid-row">
                 <div class="column-one-third" data-unit="cms">
                   <span class="data-item bold-xxlarge">{{ flowConverter measure.latestReading.value 'cm' 'second' }}</span>
@@ -42,15 +58,21 @@
                 </div>
               </div>
 
-
-
-
               {{else}}
               <span class="data-item bold-xxlarge">{{ gsValue measure riverLevel.stageScale }}</span>
               {{/equal}}
 
               <br />
-              <span class="data-item">Recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
+              <span class="data-item">Instantaneous {{ measure.parameter }} recorded at <span class="bold-small">{{ formatISOTime measure.latestReading.dateTime }} on {{ formatISODate measure.latestReading.dateTime }}</span></span>
+
+              {{#equal measure.unitName 'm3/s' }}
+              <div class="panel panel-border-wide column-two-thirds">
+              <p>
+                Please convert this reading if your condition is based on a different unit of measurement.
+              </p>
+            </div>
+            {{/equal}}
+
           </div>
           {{ else }}
           <div class="data">
@@ -61,21 +83,14 @@
                   </div>
           {{/if}}
 
+
+
+
+
       </div>
   </div>
 
-  <div class="grid-row big-space">
-      <div class="column-two-thirds">
-        <div class="notice" style="border: none;">
-          <i class="icon icon-important">
-            <span class="visually-hidden">Warning</span>
-          </i>
-          <strong class="bold-small">
-            This data is for reference only. You should continue to use your current monitoring methods to make abstraction decisions.
-          </strong>
-        </div>
-      </div>
-    </div>
+
 
     <div class="grid-row">
       <div class="column-two-thirds">

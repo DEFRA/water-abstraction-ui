@@ -1,4 +1,15 @@
 require('dotenv').config();
+const GoodWinston = require('good-winston');
+
+// Configure logger - do this only once
+const logger = require('./src/lib/logger');
+logger.init({
+  level: 'info',
+  airbrakeKey: process.env.errbit_key,
+  airbrakeHost: process.env.errbit_server,
+  airbrakeLevel: 'error'
+});
+const goodWinstonStream = new GoodWinston({ winston: logger });
 
 const serverOptions = {
   connections: {
@@ -7,6 +18,7 @@ const serverOptions = {
     }
   }
 };
+
 const Hapi = require('hapi');
 
 const server = new Hapi.Server(serverOptions);
@@ -19,16 +31,10 @@ server.connection({
 // logging options
 const goodOptions = {
   ops: {
-    interval: 1000
+    interval: 10000
   },
   reporters: {
-    myConsoleReporter: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ log: '*', response: '*' }]
-    }, {
-      module: 'good-console'
-    }, 'stdout']
+    winston: [goodWinstonStream]
   }
 };
 
@@ -36,15 +42,6 @@ server.register([{
   register: require('good'),
   options: goodOptions
 },
-
-{
-  register: require('node-hapi-airbrake-js'),
-  options: {
-    key: process.env.errbit_key,
-    host: process.env.errbit_server
-  }
-},
-
 {
   // Plugin to display the routes table to console at startup
   // See https://www.npmjs.com/package/blipp
@@ -127,7 +124,8 @@ server.register([{
 require('inert'), require('vision')
 ], (err) => {
   if (err) {
-    console.error(err);
+    logger.error(err);
+    // console.error(err);
   }
 
   server.auth.strategy('standard', 'cookie', {
@@ -156,9 +154,9 @@ require('inert'), require('vision')
   server.route(require('./src/routes/status'));
 });
 
-server.errorHandler = function (error) {
-  throw error;
-};
+// server.errorHandler = function (error) {
+//   throw error;
+// };
 
 /**
 server.ext({

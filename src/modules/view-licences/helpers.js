@@ -160,6 +160,24 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
     return isLevelMeasure(measure) && hasLatestReading(measure);
   });
 
+  switch (mode) {
+    case 'auto':
+      if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
+        return flow;
+      }
+      if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
+        return level;
+      }
+      return flow || level;
+
+    case 'level':
+      return level;
+
+    case 'flow':
+      return flow;
+  }
+
+  /*
   if (mode === 'auto') {
     if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
       return flow;
@@ -176,6 +194,7 @@ function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
   if (mode === 'flow' && flow) {
     return flow;
   }
+  */
 }
 
 /**

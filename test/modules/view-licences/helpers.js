@@ -111,9 +111,40 @@ lab.experiment('loadRiverLevelData', () => {
         valueType: 'instantaneous'
       }]
     };
+    const hofTypes = { cesFlow: true, cesLev: false };
     waterConnector.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.an.object();
+    expect(riverLevelData.riverLevel).to.be.an.object();
+  });
+
+  lab.test('does not return flow if only level HoF type in licence', async () => {
+    const response = {
+      measures: [{
+        latestReading: { value: 21.7 },
+        parameter: 'flow',
+        valueType: 'instantaneous'
+      }]
+    };
+    const hofTypes = { cesFlow: false, cesLev: true };
+    waterConnector.getRiverLevel.resolves(response);
+    const riverLevelData = await loadRiverLevelData(1234, hofTypes);
+    expect(riverLevelData.measure).to.be.undefined();
+    expect(riverLevelData.riverLevel).to.be.an.object();
+  });
+
+  lab.test('does not return level if only flow HoF type in licence', async () => {
+    const response = {
+      measures: [{
+        latestReading: { value: 21.7 },
+        parameter: 'level',
+        valueType: 'instantaneous'
+      }]
+    };
+    const hofTypes = { cesFlow: true, cesLev: false };
+    waterConnector.getRiverLevel.resolves(response);
+    const riverLevelData = await loadRiverLevelData(1234, hofTypes);
+    expect(riverLevelData.measure).to.be.undefined();
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 

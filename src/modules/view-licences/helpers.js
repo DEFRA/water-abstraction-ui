@@ -149,13 +149,12 @@ const isFlowMeasure = measure => measure.parameter === 'flow';
  * @param {Object} hofTypes - HoF types with booleans for cesLev and cesFlow
  */
 function autoSelectRiverLevelMeasure (flow, level, hofTypes) {
-  if (flow && hofTypes.cesFlow && !hofTypes.cesLev) {
+  if (flow && hofTypes.cesFlow) {
     return flow;
   }
-  if (level && !hofTypes.cesFlow && hofTypes.cesLev) {
+  if (level && hofTypes.cesLev) {
     return level;
   }
-  return flow || level;
 }
 
 /**

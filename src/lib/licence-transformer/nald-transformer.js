@@ -62,7 +62,8 @@ class NALDTransformer extends BaseTransformer {
       purposes: this.purposesFormatter(data.data.current_version.purposes),
       uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes),
       gaugingSations: this.gaugingStationFormatter(conditions),
-      hofTypes: this.getHofTypes(conditions)
+      hofTypes: this.getHofTypes(conditions),
+      sourcesOfSupply: this.getSourcesOfSupply(data.data.current_version.purposes)
     };
 
     return this.data;
@@ -459,6 +460,25 @@ class NALDTransformer extends BaseTransformer {
       cesFlow: false,
       cesLev: false
     });
+  }
+
+  /**
+   * Gets point(s) of supply
+   * @param {Array} purposes
+   * @return {Array} of points of supply
+   */
+  getSourcesOfSupply (purposes) {
+    const points = [];
+    purposes.forEach((purpose) => {
+      purpose.purposePoints.forEach((purposePoint) => {
+        console.log(purposePoint);
+        const { NAME } = purposePoint.point_source;
+        points.push({
+          name: NAME
+        });
+      });
+    });
+    return uniqBy(points, item => Object.values(item).join(','));
   }
 }
 

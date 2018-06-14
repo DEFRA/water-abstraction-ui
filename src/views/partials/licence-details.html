@@ -9,6 +9,32 @@
 
  </div>
 
+ <!-- Source of supply -->
+ {{#greaterThan licenceData.sourcesOfSupply.length 0 }}
+ <div class="data-row">
+   <div class="data-row__param">Source{{#greaterThan sourcesOfSupply.length 1}}s{{/greaterThan}} of supply</div>
+   <div class="data-row__value">
+
+     {{#greaterThan licenceData.sourcesOfSupply.length 1}}
+       <!-- Multiple purposes -->
+       {{#lessThan licenceData.sourcesOfSupply.length 6 }}
+       <ul class="sub-list sub-list--no-bottom-border">
+         {{#each licenceData.sourcesOfSupply }}
+         <li>{{name}}</li>
+         {{/each}}
+       </ul>
+       {{else}}
+       You have {{ licenceData.sourcesOfSupply.length }} sources of supply<br />
+       {{/lessThan}}
+
+     {{else}}
+       {{licenceData.sourcesOfSupply.0.name }}<br />
+     {{/greaterThan}}
+
+   </div>
+ </div>
+ {{/greaterThan}}
+
   <!-- Purposes -->
   <div class="data-row">
     <div class="data-row__param">Purpose{{#greaterThan licenceData.uniquePurposeNames.length 1}}s{{/greaterThan}} of abstraction</div>

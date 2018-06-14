@@ -198,4 +198,5 @@ if (!module.parent) {
     console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`);
   });
 }
+
 module.exports = server;

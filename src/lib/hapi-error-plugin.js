@@ -8,6 +8,7 @@
  */
 const { contextDefaults } = require('./view');
 const logger = require('./logger');
+const { get } = require('lodash');
 
 const errorPlugin = {
   register (server, options, next) {
@@ -19,8 +20,10 @@ const errorPlugin = {
         // Create view context
         const view = contextDefaults(request);
 
+        const ignore = get(request, 'route.settings.plugins.errorPlugin.ignore', false);
+
         // Boom errors
-        if (res.isBoom) {
+        if (!ignore && res.isBoom) {
           // ALWAYS Log the error
           logger.error(res);
 

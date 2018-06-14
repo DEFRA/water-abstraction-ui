@@ -62,7 +62,7 @@
                       {{ sentenceCase message_type }}
                     </td>
                     <td class="text" style="text-align: center;">
-                      {{#equal status 'error '}}
+                      {{#equal status 'error'}}
                         {{>notify-status-badge 'permanent-failure' }}
                       {{else}}
                         {{>notify-status-badge notify_status }}

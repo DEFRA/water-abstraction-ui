@@ -5,9 +5,11 @@ const rp = require('request-promise-native').defaults({
 });
 const { APIClient } = require('hapi-pg-rest-api');
 
-function sendNotifyMessage (message_ref, recipient, personalisation) {
+const notifications = require('./water-service/notifications');
+
+function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
-    var uri = `${process.env.WATER_URI}/notify/${message_ref}?token=${process.env.JWT_TOKEN}`;
+    var uri = `${process.env.WATER_URI}/notify/${messageRef}?token=${process.env.JWT_TOKEN}`;
     var requestBody = {
       recipient: recipient,
       personalisation: personalisation
@@ -49,13 +51,6 @@ const taskConfig = new APIClient(rp, {
 
 const events = new APIClient(rp, {
   endpoint: `${process.env.WATER_URI}/event`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
-
-const notifications = new APIClient(rp, {
-  endpoint: `${process.env.WATER_URI}/notification`,
   headers: {
     Authorization: process.env.JWT_TOKEN
   }

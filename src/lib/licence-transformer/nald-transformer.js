@@ -174,7 +174,7 @@ class NALDTransformer extends BaseTransformer {
       ...this.addressFormatter(licenceHolderAddress.party_address)
     });
 
-    roles.forEach((role) => {
+    roles.filter(role => role.role_type.CUST_AGENCY === 'CUST').forEach((role) => {
       contacts.push({
         type: sentenceCase(role.role_type.DESCR),
         ...this.nameFormatter(role.role_party),

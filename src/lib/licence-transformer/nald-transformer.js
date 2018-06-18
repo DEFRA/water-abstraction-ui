@@ -175,7 +175,6 @@ class NALDTransformer extends BaseTransformer {
     });
 
     const contactCodes = ['FM', 'LA', 'LC', 'MG', 'RT'];
-
     roles.filter(role => contactCodes.includes(role.role_type.CODE)).forEach((role) => {
       contacts.push({
         type: sentenceCase(role.role_type.DESCR),

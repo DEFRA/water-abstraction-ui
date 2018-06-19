@@ -1,9 +1,12 @@
+'use strict';
+
+const Boom = require('boom');
+const notificationClient = require('../../lib/connectors/water-service/notifications');
 const { taskConfig } = require('../../lib/connectors/water');
 const TaskData = require('./task-data');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
 const { sendNotification } = require('../../lib/connectors/water');
-
 const { lookup } = require('../../lib/connectors/water');
 const { Promise } = require('bluebird');
 
@@ -400,6 +403,32 @@ async function postSend (request, reply) {
   return reply.view('water/notifications/sent', view);
 }
 
+/**
+ * Returns the last email message for a given email address.
+ *
+ * If no email for the requested address then then returns a 404.
+ *
+ * This function is here to facilitate acceptance tests and it
+ * not currently used by the main applications. It's route is accessible
+ * annonymously.
+ *
+ * @param {String} request.query.email - The email address to filter by,
+ */
+async function findLastEmail (request, reply) {
+  try {
+    const { email } = request.query;
+    const data = await notificationClient.getLatestEmailByAddress(email);
+
+    if (data.data.length === 0) {
+      return reply(Boom.notFound(`No email found for ${email}`));
+    }
+
+    return reply(data);
+  } catch (error) {
+    reply(Boom.badImplementation('Error getting last email for user'));
+  }
+};
+
 module.exports = {
   getIndex,
   getStep,
@@ -409,5 +438,6 @@ module.exports = {
   getVariableData,
   postVariableData,
   getPreview,
-  postSend
+  postSend,
+  findLastEmail
 };

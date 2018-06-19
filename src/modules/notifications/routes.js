@@ -26,7 +26,7 @@ const getStep = {
   handler: controller.getStep
 };
 
-module.exports = {
+const routes = {
   getResetPassword: {
     method: 'GET',
     path: '/admin/notifications',
@@ -171,5 +171,27 @@ module.exports = {
     },
     handler: controller.postSend
   }
-
 };
+
+if (parseInt(process.env.test_mode) === 1) {
+  routes.findEmailByAddress = {
+    method: 'GET',
+    path: '/notifications/last',
+    handler: controller.findLastEmail,
+    config: {
+      plugins: {
+        errorPlugin: {
+          ignore: true
+        }
+      },
+      auth: false,
+      validate: {
+        query: Joi.object().keys({
+          email: Joi.string().required()
+        })
+      }
+    }
+  };
+}
+
+module.exports = routes;

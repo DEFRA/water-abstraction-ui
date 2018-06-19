@@ -2,6 +2,7 @@
 
 const handlebars = require('handlebars');
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 const qs = require('querystring');
 // const markdown = require('markdown').markdown;
 const sentenceCase = require('sentence-case');
@@ -10,9 +11,14 @@ const marked = require('marked');
 const Helpers = require('../lib/helpers');
 const DynamicView = require('../lib/dynamicview');
 
-handlebars.registerHelper('markdown', function (param, options) {
-  return marked(param);
-  // return markdown.toHTML(param);
+const timezone = 'Europe/London';
+const { pick, reduce } = require('lodash');
+const Joi = require('joi');
+
+handlebars.registerHelper('markdown', function (param = '') {
+  // Replace ^ with > because notify represents a blockquote using the carat.
+  const updated = param.replace(/\^/g, '>');
+  return marked(updated);
 });
 
 handlebars.registerHelper('sentenceCase', function (value) {
@@ -51,6 +57,86 @@ handlebars.registerHelper('widgetErrors', function (fieldName, errors = [], opti
     }
   });
   return str;
+});
+
+/**
+ * 1 megalitre = 1,000,000 litres = 1,000 cubic metres
+ * @param {float} value - the value in cubic metres per second
+ * @param {String} unit - can be cm|litre|megalitre
+ * @param {String} period - can be second|day
+ */
+handlebars.registerHelper('flowConverter', function (value, unit = 'litre', period = 'second', options) {
+  let val = value;
+
+  // Validate
+  const { error } = Joi.validate({ unit, period }, {
+    unit: Joi.string().allow('cm', 'litre', 'megalitre'),
+    period: Joi.string().allow('second', 'day')
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  if (unit === 'litre') {
+    val = val * 1000;
+  }
+  if (unit === 'megalitre') {
+    val = val / 1000;
+  }
+  if (period === 'day') {
+    val = val * 86400;
+  }
+
+  return parseFloat(val).toFixed(1);
+});
+
+/*
+handlebars.registerHelper('toFixed', function (value, dp) {
+  return parseFloat(value).toFixed(dp);
+});
+
+handlebars.registerHelper('toMega')
+*/
+
+/**
+ * Gets gauging station value with units
+ * - For flows, converts m3/s to m3/day
+ * - For levels, adds mASD to datum and returns in m
+ */
+handlebars.registerHelper('gsValue', function (measure, convertTo, options) {
+  const { unitName, latestReading: { value } } = measure;
+
+  // Flows - convert to m3/day
+  if (unitName === 'm3/s') {
+    if (convertTo === 'm3/day') {
+      return `${(value * 86400).toFixed(1)}m³/day`;
+    }
+
+    return `${(value).toFixed(1)}m³/s`;
+
+    // return `${(value * 86400).toFixed(1)}m³/day`;
+  }
+
+  // Levels in mASD - convert to level in m
+  if (unitName === 'mASD') {
+    return `${(value).toFixed(2)}m`;
+  }
+
+  // Unknown unit - return as is
+  return `${value}${unitName}`;
+});
+
+/**
+ * Tests whether given condition code and subcode is a hands-off flow (HOF)
+ * @param {String} code - condition code
+ * @param {String} subCode - condition subcode
+ */
+handlebars.registerHelper('isHof', function (code, subCode, options) {
+  if (code === 'CES' && (subCode === 'FLOW' || subCode === 'LEV')) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
 });
 
 handlebars.registerHelper('greaterThan', function (v1, v2, options) {
@@ -186,13 +272,13 @@ handlebars.registerHelper('guid', function () {
 });
 
 handlebars.registerHelper('formatISODate', function (dateInput) {
-  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss');
-  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
+  const date = momentTimezone(dateInput);
+  return date.isValid() ? date.tz(timezone).format('D MMMM YYYY') : dateInput;
 });
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {
-  const date = moment(dateInput, 'YYYY/MM/DD HH:mm:ss.SSSZ');
-  return date.isValid() ? date.format('HH:mma') : dateInput;
+  const date = momentTimezone(dateInput);
+  return date.isValid() ? date.tz(timezone).format('h:mma') : dateInput;
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
@@ -262,10 +348,24 @@ handlebars.registerHelper('formatAddress', function (address) {
 });
 
 handlebars.registerHelper('formatNotifyAddress', function (address) {
-  const { address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode } = address;
-  const lines = [address_line_1, address_line_2, address_line_3, address_line_4, address_line_5, address_line_6, postcode];
-  const filtered = lines.filter(x => x);
-  return filtered.join('<br />');
+  const addressParts = pick(address, [
+    'address_line_1', 'address_line_2', 'address_line_3',
+    'address_line_4', 'address_line_5', 'address_line_6',
+    'postcode'
+  ]);
+
+  return reduce(addressParts, (acc, part) => {
+    return part ? `${acc}${part}<br />` : acc;
+  }, '');
+});
+
+/**
+ * Format NGR point string, e.g. ST123456 so it has spaces, e.g. ST 123 456
+ */
+handlebars.registerHelper('ngrPointStr', function (str) {
+  const prefix = str.substr(0, 2);
+  const length = (str.length - 2) / 2;
+  return prefix + ' ' + str.substr(2, length) + ' ' + str.substr(2 + length, length);
 });
 
 handlebars.registerHelper('ngrPoint', function (points) {
@@ -318,6 +418,15 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
 
 const Path = require('path');
 
+const footerSupportLinks = `
+  <h2 class="sr-only">Support Links</h2>
+  <ul>
+    <li><a href="/cookies">Cookies</a></li>
+    <li><a href="/privacy-policy">Privacy</a></li>
+    <li><a href="/accessibility">Accessibility</a></li>
+  </ul>
+`;
+
 const defaultContext = {
   assetPath: '/public/',
   topOfPage: 'Login Handler',
@@ -338,7 +447,7 @@ const defaultContext = {
 
   afterHeader: '',
   footerTop: '',
-  footerSupportLinks: '<h2 class="sr-only">Support Links</h2><ul><li><a href="/cookies">Cookies</a></li><li><a href="/privacy-policy">Privacy</a></li></ul>',
+  footerSupportLinks,
   licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
   bodyEnd: ''
 };

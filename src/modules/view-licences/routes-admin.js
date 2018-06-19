@@ -8,7 +8,8 @@ const {
   getLicenceContact,
   getLicencePurposes,
   getLicencePoints,
-  getLicenceConditions
+  getLicenceConditions,
+  getLicenceGaugingStation
 } = require('./routes');
 
 module.exports = {
@@ -75,5 +76,9 @@ module.exports = {
   getLicenceConditionsAdmin: {
     ...getLicenceConditions,
     path: '/admin/licences/{licence_id}/conditions'
+  },
+  getLicenceGaugingStation: {
+    ...getLicenceGaugingStation,
+    path: '/admin/licences/{licence_id}/station/{gauging_station}'
   }
 };

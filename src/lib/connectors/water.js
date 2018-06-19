@@ -5,9 +5,11 @@ const rp = require('request-promise-native').defaults({
 });
 const { APIClient } = require('hapi-pg-rest-api');
 
-function sendNotifyMessage (message_ref, recipient, personalisation) {
+const notifications = require('./water-service/notifications');
+
+function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
-    var uri = `${process.env.WATER_URI}/notify/${message_ref}?token=${process.env.JWT_TOKEN}`;
+    var uri = `${process.env.WATER_URI}/notify/${messageRef}?token=${process.env.JWT_TOKEN}`;
     var requestBody = {
       recipient: recipient,
       personalisation: personalisation
@@ -54,13 +56,6 @@ const events = new APIClient(rp, {
   }
 });
 
-const notifications = new APIClient(rp, {
-  endpoint: `${process.env.WATER_URI}/notification`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
-
 /**
  * Send/preview notifications.  Builds de-duped contact list and renders templates
  * @param {Number} taskConfigId - the task ID in the water service task_config table
@@ -91,6 +86,30 @@ const sendNotification = function (taskConfigId, licenceNumbers, params = {}, se
   return rp(options);
 };
 
+const gaugingStations = new APIClient(rp, {
+  endpoint: `${process.env.WATER_URI}/gaugingStations`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
+  }
+});
+
+/**
+ * Get gauging station data
+ * @param {String} gaugingStation - the gauging station ID
+ * @return {Promise} resolves with gauging station data
+ */
+const getRiverLevel = function (gaugingStation) {
+  const options = {
+    uri: `${process.env.WATER_URI}/river-levels/station/${gaugingStation}`,
+    method: 'GET',
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    json: true
+  };
+  return rp(options);
+};
+
 module.exports = {
   sendNotifyMessage,
   pendingImport,
@@ -98,5 +117,7 @@ module.exports = {
   taskConfig,
   sendNotification,
   events,
-  notifications
+  notifications,
+  getRiverLevel,
+  gaugingStations
 };

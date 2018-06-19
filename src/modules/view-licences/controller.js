@@ -8,9 +8,8 @@ const Boom = require('boom');
 const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
-
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData } = require('./helpers');
+const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -55,6 +54,7 @@ async function getLicences (request, reply) {
  * View details for a single licence
  * @param {Object} request - the HAPI HTTP request
  * @param {String} request.params.licence_id - CRM document header GUID
+ * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
  * @param {Object} reply - HAPI reply interface
  */
 async function getLicenceDetail (request, reply) {
@@ -64,16 +64,18 @@ async function getLicenceDetail (request, reply) {
   try {
     const {
       documentHeader,
-      viewData
+      viewData,
+      gaugingStations
     } = await loadLicenceData(entityId, documentHeaderId);
 
-    documentHeader.verifications=await CRM.getDocumentVerifications(documentHeaderId);
+    documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
     const { view } = request;
 
     return reply.view(request.config.view, {
       ...view,
+      gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
@@ -81,11 +83,7 @@ async function getLicenceDetail (request, reply) {
       crmData: documentHeader
     });
   } catch (error) {
-    if (error.name === 'LicenceNotFoundError') {
-      return reply(new Boom.notFound('Licence not found', error));
-    }
-
-    reply(new Boom.badImplementation(error));
+    reply(errorMapper(error));
   }
 };
 
@@ -112,7 +110,7 @@ async function postLicenceRename (request, reply) {
   const { data, error } = await CRM.documents.getLicences(filter);
 
   if (error || data.length === 0) {
-    return reply(new Boom.notFound('Document not found', error));
+    return reply(Boom.notFound('Document not found', error));
   }
 
   const { document_id: documentId } = data[0];
@@ -121,15 +119,56 @@ async function postLicenceRename (request, reply) {
   const { error: error2 } = CRM.documents.setLicenceName(documentId, name);
 
   if (error2) {
-    return reply(new Boom.badImplementation('CRM error', error2));
+    return reply(Boom.badImplementation('CRM error', error2));
   }
 
   const { redirectBasePath = '/licences' } = request.config;
   return reply.redirect(`${redirectBasePath}/${documentId}`);
 }
 
+/**
+ * Displays a gauging station flow/level data, along with HoF conditions
+ * for the selected licence
+ */
+async function getLicenceGaugingStation (request, reply) {
+  const { entity_id: entityId } = request.auth.credentials;
+  const { measure: mode } = request.query;
+  const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
+
+  try {
+    // Load licence data
+    const licenceData = await loadLicenceData(entityId, documentHeaderId);
+
+    // Validate - check that the requested station reference is in licence metadata
+    if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
+      throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
+    }
+
+    // Load river level data
+    const { hofTypes } = licenceData.viewData;
+    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+
+    const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
+
+    const viewContext = {
+      ...request.view,
+      ...licenceData,
+      riverLevel,
+      measure,
+      ...riverLevelFlags(riverLevel, measure, hofTypes),
+      stationReference: gaugingStation,
+      pageTitle: `Gauging station for ${customName || licenceNumber}`
+    };
+
+    return reply.view('water/view-licences/gauging-station', viewContext);
+  } catch (error) {
+    reply(errorMapper(error));
+  }
+};
+
 module.exports = {
   getLicences,
   getLicenceDetail,
-  postLicenceRename
+  postLicenceRename,
+  getLicenceGaugingStation
 };

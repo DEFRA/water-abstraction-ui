@@ -3,7 +3,7 @@ console.log(__dirname);
 function viewContextDefaults (request) {
   var viewContext = {};
 
-  viewContext.isAuthenticated = request.auth.isAuthenticated;
+  viewContext.isAuthenticated = !!request.state.sid;
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;

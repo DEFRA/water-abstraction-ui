@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME } = require('../../lib/validators');
+const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
 
 const getLicence = {
   method: 'GET',
@@ -166,6 +166,32 @@ const getLicenceConditions = {
   }
 };
 
+const getLicenceGaugingStation = {
+  method: 'GET',
+  path: '/licences/{licence_id}/station/{gauging_station}',
+  handler: controller.getLicenceGaugingStation,
+  config: {
+    description: 'View abstraction conditions info for licence',
+    validate: {
+      params: {
+        licence_id: VALID_GUID,
+        gauging_station: VALID_GAUGING_STATION
+      },
+      query: {
+        measure: Joi.string().allow('level', 'flow', 'auto').default('auto')
+      }
+    },
+    plugins: {
+      config: {
+        view: 'water/view-licences/gauging-station'
+      },
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    }
+  }
+};
+
 module.exports = {
   getLicences: {
     method: 'GET',
@@ -198,6 +224,6 @@ module.exports = {
   getLicenceContact,
   getLicenceConditions,
   getLicencePoints,
-  getLicencePurposes
-
+  getLicencePurposes,
+  getLicenceGaugingStation
 };

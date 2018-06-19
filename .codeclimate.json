@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "exclude_patterns": [
+    "data",
+    "govuk_modules",
+    "node_modules",
+    "public",
+    "test",
+    "src/lib/logger/vendor"
+  ]
+}

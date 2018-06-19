@@ -51,6 +51,12 @@ module.exports = [
   { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
   { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
   { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },
+  {
+    method: 'GET',
+    path: '/accessibility',
+    config: { description: 'Displays an accessibility statement', auth: false },
+    handler: VmL.getAccessibility
+  },
   { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
   { method: 'GET', path: '/signout', config: {}, handler: AuthController.getSignout },
 

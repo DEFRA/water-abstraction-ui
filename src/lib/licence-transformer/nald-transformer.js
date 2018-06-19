@@ -6,7 +6,7 @@ const deepMap = require('deep-map');
 const {
   find,
   uniqBy,
-  filter
+  isArray
 } = require('lodash');
 const BaseTransformer = require('./base-transformer');
 const LicenceTitleLoader = require('../licence-title-loader');
@@ -43,21 +43,27 @@ class NALDTransformer extends BaseTransformer {
       return party.ID === currentVersion.ACON_APAR_ID;
     });
 
+    const conditions = await this.conditionFormatter(data.data.current_version.purposes);
+
     this.data = {
       licenceNumber: data.LIC_NO,
       licenceHolderTitle: licenceHolderParty.SALUTATION,
       licenceHolderInitials: licenceHolderParty.INITIALS,
       licenceHolderName: licenceHolderParty.NAME,
       effectiveDate: data.ORIG_EFF_DATE,
+      currentVersionEffectiveStartDate: currentVersion.EFF_ST_DATE,
       expiryDate: data.EXPIRY_DATE,
       versionCount: data.data.versions.length,
-      conditions: await this.conditionFormatter(data.data.current_version.purposes),
+      conditions: conditions,
       points: this.pointsFormatter(data.data.current_version.purposes),
       abstractionPeriods: this.periodsFormatter(data.data.current_version.purposes),
       aggregateQuantity: this.aggregateQuantitiesFormatter(data.data.current_version.purposes),
       contacts: this.contactsFormatter(currentVersion, data.data.roles),
       purposes: this.purposesFormatter(data.data.current_version.purposes),
-      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes)
+      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes),
+      gaugingSations: this.gaugingStationFormatter(conditions),
+      hofTypes: this.getHofTypes(conditions),
+      sourcesOfSupply: this.getSourcesOfSupply(data.data.current_version.purposes)
     };
 
     return this.data;
@@ -168,7 +174,8 @@ class NALDTransformer extends BaseTransformer {
       ...this.addressFormatter(licenceHolderAddress.party_address)
     });
 
-    roles.forEach((role) => {
+    const contactCodes = ['FM', 'LA', 'LC', 'MG', 'RT'];
+    roles.filter(role => contactCodes.includes(role.role_type.CODE)).forEach((role) => {
       contacts.push({
         type: sentenceCase(role.role_type.DESCR),
         ...this.nameFormatter(role.role_party),
@@ -226,50 +233,26 @@ class NALDTransformer extends BaseTransformer {
     const uniqQuantities = uniqBy(quantities, item => Object.values(item).join(','));
 
     if (uniqQuantities.length === 1) {
-      return [
-        {
-          value: uniqQuantities[0].annualQty,
-          name: 'cubic metres per year'
-        },
-        {
-          value: uniqQuantities[0].dailyQty,
-          name: 'cubic metres per day'
-        },
-        {
-          value: uniqQuantities[0].hourlyQty,
-          name: 'cubic metres per hour'
-        },
-        {
-          value: uniqQuantities[0].instantQty,
-          name: 'litres per second'
-        }
+      return [{
+        value: uniqQuantities[0].annualQty,
+        name: 'cubic metres per year'
+      },
+      {
+        value: uniqQuantities[0].dailyQty,
+        name: 'cubic metres per day'
+      },
+      {
+        value: uniqQuantities[0].hourlyQty,
+        name: 'cubic metres per hour'
+      },
+      {
+        value: uniqQuantities[0].instantQty,
+        name: 'litres per second'
+      }
       ];
     }
 
     return [];
-    // // Get all conditions as array
-    // const conditions = purposes.reduce((memo, item) => {
-    //   return [...memo, ...item.licenceConditions];
-    // }, []);
-    //
-    // // Get AGG PP conditions
-    // const agg = filter(conditions, (item) => {
-    //   return (item.condition_type.CODE === 'AGG') && (item.condition_type.SUBCODE === 'PP');
-    // });
-    //
-    // // Format
-    // const formatted = agg.map(item => ({
-    //   code: item.condition_type.CODE,
-    //   subCode: item.condition_type.SUBCODE,
-    //   text: item.TEXT,
-    //   parameter1: item.PARAM1,
-    //   parameter2: item.PARAM2
-    // }));
-    //
-    // // Get unique
-    // const unique = uniqBy(formatted, item => Object.values(item).join(','));
-    //
-    // return unique.length === 1 ? this.quantitiesStrToArray(unique[0].parameter2) : null;
   }
 
   /**
@@ -365,8 +348,6 @@ class NALDTransformer extends BaseTransformer {
     purposes.forEach((purpose) => {
       const points = purpose.purposePoints.map((purposePoint) => {
         return NALDHelpers.formatAbstractionPoint(purposePoint.point_detail);
-        // console.log(purposePoint);
-        // return NALDHelpers.abstractionPointToString(NALDHelpers.formatAbstractionPoint(purposePoint.point_detail));
       });
 
       purpose.licenceConditions.forEach((condition) => {
@@ -420,6 +401,85 @@ class NALDTransformer extends BaseTransformer {
     });
 
     return conditionsArr;
+  }
+
+  /*
+   * Get conditions from list matching code and subcode
+   * @param {Array} conditions
+   * @param {Array|String} code - the condition code
+   * @param {Array|String} subCode - the condition subcode
+   */
+  filterConditions (conditions, code, subCode) {
+    const arrCode = isArray(code) ? code : [code];
+    const arrSubCode = isArray(subCode) ? subCode : [subCode];
+    return conditions.filter(row => {
+      return arrCode.includes(row.code) && arrSubCode.includes(row.subCode);
+    });
+  }
+
+  /**
+   * Get a unique list of gauging stations from the conditions array.
+   * Return an array of objects, so that each object can hopefully support
+   * e.g. whiskiID in future to link to flood data
+   * @param {Array} conditions - data from conditions formatter above
+   * @return {Array} unique list of guaging stations for this licence
+   */
+  gaugingStationFormatter (conditions) {
+    const filtered = this.filterConditions(conditions, 'CES', ['FLOW', 'LEV']);
+
+    const names = filtered.reduce((acc, condition) => {
+      for (let point of condition.points) {
+        for (let pointCondition of point.conditions) {
+          acc.push(pointCondition.parameter1);
+        }
+      }
+      return acc;
+    }, []);
+
+    return uniqBy(names).map(name => {
+      return {
+        name: name
+      };
+    });
+  }
+
+  /**
+   * Gets HOF types in the licence
+   * @param {Object} viewData
+   * @return {Object} contains booleans for cesFlow and cesLev
+   */
+  getHofTypes (conditions) {
+    return conditions.reduce((acc, condition) => {
+      if (condition.code === 'CES' && condition.subCode === 'LEV') {
+        acc.cesLev = true;
+      }
+      if (condition.code === 'CES' && condition.subCode === 'FLOW') {
+        acc.cesFlow = true;
+      }
+      return acc;
+    }, {
+      cesFlow: false,
+      cesLev: false
+    });
+  }
+
+  /**
+   * Gets point(s) of supply
+   * @param {Array} purposes
+   * @return {Array} of points of supply
+   */
+  getSourcesOfSupply (purposes) {
+    const points = [];
+    purposes.forEach((purpose) => {
+      purpose.purposePoints.forEach((purposePoint) => {
+        console.log(purposePoint);
+        const { NAME } = purposePoint.point_source;
+        points.push({
+          name: NAME
+        });
+      });
+    });
+    return uniqBy(points, item => Object.values(item).join(','));
   }
 }
 

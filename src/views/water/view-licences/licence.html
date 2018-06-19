@@ -39,10 +39,9 @@
   <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
   {{/if}}
 
-
-  <p>Starts {{ formatDate licenceData.effectiveDate }}
+  <p>Current licence version started on {{ formatDate licenceData.currentVersionEffectiveStartDate }}
      {{#if licenceData.expiryDate }}
-      and ends {{ formatToDate licenceData.expiryDate }}
+      and ends on {{ formatToDate licenceData.expiryDate }}
      {{else}}
       and has no end date
      {{/if}}

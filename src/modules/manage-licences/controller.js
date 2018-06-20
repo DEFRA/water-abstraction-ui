@@ -1,9 +1,9 @@
 const Joi = require('joi');
-const Notify = require('../lib/connectors/notify');
-const View = require('../lib/view');
-const CRM = require('../lib/connectors/crm');
-const IDM = require('../lib/connectors/idm');
-const errorHandler = require('../lib/error-handler');
+const Notify = require('../../lib/connectors/notify');
+const View = require('../../lib/view');
+const CRM = require('../../lib/connectors/crm');
+const IDM = require('../../lib/connectors/idm');
+// const errorHandler = require('../../lib/error-handler');
 
 /**
  * Index page for manage licences

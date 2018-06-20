@@ -8,6 +8,7 @@
 const Boom = require('boom');
 const Hoek = require('hoek');
 const _ = require('lodash');
+const { promisify } = require('util');
 
 // Declare internals
 
@@ -31,18 +32,19 @@ exports.plugin = {
   }
 };
 
-internals.implementation = function (request, h) {
+internals.implementation = async function (request, h) {
   if (!_.isEmpty(request.route.settings.plugins[internals.pluginName])) {
     let requiredPermissions = request.route.settings.plugins[internals.pluginName].permissions;
     if (!_.isEmpty(requiredPermissions)) {
-      internals.permissionsFunc(request.auth.credentials, function (error, userPermissions) {
-        let hasPermission = internals.checkPermissions(requiredPermissions, userPermissions);
-        if (hasPermission) {
-          return h.continue;
-        } else {
-          throw Boom.unauthorized('Access denied');
-        }
-      });
+      const permissionsFunc = promisify(internals.permissionsFunc);
+
+      const userPermissions = await permissionsFunc(request.auth.credentials);
+      let hasPermission = internals.checkPermissions(requiredPermissions, userPermissions);
+      if (hasPermission) {
+        return h.continue;
+      } else {
+        throw Boom.unauthorized('Access denied');
+      }
     } else {
       return h.continue;
     }

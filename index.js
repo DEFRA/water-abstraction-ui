@@ -9,9 +9,8 @@ const HapiAuthCookie = require('hapi-auth-cookie');
 
 // -------------- Require project code -----------------
 const config = require('./config');
-const {
-  sessions
-} = require('./src/lib/hapi-plugins');
+const { acl, csrf, sessions, permissions } = require('./src/lib/hapi-plugins');
+const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
 
 // Initialise logger
 const logger = require('./src/lib/logger');
@@ -47,8 +46,18 @@ async function start () {
       plugin: HapiAuthCookie
     });
 
+    // Route ACL
+    await server.register({
+      plugin: acl,
+      options: {
+        permissionsFunc
+      }
+    });
+
     // App plugins
     await server.register({ plugin: sessions });
+    await server.register({ plugin: csrf });
+    await server.register({ plugin: permissions });
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', config.hapiAuthCookie);

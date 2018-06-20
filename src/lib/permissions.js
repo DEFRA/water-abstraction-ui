@@ -110,38 +110,8 @@ function getPermissionsCb (credentials, cb) {
     });
 }
 
-/**
- * Plugin code to hook in above permissions method to HAPI request
- */
-const plugin = {
-  register (server, options, next) {
-    server.ext({
-      type: 'onPreHandler',
-      method (request, reply) {
-        // Get permissions for current user
-        getPermissionsCb(request.state.sid, (err, permissions) => {
-          if (err) {
-            reply(err);
-          } else {
-            // Attach permissions to request
-            request.permissions = permissions;
-          }
-          reply.continue();
-        });
-      }
-    });
-    next();
-  }
-};
-
-plugin.register.attributes = {
-  name: 'permissionsPlugin',
-  version: '1.0.0'
-};
-
 module.exports = {
   getPermissions,
   getPermissionsCb,
-  plugin,
   permissionsToArray
 };

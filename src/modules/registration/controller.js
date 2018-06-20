@@ -3,9 +3,8 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const errorHandler = require('../lib/error-handler');
-const View = require('../lib/view');
-const IDM = require('../lib/connectors/idm');
+const View = require('../../lib/view');
+const IDM = require('../../lib/connectors/idm');
 
 /**
  * Render initial page with information for users
@@ -15,7 +14,7 @@ const IDM = require('../lib/connectors/idm');
 function getRegisterStart (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Create an account to manage your water abstraction or impoundment licence online';
-  return reply.view('water/register_start', viewContext);
+  return reply.view('water/registration/register_start', viewContext);
 }
 
 /**
@@ -26,7 +25,7 @@ function getRegisterStart (request, reply) {
 function getEmailAddress (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Tell us your email address';
-  return reply.view('water/register_email', viewContext);
+  return reply.view('water/registration/register_email', viewContext);
 }
 
 /**
@@ -43,15 +42,15 @@ function getEmailAddress (request, reply) {
  */
 async function postEmailAddress (request, reply, options = {}) {
   const defaults = {
-    template: 'water/register_email',
+    template: 'water/registration/register_email',
     redirect: '/success'
   };
   const config = Object.assign(defaults, options);
-  const pageTitle = config.template === 'water/register_email' ? 'Tell us your email address' : 'Ask for another email';
+  const pageTitle = config.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
 
   try {
     // Validate email
-    const {error, value} = Joi.validate(request.payload, {
+    const { error, value } = Joi.validate(request.payload, {
       email: Joi.string().trim().required().email().lowercase()
     });
 
@@ -60,7 +59,7 @@ async function postEmailAddress (request, reply, options = {}) {
     }
 
     // Try to create user
-    const {error: createError} = await IDM.createUserWithoutPassword(value.email);
+    const { error: createError } = await IDM.createUserWithoutPassword(value.email);
 
     if (createError) {
       throw createError;
@@ -71,10 +70,9 @@ async function postEmailAddress (request, reply, options = {}) {
   } catch (error) {
     // User exists
     if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
-      const {error: resetError} = await IDM.resetPassword(request.payload.email, 'existing');
+      const { error: resetError } = await IDM.resetPassword(request.payload.email, 'existing');
       if (resetError) {
-        console.error(resetError);
-        return errorHandler(request, reply)(resetError);
+        throw resetError;
       } else {
         return reply.redirect(config.redirect);
       }
@@ -88,7 +86,7 @@ async function postEmailAddress (request, reply, options = {}) {
       return reply.view(config.template, viewContext);
     }
 
-    errorHandler(request, reply)(error);
+    throw error;
   }
 }
 
@@ -100,7 +98,7 @@ async function postEmailAddress (request, reply, options = {}) {
 function getRegisterSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'We have sent you an email with a new link to use';
-  return reply.view('water/register_success', viewContext);
+  return reply.view('water/registration/register_success', viewContext);
 }
 
 /**
@@ -111,7 +109,7 @@ function getRegisterSuccess (request, reply) {
 function getSendAgain (request, reply) {
   var viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Ask for another email';
-  return reply.view('water/register_send_again', viewContext);
+  return reply.view('water/registration/register_send_again', viewContext);
 }
 
 /**
@@ -122,7 +120,7 @@ function getSendAgain (request, reply) {
  */
 function postSendAgain (request, reply) {
   const options = {
-    template: 'water/register_send_again',
+    template: 'water/registration/register_send_again',
     redirect: '/resent-success'
   };
   postEmailAddress(request, reply, options);
@@ -136,7 +134,7 @@ function postSendAgain (request, reply) {
 function getResentSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Check your email';
-  return reply.view('water/register_resent_success', viewContext);
+  return reply.view('water/registration/register_resent_success', viewContext);
 }
 
 module.exports = {

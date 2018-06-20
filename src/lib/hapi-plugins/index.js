@@ -1,5 +1,6 @@
 module.exports = {
   acl: require('./acl'),
+  viewContext: require('./view-context'),
   adminFirewall: require('./admin-firewall'),
   config: require('./config'),
   csrf: require('./csrf'),
@@ -8,6 +9,6 @@ module.exports = {
   holdingPage: require('./holding-page'),
   permissions: require('./permissions'),
   redirect: require('./redirect'),
-  sessions: require('./sessions'),
-  viewContext: require('./view-context')
+  secureHeaders: require('./secure-headers'),
+  sessions: require('./sessions')
 };

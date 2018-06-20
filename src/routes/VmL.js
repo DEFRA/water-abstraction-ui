@@ -13,168 +13,168 @@ Note the workaround for path / to serve static file for root path (so as not to 
 
 module.exports = [
 
-  {
-    method: 'GET',
-    path: '/',
-    handler: function (request, reply) {
-      const { permissions } = request;
-      if (permissions && permissions.admin.defra) {
-        return reply.redirect('/admin/licences');
-      } else {
-        return reply.redirect('/licences');
-      }
-    },
-    config: {
-      auth: false,
-      validate: {
-        query: {
-          access: Joi.string().max(4),
-          utm_source: Joi.string().max(254),
-          utm_medium: Joi.string().max(254),
-          utm_campaign: Joi.string().max(254)
-        }
-      }
-    }
-  },
+  // {
+  //   method: 'GET',
+  //   path: '/',
+  //   handler: function (request, reply) {
+  //     const { permissions } = request;
+  //     if (permissions && permissions.admin.defra) {
+  //       return reply.redirect('/admin/licences');
+  //     } else {
+  //       return reply.redirect('/licences');
+  //     }
+  //   },
+  //   config: {
+  //     auth: false,
+  //     validate: {
+  //       query: {
+  //         access: Joi.string().max(4),
+  //         utm_source: Joi.string().max(254),
+  //         utm_medium: Joi.string().max(254),
+  //         utm_campaign: Joi.string().max(254)
+  //       }
+  //     }
+  //   }
+  // },
 
-  {
-    method: 'GET',
-    path: '/private-beta-closed',
-    config: {
-      auth: false,
-      description: 'Holding page for private beta'
-    },
-    handler: VmL.getHoldingPage
-  },
+  // {
+  //   method: 'GET',
+  //   path: '/private-beta-closed',
+  //   config: {
+  //     auth: false,
+  //     description: 'Holding page for private beta'
+  //   },
+  //   handler: VmL.getHoldingPage
+  // },
 
-  { method: 'GET', path: '/robots.txt', handler: async function (request, reply) { return reply.response('User-agent: * Disallow: /').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
-  { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
-  { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
-  { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },
-  {
-    method: 'GET',
-    path: '/accessibility',
-    config: { description: 'Displays an accessibility statement', auth: false },
-    handler: VmL.getAccessibility
-  },
-  { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
-  { method: 'GET', path: '/signout', config: {}, handler: AuthController.getSignout },
-
-  {
-    method: 'GET',
-    path: '/welcome',
-    handler: AuthController.getWelcome,
-    config: {
-      auth: false
-    }
-  },
-
-  {
-    method: 'GET',
-    path: '/signin',
-    handler: AuthController.getSignin,
-    config: {
-      auth: false,
-      validate: {
-        query: {
-          flash: Joi.string().max(32),
-          utm_source: Joi.string().max(254),
-          utm_medium: Joi.string().max(254),
-          utm_campaign: Joi.string().max(254)
-        }
-      }
-    }
-  },
-  {
-    method: 'POST',
-    path: '/signin',
-    handler: AuthController.postSignin,
-    config: {
-      description: 'Login form handler',
-      auth: false,
-      validate: {
-        payload: {
-          user_id: Joi.string().max(254).allow(''),
-          password: Joi.string().max(128).allow('')
-        }
-      }
-    }
-  },
+  // { method: 'GET', path: '/robots.txt', handler: async function (request, reply) { return reply.response('User-agent: * Disallow: /').code(200); }, config: { auth: false, description: 'Ooh. Robots' } },
+  // { method: 'GET', path: '/feedback', config: { auth: false }, handler: VmL.getFeedback },
+  // { method: 'GET', path: '/cookies', config: { description: 'Displays cookie information', auth: false }, handler: VmL.getCookies },
+  // { method: 'GET', path: '/privacy-policy', config: { description: 'Displays privacy policy', auth: false }, handler: VmL.getPrivacyPolicy },
+  // {
+  //   method: 'GET',
+  //   path: '/accessibility',
+  //   config: { description: 'Displays an accessibility statement', auth: false },
+  //   handler: VmL.getAccessibility
+  // },
+  // { method: 'GET', path: '/tmp', config: { auth: false }, handler: VmL.getRoot },
+  // { method: 'GET', path: '/signout', config: {}, handler: AuthController.getSignout },
+  //
+  // {
+  //   method: 'GET',
+  //   path: '/welcome',
+  //   handler: AuthController.getWelcome,
+  //   config: {
+  //     auth: false
+  //   }
+  // },
+  //
+  // {
+  //   method: 'GET',
+  //   path: '/signin',
+  //   handler: AuthController.getSignin,
+  //   config: {
+  //     auth: false,
+  //     validate: {
+  //       query: {
+  //         flash: Joi.string().max(32),
+  //         utm_source: Joi.string().max(254),
+  //         utm_medium: Joi.string().max(254),
+  //         utm_campaign: Joi.string().max(254)
+  //       }
+  //     }
+  //   }
+  // },
+  // {
+  //   method: 'POST',
+  //   path: '/signin',
+  //   handler: AuthController.postSignin,
+  //   config: {
+  //     description: 'Login form handler',
+  //     auth: false,
+  //     validate: {
+  //       payload: {
+  //         user_id: Joi.string().max(254).allow(''),
+  //         password: Joi.string().max(128).allow('')
+  //       }
+  //     }
+  //   }
+  // },
 
   // Registration process
-  {
-    method: 'GET',
-    path: '/start',
-    handler: RegistrationController.getRegisterStart,
-    config: {
-      auth: false,
-      description: 'Register start page - information for users before registering'
-    }
-  },
-  {
-    method: 'GET',
-    path: '/register',
-    handler: RegistrationController.getEmailAddress,
-    config: {
-      auth: false,
-      description: 'Register user account - get email address'
-    }
-  },
-  {
-    method: 'POST',
-    path: '/register',
-    handler: RegistrationController.postEmailAddress,
-    config: {
-      auth: false,
-      description: 'Register user account - email address form handler',
-      validate: {
-        payload: {
-          email: Joi.string().allow('').max(254)
-        }
-      }
-    }
-  },
-  {
-    method: 'GET',
-    path: '/success',
-    handler: RegistrationController.getRegisterSuccess,
-    config: {
-      auth: false,
-      description: 'Register user account - success page'
-    }
-  },
-  {
-    method: 'GET',
-    path: '/send-again',
-    handler: RegistrationController.getSendAgain,
-    config: {
-      auth: false,
-      description: 'Register user account - resend email form'
-    }
-  },
-  {
-    method: 'POST',
-    path: '/send-again',
-    handler: RegistrationController.postSendAgain,
-    config: {
-      auth: false,
-      description: 'Register user account - resend email address form handler',
-      validate: {
-        payload: {
-          email: Joi.string().allow('').max(254)
-        }
-      }
-    }
-  },
-  {
-    method: 'GET',
-    path: '/resent-success',
-    handler: RegistrationController.getResentSuccess,
-    config: {
-      auth: false,
-      description: 'Register user account - email resent success page'
-    }
-  },
+  // {
+  //   method: 'GET',
+  //   path: '/start',
+  //   handler: RegistrationController.getRegisterStart,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register start page - information for users before registering'
+  //   }
+  // },
+  // {
+  //   method: 'GET',
+  //   path: '/register',
+  //   handler: RegistrationController.getEmailAddress,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - get email address'
+  //   }
+  // },
+  // {
+  //   method: 'POST',
+  //   path: '/register',
+  //   handler: RegistrationController.postEmailAddress,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - email address form handler',
+  //     validate: {
+  //       payload: {
+  //         email: Joi.string().allow('').max(254)
+  //       }
+  //     }
+  //   }
+  // },
+  // {
+  //   method: 'GET',
+  //   path: '/success',
+  //   handler: RegistrationController.getRegisterSuccess,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - success page'
+  //   }
+  // },
+  // {
+  //   method: 'GET',
+  //   path: '/send-again',
+  //   handler: RegistrationController.getSendAgain,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - resend email form'
+  //   }
+  // },
+  // {
+  //   method: 'POST',
+  //   path: '/send-again',
+  //   handler: RegistrationController.postSendAgain,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - resend email address form handler',
+  //     validate: {
+  //       payload: {
+  //         email: Joi.string().allow('').max(254)
+  //       }
+  //     }
+  //   }
+  // },
+  // {
+  //   method: 'GET',
+  //   path: '/resent-success',
+  //   handler: RegistrationController.getResentSuccess,
+  //   config: {
+  //     auth: false,
+  //     description: 'Register user account - email resent success page'
+  //   }
+  // },
 
   // Manage licences
   {
@@ -376,7 +376,7 @@ module.exports = [
         }
       }
     }
-  },
+  }
   // {
   //   method: 'GET',
   //   path: '/dashboard',
@@ -391,10 +391,10 @@ module.exports = [
   //   }
   // },
 
-  {
-    method: '*',
-    path: '/{p*}', // catch-all path
-    handler: VmL.fourOhFour
-  }
+  // {
+  //   method: '*',
+  //   path: '/{p*}', // catch-all path
+  //   handler: VmL.fourOhFour
+  // }
 
 ];

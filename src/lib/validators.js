@@ -12,9 +12,9 @@ module.exports = {
   VALID_FLASH: Joi.string().max(16),
 
   VALID_UTM: {
-    utm_source: Joi.string().max(16),
-    utm_medium: Joi.string().max(16),
-    utm_campaign: Joi.string().max(16)
+    utm_source: Joi.string().max(64),
+    utm_medium: Joi.string().max(64),
+    utm_campaign: Joi.string().max(64)
   },
 
   VALID_PASSWORD: Joi.string().requireUppercase().requireSymbol().min(8).max(128).required(),

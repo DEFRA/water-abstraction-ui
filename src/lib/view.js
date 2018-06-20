@@ -1,9 +1,9 @@
-console.log(__dirname);
+const { get } = require('lodash');
 
 function viewContextDefaults (request) {
   var viewContext = {};
 
-  viewContext.isAuthenticated = !!request.state.sid;
+  viewContext.isAuthenticated = !!get(request, 'state.sid');
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;

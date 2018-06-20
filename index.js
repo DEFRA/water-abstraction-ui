@@ -14,6 +14,7 @@ const Vision = require('vision');
 const config = require('./config');
 const { acl, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
+const routes = require('./src/modules/routes');
 
 // Initialise logger
 const logger = require('./src/lib/logger');
@@ -67,7 +68,8 @@ async function start () {
     server.views(require('./src/views'));
 
     // Import routes
-    server.route(require('./src/routes/VmL'));
+    server.route(routes);
+    // server.route(require('./src/routes/VmL'));
 
     await server.start();
 

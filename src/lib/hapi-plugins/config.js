@@ -15,7 +15,7 @@ const configPlugin = {
         request.config = config;
 
         // Continue processing request
-        return reply.continue();
+        return reply.continue;
       }
     });
   },

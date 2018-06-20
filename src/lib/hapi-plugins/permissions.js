@@ -1,24 +1,16 @@
 /**
  * Plugin to decorate request with current user's permissions
  */
-const { getPermissionsCb } = require('../permissions');
+const { getPermissions } = require('../permissions');
 
 const permissionsPlugin = {
 
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
-      method (request, reply) {
-        // Get permissions for current user
-        getPermissionsCb(request.state.sid, (err, permissions) => {
-          if (err) {
-            reply(err);
-          } else {
-            // Attach permissions to request
-            request.permissions = permissions;
-          }
-          reply.continue();
-        });
+      method: async (request, reply) => {
+        request.permissions = await getPermissions(request.state.sid);
+        return reply.continue;
       }
     });
   },

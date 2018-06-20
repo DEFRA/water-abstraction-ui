@@ -33,7 +33,7 @@ const redirectPlugin = {
         }
 
         // Continue processing request
-        return reply.continue();
+        return reply.continue;
       }
     });
   },

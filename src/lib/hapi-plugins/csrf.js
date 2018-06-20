@@ -16,12 +16,12 @@ const csrfPlugin = {
       method: async (request, reply) => {
         // Ignore GET requests
         if (request.method === 'get') {
-          return reply.continue();
+          return reply.continue;
         }
 
         // Ignore unauthenticated routes
         if (!request.auth.isAuthenticated) {
-          return reply.continue();
+          return reply.continue;
         }
 
         // Check referrer if header is set
@@ -41,7 +41,7 @@ const csrfPlugin = {
         }
 
         // Continue processing request
-        return reply.continue();
+        return reply.continue;
       }
     });
   },

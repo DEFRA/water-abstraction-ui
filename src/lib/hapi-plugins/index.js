@@ -1,4 +1,5 @@
 module.exports = {
+  acl: require('./acl'),
   adminFirewall: require('./admin-firewall'),
   config: require('./config'),
   csrf: require('./csrf'),

@@ -3,7 +3,7 @@
  * allows the session manager to be attached to every request
  * @module lib/hapi-plugins/sessions
  */
-const SessionStore = require('./session-store.js');
+const SessionStore = require('../session-store.js');
 const Boom = require('boom');
 
 const sessionsPlugin = {
@@ -15,15 +15,15 @@ const sessionsPlugin = {
         request.sessionStore = new SessionStore(request);
 
         if (!request.auth.isAuthenticated) {
-          return reply.continue();
+          return reply.continue;
         }
 
         try {
           await request.sessionStore.load();
-          reply.continue();
+          return reply.continue;
         } catch (err) {
           // Failed to load error
-          reply(Boom.unauthorized('Session not found'));
+          return reply(Boom.unauthorized('Session not found'));
         }
       }
     });
@@ -32,7 +32,7 @@ const sessionsPlugin = {
       type: 'onPostHandler',
       async method (request, reply) {
         await request.sessionStore.save();
-        reply.continue();
+        return reply.continue;
       }
     });
   },

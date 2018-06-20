@@ -6,14 +6,13 @@ const Good = require('good');
 const GoodWinston = require('good-winston');
 const Hapi = require('hapi');
 const HapiAuthCookie = require('hapi-auth-cookie');
-const hapiRouteAcl = require('hapi-route-acl');
 const HapiSanitizePayload = require('hapi-sanitize-payload');
 const Inert = require('inert');
 const Vision = require('vision');
 
 // -------------- Require project code -----------------
 const config = require('./config');
-const plugins = require('./src/lib/hapi-plugins');
+const { acl, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
 
 // Initialise logger
@@ -53,7 +52,7 @@ async function start () {
 
     // App plugins
     await server.register({
-      plugin: hapiRouteAcl,
+      plugin: acl,
       options: {
         permissionsFunc
       }

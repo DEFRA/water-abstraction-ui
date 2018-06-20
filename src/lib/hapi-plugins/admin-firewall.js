@@ -20,7 +20,7 @@ const adminFirewallPlugin = {
           }
         }
         // Continue processing request
-        return reply.continue();
+        return reply.continue;
       }
     });
   },

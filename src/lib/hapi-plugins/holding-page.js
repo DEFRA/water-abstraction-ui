@@ -24,7 +24,7 @@ const holdingPagePlugin = {
         }
 
         // Continue processing request
-        return reply.continue();
+        return reply.continue;
       }
     });
   },

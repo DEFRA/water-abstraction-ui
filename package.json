@@ -58,7 +58,7 @@
     "handlebars": "^4.0.11",
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^17.5.1",
-    "hapi-auth-cookie": "^7.0.0",
+    "hapi-auth-cookie": "^9.0.0",
     "hapi-cookie": "^0.1.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-route-acl": "^1.0.3",

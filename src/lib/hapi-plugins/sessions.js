@@ -1,13 +1,13 @@
 /**
-* HAPI sessions plugin
-* allows the session manager to be attached to every request
-* @module lib/sessions/hapi-plugin
-*/
+ * HAPI sessions plugin
+ * allows the session manager to be attached to every request
+ * @module lib/hapi-plugins/sessions
+ */
 const SessionStore = require('./session-store.js');
 const Boom = require('boom');
 
 const sessionsPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       async method (request, reply) {
@@ -35,14 +35,12 @@ const sessionsPlugin = {
         reply.continue();
       }
     });
+  },
 
-    next();
+  pkg: {
+    name: 'sessionsPlugin',
+    version: '2.0.0'
   }
-};
-
-sessionsPlugin.register.attributes = {
-  name: 'sessionsPlugin',
-  version: '1.0.0'
 };
 
 module.exports = sessionsPlugin;

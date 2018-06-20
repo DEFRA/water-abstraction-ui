@@ -9,6 +9,9 @@ const HapiAuthCookie = require('hapi-auth-cookie');
 
 // -------------- Require project code -----------------
 const config = require('./config');
+const {
+  sessions
+} = require('./src/lib/hapi-plugins');
 
 // Initialise logger
 const logger = require('./src/lib/logger');
@@ -22,34 +25,41 @@ const server = Hapi.server(config.server);
  * Async function to start HAPI server
  */
 async function start () {
-  // Good
-  await server.register({
-    plugin: Good,
-    options: { ...config.good,
-      reporters: {
-        winston: [goodWinstonStream]
+  try {
+    // Good
+    await server.register({
+      plugin: Good,
+      options: { ...config.good,
+        reporters: {
+          winston: [goodWinstonStream]
+        }
       }
-    }
-  });
+    });
 
-  // Blipp - lists all routes
-  await server.register({
-    plugin: Blipp,
-    options: config.blipp
-  });
+    // Blipp - lists all routes
+    await server.register({
+      plugin: Blipp,
+      options: config.blipp
+    });
 
-  // Hapi auth cookie
-  await server.register({
-    plugin: HapiAuthCookie
-  });
+    // Hapi auth cookie
+    await server.register({
+      plugin: HapiAuthCookie
+    });
 
-  // Set up auth strategies
-  server.auth.strategy('standard', 'cookie', config.hapiAuthCookie);
-  server.auth.default(config.auth);
+    // App plugins
+    await server.register({ plugin: sessions });
 
-  await server.start();
+    // Set up auth strategies
+    server.auth.strategy('standard', 'cookie', config.hapiAuthCookie);
+    server.auth.default(config.auth);
 
-  server.log(`Server started on ${server.info.uri} port ${server.info.port}`);
+    await server.start();
+
+    server.log(`Server started on ${server.info.uri} port ${server.info.port}`);
+  } catch (err) {
+    logger.error(err);
+  }
 
   return server;
 }

@@ -6,10 +6,14 @@ const Good = require('good');
 const GoodWinston = require('good-winston');
 const Hapi = require('hapi');
 const HapiAuthCookie = require('hapi-auth-cookie');
+const hapiRouteAcl = require('hapi-route-acl');
+const HapiSanitizePayload = require('hapi-sanitize-payload');
+const Inert = require('inert');
+const Vision = require('vision');
 
 // -------------- Require project code -----------------
 const config = require('./config');
-const { acl, csrf, sessions, permissions } = require('./src/lib/hapi-plugins');
+const plugins = require('./src/lib/hapi-plugins');
 const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
 
 // Initialise logger
@@ -25,7 +29,7 @@ const server = Hapi.server(config.server);
  */
 async function start () {
   try {
-    // Good
+    // Third-party plugins
     await server.register({
       plugin: Good,
       options: { ...config.good,
@@ -34,34 +38,37 @@ async function start () {
         }
       }
     });
-
-    // Blipp - lists all routes
     await server.register({
       plugin: Blipp,
       options: config.blipp
     });
-
-    // Hapi auth cookie
     await server.register({
       plugin: HapiAuthCookie
     });
-
-    // Route ACL
     await server.register({
-      plugin: acl,
+      plugin: HapiSanitizePayload,
+      options: config.sanitize
+    });
+    await server.register([Inert, Vision]);
+
+    // App plugins
+    await server.register({
+      plugin: hapiRouteAcl,
       options: {
         permissionsFunc
       }
     });
-
-    // App plugins
-    await server.register({ plugin: sessions });
-    await server.register({ plugin: csrf });
-    await server.register({ plugin: permissions });
+    await server.register(Object.values(plugins));
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', config.hapiAuthCookie);
     server.auth.default(config.auth);
+
+    // Set up view location
+    server.views(require('./src/views'));
+
+    // Import routes
+    server.route(require('./src/routes/VmL'));
 
     await server.start();
 

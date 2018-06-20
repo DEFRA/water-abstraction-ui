@@ -15,6 +15,12 @@ module.exports = {
     }
   },
 
+  holdingPage: {
+    enabled: !!parseInt(process.env.holding_page, 10),
+    redirect: '/private-beta-closed',
+    ignore: /^\/public\//
+  },
+
   logger: {
     level: 'info',
     airbrakeKey: process.env.errbit_key,
@@ -31,7 +37,7 @@ module.exports = {
     isHttpOnly: true
   },
 
-  sanitizePayload: {
+  sanitize: {
     pruneMethod: 'replace',
     replaceValue: ''
   },

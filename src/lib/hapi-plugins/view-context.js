@@ -1,13 +1,13 @@
 /**
-* HAPI data plugin
-* Allows data (e.g. config) to be attached to route config and sent to request.config
-*
-* @module lib/hapi-config-plugin
-*/
-const {contextDefaults} = require('./view');
+ * HAPI data plugin
+ * Allows data (e.g. config) to be attached to route config and sent to request.config
+ *
+ * @module lib/hapi-config-plugin
+ */
+const { contextDefaults } = require('../view');
 
 const viewContextPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
@@ -21,14 +21,12 @@ const viewContextPlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'viewContext',
+    version: '2.0.0'
   }
-};
-
-viewContextPlugin.register.attributes = {
-  name: 'viewContext',
-  version: '1.0.0'
 };
 
 module.exports = viewContextPlugin;

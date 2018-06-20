@@ -8,7 +8,7 @@
  */
 
 const redirectPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
       method: async (request, reply) => {
@@ -36,14 +36,13 @@ const redirectPlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'redirectPlugin',
+    version: '2.0.0'
   }
-};
 
-redirectPlugin.register.attributes = {
-  name: 'redirectPlugin',
-  version: '1.0.0'
 };
 
 module.exports = redirectPlugin;

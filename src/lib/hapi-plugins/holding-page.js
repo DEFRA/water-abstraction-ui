@@ -3,23 +3,22 @@
  * allows us to switch on a holding page using environment variable
  * e.g. holding_page=1
  *
- * @module lib/hapi-holding-page-plugin
+ * @module lib/hapi-plugins/holding-page
  */
 const holdingPagePlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
-        const enabled = !!parseInt(process.env.holding_page, 10);
+        const { ignore, redirect, enabled } = options;
 
         // Is holding page enabled?
         if (enabled) {
           const { path } = request.url;
-          const { ignore, redirect } = options;
 
           // Check to see if we should redirect
           if (!path.match(ignore) && !path.match(redirect)) {
-            console.log(`Holding page: redirect to ${redirect}`);
+            request.log('info', `Holding page: redirect to ${redirect}`);
             return reply.redirect(redirect);
           }
         }
@@ -28,14 +27,12 @@ const holdingPagePlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'holdingPagePlugin',
+    version: '2.0.0'
   }
-};
-
-holdingPagePlugin.register.attributes = {
-  name: 'holdingPagePlugin',
-  version: '1.0.0'
 };
 
 module.exports = holdingPagePlugin;

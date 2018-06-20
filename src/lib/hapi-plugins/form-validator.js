@@ -6,12 +6,10 @@
  * @module lib/hapi-form-validator-plugin
  */
 const Joi = require('joi');
-const {
-  formatViewError
-} = require('./helpers');
+const { formatViewError } = require('../helpers');
 
 const formValidator = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
@@ -39,14 +37,12 @@ const formValidator = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'formValidator',
+    version: '2.0.0'
   }
-};
-
-formValidator.register.attributes = {
-  name: 'formValidator',
-  version: '1.0.0'
 };
 
 module.exports = formValidator;

@@ -1,12 +1,12 @@
 /**
-* HAPI data plugin
-* Allows data (e.g. config) to be attached to route config and sent to request.config
-*
-* @module lib/hapi-config-plugin
-*/
+ * HAPI data plugin
+ * Allows data (e.g. config) to be attached to route config and sent to request.config
+ *
+ * @module lib/hapi-config-plugin
+ */
 
 const configPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
@@ -18,14 +18,12 @@ const configPlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'config',
+    version: '1.0.0'
   }
-};
-
-configPlugin.register.attributes = {
-  name: 'config',
-  version: '1.0.0'
 };
 
 module.exports = configPlugin;

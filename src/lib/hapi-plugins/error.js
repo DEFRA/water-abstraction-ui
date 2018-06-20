@@ -6,12 +6,12 @@
  *
  * @module lib/hapi-error-plugin
  */
-const { contextDefaults } = require('./view');
-const logger = require('./logger');
+const { contextDefaults } = require('../view');
+const logger = require('../logger');
 const { get } = require('lodash');
 
 const errorPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
       method: async (request, reply) => {
@@ -54,14 +54,12 @@ const errorPlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'errorPlugin',
+    version: '2.0.0'
   }
-};
-
-errorPlugin.register.attributes = {
-  name: 'errorPlugin',
-  version: '1.0.0'
 };
 
 module.exports = errorPlugin;

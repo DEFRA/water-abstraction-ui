@@ -7,7 +7,7 @@
 const Boom = require('boom');
 
 const adminFirewallPlugin = {
-  register (server, options, next) {
+  register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
@@ -23,14 +23,12 @@ const adminFirewallPlugin = {
         return reply.continue();
       }
     });
+  },
 
-    return next();
+  pkg: {
+    name: 'adminFirewall',
+    version: '2.0.0'
   }
-};
-
-adminFirewallPlugin.register.attributes = {
-  name: 'adminFirewall',
-  version: '1.0.0'
 };
 
 module.exports = adminFirewallPlugin;

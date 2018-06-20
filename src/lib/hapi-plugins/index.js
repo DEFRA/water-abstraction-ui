@@ -1,7 +1,12 @@
 module.exports = {
-  acl: require('./hapi-route-acl'),
+  adminFirewall: require('./admin-firewall'),
+  config: require('./config'),
   csrf: require('./csrf'),
+  error: require('./error'),
+  formValidator: require('./form-validator'),
+  holdingPage: require('./holding-page'),
   permissions: require('./permissions'),
-  sessions: require('./sessions')
-
+  redirect: require('./redirect'),
+  sessions: require('./sessions'),
+  viewContext: require('./view-context')
 };

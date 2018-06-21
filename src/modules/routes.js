@@ -1,3 +1,4 @@
+const addLicencesRoutes = require('./add-licences/routes');
 const authRoutes = require('./auth/routes');
 const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
@@ -11,6 +12,7 @@ const reportsRoutes = require('./notifications-reports/routes');
 const registrationRoutes = require('./registration/routes');
 
 module.exports = [
+  ...Object.values(addLicencesRoutes),
   ...Object.values(authRoutes),
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),

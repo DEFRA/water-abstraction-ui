@@ -3,12 +3,12 @@ module.exports = {
   viewContext: require('./view-context'),
   adminFirewall: require('./admin-firewall'),
   config: require('./config'),
+  sessions: require('./sessions'),
   csrf: require('./csrf'),
   error: require('./error'),
   formValidator: require('./form-validator'),
   holdingPage: require('./holding-page'),
   permissions: require('./permissions'),
   redirect: require('./redirect'),
-  secureHeaders: require('./secure-headers'),
-  sessions: require('./sessions')
+  secureHeaders: require('./secure-headers')
 };

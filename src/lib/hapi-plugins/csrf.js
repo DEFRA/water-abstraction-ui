@@ -26,7 +26,7 @@ const csrfPlugin = {
 
         // Check referrer if header is set
         if (request.headers.referer) {
-          const currentHost = new URL(`${request.connection.info.protocol}://${request.info.host}`);
+          const currentHost = new URL(`${request.info.protocol}://${request.info.host}`);
           const refererUrl = new URL(request.headers.referer);
 
           if (currentHost.hostname !== refererUrl.hostname) {

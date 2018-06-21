@@ -6,13 +6,13 @@
  */
 const Joi = require('joi');
 const { difference } = require('lodash');
-const errorHandler = require('../lib/error-handler');
-const View = require('../lib/view');
-const CRM = require('../lib/connectors/crm');
-const Notify = require('../lib/connectors/notify');
-const { forceArray } = require('../lib/helpers');
+// const errorHandler = require('../lib/error-handler');
+const View = require('../../lib/view');
+const CRM = require('../../lib/connectors/crm');
+const Notify = require('../../lib/connectors/notify');
+const { forceArray } = require('../../lib/helpers');
 
-const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../lib/licence-helpers');
+const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
 
 const {
   LicenceNotFoundError,
@@ -21,7 +21,7 @@ const {
   InvalidAddressError,
   NoLicencesSelectedError,
   LicenceFlowError
-} = require('./licences-add-errors');
+} = require('./errors');
 
 /**
  * Render form to add licences to account
@@ -111,14 +111,15 @@ async function postLicenceAdd (request, reply) {
     // Store document IDs in session
     request.sessionStore.set('addLicenceFlow', { documentIds });
 
-    reply.redirect('/select-licences');
+    return reply.redirect('/select-licences');
   } catch (err) {
     console.log(err);
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
       return reply.view('water/licences-add/add-licences', viewContext);
     }
-    errorHandler(request, reply)(err);
+    throw err;
+    // errorHandler(request, reply)(err);
   }
 }
 
@@ -221,13 +222,14 @@ async function postLicenceSelect (request, reply) {
     // Create new token
     request.sessionStore.set('addLicenceFlow', { documentIds, selectedIds });
 
-    reply.redirect('/select-address');
+    return reply.redirect('/select-address');
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     if (err.name === 'NoLicencesSelectedError') {
       return reply.redirect('/select-licences?error=noLicenceSelected');
     }
-    errorHandler(request, reply)(err);
+    throw err;
+    // errorHandler(request, reply)(err);
   }
 }
 
@@ -274,8 +276,9 @@ async function getAddressSelect (request, reply) {
 
     return reply.view('water/licences-add/select-address', viewContext);
   } catch (err) {
-    console.log(err);
-    errorHandler(request, reply)(err);
+    throw err;
+    // console.log(err);
+    // errorHandler(request, reply)(err);
   }
 }
 
@@ -343,7 +346,8 @@ async function postAddressSelect (request, reply) {
       return reply.redirect('/select-address?error=invalidAddress');
     }
 
-    errorHandler(request, reply)(err);
+    throw err;
+    // errorHandler(request, reply)(err);
   }
 }
 
@@ -387,8 +391,9 @@ async function getSecurityCode (request, reply) {
   try {
     return reply.view('water/licences-add/security-code', viewContext);
   } catch (error) {
-    console.error(error);
-    errorHandler(request, reply)(error);
+    throw error;
+    // console.error(error);
+    // errorHandler(request, reply)(error);
   }
 }
 
@@ -431,7 +436,8 @@ async function postSecurityCode (request, reply) {
       return reply.view('water/licences-add/security-code', viewContext);
     }
 
-    errorHandler(request, reply)(error);
+    throw error;
+    // errorHandler(request, reply)(error);
   }
 }
 

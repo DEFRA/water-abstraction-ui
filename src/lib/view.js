@@ -1,9 +1,9 @@
-console.log(__dirname);
+const { get } = require('lodash');
 
 function viewContextDefaults (request) {
   var viewContext = {};
 
-  viewContext.isAuthenticated = !!request.state.sid;
+  viewContext.isAuthenticated = !!get(request, 'state.sid');
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
@@ -19,10 +19,10 @@ function viewContextDefaults (request) {
   viewContext.bodyStart = null;
   viewContext.afterHeader = null;
   viewContext.path = request.path;
-  viewContext.debug = {};
-  viewContext.debug.connection = request.connection.info;
-  viewContext.debug.request = request.info;
-  viewContext.debug.request.path = request.path;
+  // viewContext.debug = {};
+  // viewContext.debug.connection = request.connection.info;
+  // viewContext.debug.request = request.info;
+  // viewContext.debug.request.path = request.path;
 
   if (request.sessionStore) {
     viewContext.csrfToken = request.sessionStore.get('csrf_token');

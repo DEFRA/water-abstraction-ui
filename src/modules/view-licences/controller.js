@@ -83,7 +83,7 @@ async function getLicenceDetail (request, reply) {
       crmData: documentHeader
     });
   } catch (error) {
-    reply(errorMapper(error));
+    throw errorMapper(error);
   }
 };
 

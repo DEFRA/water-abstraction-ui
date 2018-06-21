@@ -50,8 +50,6 @@
     "deep-map": "^1.5.0",
     "dotenv": "^4.0.0",
     "good": "^8.1.1",
-    "good-console": "^6.4.1",
-    "good-squeeze": "^5.0.2",
     "good-winston": "^4.0.0",
     "govuk-elements-sass": "^3.1.2",
     "govuk_frontend_toolkit": "^7.3.0",
@@ -60,10 +58,8 @@
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^17.5.1",
     "hapi-auth-cookie": "^9.0.0",
-    "hapi-cookie": "^0.1.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-sanitize-payload": "^2.0.0",
-    "hapi-server-session": "^3.0.2",
     "http-errors": "^1.6.2",
     "inert": "^5.1.0",
     "joi": "^13.1.2",
@@ -77,8 +73,7 @@
     "sentence-case": "^2.1.1",
     "url-join": "^4.0.0",
     "vision": "^5.3.3",
-    "winston": "^2.4.3",
-    "yar": "^8.1.2"
+    "winston": "^2.4.3"
   },
   "standard": {
     "ignore": [

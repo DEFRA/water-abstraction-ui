@@ -17,9 +17,9 @@ module.exports = [
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
   ...Object.values(registrationRoutes),
-  ...Object.values(manageLicencesRoutes)
-  // ...Object.values(resetPasswordRoutes),
-  // ...Object.values(updatePasswordRoutes),
+  ...Object.values(manageLicencesRoutes),
+  ...Object.values(resetPasswordRoutes),
+  ...Object.values(updatePasswordRoutes)
   // ...Object.values(viewLicenceRoutes),
   // ...Object.values(viewLicenceAdminRoutes),
   // ...Object.values(notificationsRoutes),

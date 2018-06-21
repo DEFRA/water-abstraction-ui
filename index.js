@@ -61,8 +61,10 @@ async function start () {
     await server.register(Object.values(plugins));
 
     // Set up auth strategies
-    server.auth.strategy('standard', 'cookie', config.hapiAuthCookie);
-    server.auth.default(config.auth);
+    server.auth.strategy('standard', 'cookie', {
+      ...config.hapiAuthCookie
+    });
+    server.auth.default('standard');
 
     // Set up view location
     server.views(require('./src/views'));

@@ -1,6 +1,6 @@
 module.exports = {
 
-  auth: {
+  defaultAuth: {
     strategy: 'standard',
     mode: 'try'
   },
@@ -29,6 +29,7 @@ module.exports = {
   },
 
   hapiAuthCookie: {
+    cookie: 'sid',
     password: process.env.cookie_secret, // cookie secret
     isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
     isSameSite: 'Lax',

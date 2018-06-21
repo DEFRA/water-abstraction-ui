@@ -415,18 +415,14 @@ async function postSend (request, reply) {
  * @param {String} request.query.email - The email address to filter by,
  */
 async function findLastEmail (request, reply) {
-  try {
-    const { email } = request.query;
-    const data = await notificationClient.getLatestEmailByAddress(email);
+  const { email } = request.query;
+  const data = await notificationClient.getLatestEmailByAddress(email);
 
-    if (data.data.length === 0) {
-      return reply(Boom.notFound(`No email found for ${email}`));
-    }
-
-    return reply(data);
-  } catch (error) {
-    reply(Boom.badImplementation('Error getting last email for user'));
+  if (data.data.length === 0) {
+    throw Boom.notFound(`No email found for ${email}`);
   }
+
+  return reply.response(data);
 };
 
 module.exports = {

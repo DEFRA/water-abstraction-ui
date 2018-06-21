@@ -32,7 +32,8 @@ async function getLicences (request, reply) {
     perPage: 50
   });
   if (error) {
-    reply(Boom.badImplementation('CRM error', error));
+    throw error;
+    // reply(Boom.badImplementation('CRM error', error));
   }
 
   return reply.view('water/view-licences/licences', {

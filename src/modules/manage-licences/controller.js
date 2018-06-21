@@ -12,7 +12,7 @@ const IDM = require('../../lib/connectors/idm');
  */
 async function getManage (request, reply) {
   const { view } = request;
-  return reply.view('water/manage_licences', view);
+  return reply.view('water/manage-licences/manage_licences', view);
 }
 
 /**
@@ -45,7 +45,7 @@ async function getAccessList (request, reply, context = {}) {
 
   const licenceAccess = await CRM.entityRoles.getEditableRoles(entityId, sortField, direction);
   viewContext.licenceAccess = JSON.parse(licenceAccess);
-  return reply.view('water/manage_licences_access', viewContext);
+  return reply.view('water/manage-licences/manage_licences_access', viewContext);
 }
 
 /**
@@ -60,7 +60,7 @@ function getAddAccess (request, reply, context = {}) {
   viewContext.pageTitle = 'Give access to view your licences';
 
   // get list of roles in same org as current user
-  return reply.view('water/manage_licences_add_access_form', viewContext);
+  return reply.view('water/manage-licences/manage_licences_add_access_form', viewContext);
 }
 
 /**
@@ -96,7 +96,7 @@ async function postAddAccess (request, reply, context = {}) {
     // Gracefully handle any errors.
     if (validationError) {
       viewContext.errors.email = true;
-      return reply.view('water/manage_licences_add_access_form', viewContext);
+      return reply.view('water/manage-licences/manage_licences_add_access_form', viewContext);
     }
 
     // Notification details
@@ -132,7 +132,7 @@ async function postAddAccess (request, reply, context = {}) {
       throw crmRoleError;
     }
 
-    return reply.view('water/manage_licences_added_access', viewContext);
+    return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
     reply(err);
   }
@@ -154,7 +154,7 @@ async function getRemoveAccess (request, reply, context = {}) {
   viewContext.pageTitle = 'Manage access to your licences';
   // get list of roles in same org as current user
   // call CRM and add role. CRM will call IDM if account does not exist...
-  return reply.view('water/manage_licences_removed_access', viewContext);
+  return reply.view('water/manage-licences/manage_licences_removed_access', viewContext);
 }
 
 /**
@@ -176,7 +176,7 @@ async function getAddLicences (request, reply, context = {}) {
     }
 
     viewContext.verificationCount = verifications.length;
-    return reply.view('water/manage_licences_add', viewContext);
+    return reply.view('water/manage-licences/manage_licences_add', viewContext);
   } catch (error) {
     errorHandler(request, reply)(error);
   }

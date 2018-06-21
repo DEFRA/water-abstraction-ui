@@ -1,7 +1,7 @@
-const IDM = require('../lib/connectors/idm');
-const CRM = require('../lib/connectors/crm');
-const permits = require('../lib/connectors/permit');
-const water = require('../lib/connectors/water');
+const IDM = require('../../lib/connectors/idm');
+const CRM = require('../../lib/connectors/crm');
+const permits = require('../../lib/connectors/permit');
+const water = require('../../lib/connectors/water');
 
 async function serviceStatus (request, reply) {
   var errors = 0;
@@ -99,9 +99,9 @@ async function serviceStatus (request, reply) {
   html += '</body></html>';
 
   if (request.query.format && request.query.format === 'json') {
-    return reply(data);
+    return reply.response(data);
   } else {
-    return reply(html);
+    return reply.response(html);
   }
 }
 

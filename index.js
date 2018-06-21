@@ -71,7 +71,6 @@ async function start () {
 
     // Import routes
     server.route(routes);
-    // server.route(require('./src/routes/VmL'));
 
     await server.start();
 

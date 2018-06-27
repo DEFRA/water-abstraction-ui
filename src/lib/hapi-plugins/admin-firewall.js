@@ -16,7 +16,7 @@ const adminFirewallPlugin = {
         // Detect any URL starting /admin
         if (/\/admin/i.test(path)) {
           if (!request.permissions.admin.defra) {
-            return reply(new Boom.unauthorized(`admin.defra permission required to view ${path}`));
+            throw Boom.unauthorized(`admin.defra permission required to view ${path}`);
           }
         }
         // Continue processing request

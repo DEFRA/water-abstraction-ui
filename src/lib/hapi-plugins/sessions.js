@@ -23,7 +23,7 @@ const sessionsPlugin = {
           return reply.continue;
         } catch (err) {
           // Failed to load error
-          return reply(Boom.unauthorized('Session not found'));
+          throw Boom.unauthorized('Session not found');
         }
       }
     });

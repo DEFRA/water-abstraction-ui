@@ -8,6 +8,28 @@
  */
 const { URL } = require('url');
 const Boom = require('boom');
+const Joi = require('joi');
+const { get } = require('lodash');
+
+/**
+ * Validates request payload to ensure that supplied csrf_token is
+ * a valid GUID
+ * If not, a Boom error is thrown
+ * @param {Object} payload - from HAPI request.payload
+ * @param {String} payload.csrf_token
+ */
+function validatePayload (payload) {
+  const payloadSchema = {
+    csrf_token: Joi.string().guid().required()
+  };
+  const joiOptions = {
+    allowUnknown: true
+  };
+  const { error } = Joi.validate(payload, payloadSchema, joiOptions);
+  if (error) {
+    throw Boom.badRequest('CSRF protection: invalid CSRF token', { isCsrfError: true });
+  }
+}
 
 const csrfPlugin = {
   register: (server, options) => {
@@ -30,14 +52,17 @@ const csrfPlugin = {
           const refererUrl = new URL(request.headers.referer);
 
           if (currentHost.hostname !== refererUrl.hostname) {
-            return reply(Boom.badRequest('CSRF protection: invalid HTTP referer header', { isCsrfError: true }));
+            throw Boom.badRequest('CSRF protection: invalid HTTP referer header', { isCsrfError: true });
           }
         }
 
+        // Validate payload
+        validatePayload(request.payload);
+
         // Check CSRF token
         const token = request.sessionStore.get('csrf_token');
-        if (token !== request.payload.csrf_token) {
-          return reply(Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true }));
+        if (token !== get(request, 'payload.csrf_token')) {
+          throw Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true });
         }
 
         // Continue processing request

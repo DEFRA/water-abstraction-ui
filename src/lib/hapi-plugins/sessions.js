@@ -22,8 +22,13 @@ const sessionsPlugin = {
           await request.sessionStore.load();
           return reply.continue;
         } catch (err) {
+          // Session not found - clear cookie
+          if (err.name === 'NotFoundError') {
+            request.cookieAuth.clear();
+          }
+
           // Failed to load error
-          return reply(Boom.unauthorized('Session not found'));
+          throw Boom.unauthorized('Session not found');
         }
       }
     });

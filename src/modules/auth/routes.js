@@ -63,6 +63,15 @@ module.exports = {
       description: 'Logs user out of service'
     },
     handler: controller.getSignout
-  }
+  },
 
+  getSignedOut: {
+    method: 'GET',
+    path: '/signed-out',
+    options: {
+      auth: false,
+      description: 'Confirms the user has been signed out of service'
+    },
+    handler: controller.getSignedOut
+  }
 };

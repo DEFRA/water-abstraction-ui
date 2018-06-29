@@ -33,16 +33,27 @@ function getSignin (request, reply) {
 /**
  * View signout page
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} reply - the HAPI response toolkit
  */
-async function getSignout (request, reply) {
+async function getSignout (request, h) {
   try {
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
   } catch (error) {
     request.log('error', error);
   }
-  return reply.redirect('/');
+  return h.redirect('/signed-out');
+}
+
+/**
+ * View signed out page
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} h - the HAPI HTTP response toolkit
+ */
+async function getSignedOut (request, h) {
+  const viewContext = View.contextDefaults(request);
+  viewContext.pageTitle = 'You are signed out';
+  return h.view('water/auth/signed-out', viewContext);
 }
 
 /**
@@ -97,5 +108,6 @@ module.exports = {
   getWelcome,
   getSignin,
   getSignout,
+  getSignedOut,
   postSignin
 };

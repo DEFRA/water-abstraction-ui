@@ -21,9 +21,6 @@
     </div>
       {{/equal}}
 
-
-
-
       {{#equal error.name 'LicenceNotFoundError' }}
       <script>
         sendEvent({category:'error', action:'add_licence_licence_not_found_error'})
@@ -91,28 +88,19 @@
             <span class="form-label-bold">Enter your licence number(s)</span>
             <span class="form-hint">
               You can only view water abstraction licences online at the moment. We will let you know when you can also view any impoundment licences you hold.
+            </span>
             <br/>
             <br/>
             <span class="form-hint">
               You can separate your licence numbers using spaces, commas, or by entering them on different lines.
             </span>
-
-            <fieldset>
-
-              {{#if error }}
-              <!-- <span id="enterLicenceNo" class="error-message">Enter your licence number(s).</span> -->
-              {{/if}}
-            </fieldset>
-
           </label>
           <textarea maxlength="8000" class="form-control form-control-3-4" name="licence_no" id="licence_no" rows="5" required >{{ payload.licence_no }}</textarea>
         </div>
 
         <input type="submit" value="Continue" class="button" role="button"/>
     </form>
-
-    <p></p>
-
+    <br />
     <details class="closeOnOpen">
       <summary><span class="summary">Do not have this information?</span></summary>
       <div>
@@ -123,9 +111,6 @@
 
     </div>
   </div>
-
-
-
 </main>
 {{> footerjs}}
 {{> debug}}

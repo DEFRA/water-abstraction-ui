@@ -11,7 +11,9 @@
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix",
     "sass": "gulp sass",
-    "sass:watch": "gulp sass:watch"
+    "sass:watch": "gulp sass:watch",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "",
   "license": "ISC",
@@ -35,7 +37,6 @@
     "lab": "^14.3.2",
     "run-sequence": "^2.2.1",
     "sinon": "^4.2.2",
-    "snyk": "^1.69.7",
     "standard": "^10.0.3",
     "xmldom": "^0.1.27"
   },
@@ -78,12 +79,14 @@
     "url-join": "^4.0.0",
     "vision": "^4.1.1",
     "winston": "^2.4.3",
-    "yar": "^8.1.2"
+    "yar": "^8.1.2",
+    "snyk": "^1.88.0"
   },
   "standard": {
     "ignore": [
       "node_modules/",
       "public/"
     ]
-  }
+  },
+  "snyk": true
 }

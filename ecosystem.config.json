@@ -1,0 +1,19 @@
+{
+  "apps": [
+    {
+      "name": "ui",
+      "ignore_watch": [
+        "node_modules",
+        "data",
+        "test"
+      ],
+      "script": "index.js",
+      "env": {
+        "watch": true
+      },
+      "env_production": {
+        "watch": false
+      }
+    }
+  ]
+}

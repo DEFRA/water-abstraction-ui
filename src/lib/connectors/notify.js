@@ -52,28 +52,25 @@ function sendSecurityCode (licence, accesscode) {
 
 function sendAccesseNotification (params) {
   return new Promise((resolve, reject) => {
-    if (params.newUser) {
-      var message_ref = 'share_new_user';
-      var templateId = '145e2919-da41-4f4d-9570-17f5bb12f119';
-      var link = `${process.env.base_url}/reset_password?utm_source=system&utm_medium=email&utm_campaign=share_new_user`;
-      var personalisation = {
-        link: link,
-        email: params.email,
-        sender: params.sender
-      };
-    } else {
-      var message_ref = 'share_existing_user';
-      var templateId = '725e399e-772b-4c91-835b-68f4995ab6ff';
-      var link = `${process.env.base_url}?access=PB01&utm_source=system&utm_medium=email&utm_campaign=share_existing_user`;
-      var personalisation = {
-        link: link,
-        email: params.email,
-        sender: params.sender
+    let messageRef;
+    let link;
 
-      };
+    if (params.newUser) {
+      messageRef = 'share_new_user';
+      link = `${process.env.base_url}/reset_password?utm_source=system&utm_medium=email&utm_campaign=share_new_user`;
+    } else {
+      messageRef = 'share_existing_user';
+      link = `${process.env.base_url}?utm_source=system&utm_medium=email&utm_campaign=share_existing_user`;
     }
-    var emailAddress = params.email;
-    Water.sendNotifyMessage(message_ref, emailAddress, personalisation)
+
+    const email = params.email;
+    const personalisation = {
+      link,
+      email,
+      sender: params.sender
+    };
+
+    Water.sendNotifyMessage(messageRef, email, personalisation)
       .then((response) => {
         return resolve(true);
       })

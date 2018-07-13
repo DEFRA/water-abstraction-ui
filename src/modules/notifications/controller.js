@@ -48,14 +48,11 @@ async function getStep (request, reply) {
     return reply(taskConfigError);
   }
 
-  let context = {};
-  if (start) {
-    request.sessionStore.delete('notificationsFlow');
-    context = await getContext(request.auth.credentials.user_id);
-  }
+  const context = start ? await getContext(request.auth.credentials.user_id) : {};
+  const state = start ? request.sessionStore.get('notificationsFlow') : {};
 
   // Update task data
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'), context);
+  const taskData = new TaskData(task, state, context);
 
   if (start) {
     request.sessionStore.set('notificationsFlow', taskData.getData());

@@ -6,13 +6,11 @@ const { createGUID } = require('./helpers');
 const { usersClient } = require('./connectors/idm');
 
 /**
- * Sign user in automatically
- * Note: this does NOT check for account in IDM - this must be done separately
- * @param {Object} request - HAPI HTTP request
- * @param {String} emailAddress - email address of user
- * @return {Object} returns object with data stored in secure cookie
+ * Loads user data from IDM
+ * @param {String} emailAddress
+ * @return {Promise} resolves with row of IDM user data
  */
-async function auto (request, emailAddress, userData, lastlogin) {
+async function getIDMUser (emailAddress) {
   // Get IDM record
   const { data: [user], error: idmError } = await usersClient.findMany({user_name: emailAddress.toLowerCase().trim()});
   if (idmError) {
@@ -21,6 +19,18 @@ async function auto (request, emailAddress, userData, lastlogin) {
   if (!user) {
     throw new Error(`IDM user with email address ${emailAddress} not found`);
   }
+  return user;
+}
+
+/**
+ * Sign user in automatically
+ * Note: this does NOT check for account in IDM - this must be done separately
+ * @param {Object} request - HAPI HTTP request
+ * @param {String} emailAddress - email address of user
+ * @return {Object} returns object with data stored in secure cookie
+ */
+async function auto (request, emailAddress, userData, lastlogin) {
+  const user = await getIDMUser(emailAddress);
 
   const entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
 

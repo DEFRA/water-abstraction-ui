@@ -82,6 +82,15 @@ function viewContextDefaults (request) {
     url: '/signout'
   }];
 
+  if (viewContext.isAdmin) {
+    const contactInformationLink = {
+      id: 'contact-information',
+      text: 'Contact information',
+      url: '/admin/contact-information'
+    };
+    viewContext.propositionLinks = [contactInformationLink, ...viewContext.propositionLinks];
+  }
+
   viewContext.user = request.auth.credentials;
 
   viewContext.permissions = request.permissions;

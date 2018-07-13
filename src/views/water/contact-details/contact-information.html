@@ -1,0 +1,35 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <a class="link-back" href="/start">Back</a>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+      <p>This is the information that will be available to your public contacts.</p>
+
+      {{#if error }}
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          {{#if error.contactEmail}}
+          <h2 class="heading-medium error-summary-heading">
+            The email address entered is not valid
+          </h2>
+          <ul class="error-summary-list">
+            <li><a href="#contact-email">Enter a valid email</a></li>
+          </ul>
+          {{/if}}
+        </div>
+      {{/if}}
+
+      <form novalidate action="/admin/contact-information" method="post" class="form">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" /> 
+        {{>contact-details-name-and-role}}
+{{>contact-details-addresses}}
+        <button class="button">Update your contact information</button>
+      </form>
+    </div>
+  </div>
+</main>
+

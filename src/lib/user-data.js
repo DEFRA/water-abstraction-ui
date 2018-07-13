@@ -2,7 +2,7 @@
  * A module to get/set user_data in user record of IDM
  */
 
-const { usersClient } = require('../../../lib/connectors/idm.js');
+const { usersClient } = require('./connectors/idm.js');
 
 /**
  * Gets user data from API as object
@@ -23,7 +23,7 @@ const getUserData = async (userId) => {
  * @param {Object} data - new value for user_data object
  */
 const setUserData = async (userId, data) => {
-  return usersClient.updateOne(userId, {user_data: JSON.stringify(data)});
+  return usersClient.updateOne(userId, {user_data: data});
 };
 
 module.exports = {

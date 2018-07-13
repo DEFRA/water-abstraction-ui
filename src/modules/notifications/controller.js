@@ -49,7 +49,7 @@ async function getStep (request, reply) {
   }
 
   const context = start ? await getContext(request.auth.credentials.user_id) : {};
-  const state = start ? request.sessionStore.get('notificationsFlow') : {};
+  const state = start ? null : request.sessionStore.get('notificationsFlow');
 
   // Update task data
   const taskData = new TaskData(task, state, context);

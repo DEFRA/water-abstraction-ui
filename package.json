@@ -67,6 +67,7 @@
     "joi": "^13.1.2",
     "lodash": "^4.17.5",
     "marked": "^0.3.19",
+    "minimatch": "^3.0.4",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.17",
     "nunjucks": "^3.1.3",

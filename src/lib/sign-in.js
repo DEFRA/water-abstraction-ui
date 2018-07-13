@@ -3,6 +3,24 @@
  */
 const CRM = require('./connectors/crm');
 const { createGUID } = require('./helpers');
+const { usersClient } = require('./connectors/idm');
+
+/**
+ * Loads user data from IDM
+ * @param {String} emailAddress
+ * @return {Promise} resolves with row of IDM user data
+ */
+async function getIDMUser (emailAddress) {
+  // Get IDM record
+  const { data: [user], error: idmError } = await usersClient.findMany({user_name: emailAddress.toLowerCase().trim()});
+  if (idmError) {
+    throw idmError;
+  }
+  if (!user) {
+    throw new Error(`IDM user with email address ${emailAddress} not found`);
+  }
+  return user;
+}
 
 /**
  * Sign user in automatically
@@ -12,7 +30,9 @@ const { createGUID } = require('./helpers');
  * @return {Object} returns object with data stored in secure cookie
  */
 async function auto (request, emailAddress, userData, lastlogin) {
-  const entityId = await CRM.entities.getOrCreateIndividual(emailAddress);
+  const user = await getIDMUser(emailAddress);
+
+  const entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
 
   // Get roles for user
   const {error, data: roles} = await CRM.entityRoles.setParams({entityId}).findMany();
@@ -23,7 +43,7 @@ async function auto (request, emailAddress, userData, lastlogin) {
 
   // Create session ID
   const sessionId = await request.sessionStore.create({
-    user: {emailAddress},
+    user: { id: user.user_id, emailAddress: user.user_name },
     csrf_token: createGUID()
   });
 
@@ -48,6 +68,7 @@ async function auto (request, emailAddress, userData, lastlogin) {
   const session = {
     sid: sessionId,
     username: emailAddress.toLowerCase().trim(),
+    user_id: user.user_id,
     entity_id: entityId,
     user_data: userData,
     lastlogin: lastlogin,

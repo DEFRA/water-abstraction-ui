@@ -7,72 +7,21 @@
  * allow the mapping of data to and from these fields
  * @module src/modules/notifications/task-data
  */
-const moment = require('moment');
-const { extractLicenceNumbers } = require('../../lib/licence-helpers');
+const nunjucks = require('nunjucks');
 const Joi = require('joi');
 const { find } = require('lodash');
-
-/**
- * Default mapper - simply extracts the value of the named field
- */
-const defaultMapper = {
-  import: (fieldName, payload) => {
-    return payload[fieldName];
-  },
-  export: (value) => {
-    return value;
-  }
-};
-
-/**
- * Delimited mapper - for a pasted set of licence numbers, splits string on common
- * delimiters , newlines, tabs, semicolon
- */
-const licenceNumbersMapper = {
-  import: (fieldName, payload) => {
-    return extractLicenceNumbers(payload[fieldName]);
-  },
-  export: (value) => {
-    return value.join(', ');
-  }
-};
-
-/**
- * Date mapper - combines the day month and year form values to a single
- * string formatted as YYYY-MM-DD
- */
-const dateMapper = {
-  import: (fieldName, payload) => {
-    const day = payload[fieldName + '-day'];
-    const month = payload[fieldName + '-month'];
-    const year = payload[fieldName + '-year'];
-    const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
-    return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
-  },
-  export: (value) => {
-    if (value) {
-      const m = moment(value, 'YYYY-MM-DD');
-      return m.format('D MMMM YYYY');
-    }
-    return null;
-  }
-};
-
-/**
- * Replaces the text so that each part of the address is displayed
- * on the next line. Swaps \r for a double space ('  ')
- */
-const addressMapper = {
-  import: (fieldName, payload) => payload[fieldName],
-  export: (value = '') => value.replace(/\r/g, '  ')
-};
+const { defaultMapper, licenceNumbersMapper, dateMapper, addressMapper } = require('./mappers');
 
 class TaskData {
-  constructor (task, state) {
-    console.log('state', state);
-
+  /**
+   * @param {Object} task - the task description from "water"."task_config" table
+   * @param {Object} state - the current state of the task - loaded from session if mid-flow
+   * @param {Object} context - data used for binding default values in parameters, e.g. contactdata from IDM
+   */
+  constructor (task, state, context = {}) {
     // Task config data
     this.task = task;
+    this.context = context;
 
     if (state) {
       this.data = state;
@@ -84,9 +33,11 @@ class TaskData {
         // List of licence numbers following refine audience step
         licenceNumbers: [],
         // Custom template parameter data
-        params: {}
+        params: this.getDefaultParams()
       };
     }
+
+    console.log(this.data.params);
 
     // Initialise available mappers
     this.mappers = {
@@ -95,6 +46,25 @@ class TaskData {
       address: addressMapper,
       licenceNumbers: licenceNumbersMapper
     };
+  }
+
+  /**
+   * Gets default parameter values.
+   * These are taken from the 'default' key of the config variables,
+   * and are rendered with Nunjucks using the context data.
+   * This allows fields to pre-populated, e.g. with IDM data
+   * @return {Object} key/value pairs
+   */
+  getDefaultParams () {
+    const { variables = [] } = this.task.config;
+    return variables.reduce((acc, v) => {
+      if (v.default) {
+        acc[v.name] = nunjucks.renderString(v.default, this.context);
+      } else {
+        acc[v.name] = undefined;
+      }
+      return acc;
+    }, {});
   }
 
   /**

@@ -1,9 +1,11 @@
 'use strict';
 
 const Boom = require('boom');
+
 const notificationClient = require('../../lib/connectors/water-service/notifications');
 const { taskConfig } = require('../../lib/connectors/water');
-const TaskData = require('./task-data');
+const TaskData = require('./lib/task-data');
+const { getContext } = require('./lib/context.js');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
 const { sendNotification } = require('../../lib/connectors/water');
@@ -46,12 +48,15 @@ async function getStep (request, reply) {
     return reply(taskConfigError);
   }
 
-  if (start) {
-    request.sessionStore.delete('notificationsFlow');
-  }
+  const context = start ? await getContext(request.auth.credentials.user_id) : {};
+  const state = start ? request.sessionStore.get('notificationsFlow') : {};
 
   // Update task data
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, state, context);
+
+  if (start) {
+    request.sessionStore.set('notificationsFlow', taskData.getData());
+  }
 
   return renderStep(request, reply, taskData, step);
 }

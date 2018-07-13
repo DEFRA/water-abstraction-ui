@@ -42,6 +42,7 @@
   "dependencies": {
     "airbrake-js": "^1.1.2",
     "async-waterfall": "^0.1.5",
+    "atob": "^2.1.1",
     "aws-sdk": "^2.190.0",
     "blipp": "^3.0.0",
     "bluebird": "^3.5.1",

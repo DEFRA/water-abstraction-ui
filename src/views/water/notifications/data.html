@@ -39,7 +39,7 @@
                 {{>widget-date this error=../error value=(lookup ../values this.name)  }}
               {{/equal}}
               {{#equal this.widget 'textarea' }}
-                {{>widget-textarea this error=../error  value=(lookup ../values this.name)  }}
+{{>widget-textarea this error=../error  value=(lookup ../values this.name)  }}
               {{/equal}}
               {{#equal this.widget 'text' }}
                 {{>widget-text this error=../error value=(lookup ../values this.name)  }}

@@ -1,16 +1,13 @@
 'use strict';
 
 const Boom = require('boom');
-
+const { Promise } = require('bluebird');
 const notificationClient = require('../../lib/connectors/water-service/notifications');
-const { taskConfig } = require('../../lib/connectors/water');
 const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context.js');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
-const { sendNotification } = require('../../lib/connectors/water');
-const { lookup } = require('../../lib/connectors/water');
-const { Promise } = require('bluebird');
+const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
 
 /**
  * Renders page with list of notifications that can be selected
@@ -157,7 +154,6 @@ async function getRefine (request, reply) {
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
-  // taskData.fromJson(request.query.data);
 
   // Build CRM query filter
   const filter = taskData.getFilter();

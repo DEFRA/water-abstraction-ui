@@ -28,6 +28,28 @@ async function getIndex (request, reply) {
 }
 
 /**
+  * Helper handler for start flow
+  * @param {Object} request - HAPI HTTP request
+  * @param {Number} request.params.id - the task ID
+  * @param {Number} request.query.step - the step in the process - default to 0
+  * @param {Object} h - HAPI HTTP reply interface
+  * @param {Object} task - task config data from water service
+  */
+async function getStartFlow (request, h, task) {
+  const context = await getContext(request.auth.credentials.user_id);
+  const state = null;
+  const taskData = new TaskData(task, state, context);
+  request.sessionStore.set('notificationsFlow', taskData.getData());
+
+  // Redirect if contact details not set
+  if (!context.contactDetails.name) {
+    const url = encodeURIComponent(`/admin/notifications/${request.params.id}?start=1`);
+    return h.redirect(`/admin/notifications/contact?redirect=${url}`);
+  }
+  return renderStep(request, h, taskData, 0);
+}
+
+/**
  * View a step in the flow
  * @param {Object} request - HAPI HTTP request
  * @param {Number} request.params.id - the task ID
@@ -37,30 +59,22 @@ async function getIndex (request, reply) {
 async function getStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const start = parseInt(request.query.start, 10); // Are we starting the flow?
   const step = parseInt(request.query.step, 10);
+  const start = parseInt(request.query.start, 10);
 
   const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
   if (taskConfigError) {
-    return reply(taskConfigError);
-  }
-
-  const context = start ? await getContext(request.auth.credentials.user_id) : {};
-  const state = start ? null : request.sessionStore.get('notificationsFlow');
-
-  // Update task data
-  const taskData = new TaskData(task, state, context);
-
-  if (start && !context.contactDetails.name) {
-    const url = encodeURIComponent(`/admin/notifications/${id}?start=1`);
-    return reply.redirect(`/admin/notifications/contact?redirect=${url}`);
+    throw new Error(taskConfigError);
   }
 
   if (start) {
-    // Does the user have contact details set?
-    request.sessionStore.set('notificationsFlow', taskData.getData());
+    return getStartFlow(request, reply, task);
   }
 
+  const context = await getContext(request.auth.credentials.user_id);
+  const state = request.sessionStore.get('notificationsFlow');
+
+  const taskData = new TaskData(task, state, context);
   return renderStep(request, reply, taskData, step);
 }
 

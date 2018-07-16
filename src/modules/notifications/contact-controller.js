@@ -34,6 +34,20 @@ const mapPost = (payload) => {
 };
 
 /**
+ * Gets data to send to view when form is in error state
+ * @param {Object} HAPI request
+ * @return {Object} view context data
+ */
+const getErrorViewContext = (request) => {
+  const contactDetails = mapPost(request.payload);
+  return {
+    ...request.view,
+    error: mapErrors(request.view.errors),
+    contactDetails
+  };
+};
+
+/**
  * Display form for admin user to enter their name and job role
  * prior to entering notification flow
  */
@@ -65,11 +79,7 @@ const postNameAndJob = async (request, h) => {
   const contactDetails = mapPost(request.payload);
 
   if (request.formError) {
-    return h.view('water/notifications/contact-name-job', {
-      ...request.view,
-      error: mapErrors(request.view.errors),
-      contactDetails
-    });
+    return h.view('water/notifications/contact-name-job', getErrorViewContext(request));
   }
 
   // Merge updated fields to user_data
@@ -101,11 +111,7 @@ const postDetails = async (request, h) => {
   const contactDetails = mapPost(request.payload);
 
   if (request.formError) {
-    return h.view('water/notifications/contact-details', {
-      ...request.view,
-      error: mapErrors(request.view.errors),
-      contactDetails
-    });
+    return h.view('water/notifications/contact-details', getErrorViewContext(request));
   }
 
   // Merge updated fields to user_data

@@ -55,6 +55,12 @@ async function getStep (request, reply) {
   const taskData = new TaskData(task, state, context);
 
   if (start) {
+    // Does the user have contact details set?
+    if (!context.contactDetails.name) {
+      const url = encodeURIComponent(`/admin/notifications/${id}?start=1`);
+      return reply.redirect(`/admin/notifications/contact?redirect=${url}`);
+    }
+
     request.sessionStore.set('notificationsFlow', taskData.getData());
   }
 

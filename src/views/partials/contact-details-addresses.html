@@ -3,7 +3,7 @@
   {{#if error.contactEmail}}
     <span class="error-message">Please enter a valid email address</span>
   {{/if}}
-  <input maxlength="500" name="contact-email" type="email" class="form-control" id="contact-email" value="{{ contactDetails.email }}" />
+  <input maxlength="254" name="contact-email" type="email" class="form-control" id="contact-email" value="{{ contactDetails.email }}" />
 </div>
 
 <div class="form-group {{#if error.contactTel }}form-group-error{{/if}}">
@@ -11,7 +11,7 @@
   {{#if error.contactTel}}
     <span class="error-message">Please enter a valid telephone number</span>
   {{/if}}
-  <input maxlength="500" name="contact-tel" type="tel" class="form-control" id="contact-tel" value="{{ contactDetails.tel }}" />
+  <input maxlength="254" name="contact-tel" type="tel" class="form-control" id="contact-tel" value="{{ contactDetails.tel }}" />
 </div>
 
 <div class="form-group {{#if error.contactAddress }}form-group-error{{/if}}">

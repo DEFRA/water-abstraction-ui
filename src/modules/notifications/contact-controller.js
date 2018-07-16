@@ -1,5 +1,5 @@
 const { set } = require('lodash');
-const { getUserData, setUserData } = require('./lib/user-data.js');
+const { getUserData, setUserData } = require('../../lib/user-data.js');
 
 /**
  * Maps form validator plugin errors to those required by the contact

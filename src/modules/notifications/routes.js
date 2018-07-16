@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const controller = require('./controller');
 const contactRoutes = require('./contact-routes');
+const apiController = require('./api-controller');
 
 const getStep = {
   method: 'GET',
@@ -181,7 +182,7 @@ if (parseInt(process.env.test_mode) === 1) {
   routes.findEmailByAddress = {
     method: 'GET',
     path: '/notifications/last',
-    handler: controller.findLastEmail,
+    handler: apiController.findLastEmail,
     config: {
       plugins: {
         errorPlugin: {

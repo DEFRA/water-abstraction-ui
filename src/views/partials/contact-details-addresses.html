@@ -19,5 +19,6 @@
   {{#if error.contactAddress}}
     <span class="error-message">Please enter a valid address</span>
   {{/if}}
-  <input maxlength="1000" name="contact-address" type="text" class="form-control" id="contact-address" value="{{ contactDetails.address }}" />
+
+  <textarea rows="7" maxlength="254" name="contact-address" class="form-control form-control-3-4" id="contact-address">{{ contactDetails.address }}</textarea>
 </div>

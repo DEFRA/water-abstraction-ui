@@ -1,0 +1,35 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <!-- page title -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <h1  class="heading-large">{{ pageTitle }}</h1>
+
+      <p>This is the information that will be available to your public contacts.</p>
+
+
+      <form method="POST" action="/admin/notifications/contact">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        <input type="hidden" name="redirect" value="{{ query.redirect }}" />
+{{> contact-details-name-and-role }}
+        <button type="submit" class="button">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- confirmation panel -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+    </div>
+  </div>
+
+</main>
+
+
+
+{{> footerjs}}
+{{> debug}}

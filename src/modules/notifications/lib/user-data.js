@@ -14,10 +14,7 @@ const getUserData = async (userId) => {
   if (error) {
     throw new Error(error);
   }
-  if (typeof (user.user_data) === 'object') {
-    return user.user_data;
-  }
-  return JSON.parse(user.user_data || '{}');
+  return user.user_data;
 };
 
 /**

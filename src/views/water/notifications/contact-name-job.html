@@ -13,11 +13,7 @@
       <form method="POST" action="/admin/notifications/contact">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
         <input type="hidden" name="redirect" value="{{ query.redirect }}" />
-
-
-        {{> contact-details-name-and-role }}
-
-
+{{> contact-details-name-and-role }}
         <button type="submit" class="button">Continue</button>
       </form>
     </div>

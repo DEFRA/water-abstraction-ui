@@ -12,9 +12,7 @@
 
       <form method="POST" action="/admin/notifications/contact-details">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-
-        {{> contact-details-addresses }}
-
+{{> contact-details-addresses }}
         <button type="submit" class="button">Continue</button>
       </form>
     </div>

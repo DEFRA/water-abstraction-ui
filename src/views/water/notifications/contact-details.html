@@ -13,7 +13,7 @@
       <p>This is the information that will be available to your public contacts.</p>
 
 
-      <form method="POST" action="/admin/notifications/contact-details">
+      <form novalidate method="POST" action="/admin/notifications/contact-details">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
 {{> contact-details-addresses }}
         <button type="submit" class="button">Continue</button>

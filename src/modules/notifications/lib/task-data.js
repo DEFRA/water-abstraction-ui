@@ -12,6 +12,14 @@ const Joi = require('joi');
 const { find } = require('lodash');
 const { defaultMapper, licenceNumbersMapper, dateMapper, addressMapper } = require('./mappers');
 
+// Create Nunjucks environment
+// We don't need entity escaping since here Nunjucks is being used to populate an
+// object held internally.  WHen data is output it is escaped as normal with
+// Handlebars
+const env = nunjucks.configure(null, {
+  autoescape: false
+});
+
 class TaskData {
   /**
    * @param {Object} task - the task description from "water"."task_config" table
@@ -59,7 +67,7 @@ class TaskData {
     const { variables = [] } = this.task.config;
     return variables.reduce((acc, v) => {
       if (v.default) {
-        acc[v.name] = nunjucks.renderString(v.default, this.context);
+        acc[v.name] = env.renderString(v.default, this.context);
       } else {
         acc[v.name] = undefined;
       }

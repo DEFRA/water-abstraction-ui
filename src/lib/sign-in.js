@@ -29,7 +29,7 @@ async function getIDMUser (emailAddress) {
  * @param {String} emailAddress - email address of user
  * @return {Object} returns object with data stored in secure cookie
  */
-async function auto (request, emailAddress, userData, lastlogin) {
+async function auto (request, emailAddress, userData = {}, lastlogin) {
   const user = await getIDMUser(emailAddress);
 
   const entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
@@ -47,11 +47,6 @@ async function auto (request, emailAddress, userData, lastlogin) {
     csrf_token: createGUID()
   });
 
-  try {
-    userData = JSON.parse(userData);
-  } catch (e) {
-    userData = {};
-  }
   if (!userData.usertype) {
     userData.usertype = 'external';
   }

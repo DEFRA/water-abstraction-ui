@@ -70,7 +70,7 @@ function createUserWithoutPassword (emailAddress) {
     password: Helpers.createGUID(),
     reset_guid: Helpers.createGUID(),
     admin: 0,
-    user_data: '{}',
+    user_data: {},
     reset_required: 1
   });
 }

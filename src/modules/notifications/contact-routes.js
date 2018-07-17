@@ -48,6 +48,9 @@ module.exports = {
             'contact-job-title': Joi.string().required(),
             'csrf_token': Joi.string().guid().required(),
             'redirect': Joi.string().allow('')
+          },
+          options: {
+            abortEarly: false
           }
         }
       }
@@ -89,6 +92,9 @@ module.exports = {
           activeNavLink: 'notifications'
         },
         formValidator: {
+          options: {
+            abortEarly: false
+          },
           payload: {
             'csrf_token': Joi.string().guid().required(),
             'contact-email': VALID_EMAIL,

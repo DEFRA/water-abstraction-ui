@@ -65,6 +65,7 @@
     "hapi-sanitize-payload": "^2.0.0",
     "hoek": "^4.2.1",
     "http-errors": "^1.6.2",
+    "immutability-helper": "^2.7.1",
     "inert": "^5.1.0",
     "joi": "^13.1.2",
     "lodash": "^4.17.5",

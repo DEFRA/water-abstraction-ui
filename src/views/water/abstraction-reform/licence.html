@@ -1,0 +1,45 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <a class="link-back" href="/start">Back</a>
+
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-large">{{ pageTitle }} - {{ licence.LIC_NO }}</h1>
+      <p>This shows the existing and updated version of the NALD licence.</p>
+
+      <h2 class="heading-medium">Purposes</h2>
+
+      {{#each purposes as |purpose| }}
+      <table id="purpose-{{ purpose.base.ID }}">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Original Value</th>
+            <th>New Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each purpose.base }}
+        <tr>
+          <th>{{ @key }}</th>
+          <td>{{ this }}</td>
+          <td>{{#notEqual this (lookup purpose.reform @key )}}
+            {{lookup purpose.reform @key }}
+              {{/notEqual}}
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
+
+      <br />
+      <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit-purpose/{{ purpose.base.ID }}" class="button">Edit purpose</a>
+
+      {{/each}}
+
+    </div>
+  </div>
+</main>

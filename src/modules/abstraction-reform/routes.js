@@ -2,10 +2,10 @@ const controller = require('./controller');
 
 module.exports = {
 
-  getLicence: {
+  getViewLicence: {
     method: 'GET',
     path: '/admin/abstraction-reform/licence/{documentId}',
-    handler: controller.getLicence,
+    handler: controller.getViewLicence,
     config: {
       description: 'Page to view comparison of permit repo licence with AR version',
       plugins: {

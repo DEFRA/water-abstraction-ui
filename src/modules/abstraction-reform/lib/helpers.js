@@ -1,4 +1,4 @@
-const { pickBy, isArray, isObject, mapValues } = require('lodash');
+const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
 
 /**
  * Returns obj with non-scalar values removed
@@ -30,7 +30,19 @@ const generateJsonSchema = (obj) => {
   return schema;
 };
 
+/**
+ * Given an object and a JSON schema, returns only the properties in the
+ * object that are defined in the 'properties' section of the JSON schema
+ * @param {Object} object - the data object
+ * @param {Object} schema - JSON schema
+ * @return {Object}
+ */
+const extractData = (object, schema) => {
+  return pick(object, Object.keys(schema.properties));
+};
+
 module.exports = {
   filterScalars,
-  generateJsonSchema
+  generateJsonSchema,
+  extractData
 };

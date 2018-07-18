@@ -1,15 +1,26 @@
-const { EDIT_PURPOSE } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE } = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
   return {id, email};
 };
 
-const createEditPurpose = (purposeId, data, user) => {
+const createEditPurpose = (data, user, id) => {
   return {
     type: EDIT_PURPOSE,
     payload: {
-      purposeId,
+      purposeId: id,
+      data,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
+const createEditLicence = (data, user) => {
+  return {
+    type: EDIT_LICENCE,
+    payload: {
       data,
       user: formatUser(user),
       timestamp: Date.now()
@@ -18,5 +29,6 @@ const createEditPurpose = (purposeId, data, user) => {
 };
 
 module.exports = {
-  createEditPurpose
+  createEditPurpose,
+  createEditLicence
 };

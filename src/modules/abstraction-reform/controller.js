@@ -1,43 +1,73 @@
 const { load, update } = require('./lib/loader');
-const { filterScalars } = require('./lib/helpers');
-const { getPurposes } = require('./lib/licence-helpers');
-const { find, pick } = require('lodash');
+const { filterScalars, generateJsonSchema, extractData } = require('./lib/helpers');
+const { getPurposes, getPurpose, getLicence } = require('./lib/licence-helpers');
+const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
-const { createEditPurpose } = require('./lib/action-creators');
+const { createEditPurpose, createEditLicence } = require('./lib/action-creators');
 
 /**
- * View a licence, with the original values and abstraction reform values
- * in columns for comparison
- * @param {String} request.params.documentId - CRM document ID
+ * Prepares data for use in single licence view
+ * @param {Object} licence - the base licence
+ * @param {Object} finalState - the final state from the reducer
+ * @return {Object} view data
  */
-const getLicence = async (request, h) => {
-  const { documentId } = request.params;
-
-  const { licence, finalState } = await load(documentId);
+const prepareData = (licence, finalState) => {
+  // Prepare licence
+  const base = {
+    base: filterScalars(licence.licence_data_value),
+    reform: filterScalars(finalState.licence)
+  };
 
   // Prepare purposes
   // @TODO - we will need to compare to check for deleted/added items
   const purposes = getPurposes(licence.licence_data_value).map((purpose, index) => {
-    console.log(JSON.stringify(purpose, null, 2));
-
     return {
       base: filterScalars(purpose),
       reform: filterScalars(getPurposes(finalState.licence)[index])
     };
   });
 
+  return {
+    licence: base,
+    purposes
+  };
+};
+
+/**
+ * View a licence, with the original values and abstraction reform values
+ * in columns for comparison
+ * @param {String} request.params.documentId - CRM document ID
+ */
+const getViewLicence = async (request, h) => {
+  const { documentId } = request.params;
+
+  const { licence, finalState } = await load(documentId);
+
+  const data = prepareData(licence, finalState);
+
+  // require('fs').writeFileSync('schema.json', JSON.stringify(generateJsonSchema(data.licence.base), null, 2));
+
   const view = {
     documentId,
     ...request.view,
-    licence: licence.licence_data_value,
-    purposes
+    licence,
+    data
   };
 
   return h.view('water/abstraction-reform/licence', view);
 };
 
-const extractData = (object, schema) => {
-  return pick(object, Object.keys(schema.properties));
+const objectConfig = {
+  purpose: {
+    schema: require('./schema/purpose.json'),
+    getter: getPurpose,
+    actionCreator: createEditPurpose
+  },
+  licence: {
+    schema: require('./schema/licence.json'),
+    getter: getLicence,
+    actionCreator: createEditLicence
+  }
 };
 
 /**
@@ -52,13 +82,9 @@ const getEditObject = async (request, h) => {
   // Load licence / AR licence from CRM
   const { finalState } = await load(documentId);
 
-  let data, schema;
+  const { schema, getter } = objectConfig[type];
 
-  if (type === 'purpose') {
-    schema = require('./schema/purpose.json');
-    const purpose = find(getPurposes(finalState.licence), {ID: id});
-    data = extractData(purpose, schema);
-  }
+  const data = extractData(getter(finalState.licence, id), schema);
 
   const view = {
     ...request.view,
@@ -76,38 +102,27 @@ const postEditObject = async (request, h) => {
   const { csrf_token: csrfToken, ...payload } = request.payload;
 
   // Load licence / AR licence from CRM
-  const { licence, arLicence, finalState } = await load(documentId);
+  const { arLicence, finalState } = await load(documentId);
 
-  let data, schema, redirect = `/admin/abstraction-reform/licence/${documentId}`;
+  const { schema, getter, actionCreator } = objectConfig[type];
 
-  if (type === 'purpose') {
-    schema = require('./schema/purpose.json');
-    const purpose = find(getPurposes(finalState.licence), {ID: id});
-    data = extractData(purpose, schema);
+  const data = extractData(getter(finalState.licence, id), schema);
 
-    // Compare posted data with current data, create action for action log
-    const diff = shallowDiff(data, payload);
-    if (diff.updated.length) {
-      const action = createEditPurpose(id, pick(payload, diff.updated), request.auth.credentials);
-
-      const { actions } = arLicence.licence_data_value;
-      actions.push(action);
-
-      console.log(actions);
-
-      await update(arLicence.licence_id, actions);
-
-      return h.redirect(`${redirect}#purpose-${id}`);
-      // Save
-      // arLicence.licence_data_value.actions.push(action);
-
-      // return arLicence;
-    }
+  // Compare object data with form payload
+  const diff = shallowDiff(data, payload);
+  if (diff.updated.length) {
+    const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, id);
+    const { actions } = arLicence.licence_data_value;
+    actions.push(action);
+    // Save action list to permit repo
+    await update(arLicence.licence_id, actions);
   }
+
+  return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${type}-${id}`);
 };
 
 module.exports = {
-  getLicence,
+  getViewLicence,
   getEditObject,
   postEditObject
 };

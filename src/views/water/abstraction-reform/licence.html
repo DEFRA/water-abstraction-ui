@@ -10,10 +10,40 @@
       <h1 class="heading-large">{{ pageTitle }} - {{ licence.LIC_NO }}</h1>
       <p>This shows the existing and updated version of the NALD licence.</p>
 
-      <h2 class="heading-medium">Purposes</h2>
 
-      {{#each purposes as |purpose| }}
-      <table id="purpose-{{ purpose.base.ID }}">
+      <h2 class="heading-medium" id="licence">Licence Data</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Original Value</th>
+            <th>New Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each data.licence.base }}
+        <tr>
+          <th>{{ @key }}</th>
+          <td>{{ this }}</td>
+          <td>
+            {{#notEqual this (lookup ../data.licence.reform @key )}}
+              {{lookup ../data.licence.reform @key }}
+            {{/notEqual}}
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
+
+      <br />
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}" class="button">Edit licence</a>
+
+
+      {{#each data.purposes as |purpose| }}
+
+      <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose</h2>
+
+      <table >
         <thead>
           <tr>
             <th>Field</th>

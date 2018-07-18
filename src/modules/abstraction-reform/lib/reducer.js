@@ -1,15 +1,15 @@
 const update = require('immutability-helper');
-const { EDIT_PURPOSE } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE } = require('./action-types');
 const { findIndex } = require('lodash');
 
 const reducer = (state, action) => {
   switch (action.type) {
     case EDIT_PURPOSE:
-
+    {
       const { purposeId, data } = action.payload;
 
       const index = findIndex(state.licence.data.current_version.purposes, (row) => {
-        return row.ID == purposeId;
+        return parseInt(row.ID) === parseInt(purposeId);
       });
 
       if (index === -1) {
@@ -31,6 +31,18 @@ const reducer = (state, action) => {
       };
 
       return update(state, query);
+    }
+
+    case EDIT_LICENCE:
+    {
+      const { data } = action.payload;
+      let query = {
+        licence: {
+          $merge: data
+        }
+      };
+      return update(state, query);
+    }
 
     default:
       return state;

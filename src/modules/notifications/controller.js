@@ -1,14 +1,11 @@
 'use strict';
 
-const Boom = require('boom');
-const notificationClient = require('../../lib/connectors/water-service/notifications');
-const { taskConfig } = require('../../lib/connectors/water');
-const TaskData = require('./task-data');
+const { Promise } = require('bluebird');
+const TaskData = require('./lib/task-data');
+const { getContext } = require('./lib/context.js');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
-const { sendNotification } = require('../../lib/connectors/water');
-const { lookup } = require('../../lib/connectors/water');
-const { Promise } = require('bluebird');
+const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
 
 /**
  * Renders page with list of notifications that can be selected
@@ -29,6 +26,28 @@ async function getIndex (request, reply) {
 }
 
 /**
+  * Helper handler for start flow
+  * @param {Object} request - HAPI HTTP request
+  * @param {Number} request.params.id - the task ID
+  * @param {Number} request.query.step - the step in the process - default to 0
+  * @param {Object} h - HAPI HTTP reply interface
+  * @param {Object} task - task config data from water service
+  */
+async function getStartFlow (request, h, task) {
+  const context = await getContext(request.auth.credentials.user_id);
+  const state = null;
+  const taskData = new TaskData(task, state, context);
+  request.sessionStore.set('notificationsFlow', taskData.getData());
+
+  // Redirect if contact details not set
+  if (!context.contactDetails.name) {
+    const url = encodeURIComponent(`/admin/notifications/${request.params.id}?start=1`);
+    return h.redirect(`/admin/notifications/contact?redirect=${url}`);
+  }
+  return renderStep(request, h, taskData, 0);
+}
+
+/**
  * View a step in the flow
  * @param {Object} request - HAPI HTTP request
  * @param {Number} request.params.id - the task ID
@@ -38,21 +57,22 @@ async function getIndex (request, reply) {
 async function getStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const start = parseInt(request.query.start, 10); // Are we starting the flow?
   const step = parseInt(request.query.step, 10);
+  const start = parseInt(request.query.start, 10);
 
   const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
   if (taskConfigError) {
-    return reply(taskConfigError);
+    throw new Error(taskConfigError);
   }
 
   if (start) {
-    request.sessionStore.delete('notificationsFlow');
+    return getStartFlow(request, reply, task);
   }
 
-  // Update task data
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const context = await getContext(request.auth.credentials.user_id);
+  const state = request.sessionStore.get('notificationsFlow');
 
+  const taskData = new TaskData(task, state, context);
   return renderStep(request, reply, taskData, step);
 }
 
@@ -146,7 +166,6 @@ async function getRefine (request, reply) {
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
-  // taskData.fromJson(request.query.data);
 
   // Build CRM query filter
   const filter = taskData.getFilter();
@@ -403,32 +422,6 @@ async function postSend (request, reply) {
   return reply.view('water/notifications/sent', view);
 }
 
-/**
- * Returns the last email message for a given email address.
- *
- * If no email for the requested address then then returns a 404.
- *
- * This function is here to facilitate acceptance tests and it
- * not currently used by the main applications. It's route is accessible
- * annonymously.
- *
- * @param {String} request.query.email - The email address to filter by,
- */
-async function findLastEmail (request, reply) {
-  try {
-    const { email } = request.query;
-    const data = await notificationClient.getLatestEmailByAddress(email);
-
-    if (data.data.length === 0) {
-      return reply(Boom.notFound(`No email found for ${email}`));
-    }
-
-    return reply(data);
-  } catch (error) {
-    reply(Boom.badImplementation('Error getting last email for user'));
-  }
-};
-
 module.exports = {
   getIndex,
   getStep,
@@ -438,6 +431,5 @@ module.exports = {
   getVariableData,
   postVariableData,
   getPreview,
-  postSend,
-  findLastEmail
+  postSend
 };

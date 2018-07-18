@@ -1,0 +1,24 @@
+<div class="form-group {{#if error.contactEmail }}form-group-error{{/if}}">
+  <label class="form-label-bold" for="contact-email">Contact email</label>
+  {{#if error.contactEmail}}
+    <span class="error-message">Please enter a valid email address</span>
+  {{/if}}
+  <input maxlength="254" name="contact-email" type="email" class="form-control" id="contact-email" value="{{ contactDetails.email }}" />
+</div>
+
+<div class="form-group {{#if error.contactTel }}form-group-error{{/if}}">
+  <label class="form-label-bold" for="contact-tel">Contact phone number</label>
+  {{#if error.contactTel}}
+    <span class="error-message">Please enter a valid telephone number</span>
+  {{/if}}
+  <input maxlength="254" name="contact-tel" type="tel" class="form-control" id="contact-tel" value="{{ contactDetails.tel }}" />
+</div>
+
+<div class="form-group {{#if error.contactAddress }}form-group-error{{/if}}">
+  <label class="form-label-bold" for="contact-address">Contact address</label>
+  {{#if error.contactAddress}}
+    <span class="error-message">Please enter a valid address</span>
+  {{/if}}
+
+  <textarea rows="7" maxlength="254" name="contact-address" class="form-control form-control-3-4" id="contact-address">{{ contactDetails.address }}</textarea>
+</div>

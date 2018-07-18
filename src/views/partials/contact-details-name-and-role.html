@@ -1,0 +1,15 @@
+<div class="form-group {{#if error.contactName }}form-group-error{{/if}}">
+  <label class="form-label-bold" for="contact-name">Your name</label>
+  {{#if error.contactName }}
+    <span class="error-message">Please enter a valid name</span>
+  {{/if}}
+  <input maxlength="254" name="contact-name" type="text" class="form-control" id="contact-name" value="{{ contactDetails.name }}" />
+</div>
+
+<div class="form-group {{#if error.contactJobTitle }}form-group-error{{/if}}">
+  <label class="form-label-bold" for="contact-job-title">Job title</label>
+  {{#if error.contactJobTitle}}
+    <span class="error-message">Please enter a valid job title</span>
+  {{/if}}
+  <input maxlength="254" name="contact-job-title" type="text" class="form-control" id="contact-job-title" value="{{ contactDetails.jobTitle }}" />
+</div>

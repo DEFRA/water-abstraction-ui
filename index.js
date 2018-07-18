@@ -1,202 +1,87 @@
 require('dotenv').config();
+
+// -------------- Require vendor code -----------------
+const Blipp = require('blipp');
+const Good = require('good');
 const GoodWinston = require('good-winston');
-
-// Configure logger - do this only once
-const logger = require('./src/lib/logger');
-logger.init({
-  level: 'info',
-  airbrakeKey: process.env.errbit_key,
-  airbrakeHost: process.env.errbit_server,
-  airbrakeLevel: 'error'
-});
-const goodWinstonStream = new GoodWinston({ winston: logger });
-
-const serverOptions = {
-  connections: {
-    router: {
-      stripTrailingSlash: true
-    }
-  }
-};
-
 const Hapi = require('hapi');
+const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiSanitizePayload = require('hapi-sanitize-payload');
+const Inert = require('inert');
+const Vision = require('vision');
 
-const server = new Hapi.Server(serverOptions);
-const SanitizePayload = require('hapi-sanitize-payload');
+// -------------- Require project code -----------------
+const config = require('./config');
+const { acl, ...plugins } = require('./src/lib/hapi-plugins');
+const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
+const routes = require('./src/modules/routes');
 
-server.connection({
-  port: process.env.PORT
-});
+// Initialise logger
+const logger = require('./src/lib/logger');
+const goodWinstonStream = new GoodWinston({ winston: logger });
+logger.init(config.logger);
 
-// logging options
-const goodOptions = {
-  ops: {
-    interval: 10000
-  },
-  reporters: {
-    winston: [goodWinstonStream]
-  }
-};
-
-server.register([{
-  register: require('good'),
-  options: goodOptions
-},
-{
-  // Plugin to display the routes table to console at startup
-  // See https://www.npmjs.com/package/blipp
-  register: require('blipp'),
-  options: {
-    showAuth: true
-  }
-}, {
-  register: require('hapi-auth-cookie')
-},
-{
-  // Session handling via water service
-  register: require('./src/lib/sessions/hapi-plugin.js'),
-  options: {}
-},
-{
-  // CSRF protection
-  register: require('./src/lib/hapi-csrf-plugin.js'),
-  options: {}
-},
-{
-  register: require('hapi-route-acl'),
-  options: {
-    permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
-  }
-},
-{
-  // Permissions handling
-  register: require('./src/lib/permissions.js').plugin,
-  options: {}
-},
-{
-  // Admin firewall plugin
-  register: require('./src/lib/hapi-admin-firewall-plugin.js'),
-  options: {}
-},
-{
-  // Custom error handling
-  register: require('./src/lib/hapi-error-plugin.js'),
-  options: {}
-},
-{
-  // View context plugin
-  register: require('./src/lib/hapi-view-context-plugin.js'),
-  options: {}
-},
-{
-  // Form validator plugin
-  register: require('./src/lib/hapi-form-validator-plugin.js'),
-  options: {}
-},
-{
-  // Config options plugin
-  register: require('./src/lib/hapi-config-plugin.js'),
-  options: {}
-},
-{
-  // Config options plugin
-  register: require('./src/lib/hapi-redirect-plugin.js'),
-  options: {}
-},
-{
-  // Holding page
-  register: require('./src/lib/hapi-holding-page-plugin.js'),
-  options: {
-    redirect: '/private-beta-closed',
-    ignore: /^\/public\//
-  }
-},
-{
-  // Plugin to recursively sanitize or prune values in a request.payload object
-  // See https://www.npmjs.com/package/hapi-sanitize-payload
-  register: SanitizePayload,
-  options: {
-    pruneMethod: 'replace',
-    replaceValue: ''
-  }
-},
-
-require('inert'), require('vision')
-], (err) => {
-  if (err) {
-    logger.error(err);
-    // console.error(err);
-  }
-
-  server.auth.strategy('standard', 'cookie', {
-    password: process.env.cookie_secret, // cookie secret
-    isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
-    isSameSite: 'Lax',
-    ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-    redirectTo: '/welcome',
-    isHttpOnly: true
-  });
-
-  // server.auth.default('standard');
-  server.auth.default({
-    strategy: 'standard',
-    mode: 'try'
-  });
-
-  // load views
-  server.views(require('./src/views'));
-  // load routes
-  server.route(require('./src/routes/public'));
-  server.route(require('./src/routes/VmL'));
-
-  // Import routes from modules
-  server.route(require('./src/modules/routes'));
-  server.route(require('./src/routes/status'));
-});
-
-server.errorHandler = function (error) {
-  logger.error(error);
-  throw error;
-};
+// Define server
+const server = Hapi.server(config.server);
 
 /**
-server.ext({
-  type: 'onPreHandler',
-  method (request, reply) {
-    if (request.path.indexOf('public') !== -1) {
-      // files in public dir are always online...
-      return reply.continue();
-    } else if (request.path === '/robots.txt') {
-      // robots.txt is always online because it's used for ELB healthcheck...
-      return reply.continue();
-    } else {
-    }
-    return reply.continue();
-  }
-});
-**/
+ * Async function to start HAPI server
+ */
+async function start () {
+  try {
+    // Third-party plugins
+    await server.register({
+      plugin: Good,
+      options: { ...config.good,
+        reporters: {
+          winston: [goodWinstonStream]
+        }
+      }
+    });
+    await server.register({
+      plugin: Blipp,
+      options: config.blipp
+    });
+    await server.register({
+      plugin: HapiAuthCookie
+    });
+    await server.register({
+      plugin: HapiSanitizePayload,
+      options: config.sanitize
+    });
+    await server.register([Inert, Vision]);
 
-server.ext({
-  type: 'onPostHandler',
-  method (request, reply) {
-    if ('headers' in request.response) {
-      request.response.headers['X-Frame-Options'] = 'DENY';
-      request.response.headers['X-Content-Type-Options'] = 'nosniff';
-      request.response.headers['X-XSS-Protection'] = '1';
-      request.response.headers['Strict-Transport-Security'] = 'max-age=86400; includeSubDomains';
-    }
-    return reply.continue();
-  }
-});
+    // App plugins
+    await server.register({
+      plugin: acl,
+      options: {
+        permissionsFunc
+      }
+    });
+    await server.register(Object.values(plugins));
 
-// Start the server if not testing with Lab
-if (!module.parent) {
-  server.start((err) => {
-    if (err) {
-      throw err;
-    }
-    console.log(`Service ${process.env.servicename} running at: ${server.info.uri}`);
-  });
+    // Set up auth strategies
+    server.auth.strategy('standard', 'cookie', {
+      ...config.hapiAuthCookie
+    });
+    server.auth.default('standard');
+
+    // Set up view location
+    server.views(require('./src/views'));
+
+    // Import routes
+    server.route(routes);
+
+    await server.start();
+
+    server.log(`Server started on ${server.info.uri} port ${server.info.port}`);
+  } catch (err) {
+    logger.error(err);
+  }
+
+  return server;
 }
+
+start();
 
 module.exports = server;

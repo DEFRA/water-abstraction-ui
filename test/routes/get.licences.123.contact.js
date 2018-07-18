@@ -10,7 +10,7 @@ const server = require('../../index');
 const user = { username: process.env.test_username, entity_id: process.env.test_entity_id };
 
 const guid = require('uuid/v1');
-const routePath = `/licences/${process.env.test_licence_id}/contact`;
+const routePath = `/licences/6e2118b7-fdce-49db-87f1-b2bade7bd8d0/contact`;
 const invalidPath = '/licences/123/contact';
 const notFoundPath = `/licences/${guid()}/contact`;
 

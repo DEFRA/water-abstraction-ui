@@ -1,0 +1,47 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <!-- page title -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <h1  class="heading-large">{{ pageTitle }}</h1>
+
+      {{#if error }}
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          {{>error-summary-heading description="There was a problem with some of the information entered" id="error-summary-heading"}}
+          <ul class="error-summary-list">
+            {{>error-summary-link hasError=error.contactName
+              id="contact-name" message="Enter a valid name"}}
+            {{>error-summary-link hasError=error.contactJobTitle
+              id="contact-job-title" message="Enter a valid job title"}}
+          </ul>
+        </div>
+      {{/if}}
+
+      <p>This is the information that will be available to your public contacts.</p>
+
+
+      <form method="POST" action="/admin/notifications/contact">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        <input type="hidden" name="redirect" value="{{ query.redirect }}" />
+{{> contact-details-name-and-role }}
+        <button type="submit" class="button">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- confirmation panel -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+    </div>
+  </div>
+
+</main>
+
+
+
+{{> footerjs}}
+{{> debug}}

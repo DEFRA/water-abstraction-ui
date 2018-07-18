@@ -92,7 +92,7 @@ async function postChangePassword (request, reply) {
     // Log user in
     await signIn.auto(request, user.user_name);
 
-    reply.redirect('/licences');
+    return reply.redirect('/licences');
   } catch (error) {
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }

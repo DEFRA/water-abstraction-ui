@@ -30,7 +30,6 @@
 
     <br />
 
-
   {{#equal licenceData.conditions.length 0}}
   <p>
   Sorry, we do not hold any information about your conditions on our system yet.
@@ -39,13 +38,9 @@
   </p>
   {{/equal}}
 
-
-
   {{#each licenceData.conditions }}
     {{>licence-condition this}}
   {{/each}}
-
-
 
 </main>
 {{> footerjs}}

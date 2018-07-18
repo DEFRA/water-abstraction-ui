@@ -79,6 +79,7 @@
     "randomatic": "^3.0.0",
     "request-promise-native": "^1.0.5",
     "sentence-case": "^2.1.1",
+    "shallow-diff": "0.0.5",
     "url-join": "^4.0.0",
     "vision": "^5.3.3",
     "winston": "^2.4.3"

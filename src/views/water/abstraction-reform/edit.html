@@ -1,0 +1,33 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <a class="link-back" href="/start">Back</a>
+
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+
+      <form method="POST" action="{{ formAction }}">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+
+      {{#each schema.properties }}
+
+      <div class="form-group">
+        <label class="form-label" for="{{@key}}">
+        {{@key}}
+        </label>
+        <input class="form-control" id="{{ @key }}" name="{{ @key }}" type="text" value="{{ lookup ../data @key }}">
+      </div>
+
+      {{/each}}
+
+      <button type="submit" class="button">Submit changes</button>
+      </form>
+
+    </div>
+  </div>
+</main>

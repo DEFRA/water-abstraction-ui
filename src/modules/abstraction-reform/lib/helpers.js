@@ -1,4 +1,4 @@
-const { pickBy, isArray, isObject } = require('lodash');
+const { pickBy, isArray, isObject, mapValues } = require('lodash');
 
 /**
  * Returns obj with non-scalar values removed
@@ -11,6 +11,26 @@ const filterScalars = (obj) => {
   });
 };
 
+/**
+ * A function that generates a simple JSON schema as a starting point for the supplied object
+ * all fields are set to strings
+ * @param {Object} obj
+ * @return {Object} JSON schema
+ */
+const generateJsonSchema = (obj) => {
+  const schema = {
+    type: 'object',
+    properties: mapValues(obj, (value) => {
+      return {
+        type: 'string'
+      };
+    })
+  };
+
+  return schema;
+};
+
 module.exports = {
-  filterScalars
+  filterScalars,
+  generateJsonSchema
 };

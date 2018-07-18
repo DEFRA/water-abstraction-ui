@@ -1,6 +1,7 @@
 const Boom = require('boom');
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
+const { stateManager } = require('./state-manager');
 
 /**
  * Loads or creates an abstraction reform "licence" for the specified
@@ -72,6 +73,50 @@ const loadLicence = async (documentId) => {
   };
 };
 
+/**
+ * Load all data required in AR screens, resolves with:
+ *
+ * - licence - the abstraction licence
+ * - arLicence - the abstraction reform licence containing action list
+ * - finalState - the result of running the licence and AR through the reducer
+ *
+ * @param {String} documentId - the CRM document ID
+ * @return {Promise} resolves with {licence, arLicence, finalState }
+ */
+const load = async (documentId) => {
+  const { licence, arLicence } = await loadLicence(documentId);
+
+  // Setup initial state
+  const initialState = {
+    licence: licence.licence_data_value
+  };
+
+  // Calculate final state after actions applied
+  const finalState = stateManager(initialState, arLicence.licence_data_value.actions);
+
+  return {
+    licence,
+    arLicence,
+    finalState
+  };
+};
+
+/**
+ * Updates AR licence with new actions list
+ * @param {String} licenceRef
+ * @param {Array} actions
+ * @return {Promise}
+ */
+const update = async (licenceId, actions) => {
+  const data = {
+    licence_data_value: JSON.stringify({
+      actions
+    })
+  };
+  return licences.updateOne(licenceId, data);
+};
+
 module.exports = {
-  loadLicence
+  load,
+  update
 };

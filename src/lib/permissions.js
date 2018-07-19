@@ -63,6 +63,11 @@ async function getPermissions (credentials) {
       defra: false,
       project: false,
       system: false
+    },
+    ar: {
+      admin: false,
+      approver: false,
+      user: false
     }
   };
 
@@ -90,6 +95,22 @@ async function getPermissions (credentials) {
     if (isSysAdmin) {
       permissions.admin.system = true;
     }
+    const isArAdmin = roles.find(r => r.role === 'ar_admin');
+    if (isArAdmin) {
+      permissions.ar.admin = true;
+    }
+
+    const isArApprover = roles.find(r => r.role === 'ar_approver');
+    if (isArApprover) {
+      permissions.ar.approver = true;
+    }
+
+    const isArUser = roles.find(r => r.role === 'ar_user');
+    if (isArUser) {
+      permissions.ar.user = true;
+    }
+
+    console.log(entityId, permissions);
   }
 
   return permissions;

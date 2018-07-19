@@ -7,8 +7,11 @@
 
   <div class="grid-row">
     <div class="column-full">
-      <h1 class="heading-large">{{ pageTitle }} - {{ licence.LIC_NO }}</h1>
-      <p>This shows the existing and updated version of the NALD licence.</p>
+
+      <h1 class="heading-xlarge">
+          <span class="heading-secondary">Review licence data</span>
+          {{ licence.licence_data_value.LIC_NO }}
+      </h1>
 
       <h2 class="heading-medium" id="licence">Licence Data</h2>
 
@@ -17,8 +20,8 @@
       <table>
         <thead>
           <tr>
-            <th>Field</th>
-            <th>Original Value</th>
+            <th>NALD Field</th>
+            <th>NALD data</th>
             <th>New Value</th>
           </tr>
         </thead>
@@ -50,8 +53,8 @@
       <table>
         <thead>
           <tr>
-            <th>Field</th>
-            <th>Original Value</th>
+            <th>NALD Field</th>
+            <th>NALD data</th>
             <th>New Value</th>
           </tr>
         </thead>

@@ -37,8 +37,6 @@ const getViewLicences = async (request, h) => {
     view.pagination = pagination;
   }
 
-  console.log(view.licences);
-
   return h.view('water/abstraction-reform/index', view);
 };
 
@@ -53,8 +51,6 @@ const getViewLicence = async (request, h) => {
   const { licence, finalState } = await load(documentId);
 
   const data = prepareData(licence, finalState);
-
-  // require('fs').writeFileSync('schema.json', JSON.stringify(generateJsonSchema(data.licence.base), null, 2));
 
   const view = {
     documentId,

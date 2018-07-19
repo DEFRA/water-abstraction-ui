@@ -1,5 +1,5 @@
 const { load, update } = require('./lib/loader');
-const { filterScalars, generateJsonSchema, extractData } = require('./lib/helpers');
+const { filterScalars, generateJsonSchema, extractData, transformNulls } = require('./lib/helpers');
 const { getPurposes, getPurpose, getLicence } = require('./lib/licence-helpers');
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
@@ -99,7 +99,9 @@ const getEditObject = async (request, h) => {
 
 const postEditObject = async (request, h) => {
   const { documentId, type, id } = request.params;
-  const { csrf_token: csrfToken, ...payload } = request.payload;
+  const { csrf_token: csrfToken, ...rawPayload } = request.payload;
+
+  const payload = transformNulls(rawPayload);
 
   // Load licence / AR licence from CRM
   const { arLicence, finalState } = await load(documentId);

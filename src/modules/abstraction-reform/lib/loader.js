@@ -2,6 +2,7 @@ const Boom = require('boom');
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
 const { stateManager } = require('./state-manager');
+const { transformNulls } = require('./helpers');
 
 /**
  * Loads or creates an abstraction reform "licence" for the specified
@@ -67,8 +68,13 @@ const loadLicence = async (documentId) => {
 
   const arLicence = await loadOrCreateARLicence(permitData.licence_ref);
 
+  console.log(JSON.stringify(arLicence, null, 2));
+
   return {
-    licence: permitData,
+    licence: {
+      ...permitData,
+      licence_data_value: transformNulls(permitData.licence_data_value)
+    },
     arLicence
   };
 };

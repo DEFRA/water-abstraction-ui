@@ -1,4 +1,5 @@
 const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
+const deepMap = require('deep-map');
 
 /**
  * Returns obj with non-scalar values removed
@@ -8,6 +9,21 @@ const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
 const filterScalars = (obj) => {
   return pickBy(obj, (val) => {
     return !(isArray(val) || isObject(val));
+  });
+};
+
+/**
+ * Convert 'null' or '' string to real null
+ * @param {Object} data
+ * @return {Object} with any 'null' converted to null
+ */
+const transformNulls = (data) => {
+  return deepMap(data, (val) => {
+    // Convert string null to real null
+    if (typeof (val) === 'string' && (val === '' || val === 'null')) {
+      return null;
+    }
+    return val;
   });
 };
 
@@ -44,5 +60,6 @@ const extractData = (object, schema) => {
 module.exports = {
   filterScalars,
   generateJsonSchema,
-  extractData
+  extractData,
+  transformNulls
 };

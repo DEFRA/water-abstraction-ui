@@ -5,11 +5,18 @@ const formatUser = (user) => {
   return {id, email};
 };
 
+/**
+ * Edits the purpose of a licence
+ * @param {Object} data - key/value pairs of purpose data to edit
+ * @param {Object} user - the current user of the application
+ * @param {Number} id - the purpose ID
+ * @return {Object} action to edit purpose
+ */
 const createEditPurpose = (data, user, id) => {
   return {
     type: EDIT_PURPOSE,
     payload: {
-      purposeId: id,
+      purposeId: parseInt(id),
       data,
       user: formatUser(user),
       timestamp: Date.now()
@@ -17,6 +24,12 @@ const createEditPurpose = (data, user, id) => {
   };
 };
 
+/**
+ * Edits the base licence data
+ * @param {Object} data - key/value pairs of data to edit
+ * @param {Object} user - the current user of the application
+ * @return {Object} action to edit licence base data
+ */
 const createEditLicence = (data, user) => {
   return {
     type: EDIT_LICENCE,

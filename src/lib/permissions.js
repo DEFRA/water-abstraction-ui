@@ -65,9 +65,9 @@ async function getPermissions (credentials) {
       system: false
     },
     ar: {
-      admin: false,
-      approver: false,
-      user: false
+      read: false,
+      edit: false,
+      approve: false
     }
   };
 
@@ -95,22 +95,19 @@ async function getPermissions (credentials) {
     if (isSysAdmin) {
       permissions.admin.system = true;
     }
-    const isArAdmin = roles.find(r => r.role === 'ar_admin');
-    if (isArAdmin) {
-      permissions.ar.admin = true;
-    }
 
     const isArApprover = roles.find(r => r.role === 'ar_approver');
     if (isArApprover) {
-      permissions.ar.approver = true;
+      permissions.ar.view = true;
+      permissions.ar.edit = true;
+      permissions.ar.approve = true;
     }
 
     const isArUser = roles.find(r => r.role === 'ar_user');
     if (isArUser) {
-      permissions.ar.user = true;
+      permissions.ar.view = true;
+      permissions.ar.edit = true;
     }
-
-    console.log(entityId, permissions);
   }
 
   return permissions;

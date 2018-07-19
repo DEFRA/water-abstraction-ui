@@ -10,7 +10,11 @@ module.exports = {
       description: 'Entrance search page for abstraction reform',
       plugins: {
         viewContext: {
-          pageTitle: 'Review licence data'
+          pageTitle: 'Review licence data',
+          activeNavLink: 'ar'
+        },
+        hapiRouteAcl: {
+          permissions: ['ar:view']
         }
       }
     }
@@ -24,7 +28,11 @@ module.exports = {
       description: 'Page to view comparison of permit repo licence with AR version',
       plugins: {
         viewContext: {
-          pageTitle: 'View licence'
+          pageTitle: 'View licence',
+          activeNavLink: 'ar'
+        },
+        hapiRouteAcl: {
+          permissions: ['ar:view']
         }
       }
     }
@@ -38,7 +46,11 @@ module.exports = {
       description: 'Edit an object within the licence',
       plugins: {
         viewContext: {
-          pageTitle: 'Edit'
+          pageTitle: 'Edit',
+          activeNavLink: 'ar'
+        },
+        hapiRouteAcl: {
+          permissions: ['ar:edit']
         }
       }
     }
@@ -49,7 +61,12 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id}',
     handler: controller.postEditObject,
     config: {
-      description: 'Post handler: edit an object within the licence'
+      description: 'Post handler: edit an object within the licence',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['ar:edit']
+        }
+      }
     }
   }
 

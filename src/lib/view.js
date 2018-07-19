@@ -54,6 +54,15 @@ function viewContextDefaults (request) {
         url: '/admin/notifications'
       });
     }
+
+    // Abstraction reform
+    if (request.permissions.ar.view) {
+      viewContext.mainNavLinks.push({
+        id: 'ar',
+        text: 'Abstraction reform',
+        url: '/admin/abstraction-reform'
+      });
+    }
   } else {
     if (request.permissions && request.permissions.licences.read) {
       viewContext.mainNavLinks.push({

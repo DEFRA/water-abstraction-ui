@@ -22,7 +22,9 @@ table thead th {
 
       <h2 class="heading-medium" id="licence">Licence Data</h2>
 
+      {{#if canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}#{{ @key }}">Edit licence data</a>
+      {{/if}}
 
       <table>
         <thead>
@@ -55,7 +57,9 @@ table thead th {
 
       <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose</h2>
 
+      {{#if canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
+      {{/if}}
 
       <table>
         <thead>
@@ -91,7 +95,9 @@ table thead th {
 
       <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point</h2>
 
+      {{#if canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
+      {{/if}}
 
       <table>
         <thead>
@@ -119,40 +125,64 @@ table thead th {
 
       {{/each}}
 
+      {{#each data.conditions as |condition| }}
+
+      <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition</h2>
 
 
+      {{#if canEdit }}
+      <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
+      {{/if}}
 
-            {{#each data.conditions as |condition| }}
+      <table>
+        <thead>
+          <tr>
+            <th>NALD Field</th>
+            <th>NALD data</th>
+            <th>New Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each condition.base }}
+        <tr>
+          <th>{{ @key }}</th>
+          <td>{{ this }}</td>
+          <td>{{#notEqual this (lookup condition.reform @key )}}
+            {{lookup condition.reform @key }}
+              {{/notEqual}}
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
 
-            <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition</h2>
+      <br />
 
-            <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
+      {{/each}}
+    </div>
+  </div>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>NALD Field</th>
-                  <th>NALD data</th>
-                  <th>New Value</th>
-                </tr>
-              </thead>
-              <tbody>
-              {{#each condition.base }}
-              <tr>
-                <th>{{ @key }}</th>
-                <td>{{ this }}</td>
-                <td>{{#notEqual this (lookup condition.reform @key )}}
-                  {{lookup condition.reform @key }}
-                    {{/notEqual}}
-                </td>
-              </tr>
-              {{/each}}
-              </tbody>
-            </table>
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-large">Workflow</h2>
 
-            <br />
 
-            {{/each}}
+      <!-- Submit for review -->
+      <form method="POST" action="/admin/abstraction-reform/licence/{{ documentId }}/status">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        <div class="form-group">
+          <label class="form-label" for="notes">
+            Notes about these changes (optional)
+          </label>
+          <textarea class="form-control form-control-3-4" name="notes" id="notes" rows="5"></textarea>
+        </div>
+
+        <input name="status" value="In review" type="hidden" />
+
+        <button type="submit" class="button">Submit for approval</button>
+
+      </form>
 
 
     </div>

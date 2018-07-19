@@ -1,4 +1,6 @@
+const Joi = require('joi');
 const controller = require('./controller');
+const statuses = require('./lib/statuses');
 
 module.exports = {
 
@@ -62,6 +64,27 @@ module.exports = {
     handler: controller.postEditObject,
     config: {
       description: 'Post handler: edit an object within the licence',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['ar:edit']
+        }
+      }
+    }
+  },
+
+  postSetStatus: {
+    method: 'POST',
+    path: '/admin/abstraction-reform/licence/{documentId}/status',
+    handler: controller.postSetStatus,
+    config: {
+      description: 'Post handler: set document status',
+      validate: {
+        payload: {
+          csrf_token: Joi.string().guid().required(),
+          status: Joi.string().valid(Object.values(statuses)),
+          notes: Joi.string()
+        }
+      },
       plugins: {
         hapiRouteAcl: {
           permissions: ['ar:edit']

@@ -1,4 +1,5 @@
 const reducer = require('./reducer');
+const { STATUS_IN_PROGRESS } = require('./statuses');
 
 /**
  * Gets initial state for the specified licence row from the permit repo
@@ -7,7 +8,8 @@ const reducer = require('./reducer');
  */
 const getInitialState = (licence) => {
   return {
-    licence: licence.licence_data_value
+    licence: licence.licence_data_value,
+    status: STATUS_IN_PROGRESS
   };
 };
 

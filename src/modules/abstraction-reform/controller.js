@@ -4,9 +4,10 @@ const shallowDiff = require('shallow-diff');
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
 const { getPurpose, getLicence, getPoint, getCondition } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition } = require('./lib/action-creators');
+const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
 const { search } = require('./lib/search');
+const { STATUS_IN_PROGRESS } = require('./lib/statuses');
 
 // Config for editing different data models
 const objectConfig = {
@@ -61,6 +62,10 @@ const getViewLicence = async (request, h) => {
 
   const data = prepareData(licence, finalState);
 
+  // User can only edit if no status / in progress
+  const canEdit = finalState.status === STATUS_IN_PROGRESS;
+  const canReview = request.permissions.ar.review;
+
   // const { generateJsonSchema } = require('./lib/helpers');
   // const path = require('path');
   // const fs = require('fs');
@@ -70,7 +75,9 @@ const getViewLicence = async (request, h) => {
     documentId,
     ...request.view,
     licence,
-    data
+    data,
+    canEdit,
+    canReview
   };
 
   return h.view('water/abstraction-reform/licence', view);
@@ -104,6 +111,9 @@ const getEditObject = async (request, h) => {
   return h.view('water/abstraction-reform/edit', view);
 };
 
+/**
+ * Edits a licence/purpose/point/condition etc.
+ */
 const postEditObject = async (request, h) => {
   const { documentId, type, id } = request.params;
   const { csrf_token: csrfToken, ...rawPayload } = request.payload;
@@ -137,9 +147,39 @@ const postEditObject = async (request, h) => {
   return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${type}-${id}`);
 };
 
+/**
+ * Sets document status to a different workflow status
+ * @param {String} request.params.documentId - the CRM document ID
+ * @param {String} request.payload.notes - optional notes
+ * @param {String} request.payload.status - new status for document
+ */
+const postSetStatus = async (request, h) => {
+  const { documentId } = request.params;
+  const { notes, status } = request.payload;
+
+  // Load licence / AR licence from CRM
+  const { licence, arLicence } = await load(documentId);
+
+  // Add new action to list
+  const action = createSetStatus(status, notes, request.auth.credentials);
+  const { actions } = arLicence.licence_data_value;
+  actions.push(action);
+
+  // Re-calculate final state
+  // This is so we can get the status and last editor details and store these
+  // Calculate final state from list of actions to update last editor/status
+  const { lastEdit } = stateManager(getInitialState(licence), actions);
+
+  // Save action list to permit repo
+  await update(arLicence.licence_id, {actions, status, lastEdit});
+
+  return h.redirect(`/admin/abstraction-reform`);
+};
+
 module.exports = {
   getViewLicences,
   getViewLicence,
   getEditObject,
-  postEditObject
+  postEditObject,
+  postSetStatus
 };

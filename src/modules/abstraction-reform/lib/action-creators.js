@@ -1,4 +1,4 @@
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
@@ -79,9 +79,29 @@ const createEditCondition = (data, user, id) => {
   };
 };
 
+/**
+ * Edits the condition of a licence
+ * @param {String} status - the new status
+ * @param {String} notes - notes to record with the status change
+ * @param {Object} user - the current user of the application
+ * @return {Object} action to edit condition
+ */
+const createSetStatus = (status, notes, user) => {
+  return {
+    type: SET_STATUS,
+    payload: {
+      status,
+      notes,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
   createEditPoint,
-  createEditCondition
+  createEditCondition,
+  createSetStatus
 };

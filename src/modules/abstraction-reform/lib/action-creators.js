@@ -1,3 +1,4 @@
+const statuses = require('./statuses');
 const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
 
 const formatUser = (user) => {
@@ -87,6 +88,10 @@ const createEditCondition = (data, user, id) => {
  * @return {Object} action to edit condition
  */
 const createSetStatus = (status, notes, user) => {
+  if (!Object.values(statuses).includes(status)) {
+    throw new Error(`Invalid AR status ${status}`);
+  }
+
   return {
     type: SET_STATUS,
     payload: {

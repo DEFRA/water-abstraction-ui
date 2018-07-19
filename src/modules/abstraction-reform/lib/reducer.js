@@ -1,5 +1,5 @@
 const update = require('immutability-helper');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./statuses');
 const { findIndex } = require('lodash');
 
@@ -143,6 +143,29 @@ const reducer = (state, action) => {
           }
         });
       });
+
+      return update(state, query);
+    }
+
+    case SET_STATUS:
+    {
+      const { status, notes, user, timestamp } = action.payload;
+
+      const query = {
+        status: {
+          $set: status
+        }
+      };
+
+      if (notes) {
+        query.notes = {
+          $push: [{
+            notes,
+            user,
+            timestamp
+          }]
+        };
+      }
 
       return update(state, query);
     }

@@ -96,13 +96,12 @@ const prepareData = (licence, finalState) => {
     };
   });
 
-  console.log(conditions);
-
   return {
     licence: base,
     purposes,
     points,
-    conditions
+    conditions,
+    notes: finalState.notes
   };
 };
 

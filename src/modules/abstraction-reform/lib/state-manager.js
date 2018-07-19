@@ -9,7 +9,8 @@ const { STATUS_IN_PROGRESS } = require('./statuses');
 const getInitialState = (licence) => {
   return {
     licence: licence.licence_data_value,
-    status: STATUS_IN_PROGRESS
+    status: STATUS_IN_PROGRESS,
+    notes: []
   };
 };
 

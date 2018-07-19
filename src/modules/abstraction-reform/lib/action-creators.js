@@ -91,7 +91,7 @@ const createSetStatus = (status, notes, user) => {
     type: SET_STATUS,
     payload: {
       status,
-      notes,
+      notes: notes.trim() || null,
       user: formatUser(user),
       timestamp: Date.now()
     }

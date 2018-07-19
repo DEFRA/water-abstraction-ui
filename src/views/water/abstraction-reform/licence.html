@@ -20,6 +20,27 @@ table thead th {
           {{ licence.licence_data_value.LIC_NO }}
       </h1>
 
+
+
+      {{# if data.notes }}
+      <details role="group" >
+        <summary role="button" aria-controls="details-content-0" aria-expanded="true"><span class="summary">Notes about these edits</span></summary>
+
+        {{# each data.notes }}
+          <div class="panel panel-border-wide" id="details-content-0" aria-hidden="false">
+            <p>
+              {{ notes }}
+            </p>
+            <h2 class="heading-small spaceless">{{ user.email }}, {{ formatISODate timestamp }}</h2>
+          </div>
+        {{/each}}
+        </details>
+
+        <br />
+        <br />
+      {{/if}}
+
+
       <h2 class="heading-medium" id="licence">Licence Data</h2>
 
       {{#if canEdit }}

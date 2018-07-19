@@ -54,10 +54,34 @@ const getPoint = (data, pointId) => {
   return find(getPoints(data), {ID: pointId});
 };
 
+/**
+ * Get conditions from licence
+ * @param {Object} data - permit data for licence
+ * @return {Array} array of licence conditions
+ */
+const getConditions = (data) => {
+  const purposes = getPurposes(data);
+  return purposes.reduce((acc, purpose) => {
+    return [...acc, ...purpose.licenceConditions];
+  }, []);
+};
+
+/**
+ * Get a single condition
+ * @param {Object} data - all licence data
+ * @param {String} conditionId - the condition ID
+ * @return {Object} condition
+ */
+const getCondition = (data, conditionId) => {
+  return find(getConditions(data), {ID: conditionId});
+};
+
 module.exports = {
   getPurposes,
   getPurpose,
   getLicence,
   getPoints,
-  getPoint
+  getPoint,
+  getConditions,
+  getCondition
 };

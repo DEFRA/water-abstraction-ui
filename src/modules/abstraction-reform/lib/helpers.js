@@ -1,6 +1,6 @@
 const deepMap = require('deep-map');
 const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
-const { getPurposes, getPoints } = require('./licence-helpers');
+const { getPurposes, getPoints, getConditions } = require('./licence-helpers');
 
 /**
  * Returns obj with non-scalar values removed
@@ -88,10 +88,21 @@ const prepareData = (licence, finalState) => {
     };
   });
 
+  // Conditions
+  const conditions = getConditions(licence.licence_data_value).map((condition, index) => {
+    return {
+      base: filterScalars(condition),
+      reform: filterScalars(getConditions(finalState.licence)[index])
+    };
+  });
+
+  console.log(conditions);
+
   return {
     licence: base,
     purposes,
-    points
+    points,
+    conditions
   };
 };
 

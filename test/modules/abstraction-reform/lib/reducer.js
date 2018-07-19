@@ -2,7 +2,7 @@ const Lab = require('lab');
 const { expect } = require('code');
 
 const reducer = require('../../../../src/modules/abstraction-reform/lib/reducer');
-const { createEditLicence, createEditPurpose, createEditPoint } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
+const { createEditLicence, createEditPurpose, createEditPoint, createEditCondition } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
 const lab = exports.lab = Lab.script();
@@ -43,6 +43,17 @@ lab.experiment('Test abstraction reform reducer', () => {
     const nextState = reducer({ licence }, action);
 
     expect(nextState.licence.data.current_version.purposes[0].purposePoints[0].point_detail.LOCAL_NAME).to.equal('Duck pond');
+    expect(nextState.status).to.equal('In progress');
+  });
+
+  lab.test('Test editing condition', async () => {
+    const action = createEditCondition({
+      PARAM1: 'SG 987 123'
+    }, user, '1000000007');
+
+    const nextState = reducer({ licence }, action);
+
+    expect(nextState.licence.data.current_version.purposes[0].licenceConditions[0].PARAM1).to.equal('SG 987 123');
     expect(nextState.status).to.equal('In progress');
   });
 });

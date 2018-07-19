@@ -3,8 +3,8 @@ const shallowDiff = require('shallow-diff');
 
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
-const { getPurpose, getLicence, getPoint } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint } = require('./lib/action-creators');
+const { getPurpose, getLicence, getPoint, getCondition } = require('./lib/licence-helpers');
+const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
 const { search } = require('./lib/search');
 
@@ -24,6 +24,11 @@ const objectConfig = {
     schema: require('./schema/point.json'),
     getter: getPoint,
     actionCreator: createEditPoint
+  },
+  condition: {
+    schema: require('./schema/condition.json'),
+    getter: getCondition,
+    actionCreator: createEditCondition
   }
 };
 
@@ -59,7 +64,7 @@ const getViewLicence = async (request, h) => {
   // const { generateJsonSchema } = require('./lib/helpers');
   // const path = require('path');
   // const fs = require('fs');
-  // fs.writeFileSync(path.join(__dirname, 'schema/point.json'), JSON.stringify(generateJsonSchema(data.points[0].base), null, 2));
+  // fs.writeFileSync(path.join(__dirname, 'schema/condition.json'), JSON.stringify(generateJsonSchema(data.conditions[0].base), null, 2));
 
   const view = {
     documentId,

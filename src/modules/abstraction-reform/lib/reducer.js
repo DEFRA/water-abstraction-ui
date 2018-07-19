@@ -1,5 +1,5 @@
 const update = require('immutability-helper');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION } = require('./action-types');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./statuses');
 const { findIndex } = require('lodash');
 
@@ -96,6 +96,47 @@ const reducer = (state, action) => {
                   point_detail: {
                     $merge: data
                   }
+                }
+              }
+            };
+          }
+        });
+      });
+
+      return update(state, query);
+    }
+
+    case EDIT_CONDITION:
+    {
+      const { conditionId, data, user, timestamp } = action.payload;
+
+      const query = {
+        status: {
+          $set: STATUS_IN_PROGRESS
+        },
+        lastEdit: {
+          $set: {
+            user,
+            timestamp
+          }
+        },
+        licence: {
+          data: {
+            current_version: {
+              purposes: {
+              }
+            }
+          }
+        }
+      };
+
+      state.licence.data.current_version.purposes.forEach((purpose, i) => {
+        purpose.licenceConditions.forEach((condition, j) => {
+          if (parseInt(condition.ID) === parseInt(conditionId)) {
+            query.licence.data.current_version.purposes[i] = {
+              licenceConditions: {
+                [j]: {
+                  $merge: data
                 }
               }
             };

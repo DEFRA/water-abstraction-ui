@@ -1,4 +1,11 @@
 {{> styles}}
+
+<style type="text/css">
+table thead th {
+   width: 33%;
+}
+</style>
+
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}
   {{>element-main-nav}}
@@ -113,6 +120,39 @@
       {{/each}}
 
 
+
+
+            {{#each data.conditions as |condition| }}
+
+            <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition</h2>
+
+            <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>NALD Field</th>
+                  <th>NALD data</th>
+                  <th>New Value</th>
+                </tr>
+              </thead>
+              <tbody>
+              {{#each condition.base }}
+              <tr>
+                <th>{{ @key }}</th>
+                <td>{{ this }}</td>
+                <td>{{#notEqual this (lookup condition.reform @key )}}
+                  {{lookup condition.reform @key }}
+                    {{/notEqual}}
+                </td>
+              </tr>
+              {{/each}}
+              </tbody>
+            </table>
+
+            <br />
+
+            {{/each}}
 
 
     </div>

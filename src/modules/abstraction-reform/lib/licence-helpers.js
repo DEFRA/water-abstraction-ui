@@ -32,16 +32,32 @@ const getLicence = (data) => {
 };
 
 /**
- * Get points
+ * Gets points from the supplied licence data
  * @param {Object} data - permit data for licence
- * @return {Array} array of points
+ * @return {Array} array of licence points
  */
 const getPoints = (data) => {
-  return data.data.current_version.purposes;
+  const purposes = getPurposes(data);
+  return purposes.reduce((acc, purpose) => {
+    const points = purpose.purposePoints.map(row => row.point_detail);
+    return [...acc, ...points];
+  }, []);
+};
+
+/**
+ * Get a single point
+ * @param {Object} data - all licence data
+ * @param {String} pointId - the point ID
+ * @return {Object} point
+ */
+const getPoint = (data, pointId) => {
+  return find(getPoints(data), {ID: pointId});
 };
 
 module.exports = {
   getPurposes,
   getPurpose,
-  getLicence
+  getLicence,
+  getPoints,
+  getPoint
 };

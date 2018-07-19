@@ -1,4 +1,4 @@
-const { EDIT_PURPOSE, EDIT_LICENCE } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT } = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
@@ -41,7 +41,27 @@ const createEditLicence = (data, user) => {
   };
 };
 
+/**
+ * Edits the point of a licence
+ * @param {Object} data - key/value pairs of purpose data to edit
+ * @param {Object} user - the current user of the application
+ * @param {Number} id - the point ID
+ * @return {Object} action to edit purpose
+ */
+const createEditPoint = (data, user, id) => {
+  return {
+    type: EDIT_POINT,
+    payload: {
+      pointId: parseInt(id),
+      data,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
-  createEditLicence
+  createEditLicence,
+  createEditPoint
 };

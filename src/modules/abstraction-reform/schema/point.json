@@ -1,0 +1,119 @@
+{
+  "type": "object",
+  "properties": {
+    "DEPTH": {
+      "type": "string"
+    },
+    "NOTES": {
+      "type": "string"
+    },
+    "BGS_NO": {
+      "type": "string"
+    },
+    "WRB_NO": {
+      "type": "string"
+    },
+    "AADD_ID": {
+      "type": "string"
+    },
+    "DISABLED": {
+      "type": "string"
+    },
+    "AAPC_CODE": {
+      "type": "string"
+    },
+    "ABAN_CODE": {
+      "type": "string"
+    },
+    "ASRC_CODE": {
+      "type": "string"
+    },
+    "HYDRO_REF": {
+      "type": "string"
+    },
+    "NGR1_EAST": {
+      "type": "string"
+    },
+    "NGR2_EAST": {
+      "type": "string"
+    },
+    "NGR3_EAST": {
+      "type": "string"
+    },
+    "NGR4_EAST": {
+      "type": "string"
+    },
+    "CART1_EAST": {
+      "type": "string"
+    },
+    "CART2_EAST": {
+      "type": "string"
+    },
+    "CART3_EAST": {
+      "type": "string"
+    },
+    "CART4_EAST": {
+      "type": "string"
+    },
+    "LOCAL_NAME": {
+      "type": "string"
+    },
+    "NGR1_NORTH": {
+      "type": "string"
+    },
+    "NGR1_SHEET": {
+      "type": "string"
+    },
+    "NGR2_NORTH": {
+      "type": "string"
+    },
+    "NGR2_SHEET": {
+      "type": "string"
+    },
+    "NGR3_NORTH": {
+      "type": "string"
+    },
+    "NGR3_SHEET": {
+      "type": "string"
+    },
+    "NGR4_NORTH": {
+      "type": "string"
+    },
+    "NGR4_SHEET": {
+      "type": "string"
+    },
+    "CART1_NORTH": {
+      "type": "string"
+    },
+    "CART2_NORTH": {
+      "type": "string"
+    },
+    "CART3_NORTH": {
+      "type": "string"
+    },
+    "CART4_NORTH": {
+      "type": "string"
+    },
+    "LOCATION_TEXT": {
+      "type": "string"
+    },
+    "AAPT_APTP_CODE": {
+      "type": "string"
+    },
+    "AAPT_APTS_CODE": {
+      "type": "string"
+    },
+    "LOCAL_NAME_WELSH": {
+      "type": "string"
+    },
+    "REG_WELL_INDEX_REF": {
+      "type": "string"
+    },
+    "HYDRO_GW_OFFSET_DIST": {
+      "type": "string"
+    },
+    "HYDRO_INTERCEPT_DIST": {
+      "type": "string"
+    }
+  }
+}

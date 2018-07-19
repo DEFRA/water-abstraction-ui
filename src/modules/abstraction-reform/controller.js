@@ -1,25 +1,29 @@
-const Boom = require('boom');
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
-const { getPurpose, getLicence } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence } = require('./lib/action-creators');
+const { getPurpose, getLicence, getPoint } = require('./lib/licence-helpers');
+const { createEditPurpose, createEditLicence, createEditPoint } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
 const { search } = require('./lib/search');
 
 // Config for editing different data models
 const objectConfig = {
+  licence: {
+    schema: require('./schema/licence.json'),
+    getter: getLicence,
+    actionCreator: createEditLicence
+  },
   purpose: {
     schema: require('./schema/purpose.json'),
     getter: getPurpose,
     actionCreator: createEditPurpose
   },
-  licence: {
-    schema: require('./schema/licence.json'),
-    getter: getLicence,
-    actionCreator: createEditLicence
+  point: {
+    schema: require('./schema/point.json'),
+    getter: getPoint,
+    actionCreator: createEditPoint
   }
 };
 
@@ -51,6 +55,11 @@ const getViewLicence = async (request, h) => {
   const { licence, finalState } = await load(documentId);
 
   const data = prepareData(licence, finalState);
+
+  // const { generateJsonSchema } = require('./lib/helpers');
+  // const path = require('path');
+  // const fs = require('fs');
+  // fs.writeFileSync(path.join(__dirname, 'schema/point.json'), JSON.stringify(generateJsonSchema(data.points[0].base), null, 2));
 
   const view = {
     documentId,

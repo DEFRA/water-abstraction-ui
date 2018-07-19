@@ -76,6 +76,45 @@
 
       {{/each}}
 
+
+
+
+
+      {{#each data.points as |point| }}
+
+      <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point</h2>
+
+      <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
+
+      <table>
+        <thead>
+          <tr>
+            <th>NALD Field</th>
+            <th>NALD data</th>
+            <th>New Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each point.base }}
+        <tr>
+          <th>{{ @key }}</th>
+          <td>{{ this }}</td>
+          <td>{{#notEqual this (lookup point.reform @key )}}
+            {{lookup point.reform @key }}
+              {{/notEqual}}
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
+
+      <br />
+
+      {{/each}}
+
+
+
+
     </div>
   </div>
 </main>

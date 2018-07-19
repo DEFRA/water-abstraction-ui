@@ -19,6 +19,7 @@ lab.experiment('Test abstraction reform reducer', () => {
     }, user);
     const nextState = reducer({ licence }, action);
     expect(nextState.licence.EXPIRY_DATE).to.equal('15/03/2050');
+    expect(nextState.status).to.equal('In progress');
   });
 
   lab.test('Test editing purpose', async () => {
@@ -31,6 +32,7 @@ lab.experiment('Test abstraction reform reducer', () => {
 
     expect(nextState.licence.data.current_version.purposes[0].HOURLY_QTY).to.equal(852);
     expect(nextState.licence.data.current_version.purposes[0].NOTES).to.equal('Some new notes here');
+    expect(nextState.status).to.equal('In progress');
   });
 });
 

@@ -1,0 +1,58 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <form method="GET" action="/admin/abstraction-reform">
+        <div class="form-group form-group--horizontal">
+          <label class="form-label form-label--bold" for="emailAddress">Search for a licence</label>
+          <span class="form-hint">Search by registered email address or licence number</span>
+          <div style="display: flex">
+            <input name="q" type="text" class="form-control form-control--block column-two-thirds" style="margin-right: 1em;" value="{{ query.q }}">
+            <button type="submit" class="button">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="grid-row">
+    <div class="column-full">
+      {{#if licences}}
+
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Licence number</th>
+            <th>Last editor</th>
+            <th>Last edit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+      <tbody>
+      {{#each licences}}
+      <tr>
+        <td><a href="/admin/abstraction-reform/licence/{{ document_id }}">{{ system_external_id }}</a></td>
+      </tr>
+      {{/each}}
+      </tbody>
+      </table>
+
+      {{/if}}
+    </div>
+  </div>
+
+
+</main>

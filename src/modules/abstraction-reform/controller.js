@@ -1,36 +1,69 @@
-const { load, update } = require('./lib/loader');
-const { filterScalars, generateJsonSchema, extractData, transformNulls } = require('./lib/helpers');
-const { getPurposes, getPurpose, getLicence } = require('./lib/licence-helpers');
+const Boom = require('boom');
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
+const { documents } = require('../../lib/connectors/crm.js');
+const { load, update } = require('./lib/loader');
+const { extractData, transformNulls, prepareData } = require('./lib/helpers');
+const { getPurpose, getLicence } = require('./lib/licence-helpers');
 const { createEditPurpose, createEditLicence } = require('./lib/action-creators');
+const { stateManager, getInitialState } = require('./lib/state-manager');
+
+// Config for editing different data models
+const objectConfig = {
+  purpose: {
+    schema: require('./schema/purpose.json'),
+    getter: getPurpose,
+    actionCreator: createEditPurpose
+  },
+  licence: {
+    schema: require('./schema/licence.json'),
+    getter: getLicence,
+    actionCreator: createEditLicence
+  }
+};
+
+const searchLicences = async (q) => {
+  let filter = {};
+  if (q.match('@')) {
+    filter.email = q.trim();
+  } else {
+    filter.string = q.trim();
+  }
+
+  const page = 1;
+
+  const sort = {
+    system_external_id: +1
+  };
+
+    // Get licences from CRM
+  const { data, error, pagination } = await documents.getLicences(filter, sort, {
+    page,
+    perPage: 50
+  });
+  if (error) {
+    throw new Boom.badImplementation(error);
+  }
+  return { data, pagination };
+};
 
 /**
- * Prepares data for use in single licence view
- * @param {Object} licence - the base licence
- * @param {Object} finalState - the final state from the reducer
- * @return {Object} view data
+ * View / search licences
  */
-const prepareData = (licence, finalState) => {
-  // Prepare licence
-  const base = {
-    base: filterScalars(licence.licence_data_value),
-    reform: filterScalars(finalState.licence)
-  };
+const getViewLicences = async (request, h) => {
+  const { q } = request.query;
 
-  // Prepare purposes
-  // @TODO - we will need to compare to check for deleted/added items
-  const purposes = getPurposes(licence.licence_data_value).map((purpose, index) => {
-    return {
-      base: filterScalars(purpose),
-      reform: filterScalars(getPurposes(finalState.licence)[index])
-    };
-  });
+  const { view } = request;
 
-  return {
-    licence: base,
-    purposes
-  };
+  if (q) {
+    const { data, pagination } = await searchLicences(q);
+    view.licences = data;
+    view.pagination = pagination;
+  }
+
+  console.log(view.licences);
+
+  return h.view('water/abstraction-reform/index', view);
 };
 
 /**
@@ -55,19 +88,6 @@ const getViewLicence = async (request, h) => {
   };
 
   return h.view('water/abstraction-reform/licence', view);
-};
-
-const objectConfig = {
-  purpose: {
-    schema: require('./schema/purpose.json'),
-    getter: getPurpose,
-    actionCreator: createEditPurpose
-  },
-  licence: {
-    schema: require('./schema/licence.json'),
-    getter: getLicence,
-    actionCreator: createEditLicence
-  }
 };
 
 /**
@@ -104,7 +124,7 @@ const postEditObject = async (request, h) => {
   const payload = transformNulls(rawPayload);
 
   // Load licence / AR licence from CRM
-  const { arLicence, finalState } = await load(documentId);
+  const { licence, arLicence, finalState } = await load(documentId);
 
   const { schema, getter, actionCreator } = objectConfig[type];
 
@@ -113,17 +133,25 @@ const postEditObject = async (request, h) => {
   // Compare object data with form payload
   const diff = shallowDiff(data, payload);
   if (diff.updated.length) {
+    // Add the new action to the list of actions
     const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, id);
     const { actions } = arLicence.licence_data_value;
     actions.push(action);
+
+    // Re-calculate final state
+    // This is so we can get the status and last editor details and store these
+    // Calculate final state from list of actions to update last editor/status
+    const { status, lastEdit } = stateManager(getInitialState(licence), actions);
+
     // Save action list to permit repo
-    await update(arLicence.licence_id, actions);
+    await update(arLicence.licence_id, {actions, status, lastEdit});
   }
 
   return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${type}-${id}`);
 };
 
 module.exports = {
+  getViewLicences,
   getViewLicence,
   getEditObject,
   postEditObject

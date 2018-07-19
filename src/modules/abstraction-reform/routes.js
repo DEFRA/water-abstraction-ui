@@ -2,6 +2,20 @@ const controller = require('./controller');
 
 module.exports = {
 
+  getViewLicences: {
+    method: 'GET',
+    path: '/admin/abstraction-reform',
+    handler: controller.getViewLicences,
+    config: {
+      description: 'Entrance search page for abstraction reform',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Review licence data'
+        }
+      }
+    }
+  },
+
   getViewLicence: {
     method: 'GET',
     path: '/admin/abstraction-reform/licence/{documentId}',

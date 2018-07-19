@@ -1,7 +1,7 @@
 const Boom = require('boom');
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
-const { stateManager } = require('./state-manager');
+const { stateManager, getInitialState } = require('./state-manager');
 const { transformNulls } = require('./helpers');
 
 /**
@@ -68,8 +68,6 @@ const loadLicence = async (documentId) => {
 
   const arLicence = await loadOrCreateARLicence(permitData.licence_ref);
 
-  console.log(JSON.stringify(arLicence, null, 2));
-
   return {
     licence: {
       ...permitData,
@@ -93,9 +91,7 @@ const load = async (documentId) => {
   const { licence, arLicence } = await loadLicence(documentId);
 
   // Setup initial state
-  const initialState = {
-    licence: licence.licence_data_value
-  };
+  const initialState = getInitialState(licence);
 
   // Calculate final state after actions applied
   const finalState = stateManager(initialState, arLicence.licence_data_value.actions);
@@ -110,16 +106,14 @@ const load = async (documentId) => {
 /**
  * Updates AR licence with new actions list
  * @param {String} licenceRef
- * @param {Array} actions
+ * @param {Array} actions - a list of actions describing edits
  * @return {Promise}
  */
-const update = async (licenceId, actions) => {
-  const data = {
-    licence_data_value: JSON.stringify({
-      actions
-    })
+const update = async (licenceId, data) => {
+  const payload = {
+    licence_data_value: JSON.stringify(data)
   };
-  return licences.updateOne(licenceId, data);
+  return licences.updateOne(licenceId, payload);
 };
 
 module.exports = {

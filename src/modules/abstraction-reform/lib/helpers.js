@@ -1,5 +1,6 @@
-const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
 const deepMap = require('deep-map');
+const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
+const { getPurposes } = require('./licence-helpers');
 
 /**
  * Returns obj with non-scalar values removed
@@ -57,9 +58,38 @@ const extractData = (object, schema) => {
   return pick(object, Object.keys(schema.properties));
 };
 
+/**
+ * Prepares data for use in single licence view
+ * @param {Object} licence - the base licence
+ * @param {Object} finalState - the final state from the reducer
+ * @return {Object} view data
+ */
+const prepareData = (licence, finalState) => {
+  // Prepare licence
+  const base = {
+    base: filterScalars(licence.licence_data_value),
+    reform: filterScalars(finalState.licence)
+  };
+
+  // Prepare purposes
+  // @TODO - we will need to compare to check for deleted/added items
+  const purposes = getPurposes(licence.licence_data_value).map((purpose, index) => {
+    return {
+      base: filterScalars(purpose),
+      reform: filterScalars(getPurposes(finalState.licence)[index])
+    };
+  });
+
+  return {
+    licence: base,
+    purposes
+  };
+};
+
 module.exports = {
   filterScalars,
   generateJsonSchema,
   extractData,
-  transformNulls
+  transformNulls,
+  prepareData
 };

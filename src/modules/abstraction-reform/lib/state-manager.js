@@ -1,6 +1,17 @@
 const reducer = require('./reducer');
 
 /**
+ * Gets initial state for the specified licence row from the permit repo
+ * @param {Object} licence  - row from permit repo data
+ * @return {Object} initial state for state manager
+ */
+const getInitialState = (licence) => {
+  return {
+    licence: licence.licence_data_value
+  };
+};
+
+/**
  * Gets final state based on:
  * @param {String} initialState - the immutable base licence data from permit repo
  * @param {Array} actions - an array of actions describing mutations to the data
@@ -17,5 +28,6 @@ const stateManager = (initialState, actions = []) => {
 };
 
 module.exports = {
+  getInitialState,
   stateManager
 };

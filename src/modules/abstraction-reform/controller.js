@@ -1,12 +1,13 @@
 const Boom = require('boom');
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
-const { documents } = require('../../lib/connectors/crm.js');
+
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
 const { getPurpose, getLicence } = require('./lib/licence-helpers');
 const { createEditPurpose, createEditLicence } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
+const { search } = require('./lib/search');
 
 // Config for editing different data models
 const objectConfig = {
@@ -22,31 +23,6 @@ const objectConfig = {
   }
 };
 
-const searchLicences = async (q) => {
-  let filter = {};
-  if (q.match('@')) {
-    filter.email = q.trim();
-  } else {
-    filter.string = q.trim();
-  }
-
-  const page = 1;
-
-  const sort = {
-    system_external_id: +1
-  };
-
-    // Get licences from CRM
-  const { data, error, pagination } = await documents.getLicences(filter, sort, {
-    page,
-    perPage: 50
-  });
-  if (error) {
-    throw new Boom.badImplementation(error);
-  }
-  return { data, pagination };
-};
-
 /**
  * View / search licences
  */
@@ -56,7 +32,7 @@ const getViewLicences = async (request, h) => {
   const { view } = request;
 
   if (q) {
-    const { data, pagination } = await searchLicences(q);
+    const { data, pagination } = await search(q);
     view.licences = data;
     view.pagination = pagination;
   }
@@ -108,6 +84,7 @@ const getEditObject = async (request, h) => {
 
   const view = {
     ...request.view,
+    documentId,
     pageTitle: `Edit ${type}`,
     formAction: `/admin/abstraction-reform/licence/${documentId}/edit/${type}/${id}`,
     data,

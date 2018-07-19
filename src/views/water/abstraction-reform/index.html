@@ -44,7 +44,16 @@
       <tbody>
       {{#each licences}}
       <tr>
-        <td><a href="/admin/abstraction-reform/licence/{{ document_id }}">{{ system_external_id }}</a></td>
+        <td><a href="/admin/abstraction-reform/licence/{{ id }}">{{ licenceNumber }}</a></td>
+        <td>
+          {{#if lastEdit }}{{ lastEdit.user.email }}{{/if}}
+        </td>
+        <td>
+          {{#if lastEdit }}{{ formatISODate lastEdit.timestamp }}{{/if}}
+        </td>
+        <td>
+          {{ status }}
+        </td>
       </tr>
       {{/each}}
       </tbody>

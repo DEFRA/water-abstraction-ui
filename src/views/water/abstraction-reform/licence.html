@@ -12,12 +12,34 @@ table thead th {
 
   <a class="link-back" href="/admin/abstraction-reform">Back</a>
 
+  {{# if errors }}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+        <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+          You need to select a status
+        </h2>
+
+        <ul class="error-summary-list">
+          <li><a href="#radio-1">Descriptive link to the question with an error</a></li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
+
   <div class="grid-row">
     <div class="column-full">
 
       <h1 class="heading-xlarge">
           <span class="heading-secondary">Review licence data</span>
           {{ licence.licence_data_value.LIC_NO }}
+          <span class="heading-small spaceless" style="display: block; margin-top: 0;">
+              Last edited {{ formatISODate lastEdit.timestamp }}
+          </span>
       </h1>
 
 
@@ -44,7 +66,7 @@ table thead th {
       <h2 class="heading-medium" id="licence">Licence Data</h2>
 
       {{#if canEdit }}
-      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}#{{ @key }}">Edit licence data</a>
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
       {{/if}}
 
       <table>
@@ -78,7 +100,7 @@ table thead th {
 
       <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose</h2>
 
-      {{#if canEdit }}
+      {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
       {{/if}}
 
@@ -116,7 +138,7 @@ table thead th {
 
       <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point</h2>
 
-      {{#if canEdit }}
+      {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
       {{/if}}
 
@@ -151,7 +173,7 @@ table thead th {
       <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition</h2>
 
 
-      {{#if canEdit }}
+      {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
       {{/if}}
 
@@ -185,25 +207,69 @@ table thead th {
 
   <div class="grid-row">
     <div class="column-full">
-      <h2 class="heading-large">Workflow</h2>
 
+
+      {{#if canApprove }}
+      <h2 class="heading-large">Workflow</h2>
 
       <!-- Submit for review -->
       <form method="POST" action="/admin/abstraction-reform/licence/{{ documentId }}/status">
         <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
-
         <div class="form-group">
           <label class="form-label" for="notes">
             Notes about these changes (optional)
           </label>
-          <textarea class="form-control form-control-3-4" name="notes" id="notes" rows="5"></textarea>
+          <textarea class="form-control form-control-3-4" name="notes" id="notes" rows="5">{{ payload.notes }}</textarea>
         </div>
 
-        <input name="status" value="In review" type="hidden" />
+        <div class="form-group">
+          <fieldset>
 
-        <button type="submit" class="button">Submit for approval</button>
+            <legend>
+              <h1 class="heading-medium">Do you approve these edits?</h1>
+            </legend>
 
+            <div class="multiple-choice">
+              <input id="radio-1" type="radio" name="status" value="In progress">
+              <label for="radio-1">Reject changes &rarr; In Progress</label>
+            </div>
+            <div class="multiple-choice">
+              <input id="radio-2" type="radio" name="status" value="Approved">
+              <label for="radio-2">Approved</label>
+            </div>
+            <div class="multiple-choice">
+              <input id="radio-2" type="radio" name="status" value="Licence review">
+              <label for="radio-2">Mark for whole licence review</label>
+            </div>
+          </fieldset>
+        </div>
+
+
+        <button type="submit" class="button">Save decision</button>
       </form>
+      {{ else }}
+        {{# if canSubmit }}
+        <h2 class="heading-large">Workflow</h2>
+
+        <!-- Submit for review -->
+        <form method="POST" action="/admin/abstraction-reform/licence/{{ documentId }}/status">
+          <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+          <div class="form-group">
+            <label class="form-label" for="notes">
+              Notes about these changes (optional)
+            </label>
+            <textarea class="form-control form-control-3-4" name="notes" id="notes" rows="5"></textarea>
+          </div>
+          <input name="status" value="In review" type="hidden" />
+          <button type="submit" class="button">Submit for approval</button>
+        </form>
+        {{/if}}
+      {{/if}}
+
+
+
+
+
 
 
     </div>

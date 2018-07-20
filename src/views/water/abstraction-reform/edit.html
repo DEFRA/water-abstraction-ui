@@ -7,7 +7,13 @@
 
   <div class="grid-row">
     <div class="column-full">
-      <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+      <h1 class="heading-xlarge">
+          <span class="heading-secondary">{{ pageTitle }}</span>
+          {{ licence.licence_data_value.LIC_NO }}
+      </h1>
+
 
       <form method="POST" action="{{ formAction }}">
 

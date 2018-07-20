@@ -78,16 +78,16 @@ module.exports = {
     handler: controller.postSetStatus,
     config: {
       description: 'Post handler: set document status',
-      validate: {
-        payload: {
-          csrf_token: Joi.string().guid().required(),
-          status: Joi.string().valid(Object.values(statuses)),
-          notes: Joi.string()
-        }
-      },
       plugins: {
         hapiRouteAcl: {
           permissions: ['ar:edit']
+        },
+        formValidator: {
+          payload: {
+            csrf_token: Joi.string().guid(),
+            notes: Joi.string().allow(''),
+            status: Joi.string().required().valid(Object.values(statuses))
+          }
         }
       }
     }

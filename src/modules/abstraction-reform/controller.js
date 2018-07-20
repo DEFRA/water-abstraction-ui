@@ -63,21 +63,19 @@ const getViewLicence = async (request, h) => {
   const data = prepareData(licence, finalState);
 
   // User can only edit if no status / in progress
-  const canEdit = finalState.status === STATUS_IN_PROGRESS;
-  const canReview = request.permissions.ar.review;
-
-  // const { generateJsonSchema } = require('./lib/helpers');
-  // const path = require('path');
-  // const fs = require('fs');
-  // fs.writeFileSync(path.join(__dirname, 'schema/condition.json'), JSON.stringify(generateJsonSchema(data.conditions[0].base), null, 2));
+  const canEdit = request.permissions.ar.approve || (finalState.status === STATUS_IN_PROGRESS);
+  const canSubmit = canEdit && !request.permissions.ar.review;
+  const canApprove = request.permissions.ar.approve;
 
   const view = {
     documentId,
     ...request.view,
     licence,
+    lastEdit: finalState.lastEdit,
     data,
     canEdit,
-    canReview
+    canSubmit,
+    canApprove
   };
 
   return h.view('water/abstraction-reform/licence', view);
@@ -93,7 +91,7 @@ const getEditObject = async (request, h) => {
   const {documentId, type, id} = request.params;
 
   // Load licence / AR licence from CRM
-  const { finalState } = await load(documentId);
+  const { licence, finalState } = await load(documentId);
 
   const { schema, getter } = objectConfig[type];
 
@@ -102,6 +100,7 @@ const getEditObject = async (request, h) => {
   const view = {
     ...request.view,
     documentId,
+    licence,
     pageTitle: `Edit ${type}`,
     formAction: `/admin/abstraction-reform/licence/${documentId}/edit/${type}/${id}`,
     data,
@@ -156,6 +155,13 @@ const postEditObject = async (request, h) => {
 const postSetStatus = async (request, h) => {
   const { documentId } = request.params;
   const { notes, status } = request.payload;
+
+  if (request.formError) {
+    console.log(request.view.errors);
+    return getViewLicence(request, h);
+    // console.error(request.view.errors);
+    // return 'oh no!';
+  }
 
   // Load licence / AR licence from CRM
   const { licence, arLicence } = await load(documentId);

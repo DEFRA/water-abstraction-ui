@@ -22,8 +22,8 @@ async function serviceStatus (request, reply) {
     html += `<tr><td>IDM Users</td><td>${data.idm.users}</td></tr>`;
     const idmKPI = await IDM.kpi.findMany({}, {}, {});
     idmKPI.data.forEach((d) => {
-      html += `<tr><td>&nbsp</td><td>${d.datapoint}</td><td>${d.value}</td><td>${d.description}</td></tr>`;
-      data.idm[d.datapoint] = d.value;
+      html += `<tr><td>&nbsp</td><td>${d.datapoint}</td><td>${d.measure}</td><td>${d.dimension}</td></tr>`;
+      data.idm[d.datapoint] = d.measure;
     });
   } catch (e) {
     html += `<tr><td>IDM Users</td><td>ERROR</td></tr>`;

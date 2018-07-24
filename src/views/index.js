@@ -33,6 +33,13 @@ handlebars.registerHelper('for', function (from, to, incr, block) {
 
 handlebars.registerHelper('equal', require('handlebars-helper-equal'));
 
+handlebars.registerHelper('notEqual', function (v1, v2, options) {
+  if (v1 !== v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 handlebars.registerHelper('notNull', function (param, options) {
   if (param !== null) {
     return options.fn(this);

@@ -9,6 +9,8 @@ const { find, get } = require('lodash');
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
 
+const perPage = 50;
+
 /**
  * Combines CRM document header data with AR licence details
  * @param {Array} - list of CRM document headers
@@ -92,7 +94,7 @@ const search = async (q) => {
     // Get licences from CRM
   const { data, error, pagination } = await documents.getLicences(filter, sort, {
     page,
-    perPage: 50
+    perPage
   });
   if (error) {
     throw new Boom.badImplementation(error);
@@ -118,7 +120,7 @@ const recent = async (page) => {
   };
   const requestPagination = {
     page,
-    perPage: 5
+    perPage
   };
   const { data, pagination, error } = await licences.findMany(filter, sort, requestPagination);
 

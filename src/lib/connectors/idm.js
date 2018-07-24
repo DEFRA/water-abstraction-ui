@@ -68,9 +68,9 @@ function createUserWithoutPassword (emailAddress) {
     user_name: emailAddress.toLowerCase(),
     password: Helpers.createGUID(),
     reset_guid: Helpers.createGUID(),
-    admin: 0,
     user_data: {},
-    reset_required: 1
+    reset_required: 1,
+    application: config.idm.application
   });
 }
 

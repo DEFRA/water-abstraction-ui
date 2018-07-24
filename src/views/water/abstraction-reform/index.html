@@ -60,6 +60,37 @@
       </table>
 
       {{/if}}
+
+      {{#greaterThan pagination.pageCount 1}}
+      <nav role="navigation" aria-label="Pagination navigation">
+        <ol class="pagination">
+          <li class="pagination__item" {{#equal pagination.page 1}}aria-hidden="true"{{/equal}}>
+            {{#greaterThan pagination.page 1}}
+              <a class="pagination__link" href="/admin/abstraction-reform?{{{ queryString q=q }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
+            {{/greaterThan}}
+            	&larr; Previous page
+            {{#greaterThan pagination.page 1}}
+              </a>
+            {{/greaterThan}}
+          </li>
+          {{#for 0 pagination.pageCount 1 }}
+          <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/admin/abstraction-reform?{{{ queryString q=../q }}}&amp;page={{add this 1 }}#results"><span class="sr-only">Page </span>{{add this 1 }}{{#equal (add this 1) ../pagination.page}}<span class="sr-only"> - current page</span>{{/equal}}</a></li>
+          {{/for}}
+          <li class="pagination__item" {{#equal pagination.page pagination.pageCount}}aria-hidden="true"{{/equal}}>
+            {{#lessThan pagination.page pagination.pageCount}}
+              <a class="pagination__link" href="/admin/abstraction-reform?{{{ queryString q=q }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
+            {{/lessThan}}
+            Next page 	&rarr;
+            {{#lessThan pagination.page pagination.pageCount}}
+              </a>
+            {{/lessThan}}
+          </li>
+        </ol>
+      </nav>
+      {{/greaterThan}}
+
+
+
     </div>
   </div>
 

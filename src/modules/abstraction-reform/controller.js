@@ -6,8 +6,8 @@ const { extractData, transformNulls, prepareData } = require('./lib/helpers');
 const { getPurpose, getLicence, getPoint, getCondition } = require('./lib/licence-helpers');
 const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
-const { search } = require('./lib/search');
-const { STATUS_IN_PROGRESS } = require('./lib/statuses');
+const { search, recent } = require('./lib/search');
+const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./lib/statuses');
 
 // Config for editing different data models
 const objectConfig = {
@@ -37,12 +37,19 @@ const objectConfig = {
  * View / search licences
  */
 const getViewLicences = async (request, h) => {
-  const { q } = request.query;
+  const { q, page } = request.query;
 
-  const { view } = request;
+  const view = {
+    q,
+    ...request.view
+  };
 
   if (q) {
-    const { data, pagination } = await search(q);
+    const { data, pagination } = await search(q, page);
+    view.licences = data;
+    view.pagination = pagination;
+  } else {
+    const { data, pagination } = await recent(page);
     view.licences = data;
     view.pagination = pagination;
   }
@@ -63,7 +70,7 @@ const getViewLicence = async (request, h) => {
   const data = prepareData(licence, finalState);
 
   // User can only edit if no status / in progress
-  const canEdit = request.permissions.ar.approve || (finalState.status === STATUS_IN_PROGRESS);
+  const canEdit = (finalState.status === STATUS_IN_REVIEW && request.permissions.ar.approve) || (finalState.status === STATUS_IN_PROGRESS);
   const canSubmit = canEdit && !request.permissions.ar.review;
   const canApprove = request.permissions.ar.approve;
 

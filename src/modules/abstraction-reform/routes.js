@@ -10,6 +10,12 @@ module.exports = {
     handler: controller.getViewLicences,
     config: {
       description: 'Entrance search page for abstraction reform',
+      validate: {
+        query: {
+          page: Joi.number().default(1),
+          q: Joi.string().allow('')
+        }
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Review licence data',

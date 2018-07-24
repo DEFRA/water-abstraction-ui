@@ -4,7 +4,7 @@
  * to enable display of status/last editor in list
  */
 const Boom = require('boom');
-const { find } = require('lodash');
+const { find, get } = require('lodash');
 
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
@@ -24,8 +24,29 @@ const combineLicences = (crmLicences, arLicences) => {
     return {
       id: row.document_id,
       licenceNumber: row.system_external_id,
-      lastEdit: arLicence ? arLicence.licence_data_value.lastEdit : null,
-      status: arLicence ? arLicence.licence_data_value.status : null
+      lastEdit: get(arLicence, 'licence_data_value.lastEdit'),
+      status: get(arLicence, 'licence_data_value.status')
+    };
+  });
+};
+
+/**
+ * Combines CRM document header data with AR licence details
+ * @param {Array} - list of CRM document headers
+ * @param {Array} - list of abstraction reform permit repo "licences"
+ * @return {Array} - view data
+ */
+const combineARLicences = (arLicences, crmLicences) => {
+  // Combine CRM documents with AR licences
+  return arLicences.map(row => {
+    // Find corresponding AR licence
+    const crmLicence = find(crmLicences, { system_external_id: row.licence_ref });
+
+    return {
+      id: get(crmLicence, 'document_id'),
+      licenceNumber: get(row, 'licence_ref'),
+      lastEdit: get(row, 'licence_data_value.lastEdit'),
+      status: get(row, 'licence_data_value.status')
     };
   });
 };
@@ -83,6 +104,45 @@ const search = async (q) => {
   return { data: combineLicences(data, arLicences), pagination };
 };
 
+/**
+ * Get recently edited licences
+ * @return {Promise} resolves with array of licences
+ */
+const recent = async (page) => {
+  const filter = {
+    licence_type_id: 10,
+    licence_regime_id: 1
+  };
+  const sort = {
+    'licence_data_value->lastEdit->timestamp': -1
+  };
+  const requestPagination = {
+    page,
+    perPage: 5
+  };
+  const { data, pagination, error } = await licences.findMany(filter, sort, requestPagination);
+
+  if (error) {
+    throw error;
+  }
+
+  // Match up with CRM docs
+  const crmFilter = {
+    system_external_id: {
+      $in: data.map(row => row.licence_ref)
+    }
+  };
+
+  const { data: crmData, error: crmError } = await documents.findMany(crmFilter, null, null, ['document_id', 'system_external_id']);
+
+  if (crmError) {
+    throw crmError;
+  }
+
+  return { data: combineARLicences(data, crmData), pagination };
+};
+
 module.exports = {
-  search
+  search,
+  recent
 };

@@ -68,6 +68,8 @@ table thead th {
       {{#if canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
       {{/if}}
+      <br />
+      <br />
 
       <table>
         <thead>
@@ -95,6 +97,7 @@ table thead th {
       <br />
       <br />
       <br />
+      <br />
 
       {{#each data.purposes as |purpose| }}
 
@@ -103,6 +106,9 @@ table thead th {
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
       {{/if}}
+
+      <br />
+      <br />
 
       <table>
         <thead>
@@ -127,6 +133,9 @@ table thead th {
       </table>
 
       <br />
+      <br />
+      <br />
+      <br />
 
       {{/each}}
 
@@ -141,6 +150,9 @@ table thead th {
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
       {{/if}}
+
+      <br />
+      <br />
 
       <table>
         <thead>
@@ -164,6 +176,9 @@ table thead th {
         </tbody>
       </table>
 
+      <br />
+      <br />
+      <br />
       <br />
 
       {{/each}}
@@ -200,6 +215,9 @@ table thead th {
       </table>
 
       <br />
+      <br />
+      <br />
+      <br />
 
       {{/each}}
     </div>
@@ -231,7 +249,7 @@ table thead th {
 
             <div class="multiple-choice">
               <input id="radio-1" type="radio" name="status" value="In progress">
-              <label for="radio-1">Reject changes &rarr; In Progress</label>
+              <label for="radio-1">Reject changes and set to in progress</label>
             </div>
             <div class="multiple-choice">
               <input id="radio-2" type="radio" name="status" value="Approved">

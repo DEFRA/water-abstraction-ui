@@ -1,84 +1,143 @@
 const Joi = require('joi');
 const admin = require('./admin');
 const { VALID_LICENCE_QUERY } = require('../../lib/validators');
-const {
-  getLicence,
-  getLicenceRename,
-  postLicenceRename,
-  getLicenceContact,
-  getLicencePurposes,
-  getLicencePoints,
-  getLicenceConditions,
-  getLicenceGaugingStation
-} = require('./routes');
+const externalRoutes = require('./routes');
+const constants = require('../../lib/constants');
+const allAdmin = constants.scope.allAdmin;
+
+const getLicencesAdmin = {
+  method: 'GET',
+  path: '/admin/licences',
+  handler: admin.getLicences,
+  config: {
+    auth: {
+      scope: allAdmin
+    },
+    description: 'Admin: view list of licences with facility to sort/filter',
+    validate: {
+      query: VALID_LICENCE_QUERY
+    },
+    plugins: {
+      viewContext: {
+        pageTitle: 'Licences',
+        customTitle: 'Water abstraction or impoundment licences',
+        enableSearch: true,
+        showEmailFilter: true,
+        activeNavLink: 'view'
+      },
+      formValidator: {
+        query: {
+          emailAddress: Joi.string().allow('').email(),
+          licenceNumber: Joi.string().allow('')
+        }
+      }
+    }
+  }
+};
+
+const getLicenceAdmin = {
+  ...externalRoutes.getLicence,
+  config: {
+    ...externalRoutes.getLicence.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}'
+};
+
+const getLicenceRenameAdmin = {
+  ...externalRoutes.getLicenceRename,
+  config: {
+    ...externalRoutes.getLicenceRename.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/rename'
+};
+
+const postLicenceRenameAdmin = {
+  ...externalRoutes.postLicenceRename,
+  path: '/admin/licences/{licence_id}',
+  config: {
+    ...externalRoutes.postLicenceRename.config,
+    auth: {
+      scope: allAdmin
+    },
+    plugins: {
+      ...externalRoutes.postLicenceRename.config.plugins,
+      config: {
+        ...externalRoutes.postLicenceRename.config.plugins.config,
+        redirectBasePath: '/admin/licences'
+      }
+    }
+  }
+};
+
+const getLicenceContactAdmin = {
+  ...externalRoutes.getLicenceContact,
+  config: {
+    ...externalRoutes.getLicenceContact.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/contact'
+};
+
+const getLicencePurposesAdmin = {
+  ...externalRoutes.getLicencePurposes,
+  config: {
+    ...externalRoutes.getLicencePurposes.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/purposes'
+};
+
+const getLicencePointsAdmin = {
+  ...externalRoutes.getLicencePoints,
+  config: {
+    ...externalRoutes.getLicencePoints.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/points'
+};
+
+const getLicenceConditionsAdmin = {
+  ...externalRoutes.getLicenceConditions,
+  config: {
+    ...externalRoutes.getLicenceConditions.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/conditions'
+};
+
+const getLicenceGaugingStationAdmin = {
+  ...externalRoutes.getLicenceGaugingStation,
+  config: {
+    ...externalRoutes.getLicenceGaugingStation.config,
+    auth: {
+      scope: allAdmin
+    }
+  },
+  path: '/admin/licences/{licence_id}/station/{gauging_station}'
+};
 
 module.exports = {
-  getLicencesAdmin: {
-    method: 'GET',
-    path: '/admin/licences',
-    handler: admin.getLicences,
-    config: {
-      description: 'Admin: view list of licences with facility to sort/filter',
-      validate: {
-        query: VALID_LICENCE_QUERY
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Licences',
-          customTitle: 'Water abstraction or impoundment licences',
-          enableSearch: true,
-          showEmailFilter: true,
-          activeNavLink: 'view'
-        },
-        formValidator: {
-          query: {
-            emailAddress: Joi.string().allow('').email(),
-            licenceNumber: Joi.string().allow('')
-          }
-        }
-      }
-    }
-  },
-  getLicenceAdmin: {
-    ...getLicence,
-    path: '/admin/licences/{licence_id}'
-  },
-  getLicenceRenameAdmin: {
-    ...getLicenceRename,
-    path: '/admin/licences/{licence_id}/rename'
-  },
-  postLicenceRenameAdmin: {
-    ...postLicenceRename,
-    path: '/admin/licences/{licence_id}',
-    config: {
-      ...postLicenceRename.config,
-      plugins: {
-        ...postLicenceRename.config.plugins,
-        config: {
-          ...postLicenceRename.config.plugins.config,
-          redirectBasePath: '/admin/licences'
-        }
-      }
-    }
-  },
-  getLicenceContactAdmin: {
-    ...getLicenceContact,
-    path: '/admin/licences/{licence_id}/contact'
-  },
-  getLicencePurposesAdmin: {
-    ...getLicencePurposes,
-    path: '/admin/licences/{licence_id}/purposes'
-  },
-  getLicencePointsAdmin: {
-    ...getLicencePoints,
-    path: '/admin/licences/{licence_id}/points'
-  },
-  getLicenceConditionsAdmin: {
-    ...getLicenceConditions,
-    path: '/admin/licences/{licence_id}/conditions'
-  },
-  getLicenceGaugingStation: {
-    ...getLicenceGaugingStation,
-    path: '/admin/licences/{licence_id}/station/{gauging_station}'
-  }
+  getLicencesAdmin,
+  getLicenceAdmin,
+  getLicenceRenameAdmin,
+  postLicenceRenameAdmin,
+  getLicenceContactAdmin,
+  getLicencePurposesAdmin,
+  getLicencePointsAdmin,
+  getLicenceConditionsAdmin,
+  getLicenceGaugingStationAdmin
 };

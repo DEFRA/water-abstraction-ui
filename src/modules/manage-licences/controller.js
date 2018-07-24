@@ -120,10 +120,7 @@ async function postAddAccess (request, reply, context = {}) {
     }
 
     // Create CRM entity for invited user
-    const { error: crmEntityError } = await CRM.entities.getOrCreateIndividual(email);
-    if (crmEntityError) {
-      throw crmEntityError;
-    }
+    const crmEntityId = await CRM.entities.getOrCreateIndividual(email);
 
     // Add role
     const { error: crmRoleError } = await CRM.entityRoles.addColleagueRole(entityId, email);
@@ -131,6 +128,10 @@ async function postAddAccess (request, reply, context = {}) {
     if (crmRoleError) {
       throw crmRoleError;
     }
+
+    // Update the idm.user with the crm.entity id
+    const { data: user } = await IDM.getUser(email);
+    await IDM.updateExternalId(user, crmEntityId);
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
@@ -178,7 +179,7 @@ async function getAddLicences (request, reply, context = {}) {
     viewContext.verificationCount = verifications.length;
     return reply.view('water/manage-licences/manage_licences_add', viewContext);
   } catch (error) {
-    errorHandler(request, reply)(error);
+    throw error;
   }
 }
 

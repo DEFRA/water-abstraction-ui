@@ -2,11 +2,16 @@ const Joi = require('joi');
 const controller = require('./controller');
 const contactRoutes = require('./contact-routes');
 const apiController = require('./api-controller');
+const constants = require('../../lib/constants');
+const allAdmin = constants.scope.allAdmin;
 
 const getStep = {
   method: 'GET',
   path: '/admin/notifications/{id}',
   config: {
+    auth: {
+      scope: allAdmin
+    },
     description: 'Admin view step of notification task',
     validate: {
       params: {
@@ -33,6 +38,9 @@ const routes = {
     method: 'GET',
     path: '/admin/notifications',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Admin report/notifications index page',
       plugins: {
         viewContext: {
@@ -49,6 +57,9 @@ const routes = {
     method: 'POST',
     handler: controller.postStep,
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Post handler for single step of notification query flow',
       plugins: {
         viewContext: {
@@ -61,6 +72,9 @@ const routes = {
     method: 'GET',
     path: '/admin/notifications/{id}/refine',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: refine audience',
       validate: {
         params: {
@@ -80,6 +94,9 @@ const routes = {
     method: 'POST',
     path: '/admin/notifications/{id}/refine',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: refine audience',
       validate: {
         params: {
@@ -99,6 +116,9 @@ const routes = {
     method: 'GET',
     path: '/admin/notifications/{id}/data',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: add custom data',
       validate: {
         params: {
@@ -118,6 +138,9 @@ const routes = {
     method: 'POST',
     path: '/admin/notifications/{id}/data',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: add custom data',
       validate: {
         params: {
@@ -138,6 +161,9 @@ const routes = {
     method: 'GET',
     path: '/admin/notifications/{id}/preview',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: preview',
       validate: {
         params: {
@@ -158,6 +184,9 @@ const routes = {
     method: 'POST',
     path: '/admin/notifications/{id}/send',
     config: {
+      auth: {
+        scope: allAdmin
+      },
       description: 'Notification: send messages',
       validate: {
         params: {

@@ -13,7 +13,7 @@ const Vision = require('vision');
 // -------------- Require project code -----------------
 const config = require('./config');
 const { acl, ...plugins } = require('./src/lib/hapi-plugins');
-const { getPermissionsCb: permissionsFunc } = require('./src/lib/permissions.js');
+const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
 
 // Initialise logger

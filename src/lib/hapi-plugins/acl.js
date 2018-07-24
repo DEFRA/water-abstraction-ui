@@ -4,14 +4,11 @@
  */
 
 // Load modules
-
 const Boom = require('boom');
 const Hoek = require('hoek');
 const _ = require('lodash');
-const { promisify } = require('util');
 
 // Declare internals
-
 let internals = {};
 internals.pluginName = 'hapiRouteAcl';
 
@@ -36,9 +33,7 @@ internals.implementation = async function (request, h) {
   if (!_.isEmpty(request.route.settings.plugins[internals.pluginName])) {
     let requiredPermissions = request.route.settings.plugins[internals.pluginName].permissions;
     if (!_.isEmpty(requiredPermissions)) {
-      const permissionsFunc = promisify(internals.permissionsFunc);
-
-      const userPermissions = await permissionsFunc(request.auth.credentials);
+      const userPermissions = internals.permissionsFunc(request.auth.credentials);
       let hasPermission = internals.checkPermissions(requiredPermissions, userPermissions);
       if (hasPermission) {
         return h.continue;

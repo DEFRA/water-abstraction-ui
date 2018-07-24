@@ -1,11 +1,14 @@
 const controller = require('./controller');
 const Joi = require('joi');
+const constants = require('../../lib/constants');
+const allAdmin = constants.scope.allAdmin;
 
 const getContactInformation = {
   method: 'GET',
   path: '/admin/contact-information',
   handler: controller.getContactInformation,
   options: {
+    auth: { scope: allAdmin },
     description: 'Displays the user\'s contact information'
   }
 };
@@ -15,6 +18,7 @@ const postContactInformation = {
   path: '/admin/contact-information',
   handler: controller.postContactInformation,
   options: {
+    auth: { scope: allAdmin },
     description: 'Updates the user\'s contact information if valid',
     validate: {
       payload: {

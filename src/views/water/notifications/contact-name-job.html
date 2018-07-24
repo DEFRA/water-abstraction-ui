@@ -7,6 +7,18 @@
     <div class="column-two-thirds">
       <h1  class="heading-large">{{ pageTitle }}</h1>
 
+      {{#if error }}
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          {{>error-summary-heading description="There was a problem with some of the information entered" id="error-summary-heading"}}
+          <ul class="error-summary-list">
+            {{>error-summary-link hasError=error.contactName
+              id="contact-name" message="Enter a valid name"}}
+            {{>error-summary-link hasError=error.contactJobTitle
+              id="contact-job-title" message="Enter a valid job title"}}
+          </ul>
+        </div>
+      {{/if}}
+
       <p>This is the information that will be available to your public contacts.</p>
 
 

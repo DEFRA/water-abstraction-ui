@@ -12,8 +12,7 @@ const client = new APIClient(rp, {
     Authorization: process.env.JWT_TOKEN
   }
 });
-
-
+const config = require('../../../config');
 const idmKPI = require('./idm/kpi');
 
 /**
@@ -44,12 +43,12 @@ function resetPassword (email, mode = 'reset', params = {}) {
  * @param {String} resetGuid - the password reset GUID issued by email
  * @return {Promise} resolves with user record if found or null otherwise
  */
-async function getUserByResetGuid (reset_guid) {
+async function getUserByResetGuid (resetGuid) {
   const {
     error,
     data
   } = await client.findMany({
-    reset_guid
+    reset_guid: resetGuid
   });
   if (error) {
     throw error;
@@ -69,9 +68,9 @@ function createUserWithoutPassword (emailAddress) {
     user_name: emailAddress.toLowerCase(),
     password: Helpers.createGUID(),
     reset_guid: Helpers.createGUID(),
-    admin: 0,
     user_data: {},
-    reset_required: 1
+    reset_required: 1,
+    application: config.idm.application
   });
 }
 
@@ -84,43 +83,23 @@ function getUser (userId) {
   return client.findOne(userId.toLowerCase());
 }
 
-function login (user_name, password) {
-  return new Promise((resolve, reject) => {
-    var data = {
-      user_name: user_name,
-      password: password
-    };
-    var uri = process.env.IDM_URI + '/user/login' + '?token=' + process.env.JWT_TOKEN;
-    var method = 'post';
-    Helpers.makeURIRequestWithBody(uri, method, data)
-      .then((response) => {
-        // console.log('login response')
-        // console.log(response.body)
-        response.body.sessionGUID = Helpers.createGUID();
-        resolve(response);
-      }).catch((response) => {
-        // console.log(response)
-        // console.log('rejecting in idm.login')
-        reject(response);
-      });
-  });
+function login (userName, password) {
+  return verifyCredentials(userName, password)
+    .then((response) => {
+      response.body.sessionGUID = Helpers.createGUID();
+      return response;
+    });
 }
 
-function verifyCredentials (user_name, password) {
-  return new Promise((resolve, reject) => {
-    var data = {
-      user_name: user_name,
-      password: password
-    };
-    var uri = process.env.IDM_URI + '/user/login' + '?token=' + process.env.JWT_TOKEN;
-    var method = 'post';
-    Helpers.makeURIRequestWithBody(uri, method, data)
-      .then((response) => {
-        resolve(response);
-      }).catch((response) => {
-        reject(response);
-      });
-  });
+function verifyCredentials (userName, password) {
+  const data = {
+    user_name: userName,
+    password: password,
+    application: config.idm.application
+  };
+  const uri = `${process.env.IDM_URI}/user/login?token=${process.env.JWT_TOKEN}`;
+  const method = 'post';
+  return Helpers.makeURIRequestWithBody(uri, method, data);
 }
 
 function getPasswordResetLink (emailAddress) {
@@ -171,7 +150,7 @@ const usersClient = new APIClient(rp, {
 });
 
 module.exports = {
-  login: login,
+  login,
   resetPassword,
   getPasswordResetLink: getPasswordResetLink,
   updatePassword: updatePassword,

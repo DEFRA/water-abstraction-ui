@@ -6,12 +6,14 @@
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
     "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
-    "test": "./node_modules/lab/bin/lab -t 55 -m 0 --coverage-path ./src/ -r lcov -o lcov.info -r console -o stdout",
+    "test": "./node_modules/lab/bin/lab -t 55 -m 0 -r lcov -o lcov.info -r console -o stdout",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix",
     "sass": "gulp sass",
-    "sass:watch": "gulp sass:watch"
+    "sass:watch": "gulp sass:watch",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "",
   "license": "ISC",
@@ -35,7 +37,6 @@
     "lab": "^14.3.2",
     "run-sequence": "^2.2.1",
     "sinon": "^4.2.2",
-    "snyk": "^1.69.7",
     "standard": "^10.0.3",
     "xmldom": "^0.1.27"
   },
@@ -81,6 +82,8 @@
     "sentence-case": "^2.1.1",
     "shallow-diff": "0.0.5",
     "url-join": "^4.0.0",
+    "yar": "^8.1.2",
+    "snyk": "^1.88.0",
     "vision": "^5.3.3",
     "winston": "^2.4.3"
   },
@@ -89,5 +92,6 @@
       "node_modules/",
       "public/"
     ]
-  }
+  },
+  "snyk": true
 }

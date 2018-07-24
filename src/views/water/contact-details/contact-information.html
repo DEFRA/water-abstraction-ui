@@ -12,14 +12,11 @@
 
       {{#if error }}
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-          {{#if error.contactEmail}}
-          <h2 class="heading-medium error-summary-heading">
-            The email address entered is not valid
-          </h2>
+          {{> error-summary-heading description="The email address entered is not valid" id="error-summary-heading" }}
           <ul class="error-summary-list">
-            <li><a href="#contact-email">Enter a valid email</a></li>
+            {{>error-summary-link hasError=error.contactEmail
+              id="contact-email" message="Enter a valid email"}}
           </ul>
-          {{/if}}
         </div>
       {{/if}}
 

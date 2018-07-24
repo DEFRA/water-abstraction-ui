@@ -82,7 +82,9 @@ const getViewLicence = async (request, h) => {
     data,
     canEdit,
     canSubmit,
-    canApprove
+    canApprove,
+    highlightNald: finalState.status === STATUS_IN_PROGRESS,
+    highlightAr: finalState.status === STATUS_IN_REVIEW
   };
 
   return h.view('water/abstraction-reform/licence', view);

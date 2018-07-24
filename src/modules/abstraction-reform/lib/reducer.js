@@ -9,11 +9,11 @@ const { findIndex } = require('lodash');
  * @param {Object} action
  * @return {Object} query for immutability helper
  */
-const getBaseQuery = (action) => {
+const getBaseQuery = (action, status = STATUS_IN_PROGRESS) => {
   const { user, timestamp } = action.payload;
   return {
     status: {
-      $set: STATUS_IN_PROGRESS
+      $set: status
     },
     lastEdit: {
       $set: {
@@ -24,6 +24,9 @@ const getBaseQuery = (action) => {
   };
 };
 
+/**
+ * Edits a licence purpose within the current_version by ID
+ */
 const editPurpose = (state, action) => {
   const { purposeId, data } = action.payload;
 
@@ -53,6 +56,9 @@ const editPurpose = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Edits base level licence data
+ */
 const editLicence = (state, action) => {
   const { data } = action.payload;
   let query = {
@@ -64,6 +70,9 @@ const editLicence = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Edits a point within current licence data
+ */
 const editPoint = (state, action) => {
   const { pointId, data } = action.payload;
 
@@ -133,11 +142,7 @@ const editCondition = (state, action) => {
 const setState = (state, action) => {
   const { status, notes, user, timestamp } = action.payload;
 
-  const query = {
-    status: {
-      $set: status
-    }
-  };
+  const query = getBaseQuery(action, status);
 
   if (notes) {
     query.notes = {

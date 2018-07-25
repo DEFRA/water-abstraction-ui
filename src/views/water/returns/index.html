@@ -1,0 +1,80 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  {{# each returns }}
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-medium">{{@key}}</h2>
+
+
+      <div class="table big-space">                                          <!-- a table -->
+
+          <div class="table-row table-head">                                      <!-- the table head -->
+            <div class="table-cell bold-small column-33">
+              Licence number
+            </div>
+            <div class="table-cell bold-small">
+              Licence name
+            </div>
+            <div class="table-cell bold-small">
+              Purpose
+            </div>
+            <div class="table-cell bold-small column-15">
+              Status
+            </div>
+          </div>
+
+          {{#each this }}
+          <div class="table-row medium-space clickable">                                    <!-- a data row starts -->
+            <div class="table-cell">
+              <h3 class="sr-only">
+                Row {{ add @key 1 }}
+              </h3>
+              <h4 class="context">
+                Licence number
+              </h4>
+              <a href="/returns/return/{{ return_id }}">
+                {{ licence_ref }}
+              </a>
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Licence name
+              </h4>
+              {{ licenceName }}
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Purpose
+              </h4>
+              {{#each metadata.purposes }}
+              {{ tertiary.description }}
+              {{/each }}
+
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Status
+              </h4>
+            </div>
+          </div>
+          {{/each}}
+
+
+        </div>
+
+    </div>
+  </div>
+  {{/each}}
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

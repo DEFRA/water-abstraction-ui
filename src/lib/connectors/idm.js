@@ -24,8 +24,9 @@ const idmKPI = require('./idm/kpi');
  * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
  */
 function resetPassword (email, mode = 'reset', params = {}) {
+  const { application } = config.idm;
   return rp({
-    uri: `${process.env.IDM_URI}/reset/${email}`,
+    uri: `${process.env.IDM_URI}/reset/${application}/${email}`,
     qs: {
       mode,
       ...params

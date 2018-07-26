@@ -38,7 +38,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     licence_ref: 1
   };
 
-  const columns = ['return_id', 'start_date', 'metadata'];
+  const columns = ['return_id', 'licence_ref', 'start_date', 'metadata'];
 
   const requestPagination = {
     page,
@@ -103,21 +103,15 @@ const getReturns = async (request, h) => {
   const { page } = request.query;
   const { entity_id: entityId } = request.auth.credentials;
 
-  console.log(`Getting documents`);
-
+  // Get documents from CRM
   const documents = await getLicenceNumbers(entityId);
-
   const licenceNumbers = documents.map(row => row.system_external_id);
-
-  console.log(`Getting returns`);
 
   const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
 
-  console.log(`Grouping/merging`);
-
   const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
 
-  console.log('view');
+  console.log(JSON.stringify(returns, null, 2));
 
   const view = {
     ...request.view,

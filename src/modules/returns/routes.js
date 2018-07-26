@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const controller = require('./controller');
 
 module.exports = {
@@ -10,6 +11,25 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Your returns',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  getReturn: {
+    method: 'GET',
+    path: '/returns/return',
+    handler: controller.getReturn,
+    config: {
+      description: 'Displays data for a single return',
+      validate: {
+        query: {
+          id: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
           activeNavLink: 'returns'
         }
       }

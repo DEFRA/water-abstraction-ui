@@ -8,10 +8,11 @@
   {{# each returns }}
   <div class="grid-row">
     <div class="column-full">
-      <h2 class="heading-medium">{{@key}}</h2>
+      <h2 class="heading-medium">{{year}}</h2>
 
 
       <div class="table big-space">                                          <!-- a table -->
+
 
           <div class="table-row table-head">                                      <!-- the table head -->
             <div class="table-cell bold-small column-33">
@@ -28,7 +29,7 @@
             </div>
           </div>
 
-          {{#each this }}
+          {{#each returns }}
           <div class="table-row medium-space clickable">                                    <!-- a data row starts -->
             <div class="table-cell">
               <h3 class="sr-only">
@@ -37,7 +38,7 @@
               <h4 class="context">
                 Licence number
               </h4>
-              <a href="/returns/return/{{ return_id }}">
+              <a href="/returns/return?id={{ return_id }}">
                 {{ licence_ref }}
               </a>
             </div>
@@ -60,6 +61,7 @@
               <h4 class="context">
                 Status
               </h4>
+              {{ status }}
             </div>
           </div>
           {{/each}}

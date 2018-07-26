@@ -1,6 +1,6 @@
 const Boom = require('boom');
 const { documents } = require('../../lib/connectors/crm');
-const { returns } = require('../../lib/connectors/returns');
+const { returns, lines, versions } = require('../../lib/connectors/returns');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -30,14 +30,11 @@ const getLicenceReturns = async (licenceNumbers) => {
     licence_type: 'abstraction',
     licence_ref: {
       $in: licenceNumbers
-    },
-    start_date: {
-      $gt: '2008-01-01'
     }
   };
 
   const sort = {
-    start_date: 1,
+    start_date: -1,
     licence_ref: 1
   };
 
@@ -52,19 +49,24 @@ const getLicenceReturns = async (licenceNumbers) => {
 };
 
 /**
- * Groups returns by year
+ * Groups and sorts returns by year descending
  * @param {Array} data
  * @return {Array} organised by year
  */
 const groupReturnsByYear = (data) => {
-  return data.reduce((acc, row) => {
+  const grouped = data.reduce((acc, row) => {
     const year = parseInt(row.start_date.substr(0, 4));
     if (!(year in acc)) {
-      acc[year] = [];
+      acc[year] = {
+        year,
+        returns: []
+      };
     }
-    acc[year].push(row);
+    acc[year].returns.push(row);
     return acc;
   }, {});
+
+  return Object.values(grouped).reverse();
 };
 
 /**
@@ -99,13 +101,9 @@ const getReturns = async (request, h) => {
 
   const licenceNumbers = documents.map(row => row.system_external_id);
 
-  console.log(licenceNumbers);
-
   const data = await getLicenceReturns(licenceNumbers);
 
   const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
-
-  console.log(JSON.stringify(returns, null, 2));
 
   const view = {
     ...request.view,
@@ -115,6 +113,58 @@ const getReturns = async (request, h) => {
   return h.view('water/returns/index', view);
 };
 
+/**
+ * Gets the most recent version of a return
+ * @param {String} returnId
+ * @return {Promise} resolves with object of version data on success
+ */
+const getLatestVersion = async (returnId) => {
+  // Find newest version
+  const filter = {
+    return_id: returnId
+  };
+  const sort = {
+    version_number: -1
+  };
+  const { error, data: [version] } = await versions.findMany(filter, sort);
+  if (error) {
+    throw new Boom.badImplementation(error);
+  }
+  return version;
+};
+
+const getReturn = async (request, h) => {
+  const { id } = request.query;
+
+  // Load return
+  const { data, error: returnError } = await returns.findMany({ return_id: id });
+  if (returnError) {
+    throw new Boom.badImplementation(returnError);
+  }
+
+  // Find lines for version
+  const version = await getLatestVersion(id);
+  const filter = {
+    version_id: version.version_id
+  };
+  const sort = {
+    start_date: 1
+  };
+  const { data: linesData, error: linesError } = await lines.findMany(filter, sort);
+  if (linesError) {
+    throw new Boom.badImplementation(linesError);
+  }
+
+  const view = {
+    ...request.view,
+    return: data[0],
+    pageTitle: `Abstraction return for ${data[0].licence_ref}`,
+    lines: linesData
+  };
+  return h.view('water/returns/return', view);
+};
+
 module.exports = {
-  getReturns
+  getReturns,
+  getReturn
 };

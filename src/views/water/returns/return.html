@@ -1,0 +1,48 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  <dl>
+        <dt class="meta-label">
+          Region
+        </dt>
+        <dd class="meta-description">
+        </dd>
+        <dt class="meta-label">
+          Site description
+        </dt>
+        <dd class="meta-description">
+          {{ return.metadata.description }}
+        </dd>
+        <dt class="meta-label">
+          Purpose
+        </dt>
+        <dd class="meta-description">
+          {{#each return.metadata.purposes }}
+            {{ tertiary.description }}
+          {{/each}}
+        </dd>
+      </dl>
+
+  <table>
+    <tbody>
+  {{# each lines }}
+  <tr>
+      <td>{{ formatISODate start_date }}</td>
+      <td>{{ formatISODate end_date }}</td>
+      <td>{{ quantity }}</td>
+      <td>{{ unit }}</td>
+  </tr>
+  {{/each}}
+    </tbody>
+  </table>
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

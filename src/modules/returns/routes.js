@@ -8,6 +8,11 @@ module.exports = {
     handler: controller.getReturns,
     config: {
       description: 'Displays a list of returns for the current licence holder',
+      validate: {
+        query: {
+          page: Joi.number().default(1)
+        }
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Your returns',

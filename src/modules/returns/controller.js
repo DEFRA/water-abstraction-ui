@@ -24,7 +24,7 @@ const getLicenceNumbers = async (entityId) => {
  * @param {Array} list of licence numbers to get returns data for
  * @return {Promise} resolves with returns
  */
-const getLicenceReturns = async (licenceNumbers) => {
+const getLicenceReturns = async (licenceNumbers, page = 1) => {
   const filter = {
     regime: 'water',
     licence_type: 'abstraction',
@@ -40,12 +40,17 @@ const getLicenceReturns = async (licenceNumbers) => {
 
   const columns = ['return_id', 'start_date', 'metadata'];
 
-  const { data, error } = await returns.findMany(filter, sort, columns);
+  const requestPagination = {
+    page,
+    perPage: 50
+  };
+
+  const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
     throw Boom.badImplementation('Returns error', error);
   }
 
-  return data;
+  return { data, pagination };
 };
 
 /**
@@ -95,19 +100,29 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
  * grouped by year
  */
 const getReturns = async (request, h) => {
+  const { page } = request.query;
   const { entity_id: entityId } = request.auth.credentials;
+
+  console.log(`Getting documents`);
 
   const documents = await getLicenceNumbers(entityId);
 
   const licenceNumbers = documents.map(row => row.system_external_id);
 
-  const data = await getLicenceReturns(licenceNumbers);
+  console.log(`Getting returns`);
+
+  const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
+
+  console.log(`Grouping/merging`);
 
   const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
 
+  console.log('view');
+
   const view = {
     ...request.view,
-    returns
+    returns,
+    pagination
   };
 
   return h.view('water/returns/index', view);

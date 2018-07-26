@@ -4,7 +4,6 @@ const handlebars = require('handlebars');
 const moment = require('moment');
 const momentTimezone = require('moment-timezone');
 const qs = require('querystring');
-// const markdown = require('markdown').markdown;
 const sentenceCase = require('sentence-case');
 const marked = require('marked');
 
@@ -14,6 +13,66 @@ const DynamicView = require('../lib/dynamicview');
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
 const Joi = require('joi');
+
+/**
+ * Creates a pagination anchor tag for the pagination helper
+ * @param {String} url - base URL, e.g. /some/page
+ * @param {Object} params - key/value pairs of query string parameters, the page number will be merged with these
+ * @param {Number} page - the page for the page link
+ * @param {String} ariaLabel - the aria label text
+ * @param {Boolean} isActive - whether this is an active pagination link
+ * @return {String} link html
+ */
+function paginationLink (url, params, page, ariaLabel, isActive = false) {
+  const fullUrl = `${url}?${qs.stringify({ ...params, page })}`;
+  return `<a class="pagination__link${isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" aria-label="${ariaLabel}">`;
+}
+
+handlebars.registerHelper('pagination', function (pagination, options) {
+  const { url = '/', params = {} } = options.hash;
+  const { page, pageCount } = pagination;
+
+  if (pageCount === 1) {
+    return null;
+  }
+
+  let html = `<nav role="navigation" aria-label="Pagination navigation">
+    <ol class="pagination">`;
+
+  // Previous page link
+  html += `<li class="pagination__item" ${page === 1 ? 'aria-hidden="true"' : ''}>`;
+  if (page > 1) {
+    html += paginationLink(url, params, page - 1, 'Previous page') + `&larr; Previous page</a>`;
+  } else {
+    html += '&larr; Previous page';
+  }
+  html += '</li>';
+
+  // Each page link
+  for (let i = 1; i <= pageCount; i++) {
+    html += `<li class="pagination__item">`;
+    html += paginationLink(url, params, i, null, page === i);
+    html += `<span class="sr-only">Page </span> ${i}`;
+    if (i === page) {
+      html += `<span class="sr-only"> - current page</span>`;
+    }
+    html += `</a></li>`;
+  }
+
+  // Next page link
+  html += `<li class="pagination__item" ${page === pageCount ? 'aria-hidden="true"' : ''}>`;
+  if (page < pageCount) {
+    html += paginationLink(url, params, page + 1, 'Next page') + `Next page &rarr;</a>`;
+  } else {
+    html += 'Next page &rarr;';
+  }
+  html += '</li>';
+
+  html += `</ol>
+  </nav>`;
+
+  return html;
+});
 
 handlebars.registerHelper('markdown', function (param = '') {
   // Replace ^ with > because notify represents a blockquote using the carat.

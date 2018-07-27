@@ -7,6 +7,7 @@ table thead th {
 }
 table tbody td, table tbody th {
   vertical-align: top;
+  word-break:  break-word;
 }
 {{#if highlightNald}}
 .td.td--nald {
@@ -44,6 +45,11 @@ table tbody td, table tbody th {
   </div>
   {{/if}}
 
+  {{#equal flash 'locked' }}
+  <div class="panel panel-border-wide alert-default big-space">
+    You do not have permission to edit this licence.
+  </div>
+  {{/equal}}
 
   <div class="grid-row">
     <div class="column-full">
@@ -115,7 +121,7 @@ table tbody td, table tbody th {
 
       {{#each data.purposes as |purpose| }}
 
-      <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose</h2>
+      <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose {{ purpose.base.ID }}</h2>
 
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
@@ -159,7 +165,7 @@ table tbody td, table tbody th {
 
       {{#each data.points as |point| }}
 
-      <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point</h2>
+      <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point {{ point.base.ID }}</h2>
 
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
@@ -199,7 +205,7 @@ table tbody td, table tbody th {
 
       {{#each data.conditions as |condition| }}
 
-      <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition</h2>
+      <h2 id="condition-{{ condition.base.ID }}" class="heading-medium">Condition {{ condition.base.ID }}</h2>
 
 
       {{#if ../canEdit }}
@@ -270,8 +276,8 @@ table tbody td, table tbody th {
               <label for="radio-2">Approved</label>
             </div>
             <div class="multiple-choice">
-              <input id="radio-2" type="radio" name="status" value="Licence review">
-              <label for="radio-2">Mark for full licence review</label>
+              <input id="radio-3" type="radio" name="status" value="Licence review">
+              <label for="radio-3">Mark for full licence review</label>
             </div>
           </fieldset>
         </div>

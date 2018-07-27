@@ -3,6 +3,7 @@ const shallowDiff = require('shallow-diff');
 
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
+const { getPermissions } = require('./lib/permissions');
 const { getPurpose, getLicence, getPoint, getCondition } = require('./lib/licence-helpers');
 const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
@@ -64,25 +65,22 @@ const getViewLicences = async (request, h) => {
  */
 const getViewLicence = async (request, h) => {
   const { documentId } = request.params;
+  const { flash } = request.query;
 
   const { licence, finalState } = await load(documentId);
 
   const data = prepareData(licence, finalState);
 
-  // User can only edit if no status / in progress
-  const canEdit = (finalState.status === STATUS_IN_REVIEW && request.permissions.ar.approve) || (finalState.status === STATUS_IN_PROGRESS);
-  const canSubmit = canEdit && !request.permissions.ar.review;
-  const canApprove = request.permissions.ar.approve;
+  const permissions = getPermissions(request, finalState);
 
   const view = {
+    flash,
     documentId,
     ...request.view,
     licence,
     lastEdit: finalState.lastEdit,
     data,
-    canEdit,
-    canSubmit,
-    canApprove,
+    ...permissions,
     highlightNald: finalState.status === STATUS_IN_PROGRESS,
     highlightAr: finalState.status === STATUS_IN_REVIEW
   };
@@ -101,6 +99,12 @@ const getEditObject = async (request, h) => {
 
   // Load licence / AR licence from CRM
   const { licence, finalState } = await load(documentId);
+
+  // Check permissions
+  const { canEdit } = getPermissions(request, finalState);
+  if (!canEdit) {
+    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`);
+  }
 
   const { schema, getter } = objectConfig[type];
 
@@ -130,6 +134,12 @@ const postEditObject = async (request, h) => {
 
   // Load licence / AR licence from CRM
   const { licence, arLicence, finalState } = await load(documentId);
+
+  // Check permissions
+  const { canEdit } = getPermissions(request, finalState);
+  if (!canEdit) {
+    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`);
+  }
 
   const { schema, getter, actionCreator } = objectConfig[type];
 
@@ -166,10 +176,7 @@ const postSetStatus = async (request, h) => {
   const { notes, status } = request.payload;
 
   if (request.formError) {
-    console.log(request.view.errors);
     return getViewLicence(request, h);
-    // console.error(request.view.errors);
-    // return 'oh no!';
   }
 
   // Load licence / AR licence from CRM

@@ -8,8 +8,8 @@ const permissionsPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
-      method: async (request, reply) => {
-        request.permissions = await getPermissions(request.state.sid);
+      method: (request, reply) => {
+        request.permissions = getPermissions(request.state.sid);
         return reply.continue;
       }
     });

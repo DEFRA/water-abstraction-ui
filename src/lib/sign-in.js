@@ -4,6 +4,9 @@
 const CRM = require('./connectors/crm');
 const { createGUID } = require('./helpers');
 const { usersClient } = require('./connectors/idm');
+const config = require('../../config');
+const idm = require('./connectors/idm');
+const { get } = require('lodash');
 
 /**
  * Loads user data from IDM
@@ -12,7 +15,10 @@ const { usersClient } = require('./connectors/idm');
  */
 async function getIDMUser (emailAddress) {
   // Get IDM record
-  const { data: [user], error: idmError } = await usersClient.findMany({user_name: emailAddress.toLowerCase().trim()});
+  const { data: [user], error: idmError } = await usersClient.findMany({
+    user_name: emailAddress.toLowerCase().trim(),
+    application: config.idm.application
+  });
   if (idmError) {
     throw idmError;
   }
@@ -31,11 +37,11 @@ async function getIDMUser (emailAddress) {
  */
 async function auto (request, emailAddress, userData = {}, lastlogin) {
   const user = await getIDMUser(emailAddress);
-
   const entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
+  await idm.updateExternalId(user, entityId);
 
   // Get roles for user
-  const {error, data: roles} = await CRM.entityRoles.setParams({entityId}).findMany();
+  const { error, data: roles } = await CRM.entityRoles.setParams({entityId}).findMany();
 
   if (error) {
     throw error;
@@ -67,7 +73,8 @@ async function auto (request, emailAddress, userData = {}, lastlogin) {
     entity_id: entityId,
     user_data: userData,
     lastlogin: lastlogin,
-    roles
+    roles,
+    scope: get(user, 'role.scopes', [])
   };
 
   // Set user info in signed cookie

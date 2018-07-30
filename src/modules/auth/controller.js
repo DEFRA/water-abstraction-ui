@@ -74,9 +74,7 @@ async function postSignin (request, reply) {
     const {
       body: {
         reset_required: resetRequired,
-        reset_guid: resetGuid,
-        user_data: userData,
-        last_login: lastLogin
+        reset_guid: resetGuid
       }
     } = await IDM.login(request.payload.user_id, request.payload.password);
 
@@ -87,7 +85,7 @@ async function postSignin (request, reply) {
       return reply.redirect(`reset_password_change_password?resetGuid=${resetGuid}&forced=1`);
     }
 
-    const session = await signIn.auto(request, request.payload.user_id, userData, lastLogin);
+    const session = await signIn.auto(request, request.payload.user_id);
 
     // Redirect user
     const permissions = getPermissions(session);

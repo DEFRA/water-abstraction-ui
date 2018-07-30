@@ -1,6 +1,9 @@
 'use strict';
 
-const { intersection } = require('lodash');
+// Using lodash functions over some native functions because
+// they are forgiving to undefined.
+const { size, find, includes, intersection, get } = require('lodash');
+
 /**
  * Permissions module
  *
@@ -21,31 +24,64 @@ const { intersection } = require('lodash');
  * @param {String|Array} type - the role type or types to match
  * @return {Number} number of roles of specified type
  */
-function countRoles (roles, type) {
+const countRoles = (roles = [], type) => {
   // Handle array or string
   const types = typeof (type) === 'string' ? [type] : type;
   return roles.reduce((memo, role) => {
-    return types.includes(role.role) ? memo + 1 : memo;
+    return includes(types, role.role) ? memo + 1 : memo;
   }, 0);
-}
+};
 
-const hasMatch = (requiredScopes, userScopes) => intersection(requiredScopes, userScopes).length > 0;
+/**
+ * Checks if the user has a scope that is in the list of required scopes
+ *
+ * @param {array} requiredScopes A list of strings representing the scopes that are required for a resource
+ * @param {array} userScopes The list of strings representing the scopes a user has
+ * @returns {boolean}
+ */
+const hasMatch = (requiredScopes, userScopes) => {
+  return size(intersection(requiredScopes, userScopes)) > 0;
+};
 
-const isExternal = (scope = []) => scope.includes('external');
-const isVmlAdmin = (scope = []) => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
-const isPrimaryUser = (roles = []) => !!roles.find(role => role.role === 'primary_user');
+/**
+ * Does the role object have a role property of 'primary_user'?
+ * { role: 'primary_user' }
+ */
+const isPrimaryUserRole = role => get(role, 'role') === 'primary_user';
+
+/**
+ * Is this a role with a role value of user_returns.
+ * { role: 'user_returns' }
+ */
+const isUserReturnsRole = role => get(role, 'role') === 'user_returns';
+
+/**
+ * Checks if there is a scope called 'external'
+ *
+ * @param scope An array of strings
+ */
+const isExternal = scope => includes(scope, 'external');
+
+const isVmlAdmin = scope => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
+const isPrimaryUser = roles => !!find(roles, isPrimaryUserRole);
+const isUserReturnsUser = roles => !!find(roles, isUserReturnsRole);
 
 const canReadLicence = entityId => !!entityId;
-const canEditAbstractionReform = (scope = []) => hasMatch(['ar_user', 'ar_approver'], scope);
+const canEditAbstractionReform = scope => hasMatch(['ar_user', 'ar_approver'], scope);
 
-const canApproveAbstractionReform = (scope = []) => scope.includes('ar_approver');
+const canApproveAbstractionReform = scope => includes(scope, 'ar_approver');
 
-const canEditLicence = (scope = [], roles = []) => {
-  return isExternal(scope) && roles.length === 1 && isPrimaryUser(roles);
+const canEditLicence = (scope, roles) => {
+  return isExternal(scope) && size(roles) === 1 && isPrimaryUser(roles);
 };
 
 const canViewMutlipleLicences = (scope = [], roles = []) => {
   return isExternal(scope) && countRoles(roles, ['user', 'primary_user']) > 1;
+};
+
+const canPerformReturns = (scope = [], roles = []) => {
+  return isExternal(scope) &&
+    (isPrimaryUser(roles) || isUserReturnsUser(roles));
 };
 
 /**
@@ -60,7 +96,8 @@ const getPermissions = (credentials = {}) => {
     licences: {
       read: canReadLicence(entityId),
       edit: canEditLicence(scope, roles),
-      multi: canViewMutlipleLicences(scope, roles)
+      multi: canViewMutlipleLicences(scope, roles),
+      returns: canPerformReturns(scope, roles)
     },
     admin: {
       defra: isVmlAdmin(scope)

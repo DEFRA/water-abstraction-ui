@@ -65,7 +65,7 @@ server.register([{
 {
   register: require('hapi-route-acl'),
   options: {
-    permissionsFunc: require('./src/lib/permissions.js').getPermissionsCb
+    permissionsFunc: require('./src/lib/permissions.js').getPermissions
   }
 },
 {

@@ -1,3 +1,6 @@
+'use strict';
+
+const { intersection } = require('lodash');
 /**
  * Permissions module
  *
@@ -13,23 +16,6 @@
  */
 
 /**
- * Get permissions as an array of strings
- * @param {Object} permissions object
- * @return {Array} array of strings, e.g. ['licences:view', 'admin:defra']
- */
-function permissionsToArray (permissions) {
-  const arr = [];
-  for (let key in permissions) {
-    for (let subKey in permissions[key]) {
-      if (permissions[key][subKey]) {
-        arr.push(`${key}:${subKey}`);
-      }
-    }
-  }
-  return arr;
-}
-
-/**
  * Gets user-type role count from roles array
  * @param {Array} roles - array of roles loaded from CRM
  * @param {String|Array} type - the role type or types to match
@@ -43,93 +29,50 @@ function countRoles (roles, type) {
   }, 0);
 }
 
+const hasMatch = (requiredScopes, userScopes) => intersection(requiredScopes, userScopes).length > 0;
+
+const isExternal = (scope = []) => scope.includes('external');
+const isVmlAdmin = (scope = []) => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
+const isPrimaryUser = (roles = []) => !!roles.find(role => role.role === 'primary_user');
+
+const canReadLicence = entityId => !!entityId;
+const canEditAbstractionReform = (scope = []) => hasMatch(['ar_user', 'ar_approver'], scope);
+
+const canApproveAbstractionReform = (scope = []) => scope.includes('ar_approver');
+
+const canEditLicence = (scope = [], roles = []) => {
+  return isExternal(scope) && roles.length === 1 && isPrimaryUser(roles);
+};
+
+const canViewMutlipleLicences = (scope = [], roles = []) => {
+  return isExternal(scope) && countRoles(roles, ['user', 'primary_user']) > 1;
+};
+
 /**
  * Gets permissions available to current user based on current HAPI request
  * @param {Object} credentials - credentials from HAPI request
  * @return {Object} permissions - permissions object
  */
-async function getPermissions (credentials) {
-  // Default permissions
-  const permissions = {
-    licences: {
-      read: false,
-      edit: false,
+const getPermissions = (credentials = {}) => {
+  const { roles, entity_id: entityId, scope } = credentials;
 
-      // Agents can view licences for multiple licence holders
-      // this flag is set to true
-      multi: false
+  return {
+    licences: {
+      read: canReadLicence(entityId),
+      edit: canEditLicence(scope, roles),
+      multi: canViewMutlipleLicences(scope, roles)
     },
     admin: {
-      defra: false,
-      project: false,
-      system: false
+      defra: isVmlAdmin(scope)
     },
     ar: {
-      read: false,
-      edit: false,
-      approve: false
+      read: canEditAbstractionReform(scope),
+      edit: canEditAbstractionReform(scope),
+      approve: canApproveAbstractionReform(scope)
     }
   };
-
-  if (credentials) {
-    const { roles, entity_id: entityId } = credentials;
-
-    if (entityId) {
-      permissions.licences.read = true;
-    }
-    if (roles.length === 1 && roles[0].role === 'primary_user') {
-      permissions.licences.edit = true;
-    }
-    if (countRoles(roles, ['user', 'primary_user']) > 1) {
-      permissions.licences.multi = true;
-    }
-    const isDefraAdmin = roles.find(r => r.role === 'admin');
-    if (isDefraAdmin) {
-      permissions.admin.defra = true;
-    }
-    const isProjectAdmin = roles.find(r => r.role === 'project_admin');
-    if (isProjectAdmin) {
-      permissions.admin.project = true;
-    }
-    const isSysAdmin = roles.find(r => r.role === 'system_admin');
-    if (isSysAdmin) {
-      permissions.admin.system = true;
-    }
-
-    const isArApprover = roles.find(r => r.role === 'ar_approver');
-    if (isArApprover) {
-      permissions.ar.view = true;
-      permissions.ar.edit = true;
-      permissions.ar.approve = true;
-    }
-
-    const isArUser = roles.find(r => r.role === 'ar_user');
-    if (isArUser) {
-      permissions.ar.view = true;
-      permissions.ar.edit = true;
-    }
-  }
-
-  return permissions;
-}
-
-/**
- * Get permissions - callback style
- * @param {Object} credentials - credentials from HAPI request
- * @return {Object} permissions - permissions object
- */
-function getPermissionsCb (credentials, cb) {
-  getPermissions(credentials)
-    .then((permissions) => {
-      cb(null, permissions);
-    })
-    .catch((err) => {
-      cb(err, null);
-    });
-}
+};
 
 module.exports = {
-  getPermissions,
-  getPermissionsCb,
-  permissionsToArray
+  getPermissions
 };

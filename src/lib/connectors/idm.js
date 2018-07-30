@@ -3,15 +3,15 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const {
-  APIClient
-} = require('hapi-pg-rest-api');
+const { APIClient } = require('hapi-pg-rest-api');
+
 const client = new APIClient(rp, {
   endpoint: process.env.IDM_URI + '/user',
   headers: {
     Authorization: process.env.JWT_TOKEN
   }
 });
+
 const config = require('../../../config');
 const idmKPI = require('./idm/kpi');
 
@@ -24,8 +24,9 @@ const idmKPI = require('./idm/kpi');
  * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
  */
 function resetPassword (email, mode = 'reset', params = {}) {
+  const { application } = config.idm;
   return rp({
-    uri: `${process.env.IDM_URI}/reset/${email}`,
+    uri: `${process.env.IDM_URI}/reset/${application}/${email}`,
     qs: {
       mode,
       ...params
@@ -70,7 +71,10 @@ function createUserWithoutPassword (emailAddress) {
     reset_guid: Helpers.createGUID(),
     user_data: {},
     reset_required: 1,
-    application: config.idm.application
+    application: config.idm.application,
+    role: {
+      scopes: ['external']
+    }
   });
 }
 
@@ -142,6 +146,18 @@ function updatePasswordWithGuid (resetGuid, password) {
   });
 }
 
+/**
+ * Update the external_id field for the given user
+ * @param {object} user - The user
+ * @param {String} externalId - The crm entity id
+ */
+const updateExternalId = (user, externalId) => {
+  if (user.external_id) {
+    return Promise.resolve();
+  }
+  return client.updateOne(user.user_id, { external_id: externalId });
+};
+
 const usersClient = new APIClient(rp, {
   endpoint: `${process.env.IDM_URI}/user`,
   headers: {
@@ -152,13 +168,14 @@ const usersClient = new APIClient(rp, {
 module.exports = {
   login,
   resetPassword,
-  getPasswordResetLink: getPasswordResetLink,
-  updatePassword: updatePassword,
-  updatePasswordWithGuid: updatePasswordWithGuid,
+  getPasswordResetLink,
+  updatePassword,
+  updatePasswordWithGuid,
   createUserWithoutPassword,
   getUser,
   getUserByResetGuid,
   verifyCredentials,
   usersClient,
-  kpi: idmKPI
+  kpi: idmKPI,
+  updateExternalId
 };

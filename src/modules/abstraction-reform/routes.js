@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const controller = require('./controller');
 const statuses = require('./lib/statuses');
+const { scope } = require('../../lib/constants');
+const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover];
 
 module.exports = {
 
@@ -8,7 +10,8 @@ module.exports = {
     method: 'GET',
     path: '/admin/abstraction-reform',
     handler: controller.getViewLicences,
-    config: {
+    options: {
+      auth: { scope: allowedScopes },
       description: 'Entrance search page for abstraction reform',
       validate: {
         query: {
@@ -20,9 +23,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Review licence data',
           activeNavLink: 'ar'
-        },
-        hapiRouteAcl: {
-          permissions: ['ar:view']
         }
       }
     }
@@ -32,15 +32,13 @@ module.exports = {
     method: 'GET',
     path: '/admin/abstraction-reform/licence/{documentId}',
     handler: controller.getViewLicence,
-    config: {
+    options: {
+      auth: { scope: allowedScopes },
       description: 'Page to view comparison of permit repo licence with AR version',
       plugins: {
         viewContext: {
           pageTitle: 'View licence',
           activeNavLink: 'ar'
-        },
-        hapiRouteAcl: {
-          permissions: ['ar:view']
         }
       }
     }
@@ -50,15 +48,13 @@ module.exports = {
     method: 'GET',
     path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id}',
     handler: controller.getEditObject,
-    config: {
+    options: {
+      auth: { scope: allowedScopes },
       description: 'Edit an object within the licence',
       plugins: {
         viewContext: {
           pageTitle: 'Edit',
           activeNavLink: 'ar'
-        },
-        hapiRouteAcl: {
-          permissions: ['ar:edit']
         }
       }
     }
@@ -68,13 +64,9 @@ module.exports = {
     method: 'POST',
     path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id}',
     handler: controller.postEditObject,
-    config: {
-      description: 'Post handler: edit an object within the licence',
-      plugins: {
-        hapiRouteAcl: {
-          permissions: ['ar:edit']
-        }
-      }
+    options: {
+      auth: { scope: allowedScopes },
+      description: 'Post handler: edit an object within the licence'
     }
   },
 
@@ -82,12 +74,10 @@ module.exports = {
     method: 'POST',
     path: '/admin/abstraction-reform/licence/{documentId}/status',
     handler: controller.postSetStatus,
-    config: {
+    options: {
+      auth: { scope: allowedScopes },
       description: 'Post handler: set document status',
       plugins: {
-        hapiRouteAcl: {
-          permissions: ['ar:edit']
-        },
         formValidator: {
           payload: {
             csrf_token: Joi.string().guid(),
@@ -98,5 +88,4 @@ module.exports = {
       }
     }
   }
-
 };

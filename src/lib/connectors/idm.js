@@ -79,12 +79,25 @@ function createUserWithoutPassword (emailAddress) {
 }
 
 /**
- * Get user by numeric ID/email address
- * @param {String|Number} numeric ID or string email address
+ * Get user by numeric ID
+ * @param {Number} numeric ID
  * @return {Promise} resolves with user if found
  */
-function getUser (userId) {
-  return client.findOne(userId.toLowerCase());
+const getUser = userId => client.findOne(userId);
+
+/**
+ * Gets the user for the current VML application who has the
+ * given email address.
+ *
+ * @param {String} The user's email address.
+ * @return {Promise} Resolves with an array of users which should
+ * only ever have zero or one users.
+ */
+function getUserByEmail (email) {
+  return client.findMany({
+    user_name: email,
+    application: config.idm.application
+  });
 }
 
 function login (userName, password) {
@@ -113,7 +126,6 @@ function getPasswordResetLink (emailAddress) {
       .then((response) => {
         resolve(response.body);
       }).catch((response) => {
-        //      console.log('rejecting in idm.getPasswordResetLink')
         reject(response);
       });
   });
@@ -121,13 +133,11 @@ function getPasswordResetLink (emailAddress) {
 
 /**
  * Updates user password
- * @param {String} username - user's IDM email address
+ * @param {number} user id - user's ID
  * @param {String} password - new password
  */
-function updatePassword (username, password) {
-  return client.updateOne(username, {
-    password
-  });
+function updatePassword (userId, password) {
+  return client.updateOne(userId, { password });
 }
 
 /**
@@ -173,6 +183,7 @@ module.exports = {
   updatePasswordWithGuid,
   createUserWithoutPassword,
   getUser,
+  getUserByEmail,
   getUserByResetGuid,
   verifyCredentials,
   usersClient,

@@ -130,7 +130,7 @@ async function postAddAccess (request, reply, context = {}) {
     }
 
     // Update the idm.user with the crm.entity id
-    const { data: user } = await IDM.getUser(email);
+    const { data: user } = await IDM.getUserByEmail(email);
     await IDM.updateExternalId(user, crmEntityId);
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);

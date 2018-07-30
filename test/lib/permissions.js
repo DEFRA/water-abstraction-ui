@@ -110,11 +110,7 @@ lab.experiment('getPermissions::agent with data returns', () => {
   let permissions;
 
   lab.beforeEach(async () => {
-    const userRole = {
-      role: 'user',
-      permissions: { returns: true }
-    };
-    const credentials = getCredentials(['external'], [userRole], 'entity-id');
+    const credentials = getCredentials(['external'], ['user', 'user_returns'], 'entity-id');
     permissions = await getPermissions(credentials);
   });
 

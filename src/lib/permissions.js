@@ -44,14 +44,16 @@ const hasMatch = (requiredScopes, userScopes) => {
 };
 
 /**
- * Does the role object have a role property of 'user'?
- */
-const isUserRole = role => get(role, 'role') === 'user';
-
-/**
  * Does the role object have a role property of 'primary_user'?
+ * { role: 'primary_user' }
  */
 const isPrimaryUserRole = role => get(role, 'role') === 'primary_user';
+
+/**
+ * Is this a role with a role value of user_returns.
+ * { role: 'user_returns' }
+ */
+const isUserReturnsRole = role => get(role, 'role') === 'user_returns';
 
 /**
  * Checks if there is a scope called 'external'
@@ -62,6 +64,7 @@ const isExternal = scope => includes(scope, 'external');
 
 const isVmlAdmin = scope => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
 const isPrimaryUser = roles => !!find(roles, isPrimaryUserRole);
+const isUserReturnsUser = roles => !!find(roles, isUserReturnsRole);
 
 const canReadLicence = entityId => !!entityId;
 const canEditAbstractionReform = scope => hasMatch(['ar_user', 'ar_approver'], scope);
@@ -76,14 +79,9 @@ const canViewMutlipleLicences = (scope = [], roles = []) => {
   return isExternal(scope) && countRoles(roles, ['user', 'primary_user']) > 1;
 };
 
-const getUserRole = roles => find(roles, isUserRole);
-
 const canPerformReturns = (scope = [], roles = []) => {
-  if (isExternal(scope)) {
-    const user = getUserRole(roles);
-    return isPrimaryUser(roles) || get(user, 'permissions.returns', false);
-  }
-  return false;
+  return isExternal(scope) &&
+    (isPrimaryUser(roles) || isUserReturnsUser(roles));
 };
 
 /**

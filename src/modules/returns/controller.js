@@ -46,7 +46,7 @@ const getReturn = async (request, h) => {
 
   // @TODO check permission.  Must be either a primary user of the licence company
   // or a user of the company with returns permission set
-  console.log(request.credentials.auth.roles);
+  // console.log(request.credentials.auth.roles);
 
   // Find lines for version
   const version = await getLatestVersion(id);

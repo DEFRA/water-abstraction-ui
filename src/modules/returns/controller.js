@@ -1,5 +1,5 @@
 const Boom = require('boom');
-// const { documents } = require('../../lib/connectors/crm');
+/* eslint new-cap: "warn" */
 
 const { returns, lines } = require('../../lib/connectors/returns');
 
@@ -37,16 +37,25 @@ const getReturns = async (request, h) => {
  */
 const getReturn = async (request, h) => {
   const { id } = request.query;
+  const { entity_id: entityId } = request.auth.credentials;
 
   // Load return
-  const { data, error: returnError } = await returns.findMany({ return_id: id });
+  const { data: [returnData], error: returnError } = await returns.findMany({ return_id: id });
   if (returnError) {
     throw new Boom.badImplementation(returnError);
   }
+  if (!returnData) {
+    throw new Boom.notFound(`Return ${id} not found`);
+  }
 
-  // @TODO check permission.  Must be either a primary user of the licence company
-  // or a user of the company with returns permission set
-  // console.log(request.credentials.auth.roles);
+  const { licence_ref: licenceNumber } = returnData;
+
+  // Load licence from CRM to check user has access
+  const [ documentHeader ] = await getLicenceNumbers(entityId, licenceNumber);
+
+  if (!documentHeader) {
+    throw new Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
+  }
 
   // Find lines for version
   const version = await getLatestVersion(id);
@@ -63,8 +72,8 @@ const getReturn = async (request, h) => {
 
   const view = {
     ...request.view,
-    return: data[0],
-    pageTitle: `Abstraction return for ${data[0].licence_ref}`,
+    return: returnData,
+    pageTitle: `Abstraction return for ${licenceNumber}`,
     lines: linesData
   };
   return h.view('water/returns/return', view);

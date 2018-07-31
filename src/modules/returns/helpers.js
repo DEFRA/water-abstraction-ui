@@ -5,12 +5,18 @@ const { returns, versions } = require('../../lib/connectors/returns');
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
  * @param {String} entityId - individual entity GUID
+ * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId) => {
-  const filter = { entity_id: entityId };
-
+const getLicenceNumbers = async (entityId, licenceNumber = null) => {
   // @TODO handle > 1 page of results
+  const filter = {
+    entity_id: entityId,
+    roles: ['primary_user', 'returns']
+  };
+  if (licenceNumber) {
+    filter.system_external_id = licenceNumber;
+  }
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name']);
 
   if (error) {

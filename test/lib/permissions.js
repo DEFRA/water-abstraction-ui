@@ -6,9 +6,39 @@ const { expect } = require('code');
 
 const { getPermissions } = require('../../src/lib/permissions');
 
+const primaryRole = {
+  entity_role_id: 'primaryRole',
+  role: 'primary_user',
+  regime_entity_id: 'regime_a',
+  company_entity_id: 'company_a',
+  permissions: {
+
+  }
+};
+const userRole = {
+  entity_role_id: 'userRole_1',
+  role: 'user',
+  regime_entity_id: 'regime_a',
+  company_entity_id: 'company_b',
+  permissions: {
+
+  }
+};
+const userRoleWithReturns = {
+  entity_role_id: 'userRole_2',
+  role: 'user',
+  regime_entity_id: 'regime_a',
+  company_entity_id: 'company_c',
+  permissions: {
+    returns: true
+  }
+};
+
 const getCredentials = (scope = [], roles = [], entityId = null) => ({
   scope,
-  roles: roles.map(role => ({ role })),
+  roles: roles.map(role => {
+    return {...role, entity_id: entityId };
+  }),
   entity_id: entityId
 });
 
@@ -35,13 +65,17 @@ lab.experiment('getPermissions::internal user', () => {
   lab.test('has admin permission', async () => {
     expect(internalPermissions.admin.defra).to.equal(true);
   });
+
+  lab.test('cannot view external returns', async () => {
+    expect(internalPermissions.returns.read).to.equal(false);
+  });
 });
 
 lab.experiment('getPermissions::primary user', () => {
   let permissions;
 
   lab.beforeEach(async () => {
-    const credentials = getCredentials(['external'], ['primary_user'], 'entity-id');
+    const credentials = getCredentials(['external'], [primaryRole], 'entity-id');
     permissions = await getPermissions(credentials);
   });
 
@@ -60,13 +94,17 @@ lab.experiment('getPermissions::primary user', () => {
   lab.test('does not have admin permission', async () => {
     expect(permissions.admin.defra).to.equal(false);
   });
+
+  lab.test('can view external returns', async () => {
+    expect(permissions.returns.read).to.equal(true);
+  });
 });
 
 lab.experiment('getPermissions::agent', () => {
   let permissions;
 
   lab.beforeEach(async () => {
-    const credentials = getCredentials(['external'], ['primary_user', 'user'], 'entity-id');
+    const credentials = getCredentials(['external'], [primaryRole, userRole], 'entity-id');
     permissions = await getPermissions(credentials);
   });
 
@@ -84,6 +122,10 @@ lab.experiment('getPermissions::agent', () => {
 
   lab.test('user does not have admin permission', async () => {
     expect(permissions.admin.defra).to.equal(false);
+  });
+
+  lab.test('can view external returns', async () => {
+    expect(permissions.returns.read).to.equal(true);
   });
 });
 

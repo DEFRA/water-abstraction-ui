@@ -1,0 +1,119 @@
+{{> styles}}
+<style type="text/css">
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 250px;
+}
+.table-cell {
+
+}
+</style>
+
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+
+  {{# each returns }}
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-medium">{{year}}</h2>
+
+
+      <div class="table big-space">                                          <!-- a table -->
+
+
+          <div class="table-row table-head">                                      <!-- the table head -->
+            <div class="table-cell bold-small column-33">
+              Licence
+            </div>
+            <div class="table-cell bold-small">
+              Purpose
+            </div>
+            <div class="table-cell bold-small">
+              Site description
+            </div>
+            <div class="table-cell bold-small column-15">
+              Status
+            </div>
+          </div>
+
+          {{#each returns }}
+          <div class="table-row medium-space clickable">                                    <!-- a data row starts -->
+            <div class="table-cell">
+              <h3 class="sr-only">
+                Row {{ add @key 1 }}
+              </h3>
+
+              {{# notEqual received_date null }}
+              <a href="/returns/return?id={{ return_id }}">
+              {{/notEqual}}
+
+              {{#if licenceName }}
+              {{ licenceName }}
+              {{else}}
+              {{ licence_ref }}
+              {{/if}}
+
+              {{# notEqual received_date null }}
+              </a>
+              {{/notEqual}}
+
+              <h4 class="context">
+                Licence number
+              </h4>
+              <a href="/returns/return?id={{ return_id }}">
+
+              </a>
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Purpose
+              </h4>
+              {{#each metadata.purposes }}
+              {{ tertiary.description }}
+              {{/each }}
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Site description
+              </h4>
+              <span class="truncate">
+              {{{ titleCase metadata.description  }}}
+              </span>
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Status
+              </h4>
+
+              {{# equal received_date null }}
+              <strong class="badge badge--success badge--caps">
+                Return due
+              </strong>
+              {{/equal}}
+            </div>
+          </div>
+          {{/each}}
+
+
+        </div>
+
+    </div>
+  </div>
+  {{/each}}
+
+
+  {{{ pagination pagination url='/returns' }}}
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

@@ -4,8 +4,8 @@ const handlebars = require('handlebars');
 const moment = require('moment');
 const momentTimezone = require('moment-timezone');
 const qs = require('querystring');
-// const markdown = require('markdown').markdown;
 const sentenceCase = require('sentence-case');
+const titleCase = require('title-case');
 const marked = require('marked');
 
 const Helpers = require('../lib/helpers');
@@ -15,6 +15,87 @@ const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
 const Joi = require('joi');
 
+const commaNumber = require('comma-number');
+
+/**
+ * Formats numbers with commas to separate thousands, eg. 1,000
+ * @param {Number} value
+ * @return {String} number formatted
+ */
+handlebars.registerHelper('commaNumber', function (value) {
+  return commaNumber(value);
+});
+
+/**
+ * Converts gallons to cubic metres
+ * @param {Number} value
+ * @return {String} number formatted
+ */
+handlebars.registerHelper('gallonsToCubicMetres', function (value) {
+  return value * 0.00454609;
+});
+
+/**
+ * Creates a pagination anchor tag for the pagination helper
+ * @param {String} url - base URL, e.g. /some/page
+ * @param {Object} params - key/value pairs of query string parameters, the page number will be merged with these
+ * @param {Number} page - the page for the page link
+ * @param {Object} options
+ * @param {String} options.ariaLabel - the aria label text
+ * @param {Boolean} options.isActive - whether this is an active pagination link
+ * @return {String} link html
+ */
+function paginationLink (url, params, page, options = {}) {
+  const fullUrl = `${url}?${qs.stringify({ ...params, page })}`;
+  return `<a class="pagination__link${options.isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" aria-label="${options.ariaLabel}">`;
+}
+
+handlebars.registerHelper('pagination', function (pagination, options) {
+  const { url = '/', params = {} } = options.hash;
+  const { page, pageCount } = pagination;
+
+  if (pageCount === 1) {
+    return null;
+  }
+
+  let html = `<nav role="navigation" aria-label="Pagination navigation">
+    <ol class="pagination">`;
+
+  // Previous page link
+  html += `<li class="pagination__item" ${page === 1 ? 'aria-hidden="true"' : ''}>`;
+  if (page > 1) {
+    html += paginationLink(url, params, page - 1, {ariaLabel: 'Previous page'}) + `&larr; Previous page</a>`;
+  } else {
+    html += '&larr; Previous page';
+  }
+  html += '</li>';
+
+  // Each page link
+  for (let i = 1; i <= pageCount; i++) {
+    html += `<li class="pagination__item">`;
+    html += paginationLink(url, params, i, { isActive: page === i });
+    html += `<span class="sr-only">Page </span> ${i}`;
+    if (i === page) {
+      html += `<span class="sr-only"> - current page</span>`;
+    }
+    html += `</a></li>`;
+  }
+
+  // Next page link
+  html += `<li class="pagination__item" ${page === pageCount ? 'aria-hidden="true"' : ''}>`;
+  if (page < pageCount) {
+    html += paginationLink(url, params, page + 1, { arialLabel: 'Next page' }) + `Next page &rarr;</a>`;
+  } else {
+    html += 'Next page &rarr;';
+  }
+  html += '</li>';
+
+  html += `</ol>
+  </nav>`;
+
+  return html;
+});
+
 handlebars.registerHelper('markdown', function (param = '') {
   // Replace ^ with > because notify represents a blockquote using the carat.
   const updated = param.replace(/\^/g, '>');
@@ -23,6 +104,10 @@ handlebars.registerHelper('markdown', function (param = '') {
 
 handlebars.registerHelper('sentenceCase', function (value) {
   return sentenceCase(value);
+});
+
+handlebars.registerHelper('titleCase', function (value) {
+  return titleCase(value);
 });
 
 handlebars.registerHelper('for', function (from, to, incr, block) {
@@ -278,9 +363,10 @@ handlebars.registerHelper('guid', function () {
   return Helpers.createGUID();
 });
 
-handlebars.registerHelper('formatISODate', function (dateInput) {
+handlebars.registerHelper('formatISODate', function (dateInput, options) {
   const date = momentTimezone(dateInput);
-  return date.isValid() ? date.tz(timezone).format('D MMMM YYYY') : dateInput;
+  const { format = 'D MMMM YYYY' } = options.hash;
+  return date.isValid() ? date.tz(timezone).format(format) : dateInput;
 });
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {

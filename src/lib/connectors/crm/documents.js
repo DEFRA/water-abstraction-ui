@@ -146,7 +146,6 @@ client.getLicenceInternalID = async function (licences, document_id) {
   throw new Error('Licence with ID ' + document_id + ' could not be found.');
 };
 
-
 /**
  * Get a list of licences based on the supplied options
  * @param {Object} filter - criteria to filter licence lisrt
@@ -175,6 +174,5 @@ client.getFilteredLicences = function (filter, sort = {}, pagination = {
     }
   });
 };
-
 
 module.exports = client;

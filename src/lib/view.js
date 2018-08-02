@@ -71,6 +71,13 @@ function viewContextDefaults (request) {
         url: '/licences'
       });
     }
+    if (request.permissions && request.permissions.licences.returns) {
+      viewContext.mainNavLinks.push({
+        id: 'returns',
+        text: 'Returns',
+        url: '/returns'
+      });
+    }
     if (request.permissions && request.permissions.licences.edit) {
       viewContext.mainNavLinks.push({
         id: 'manage',

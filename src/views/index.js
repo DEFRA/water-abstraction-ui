@@ -40,13 +40,14 @@ handlebars.registerHelper('gallonsToCubicMetres', function (value) {
  * @param {String} url - base URL, e.g. /some/page
  * @param {Object} params - key/value pairs of query string parameters, the page number will be merged with these
  * @param {Number} page - the page for the page link
- * @param {String} ariaLabel - the aria label text
- * @param {Boolean} isActive - whether this is an active pagination link
+ * @param {Object} options
+ * @param {String} options.ariaLabel - the aria label text
+ * @param {Boolean} options.isActive - whether this is an active pagination link
  * @return {String} link html
  */
-function paginationLink (url, params, page, ariaLabel, isActive = false) {
+function paginationLink (url, params, page, options = {}) {
   const fullUrl = `${url}?${qs.stringify({ ...params, page })}`;
-  return `<a class="pagination__link${isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" aria-label="${ariaLabel}">`;
+  return `<a class="pagination__link${options.isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" aria-label="${options.ariaLabel}">`;
 }
 
 handlebars.registerHelper('pagination', function (pagination, options) {
@@ -63,7 +64,7 @@ handlebars.registerHelper('pagination', function (pagination, options) {
   // Previous page link
   html += `<li class="pagination__item" ${page === 1 ? 'aria-hidden="true"' : ''}>`;
   if (page > 1) {
-    html += paginationLink(url, params, page - 1, 'Previous page') + `&larr; Previous page</a>`;
+    html += paginationLink(url, params, page - 1, {ariaLabel: 'Previous page'}) + `&larr; Previous page</a>`;
   } else {
     html += '&larr; Previous page';
   }
@@ -72,7 +73,7 @@ handlebars.registerHelper('pagination', function (pagination, options) {
   // Each page link
   for (let i = 1; i <= pageCount; i++) {
     html += `<li class="pagination__item">`;
-    html += paginationLink(url, params, i, null, page === i);
+    html += paginationLink(url, params, i, { isActive: page === i });
     html += `<span class="sr-only">Page </span> ${i}`;
     if (i === page) {
       html += `<span class="sr-only"> - current page</span>`;
@@ -83,7 +84,7 @@ handlebars.registerHelper('pagination', function (pagination, options) {
   // Next page link
   html += `<li class="pagination__item" ${page === pageCount ? 'aria-hidden="true"' : ''}>`;
   if (page < pageCount) {
-    html += paginationLink(url, params, page + 1, 'Next page') + `Next page &rarr;</a>`;
+    html += paginationLink(url, params, page + 1, { arialLabel: 'Next page' }) + `Next page &rarr;</a>`;
   } else {
     html += 'Next page &rarr;';
   }

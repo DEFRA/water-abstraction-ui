@@ -3,7 +3,7 @@ const Boom = require('boom');
 
 const { returns, lines } = require('../../lib/connectors/returns');
 
-const { getLicenceNumbers, getLicenceReturns, groupReturnsByYear, mergeReturnsAndLicenceNames, getLatestVersion } = require('./helpers');
+const { getLicenceNumbers, getLicenceReturns, groupReturnsByYear, mergeReturnsAndLicenceNames, getLatestVersion, getUnit } = require('./helpers');
 
 /**
  * Gets and displays a list of returns for the current user,
@@ -21,8 +21,6 @@ const getReturns = async (request, h) => {
 
   const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
 
-  console.log(JSON.stringify(returns, null, 2));
-
   const view = {
     ...request.view,
     returns,
@@ -34,6 +32,7 @@ const getReturns = async (request, h) => {
 
 /**
  * Gets a single return by ID
+ * @param {String} request.query.id - the return ID to display
  */
 const getReturn = async (request, h) => {
   const { id } = request.query;
@@ -74,7 +73,9 @@ const getReturn = async (request, h) => {
     ...request.view,
     return: returnData,
     pageTitle: `Abstraction return for ${licenceNumber}`,
-    lines: linesData
+    lines: linesData,
+    documentHeader,
+    unit: getUnit(linesData)
   };
   return h.view('water/returns/return', view);
 };

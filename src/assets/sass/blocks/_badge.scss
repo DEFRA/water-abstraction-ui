@@ -1,18 +1,28 @@
 .badge {
 
+
   min-width: 4rem;
   line-height: 2.25rem;
-  border-radius: 0.3rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
   font-weight: bold;
   font-size: 16px;
-  padding: 2px 5px 0;
+  padding: 3px 5px 0 5px;
   background: $grey-4;
-
+  letter-spacing: 1px;
+  
   &--error {
     color: $page-colour;
     background: $error-colour;
+  }
+
+  &--success {
+    color: $page-colour;
+    background: $button-colour;
+  }
+
+  &--caps {
+    text-transform: uppercase;
   }
 }

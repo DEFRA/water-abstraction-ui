@@ -5,6 +5,7 @@ const moment = require('moment');
 const momentTimezone = require('moment-timezone');
 const qs = require('querystring');
 const sentenceCase = require('sentence-case');
+const titleCase = require('title-case');
 const marked = require('marked');
 
 const Helpers = require('../lib/helpers');
@@ -13,6 +14,26 @@ const DynamicView = require('../lib/dynamicview');
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
 const Joi = require('joi');
+
+const commaNumber = require('comma-number');
+
+/**
+ * Formats numbers with commas to separate thousands, eg. 1,000
+ * @param {Number} value
+ * @return {String} number formatted
+ */
+handlebars.registerHelper('commaNumber', function (value) {
+  return commaNumber(value);
+});
+
+/**
+ * Converts gallons to cubic metres
+ * @param {Number} value
+ * @return {String} number formatted
+ */
+handlebars.registerHelper('gallonsToCubicMetres', function (value) {
+  return value * 0.00454609;
+});
 
 /**
  * Creates a pagination anchor tag for the pagination helper
@@ -82,6 +103,10 @@ handlebars.registerHelper('markdown', function (param = '') {
 
 handlebars.registerHelper('sentenceCase', function (value) {
   return sentenceCase(value);
+});
+
+handlebars.registerHelper('titleCase', function (value) {
+  return titleCase(value);
 });
 
 handlebars.registerHelper('for', function (from, to, incr, block) {
@@ -337,9 +362,10 @@ handlebars.registerHelper('guid', function () {
   return Helpers.createGUID();
 });
 
-handlebars.registerHelper('formatISODate', function (dateInput) {
+handlebars.registerHelper('formatISODate', function (dateInput, options) {
   const date = momentTimezone(dateInput);
-  return date.isValid() ? date.tz(timezone).format('D MMMM YYYY') : dateInput;
+  const { format = 'D MMMM YYYY' } = options.hash;
+  return date.isValid() ? date.tz(timezone).format(format) : dateInput;
 });
 
 handlebars.registerHelper('formatISOTime', function (dateInput) {

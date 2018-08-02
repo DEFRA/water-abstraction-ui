@@ -1,4 +1,5 @@
 const Boom = require('boom');
+const { uniq } = require('lodash');
 const { documents } = require('../../lib/connectors/crm');
 const { returns, versions } = require('../../lib/connectors/returns');
 
@@ -17,7 +18,7 @@ const getLicenceNumbers = async (entityId, licenceNumber = null) => {
   if (licenceNumber) {
     filter.system_external_id = licenceNumber;
   }
-  const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name']);
+  const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
   if (error) {
     throw Boom.badImplementation('CRM error', error);
@@ -45,7 +46,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     licence_ref: 1
   };
 
-  const columns = ['return_id', 'licence_ref', 'start_date', 'metadata', 'status'];
+  const columns = ['return_id', 'licence_ref', 'start_date', 'metadata', 'status', 'received_date'];
 
   const requestPagination = {
     page,
@@ -122,10 +123,26 @@ const getLatestVersion = async (returnId) => {
   return version;
 };
 
+/**
+ * Checks that all rows have same units
+ * this is to match the design, but handles the possibility that a return
+ * could have a mix of units
+ * @param {Array} lines - lines data from the returns module
+ * @return {String|null} returns the unit used, ignoring null values
+ */
+const getUnit = (lines) => {
+  const units = uniq(lines.map(row => row.unit).filter(val => val !== null));
+  if (units.length === 1) {
+    return units[0];
+  }
+  return null;
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
   groupReturnsByYear,
   mergeReturnsAndLicenceNames,
-  getLatestVersion
+  getLatestVersion,
+  getUnit
 };

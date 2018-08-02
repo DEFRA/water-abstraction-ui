@@ -4,29 +4,22 @@ const rp = require('request-promise-native').defaults({
 });
 const { APIClient } = require('hapi-pg-rest-api');
 
-const returns = new APIClient(rp, {
-  endpoint: `${process.env.RETURNS_URI}/returns`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
-
-const versions = new APIClient(rp, {
-  endpoint: `${process.env.RETURNS_URI}/versions`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
-
-const lines = new APIClient(rp, {
-  endpoint: `${process.env.RETURNS_URI}/lines`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
+/**
+ * Create a returns API client for the given resource name
+ * @param {String} name - the entity name
+ * @return {Object} HAPI REST API client
+ */
+const createClient = (name) => {
+  return new APIClient(rp, {
+    endpoint: `${process.env.RETURNS_URI}/${name}`,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    }
+  });
+};
 
 module.exports = {
-  returns,
-  versions,
-  lines
+  returns: createClient('returns'),
+  versions: createClient('versions'),
+  lines: createClient('lines')
 };

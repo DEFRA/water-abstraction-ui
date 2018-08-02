@@ -1,7 +1,8 @@
+/* eslint new-cap: "warn" */
 const Boom = require('boom');
 const { uniq } = require('lodash');
 const { documents } = require('../../lib/connectors/crm');
-const { returns, versions } = require('../../lib/connectors/returns');
+const { returns, versions, lines } = require('../../lib/connectors/returns');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -138,11 +139,46 @@ const getUnit = (lines) => {
   return null;
 };
 
+/**
+ * Loads a single return
+ * @param {String} returnId
+ * @return {Promise} resolves with { return, version, lines }
+ */
+const getReturnData = async (returnId) => {
+  // Load return
+  const { data: [returnData], error: returnError } = await returns.findMany({ return_id: returnId });
+  if (returnError) {
+    throw new Boom.badImplementation(returnError);
+  }
+  if (!returnData) {
+    throw new Boom.notFound(`Return ${returnId} not found`);
+  }
+
+  // Find lines for version
+  const version = await getLatestVersion(returnId);
+  const filter = {
+    version_id: version.version_id
+  };
+  const sort = {
+    start_date: 1
+  };
+  const { data: linesData, error: linesError } = await lines.findMany(filter, sort);
+  if (linesError) {
+    throw new Boom.badImplementation(linesError);
+  }
+  return {
+    return: returnData,
+    version,
+    lines: linesData
+  };
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
   groupReturnsByYear,
   mergeReturnsAndLicenceNames,
   getLatestVersion,
-  getUnit
+  getUnit,
+  getReturnData
 };

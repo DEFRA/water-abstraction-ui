@@ -1,9 +1,14 @@
-const Boom = require('boom');
 /* eslint new-cap: "warn" */
+const Boom = require('boom');
 
-const { returns, lines } = require('../../lib/connectors/returns');
-
-const { getLicenceNumbers, getLicenceReturns, groupReturnsByYear, mergeReturnsAndLicenceNames, getLatestVersion, getUnit } = require('./helpers');
+const {
+  getLicenceNumbers,
+  getLicenceReturns,
+  groupReturnsByYear,
+  mergeReturnsAndLicenceNames,
+  getUnit,
+  getReturnData
+} = require('./helpers');
 
 /**
  * Gets and displays a list of returns for the current user,
@@ -38,16 +43,11 @@ const getReturn = async (request, h) => {
   const { id } = request.query;
   const { entity_id: entityId } = request.auth.credentials;
 
-  // Load return
-  const { data: [returnData], error: returnError } = await returns.findMany({ return_id: id });
-  if (returnError) {
-    throw new Boom.badImplementation(returnError);
-  }
-  if (!returnData) {
-    throw new Boom.notFound(`Return ${id} not found`);
-  }
+  // Load return data
+  const data = await getReturnData(id);
 
-  const { licence_ref: licenceNumber } = returnData;
+  // Load CRM data to check access
+  const { licence_ref: licenceNumber } = data.return;
 
   // Load licence from CRM to check user has access
   const [ documentHeader ] = await getLicenceNumbers(entityId, licenceNumber);
@@ -56,26 +56,12 @@ const getReturn = async (request, h) => {
     throw new Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
-  // Find lines for version
-  const version = await getLatestVersion(id);
-  const filter = {
-    version_id: version.version_id
-  };
-  const sort = {
-    start_date: 1
-  };
-  const { data: linesData, error: linesError } = await lines.findMany(filter, sort);
-  if (linesError) {
-    throw new Boom.badImplementation(linesError);
-  }
-
   const view = {
     ...request.view,
-    return: returnData,
+    ...data,
     pageTitle: `Abstraction return for ${licenceNumber}`,
-    lines: linesData,
     documentHeader,
-    unit: getUnit(linesData)
+    unit: getUnit(data.lines)
   };
   return h.view('water/returns/return', view);
 };

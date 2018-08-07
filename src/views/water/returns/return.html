@@ -42,6 +42,11 @@
   </p>
   <br />
 
+
+  {{# if version.nil_return }}
+  <h1 class="heading-large">Nil return</h1>
+  {{else}}
+
   <h2 class="heading-medium">Abstraction amounts</h2>
 
 
@@ -87,10 +92,15 @@
   <tr>
       <td>
         {{#equal ../return.returns_frequency 'daily' }}
-          {{ formatISODate start_date format='D MMMM YYYY' }}
+          {{ formatISODate start_date format='D MMMM' }}
         {{/equal}}
+
+        {{#equal ../return.returns_frequency 'weekly' }}
+          {{ formatISODate start_date format='D MMMM' }}
+        {{/equal}}
+
         {{#equal ../return.returns_frequency 'monthly' }}
-          {{ formatISODate start_date format='MMMM YYYY' }}
+          {{ formatISODate start_date format='MMMM' }}
         {{/equal}}
         {{#equal ../return.returns_frequency 'annual' }}
           {{ formatISODate start_date format='YYYY' }}
@@ -112,6 +122,8 @@
   </div>
   </div>
   {{/equal}}
+
+  {{/if}}
 
 </main>
 

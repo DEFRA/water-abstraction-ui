@@ -87,10 +87,10 @@
   <tr>
       <td>
         {{#equal ../return.returns_frequency 'daily' }}
-          {{ formatISODate start_date format='D MMMM' }}
+          {{ formatISODate start_date format='D MMMM YYYY' }}
         {{/equal}}
         {{#equal ../return.returns_frequency 'monthly' }}
-          {{ formatISODate start_date format='MMMM' }}
+          {{ formatISODate start_date format='MMMM YYYY' }}
         {{/equal}}
         {{#equal ../return.returns_frequency 'annual' }}
           {{ formatISODate start_date format='YYYY' }}

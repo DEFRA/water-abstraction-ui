@@ -39,7 +39,8 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     licence_type: 'abstraction',
     licence_ref: {
       $in: licenceNumbers
-    }
+    },
+    'metadata->>isCurrent': 'true'
   };
 
   const sort = {
@@ -157,12 +158,13 @@ const getReturnData = async (returnId) => {
   // Find lines for version
   const version = await getLatestVersion(returnId);
   const filter = {
-    version_id: version.version_id
+    version_id: version.version_id,
+    'metadata->>isCurrent': 'true'
   };
   const sort = {
     start_date: 1
   };
-  const { data: linesData, error: linesError } = await lines.findMany(filter, sort);
+  const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
   if (linesError) {
     throw new Boom.badImplementation(linesError);
   }

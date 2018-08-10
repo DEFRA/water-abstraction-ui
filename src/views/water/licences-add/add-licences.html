@@ -85,14 +85,15 @@
         <!-- licence number field -->
         <div class="form-group {{#if error }}form-group-error{{/if}}">
           <label for="licence_no">
-            <span class="form-label-bold">Enter your licence number(s)</span>
+            <p class="form-label-bold">Enter your licence number(s)</p>
+            <p class="form-hint">
+              You can only view water abstraction licences online at the moment.
+              We will let you know when you can also view any impoundment licences you
+              hold.
+            </p>
             <span class="form-hint">
-              You can only view water abstraction licences online at the moment. We will let you know when you can also view any impoundment licences you hold.
-            </span>
-            <br/>
-            <br/>
-            <span class="form-hint">
-              You can separate your licence numbers using spaces, commas, or by entering them on different lines.
+              You can separate your licence numbers using spaces, commas,
+              or by entering them on different lines.
             </span>
           </label>
           <textarea maxlength="8000" class="form-control form-control-3-4" name="licence_no" id="licence_no" rows="5" required >{{ payload.licence_no }}</textarea>

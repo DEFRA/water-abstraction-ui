@@ -45,13 +45,16 @@
           {{#each returns }}
           <div class="table-row medium-space clickable">                                    <!-- a data row starts -->
             <div class="table-cell">
-              <h3 class="sr-only">
-                Row {{ add @key 1 }}
+              <h3 class="context">
+                Licence
               </h3>
 
               {{# notEqual received_date null }}
               <a href="/returns/return?id={{ return_id }}">
               {{/notEqual}}
+
+
+              <span class="sr-only">View {{add ../year 1}} return for licence </span>
 
               {{#if licenceName }}
               {{ licenceName }}
@@ -59,16 +62,25 @@
               {{ licence_ref }}
               {{/if}}
 
+
+              <span class="sr-only">for
+                {{#each metadata.purposes }}
+                {{ tertiary.description }}
+                {{/each }}
+
+                at {{ titleCase metadata.description }}
+
+                {{# equal received_date null }}
+                  - return due
+                {{/equal}}
+               </span>
+
               {{# notEqual received_date null }}
               </a>
               {{/notEqual}}
 
-              <h4 class="context">
-                Licence number
-              </h4>
-              <a href="/returns/return?id={{ return_id }}">
 
-              </a>
+
             </div>
             <div class="table-cell">
               <h4 class="context">

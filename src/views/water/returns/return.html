@@ -68,9 +68,10 @@
     <thead>
       <tr>
         <th>
-          {{#equal return.returns_frequency 'daily' }}Day{{/equal}}
-          {{#equal return.returns_frequency 'monthly' }}Month{{/equal}}
-          {{#equal return.returns_frequency 'annual' }}Week{{/equal}}
+          {{#equal return.returns_frequency 'day' }}Day{{/equal}}
+          {{#equal return.returns_frequency 'month' }}Month{{/equal}}
+          {{#equal return.returns_frequency 'year' }}Week{{/equal}}
+          {{#equal return.returns_frequency 'week' }}Week ending{{/equal}}
         </th>
         <th class="numeric">
           {{#equal unit 'm³' }}
@@ -91,18 +92,18 @@
   {{# each lines }}
   <tr>
       <td>
-        {{#equal ../return.returns_frequency 'daily' }}
+        {{#equal ../return.returns_frequency 'day' }}
           {{ formatISODate start_date format='D MMMM' }}
         {{/equal}}
 
-        {{#equal ../return.returns_frequency 'weekly' }}
-          {{ formatISODate start_date format='D MMMM' }}
+        {{#equal ../return.returns_frequency 'week' }}
+          {{ formatISODate end_date format='D MMMM' }}
         {{/equal}}
 
-        {{#equal ../return.returns_frequency 'monthly' }}
+        {{#equal ../return.returns_frequency 'month' }}
           {{ formatISODate start_date format='MMMM' }}
         {{/equal}}
-        {{#equal ../return.returns_frequency 'annual' }}
+        {{#equal ../return.returns_frequency 'year' }}
           {{ formatISODate start_date format='YYYY' }}
         {{/equal}}
       </td>

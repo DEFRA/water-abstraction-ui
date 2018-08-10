@@ -42,6 +42,11 @@
   </p>
   <br />
 
+
+  {{# if version.nil_return }}
+  <h1 class="heading-large">Nil return</h1>
+  {{else}}
+
   <h2 class="heading-medium">Abstraction amounts</h2>
 
 
@@ -63,9 +68,10 @@
     <thead>
       <tr>
         <th>
-          {{#equal return.returns_frequency 'daily' }}Day{{/equal}}
-          {{#equal return.returns_frequency 'monthly' }}Month{{/equal}}
-          {{#equal return.returns_frequency 'annual' }}Week{{/equal}}
+          {{#equal return.returns_frequency 'day' }}Day{{/equal}}
+          {{#equal return.returns_frequency 'month' }}Month{{/equal}}
+          {{#equal return.returns_frequency 'year' }}Week{{/equal}}
+          {{#equal return.returns_frequency 'week' }}Week ending{{/equal}}
         </th>
         <th class="numeric">
           {{#equal unit 'm³' }}
@@ -86,13 +92,18 @@
   {{# each lines }}
   <tr>
       <td>
-        {{#equal ../return.returns_frequency 'daily' }}
+        {{#equal ../return.returns_frequency 'day' }}
           {{ formatISODate start_date format='D MMMM' }}
         {{/equal}}
-        {{#equal ../return.returns_frequency 'monthly' }}
+
+        {{#equal ../return.returns_frequency 'week' }}
+          {{ formatISODate end_date format='D MMMM' }}
+        {{/equal}}
+
+        {{#equal ../return.returns_frequency 'month' }}
           {{ formatISODate start_date format='MMMM' }}
         {{/equal}}
-        {{#equal ../return.returns_frequency 'annual' }}
+        {{#equal ../return.returns_frequency 'year' }}
           {{ formatISODate start_date format='YYYY' }}
         {{/equal}}
       </td>
@@ -112,6 +123,8 @@
   </div>
   </div>
   {{/equal}}
+
+  {{/if}}
 
 </main>
 

@@ -18,6 +18,10 @@
   <h1 class="heading-large">{{ pageTitle }}</h1>
 
 
+  {{# equal returns.length 0 }}
+  <p>No returns found.</p>
+  {{/equal}}
+
   {{# each returns }}
   <div class="grid-row">
     <div class="column-full">

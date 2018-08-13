@@ -37,8 +37,13 @@ async function getIDMUser (emailAddress) {
  */
 async function auto (request, emailAddress) {
   const user = await getIDMUser(emailAddress);
-  const entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
-  await idm.updateExternalId(user, entityId);
+
+  let entityId = user.external_id;
+
+  if (!entityId) {
+    entityId = await CRM.entities.getOrCreateIndividual(user.user_name);
+    await idm.updateExternalId(user, entityId);
+  }
 
   // Get roles for user
   const { error, data: roles } = await CRM.entityRoles.setParams({entityId}).findMany();

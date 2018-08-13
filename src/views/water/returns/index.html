@@ -47,7 +47,7 @@
           </div>
 
           {{#each returns }}
-          <div class="table-row medium-space clickable">                                    <!-- a data row starts -->
+          <div class="table-row medium-space {{# notEqual received_date null }}clickable{{/notEqual }}">                                    <!-- a data row starts -->
             <div class="table-cell">
               <h3 class="context">
                 Licence

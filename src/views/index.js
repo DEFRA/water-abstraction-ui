@@ -47,7 +47,8 @@ handlebars.registerHelper('gallonsToCubicMetres', function (value) {
  */
 function paginationLink (url, params, page, options = {}) {
   const fullUrl = `${url}?${qs.stringify({ ...params, page })}`;
-  return `<a class="pagination__link${options.isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" aria-label="${options.ariaLabel}">`;
+  const ariaLabel = options.ariaLabel ? `aria-label="${options.ariaLabel}"` : null;
+  return `<a class="pagination__link${options.isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" ${ariaLabel}>`;
 }
 
 handlebars.registerHelper('pagination', function (pagination, options) {

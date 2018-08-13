@@ -54,7 +54,7 @@ handlebars.registerHelper('pagination', function (pagination, options) {
   const { url = '/', params = {} } = options.hash;
   const { page, pageCount } = pagination;
 
-  if (pageCount === 1) {
+  if (pageCount <= 1) {
     return null;
   }
 

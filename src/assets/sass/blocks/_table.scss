@@ -23,11 +23,21 @@ table {
 }
 
 .table-row {
-  cursor: pointer;
+
   margin-bottom: 30px;
   @media (min-width: 768px) {
     display: table-row;
   }
+
+  // If JS is enabled, user can click entire table row to view licence
+  // Hint to user this is possible by displaying hover state on table row
+  .js-enabled &.clickable {
+    &:hover {
+      cursor: pointer;
+      background: $highlight-colour;
+    }
+  }
+
 }
 
 .table-head {

@@ -48,6 +48,15 @@ function viewContextDefaults (request) {
     if (request.permissions && request.permissions.admin.defra) {
       viewContext.labels.licences = 'Licences';
 
+      // Abstraction reform
+      if (request.permissions.ar.read) {
+        viewContext.mainNavLinks.push({
+          id: 'ar',
+          text: 'Abstraction reform',
+          url: '/admin/abstraction-reform'
+        });
+      }
+
       viewContext.mainNavLinks.push({
         id: 'notifications',
         text: 'Reports and notifications',
@@ -60,6 +69,13 @@ function viewContextDefaults (request) {
         id: 'view',
         text: 'View your licences',
         url: '/licences'
+      });
+    }
+    if (request.permissions && request.permissions.licences.returns) {
+      viewContext.mainNavLinks.push({
+        id: 'returns',
+        text: 'Returns',
+        url: '/returns'
       });
     }
     if (request.permissions && request.permissions.licences.edit) {

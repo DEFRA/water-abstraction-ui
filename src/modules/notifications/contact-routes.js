@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const contactController = require('./contact-controller');
 const { VALID_EMAIL } = require('../../lib/validators');
+const constants = require('../../lib/constants');
+const allAdmin = constants.scope.allAdmin;
 
 module.exports = {
   getNameAndJob: {
@@ -8,6 +10,7 @@ module.exports = {
     path: '/admin/notifications/contact',
     handler: contactController.getNameAndJob,
     config: {
+      auth: { scope: allAdmin },
       description: 'Display contact details form if not already set in notifications flow',
       validate: {
         query: {
@@ -28,6 +31,7 @@ module.exports = {
     path: '/admin/notifications/contact',
     handler: contactController.postNameAndJob,
     config: {
+      auth: { scope: allAdmin },
       description: 'Post handler for name and job title',
       validate: {
         payload: {
@@ -62,6 +66,7 @@ module.exports = {
     path: '/admin/notifications/contact-details',
     handler: contactController.getDetails,
     config: {
+      auth: { scope: allAdmin },
       description: 'Next page of notification contact details - email, tel, address',
       plugins: {
         viewContext: {
@@ -77,6 +82,7 @@ module.exports = {
     path: '/admin/notifications/contact-details',
     handler: contactController.postDetails,
     config: {
+      auth: { scope: allAdmin },
       description: 'Post handler for email/tel/address',
       validate: {
         payload: {

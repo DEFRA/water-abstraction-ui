@@ -203,29 +203,28 @@ async function verify (entityId, verificationCode) {
   return {error: null, data: {verification_id: verificationId}};
 }
 
-
 /**
  * Gets a list of verification codes and entity_nm values relating to documents
  * @param {String} document_id - the document header ID
  * @return {Promise} resolves with array of verification data
  */
-async function getDocumentVerifications (document_id) {
+async function getDocumentVerifications (documentId) {
   // Get verifications for document
-  const {error, data} =  await crmDocumentVerification.getDocumentVerifications(document_id);
+  const {error, data} = await crmDocumentVerification.getDocumentVerifications(documentId);
 
-  //sort by date
-  data.sort(function(a,b){
-  return new Date(b.date_created) - new Date(a.date_created);
+  // Sort by date
+  data.sort(function (a, b) {
+    return new Date(b.date_created) - new Date(a.date_created);
   });
 
-  //kludge a unique key on entity_id and document
+  // Kludge a unique key on entity_id and document
   data.map((verification) => {
-      verification.key = verification.entity_id+'.'+verification.document_id;
-      return verification;
-  })
+    verification.key = verification.entity_id + '.' + verification.document_id;
+    return verification;
+  });
 
-  //dedupe on key
-const deduped=removeDuplicates(data,'key')
+  // Dedupe on key
+  const deduped = removeDuplicates(data, 'key');
 
   if (error) {
     throw error;
@@ -234,22 +233,21 @@ const deduped=removeDuplicates(data,'key')
   return deduped;
 }
 
-function removeDuplicates(arr, key) {
-    if (!(arr instanceof Array) || key && typeof key !== 'string') {
-        return false;
-    }
+function removeDuplicates (arr, key) {
+  if (!(arr instanceof Array) || key && typeof key !== 'string') {
+    return false;
+  }
 
-    if (key && typeof key === 'string') {
-        return arr.filter((obj, index, arr) => {
-            return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
-        });
-
-    } else {
-        return arr.filter(function(item, index, arr) {
-            return arr.indexOf(item) == index;
-        });
-    }
+  if (key && typeof key === 'string') {
+    return arr.filter((obj, index, arr) => {
+      return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+    });
+  }
+  return arr.filter(function (item, index, arr) {
+    return arr.indexOf(item) === index;
+  });
 }
+
 module.exports = {
   verification: crmVerification,
   documents: crmDocuments,
@@ -262,5 +260,4 @@ module.exports = {
   getPrimaryCompany,
   verify,
   getDocumentVerifications
-
 };

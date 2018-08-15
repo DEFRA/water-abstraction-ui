@@ -1,15 +1,16 @@
 /**
  * Plugin to decorate request with current user's permissions
  */
-const { getPermissions } = require('../permissions');
+const { getPermissions, getCompanyPermissions } = require('../permissions');
 
 const permissionsPlugin = {
 
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
-      method: async (request, reply) => {
-        request.permissions = await getPermissions(request.state.sid);
+      method: (request, reply) => {
+        request.permissions = getPermissions(request.state.sid);
+        request.permissions.companies = getCompanyPermissions(request.state.sid);
         return reply.continue;
       }
     });

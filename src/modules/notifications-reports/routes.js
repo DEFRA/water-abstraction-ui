@@ -2,6 +2,9 @@ const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID } = require('../../lib/validators');
 
+const constants = require('../../lib/constants');
+const allAdmin = constants.scope.allAdmin;
+
 module.exports = {
 
   getNotificationsList: {
@@ -9,6 +12,7 @@ module.exports = {
     path: '/admin/notifications/report',
     handler: controller.getNotificationsList,
     config: {
+      auth: { scope: allAdmin },
       description: 'View list of notifications sent',
       validate: {
         query: {
@@ -30,6 +34,7 @@ module.exports = {
     path: '/admin/notifications/report/{id}',
     handler: controller.getNotification,
     config: {
+      auth: { scope: allAdmin },
       description: 'View list of recipients for a single event',
       validate: {
         params: {
@@ -48,5 +53,4 @@ module.exports = {
       }
     }
   }
-
 };

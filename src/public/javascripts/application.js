@@ -14,7 +14,6 @@ $(document).ready(function () {
   // Use GOV.UK shim-links-with-button-role.js to trigger a link styled to look like a button,
   // with role="button" when the space key is pressed.
   GOVUK.shimLinksWithButtonRole.init();
-
 });
 
 $(window).load(function () {
@@ -41,6 +40,12 @@ $(function () {
   $('.license-result').on('click', function (ev) {
     window.location.href = $(this).find('a:first').attr('href');
     $(this).addClass('license-result--active');
+    ev.preventDefault();
+  });
+
+  // Click on clickable flex table clicks inner link
+  $('.table-row.clickable').on('click', function (ev) {
+    window.location.href = $(this).find('a:first').attr('href');
     ev.preventDefault();
   });
 

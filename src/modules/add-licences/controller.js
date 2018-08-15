@@ -31,7 +31,7 @@ const {
 async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Which licences do you want to be able to view?';
+  viewContext.pageTitle = 'Which licences do you want to view?';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
 

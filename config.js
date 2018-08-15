@@ -1,5 +1,9 @@
 module.exports = {
 
+  idm: {
+    application: 'water_vml'
+  },
+
   defaultAuth: {
     strategy: 'standard',
     mode: 'try'

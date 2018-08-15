@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "LANDS": {
+      "type": "string"
+    },
+    "NOTES": {
+      "type": "string"
+    },
+    "DISP_ORD": {
+      "type": "string"
+    },
+    "INST_QTY": {
+      "type": "string"
+    },
+    "AMOM_CODE": {
+      "type": "string"
+    },
+    "AREC_CODE": {
+      "type": "string"
+    },
+    "DAILY_QTY": {
+      "type": "string"
+    },
+    "ANNUAL_QTY": {
+      "type": "string"
+    },
+    "HOURLY_QTY": {
+      "type": "string"
+    },
+    "AABV_INCR_NO": {
+      "type": "string"
+    },
+    "AABV_ISSUE_NO": {
+      "type": "string"
+    },
+    "PERIOD_ST_DAY": {
+      "type": "string"
+    },
+    "APUR_APPR_CODE": {
+      "type": "string"
+    },
+    "APUR_APSE_CODE": {
+      "type": "string"
+    },
+    "APUR_APUS_CODE": {
+      "type": "string"
+    },
+    "PERIOD_END_DAY": {
+      "type": "string"
+    },
+    "PERIOD_ST_MONTH": {
+      "type": "string"
+    },
+    "TIMELTD_ST_DATE": {
+      "type": "string"
+    },
+    "PERIOD_END_MONTH": {
+      "type": "string"
+    },
+    "TIMELTD_END_DATE": {
+      "type": "string"
+    },
+    "INST_QTY_USABILITY": {
+      "type": "string"
+    },
+    "DAILY_QTY_USABILITY": {
+      "type": "string"
+    },
+    "ANNUAL_QTY_USABILITY": {
+      "type": "string"
+    },
+    "HOURLY_QTY_USABILITY": {
+      "type": "string"
+    }
+  }
+}

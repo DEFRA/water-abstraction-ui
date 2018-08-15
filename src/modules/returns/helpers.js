@@ -10,15 +10,10 @@ const { returns, versions, lines } = require('../../lib/connectors/returns');
  * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, licenceNumber = null) => {
-  // @TODO handle > 1 page of results
-  const filter = {
-    entity_id: entityId,
-    roles: ['primary_user', 'returns']
-  };
-  if (licenceNumber) {
-    filter.system_external_id = licenceNumber;
-  }
+const getLicenceNumbers = async (entityId, filter = {}) => {
+  filter.entity_id = entityId;
+  filter.roles = ['primary_user', 'returns'];
+
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
   if (error) {
@@ -48,7 +43,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     licence_ref: 1
   };
 
-  const columns = ['return_id', 'licence_ref', 'start_date', 'metadata', 'status', 'received_date'];
+  const columns = ['return_id', 'licence_ref', 'start_date', 'end_date', 'metadata', 'status', 'received_date'];
 
   const requestPagination = {
     page,
@@ -175,6 +170,39 @@ const getReturnData = async (returnId) => {
   };
 };
 
+/**
+ * Gets data to display in returns list view
+ * This can be either all returns for a particular CRM entity,
+ * or additionally can be filtered e.g. by document ID
+ * @param {Object} request
+ * @param {String} request.auth.credentials.entity_id - CRM entity ID of the current user
+ * @param {Number} request.query.page - page number, for paginated results
+ * @param {String} request.params.documentId - a single document ID to retrieve (otherwise gets all)
+ * @return {Promise} resolves with list view data
+ */
+const getReturnsViewData = async (request) => {
+  const { page } = request.query;
+  const { entity_id: entityId } = request.auth.credentials;
+  const { documentId } = request.params;
+
+  // Get documents from CRM
+  const filter = documentId ? { document_id: documentId } : {};
+  const documents = await getLicenceNumbers(entityId, filter);
+  const licenceNumbers = documents.map(row => row.system_external_id);
+
+  const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
+
+  const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
+
+  return {
+    ...request.view,
+    returns,
+    pagination,
+    documents,
+    document: documentId ? documents[0] : null
+  };
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -182,5 +210,6 @@ module.exports = {
   mergeReturnsAndLicenceNames,
   getLatestVersion,
   getUnit,
-  getReturnData
+  getReturnData,
+  getReturnsViewData
 };

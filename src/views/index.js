@@ -375,6 +375,24 @@ handlebars.registerHelper('formatISOTime', function (dateInput) {
   return date.isValid() ? date.tz(timezone).format('h:mma') : dateInput;
 });
 
+handlebars.registerHelper('isFirstDayOfMonth', function (date, options) {
+  const m = moment(date);
+  const e = moment(date).startOf('month');
+  if (m.isSame(e, 'day')) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+handlebars.registerHelper('isLastDayOfMonth', function (date, options) {
+  const m = moment(date);
+  const e = moment(date).endOf('month');
+  if (m.isSame(e, 'day')) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 handlebars.registerHelper('formatDate', function (dateInput) {
   console.log('formatDate');
 

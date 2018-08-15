@@ -72,8 +72,7 @@ class NALDTransformer extends BaseTransformer {
     return this.data;
   }
 
-  formatsFormatter (formats) {
-    console.log(formats[0].purposes);
+  formatsFormatter (formats = []) {
     return formats.map(row => {
       return {
         siteDescription: row.SITE_DESCR,

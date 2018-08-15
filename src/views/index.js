@@ -376,18 +376,14 @@ handlebars.registerHelper('formatISOTime', function (dateInput) {
 });
 
 handlebars.registerHelper('isFirstDayOfMonth', function (date, options) {
-  const m = moment(date);
-  const e = moment(date).startOf('month');
-  if (m.isSame(e, 'day')) {
+  if (moment(date).startOf('month').isSame(date)) {
     return options.fn(this);
   }
   return options.inverse(this);
 });
 
 handlebars.registerHelper('isLastDayOfMonth', function (date, options) {
-  const m = moment(date);
-  const e = moment(date).endOf('month');
-  if (m.isSame(e, 'day')) {
+  if (moment(date).endOf('month').isSame(date)) {
     return options.fn(this);
   }
   return options.inverse(this);

@@ -2,7 +2,7 @@
 
 // Using lodash functions over some native functions because
 // they are forgiving to undefined.
-const { size, find, includes, intersection, get } = require('lodash');
+const { size, find, includes, intersection, get, uniq } = require('lodash');
 
 /**
  * Permissions module
@@ -110,6 +110,29 @@ const getPermissions = (credentials = {}) => {
   };
 };
 
+/**
+ * Gets a list of permissions the user with the specified credentials has
+ * on the supplied company ID
+ * @param {Object} credentials
+ * @param {String} companyEntityId GUID
+ * @return {Object} of permissions
+ */
+const getCompanyPermissions = (credentials = {}) => {
+  const { roles = [], ...rest } = credentials;
+
+  const companyEntityIds = uniq(roles.map(role => role.company_entity_id).filter(entityId => !!entityId));
+
+  return companyEntityIds.reduce((acc, companyEntityId) => {
+    const companyCredentials = {
+      ...rest,
+      roles: roles.filter(row => row.company_entity_id === companyEntityId)
+    };
+    acc[companyEntityId] = getPermissions(companyCredentials);
+    return acc;
+  }, {});
+};
+
 module.exports = {
-  getPermissions
+  getPermissions,
+  getCompanyPermissions
 };

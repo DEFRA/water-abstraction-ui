@@ -210,27 +210,7 @@
   <div class="data-row">
     <div class="data-row__param">Returns for this licence</div>
     <div class="data-row__value">
-
-      {{#greaterThan licenceData.returnFormats.length 1}}
-        <!-- Multiple purposes -->
-        {{#lessThan licenceData.returnFormats.length 6 }}
-        <ul class="sub-list">
-          {{#each licenceData.conditions }}
-          <li>{{this.siteDescription}}</li>
-          {{/each}}
-        </ul>
-        {{else}}
-        You have {{ licenceData.returnFormats.length }} returns<br />
-        {{/lessThan}}
-
-        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/returns">View details of your returns</a>
-
-
-      {{else}}
-          {{licenceData.returnFormats.0.siteDescription }}<br />
-          <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/returns">View details of your return</a>
-      {{/greaterThan}}
-
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/returns">View returns</a>
     </div>
   </div>
       {{/greaterThan}}

@@ -204,6 +204,7 @@
   </div>
 
   <!-- Return formats -->
+  {{#if canViewReturns }}
   {{#greaterThan licenceData.returnFormats.length 0 }}
   <div class="data-row">
     <div class="data-row__param">Returns for this licence</div>
@@ -212,6 +213,7 @@
     </div>
   </div>
   {{/greaterThan}}
+  {{/if}}
 
   <p></p>
   <p></p>

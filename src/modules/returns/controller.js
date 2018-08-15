@@ -3,7 +3,6 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  // getUnit,
   hasGallons,
   getReturnData,
   getReturnsViewData
@@ -25,7 +24,12 @@ const getReturns = async (request, h) => {
  */
 const getReturnsForLicence = async (request, h) => {
   const view = await getReturnsViewData(request);
+
+  if (!view.document) {
+    throw Boom.notFound(`Document ${request.params.documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
+  }
   view.pageTitle = `Returns for ${view.document.system_external_id}`;
+
   return h.view('water/returns/licence', view);
 };
 

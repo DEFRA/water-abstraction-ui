@@ -1,7 +1,7 @@
 /**
  * Plugin to decorate request with current user's permissions
  */
-const { getPermissions } = require('../permissions');
+const { getPermissions, getCompanyPermissions } = require('../permissions');
 
 const permissionsPlugin = {
 
@@ -10,6 +10,7 @@ const permissionsPlugin = {
       type: 'onPreHandler',
       method: (request, reply) => {
         request.permissions = getPermissions(request.state.sid);
+        request.permissions.companies = getCompanyPermissions(request.state.sid);
         return reply.continue;
       }
     });

@@ -2,7 +2,7 @@ const Joi = require('joi');
 const controller = require('./controller');
 
 module.exports = {
-  getLicenceReturns: {
+  getAllReturns: {
     method: 'GET',
     path: '/returns',
     handler: controller.getReturns,
@@ -17,6 +17,28 @@ module.exports = {
         viewContext: {
           pageTitle: 'Your returns',
           activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  getReturnsForLicence: {
+    method: 'GET',
+    path: '/licences/{documentId}/returns',
+    handler: controller.getReturnsForLicence,
+    config: {
+      description: 'Displays a list of returns for a particular licence',
+      validate: {
+        params: {
+          documentId: Joi.string().guid().required()
+        },
+        query: {
+          page: Joi.number().default(1)
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
         }
       }
     }

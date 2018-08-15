@@ -203,12 +203,15 @@
     </div>
   </div>
 
-
-
-
-
-
-
+  <!-- Return formats -->
+  {{#greaterThan licenceData.returnFormats.length 0 }}
+  <div class="data-row">
+    <div class="data-row__param">Returns for this licence</div>
+    <div class="data-row__value">
+        <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}/returns">View returns</a>
+    </div>
+  </div>
+  {{/greaterThan}}
 
   <p></p>
   <p></p>

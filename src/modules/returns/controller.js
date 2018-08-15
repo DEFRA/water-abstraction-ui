@@ -3,11 +3,10 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  getLicenceReturns,
-  groupReturnsByYear,
-  mergeReturnsAndLicenceNames,
-  getUnit,
-  getReturnData
+  // getUnit,
+  hasGallons,
+  getReturnData,
+  getReturnsViewData
 } = require('./helpers');
 
 /**
@@ -15,24 +14,19 @@ const {
  * grouped by year
  */
 const getReturns = async (request, h) => {
-  const { page } = request.query;
-  const { entity_id: entityId } = request.auth.credentials;
-
-  // Get documents from CRM
-  const documents = await getLicenceNumbers(entityId);
-  const licenceNumbers = documents.map(row => row.system_external_id);
-
-  const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-
-  const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
-
-  const view = {
-    ...request.view,
-    returns,
-    pagination
-  };
-
+  const view = await getReturnsViewData(request);
   return h.view('water/returns/index', view);
+};
+
+/**
+ * Get a list of returns for a particular licence
+ * @param {String} request.params.documenId - the CRM doc ID for the licence
+ * @param {Number} request.query.page - the page number for paginated results
+ */
+const getReturnsForLicence = async (request, h) => {
+  const view = await getReturnsViewData(request);
+  view.pageTitle = `Returns for ${view.document.system_external_id}`;
+  return h.view('water/returns/licence', view);
 };
 
 /**
@@ -50,7 +44,7 @@ const getReturn = async (request, h) => {
   const { licence_ref: licenceNumber } = data.return;
 
   // Load licence from CRM to check user has access
-  const [ documentHeader ] = await getLicenceNumbers(entityId, licenceNumber);
+  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber});
 
   if (!documentHeader) {
     throw new Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
@@ -60,13 +54,13 @@ const getReturn = async (request, h) => {
     ...request.view,
     ...data,
     pageTitle: `Abstraction return for ${licenceNumber}`,
-    documentHeader,
-    unit: getUnit(data.lines)
+    documentHeader
   };
   return h.view('water/returns/return', view);
 };
 
 module.exports = {
   getReturns,
+  getReturnsForLicence,
   getReturn
 };

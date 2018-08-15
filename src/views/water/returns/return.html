@@ -59,10 +59,9 @@
 
 
 
-  {{#equal unit 'm³'}}
+
   <div class="grid-row">
   <div class="column-two-thirds">
-  {{/equal}}
 
   <table>
     <thead>
@@ -73,19 +72,19 @@
           {{#equal return.returns_frequency 'year' }}Week{{/equal}}
           {{#equal return.returns_frequency 'week' }}Week ending{{/equal}}
         </th>
+
+        {{!--
+        {{#if showGallons }}
         <th class="numeric">
-          {{#equal unit 'm³' }}
-            Cubic metres
-          {{/equal}}
-          {{#equal unit 'gal' }}
-            Gallons
-          {{/equal}}
+          Gallons
         </th>
-        {{#equal unit 'gal'}}
+        {{/if}}
+        --}}
+
+
         <th class="numeric">
            Cubic metres
         </th>
-        {{/equal}}
       </tr>
     </thead>
     <tbody>
@@ -107,22 +106,29 @@
           {{ formatISODate start_date format='YYYY' }}
         {{/equal}}
       </td>
-      <td class="numeric">{{{ commaNumber quantity }}}</td>
 
-      {{#equal unit 'gal'}}
+
+      {{!--
+      {{#if ../showGallons }}
+      <td class="numeric">
+        {{#equal user_unit 'gal'}}
+
+            {{{ commaNumber (precision (cubicMetresToGallons quantity) 1) }}}
+        {{/equal}}
+      </td>
+      {{/if}}
+      --}}
+
+
       <th class="numeric">
-         {{{ commaNumber (precision (gallonsToCubicMetres quantity) 3) }}}
+         {{{ commaNumber quantity }}}
       </th>
-      {{/equal}}
+
   </tr>
   {{/each}}
     </tbody>
   </table>
 
-  {{#equal unit 'm³'}}
-  </div>
-  </div>
-  {{/equal}}
 
   {{/if}}
 

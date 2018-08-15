@@ -121,18 +121,14 @@ const getLatestVersion = async (returnId) => {
 };
 
 /**
- * Checks that all rows have same units
- * this is to match the design, but handles the possibility that a return
- * could have a mix of units
- * @param {Array} lines - lines data from the returns module
- * @return {String|null} returns the unit used, ignoring null values
+ * Checks whether any line in the return has imperial units
+ * @param {Array} lines
+ * @return {Boolean}
  */
-const getUnit = (lines) => {
-  const units = uniq(lines.map(row => row.unit).filter(val => val !== null));
-  if (units.length === 1) {
-    return units[0];
-  }
-  return null;
+const hasGallons = (lines) => {
+  return lines.reduce((acc, line) => {
+    return acc || line.user_unit === 'gal';
+  }, false);
 };
 
 /**
@@ -209,7 +205,8 @@ module.exports = {
   groupReturnsByYear,
   mergeReturnsAndLicenceNames,
   getLatestVersion,
-  getUnit,
+  hasGallons,
+  // getUnit,
   getReturnData,
   getReturnsViewData
 };

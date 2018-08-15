@@ -36,6 +36,15 @@ handlebars.registerHelper('gallonsToCubicMetres', function (value) {
 });
 
 /**
+ * Converts cubic metres to gallons
+ * @param {Number} value
+ * @return {String} number formatted
+ */
+handlebars.registerHelper('cubicMetresToGallons', function (value) {
+  return value / 0.00454609;
+});
+
+/**
  * Creates a pagination anchor tag for the pagination helper
  * @param {String} url - base URL, e.g. /some/page
  * @param {Object} params - key/value pairs of query string parameters, the page number will be merged with these
@@ -118,6 +127,13 @@ handlebars.registerHelper('for', function (from, to, incr, block) {
 });
 
 handlebars.registerHelper('equal', require('handlebars-helper-equal'));
+
+handlebars.registerHelper('ifNot', function (param, options) {
+  if (!param) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
 
 handlebars.registerHelper('notEqual', function (v1, v2, options) {
   if (v1 !== v2) {

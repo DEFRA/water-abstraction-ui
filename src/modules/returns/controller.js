@@ -3,7 +3,8 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  getUnit,
+  // getUnit,
+  hasGallons,
   getReturnData,
   getReturnsViewData
 } = require('./helpers');
@@ -53,8 +54,7 @@ const getReturn = async (request, h) => {
     ...request.view,
     ...data,
     pageTitle: `Abstraction return for ${licenceNumber}`,
-    documentHeader,
-    unit: getUnit(data.lines)
+    documentHeader
   };
   return h.view('water/returns/return', view);
 };

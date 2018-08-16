@@ -135,12 +135,12 @@ const hasGallons = (lines) => {
 };
 
 /**
- * Loads a single return
+ * Get return data by ID, provided date is >= April 2008
  * @param {String} returnId
- * @return {Promise} resolves with { return, version, lines }
+ * @return {Promise} resolves with return row
  */
-const getReturnData = async (returnId) => {
-  const returnFilter = {
+const getReturn = async (returnId) => {
+  const filter = {
     return_id: returnId,
     start_date: {
       $gte: '2008-04-01'
@@ -148,13 +148,24 @@ const getReturnData = async (returnId) => {
   };
 
   // Load return
-  const { data: [returnData], error: returnError } = await returns.findMany(returnFilter);
+  const { data: [returnData], error: returnError } = await returns.findMany(filter);
   if (returnError) {
     throw Boom.badImplementation(returnError);
   }
   if (!returnData) {
     throw Boom.notFound(`Return ${returnId} not found`);
   }
+
+  return returnData;
+};
+
+/**
+ * Loads a single return
+ * @param {String} returnId
+ * @return {Promise} resolves with { return, version, lines }
+ */
+const getReturnData = async (returnId) => {
+  const returnData = await getReturn(returnId);
 
   // Find lines for version
   const version = await getLatestVersion(returnId);

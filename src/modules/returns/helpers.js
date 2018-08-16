@@ -35,7 +35,10 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     licence_ref: {
       $in: licenceNumbers
     },
-    'metadata->>isCurrent': 'true'
+    'metadata->>isCurrent': 'true',
+    start_date: {
+      $gte: '2008-04-01'
+    }
   };
 
   const sort = {
@@ -137,13 +140,20 @@ const hasGallons = (lines) => {
  * @return {Promise} resolves with { return, version, lines }
  */
 const getReturnData = async (returnId) => {
+  const returnFilter = {
+    return_id: returnId,
+    start_date: {
+      $gte: '2008-04-01'
+    }
+  };
+
   // Load return
-  const { data: [returnData], error: returnError } = await returns.findMany({ return_id: returnId });
+  const { data: [returnData], error: returnError } = await returns.findMany(returnFilter);
   if (returnError) {
-    throw new Boom.badImplementation(returnError);
+    throw Boom.badImplementation(returnError);
   }
   if (!returnData) {
-    throw new Boom.notFound(`Return ${returnId} not found`);
+    throw Boom.notFound(`Return ${returnId} not found`);
   }
 
   // Find lines for version

@@ -69,6 +69,7 @@ async function getLicenceDetail (request, reply) {
       gaugingStations
     } = await loadLicenceData(entityId, documentHeaderId);
 
+    console.log(JSON.stringify(request.permissions, null, 2));
     const canViewReturns = get(request.permissions, `companies.${documentHeader.company_entity_id}.licences.returns`);
 
     documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);

@@ -11,6 +11,11 @@ module.exports = {
     ],
     internal: SCOPE_INTERNAL,
     abstractionReformUser: SCOPE_ABSTRACTION_REFORM_USER,
-    abstractionReformApprover: SCOPE_ABSTRACTION_REFORM_APPROVER
+    abstractionReformApprover: SCOPE_ABSTRACTION_REFORM_APPROVER,
+
+    // @TODO - limit to correct scopes
+    returns: [
+      SCOPE_INTERNAL
+    ]
   }
 };

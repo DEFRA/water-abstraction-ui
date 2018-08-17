@@ -3,10 +3,9 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  hasGallons,
   getReturnData,
   getReturnsViewData
-} = require('./helpers');
+} = require('../lib/helpers');
 
 /**
  * Gets and displays a list of returns for the current user,

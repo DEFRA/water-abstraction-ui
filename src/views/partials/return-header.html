@@ -1,0 +1,38 @@
+{{#if documentHeader.document_name }}
+<h1 class="heading-large">
+    <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
+    {{ documentHeader.document_name }}
+  </h1>
+{{else}}
+<h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
+{{/if}}
+
+
+
+<dl class="meta">
+    <dt class="meta__label">
+      Site description
+    </dt>
+    <dd class="meta__description">
+      {{ return.metadata.description }}
+    </dd>
+    <dt class="meta__label">
+      Purpose
+    </dt>
+    <dd class="meta__description">
+      {{#each return.metadata.purposes }}
+        {{ tertiary.description }}
+      {{/each}}
+    </dd>
+    <dt class="meta__label">
+      Return period
+    </dt>
+    <dd class="meta__description">
+      {{ formatISODate return.start_date }} to {{ formatISODate return.end_date }}
+    </dd>
+  </dl>
+
+  <br />
+<p>
+<a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
+</p>

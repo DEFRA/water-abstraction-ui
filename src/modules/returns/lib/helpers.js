@@ -1,8 +1,8 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const { uniq } = require('lodash');
-const { documents } = require('../../lib/connectors/crm');
-const { returns, versions, lines } = require('../../lib/connectors/returns');
+const { documents } = require('../../../lib/connectors/crm');
+const { returns, versions, lines } = require('../../../lib/connectors/returns');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -174,7 +174,8 @@ const getReturnData = async (returnId) => {
     'metadata->>isCurrent': 'true'
   };
   const sort = {
-    start_date: 1
+    start_date: 1,
+    licence_ref: 1
   };
   const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
   if (linesError) {

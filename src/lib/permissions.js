@@ -84,6 +84,10 @@ const canPerformReturns = (scope = [], roles = []) => {
     (isPrimaryUser(roles) || isUserReturnsUser(roles));
 };
 
+const canViewInternalReturns = (scope = []) => {
+  return scope.includes('internal') && scope.includes('returns');
+};
+
 /**
  * Gets permissions available to current user based on current HAPI request
  * @param {Object} credentials - credentials from HAPI request
@@ -101,6 +105,9 @@ const getPermissions = (credentials = {}) => {
     },
     admin: {
       defra: isVmlAdmin(scope)
+    },
+    returns: {
+      read: canViewInternalReturns(scope)
     },
     ar: {
       read: canEditAbstractionReform(scope),

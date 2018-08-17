@@ -1,6 +1,6 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { uniq } = require('lodash');
+const { get } = require('lodash');
 const { documents } = require('../../lib/connectors/crm');
 const { returns, versions, lines } = require('../../lib/connectors/returns');
 
@@ -12,7 +12,6 @@ const { returns, versions, lines } = require('../../lib/connectors/returns');
  */
 const getLicenceNumbers = async (entityId, filter = {}) => {
   filter.entity_id = entityId;
-  filter.roles = ['primary_user', 'returns'];
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
@@ -118,7 +117,7 @@ const getLatestVersion = async (returnId) => {
   };
   const { error, data: [version] } = await versions.findMany(filter, sort);
   if (error) {
-    throw new Boom.badImplementation(error);
+    throw Boom.badImplementation(error);
   }
   return version;
 };
@@ -178,7 +177,7 @@ const getReturnData = async (returnId) => {
   };
   const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
   if (linesError) {
-    throw new Boom.badImplementation(linesError);
+    throw Boom.badImplementation(linesError);
   }
   return {
     return: returnData,
@@ -204,6 +203,11 @@ const getReturnsViewData = async (request) => {
 
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
+  const isInternalReturns = get(request.permissions, 'returns.read');
+  if (!isInternalReturns) {
+    filter.roles = ['primary_user', 'returns'];
+  }
+
   const documents = await getLicenceNumbers(entityId, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 

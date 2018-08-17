@@ -67,6 +67,7 @@
 
               {{# notEqual received_date null }}
               <a href="/returns/return?id={{ return_id }}">
+                <span class="sr-only">View return from </span>
               {{/notEqual}}
 
               {{# isFirstDayOfMonth start_date }}
@@ -85,6 +86,12 @@
 
 
               {{# notEqual received_date null }}
+                <span class="sr-only">for
+                  {{#each metadata.purposes }}
+                  {{ tertiary.description }}
+                  {{/each }}
+                  at {{{ titleCase metadata.description  }}}
+                 </span>
               </a>
               {{/notEqual}}
             </div>

@@ -25,10 +25,13 @@ const getReturns = async (request, h) => {
 const getReturnsForLicence = async (request, h) => {
   const view = await getReturnsViewData(request);
 
+  const { documentId } = request.params;
+
   if (!view.document) {
-    throw Boom.notFound(`Document ${request.params.documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
+    throw Boom.notFound(`Document ${documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
   }
   view.pageTitle = `Returns for ${view.document.system_external_id}`;
+  view.paginationUrl = `${request.view.isAdmin ? '/admin' : ''}/licences/${documentId}/returns`;
 
   return h.view('water/returns/licence', view);
 };

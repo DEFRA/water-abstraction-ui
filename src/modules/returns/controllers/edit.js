@@ -7,6 +7,8 @@ const Boom = require('boom');
 const { documents } = require('../../../lib/connectors/crm');
 const { getReturnData, getLicenceNumbers } = require('../lib/helpers');
 
+const { Form, Radio, Hidden } = require('./forms');
+
 class ReturnsViewModel {
   constructor () {
     this.formData = {
@@ -54,6 +56,18 @@ class ReturnsViewModel {
   }
 }
 
+const createForm = (request) => {
+  const { returnId } = request.query;
+  const { csrfToken } = request.view;
+
+  const action = `/admin/return?returnId=${returnId}`;
+  const f = new Form({action});
+  f.add(new Radio('isNil', 'Are there any abstraction amounts to report?', ['Yes', 'No']))
+    .add(new Hidden('csrf_token'));
+
+  return f;
+};
+
 /**
  * Render form to display whether amounts / nil return for this cycle
  * @param {String} request.query.returnId - the return to edit
@@ -61,17 +75,30 @@ class ReturnsViewModel {
 const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
+  // console.log(request);
+
+  const action = `/admin/return?returnId=${returnId}`;
+
   // Load return data
   const view = new ReturnsViewModel();
   await view.loadReturn(returnId);
 
-  const data = view.getData();
+  const f = createForm(request);
+
+  console.log(f.getView());
 
   return h.view('water/returns/internal/amounts', {
-    ...request.view,
-    ...data,
-    formAction: `/admin/return?returnId=${returnId}`
+    form: f.getView(),
+    ...request.view
   });
+
+  // const data = view.getData();
+  //
+  // return h.view('water/returns/internal/amounts', {
+  //   ...request.view,
+  //   ...data,
+  //   formAction: `/admin/return?returnId=${returnId}`
+  // });
 };
 
 /**

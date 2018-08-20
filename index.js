@@ -46,9 +46,7 @@ async function start () {
     await server.register({
       plugin: HapiAuthCookie
     });
-    await server.register({
-      plugin: HapiAuthJWT2
-    });
+
     await server.register({
       plugin: HapiSanitizePayload,
       options: config.sanitize
@@ -69,6 +67,9 @@ async function start () {
       ...config.hapiAuthCookie
     });
     if (config.testMode) {
+      await server.register({
+        plugin: HapiAuthJWT2
+      });
       server.auth.strategy('jwt', 'jwt', {
         ...config.jwt,
         validate: async (decoded) => ({isValid: !!decoded.id})

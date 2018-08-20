@@ -6,6 +6,10 @@
 const SessionStore = require('../session-store.js');
 const Boom = require('boom');
 
+const sessionRequired = (request) => {
+  return request.auth.isAuthenticated && (request.auth.strategy === 'standard');
+};
+
 const sessionsPlugin = {
   register: (server, options) => {
     server.ext({
@@ -14,7 +18,7 @@ const sessionsPlugin = {
         // Attach session store to HAPI request interface
         request.sessionStore = new SessionStore(request);
 
-        if (!request.auth.isAuthenticated) {
+        if (!sessionRequired(request)) {
           return reply.continue;
         }
 

@@ -14,6 +14,7 @@ const serviceStatusRoutes = require('./service-status/routes');
 const contactDetailsRoutes = require('./contact-details/routes');
 const abstractionReformRoutes = require('./abstraction-reform/routes');
 const returnsRoutes = require('./returns/routes');
+const naldPOCRoutes = require('./nald-poc/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -31,5 +32,6 @@ module.exports = [
   ...Object.values(serviceStatusRoutes),
   ...Object.values(contactDetailsRoutes),
   ...Object.values(abstractionReformRoutes),
-  ...Object.values(returnsRoutes)
+  ...Object.values(returnsRoutes),
+  ...Object.values(naldPOCRoutes)
 ];

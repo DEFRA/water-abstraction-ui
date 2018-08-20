@@ -1,5 +1,7 @@
 module.exports = {
 
+  testMode: parseInt(process.env.test_mode) === 1,
+
   idm: {
     application: 'water_vml'
   },
@@ -23,6 +25,11 @@ module.exports = {
     enabled: !!parseInt(process.env.holding_page, 10),
     redirect: '/private-beta-closed',
     ignore: /^\/public\//
+  },
+
+  jwt: {
+    key: process.env.JWT_SECRET,
+    verifyOptions: { algorithms: [ 'HS256' ] }
   },
 
   logger: {

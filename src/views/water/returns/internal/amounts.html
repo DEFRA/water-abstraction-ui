@@ -20,14 +20,19 @@
   {{/if}}
 
 
+      {{stringify form }}
+
+
   {{>return-header }}
 
 
-  {{stringify form }}
+
 
   {{>form-header form }}
 
-  {{>form-widget form field='isNil' }}
+  {{#each form.fields }}
+    {{>form-widget }}
+  {{/each}}
 
   {{>form-footer form }}
 

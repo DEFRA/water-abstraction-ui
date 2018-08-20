@@ -65,6 +65,8 @@ const createForm = (request) => {
   f.add(new Radio('isNil', 'Are there any abstraction amounts to report?', ['Yes', 'No']))
     .add(new Hidden('csrf_token'));
 
+  f.set('csrf_token', csrfToken);
+
   return f;
 };
 

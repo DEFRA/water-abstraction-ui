@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { find } = require('lodash');
 
 class Form {
   constructor (options = {}) {
@@ -57,14 +58,36 @@ class Form {
     };
   }
 
+  // /**
+  //  * Sets values without any validation
+  //  * @param {Object} data
+  //  * @return {this}
+  //  */
+  // setValues (data) {
+  //   this.values = data;
+  //   return this;
+  // }
+
   /**
-   * Sets values without any validation
-   * @param {Object} data
-   * @return {this}
+   * Sets a value on a field, bypassing validation
+   * @param {String} name - field name
+   * @param {Mixed} value
    */
-  setValues (data) {
-    this.values = data;
-    return this;
+  set (name, value) {
+    console.log('Setting', name, value);
+    let field = this.find(name);
+    if (field) {
+      field.setValue(value);
+    }
+  }
+
+  /**
+   * Finds a field by name
+   * @param {String} name
+   * @return {Object} field instance
+   */
+  find (name) {
+    return find(this.fields, {name});
   }
 
   /**

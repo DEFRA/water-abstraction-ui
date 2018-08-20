@@ -10,14 +10,14 @@ class Hidden extends Base {
     super(name, label, { ...defaults, ...options });
   }
 
-  getView () {
-    const { name, label, options } = this;
-    return {
-      name,
-      label,
-      options
-    };
-  }
+  // getView () {
+  //   const { name, label, options } = this;
+  //   return {
+  //     name,
+  //     label,
+  //     options
+  //   };
+  // }
 }
 
 module.exports = Hidden;

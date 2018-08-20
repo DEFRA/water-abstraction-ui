@@ -5,6 +5,17 @@ class Base {
     this.name = name;
     this.label = label;
     this.options = options;
+    this.value = undefined;
+  }
+
+  setValue (value) {
+    console.log('set!', value);
+    this.value = value;
+    return this;
+  }
+
+  getValue (value) {
+    return this.value;
   }
 
   getValidator () {
@@ -12,8 +23,8 @@ class Base {
   }
 
   getView () {
-    const { name, label, options } = this;
-    return { name, label, options };
+    const { name, label, options, value } = this;
+    return { name, label, options, value };
   }
 }
 

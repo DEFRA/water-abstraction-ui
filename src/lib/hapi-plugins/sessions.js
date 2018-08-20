@@ -18,6 +18,10 @@ const sessionsPlugin = {
           return reply.continue;
         }
 
+        if (request.auth.strategy === 'jwt') {
+          return reply.continue;
+        }
+
         try {
           await request.sessionStore.load();
           return reply.continue;

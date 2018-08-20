@@ -9,6 +9,7 @@ const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiSanitizePayload = require('hapi-sanitize-payload');
 const Inert = require('inert');
 const Vision = require('vision');
+const HapiAuthJWT2 = require('hapi-auth-jwt2');
 
 // -------------- Require project code -----------------
 const config = require('./config');
@@ -46,6 +47,9 @@ async function start () {
       plugin: HapiAuthCookie
     });
     await server.register({
+      plugin: HapiAuthJWT2
+    });
+    await server.register({
       plugin: HapiSanitizePayload,
       options: config.sanitize
     });
@@ -64,6 +68,13 @@ async function start () {
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie
     });
+    if (config.testMode) {
+      server.auth.strategy('jwt', 'jwt', {
+        ...config.jwt,
+        validate: async (decoded) => ({isValid: !!decoded.id})
+      });
+    }
+
     server.auth.default('standard');
 
     // Set up view location

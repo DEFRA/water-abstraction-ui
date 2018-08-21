@@ -13,7 +13,19 @@ const getLogs = async (request, h) => {
   const filtered = data.filter(row => {
     return row.DATE_FROM === '01/11/2016';
   });
-  return filtered.map(mapLog);
+
+  const filteredData = filtered.map(mapLog);
+
+  return {
+    error: null,
+    data: filteredData,
+    pagination: {
+      page: 1,
+      perPage: 100,
+      totalRows: filteredData.length,
+      pageCount: 1
+    }
+  };
 };
 
 /**
@@ -25,7 +37,17 @@ const getLogs = async (request, h) => {
 const getLines = async (request, reply) => {
   validateRequest(request);
   const data = await getReturnsLines(6, 10032889, '01/11/2016');
-  return data.map(mapLine);
+
+  return {
+    error: null,
+    data: data.map(mapLine),
+    pagination: {
+      page: 1,
+      perPage: 100,
+      totalRows: data.length,
+      pageCount: 1
+    }
+  };
 };
 
 module.exports = {

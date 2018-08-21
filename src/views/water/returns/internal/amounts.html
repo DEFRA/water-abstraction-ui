@@ -2,76 +2,11 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  {{#if errors }}
-  <div class="column-two-thirds">
-
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
-
-      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
-        $$ There is a problem
-      </h2>
-
-
-      <ul class="error-summary-list">
-        <li><a href="#amounts-yes">$$ Abstraction amounts to report is required</a></li>
-      </ul>
-
-    </div>
-  {{/if}}
-
-
-      {{stringify form }}
-
+  {{>form-errors form }}
 
   {{>return-header }}
 
-
-
-
-  {{>form-header form }}
-
-  {{#each form.fields }}
-    {{>form-widget }}
-  {{/each}}
-
-  {{>form-footer form }}
-
-<!--
-  <form method="POST" action="{{ formAction }}">
-    <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
-
-
-  <div class="form-group {{#if errors}}form-group-error{{/if}}">
-    <fieldset>
-
-      <legend>
-        <span class="heading-medium">Are there any abstraction amounts to report?</span>
-
-        {{#if errors}}
-        <span class="error-message">
-            $$ A response is required
-        </span>
-        {{/if}}
-
-
-      </legend>
-
-      <div class="multiple-choice">
-        <input id="amounts-yes" type="radio" name="isNil" value="Yes" {{# equal formData.isNil true }}checked{{/equal}}>
-        <label for="amounts-yes">Yes</label>
-      </div>
-      <div class="multiple-choice">
-        <input id="amounts-no" type="radio" name="isNil" value="No" {{# equal formData.isNil false }}checked{{/equal}}>
-        <label for="amounts-no">No</label>
-      </div>
-
-    </fieldset>
-  </div>
-
-  <button class="button" type="submit">Submit</button>
-  </form>
--->
-
+  {{>form form }}
 
 </main>
 

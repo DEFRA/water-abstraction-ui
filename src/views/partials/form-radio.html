@@ -1,21 +1,26 @@
 
-<div class="form-group">
-  <fieldset class="inline">
+<div class="form-group {{#if errors }}form-group-error{{/if}}">
+  <fieldset class="inline" id="{{ name }}">
 
     <legend>
-      <h1 class="heading-medium">
-        Do you already have a personal user account?
-      </h1>
+      <h2 class="heading-medium">
+        {{ options.label }}
+      </h2>
+
+      {{#each errors}}
+      <span class="error-message">{{ message }}</span>
+      {{/each}}
     </legend>
 
+
+    {{#each options.choices }}
     <div class="multiple-choice">
-      <input id="radio-inline-1" type="radio" name="radio-inline-group" value="Yes">
-      <label for="radio-inline-1">Yes</label>
+      <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this }}" {{#equal ../value this}}checked{{/equal}}>
+      <label for="radio-inline-{{@index}}">{{ this }}</label>
     </div>
-    <div class="multiple-choice">
-      <input id="radio-inline-2" type="radio" name="radio-inline-group" value="No">
-      <label for="radio-inline-2">No</label>
-    </div>
+    {{/each}}
+
+
 
   </fieldset>
 </div>

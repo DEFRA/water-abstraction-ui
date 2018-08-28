@@ -211,17 +211,22 @@ const getReturnsViewData = async (request) => {
   const documents = await getLicenceNumbers(entityId, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
-  const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-
-  const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
-
-  return {
+  const view = {
     ...request.view,
-    returns,
-    pagination,
     documents,
-    document: documentId ? documents[0] : null
+    document: documentId ? documents[0] : null,
+    returns: []
   };
+
+  if (licenceNumbers.length) {
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
+
+    view.pagination = pagination;
+    view.returns = returns;
+  }
+
+  return view;
 };
 
 module.exports = {

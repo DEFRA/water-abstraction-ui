@@ -38,7 +38,7 @@ async function getAccessList (request, reply, context = {}) {
   viewContext.direction = direction;
   viewContext.sort = sortField;
 
-  viewContext.pageTitle = 'Give access to view your licences';
+  viewContext.pageTitle = 'Give access to your licences';
   viewContext.entity_id = entityId;
   // get list of role  s in same org as current user
   // need to ensure that current user is admin...

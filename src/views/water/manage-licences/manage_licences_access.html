@@ -4,13 +4,16 @@
 
   <h1 class="heading-large">{{ pageTitle }}</h1>
 
-
   <div class="grid-row medium-space">
     <div class="column-two-thirds">
 
-        <p>You can give other people access to view your licences too. Tell us their email address and we will send them a link to create an account.</p>
-        <p>You can remove their access at any time.</p>
-        <a class="button" href="/manage_licences/add_access" role="button" style="margin-bottom:20px;">Add user</a>
+        <p>You can let others view your licence information. You can also allow them to complete your returns on your behalf.</p>
+        <div class="notice medium-space">
+          <i class="icon icon-important"><span class="visually-hidden">Warning</span></i>
+          <strong class="bold-small">You will still be legally responsible for your returns</strong>
+        </div>
+        <p>You will be able to remove their access at any time.</p>
+        <a class="button" href="/manage_licences/add_access" role="button">Give access</a>
 
     </div>
   </div>
@@ -23,7 +26,7 @@
 
           <div class="license-results-header">
             <div class="license-results-header__column">
-              <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="entity_nm"}}}#results">People with access
+              <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="entity_nm"}}}#results">Permission to access
                 {{{ sortIcon  direction=direction sort=sort field="entity_nm" }}}
               </a>
             </div>

@@ -61,6 +61,10 @@ function paginationLink (url, params, page, options = {}) {
 }
 
 handlebars.registerHelper('pagination', function (pagination, options) {
+  if (typeof (pagination) !== 'object') {
+    return;
+  }
+
   const { url = '/', params = {} } = options.hash;
   const { page, pageCount } = pagination;
 

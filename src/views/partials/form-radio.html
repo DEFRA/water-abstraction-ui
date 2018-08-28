@@ -1,6 +1,6 @@
 
 <div class="form-group {{#if errors }}form-group-error{{/if}}">
-  <fieldset class="inline" id="{{ name }}">
+  <fieldset id="{{ name }}">
 
     <legend>
       <h2 class="heading-medium">
@@ -15,8 +15,8 @@
 
     {{#each options.choices }}
     <div class="multiple-choice">
-      <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this }}" {{#equal ../value this}}checked{{/equal}}>
-      <label for="radio-inline-{{@index}}">{{ this }}</label>
+      <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this.value }}" {{#equal ../value this.value}}checked{{/equal}}>
+      <label for="radio-inline-{{@index}}">{{ this.label }}</label>
     </div>
     {{/each}}
 

@@ -1,90 +1,50 @@
 /**
  * Controller to allow internal colleagues to submit/edit returns data
  */
-// const moment = require('moment');
 // const { get } = require('lodash');
-const Boom = require('boom');
-const { documents } = require('../../../lib/connectors/crm');
-const { getReturnData } = require('../lib/helpers');
+// const Boom = require('boom');
+// const { documents } = require('../../../lib/connectors/crm');
+// const { getReturnData } = require('../lib/helpers');
 
-const { formFactory, handleRequest, fields } = require('./forms');
+const { formFactory, handleRequest, fields, setValues } = require('./forms');
 
-// const { Form, Radio, Hidden } = require('./forms');
+const { returns } = require('../../../lib/connectors/water');
 
 /**
  * Loads return data
  * @param {String} returnId
  * @return {Promise}
  */
-const loadReturn = async (returnId) => {
-  // Load return data by return ID
-  const data = await getReturnData(returnId);
+// const loadReturn = async (returnId) => {
+//   // Load return data by return ID
+//   const data = await getReturnData(returnId);
+//
+//   // Load CRM document header
+//   const { data: [documentHeader] } = await documents.findMany({ system_external_id: data.return.licence_ref });
+//
+//   if (!documentHeader) {
+//     throw Boom.notFound(`Document header not found for ${data.return.licence_ref}`);
+//   }
+//
+//   return {
+//     documentHeader,
+//     return: data.return
+//   };
+// };
 
-  this.return = data.return;
-
-  // Load CRM document header
-  const { data: [documentHeader] } = await documents.findMany({ system_external_id: data.return.licence_ref });
-
-  if (!documentHeader) {
-    throw Boom.notFound(`Document header not found for ${data.return.licence_ref}`);
-  }
-
-  this.documentHeader = documentHeader;
-};
-
-const createViewModel = async (returnId) => {
-
-};
-
-/**
- * @todo functional approach
- */
-class ReturnsViewModel {
-  constructor () {
-    this.formData = {
-      isNil: null,
-      units: null,
-      lines: []
-    };
-
-    this.documentHeader = null;
-    this.return = null;
-  }
-
-  getData () {
-    const { formData, documentHeader, return: returnData } = this;
-    return {
-      formData,
-      documentHeader,
-      return: returnData
-    };
-  }
-
-  setData (data) {
-    this.data = data;
-  }
-
-  /**
-   * Loads return data
-   * @param {String} returnId
-   * @return {Promise}
-   */
-  async loadReturn (returnId) {
-    // Load return data by return ID
-    const data = await getReturnData(returnId);
-
-    this.return = data.return;
-
-    // Load CRM document header
-    const { data: [documentHeader] } = await documents.findMany({ system_external_id: data.return.licence_ref });
-
-    if (!documentHeader) {
-      throw Boom.notFound(`Document header not found for ${data.return.licence_ref}`);
-    }
-
-    this.documentHeader = documentHeader;
-  }
-}
+// const createViewModel = async (returnId) => {
+//   const { return: returnData, documentHeader } = await loadReturn(returnId);
+//   const formData = {
+//     isNil: null,
+//     units: null,
+//     lines: []
+//   };
+//   return {
+//     return: returnData,
+//     documentHeader,
+//     formData
+//   };
+// };
 
 const createForm = (request) => {
   const { returnId } = request.query;
@@ -92,17 +52,21 @@ const createForm = (request) => {
   const action = `/admin/return?returnId=${returnId}`;
 
   const f = formFactory(action);
-  f.fields.push(fields.radio('isNil', {label: 'Are there any abstraction amounts to report?', choices: ['Yes', 'No']}));
+  f.fields.push(fields.radio('isNil', {
+    label: 'Are there any abstraction amounts to report?',
+    choices: [
+      { value: true, label: 'Yes'},
+      { value: false, label: 'No'}
+    ]}));
+
+  f.fields.push(fields.date('testDate', {
+    label: 'Enter a date',
+    hint: 'E.g. your birthday'
+  }, new Date()));
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  // console.log(JSON.stringify(f, null, 2));
-
-  //
-  // const f = new Form({action});
-  // f.add(new Radio('isNil', 'Are there any abstraction amounts to report?', ['Yes', 'No']))
-  //   .add(new Hidden('csrf_token'));
-  //
-  // f.set('csrf_token', csrfToken);
+  console.log(JSON.stringify(f, null, 2));
 
   return f;
 };
@@ -114,30 +78,16 @@ const createForm = (request) => {
 const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
-  // console.log(request);
+  const data = await returns.getReturn(returnId);
+  request.sessionStore.set('internalReturnFlow', data);
 
-  // const action = `/admin/return?returnId=${returnId}`;
-
-  // Load return data
-  const view = new ReturnsViewModel();
-  await view.loadReturn(returnId);
-
-  const form = createForm(request);
-
-  // console.log(f.getView());
+  const form = setValues(createForm(request), data);
 
   return h.view('water/returns/internal/amounts', {
     form,
+    ...data,
     ...request.view
   });
-
-  // const data = view.getData();
-  //
-  // return h.view('water/returns/internal/amounts', {
-  //   ...request.view,
-  //   ...data,
-  //   formAction: `/admin/return?returnId=${returnId}`
-  // });
 };
 
 /**
@@ -145,14 +95,28 @@ const getAmounts = async (request, h) => {
  * @param {String} request.query.returnId - the return to edit
  */
 const postAmounts = async (request, h) => {
-  const form = createForm(request);
+  // const { returnId } = request.query;
 
-  const f2 = handleRequest(form, request);
+  const data = request.sessionStore.get('internalReturnFlow');
 
-  // console.log(f2);
+  const form = handleRequest(setValues(createForm(request), data), request);
+
+  // const form = setValues(createF)
+
+  console.log(data);
+
+  //
+  // const view = await createViewModel(returnId);
+  // const form = handleRequest(createForm(request), request);
+
+  if (form.isValid) {
+    // Persist
+
+  }
 
   return h.view('water/returns/internal/amounts', {
-    form: f2,
+    form,
+    // ...view,
     ...request.view
   });
 };

@@ -540,6 +540,8 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:';
 });
 
+handlebars.registerHelper('yesIfTruthy', value => value ? 'Yes' : '');
+
 const Path = require('path');
 
 const footerSupportLinks = `

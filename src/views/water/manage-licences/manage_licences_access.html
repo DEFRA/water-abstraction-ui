@@ -21,44 +21,36 @@
   <div class="grid-row medium-space">
     <div class="column-full">
 
-        <!-- Results page goes here -->
         <div class="license-results" id="results">
 
           <div class="license-results-header">
-            <div class="license-results-header__column">
-              <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="entity_nm"}}}#results">Permission to access
-                {{{ sortIcon  direction=direction sort=sort field="entity_nm" }}}
-              </a>
-            </div>
-            <div class="license-results-header__column">
-              <a href="/manage_licences?{{{ sortQuery direction=direction sort=sort field="created_at"}}}#results">Date
-                {{{ sortIcon  direction=direction sort=sort field="created_at" }}}
-              </a>
-            </div>
-            <div class="license-results-header__column"></div>
+            <div class="license-results-header__column">Permission to access</div>
+            <div class="license-results-header__column">Date</div>
+            <div class="license-results-header__column">Manage returns</div>
             <div class="license-results-header__column"></div>
           </div>
 
           {{^licenceAccess}}
-          <!-- No results found -->
           <div class="license-result">
             <h2 class="heading-medium license-result__column">No results found.</h2>
-            <p class="license-result__column license-result__column--description"></p>
-            <div class="license-result__column license-result__column--view" aria-hidden="true" aria-label="Remove Access"></div>
+            <div class="license-result__column" aria-hidden="true"></div>
+            <div class="license-result__column" aria-hidden="true"></div>
+            <div class="license-result__column" aria-hidden="true"></div>
           </div>
           {{/licenceAccess}}
 
-          <!-- Display list of clickable licence rows/tiles -->
           {{#each licenceAccess}}
           <div class="license-result">
-            <h2 class="heading-medium license-result__column">{{entity_nm}}</h2>
-            <p class="license-result__column license-result__column--description">{{formatTS created_at}}</p>
-            <p class="license-result__column license-result__column--description"><a href="/manage_licences/remove_access?entity_role_id={{entity_role_id}}&email={{encode value=entity_nm}}" aria-hidden="false" aria-label="Remove access from {{entity_nm}}" title="Remove access from {{entity_nm}}">Remove access </a></p>
-            </div>
+            <h2 class="heading-medium license-result__column">{{name}}</h2>
+            <p class="license-result__column license-result__column--description">{{formatTS createdAt}}</p>
+            <p class="license-result__column license-result__column--description">{{yesIfTruthy hasReturns}}</p>
+            <p class="license-result__column license-result__column--description">
+              <a href="/manage_licences/remove_access?entity_role_id={{entity_role_id}}&email={{encode value=name}}" aria-hidden="false" aria-label="Change access for {{name}}" title="Change access for {{name}}">Change</a>
+            </p>
+          </div>
           {{/each}}
 
         </div>
-        <p></p>
     </div>
   </div>
 </main>

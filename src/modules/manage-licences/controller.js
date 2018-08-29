@@ -16,6 +16,34 @@ async function getManage (request, reply) {
 }
 
 /**
+ * Takes the response from the query to get all colleague roles
+ * and changes the shape of the data to be more friendy for rendering.
+ *
+ * Also updates a user role a flag showing if that user also has returns
+ * priviledges
+ */
+const createAccessListViewModel = licenceAccess => {
+  const userRoles = licenceAccess.filter(r => r.role === 'user');
+  const mapped = userRoles.map(ur => {
+    return {
+      createdAt: ur.created_at,
+      hasReturns: !!licenceAccess.find(la => {
+        return (
+          la.company_entity_id === ur.company_entity_id &&
+          la.regime_entity_id === ur.regime_entity_id &&
+          la.individual_entity_id === ur.individual_entity_id &&
+          la.role === 'user_returns'
+        );
+      }),
+      name: ur.entity_nm,
+      id: ur.entity_role_id,
+      colleagueEntityID: ur.individual_entity_id
+    };
+  });
+  return mapped;
+};
+
+/**
  * Renders list of emails with access to your licences
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} reply - the HAPI HTTP response
@@ -44,7 +72,7 @@ async function getAccessList (request, reply, context = {}) {
   // need to ensure that current user is admin...
 
   const licenceAccess = await CRM.entityRoles.getEditableRoles(entityId, sortField, direction);
-  viewContext.licenceAccess = JSON.parse(licenceAccess);
+  viewContext.licenceAccess = createAccessListViewModel(JSON.parse(licenceAccess));
   return reply.view('water/manage-licences/manage_licences_access', viewContext);
 }
 
@@ -198,5 +226,6 @@ module.exports = {
   getAddAccess,
   postAddAccess,
   getRemoveAccess,
-  getAddLicences
+  getAddLicences,
+  createAccessListViewModel
 };

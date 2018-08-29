@@ -36,15 +36,16 @@ client.deleteColleagueRole = async function (entityId, entityRoleId) {
   }
 };
 
-client.addColleagueRole = async function (entityId, email) {
-  const uri = process.env.CRM_URI + '/entity/' + entityId + '/colleagues/?token=' + process.env.JWT_TOKEN;
-  const data = { email };
+client.addColleagueRole = async function (entityID, colleagueEntityID, role = 'user') {
+  const uri = process.env.CRM_URI + '/entity/' + entityID + '/colleagues/?token=' + process.env.JWT_TOKEN;
+  const data = { colleagueEntityID, role };
   const options = { method: `POST`, uri, json: true, body: data };
 
   try {
     const response = await rp(options);
     return response;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };

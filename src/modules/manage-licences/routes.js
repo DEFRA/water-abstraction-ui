@@ -68,6 +68,7 @@ module.exports = {
       validate: {
         payload: {
           email: Joi.string().max(254).allow(''),
+          returns: Joi.boolean(),
           csrf_token: Joi.string().guid().required()
         }
       },

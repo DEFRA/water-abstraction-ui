@@ -80,6 +80,7 @@ async function postAddAccess (request, reply, context = {}) {
   // Validate input data with Joi
   const schema = {
     email: Joi.string().trim().required().email().lowercase().trim(),
+    returns: Joi.boolean(),
     csrf_token: Joi.string().guid().required()
   };
 
@@ -101,7 +102,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     // Notification details
     const { username: sender } = request.auth.credentials;
-    const { email } = value;
+    const { email, returns: allowReturns } = value;
 
     const { error: createUserError } = await IDM.createUserWithoutPassword(email);
 
@@ -123,10 +124,18 @@ async function postAddAccess (request, reply, context = {}) {
     const crmEntityId = await CRM.entities.getOrCreateIndividual(email);
 
     // Add role
-    const { error: crmRoleError } = await CRM.entityRoles.addColleagueRole(entityId, email);
+    const userRoleResponse = await CRM.entityRoles.addColleagueRole(entityId, crmEntityId);
 
-    if (crmRoleError) {
-      throw crmRoleError;
+    if (userRoleResponse.error) {
+      throw userRoleResponse.error;
+    }
+
+    if (allowReturns) {
+      const userReturnsRoleResponse = await CRM.entityRoles.addColleagueRole(entityId, crmEntityId, 'user_returns');
+
+      if (userReturnsRoleResponse.error) {
+        throw userReturnsRoleResponse.error;
+      }
     }
 
     // Update the idm.user with the crm.entity id

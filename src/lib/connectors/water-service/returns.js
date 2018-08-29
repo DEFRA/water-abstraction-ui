@@ -24,6 +24,25 @@ const getReturn = (returnId) => {
   });
 };
 
+/**
+ * Posts return view back to water service, water service to store
+ * it in the returns service / NALD import tables
+ * @param {Object} data
+ * @return {Promise} resolves with post response
+ */
+const postReturn = (data) => {
+  return rp({
+    method: 'POST',
+    uri: endpoint,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    body: data,
+    json: true
+  });
+};
+
 module.exports = {
-  getReturn
+  getReturn,
+  postReturn
 };

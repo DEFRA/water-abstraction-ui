@@ -1,75 +1,14 @@
 /**
  * Controller to allow internal colleagues to submit/edit returns data
+ * @todo - ensure the user cannot edit/submit a completed return
+ * @todo - ensure session data is valid at every step
  */
-// const { get } = require('lodash');
-// const Boom = require('boom');
-// const { documents } = require('../../../lib/connectors/crm');
-// const { getReturnData } = require('../lib/helpers');
+const { set } = require('lodash');
+const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 
-const { formFactory, handleRequest, fields, setValues } = require('./forms');
+const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
-
-/**
- * Loads return data
- * @param {String} returnId
- * @return {Promise}
- */
-// const loadReturn = async (returnId) => {
-//   // Load return data by return ID
-//   const data = await getReturnData(returnId);
-//
-//   // Load CRM document header
-//   const { data: [documentHeader] } = await documents.findMany({ system_external_id: data.return.licence_ref });
-//
-//   if (!documentHeader) {
-//     throw Boom.notFound(`Document header not found for ${data.return.licence_ref}`);
-//   }
-//
-//   return {
-//     documentHeader,
-//     return: data.return
-//   };
-// };
-
-// const createViewModel = async (returnId) => {
-//   const { return: returnData, documentHeader } = await loadReturn(returnId);
-//   const formData = {
-//     isNil: null,
-//     units: null,
-//     lines: []
-//   };
-//   return {
-//     return: returnData,
-//     documentHeader,
-//     formData
-//   };
-// };
-
-const createForm = (request) => {
-  const { returnId } = request.query;
-  const { csrfToken } = request.view;
-  const action = `/admin/return?returnId=${returnId}`;
-
-  const f = formFactory(action);
-  f.fields.push(fields.radio('isNil', {
-    label: 'Are there any abstraction amounts to report?',
-    choices: [
-      { value: true, label: 'Yes'},
-      { value: false, label: 'No'}
-    ]}));
-
-  f.fields.push(fields.date('testDate', {
-    label: 'Enter a date',
-    hint: 'E.g. your birthday'
-  }, new Date()));
-
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-
-  console.log(JSON.stringify(f, null, 2));
-
-  return f;
-};
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -81,9 +20,9 @@ const getAmounts = async (request, h) => {
   const data = await returns.getReturn(returnId);
   request.sessionStore.set('internalReturnFlow', data);
 
-  const form = setValues(createForm(request), data);
+  const form = setValues(amountsForm(request), data);
 
-  return h.view('water/returns/internal/amounts', {
+  return h.view('water/returns/internal/form', {
     form,
     ...data,
     ...request.view
@@ -95,33 +34,210 @@ const getAmounts = async (request, h) => {
  * @param {String} request.query.returnId - the return to edit
  */
 const postAmounts = async (request, h) => {
-  // const { returnId } = request.query;
-
   const data = request.sessionStore.get('internalReturnFlow');
 
-  const form = handleRequest(setValues(createForm(request), data), request);
-
-  // const form = setValues(createF)
-
-  console.log(data);
-
-  //
-  // const view = await createViewModel(returnId);
-  // const form = handleRequest(createForm(request), request);
+  const form = handleRequest(setValues(amountsForm(request), data), request);
 
   if (form.isValid) {
+    const { isNil } = getValues(form);
     // Persist
+    data.isNil = isNil;
+    request.sessionStore.set('internalReturnFlow', data);
 
+    const path = isNil ? '/admin/return/nil-return' : '/admin/return/method';
+    return h.redirect(path);
   }
 
-  return h.view('water/returns/internal/amounts', {
+  return h.view('water/returns/internal/form', {
     form,
-    // ...view,
+    ...request.view
+  });
+};
+
+/**
+ * Confirmation screen for nil return
+ */
+const getNilReturn = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = confirmForm(request);
+
+  return h.view('water/returns/internal/nil-return', {
+    ...data,
+    form,
+    ...request.view
+  });
+};
+
+/**
+ * Confirmation screen for nil return
+ */
+const postNilReturn = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = handleRequest(confirmForm(request), request);
+
+  const view = {
+    ...data,
+    form,
+    ...request.view
+  };
+
+  if (form.isValid) {
+    try {
+      await returns.postReturn(data);
+      return h.redirect('/admin/return/submitted');
+    } catch (error) {
+      console.error(error);
+      view.error = error;
+    }
+  }
+
+  return h.view('water/returns/internal/nil-return', view);
+};
+
+/**
+ * Return submitted page
+ * @todo show licence name if available
+ * @todo link to view return
+ */
+const getSubmitted = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+  return h.view('water/returns/internal/submitted', {
+    ...data,
+    ...request.view,
+    returnUrl: `/admin/return/view?returnId=${data.returnId}`
+  });
+};
+
+/**
+ * Routing question -
+ * whether user is submitting meter readings or other
+ */
+const getMethod = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = methodForm(request);
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Post handler for routing question
+ * whether user is submitting meter readings or other
+ */
+const postMethod = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = handleRequest(methodForm(request), request);
+
+  if (form.isValid) {
+    const { isMeterReadings } = getValues(form);
+
+    const path = isMeterReadings ? `/admin/return/meter` : '/admin/return/units';
+    return h.redirect(path);
+  }
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Form to choose units
+ */
+const getUnits = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const { units } = data.reading;
+
+  const form = setValues(unitsForm(request), { units });
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Post handler for units form
+ */
+const postUnits = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = handleRequest(unitsForm(request), request);
+
+  if (form.isValid) {
+    // Persist chosen units to session
+    const { units } = getValues(form);
+    data.reading.units = units;
+    request.sessionStore.set('internalReturnFlow', data);
+
+    return h.redirect('/admin/return/single-total');
+  }
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Form to choose whether single figure or multiple amounts
+ */
+const getSingleTotal = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = singleTotalForm(request);
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Post handler for single total
+ */
+const postSingleTotal = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
+
+  if (form.isValid) {
+    // Persist to session
+    const { isSingleTotal, total } = getValues(form);
+    set(data, 'reading.totalFlag', isSingleTotal);
+    set(data, 'reading.total', isSingleTotal ? total : null);
+    request.sessionStore.set('internalReturnFlow', data);
+  }
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
     ...request.view
   });
 };
 
 module.exports = {
   getAmounts,
-  postAmounts
+  postAmounts,
+  getNilReturn,
+  postNilReturn,
+  getSubmitted,
+  getMethod,
+  postMethod,
+  getUnits,
+  postUnits,
+  getSingleTotal,
+  postSingleTotal
 };

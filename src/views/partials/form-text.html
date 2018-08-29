@@ -1,16 +1,22 @@
 {{#equal options.type 'hidden'}}
 <input type="hidden" name="{{ name }}" value="{{ value }}" />
 {{else}}
-<div class="form-group">
-  <label class="form-label" for="ni-number">
-    Insurance number
+<div id="{{ name }}_container" class="{{#if options.panel }}panel panel-border-narrow{{ else }}form-group{{/if}} {{#if options.jsHidden }}js-hidden{{/if}} {{#if errors }}form-group-error{{/if}}">
+  <label class="form-label" for="{{ name }}">
+    {{ options.label }}
+
+    {{#if options.hint }}
     <span class="form-hint">
-      It's on your National Insurance card, benefit letter, payslip or P60.
-      <br>
-      For example, ‘QQ 12 34 56 C’.
+      {{ options.hint }}
     </span>
+    {{/if}}
+
+    {{#each errors}}
+    <span class="error-message">{{ message }}</span>
+    {{/each}}
+
   </label>
-  <input class="form-control" id="ni-number" type="text" name="ni-number">
+  <input class="form-control" id="{{ name }}" type="text" name="{{ name }}" value="{{ value }}">
 </div>
 
 {{/equal}}

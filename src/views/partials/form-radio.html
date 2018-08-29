@@ -1,4 +1,5 @@
 
+
 <div class="form-group {{#if errors }}form-group-error{{/if}}">
   <fieldset id="{{ name }}">
 
@@ -12,15 +13,18 @@
       {{/each}}
     </legend>
 
-
     {{#each options.choices }}
-    <div class="multiple-choice">
+    <div class="multiple-choice" {{#if dataTarget }}data-target="{{ dataTarget }}"{{/if}}>
       <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this.value }}" {{#equal ../value this.value}}checked{{/equal}}>
       <label for="radio-inline-{{@index}}">{{ this.label }}</label>
     </div>
+
+    <!-- render child fields -->
+    {{#each this.fields }}
+      {{>form-widget this form=../../form parent=../this }}
     {{/each}}
 
-
+    {{/each}}
 
   </fieldset>
 </div>

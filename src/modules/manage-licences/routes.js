@@ -35,13 +35,18 @@ module.exports = {
   },
   getRemoveAccess: {
     method: 'GET',
-    path: '/manage_licences/remove_access',
+    path: '/manage_licences/access/{colleagueEntityID}/remove',
     handler: controller.getRemoveAccess,
     config: {
       description: 'Manage licences - remove access form',
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        params: {
+          colleagueEntityID: Joi.string().uuid().required()
         }
       }
     }
@@ -109,7 +114,5 @@ module.exports = {
         }
       }
     }
-  },
-  postChangeAccess: {
   }
 };

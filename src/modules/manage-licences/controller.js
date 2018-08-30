@@ -3,7 +3,6 @@ const Notify = require('../../lib/connectors/notify');
 const View = require('../../lib/view');
 const CRM = require('../../lib/connectors/crm');
 const IDM = require('../../lib/connectors/idm');
-// const errorHandler = require('../../lib/error-handler');
 
 /**
  * Index page for manage licences
@@ -172,16 +171,21 @@ async function postAddAccess (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 async function getRemoveAccess (request, reply, context = {}) {
-  const { entity_id: entityId } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.email = request.query.email;
-  await CRM.entityRoles.deleteColleagueRole(entityId, request.query.entity_role_id);
-  console.log('viewContext ', viewContext);
-  viewContext.pageTitle = 'Manage access to your licences';
-  // get list of roles in same org as current user
-  // call CRM and add role. CRM will call IDM if account does not exist...
-  return reply.view('water/manage-licences/manage_licences_removed_access', viewContext);
+  const { entity_id: entityID } = request.auth.credentials;
+  const { colleagueEntityID } = request.params;
+
+  try {
+    const { data: colleagueEntity } = await CRM.entities.findOne(colleagueEntityID);
+    const viewContext = Object.assign({}, View.contextDefaults(request), context);
+    viewContext.activeNavLink = 'manage';
+    viewContext.entityID = entityID;
+    viewContext.colleagueName = colleagueEntity.entity_nm;
+    viewContext.pageTitle = 'You are about to remove access';
+    return reply.view('water/manage-licences/remove-access', viewContext);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 /**

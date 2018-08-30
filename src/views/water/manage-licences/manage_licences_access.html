@@ -21,33 +21,42 @@
   <div class="grid-row medium-space">
     <div class="column-full">
 
-        <div class="license-results" id="results">
+        <div class="table license-results" id="results">
 
-          <div class="license-results-header">
-            <div class="license-results-header__column">Permission to access</div>
-            <div class="license-results-header__column">Date</div>
-            <div class="license-results-header__column">Manage returns</div>
-            <div class="license-results-header__column"></div>
+          <div class="table-row table-head">
+            <div class="table-cell bold-small column-50">Permission to access</div>
+            <div class="table-cell bold-small column-20">Date</div>
+            <div class="table-cell bold-small column-20">Manage returns</div>
+            <div class="table-cell bold-small column-10"></div>
           </div>
 
           {{^licenceAccess}}
-          <div class="license-result">
-            <h2 class="heading-medium license-result__column">No results found.</h2>
-            <div class="license-result__column" aria-hidden="true"></div>
-            <div class="license-result__column" aria-hidden="true"></div>
-            <div class="license-result__column" aria-hidden="true"></div>
+          <div class="table-row">
+            <h2 class="table-cell column-100">No results found.</h2>
+            <div class="table-cell" aria-hidden="true"></div>
+            <div class="table-cell" aria-hidden="true"></div>
+            <div class="table-cell" aria-hidden="true"></div>
           </div>
           {{/licenceAccess}}
 
           {{#each licenceAccess}}
-          <div class="license-result">
-            <h2 class="heading-medium license-result__column">{{name}}</h2>
-            <p class="license-result__column license-result__column--description">{{formatTS createdAt}}</p>
-            <p class="license-result__column license-result__column--description">{{yesIfTruthy hasReturns}}</p>
-            <p class="license-result__column license-result__column--description">
-            <a href="/manage_licences/access/{{colleagueEntityID}}/change" aria-hidden="false"
-               aria-label="Change access for {{name}}" title="Change access for {{name}}">Change</a>
-            </p>
+          <div class="table-row license-result">
+            <div class="table-cell">
+              <h4 class="context">Permission to access</h4>
+              {{name}}
+            </div>
+            <div class="table-cell">
+              <h4 class="context">Date</h4>
+              {{formatTS createdAt}}
+            </div>
+            <div class="table-cell">
+              <h4 class="context">Manage returns</h4>
+              {{yesIfTruthy hasReturns}}
+            </div>
+            <div class="table-cell">
+              <a href="/manage_licences/access/{{colleagueEntityID}}/change" aria-hidden="false"
+                 aria-label="Change access for {{name}}" title="Change access for {{name}}">Change</a>
+            </div>
           </div>
           {{/each}}
 

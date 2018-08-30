@@ -52,6 +52,7 @@ lab.experiment('createAccessListViewModel', () => {
   lab.test('there is a result for the user without returns', async () => {
     const role = viewModel.find(er => er.colleagueEntityID === 'user_only');
     expect(role.hasReturns).to.be.false();
+    expect(role.returnsEntityRoleID).to.be.undefined();
     expect(role.createdAt).to.equal('created_3');
     expect(role.name).to.equal('2@example.com');
   });
@@ -59,6 +60,7 @@ lab.experiment('createAccessListViewModel', () => {
   lab.test('there is a result for the user with returns', async () => {
     const role = viewModel.find(er => er.colleagueEntityID === 'user_with_returns');
     expect(role.hasReturns).to.be.true();
+    expect(role.returnsEntityRoleID).to.equal('erid:1');
     expect(role.createdAt).to.equal('created_2');
     expect(role.name).to.equal('1@example.com');
   });

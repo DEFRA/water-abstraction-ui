@@ -12,6 +12,7 @@
   <form novalidate method="post" action="/manage_licences/access/change" class="form">
     <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
     <input name="colleagueEntityID" type="hidden" value="{{ colleagueEntityRole.colleagueEntityID }}" />
+    <input name="returnsEntityRoleID" type="hidden" value="{{ colleagueEntityRole.returnsEntityRoleID }}" />
     <div class="form-group">
       <div class="multiple-choice">
         <input id="returns" name="returns" type="checkbox" value="true" data-initial="{{ colleagueEntityRole.hasReturns }}" {{#if colleagueEntityRole.hasReturns}}checked{{/if}}>

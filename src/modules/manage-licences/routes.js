@@ -151,8 +151,9 @@ module.exports = {
       },
       validate: {
         payload: {
-          csrf_token: Joi.string().guid().required(),
+          csrf_token: Joi.string().uuid().required(),
           colleagueEntityID: Joi.string().uuid().required(),
+          returnsEntityRoleID: Joi.string().uuid().allow(''),
           returns: Joi.string()
         }
       }

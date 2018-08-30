@@ -26,16 +26,19 @@ async function getManage (request, reply) {
 const createAccessListViewModel = licenceAccess => {
   const userRoles = licenceAccess.filter(r => r.role === 'user');
   const mapped = userRoles.map(ur => {
+    const returnsRole = licenceAccess.find(la => {
+      return (
+        la.company_entity_id === ur.company_entity_id &&
+        la.regime_entity_id === ur.regime_entity_id &&
+        la.individual_entity_id === ur.individual_entity_id &&
+        la.role === 'user_returns'
+      );
+    });
+
     return {
       createdAt: ur.created_at,
-      hasReturns: !!licenceAccess.find(la => {
-        return (
-          la.company_entity_id === ur.company_entity_id &&
-          la.regime_entity_id === ur.regime_entity_id &&
-          la.individual_entity_id === ur.individual_entity_id &&
-          la.role === 'user_returns'
-        );
-      }),
+      hasReturns: !!returnsRole,
+      returnsEntityRoleID: returnsRole ? returnsRole.entity_role_id : void 0,
       name: ur.entity_nm,
       id: ur.entity_role_id,
       colleagueEntityID: ur.individual_entity_id
@@ -294,13 +297,13 @@ async function getChangeAccess (request, h) {
 
 async function postChangeAccess (request, h) {
   const { entity_id: entityID } = request.auth.credentials;
-  const { returns, colleagueEntityID } = request.payload;
+  const { returns, colleagueEntityID, returnsEntityRoleID } = request.payload;
 
-  if (returns) {
-    const { error } = await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns');
+  const response = returns
+    ? await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns')
+    : await CRM.entityRoles.deleteColleagueRole(entityID, returnsEntityRoleID);
 
-    return error || h.redirect('/manage_licences/access');
-  }
+  return response.error || h.redirect('/manage_licences/access');
 };
 
 module.exports = {

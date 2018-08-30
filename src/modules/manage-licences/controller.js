@@ -180,12 +180,17 @@ async function getRemoveAccess (request, reply, context = {}) {
     viewContext.activeNavLink = 'manage';
     viewContext.entityID = entityID;
     viewContext.colleagueName = colleagueEntity.entity_nm;
+    viewContext.colleagueEntityID = colleagueEntityID;
     viewContext.pageTitle = 'You are about to remove access';
     return reply.view('water/manage-licences/remove-access', viewContext);
   } catch (error) {
     console.log(error);
     throw error;
   }
+}
+
+async function postRemoveAccess (request, h) {
+  return h.redirect('/manage_licences/access');
 }
 
 /**
@@ -232,6 +237,7 @@ module.exports = {
   getAddAccess,
   postAddAccess,
   getRemoveAccess,
+  postRemoveAccess,
   getAddLicences,
   createAccessListViewModel,
   getChangeAccess

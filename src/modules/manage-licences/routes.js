@@ -51,6 +51,26 @@ module.exports = {
       }
     }
   },
+  postRemoveAccess: {
+    method: 'POST',
+    path: '/manage_licences/access/remove',
+    handler: controller.postRemoveAccess,
+    config: {
+      description: 'Remove all access for a  colleague',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        payload: {
+          entityID: Joi.string().uuid().required(),
+          colleagueEntityID: Joi.string().uuid().required(),
+          csrf_token: Joi.string().guid().required()
+        }
+      }
+    }
+  },
   getAddAccess: {
     method: 'GET',
     path: '/manage_licences/add_access',

@@ -137,5 +137,25 @@ module.exports = {
         }
       }
     }
+  },
+  postChangeAccess: {
+    method: 'POST',
+    path: '/manage_licences/access/change',
+    handler: controller.postChangeAccess,
+    config: {
+      description: 'Updates the returns role for the user',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        payload: {
+          csrf_token: Joi.string().guid().required(),
+          colleagueEntityID: Joi.string().uuid().required(),
+          returns: Joi.string()
+        }
+      }
+    }
   }
 };

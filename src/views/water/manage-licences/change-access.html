@@ -9,8 +9,9 @@
     <span class="bold-small">{{ colleagueEntityRole.name }}</span> has access to your licences.
   </p>
 
-  <form novalidate method="post" action="/manage_licences/add_access" class="form">
+  <form novalidate method="post" action="/manage_licences/access/change" class="form">
     <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+    <input name="colleagueEntityID" type="hidden" value="{{ colleagueEntityRole.colleagueEntityID }}" />
     <div class="form-group">
       <div class="multiple-choice">
         <input id="returns" name="returns" type="checkbox" value="true" data-initial="{{ colleagueEntityRole.hasReturns }}" {{#if colleagueEntityRole.hasReturns}}checked{{/if}}>

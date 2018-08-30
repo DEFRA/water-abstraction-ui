@@ -292,6 +292,17 @@ async function getChangeAccess (request, h) {
   return h.view('water/manage-licences/change-access', viewContext);
 };
 
+async function postChangeAccess (request, h) {
+  const { entity_id: entityID } = request.auth.credentials;
+  const { returns, colleagueEntityID } = request.payload;
+
+  if (returns) {
+    const { error } = await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns');
+
+    return error || h.redirect('/manage_licences/access');
+  }
+};
+
 module.exports = {
   getManage,
   getAccessList,
@@ -301,5 +312,6 @@ module.exports = {
   postRemoveAccess,
   getAddLicences,
   createAccessListViewModel,
-  getChangeAccess
+  getChangeAccess,
+  postChangeAccess
 };

@@ -43,6 +43,11 @@ const createAccessListViewModel = licenceAccess => {
   return mapped;
 };
 
+const getLicenceAccessListViewModel = async userEntityID => {
+  const licenceAccess = await CRM.entityRoles.getEditableRoles(userEntityID);
+  return createAccessListViewModel(JSON.parse(licenceAccess));
+};
+
 /**
  * Renders list of emails with access to your licences
  * @param {Object} request - the HAPI HTTP request
@@ -54,25 +59,9 @@ async function getAccessList (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign({}, View.contextDefaults(request), context);
   viewContext.activeNavLink = 'manage';
-
-  // Sorting
-  const sortFields = { entity_nm: 'entity_nm', created_at: 'created_at' };
-  const sortField = request.query.sort || 'entity_nm';
-  const direction = request.query.direction === -1 ? -1 : 1;
-  const sort = {};
-  sort[sortFields[sortField]] = direction;
-
-  // Set sort info on viewContext
-  viewContext.direction = direction;
-  viewContext.sort = sortField;
-
   viewContext.pageTitle = 'Give access to your licences';
   viewContext.entity_id = entityId;
-  // get list of role  s in same org as current user
-  // need to ensure that current user is admin...
-
-  const licenceAccess = await CRM.entityRoles.getEditableRoles(entityId, sortField, direction);
-  viewContext.licenceAccess = createAccessListViewModel(JSON.parse(licenceAccess));
+  viewContext.licenceAccess = await getLicenceAccessListViewModel(entityId);
   return reply.view('water/manage-licences/manage_licences_access', viewContext);
 }
 
@@ -220,6 +209,19 @@ async function getAddLicences (request, reply, context = {}) {
   }
 }
 
+async function getChangeAccess (request, h) {
+  const { entity_id: entityID } = request.auth.credentials;
+  const viewContext = View.contextDefaults(request);
+  viewContext.activeNavLink = 'manage';
+  viewContext.pageTitle = 'Change access to your licences';
+
+  const allAccessEntities = await getLicenceAccessListViewModel(entityID);
+  const colleagueEntityRole = allAccessEntities.find(entity => entity.colleagueEntityID === request.params.colleagueEntityID);
+  viewContext.colleagueEntityRole = colleagueEntityRole;
+
+  return h.view('water/manage-licences/change-access', viewContext);
+};
+
 module.exports = {
   getManage,
   getAccessList,
@@ -227,5 +229,6 @@ module.exports = {
   postAddAccess,
   getRemoveAccess,
   getAddLicences,
-  createAccessListViewModel
+  createAccessListViewModel,
+  getChangeAccess
 };

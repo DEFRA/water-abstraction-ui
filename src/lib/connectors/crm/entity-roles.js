@@ -14,7 +14,7 @@ const client = new APIClient(rp, {
   headers: { Authorization: process.env.JWT_TOKEN }
 });
 
-client.getEditableRoles = async function (entityId, sort, direction) {
+client.getEditableRoles = async function (entityId, sort = 'entity_nm', direction = 1) {
   const uri = process.env.CRM_URI + '/entity/' + entityId + '/colleagues?sort=' + sort + '&direction=' + direction + '&token=' + process.env.JWT_TOKEN;
   const options = { method: `GET`, uri };
   try {

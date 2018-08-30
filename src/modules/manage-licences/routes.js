@@ -91,5 +91,25 @@ module.exports = {
         }
       }
     }
+  },
+  getChangeAccess: {
+    method: 'GET',
+    path: '/manage_licences/access/{colleagueEntityID}/change',
+    handler: controller.getChangeAccess,
+    config: {
+      description: 'Change the licence access for a colleague',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        params: {
+          colleagueEntityID: Joi.string().uuid().required()
+        }
+      }
+    }
+  },
+  postChangeAccess: {
   }
 };

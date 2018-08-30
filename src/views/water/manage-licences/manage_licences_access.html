@@ -45,7 +45,8 @@
             <p class="license-result__column license-result__column--description">{{formatTS createdAt}}</p>
             <p class="license-result__column license-result__column--description">{{yesIfTruthy hasReturns}}</p>
             <p class="license-result__column license-result__column--description">
-              <a href="/manage_licences/remove_access?entity_role_id={{entity_role_id}}&email={{encode value=name}}" aria-hidden="false" aria-label="Change access for {{name}}" title="Change access for {{name}}">Change</a>
+            <a href="/manage_licences/access/{{colleagueEntityID}}/change" aria-hidden="false"
+               aria-label="Change access for {{name}}" title="Change access for {{name}}">Change</a>
             </p>
           </div>
           {{/each}}

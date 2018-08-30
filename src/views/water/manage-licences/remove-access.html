@@ -10,7 +10,6 @@
 
   <form novalidate method="post" action="/manage_licences/access/remove" class="form">
     <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
-    <input name="entityID" type="hidden" value="{{ entityID }}" />
     <input name="colleagueEntityID" type="hidden" value="{{ colleagueEntityID }}" />
     <button type="submit" class="button">Remove access</button>
   </form>

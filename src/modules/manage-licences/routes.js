@@ -60,11 +60,14 @@ module.exports = {
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']
+        },
+        viewContext: {
+          pageTitle: 'Access removed',
+          activeNavLink: 'manage'
         }
       },
       validate: {
         payload: {
-          entityID: Joi.string().uuid().required(),
           colleagueEntityID: Joi.string().uuid().required(),
           csrf_token: Joi.string().guid().required()
         }

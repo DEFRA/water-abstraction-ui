@@ -25,15 +25,16 @@ client.getEditableRoles = async function (entityId, sort = 'entity_nm', directio
   }
 };
 
-client.deleteColleagueRole = async function (entityId, entityRoleId) {
-  const uri = process.env.CRM_URI + '/entity/' + entityId + '/colleagues/' + entityRoleId + '?token=' + process.env.JWT_TOKEN;
-  const options = { method: `DELETE`, uri };
-  try {
-    const response = await rp(options);
-    return Promise.resolve(response);
-  } catch (error) {
-    Promise.reject(error);
-  }
+client.deleteColleagueRole = function (entityId, entityRoleId) {
+  const uri = process.env.CRM_URI + '/entity/' + entityId + '/colleagues/' + entityRoleId;
+
+  const options = {
+    method: `DELETE`,
+    headers: { Authorization: process.env.JWT_TOKEN },
+    uri
+  };
+
+  return rp(options);
 };
 
 client.addColleagueRole = async function (entityID, colleagueEntityID, role = 'user') {

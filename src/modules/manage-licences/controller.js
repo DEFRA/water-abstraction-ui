@@ -3,6 +3,8 @@ const Notify = require('../../lib/connectors/notify');
 const View = require('../../lib/view');
 const CRM = require('../../lib/connectors/crm');
 const IDM = require('../../lib/connectors/idm');
+const Boom = require('boom');
+const { find } = require('lodash');
 
 /**
  * Index page for manage licences
@@ -175,7 +177,15 @@ async function getRemoveAccess (request, reply, context = {}) {
   const { colleagueEntityID } = request.params;
 
   try {
-    const { data: colleagueEntity } = await CRM.entities.findOne(colleagueEntityID);
+    const { data: colleagueEntity, error } = await CRM.entities.findOne(colleagueEntityID);
+
+    if (!colleagueEntity) {
+      throw Boom.notFound(`Colleague ${colleagueEntityID} not found for ${entityID}`);
+    }
+    if (error) {
+      throw Boom.badImplementation(`CRM error finding entity ${colleagueEntityID}`, error);
+    }
+
     const viewContext = Object.assign({}, View.contextDefaults(request), context);
     viewContext.activeNavLink = 'manage';
     viewContext.entityID = entityID;
@@ -189,8 +199,59 @@ async function getRemoveAccess (request, reply, context = {}) {
   }
 }
 
+/**
+ * Removes colleague from company by deleting all roles
+ * @param {String} regimeId - CRM entity GUID of regime
+ * @param {String} companyId - CRM entity GUID of company
+ * @param {String} entityId - CRM entity GUID of primary_user
+ * @param {String} colleagueId - CRM entity GUID of colleague to remove
+ * @return {Promise}
+ */
+const removeColleague = async (regimeId, companyId, entityId, colleagueId) => {
+  // Find entity_roles for the colleague on this company
+  const filter = {
+    company_entity_id: companyId,
+    ...regimeId && { regime_entity_id: regimeId }
+  };
+
+  const { data: roles, error: roleError } = await CRM.entityRoles.setParams({entityId: colleagueId}).findMany(filter);
+
+  if (roleError) {
+    throw Boom.badImplementation(`CRM error getting roles on company ${companyId} for entity ${colleagueId}`, roleError);
+  }
+
+  for (let role of roles) {
+    console.log(entityId, role.entity_role_id);
+    await CRM.entityRoles.deleteColleagueRole(entityId, role.entity_role_id);
+  }
+};
+
+/**
+ * Removes colleague access to the primary user's company
+ * @param {String} request.payload.colleagueEntityID - the entity ID of the colleague to remove
+ */
 async function postRemoveAccess (request, h) {
-  return h.redirect('/manage_licences/access');
+  const { entity_id: entityId } = request.auth.credentials;
+  const { colleagueEntityID } = request.payload;
+
+  // Need to find all roles that the colleage has for the company
+  // for whom the current user is the primary_user
+  const { regime_entity_id: regimeId, company_entity_id: companyId } = find(request.auth.credentials.roles, role => role.role === 'primary_user');
+
+  await removeColleague(regimeId, companyId, entityId, colleagueEntityID);
+
+  // Get the entity so their email can be displayed
+  const { data: colleague, error } = await CRM.entities.findOne(colleagueEntityID);
+
+  if (error) {
+    throw Boom.badImplementation(`CRM error`, error);
+  }
+  const view = {
+    ...request.view,
+    colleague
+  };
+
+  return h.view('water/manage-licences/remove-access-success', view);
 }
 
 /**

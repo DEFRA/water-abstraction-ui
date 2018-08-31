@@ -35,13 +35,41 @@ module.exports = {
   },
   getRemoveAccess: {
     method: 'GET',
-    path: '/manage_licences/remove_access',
+    path: '/manage_licences/access/{colleagueEntityID}/remove',
     handler: controller.getRemoveAccess,
     config: {
       description: 'Manage licences - remove access form',
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        params: {
+          colleagueEntityID: Joi.string().uuid().required()
+        }
+      }
+    }
+  },
+  postRemoveAccess: {
+    method: 'POST',
+    path: '/manage_licences/access/remove',
+    handler: controller.postRemoveAccess,
+    config: {
+      description: 'Remove all access for a  colleague',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        },
+        viewContext: {
+          pageTitle: 'Access removed',
+          activeNavLink: 'manage'
+        }
+      },
+      validate: {
+        payload: {
+          colleagueEntityID: Joi.string().uuid().required(),
+          csrf_token: Joi.string().guid().required()
         }
       }
     }
@@ -68,6 +96,7 @@ module.exports = {
       validate: {
         payload: {
           email: Joi.string().max(254).allow(''),
+          returns: Joi.boolean(),
           csrf_token: Joi.string().guid().required()
         }
       },
@@ -87,6 +116,45 @@ module.exports = {
       plugins: {
         hapiRouteAcl: {
           permissions: ['licences:edit']
+        }
+      }
+    }
+  },
+  getChangeAccess: {
+    method: 'GET',
+    path: '/manage_licences/access/{colleagueEntityID}/change',
+    handler: controller.getChangeAccess,
+    config: {
+      description: 'Change the licence access for a colleague',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        params: {
+          colleagueEntityID: Joi.string().uuid().required()
+        }
+      }
+    }
+  },
+  postChangeAccess: {
+    method: 'POST',
+    path: '/manage_licences/access/change',
+    handler: controller.postChangeAccess,
+    config: {
+      description: 'Updates the returns role for the user',
+      plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:edit']
+        }
+      },
+      validate: {
+        payload: {
+          csrf_token: Joi.string().uuid().required(),
+          colleagueEntityID: Joi.string().uuid().required(),
+          returnsEntityRoleID: Joi.string().uuid().allow(''),
+          returns: Joi.string()
         }
       }
     }

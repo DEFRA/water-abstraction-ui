@@ -1,0 +1,41 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+
+  <p>
+    <span class="bold-small">{{ colleagueEntityRole.name }}</span> has access to your licences.
+  </p>
+
+  <form novalidate method="post" action="/manage_licences/access/change" class="form">
+    <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+    <input name="colleagueEntityID" type="hidden" value="{{ colleagueEntityRole.colleagueEntityID }}" />
+    <input name="returnsEntityRoleID" type="hidden" value="{{ colleagueEntityRole.returnsEntityRoleID }}" />
+    <div class="form-group">
+      <div class="multiple-choice">
+        <input id="returns" name="returns" type="checkbox" value="true" data-initial="{{ colleagueEntityRole.hasReturns }}" {{#if colleagueEntityRole.hasReturns}}checked{{/if}}>
+        <label for="returns">This person can also manage my returns</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <a href="/manage_licences/access/{{ colleagueEntityRole.colleagueEntityID }}/remove">Remove access</a>
+    </div>
+    <button id="submitChange" type="submit" class="button">Update</button>
+  </form>
+</main>
+
+{{> footerjs}}
+
+<script>
+  $(function () {
+    var $submitChange = $('#submitChange');
+    $submitChange.prop('disabled', true);
+    $('#returns').on('change', function () {
+      var initial = $(this).data('initial');
+      var checked = $(this).prop('checked');
+      $submitChange.prop('disabled', initial === checked);
+    });
+  });
+</script>

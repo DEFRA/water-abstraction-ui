@@ -14,7 +14,7 @@ module.exports = {
           permissions: ['licences:edit']
         },
         viewContext: {
-          pageTitle: 'Manage your licences',
+          pageTitle: 'Add more of your licences or give others access',
           activeNavLink: 'manage'
         }
       }

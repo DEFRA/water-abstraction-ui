@@ -12,6 +12,7 @@ const { returns, versions, lines } = require('../../lib/connectors/returns');
  */
 const getLicenceNumbers = async (entityId, filter = {}) => {
   filter.entity_id = entityId;
+  filter.roles = ['primary_user', 'user_returns'];
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 

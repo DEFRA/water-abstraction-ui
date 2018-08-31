@@ -3,7 +3,6 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  hasGallons,
   getReturnData,
   getReturnsViewData
 } = require('./helpers');
@@ -54,7 +53,7 @@ const getReturn = async (request, h) => {
   const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber});
 
   if (!documentHeader) {
-    throw new Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
+    throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
   const view = {

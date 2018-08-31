@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const controller = require('./controller');
-;
 
 module.exports = {
   getAllReturns: {
@@ -57,6 +56,9 @@ module.exports = {
         }
       },
       plugins: {
+        hapiRouteAcl: {
+          permissions: ['licences:returns']
+        },
         viewContext: {
           activeNavLink: 'returns'
         }

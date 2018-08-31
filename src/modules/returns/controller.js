@@ -4,7 +4,8 @@ const Boom = require('boom');
 const {
   getLicenceNumbers,
   getReturnData,
-  getReturnsViewData
+  getReturnsViewData,
+  isInternalReturnsUser
 } = require('./helpers');
 
 /**
@@ -50,7 +51,8 @@ const getReturn = async (request, h) => {
   const { licence_ref: licenceNumber } = data.return;
 
   // Load licence from CRM to check user has access
-  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber});
+  const isInternalReturns = isInternalReturnsUser(request);
+  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternalReturns);
 
   if (!documentHeader) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);

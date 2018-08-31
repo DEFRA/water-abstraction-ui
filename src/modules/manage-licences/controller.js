@@ -165,7 +165,8 @@ async function postAddAccess (request, reply, context = {}) {
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
-    reply(err);
+    console.error(err);
+    throw err;
   }
 }
 

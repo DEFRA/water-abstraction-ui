@@ -163,8 +163,29 @@ const applyBasis = (data, formValues) => {
   return f;
 };
 
+/**
+ * Applies form lines values to data
+ * @param {Object} - return model
+ * @param {Object} - basis form data
+ * @return {Object} - updated return model
+ */
+const applyQuantities = (data, formValues) => {
+  const f = cloneDeep(data);
+
+  f.lines = data.requiredLines.map(line => {
+    const name = line.startDate + '_' + line.endDate;
+    return {
+      ...line,
+      quantity: formValues[name]
+    };
+  });
+
+  return f;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
-  applyBasis
+  applyBasis,
+  applyQuantities
 };

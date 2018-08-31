@@ -3,11 +3,11 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { set } = require('lodash');
+const { set, get } = require('lodash');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
-const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema } = require('../forms/');
+const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
-const { applySingleTotal, applyBasis } = require('../lib/return-helpers');
+const { applySingleTotal, applyBasis, applyQuantities } = require('../lib/return-helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -259,9 +259,46 @@ const postBasis = async (request, h) => {
     const d = applyBasis(data, getValues(form));
     request.sessionStore.set('internalReturnFlow', d);
 
-    return h.redirect('/admin/return/confirm');
+    const path = get(d, 'reading.totalFlag') ? '/admin/return/confirm' : '/admin/return/quantities';
+    return h.redirect(path);
   }
 
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Screen for user to enter quantities
+ */
+const getQuantities = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = quantitiesForm(request, data);
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+const postQuantities = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const schema = quantitiesSchema(data);
+
+  const form = handleRequest(quantitiesForm(request, data), request, schema);
+  if (form.isValid) {
+    // Persist
+    const d = applyQuantities(data, getValues(form));
+
+    request.sessionStore.set('internalReturnFlow', d);
+
+    return h.redirect(`/admin/return/confirm`);
+  }
   return h.view('water/returns/internal/form', {
     form,
     ...data,
@@ -323,6 +360,8 @@ module.exports = {
   postSingleTotal,
   getBasis,
   postBasis,
+  getQuantities,
+  postQuantities,
   getConfirm,
   postConfirm
 };

@@ -254,6 +254,42 @@ module.exports = {
     }
   },
 
+  getQuantities: {
+    method: 'GET',
+    path: '/admin/return/quantities',
+    handler: controller.getQuantities,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Display quantities form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  postQuantities: {
+    method: 'POST',
+    path: '/admin/return/quantities',
+    handler: controller.postQuantities,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Post handler for quantities',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
   getConfirm: {
     method: 'GET',
     path: '/admin/return/confirm',

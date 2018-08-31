@@ -5,10 +5,9 @@
  */
 const { set } = require('lodash');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
-
-const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema } = require('../forms/');
-
+const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
+const { applySingleTotal, applyBasis } = require('../lib/return-helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -216,9 +215,13 @@ const postSingleTotal = async (request, h) => {
   if (form.isValid) {
     // Persist to session
     const { isSingleTotal, total } = getValues(form);
-    set(data, 'reading.totalFlag', isSingleTotal);
-    set(data, 'reading.total', isSingleTotal ? total : null);
-    request.sessionStore.set('internalReturnFlow', data);
+
+    const d = isSingleTotal ? applySingleTotal(data, total) : data;
+    set(d, 'reading.totalFlag', isSingleTotal);
+
+    request.sessionStore.set('internalReturnFlow', d);
+
+    return h.redirect('/admin/return/basis');
   }
 
   return h.view('water/returns/internal/form', {
@@ -226,6 +229,56 @@ const postSingleTotal = async (request, h) => {
     ...data,
     ...request.view
   });
+};
+
+/**
+ * What is the basis for the return - amounts/pump/herd
+ */
+const getBasis = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = basisForm(request);
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+/**
+ * Post handler for basis form
+ */
+const postBasis = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  const form = handleRequest(basisForm(request), request, basisSchema);
+
+  if (form.isValid) {
+    const d = applyBasis(data, getValues(form));
+    request.sessionStore.set('internalReturnFlow', d);
+
+    return h.redirect('/admin/return/confirm');
+  }
+
+  return h.view('water/returns/internal/form', {
+    form,
+    ...data,
+    ...request.view
+  });
+};
+
+const getConfirm = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  return h.view('water/returns/internal/confirm', {
+    ...data,
+    ...request.view
+  });
+};
+
+const postConfirm = async (request, h) => {
+
 };
 
 module.exports = {
@@ -239,5 +292,9 @@ module.exports = {
   getUnits,
   postUnits,
   getSingleTotal,
-  postSingleTotal
+  postSingleTotal,
+  getBasis,
+  postBasis,
+  getConfirm,
+  postConfirm
 };

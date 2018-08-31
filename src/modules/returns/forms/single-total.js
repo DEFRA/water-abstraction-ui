@@ -14,9 +14,8 @@ const form = (request) => {
     choices: [
       { value: true,
         label: 'A single total amount',
-        dataTarget: 'total_container',
         fields: [
-          fields.text('total', {label: 'Total amount provided', panel: true, jsHidden: true})
+          fields.text('total', {label: 'Total amount provided'})
         ]},
       { value: false, label: 'A number of amounts' }
     ]}));

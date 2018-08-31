@@ -14,15 +14,19 @@
     </legend>
 
     {{#each options.choices }}
-    <div class="multiple-choice" {{#if dataTarget }}data-target="{{ dataTarget }}"{{/if}}>
+    <div class="multiple-choice" {{#if this.fields.length }}data-target="{{ ../name }}_{{ @index }}_panel"{{/if}}>
       <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this.value }}" {{#equal ../value this.value}}checked{{/equal}}>
       <label for="radio-inline-{{@index}}">{{ this.label }}</label>
     </div>
 
     <!-- render child fields -->
-    {{#each this.fields }}
-      {{>form-widget this form=../../form parent=../this }}
-    {{/each}}
+    {{#if this.fields.length}}
+      <div class="panel panel-border-narrow js-hidden" id="{{ ../name }}_{{ @index }}_panel">
+      {{#each this.fields }}
+        {{>form-widget this form=../../form parent=../this }}
+      {{/each}}
+      </div>
+    {{/if}}
 
     {{/each}}
 

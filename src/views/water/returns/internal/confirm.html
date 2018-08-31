@@ -1,0 +1,45 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  {{>return-header }}
+
+  <h3 class="heading-medium">Confirm this return information</h3>
+{{ stringify lines }}
+
+  <div class="table medium-space">                                          <!-- a table -->
+
+        <div class="table-row table-head">                                      <!-- the table head -->
+          <div class="table-cell bold-small column-33">
+            Months
+          </div>
+          <div class="table-cell bold-small column-33 numbers">
+
+
+          </div>
+        </div>
+
+        {{#each lines }}
+        <div class="table-row medium-space">                                    <!-- a data row starts -->
+
+          <div class="table-cell">
+            <h5>{{ this.startDate }}</h3>
+          </div>
+          <div class="table-cell numbers">
+            <h5 class="context">
+              Cubic metres
+            </h5>
+            {{ this.quantity }}
+          </div>
+        </div>
+        {{/each}}
+
+      </div>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

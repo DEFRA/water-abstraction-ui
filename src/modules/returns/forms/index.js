@@ -1,4 +1,5 @@
 const { singleTotalForm, singleTotalSchema } = require('./single-total');
+const { basisForm, basisSchema } = require('./basis');
 
 module.exports = {
   amountsForm: require('./amounts'),
@@ -6,5 +7,7 @@ module.exports = {
   methodForm: require('./method'),
   singleTotalForm,
   singleTotalSchema,
-  unitsForm: require('./units')
+  unitsForm: require('./units'),
+  basisForm,
+  basisSchema
 };

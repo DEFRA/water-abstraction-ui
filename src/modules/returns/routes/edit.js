@@ -216,6 +216,78 @@ module.exports = {
         }
       }
     }
+  },
+
+  getBasis: {
+    method: 'GET',
+    path: '/admin/return/basis',
+    handler: controller.getBasis,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Get basis for supplied return data',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  postBasis: {
+    method: 'POST',
+    path: '/admin/return/basis',
+    handler: controller.postBasis,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Post handler for records basis',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  getConfirm: {
+    method: 'GET',
+    path: '/admin/return/confirm',
+    handler: controller.getConfirm,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Display confirmation screen of returned quantities',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  postConfirm: {
+    method: 'POST',
+    path: '/admin/return/confirm',
+    handler: controller.postConfirm,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Post handler for confirmation screen',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
   }
 
 };

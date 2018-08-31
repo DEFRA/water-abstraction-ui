@@ -1,0 +1,170 @@
+const { cloneDeep, set, mapValues } = require('lodash');
+const moment = require('moment');
+
+/**
+ * Checks whether a supplied day/month is the same or after a reference day/month
+ * @param {Number} day - the day to test
+ * @param {Number} month - the month to test
+ * @param {Number} refDay - the reference day
+ * @param {Number} refMonth - the reference month
+ * @return {Boolean}
+ */
+const isSameOrAfter = (day, month, refDay, refMonth) => {
+  if (month > refMonth) {
+    return true;
+  }
+  return ((month === refMonth) && (day >= refDay));
+};
+
+/**
+ * Checks whether a supplied day/month is the same or before a reference day/month
+ * @param {Number} day - the day to test
+ * @param {Number} month - the month to test
+ * @param {Number} refDay - the reference day
+ * @param {Number} refMonth - the reference month
+ * @return {Boolean}
+ */
+const isSameOrBefore = (day, month, refDay, refMonth) => {
+  if (month < refMonth) {
+    return true;
+  }
+  return (month === refMonth) && (day <= refDay);
+};
+
+/**
+ * Checks whether the specified date is within the abstraction period
+ * @param {String} date - the date to test, format YYYY-MM-DD
+ * @param {Object} options - abstraction period
+ * @param {Number} options.periodStartDay - abstraction period start day of the month
+ * @param {Number} options.periodStartMonth - abstraction period start month
+ * @param {Number} options.periodEndDay - abstraction period end day of the month
+ * @param {Number} options.periodEndMonth - abstraction period end month
+ * @return {Boolean} whether supplied date is within abstraction period
+ */
+const isDateWithinAbstractionPeriod = (date, options) => {
+  const {
+    periodEndDay,
+    periodEndMonth,
+    periodStartDay,
+    periodStartMonth
+  } = options;
+
+  // Month and day of test date
+  const month = moment(date).month() + 1;
+  const day = moment(date).date();
+
+  // Period start date is >= period end date
+  if (isSameOrAfter(periodEndDay, periodEndMonth, periodStartDay, periodStartMonth)) {
+    return isSameOrAfter(day, month, periodStartDay, periodStartMonth) &&
+      isSameOrBefore(day, month, periodEndDay, periodEndMonth);
+  } else {
+    const prevYear = isSameOrAfter(day, month, 1, 1) &&
+     isSameOrBefore(day, month, periodEndDay, periodEndMonth);
+
+    const thisYear = isSameOrAfter(day, month, periodStartDay, periodStartMonth) &&
+     isSameOrBefore(day, month, 31, 12);
+
+    return prevYear || thisYear;
+  }
+};
+
+/**
+ * Gets period start/end from NALD metadata in return,
+ * and converts to integers
+ * @param {Object} data
+ * @return {Object} only contains period start/end data as integers
+ */
+const getPeriodStartEnd = (data) => {
+  // Get period start/end and convert to integers
+  const {
+    periodEndDay,
+    periodEndMonth,
+    periodStartDay,
+    periodStartMonth
+  } = data.metadata.nald;
+
+  return mapValues({
+    periodEndDay,
+    periodEndMonth,
+    periodStartDay,
+    periodStartMonth
+  }, parseInt);
+};
+
+/**
+ * Applies single total to lines by distributing the value among all
+ * lines within abstraction period
+ * Period start day/month
+ * Period end day/month
+ * @param {Object} data - return data model
+ * @param {Number} total - single total value
+ * @return {Object} data - updated return data model
+ */
+const applySingleTotal = (data, total) => {
+  const d = cloneDeep(data);
+
+  // Set single total
+  set(d, 'reading.totalFlag', true);
+  set(d, 'reading.total', total);
+
+  // Get period start/end and convert to integers
+  const options = getPeriodStartEnd(d);
+
+  // Find which return lines are within abstraction period
+  const indexes = d.requiredLines.reduce((acc, line, index) => {
+    if (isDateWithinAbstractionPeriod(line.startDate, options) || isDateWithinAbstractionPeriod(line.endDate, options)) {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
+
+  const perMonth = total / indexes.length;
+
+  d.lines = d.requiredLines.map((line, i) => {
+    return {
+      ...line,
+      quantity: indexes.includes(i) ? perMonth : 0
+    };
+  });
+
+  return d;
+};
+
+/**
+ * Applies data from returns basis form to model
+ * and returns new model data
+ * @param {Object} - return model
+ * @param {Object} - basis form data
+ * @return {Object} - updated return model
+ */
+const applyBasis = (data, formValues) => {
+  const f = cloneDeep(data);
+
+  if (formValues.basis === 'records') {
+    set(f, 'reading.type', 'measured');
+    set(f, 'reading.method', null);
+    set(f, 'reading.pumpCapacity', null);
+    set(f, 'reading.hoursRun', null);
+    set(f, 'reading.numberLivestock', null);
+  } else if (formValues.basis === 'pump') {
+    set(f, 'reading.type', 'estimated');
+    set(f, 'reading.method', 'pump');
+    set(f, 'reading.pumpCapacity', formValues.pumpCapacity);
+    set(f, 'reading.hoursRun', formValues.hoursRun);
+    set(f, 'reading.numberLivestock', null);
+  } else if (formValues.basis === 'herd') {
+    set(f, 'reading.type', 'estimated');
+    set(f, 'reading.method', 'herd');
+    set(f, 'reading.pumpCapacity', null);
+    set(f, 'reading.hoursRun', null);
+    set(f, 'reading.numberLivestock', formValues.numberLivestock);
+  }
+
+  return f;
+};
+
+module.exports = {
+  applySingleTotal,
+  isDateWithinAbstractionPeriod,
+  applyBasis
+};

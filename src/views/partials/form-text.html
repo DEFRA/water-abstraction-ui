@@ -1,7 +1,7 @@
 {{#equal options.type 'hidden'}}
 <input type="hidden" name="{{ name }}" value="{{ value }}" />
 {{else}}
-<div id="{{ name }}_container" class="{{#if options.panel }}panel panel-border-narrow{{ else }}form-group{{/if}} {{#if options.jsHidden }}js-hidden{{/if}} {{#if errors }}form-group-error{{/if}}">
+<div class="form-group {{#if errors }}form-group-error{{/if}}">
   <label class="form-label" for="{{ name }}">
     {{ options.label }}
 

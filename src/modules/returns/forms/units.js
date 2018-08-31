@@ -15,6 +15,7 @@ const unitsForm = (request) => {
       { value: 'gal', label: 'Gallons' }
     ]}));
 
+  f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;

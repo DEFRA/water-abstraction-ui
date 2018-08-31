@@ -15,6 +15,7 @@ const amountsForm = (request) => {
       { value: true, label: 'No' }
     ]}));
 
+  f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;

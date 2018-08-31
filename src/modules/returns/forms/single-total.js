@@ -20,6 +20,7 @@ const form = (request) => {
       { value: false, label: 'A number of amounts' }
     ]}));
 
+  f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session

@@ -22,7 +22,7 @@ const mapModelToForm = (data) => {
     return {
       basis: 'pump',
       pumpCapacity: get(data, 'reading.pumpCapacity'),
-      hoursRun: null,
+      hoursRun: get(data, 'reading.hoursRun'),
       numberLivestock: null
     };
   } else if (readingMethod === 'livestock') {
@@ -66,6 +66,7 @@ const form = (request) => {
 
     ]}));
 
+  f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session

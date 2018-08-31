@@ -65,7 +65,9 @@ const setValues = (form, values) => {
 const getValues = (form) => {
   const values = {};
   mapFields(form, (field) => {
-    values[field.name] = field.value;
+    if (field.name) {
+      values[field.name] = field.value;
+    }
     return field;
   });
   return values;
@@ -109,8 +111,10 @@ const mapFields = (form, fn) => {
 const importData = (form, payload) => {
   const data = {};
   mapFields(form, (field) => {
-    const mapper = field.options.mapper || 'defaultMapper';
-    data[field.name] = mappers[mapper].import(field.name, payload);
+    if (field.name) {
+      const mapper = field.options.mapper || 'defaultMapper';
+      data[field.name] = mappers[mapper].import(field.name, payload);
+    }
     return field;
   });
   return data;

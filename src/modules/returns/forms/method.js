@@ -14,6 +14,7 @@ const methodForm = (request) => {
       { value: false, label: 'Other' }
     ]}));
 
+  f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;

@@ -1,6 +1,5 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { uniq } = require('lodash');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions, lines } = require('../../../lib/connectors/returns');
 

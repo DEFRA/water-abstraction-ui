@@ -5,37 +5,63 @@
   {{>return-header }}
 
   <h3 class="heading-medium">Confirm this return information</h3>
-{{ stringify lines }}
-
-  <div class="table medium-space">                                          <!-- a table -->
-
-        <div class="table-row table-head">                                      <!-- the table head -->
-          <div class="table-cell bold-small column-33">
-            Months
-          </div>
-          <div class="table-cell bold-small column-33 numbers">
 
 
-          </div>
-        </div>
+<div class="grid-row">
+  <div class="column-two-thirds">
+
+    <table>
+      <thead>
+        <tr>
+          <th>
+            {{#equal lines.0.timePeriod 'day' }}Day{{/equal}}
+            {{#equal lines.0.timePeriod 'week' }}Week ending{{/equal}}
+            {{#equal lines.0.timePeriod 'month' }}Month{{/equal}}
+            {{#equal lines.0.timePeriod 'year' }}Year{{/equal}}
+          </th>
+          <th class="numeric">
+            {{#equal reading.units 'gal' }}Gallons{{/equal}}
+            {{#equal reading.units 'l' }}Litres{{/equal}}
+            {{#equal reading.units 'Ml' }}Megalitres{{/equal}}
+            {{#equal reading.units 'm3' }}Cubic metres{{/equal}}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+
 
         {{#each lines }}
-        <div class="table-row medium-space">                                    <!-- a data row starts -->
+      <tr>
+        <td>
+            {{#equal timePeriod 'day' }}
+              {{ formatISODate startDate format='D MMMM' }}
+            {{/equal}}
 
-          <div class="table-cell">
-            <h5>{{ this.startDate }}</h3>
-          </div>
-          <div class="table-cell numbers">
-            <h5 class="context">
-              Cubic metres
-            </h5>
+            {{#equal timePeriod 'week' }}
+              {{ formatISODate endDate format='D MMMM' }}
+            {{/equal}}
+
+            {{#equal timePeriod 'month' }}
+              {{ formatISODate startDate format='MMMM' }}
+            {{/equal}}
+            {{#equal timePeriod 'year' }}
+              {{ formatISODate startDate format='D MMMM YYYY' }} -
+              {{ formatISODate endDate format='D MMMM YYYY' }}
+            {{/equal}}
+          </td>
+          <td class="numeric">
             {{ this.quantity }}
-          </div>
-        </div>
+          </td>
+        </tr>
         {{/each}}
+      </tbody>
+    </table>
 
-      </div>
+    <br />
+  {{>form form }}
 
+  </div>
+</div>
 </main>
 
 

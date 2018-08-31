@@ -212,6 +212,7 @@ const postSingleTotal = async (request, h) => {
 
   const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
 
+  console.log(JSON.stringify(form, null, 2));
   if (form.isValid) {
     // Persist to session
     const { isSingleTotal, total } = getValues(form);
@@ -268,17 +269,44 @@ const postBasis = async (request, h) => {
   });
 };
 
+/**
+ * Confirm screen for user to check amounts before submission
+ */
 const getConfirm = async (request, h) => {
   const data = request.sessionStore.get('internalReturnFlow');
 
+  const form = confirmForm(request, `/admin/return/confirm`);
+
   return h.view('water/returns/internal/confirm', {
     ...data,
+    form,
     ...request.view
   });
 };
 
+/**
+ * Confirm return
+ */
 const postConfirm = async (request, h) => {
+  const data = request.sessionStore.get('internalReturnFlow');
 
+  const form = confirmForm(request, `/admin/return/confirm`);
+
+  const view = {
+    ...request.view,
+    ...data,
+    form
+  };
+
+  try {
+    await returns.postReturn(data);
+    return h.redirect('/admin/return/submitted');
+  } catch (error) {
+    console.error(error);
+    view.error = error;
+  }
+
+  return h.view('water/returns/internal/confirm', view);
 };
 
 module.exports = {

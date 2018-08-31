@@ -67,14 +67,14 @@ function viewContextDefaults (request) {
     if (request.permissions && request.permissions.licences.read) {
       viewContext.mainNavLinks.push({
         id: 'view',
-        text: 'View your licences',
+        text: 'View licences',
         url: '/licences'
       });
     }
     if (request.permissions && request.permissions.licences.returns) {
       viewContext.mainNavLinks.push({
         id: 'returns',
-        text: 'Returns',
+        text: 'View returns',
         url: '/returns'
       });
     }

@@ -3,6 +3,7 @@ const Boom = require('boom');
 const { get } = require('lodash');
 const { documents } = require('../../lib/connectors/crm');
 const { returns, versions, lines } = require('../../lib/connectors/returns');
+const { externalRoles } = require('../../lib/constants');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -10,9 +11,9 @@ const { returns, versions, lines } = require('../../lib/connectors/returns');
  * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, filter = {}) => {
+const getLicenceNumbers = async (entityId, filter = {}, isInternalReturnsUser) => {
   filter.entity_id = entityId;
-  filter.roles = ['primary_user', 'user_returns'];
+  filter.roles = getInternalRoles(isInternalReturnsUser, filter.roles);
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
@@ -204,12 +205,10 @@ const getReturnsViewData = async (request) => {
 
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
-  const isInternalReturns = get(request.permissions, 'returns.read');
-  if (!isInternalReturns) {
-    filter.roles = ['primary_user', 'returns'];
-  }
+  const isInternalReturns = isInternalReturnsUser(request);
+  filter.roles = getInternalRoles(isInternalReturns, filter.roles);
 
-  const documents = await getLicenceNumbers(entityId, filter);
+  const documents = await getLicenceNumbers(entityId, filter, isInternalReturns);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const view = {
@@ -230,6 +229,19 @@ const getReturnsViewData = async (request) => {
   return view;
 };
 
+/**
+ * Does the hapi request object represent an internal user with returns access?
+ */
+const isInternalReturnsUser = request => get(request, 'permissions.returns.read', false);
+
+/**
+ * If the user is an external user, add the CRM roles that the requesting user
+ * would need to have one of, in order to be authorised to view a return.
+ */
+const getInternalRoles = (isInternalUser, roles) => {
+  return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -237,7 +249,8 @@ module.exports = {
   mergeReturnsAndLicenceNames,
   getLatestVersion,
   hasGallons,
-  // getUnit,
   getReturnData,
-  getReturnsViewData
+  getReturnsViewData,
+  isInternalReturnsUser,
+  getInternalRoles
 };

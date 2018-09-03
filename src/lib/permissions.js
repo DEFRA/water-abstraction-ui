@@ -1,3 +1,9 @@
+'use strict';
+
+// Using lodash functions over some native functions because
+// they are forgiving to undefined.
+const { size, find, includes, intersection, get, uniq } = require('lodash');
+
 /**
  * Permissions module
  *
@@ -13,105 +19,127 @@
  */
 
 /**
- * Get permissions as an array of strings
- * @param {Object} permissions object
- * @return {Array} array of strings, e.g. ['licences:view', 'admin:defra']
- */
-function permissionsToArray (permissions) {
-  const arr = [];
-  for (let key in permissions) {
-    for (let subKey in permissions[key]) {
-      if (permissions[key][subKey]) {
-        arr.push(`${key}:${subKey}`);
-      }
-    }
-  }
-  return arr;
-}
-
-/**
  * Gets user-type role count from roles array
  * @param {Array} roles - array of roles loaded from CRM
  * @param {String|Array} type - the role type or types to match
  * @return {Number} number of roles of specified type
  */
-function countRoles (roles, type) {
+const countRoles = (roles = [], type) => {
   // Handle array or string
   const types = typeof (type) === 'string' ? [type] : type;
   return roles.reduce((memo, role) => {
-    return types.includes(role.role) ? memo + 1 : memo;
+    return includes(types, role.role) ? memo + 1 : memo;
   }, 0);
-}
+};
+
+/**
+ * Checks if the user has a scope that is in the list of required scopes
+ *
+ * @param {array} requiredScopes A list of strings representing the scopes that are required for a resource
+ * @param {array} userScopes The list of strings representing the scopes a user has
+ * @returns {boolean}
+ */
+const hasMatch = (requiredScopes, userScopes) => {
+  return size(intersection(requiredScopes, userScopes)) > 0;
+};
+
+/**
+ * Does the role object have a role property of 'primary_user'?
+ * { role: 'primary_user' }
+ */
+const isPrimaryUserRole = role => get(role, 'role') === 'primary_user';
+
+/**
+ * Is this a role with a role value of user_returns.
+ * { role: 'user_returns' }
+ */
+const isUserReturnsRole = role => get(role, 'role') === 'user_returns';
+
+/**
+ * Checks if there is a scope called 'external'
+ *
+ * @param scope An array of strings
+ */
+const isExternal = scope => includes(scope, 'external');
+
+const isVmlAdmin = scope => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
+const isPrimaryUser = roles => !!find(roles, isPrimaryUserRole);
+const isUserReturnsUser = roles => !!find(roles, isUserReturnsRole);
+
+const canReadLicence = entityId => !!entityId;
+const canEditAbstractionReform = scope => hasMatch(['ar_user', 'ar_approver'], scope);
+
+const canApproveAbstractionReform = scope => includes(scope, 'ar_approver');
+
+const canEditLicence = (scope, roles) => {
+  return isExternal(scope) && size(roles) === 1 && isPrimaryUser(roles);
+};
+
+const canViewMutlipleLicences = (scope = [], roles = []) => {
+  return isExternal(scope) && countRoles(roles, ['user', 'primary_user']) > 1;
+};
+
+const canPerformReturns = (scope = [], roles = []) => {
+  return isExternal(scope) &&
+    (isPrimaryUser(roles) || isUserReturnsUser(roles));
+};
+
+const canViewInternalReturns = (scope = []) => {
+  return scope.includes('internal') && scope.includes('returns');
+};
 
 /**
  * Gets permissions available to current user based on current HAPI request
  * @param {Object} credentials - credentials from HAPI request
  * @return {Object} permissions - permissions object
  */
-async function getPermissions (credentials) {
-  // Default permissions
-  const permissions = {
-    licences: {
-      read: false,
-      edit: false,
+const getPermissions = (credentials = {}) => {
+  const { roles, entity_id: entityId, scope } = credentials;
 
-      // Agents can view licences for multiple licence holders
-      // this flag is set to true
-      multi: false
+  return {
+    licences: {
+      read: canReadLicence(entityId),
+      edit: canEditLicence(scope, roles),
+      multi: canViewMutlipleLicences(scope, roles),
+      returns: canPerformReturns(scope, roles)
     },
     admin: {
-      defra: false,
-      project: false,
-      system: false
+      defra: isVmlAdmin(scope)
+    },
+    returns: {
+      read: canViewInternalReturns(scope)
+    },
+    ar: {
+      read: canEditAbstractionReform(scope),
+      edit: canEditAbstractionReform(scope),
+      approve: canApproveAbstractionReform(scope)
     }
   };
-
-  if (credentials) {
-    const { roles, entity_id: entityId } = credentials;
-
-    if (entityId) {
-      permissions.licences.read = true;
-    }
-    if (roles.length === 1 && roles[0].role === 'primary_user') {
-      permissions.licences.edit = true;
-    }
-    if (countRoles(roles, ['user', 'primary_user']) > 1) {
-      permissions.licences.multi = true;
-    }
-    const isDefraAdmin = roles.find(r => r.role === 'admin');
-    if (isDefraAdmin) {
-      permissions.admin.defra = true;
-    }
-    const isProjectAdmin = roles.find(r => r.role === 'project_admin');
-    if (isProjectAdmin) {
-      permissions.admin.project = true;
-    }
-    const isSysAdmin = roles.find(r => r.role === 'system_admin');
-    if (isSysAdmin) {
-      permissions.admin.system = true;
-    }
-  }
-
-  return permissions;
-}
+};
 
 /**
- * Get permissions - callback style
- * @param {Object} credentials - credentials from HAPI request
- * @return {Object} permissions - permissions object
+ * Gets a list of permissions the user with the specified credentials has
+ * on the supplied company ID
+ * @param {Object} credentials
+ * @param {String} companyEntityId GUID
+ * @return {Object} of permissions
  */
-function getPermissionsCb (credentials, cb) {
-  getPermissions(credentials)
-    .then((permissions) => {
-      cb(null, permissions);
-    })
-    .catch((err) => {
-      cb(err, null);
-    });
-}
+const getCompanyPermissions = (credentials = {}) => {
+  const { roles = [], ...rest } = credentials;
+
+  const companyEntityIds = uniq(roles.map(role => role.company_entity_id).filter(entityId => !!entityId));
+
+  return companyEntityIds.reduce((acc, companyEntityId) => {
+    const companyCredentials = {
+      ...rest,
+      roles: roles.filter(row => row.company_entity_id === companyEntityId)
+    };
+    acc[companyEntityId] = getPermissions(companyCredentials);
+    return acc;
+  }, {});
+};
 
 module.exports = {
   getPermissions,
-  getPermissionsCb,
-  permissionsToArray
+  getCompanyPermissions
 };

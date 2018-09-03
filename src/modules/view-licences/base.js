@@ -1,6 +1,5 @@
-const Boom = require('boom');
 const CRM = require('../../lib/connectors/crm');
-const { getUser } = require('../../lib/connectors/idm');
+const IDM = require('../../lib/connectors/idm');
 const { mapSort, mapFilter } = require('./helpers');
 
 /**
@@ -12,9 +11,15 @@ const { mapSort, mapFilter } = require('./helpers');
  * @param {String} [request.query.licenceNumber] - the licence number to search on
  * @param {String} [request.query.sort] - the field to sort on licenceNumber|name
  * @param {Number} [request.query.direction] - sort direction +1 : asc, -1 : desc
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} h - the HAPI response toolkit
  */
-async function getLicences (request, reply) {
+async function getLicences (request, h) {
+  const viewName = 'water/view-licences/licences';
+
+  if (request.formError) {
+    return h.view(viewName, request.view);
+  }
+
   const { entity_id: entityId } = request.auth.credentials;
   const { page, emailAddress } = request.query;
   const sort = mapSort(request.query);
@@ -22,8 +27,8 @@ async function getLicences (request, reply) {
 
   // Check if user exists
   if (emailAddress) {
-    const { error } = await getUser(emailAddress);
-    request.view.error = error;
+    const { data } = await IDM.getUserByEmail(emailAddress);
+    request.view.error = data.length === 0;
   }
 
   // Get licences from CRM
@@ -31,12 +36,12 @@ async function getLicences (request, reply) {
     page,
     perPage: 50
   });
+
   if (error) {
     throw error;
-    // reply(Boom.badImplementation('CRM error', error));
   }
 
-  return reply.view('water/view-licences/licences', {
+  return h.view(viewName, {
     ...request.view,
     licenceData: data,
     pagination

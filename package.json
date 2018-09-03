@@ -6,7 +6,7 @@
   "scripts": {
     "heroku-prebuild": "npm install --only=dev",
     "heroku-postbuild": "gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass",
-    "test": "./node_modules/lab/bin/lab -t 55 -m 0 --coverage-path ./src/ -r lcov -o lcov.info -r console -o stdout",
+    "test": "./node_modules/lab/bin/lab -t 55 -m 0 -r lcov -o lcov.info -r console -o stdout",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js --fix",
@@ -37,6 +37,7 @@
     "lab": "^14.3.2",
     "run-sequence": "^2.2.1",
     "sinon": "^4.2.2",
+    "snyk": "^1.89.0",
     "standard": "^10.0.3",
     "xmldom": "^0.1.27"
   },
@@ -48,6 +49,7 @@
     "blipp": "^3.0.0",
     "bluebird": "^3.5.1",
     "boom": "^7.2.0",
+    "comma-number": "^2.0.0",
     "csv-parse": "^2.0.2",
     "debug": "^2.6.9",
     "deep-extend": "^0.6.0",
@@ -62,10 +64,12 @@
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^17.5.1",
     "hapi-auth-cookie": "^9.0.0",
+    "hapi-auth-jwt2": "^8.1.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-sanitize-payload": "^2.0.0",
     "hoek": "^4.2.1",
     "http-errors": "^1.6.2",
+    "immutability-helper": "^2.7.1",
     "inert": "^5.1.0",
     "joi": "^13.1.2",
     "lodash": "^4.17.5",
@@ -79,11 +83,12 @@
     "randomatic": "^3.0.0",
     "request-promise-native": "^1.0.5",
     "sentence-case": "^2.1.1",
+    "shallow-diff": "0.0.5",
+    "title-case": "^2.1.1",
     "url-join": "^4.0.0",
-    "yar": "^8.1.2",
-    "snyk": "^1.88.0",
     "vision": "^5.3.3",
-    "winston": "^2.4.3"
+    "winston": "^2.4.3",
+    "yar": "^8.1.2"
   },
   "standard": {
     "ignore": [

@@ -1,0 +1,141 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  {{#if documentHeader.document_name }}
+  <h1 class="heading-large">
+      <span class="heading-secondary">{{ pageTitle }}</span>
+      {{ documentHeader.document_name }}
+    </h1>
+  {{else}}
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+  {{/if}}
+
+
+
+  <dl class="meta">
+        <dt class="meta__label">
+          Site description
+        </dt>
+        <dd class="meta__description">
+          {{ return.metadata.description }}
+        </dd>
+        <dt class="meta__label">
+          Purpose
+        </dt>
+        <dd class="meta__description">
+          {{#each return.metadata.purposes }}
+            {{ tertiary.description }}
+          {{/each}}
+        </dd>
+        <dt class="meta__label">
+          Return period
+        </dt>
+        <dd class="meta__description">
+          {{ formatISODate return.start_date }} to {{ formatISODate return.end_date }}
+        </dd>
+      </dl>
+
+      <br />
+  <p>
+    <a href="{{#if isAdmin}}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
+  </p>
+  <br />
+
+
+  {{# if version.nil_return }}
+  <h1 class="heading-large">Nil return</h1>
+  {{else}}
+
+  <h2 class="heading-medium">Abstraction amounts</h2>
+
+
+    <details role="group">
+          <summary role="button" aria-controls="details-content-0" aria-expanded="false"><span class="summary">Do you need to make a change to a submitted return?</span></summary>
+          <div id="details-content-0" aria-hidden="true">
+            {{>contact-details}}
+          </div>
+        </details>
+
+
+
+
+  <div class="grid-row">
+  <div class="column-two-thirds">
+
+  <table>
+    <thead>
+      <tr>
+        <th>
+          {{#equal return.returns_frequency 'day' }}Day{{/equal}}
+          {{#equal return.returns_frequency 'month' }}Month{{/equal}}
+          {{#equal return.returns_frequency 'year' }}Year{{/equal}}
+          {{#equal return.returns_frequency 'week' }}Date{{/equal}}
+        </th>
+
+        {{!--
+        {{#if showGallons }}
+        <th class="numeric">
+          Gallons
+        </th>
+        {{/if}}
+        --}}
+
+
+        <th class="numeric">
+           Cubic metres
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+  {{# each lines }}
+  <tr>
+      <td>
+        {{#equal ../return.returns_frequency 'day' }}
+          {{ formatISODate start_date format='D MMMM' }}
+        {{/equal}}
+
+        {{#equal ../return.returns_frequency 'week' }}
+          {{ formatISODate end_date format='D MMMM' }}
+        {{/equal}}
+
+        {{#equal ../return.returns_frequency 'month' }}
+          {{ formatISODate start_date format='MMMM' }}
+        {{/equal}}
+        {{#equal ../return.returns_frequency 'year' }}
+          {{ formatISODate start_date format='YYYY' }}
+        {{/equal}}
+      </td>
+
+
+      {{!--
+      {{#if ../showGallons }}
+      <td class="numeric">
+        {{#equal user_unit 'gal'}}
+
+            {{{ commaNumber (precision (cubicMetresToGallons quantity) 1) }}}
+        {{/equal}}
+      </td>
+      {{/if}}
+      --}}
+
+
+      <th class="numeric">
+         {{{ commaNumber quantity }}}
+      </th>
+
+  </tr>
+  {{/each}}
+    </tbody>
+  </table>
+
+
+  {{/if}}
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

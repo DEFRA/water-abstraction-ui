@@ -1,0 +1,122 @@
+{{> styles}}
+
+<style type="text/css">
+.form-container {
+  display: flex;
+}
+.form-container input {
+  flex-grow: 1;
+  margin-right: 1em;
+}
+
+</style>
+
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <div class="grid-row">
+    <div class="column-full">
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <form method="GET" action="/admin/abstraction-reform">
+        <div class="form-group form-group--horizontal">
+          <label class="form-label form-label--bold" for="q">Search for a licence
+            <span class="form-hint">You can search by email address, licence number or licence name</span>
+          </label>
+
+          <div class="form-container">
+            <input  id="q" name="q" type="text" class="form-control  column-two-thirds" value="{{ query.q }}">
+            <button type="submit" class="button">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="grid-row">
+    <div class="column-full">
+
+
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Licence number</th>
+            <th>Last editor</th>
+            <th>Last edit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+      <tbody>
+
+        {{#if licences}}
+      {{#each licences}}
+      <tr>
+        <td><a href="/admin/abstraction-reform/licence/{{ id }}">{{ licenceNumber }}</a></td>
+        <td>
+          {{#if lastEdit }}{{ lastEdit.user.email }}{{/if}}
+        </td>
+        <td>
+          {{#if lastEdit }}{{ formatISODate lastEdit.timestamp }}{{/if}}
+        </td>
+        <td>
+          {{ status }}
+        </td>
+      </tr>
+      {{/each}}
+        {{else}}
+        <tr>
+          <td colspan="4">
+            No results found.
+          </td>
+        <tr>
+
+        {{/if}}
+      </tbody>
+      </table>
+
+
+
+      {{#greaterThan pagination.pageCount 1}}
+      <nav role="navigation" aria-label="Pagination navigation">
+        <ol class="pagination">
+          <li class="pagination__item" {{#equal pagination.page 1}}aria-hidden="true"{{/equal}}>
+            {{#greaterThan pagination.page 1}}
+              <a class="pagination__link" href="/admin/abstraction-reform?{{{ queryString q=q }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
+            {{/greaterThan}}
+            	&larr; Previous page
+            {{#greaterThan pagination.page 1}}
+              </a>
+            {{/greaterThan}}
+          </li>
+          {{#for 0 pagination.pageCount 1 }}
+          <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/admin/abstraction-reform?{{{ queryString q=../q }}}&amp;page={{add this 1 }}#results"><span class="sr-only">Page </span>{{add this 1 }}{{#equal (add this 1) ../pagination.page}}<span class="sr-only"> - current page</span>{{/equal}}</a></li>
+          {{/for}}
+          <li class="pagination__item" {{#equal pagination.page pagination.pageCount}}aria-hidden="true"{{/equal}}>
+            {{#lessThan pagination.page pagination.pageCount}}
+              <a class="pagination__link" href="/admin/abstraction-reform?{{{ queryString q=q }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
+            {{/lessThan}}
+            Next page 	&rarr;
+            {{#lessThan pagination.page pagination.pageCount}}
+              </a>
+            {{/lessThan}}
+          </li>
+        </ol>
+      </nav>
+      {{/greaterThan}}
+
+
+
+    </div>
+  </div>
+
+
+</main>

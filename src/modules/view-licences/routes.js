@@ -212,7 +212,10 @@ module.exports = {
         formValidator: {
           query: {
             emailAddress: Joi.string().allow('').email(),
-            licenceNumber: Joi.string().allow('')
+            licenceNumber: Joi.string().allow(''),
+            sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),
+            direction: Joi.number().valid(1, -1).default(1),
+            page: Joi.number().allow('').min(1).default(1)
           }
         }
       }

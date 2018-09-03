@@ -110,6 +110,40 @@ const getRiverLevel = function (gaugingStation) {
   return rp(options);
 };
 
+/**
+ * @TODO remove
+ */
+const getReturnsLogs = async (regionCode, formatId) => {
+  return rp({
+    uri: process.env.WATER_URI + '/nald/returns/logs',
+    method: 'GET',
+    qs: {
+      filter: JSON.stringify({regionCode, formatId})
+    },
+    json: true,
+    headers: {
+      Authorization: `Bearer ${process.env.JWT_TOKEN}`
+    }
+  });
+};
+
+/**
+ * @TODO remove
+ */
+const getReturnsLines = async (regionCode, formatId, dateFrom) => {
+  return rp({
+    uri: process.env.WATER_URI + '/nald/returns/lines',
+    method: 'GET',
+    qs: {
+      filter: JSON.stringify({regionCode, formatId, dateFrom})
+    },
+    json: true,
+    headers: {
+      Authorization: `Bearer ${process.env.JWT_TOKEN}`
+    }
+  });
+};
+
 module.exports = {
   sendNotifyMessage,
   pendingImport,
@@ -119,5 +153,7 @@ module.exports = {
   events,
   notifications,
   getRiverLevel,
-  gaugingStations
+  gaugingStations,
+  getReturnsLogs,
+  getReturnsLines
 };

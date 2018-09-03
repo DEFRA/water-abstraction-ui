@@ -60,8 +60,8 @@ async function postSetPassword (request, reply) {
       throw new AuthTokenError();
     }
     // Change password
-    const { username } = request.auth.credentials;
-    const { error } = IDM.updatePassword(username, password);
+    const { user_id: userId } = request.auth.credentials;
+    const { error } = IDM.updatePassword(userId, password);
     if (error) {
       throw error;
     }

@@ -1,0 +1,146 @@
+{{> styles}}
+<style type="text/css">
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 250px;
+}
+.table-cell {
+
+}
+</style>
+
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ document.system_external_id }}</a>
+
+  {{#if document.document_name }}
+  <h1 class="heading-large heading-large--tight-above">
+    <span class="heading-secondary">Licence number {{ document.system_external_id }}</span>
+    Returns for {{ document.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large heading-large--tight-above">Returns for licence number {{ document.system_external_id }}</h1>
+  {{/if}}
+
+
+
+  {{# equal returns.length 0 }}
+  <p>No returns found.</p>
+  {{/equal}}
+
+
+  <div class="grid-row">
+    <div class="column-full">
+
+
+      <div class="table big-space">                                          <!-- a table -->
+
+
+          <div class="table-row table-head">                                      <!-- the table head -->
+            <div class="table-cell bold-small">
+              Return period
+            </div>
+            <div class="table-cell bold-small">
+              Purpose
+            </div>
+            <div class="table-cell bold-small">
+              Site description
+            </div>
+            <div class="table-cell bold-small column-15">
+              Status
+            </div>
+          </div>
+
+
+        {{# each returns }}
+          {{#each returns }}
+          <div class="table-row medium-space {{# notEqual received_date null }}clickable{{/notEqual }}">                                    <!-- a data row starts -->
+
+            <div class="table-cell">
+              <h3 class="context">
+                Return period
+              </h4>
+
+              {{# notEqual received_date null }}
+              <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
+                <span class="sr-only">View return from </span>
+              {{/notEqual}}
+
+              {{# isFirstDayOfMonth start_date }}
+                {{ formatISODate start_date format='MMMM YYYY' }}
+              {{else}}
+                {{ formatISODate start_date }}
+              {{/isFirstDayOfMonth }}
+
+              to
+
+              {{# isLastDayOfMonth end_date }}
+                {{ formatISODate end_date format='MMMM YYYY' }}
+              {{else}}
+                {{ formatISODate end_date }}
+              {{/isLastDayOfMonth }}
+
+
+              {{# notEqual received_date null }}
+                <span class="sr-only">for
+                  {{#each metadata.purposes }}
+                  {{ tertiary.description }}
+                  {{/each }}
+                  at {{{ titleCase metadata.description  }}}
+                 </span>
+              </a>
+              {{/notEqual}}
+            </div>
+
+            <div class="table-cell">
+              <h4 class="context">
+                Purpose
+              </h4>
+              {{#each metadata.purposes }}
+              {{ tertiary.description }}
+              {{/each }}
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Site description
+              </h4>
+              <span class="truncate">
+              {{{ titleCase metadata.description  }}}
+              </span>
+            </div>
+            <div class="table-cell">
+              <h4 class="context">
+                Status
+              </h4>
+
+              {{# equal received_date null }}
+              <strong class="badge badge--success badge--caps">
+                Return due
+              </strong>
+              {{/equal}}
+            </div>
+          </div>
+          {{/each}}
+        {{/each}}
+
+
+        </div>
+
+    </div>
+  </div>
+
+
+
+  {{{ pagination pagination url=paginationUrl }}}
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

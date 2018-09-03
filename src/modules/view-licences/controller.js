@@ -5,6 +5,7 @@
 
 /* eslint "new-cap" : ["warn", { "newIsCap": true }] */
 const Boom = require('boom');
+const { get } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const { getLicenceCount } = require('../../lib/connectors/crm/documents');
 const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
@@ -68,6 +69,9 @@ async function getLicenceDetail (request, reply) {
       gaugingStations
     } = await loadLicenceData(entityId, documentHeaderId);
 
+    const canViewReturns = get(request.permissions, `companies.${documentHeader.company_entity_id}.licences.returns`) ||
+    get(request.permissions, 'returns.read');
+
     documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
@@ -75,6 +79,7 @@ async function getLicenceDetail (request, reply) {
 
     return reply.view(request.config.view, {
       ...view,
+      canViewReturns,
       gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,

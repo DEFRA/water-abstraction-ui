@@ -63,10 +63,25 @@ class NALDTransformer extends BaseTransformer {
       uniquePurposeNames: this.uniquePurposeNamesFormatter(data.data.current_version.purposes),
       gaugingSations: this.gaugingStationFormatter(conditions),
       hofTypes: this.getHofTypes(conditions),
-      sourcesOfSupply: this.getSourcesOfSupply(data.data.current_version.purposes)
+      sourcesOfSupply: this.getSourcesOfSupply(data.data.current_version.purposes),
+      returnFormats: this.formatsFormatter(data.data.current_version.formats)
     };
 
+    // console.log(JSON.stringify(this.data, null, 2));
+
     return this.data;
+  }
+
+  formatsFormatter (formats = []) {
+    return formats.map(row => {
+      return {
+        siteDescription: row.SITE_DESCR,
+        points: row.points.map(NALDHelpers.formatAbstractionPoint),
+        purposes: row.purposes.map(purpose => ({
+          name: purpose.PURP_ALIAS
+        }))
+      };
+    });
   }
 
   /**

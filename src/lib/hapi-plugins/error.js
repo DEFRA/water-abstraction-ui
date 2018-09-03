@@ -8,7 +8,7 @@
  */
 const { contextDefaults } = require('../view');
 const logger = require('../logger');
-const { get } = require('lodash');
+const { get, pick } = require('lodash');
 
 const errorPlugin = {
   register: (server, options) => {
@@ -25,7 +25,7 @@ const errorPlugin = {
         // Boom errors
         if (!ignore && res.isBoom) {
           // ALWAYS Log the error
-          logger.error(res);
+          logger.error(pick(res, ['error', 'message', 'statusCode', 'stack']));
 
           const { statusCode } = res.output;
 

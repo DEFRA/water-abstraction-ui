@@ -21,9 +21,7 @@ module.exports = {
         scope: ['returns']
       },
       plugins: {
-        ...getReturn.config.plugins,
         viewContext: {
-          ...getReturn.config.plugins.viewContext,
           activeNavLink: 'view'
         }
       }

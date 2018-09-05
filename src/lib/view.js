@@ -71,7 +71,7 @@ function viewContextDefaults (request) {
         url: '/licences'
       });
     }
-    if (request.permissions && request.permissions.licences.returns) {
+    if (request.permissions && request.permissions.returns.read) {
       viewContext.mainNavLinks.push({
         id: 'returns',
         text: 'View returns',

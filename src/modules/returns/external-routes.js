@@ -57,7 +57,7 @@ module.exports = {
       },
       plugins: {
         hapiRouteAcl: {
-          permissions: ['licences:returns']
+          permissions: ['returns:read']
         },
         viewContext: {
           activeNavLink: 'returns'

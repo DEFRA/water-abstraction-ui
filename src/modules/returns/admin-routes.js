@@ -7,7 +7,7 @@ module.exports = {
     config: {
       ...getReturnsForLicence.config,
       auth: {
-        scope: ['returns']
+        scope: ['internal']
       }
     }
   },
@@ -18,7 +18,7 @@ module.exports = {
     config: {
       ...getReturn.config,
       auth: {
-        scope: ['returns']
+        scope: ['internal']
       },
       plugins: {
         viewContext: {

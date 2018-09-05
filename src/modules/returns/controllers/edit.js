@@ -18,6 +18,7 @@ const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
   const data = await returns.getReturn(returnId);
+
   data.versionNumber = (data.versionNumber || 0) + 1;
   request.sessionStore.set('internalReturnFlow', data);
 
@@ -25,7 +26,7 @@ const getAmounts = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -52,6 +53,7 @@ const postAmounts = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
+    return: data,
     ...request.view
   });
 };
@@ -65,7 +67,7 @@ const getNilReturn = async (request, h) => {
   const form = confirmForm(request);
 
   return h.view('water/returns/internal/nil-return', {
-    ...data,
+    return: data,
     form,
     ...request.view
   });
@@ -80,7 +82,7 @@ const postNilReturn = async (request, h) => {
   const form = handleRequest(confirmForm(request), request);
 
   const view = {
-    ...data,
+    return: data,
     form,
     ...request.view
   };
@@ -110,7 +112,7 @@ const getSubmitted = async (request, h) => {
   request.sessionStore.delete('internalReturnFlow');
 
   return h.view('water/returns/internal/submitted', {
-    ...data,
+    return: data,
     ...request.view,
     returnUrl: `/admin/return/view?returnId=${data.returnId}`
   });
@@ -127,7 +129,7 @@ const getMethod = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -150,7 +152,7 @@ const postMethod = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -167,7 +169,7 @@ const getUnits = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -191,7 +193,7 @@ const postUnits = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -206,7 +208,7 @@ const getSingleTotal = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -233,7 +235,7 @@ const postSingleTotal = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -248,7 +250,7 @@ const getBasis = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -271,7 +273,7 @@ const postBasis = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -286,7 +288,7 @@ const getQuantities = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -307,7 +309,7 @@ const postQuantities = async (request, h) => {
   }
   return h.view('water/returns/internal/form', {
     form,
-    ...data,
+    return: data,
     ...request.view
   });
 };
@@ -318,10 +320,12 @@ const postQuantities = async (request, h) => {
 const getConfirm = async (request, h) => {
   const data = fetchReturnData(request);
 
+  console.log(data);
+
   const form = confirmForm(request, `/admin/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
-    ...data,
+    return: data,
     form,
     ...request.view
   });

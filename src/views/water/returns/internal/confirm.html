@@ -14,23 +14,23 @@
       <thead>
         <tr>
           <th>
-            {{#equal lines.0.timePeriod 'day' }}Day{{/equal}}
-            {{#equal lines.0.timePeriod 'week' }}Week ending{{/equal}}
-            {{#equal lines.0.timePeriod 'month' }}Month{{/equal}}
-            {{#equal lines.0.timePeriod 'year' }}Year{{/equal}}
+            {{#equal return.lines.0.timePeriod 'day' }}Day{{/equal}}
+            {{#equal return.lines.0.timePeriod 'week' }}Week ending{{/equal}}
+            {{#equal return.lines.0.timePeriod 'month' }}Month{{/equal}}
+            {{#equal return.lines.0.timePeriod 'year' }}Year{{/equal}}
           </th>
           <th class="numeric">
-            {{#equal reading.units 'gal' }}Gallons{{/equal}}
-            {{#equal reading.units 'l' }}Litres{{/equal}}
-            {{#equal reading.units 'Ml' }}Megalitres{{/equal}}
-            {{#equal reading.units 'm3' }}Cubic metres{{/equal}}
+            {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
+            {{#equal return.reading.units 'l' }}Litres{{/equal}}
+            {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
+            {{#equal return.reading.units 'm3' }}Cubic metres{{/equal}}
           </th>
         </tr>
       </thead>
       <tbody>
 
 
-        {{#each lines }}
+        {{#each return.lines }}
       <tr>
         <td>
             {{#equal timePeriod 'day' }}

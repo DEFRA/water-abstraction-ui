@@ -110,7 +110,7 @@ const applySingleTotal = (data, total) => {
   // Get period start/end and convert to integers
   const options = getPeriodStartEnd(d);
 
-  const lines = d.lines || d.requiredLines;
+  const lines = getFormLines(d);
 
   // Find which return lines are within abstraction period
   if (lines) {
@@ -168,6 +168,15 @@ const applyBasis = (data, formValues) => {
 };
 
 /**
+ * Returns form lines
+ * @param {Object} returns data model
+ * @return {Array} returns lines if set and not empty, otherwise required lines
+ */
+const getFormLines = (data) => {
+  return data.lines && data.lines.length ? data.lines : data.requiredLines;
+};
+
+/**
  * Applies form lines values to data
  * @param {Object} - return model
  * @param {Object} - basis form data
@@ -176,7 +185,7 @@ const applyBasis = (data, formValues) => {
 const applyQuantities = (data, formValues) => {
   const f = cloneDeep(data);
 
-  const lines = data.lines || data.requiredLines;
+  const lines = getFormLines(f);
 
   f.lines = lines.map(line => {
     const name = line.startDate + '_' + line.endDate;
@@ -228,5 +237,6 @@ module.exports = {
   applyBasis,
   applyQuantities,
   applyUserDetails,
-  applyNilReturn
+  applyNilReturn,
+  getFormLines
 };

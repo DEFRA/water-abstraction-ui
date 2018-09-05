@@ -1,15 +1,36 @@
-{{#if documentHeader.document_name }}
-<h1 class="heading-large">
-    <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
-    {{ documentHeader.document_name }}
-  </h1>
+{{#if isAdmin}}
+  <h1 class="heading-large">Abstraction return for {{ return.licenceNumber }}</h1>
 {{else}}
-<h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
+  {{#if documentHeader.document_name }}
+  <h1 class="heading-large">
+      <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
+      {{ documentHeader.document_name }}
+    </h1>
+  {{else}}
+  <h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
+  {{/if}}
 {{/if}}
 
 
 
 <dl class="meta">
+
+
+  {{#if isAdmin }}
+  <dt class="meta__label">
+    NALD reference
+  </dt>
+  <dd class="meta__description">
+    {{ return.metadata.nald.formatId }}
+  </dd>
+  <dt class="meta__label">
+    Region
+  </dt>
+  <dd class="meta__description">
+    {{ naldRegion return.metadata.nald.regionCode }}
+  </dd>
+  {{/if}}
+
     <dt class="meta__label">
       Site description
     </dt>
@@ -30,7 +51,17 @@
     <dd class="meta__description">
       {{ formatISODate return.start_date }} to {{ formatISODate return.end_date }}
     </dd>
+
+    <dt class="meta__label">
+      Abstraction period
+    </dt>
+    <dd class="meta__description">
+      {{ returnPeriod return.metadata.nald }}
+    </dd>
+
   </dl>
+
+
 
   <br />
 <p>

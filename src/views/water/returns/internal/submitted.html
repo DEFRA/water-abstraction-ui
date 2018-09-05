@@ -14,12 +14,12 @@
           </h1>
 
             <p>Purpose
-              {{#each metadata.purposes }}
+              {{#each return.metadata.purposes }}
                   <span class="bold">{{ this.tertiary.description }}</span>
               {{/each}}
             </p>
             <p>
-            Licence number <span class="bold">{{ licenceNumber }}</span>
+            Licence number <span class="bold">{{ return.licenceNumber }}</span>
 
             </p>
         </div>

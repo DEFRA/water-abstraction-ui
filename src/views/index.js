@@ -540,6 +540,32 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:';
 });
 
+handlebars.registerHelper('naldRegion', function (code) {
+  const codes = {
+    1: 'Anglian',
+    2: 'Midlands',
+    3: 'North east',
+    4: 'North west',
+    5: 'South west',
+    6: 'Southern',
+    7: 'Thames'
+  };
+
+  return codes[code];
+});
+
+handlebars.registerHelper('returnPeriod', function (metadata) {
+  const { periodEndDay,
+    periodEndMonth,
+    periodStartDay,
+    periodStartMonth} = metadata;
+
+  const start = moment().month(periodStartMonth - 1).date(periodStartDay);
+  const end = moment().month(periodEndMonth - 1).date(periodEndDay);
+
+  return start.format('D MMMM') + ' to ' + end.format('D MMMM');
+});
+
 const Path = require('path');
 
 const footerSupportLinks = `

@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const moment = require('moment');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { getFormLines } = require('../lib/return-helpers');
 
 /**
  * Gets label text for line
@@ -64,7 +65,7 @@ const quantitiesForm = (request, data) => {
 
   const suffix = getSuffix(data.reading.units);
 
-  const lines = data.lines || data.requiredLines;
+  const lines = getFormLines(data);
 
   for (let line of lines) {
     const name = getName(line);
@@ -90,7 +91,7 @@ const quantitiesSchema = (data) => {
     csrf_token: Joi.string().guid().required()
   };
 
-  const lines = data.lines || data.requiredLines;
+  const lines = getFormLines(data);
 
   return lines.reduce((acc, line) => {
     const name = getName(line);

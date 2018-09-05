@@ -176,7 +176,9 @@ const applyBasis = (data, formValues) => {
 const applyQuantities = (data, formValues) => {
   const f = cloneDeep(data);
 
-  f.lines = data.requiredLines.map(line => {
+  const lines = data.lines || data.requiredLines;
+
+  f.lines = lines.map(line => {
     const name = line.startDate + '_' + line.endDate;
     return {
       ...line,

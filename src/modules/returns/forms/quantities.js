@@ -64,7 +64,9 @@ const quantitiesForm = (request, data) => {
 
   const suffix = getSuffix(data.reading.units);
 
-  for (let line of data.requiredLines) {
+  const lines = data.lines || data.requiredLines;
+
+  for (let line of lines) {
     const name = getName(line);
     const label = getLabel(line);
     f.fields.push(fields.text(name, { label, suffix }));
@@ -88,7 +90,9 @@ const quantitiesSchema = (data) => {
     csrf_token: Joi.string().guid().required()
   };
 
-  return data.requiredLines.reduce((acc, line) => {
+  const lines = data.lines || data.requiredLines;
+
+  return lines.reduce((acc, line) => {
     const name = getName(line);
     return {
       ...acc,

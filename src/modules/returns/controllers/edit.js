@@ -7,7 +7,8 @@ const { set, get } = require('lodash');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
-const { applySingleTotal, applyBasis, applyQuantities } = require('../lib/return-helpers');
+const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = require('../lib/return-helpers');
+const { fetchReturnData, persistReturnData } = require('../lib/session-helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -17,6 +18,7 @@ const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
   const data = await returns.getReturn(returnId);
+  data.versionNumber = (data.versionNumber || 0) + 1;
   request.sessionStore.set('internalReturnFlow', data);
 
   const form = setValues(amountsForm(request), data);
@@ -33,15 +35,16 @@ const getAmounts = async (request, h) => {
  * @param {String} request.query.returnId - the return to edit
  */
 const postAmounts = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(setValues(amountsForm(request), data), request);
 
   if (form.isValid) {
     const { isNil } = getValues(form);
-    // Persist
-    data.isNil = isNil;
-    request.sessionStore.set('internalReturnFlow', data);
+
+    const d = applyNilReturn(data, isNil);
+
+    request.sessionStore.set('internalReturnFlow', d);
 
     const path = isNil ? '/admin/return/nil-return' : '/admin/return/method';
     return h.redirect(path);
@@ -57,7 +60,7 @@ const postAmounts = async (request, h) => {
  * Confirmation screen for nil return
  */
 const getNilReturn = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = confirmForm(request);
 
@@ -72,7 +75,7 @@ const getNilReturn = async (request, h) => {
  * Confirmation screen for nil return
  */
 const postNilReturn = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(confirmForm(request), request);
 
@@ -84,7 +87,7 @@ const postNilReturn = async (request, h) => {
 
   if (form.isValid) {
     try {
-      await returns.postReturn(data);
+      await persistReturnData(data, request);
       return h.redirect('/admin/return/submitted');
     } catch (error) {
       console.error(error);
@@ -101,7 +104,11 @@ const postNilReturn = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
+
+  // Clear session
+  request.sessionStore.delete('internalReturnFlow');
+
   return h.view('water/returns/internal/submitted', {
     ...data,
     ...request.view,
@@ -114,7 +121,7 @@ const getSubmitted = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const getMethod = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = methodForm(request);
 
@@ -130,7 +137,7 @@ const getMethod = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const postMethod = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(methodForm(request), request);
 
@@ -152,7 +159,7 @@ const postMethod = async (request, h) => {
  * Form to choose units
  */
 const getUnits = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const { units } = data.reading;
 
@@ -169,7 +176,7 @@ const getUnits = async (request, h) => {
  * Post handler for units form
  */
 const postUnits = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(unitsForm(request), request);
 
@@ -193,7 +200,7 @@ const postUnits = async (request, h) => {
  * Form to choose whether single figure or multiple amounts
  */
 const getSingleTotal = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = singleTotalForm(request);
 
@@ -208,11 +215,10 @@ const getSingleTotal = async (request, h) => {
  * Post handler for single total
  */
 const postSingleTotal = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
 
-  console.log(JSON.stringify(form, null, 2));
   if (form.isValid) {
     // Persist to session
     const { isSingleTotal, total } = getValues(form);
@@ -236,7 +242,7 @@ const postSingleTotal = async (request, h) => {
  * What is the basis for the return - amounts/pump/herd
  */
 const getBasis = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = basisForm(request);
 
@@ -251,7 +257,7 @@ const getBasis = async (request, h) => {
  * Post handler for basis form
  */
 const postBasis = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = handleRequest(basisForm(request), request, basisSchema);
 
@@ -274,7 +280,7 @@ const postBasis = async (request, h) => {
  * Screen for user to enter quantities
  */
 const getQuantities = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = quantitiesForm(request, data);
 
@@ -286,7 +292,7 @@ const getQuantities = async (request, h) => {
 };
 
 const postQuantities = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const schema = quantitiesSchema(data);
 
@@ -310,7 +316,7 @@ const postQuantities = async (request, h) => {
  * Confirm screen for user to check amounts before submission
  */
 const getConfirm = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = confirmForm(request, `/admin/return/confirm`);
 
@@ -325,25 +331,14 @@ const getConfirm = async (request, h) => {
  * Confirm return
  */
 const postConfirm = async (request, h) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+  const data = fetchReturnData(request);
 
   const form = confirmForm(request, `/admin/return/confirm`);
 
-  const view = {
-    ...request.view,
-    ...data,
-    form
-  };
+  // Post return
+  await persistReturnData(data, request);
 
-  try {
-    await returns.postReturn(data);
-    return h.redirect('/admin/return/submitted');
-  } catch (error) {
-    console.error(error);
-    view.error = error;
-  }
-
-  return h.view('water/returns/internal/confirm', view);
+  return h.redirect('/admin/return/submitted');
 };
 
 module.exports = {

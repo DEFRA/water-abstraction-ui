@@ -25,7 +25,7 @@ const mapModelToForm = (data) => {
       hoursRun: get(data, 'reading.hoursRun'),
       numberLivestock: null
     };
-  } else if (readingMethod === 'livestock') {
+  } else if (readingMethod === 'herd') {
     return {
       basis: 'herd',
       pumpCapacity: null,

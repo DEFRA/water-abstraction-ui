@@ -110,22 +110,26 @@ const applySingleTotal = (data, total) => {
   // Get period start/end and convert to integers
   const options = getPeriodStartEnd(d);
 
+  const lines = d.lines || d.requiredLines;
+
   // Find which return lines are within abstraction period
-  const indexes = d.requiredLines.reduce((acc, line, index) => {
-    if (isDateWithinAbstractionPeriod(line.startDate, options) || isDateWithinAbstractionPeriod(line.endDate, options)) {
-      acc.push(index);
-    }
-    return acc;
-  }, []);
+  if (lines) {
+    const indexes = lines.reduce((acc, line, index) => {
+      if (isDateWithinAbstractionPeriod(line.startDate, options) || isDateWithinAbstractionPeriod(line.endDate, options)) {
+        acc.push(index);
+      }
+      return acc;
+    }, []);
 
-  const perMonth = total / indexes.length;
+    const perMonth = total / indexes.length;
 
-  d.lines = d.requiredLines.map((line, i) => {
-    return {
-      ...line,
-      quantity: indexes.includes(i) ? perMonth : 0
-    };
-  });
+    d.lines = lines.map((line, i) => {
+      return {
+        ...line,
+        quantity: indexes.includes(i) ? perMonth : 0
+      };
+    });
+  }
 
   return d;
 };
@@ -183,9 +187,44 @@ const applyQuantities = (data, formValues) => {
   return f;
 };
 
+/**
+ * Applies user details to the return
+ * @param {Object} data - returns model
+ * @param {Object} credentials - request.auth.credentials for current user
+ * @return {Object} returns model with user data added
+ */
+const applyUserDetails = (data, credentials) => {
+  const d = cloneDeep(data);
+  const { username, scope } = credentials;
+  return {
+    ...d,
+    user: {
+      email: username,
+      type: scope.includes('internal') ? 'internal' : 'external'
+    }
+  };
+};
+
+/**
+ * Applies nil return to return data model
+ * @param {Object} data
+ * @param {Boolean} isNil
+ * @return {Object}
+ */
+const applyNilReturn = (data, isNil) => {
+  const d = cloneDeep(data);
+  d.isNil = isNil;
+  if (isNil) {
+    delete d.lines;
+  }
+  return d;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
   applyBasis,
-  applyQuantities
+  applyQuantities,
+  applyUserDetails,
+  applyNilReturn
 };

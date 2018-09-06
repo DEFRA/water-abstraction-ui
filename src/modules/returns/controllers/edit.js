@@ -163,7 +163,7 @@ const postMethod = async (request, h) => {
 const getUnits = async (request, h) => {
   const data = fetchReturnData(request);
 
-  const { units } = data.reading;
+  const units = get(data, 'reading.units');
 
   const form = setValues(unitsForm(request), { units });
 
@@ -185,7 +185,7 @@ const postUnits = async (request, h) => {
   if (form.isValid) {
     // Persist chosen units to session
     const { units } = getValues(form);
-    data.reading.units = units;
+    set(data, 'reading.units', units);
     request.sessionStore.set('internalReturnFlow', data);
 
     return h.redirect('/admin/return/single-total');

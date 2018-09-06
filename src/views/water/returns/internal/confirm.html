@@ -67,6 +67,17 @@
         </tr>
         {{/each}}
       </tbody>
+
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <td class="numeric">{{ formatQuantity total }}</td>
+          {{#notEqual return.reading.units 'm3' }}
+          <td class="numeric">{{ formatQuantity (convertToCubicMetres total unit=return.reading.units )}}</td>
+          {{/notEqual}}
+        </tr>
+      </tfoot>
+
     </table>
 
     <br />
@@ -76,6 +87,11 @@
 </div>
 </main>
 
+<style type="text/css">
+table tfoot th, table tfoot td {
+  font-weight: bold;
+}
+</style>
 
 {{> footerjs}}
 

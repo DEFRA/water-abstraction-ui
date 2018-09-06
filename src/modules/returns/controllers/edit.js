@@ -4,6 +4,7 @@
  * @todo - ensure session data is valid at every step
  */
 const { set, get } = require('lodash');
+const moment = require('moment');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
@@ -18,6 +19,11 @@ const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
   const data = await returns.getReturn(returnId);
+
+  // Check start date
+  if (moment(data.startDate).isBefore('2018-11-01')) {
+    throw Error(`Cannot edit return ${returnId}, start date is before 01/11/2018`);
+  }
 
   data.versionNumber = (data.versionNumber || 0) + 1;
   request.sessionStore.set('internalReturnFlow', data);
@@ -320,13 +326,17 @@ const postQuantities = async (request, h) => {
 const getConfirm = async (request, h) => {
   const data = fetchReturnData(request);
 
-  console.log(data);
+  // Calculate total in user units
+  const total = data.lines.reduce((acc, line) => {
+    return acc + line.quantity;
+  }, 0);
 
   const form = confirmForm(request, `/admin/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
     return: data,
     form,
+    total,
     ...request.view
   });
 };

@@ -8,7 +8,7 @@
 
 
 <div class="grid-row">
-  <div class="column-two-thirds">
+  <div class="{{#equal return.reading.units 'm3' }}column-two-thirds{{ else }}column-full{{/equal}}">
 
     <table>
       <thead>
@@ -25,6 +25,12 @@
             {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
             {{#equal return.reading.units 'm3' }}Cubic metres{{/equal}}
           </th>
+
+          {{#notEqual return.reading.units 'm3' }}
+          <th class="numeric">
+            Cubic metres
+          </th>
+          {{/notEqual}}
         </tr>
       </thead>
       <tbody>
@@ -50,8 +56,14 @@
             {{/equal}}
           </td>
           <td class="numeric">
-            {{ this.quantity }}
+            {{ formatQuantity this.quantity }}
           </td>
+
+          {{#notEqual ../return.reading.units 'm3' }}
+          <td class="numeric">
+            {{ formatQuantity (convertToCubicMetres this.quantity unit=../return.reading.units)  }}
+          </td>
+          {{/notEqual}}
         </tr>
         {{/each}}
       </tbody>

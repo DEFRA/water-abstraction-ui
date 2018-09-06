@@ -2,6 +2,7 @@ const Joi = require('joi');
 const moment = require('moment');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines } = require('../lib/return-helpers');
+const { maxPrecision } = require('../../../lib/number-formatter');
 
 /**
  * Gets label text for line
@@ -53,7 +54,7 @@ const getLineValues = (lines) => {
     const name = getName(line);
     return {
       ...acc,
-      [name]: line.quantity
+      [name]: maxPrecision(line.quantity, 3)
     };
   }, {});
 };

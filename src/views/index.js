@@ -16,6 +16,8 @@ const { pick, reduce } = require('lodash');
 const Joi = require('joi');
 
 const commaNumber = require('comma-number');
+const { convertToCubicMetres } = require('../lib/unit-conversion');
+const { maxPrecision } = require('../lib/number-formatter.js');
 
 /**
  * Formats numbers with commas to separate thousands, eg. 1,000
@@ -554,6 +556,12 @@ handlebars.registerHelper('naldRegion', function (code) {
   return codes[code];
 });
 
+/**
+ * Accepts an object containing period start/end month/day
+ * and returns a string in the format 20 January to 30 December
+ * @param {Object} metadata
+ * @return {String} formatted date
+ */
 handlebars.registerHelper('returnPeriod', function (metadata) {
   const { periodEndDay,
     periodEndMonth,
@@ -564,6 +572,23 @@ handlebars.registerHelper('returnPeriod', function (metadata) {
   const end = moment().month(periodEndMonth - 1).date(periodEndDay);
 
   return start.format('D MMMM') + ' to ' + end.format('D MMMM');
+});
+
+/**
+ * Converts a value in cubic metres to the specified user unit
+ * @param {Object} metadata
+ * @return {String} formatted date
+ */
+handlebars.registerHelper('convertToCubicMetres', (value, options) => {
+  const { unit } = options.hash;
+  return convertToCubicMetres(value, unit);
+});
+
+/**
+ * Formats a number to 3 DP and comma separates 000's
+ */
+handlebars.registerHelper('formatQuantity', (value) => {
+  return commaNumber(maxPrecision(value, 3));
 });
 
 const Path = require('path');

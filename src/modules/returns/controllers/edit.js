@@ -347,8 +347,6 @@ const getConfirm = async (request, h) => {
 const postConfirm = async (request, h) => {
   const data = fetchReturnData(request);
 
-  const form = confirmForm(request, `/admin/return/confirm`);
-
   // Post return
   await persistReturnData(data, request);
 

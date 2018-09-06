@@ -231,6 +231,20 @@ const applyNilReturn = (data, isNil) => {
   return d;
 };
 
+/**
+ * Applys received date and completed status to return
+ * @param {Object} data - return data model
+ * @return {Object} updated return data model
+ */
+const applyStatus = (data, status = 'complete') => {
+  const d = cloneDeep(data);
+  if (!d.receivedDate) {
+    d.receivedDate = moment().format('YYYY-MM-DD');
+  }
+  d.status = status;
+  return d;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
@@ -238,5 +252,6 @@ module.exports = {
   applyQuantities,
   applyUserDetails,
   applyNilReturn,
-  getFormLines
+  getFormLines,
+  applyStatus
 };

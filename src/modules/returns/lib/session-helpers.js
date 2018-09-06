@@ -1,6 +1,6 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
-const { applyUserDetails } = require('../lib/return-helpers');
+const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
 
 /**
  * Loads return data from session.
@@ -25,15 +25,18 @@ const fetchReturnData = (request) => {
  * @return {Promise} resolve when data posted to water service
  */
 const persistReturnData = (data, request) => {
-  const d = applyUserDetails(data, request.auth.credentials);
+  const d = applyStatus(applyUserDetails(data, request.auth.credentials));
+
+  // Don't bother sending required return lines
+  delete d.requiredLines;
 
   // Post return
   try {
-    console.log(`Posting return`);
-    console.log(d, null, 2);
+    request.log('info', `Posting return`);
+    request.log('info', JSON.stringify(d, null, 2));
     return returns.postReturn(d);
   } catch (err) {
-    console.error(err);
+    request.log('error', err);
     throw err;
   }
 };

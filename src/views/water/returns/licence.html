@@ -65,6 +65,12 @@
                 Return period
               </h4>
 
+
+              {{#if isEditable }}
+              <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                <span class="sr-only">View return from </span>
+              {{/if}}
+
               {{# notEqual received_date null }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
@@ -94,6 +100,10 @@
                  </span>
               </a>
               {{/notEqual}}
+
+              {{#if isEditable }}
+              </a>
+              {{/if}}
             </div>
 
             <div class="table-cell">
@@ -122,6 +132,8 @@
                 Return due
               </strong>
               {{/equal}}
+
+              
             </div>
           </div>
           {{/each}}

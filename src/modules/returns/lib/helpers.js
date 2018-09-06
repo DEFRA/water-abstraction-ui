@@ -1,6 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const { get } = require('lodash');
+const moment = require('moment');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions, lines } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
@@ -189,6 +190,32 @@ const getReturnData = async (returnId) => {
 };
 
 /**
+ * Adds an editable flag to each return in list
+ * @param {Array} returns - returned from returns service
+ * @param {Object} request - HAPI request interface
+ * @return {Array} returns with isEditable flag added
+ */
+const addEditableFlag = (returns, request) => {
+  const isInternal = isInternalUser(request);
+  const isInternalReturns = isInternalReturnsUser(request);
+
+  console.log('isInternal', isInternal, 'isInternalReturns', isInternalReturns);
+
+  return returns.map(row => {
+    const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2018-11-01');
+    const isEditable = isAfterSummer2018 &&
+      (
+        (isInternal && isInternalReturns) ||
+        (!isInternal && row.status === 'due')
+      );
+    return {
+      ...row,
+      isEditable
+    };
+  });
+};
+
+/**
  * Gets data to display in returns list view
  * This can be either all returns for a particular CRM entity,
  * or additionally can be filtered e.g. by document ID
@@ -220,7 +247,9 @@ const getReturnsViewData = async (request) => {
 
   if (licenceNumbers.length) {
     const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addEditableFlag(data, request), documents));
+
+    console.log(JSON.stringify(returns, null, 2));
 
     view.pagination = pagination;
     view.returns = returns;
@@ -233,6 +262,8 @@ const getReturnsViewData = async (request) => {
  * Does the hapi request object represent an internal user with returns access?
  */
 const isInternalReturnsUser = request => get(request, 'permissions.returns.read', false);
+
+const isInternalUser = request => get(request, 'permissions.admin.defra', false);
 
 /**
  * If the user is an external user, add the CRM roles that the requesting user

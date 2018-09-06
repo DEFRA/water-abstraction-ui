@@ -1,7 +1,9 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
+const { get } = require('lodash');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions, lines } = require('../../../lib/connectors/returns');
+const { externalRoles } = require('../../../lib/constants');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -9,9 +11,9 @@ const { returns, versions, lines } = require('../../../lib/connectors/returns');
  * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, filter = {}) => {
+const getLicenceNumbers = async (entityId, filter = {}, isInternalReturnsUser) => {
   filter.entity_id = entityId;
-  filter.roles = ['primary_user', 'returns'];
+  filter.roles = getInternalRoles(isInternalReturnsUser, filter.roles);
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
@@ -117,7 +119,7 @@ const getLatestVersion = async (returnId) => {
   };
   const { error, data: [version] } = await versions.findMany(filter, sort);
   if (error) {
-    throw new Boom.badImplementation(error);
+    throw Boom.badImplementation(error);
   }
   return version;
 };
@@ -173,12 +175,11 @@ const getReturnData = async (returnId) => {
     'metadata->>isCurrent': 'true'
   };
   const sort = {
-    start_date: 1,
-    licence_ref: 1
+    start_date: 1
   };
   const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
   if (linesError) {
-    throw new Boom.badImplementation(linesError);
+    throw Boom.badImplementation(linesError);
   }
   return {
     return: returnData,
@@ -204,20 +205,41 @@ const getReturnsViewData = async (request) => {
 
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
-  const documents = await getLicenceNumbers(entityId, filter);
+  const isInternalReturns = isInternalReturnsUser(request);
+  filter.roles = getInternalRoles(isInternalReturns, filter.roles);
+
+  const documents = await getLicenceNumbers(entityId, filter, isInternalReturns);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
-  const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-
-  const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
-
-  return {
+  const view = {
     ...request.view,
-    returns,
-    pagination,
     documents,
-    document: documentId ? documents[0] : null
+    document: documentId ? documents[0] : null,
+    returns: []
   };
+
+  if (licenceNumbers.length) {
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
+
+    view.pagination = pagination;
+    view.returns = returns;
+  }
+
+  return view;
+};
+
+/**
+ * Does the hapi request object represent an internal user with returns access?
+ */
+const isInternalReturnsUser = request => get(request, 'permissions.returns.read', false);
+
+/**
+ * If the user is an external user, add the CRM roles that the requesting user
+ * would need to have one of, in order to be authorised to view a return.
+ */
+const getInternalRoles = (isInternalUser, roles) => {
+  return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
 };
 
 module.exports = {
@@ -227,7 +249,8 @@ module.exports = {
   mergeReturnsAndLicenceNames,
   getLatestVersion,
   hasGallons,
-  // getUnit,
   getReturnData,
-  getReturnsViewData
+  getReturnsViewData,
+  isInternalReturnsUser,
+  getInternalRoles
 };

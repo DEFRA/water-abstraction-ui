@@ -64,6 +64,7 @@
     "handlebars-helper-equal": "^1.0.0",
     "hapi": "^17.5.1",
     "hapi-auth-cookie": "^9.0.0",
+    "hapi-auth-jwt2": "^8.1.0",
     "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-sanitize-payload": "^2.0.0",
     "hoek": "^4.2.1",

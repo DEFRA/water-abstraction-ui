@@ -67,21 +67,21 @@ function viewContextDefaults (request) {
     if (request.permissions && request.permissions.licences.read) {
       viewContext.mainNavLinks.push({
         id: 'view',
-        text: 'View your licences',
+        text: 'View licences',
         url: '/licences'
       });
     }
-    if (request.permissions && request.permissions.licences.returns) {
+    if (request.permissions && request.permissions.returns.read) {
       viewContext.mainNavLinks.push({
         id: 'returns',
-        text: 'Returns',
+        text: 'View returns',
         url: '/returns'
       });
     }
     if (request.permissions && request.permissions.licences.edit) {
       viewContext.mainNavLinks.push({
         id: 'manage',
-        text: 'Manage your licences',
+        text: 'Add licences or give access',
         url: '/manage_licences'
       });
     }

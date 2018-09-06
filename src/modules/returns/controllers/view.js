@@ -4,7 +4,8 @@ const Boom = require('boom');
 const {
   getLicenceNumbers,
   getReturnData,
-  getReturnsViewData
+  getReturnsViewData,
+  isInternalReturnsUser
 } = require('../lib/helpers');
 
 /**
@@ -24,10 +25,13 @@ const getReturns = async (request, h) => {
 const getReturnsForLicence = async (request, h) => {
   const view = await getReturnsViewData(request);
 
+  const { documentId } = request.params;
+
   if (!view.document) {
-    throw Boom.notFound(`Document ${request.params.documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
+    throw Boom.notFound(`Document ${documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
   }
   view.pageTitle = `Returns for ${view.document.system_external_id}`;
+  view.paginationUrl = `${request.view.isAdmin ? '/admin' : ''}/licences/${documentId}/returns`;
 
   return h.view('water/returns/licence', view);
 };
@@ -47,7 +51,8 @@ const getReturn = async (request, h) => {
   const { licence_ref: licenceNumber } = data.return;
 
   // Load licence from CRM to check user has access
-  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber});
+  const isInternalReturns = isInternalReturnsUser(request);
+  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternalReturns);
 
   if (!documentHeader) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);

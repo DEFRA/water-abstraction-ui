@@ -2,6 +2,29 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
+  {{#ifNot return.isCurrent }}
+  <br />
+  <br />
+  <div class="grid-row">
+      <div class="column-two-thirds">
+
+        <div class="banner bold-medium">
+          <div class="notice">
+            <i class="icon icon-important">
+              <span class="visually-hidden">Warning</span>
+            </i>
+            <strong class="bold-small">
+              This return is not the current version<br>
+              <a href="/admin/returns/return?id={{ return.returnId }}">View the current return</a>
+            </strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {{/ifNot }}
+
+
   {{>return-header}}
 
 

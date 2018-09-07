@@ -60,7 +60,8 @@ module.exports = {
           permissions: ['returns:read']
         },
         viewContext: {
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         }
       }
     }

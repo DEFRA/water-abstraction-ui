@@ -27,8 +27,9 @@ const fetchReturnData = (request) => {
 const persistReturnData = (data, request) => {
   const d = applyStatus(applyUserDetails(data, request.auth.credentials));
 
-  // Don't bother sending required return lines
+  // Don't bother sending required return lines/versions
   delete d.requiredLines;
+  delete d.versions;
 
   // Post return
   try {

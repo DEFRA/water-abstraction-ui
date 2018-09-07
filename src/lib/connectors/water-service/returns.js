@@ -10,16 +10,23 @@ const endpoint = `${process.env.WATER_URI}/returns`;
  * @param {String} returnId
  * @return {Promise} resolves with data
  */
-const getReturn = (returnId) => {
+const getReturn = (returnId, versionNumber) => {
+  const qs = {
+    returnId
+  };
+  if (versionNumber) {
+    qs.versionNumber = versionNumber;
+  };
+
+  console.log(qs);
+
   return rp({
     method: 'GET',
     uri: endpoint,
     headers: {
       Authorization: process.env.JWT_TOKEN
     },
-    qs: {
-      returnId
-    },
+    qs,
     json: true
   });
 };

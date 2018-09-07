@@ -11,7 +11,7 @@ const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, single
 const { returns } = require('../../../lib/connectors/water');
 const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = require('../lib/return-helpers');
 const { fetchReturnData, persistReturnData } = require('../lib/session-helpers');
-const { getReturnTotal } = require('../lib/helpers');
+const { getReturnTotal, isInternalUser } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -128,11 +128,14 @@ const getSubmitted = async (request, h) => {
   // Clear session
   request.sessionStore.delete('internalReturnFlow');
 
+  const isInternal = isInternalUser(request);
+  const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId} `;
+
   return h.view('water/returns/internal/submitted', {
     return: data,
     ...request.view,
     documentHeader,
-    returnUrl: `/admin/return/view?returnId=${data.returnId}`
+    returnUrl
   });
 };
 

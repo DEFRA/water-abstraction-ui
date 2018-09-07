@@ -591,6 +591,26 @@ handlebars.registerHelper('formatQuantity', (value) => {
   return commaNumber(maxPrecision(value, 3));
 });
 
+/**
+ * Each iterates in reverse order
+ * @see {@link https://github.com/diy/handlebars-helpers/blob/master/lib/each-reverse.js}
+ */
+function eachReverse (context) {
+  var options = arguments[arguments.length - 1];
+  var ret = '';
+
+  if (context && context.length > 0) {
+    for (var i = context.length - 1; i >= 0; i--) {
+      ret += options.fn(context[i]);
+    }
+  } else {
+    ret = options.inverse(this);
+  }
+
+  return ret;
+};
+handlebars.registerHelper('eachReverse', eachReverse);
+
 const Path = require('path');
 
 const footerSupportLinks = `

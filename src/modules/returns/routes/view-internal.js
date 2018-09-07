@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { getReturnsForLicence, getReturn } = require('./view');
 
 module.exports = {
@@ -17,12 +18,19 @@ module.exports = {
     path: '/admin/returns/return',
     config: {
       ...getReturn.config,
+      validate: {
+        query: {
+          id: Joi.string().required(),
+          version: Joi.number().optional().min(1)
+        }
+      },
       auth: {
         scope: ['internal']
       },
       plugins: {
         viewContext: {
-          activeNavLink: 'view'
+          activeNavLink: 'view',
+          showMeta: true
         }
       }
     }

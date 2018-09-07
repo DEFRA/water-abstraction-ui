@@ -242,6 +242,7 @@ module.exports = {
   hasGallons,
   getReturnsViewData,
   isInternalReturnsUser,
+  isInternalUser,
   getInternalRoles,
   getReturnTotal
 };

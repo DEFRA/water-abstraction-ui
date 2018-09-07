@@ -8,32 +8,10 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
  * @return {Object} form values
  */
 const mapModelToForm = (data) => {
-  const readingType = get(data, 'reading.type');
-  const readingMethod = get(data, 'reading.method');
-
-  if (readingType === 'measured') {
-    return {
-      basis: 'records',
-      pumpCapacity: null,
-      hoursRun: null,
-      numberLivestock: null
-    };
-  } else if (readingMethod === 'pump') {
-    return {
-      basis: 'pump',
-      pumpCapacity: get(data, 'reading.pumpCapacity'),
-      hoursRun: get(data, 'reading.hoursRun'),
-      numberLivestock: null
-    };
-  } else if (readingMethod === 'herd') {
-    return {
-      basis: 'herd',
-      pumpCapacity: null,
-      hoursRun: null,
-      numberLivestock: get(data, 'reading.numberLivestock')
-    };
-  }
-  return {};
+  const basis = get(data, 'reading.type');
+  return {
+    basis
+  };
 };
 
 const form = (request) => {
@@ -43,30 +21,24 @@ const form = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('basis', {
-    label: 'What is your return total based on?',
+    label: 'What is your return based on?',
+    errors: {
+      'any.required': {
+        message: 'Select measurements or estimates'
+      }
+    },
     choices: [
-      { value: 'records',
-        label: 'Records'
+      { value: 'measured',
+        label: 'Measurements'
       },
       {
-        value: 'pump',
-        label: 'Abstraction rate',
-        fields: [
-          fields.text('pumpCapacity', {label: 'Pump capacity', panel: true, jsHidden: true}),
-          fields.text('hoursRun', {label: 'Hours run', panel: true, jsHidden: true})
-        ]
-      },
-      {
-        value: 'herd',
-        label: 'Herd numbers',
-        fields: [
-          fields.text('numberLivestock', {label: 'Number of head of livestock', panel: true, jsHidden: true})
-        ]
+        value: 'estimated',
+        label: 'Estimates'
       }
 
     ]}));
 
-  f.fields.push(fields.button());
+  f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session
@@ -77,10 +49,7 @@ const form = (request) => {
 };
 
 const schema = {
-  basis: Joi.string().required().valid('records', 'pump', 'herd'),
-  pumpCapacity: Joi.when('basis', { is: 'pump', then: Joi.number().required() }),
-  hoursRun: Joi.when('basis', { is: 'pump', then: Joi.number().required() }),
-  numberLivestock: Joi.when('basis', { is: 'herd', then: Joi.number().required().min(1) }),
+  basis: Joi.string().required().valid('measured', 'estimated'),
   csrf_token: Joi.string().guid().required()
 };
 

@@ -74,6 +74,23 @@ const getValues = (form) => {
 };
 
 /**
+ * Given a form object, gets all custom error messages as a flat key/value
+ * object
+ * @param {Object} form
+ * @return {Object} custom errors objects
+ */
+const getCustomErrors = (form) => {
+  const errors = {};
+  mapFields(form, (field) => {
+    if (field.name && field.options.errors) {
+      errors[field.name] = field.options.errors;
+    }
+    return field;
+  });
+  return errors;
+};
+
+/**
  * Applies the supplied function to every field
  * using a deep traversal
  * Mutates the supplied object
@@ -121,6 +138,37 @@ const importData = (form, payload) => {
 };
 
 /**
+ * Formats error object from Joi into an easy format, and includes
+ * custom error messages from the object provided
+ * @param {Object} error - Joi error from schema.validate()
+ * @param {Object} customErrors - custom error messages
+ * @return {Array} formatted error messages
+ */
+const formatErrors = (error, customErrors) => {
+  return error.details.map(err => {
+    const name = err.context.key;
+    const { type, message } = err;
+
+    // Use custom error messages
+    if ((name in customErrors) && (type in customErrors[name])) {
+      const custom = customErrors[name][type];
+      return {
+        name,
+        message: custom.message,
+        summary: custom.summary || custom.message
+      };
+    }
+
+    // Use default Joi message
+    return {
+      name,
+      message,
+      summary: message
+    };
+  });
+};
+
+/**
  * Applies Joi errors to fields and returns a new form object
  * @param {Object} form
  * @param {Array} error - returned from Joi.validate()
@@ -131,16 +179,19 @@ const applyErrors = (form, error) => {
     return form;
   }
 
+  // Get array of error messages with custom error messaging
+  const formattedErrors = formatErrors(error, getCustomErrors(form));
+
   const f = mapFields(form, (field) => {
-    const errors = error.details.filter(err => {
-      return err.context.key === field.name;
+    const errors = formattedErrors.filter(err => {
+      return err.name === field.name;
     });
     return {
       ...field,
       errors
     };
   });
-  f.errors = error.details;
+  f.errors = formattedErrors;
   return f;
 };
 
@@ -161,6 +212,8 @@ const handleRequest = (form, request, joiSchema) => {
   const { error, value } = Joi.validate(requestData, schema, {
     abortEarly: false
   });
+
+  console.log(JSON.stringify(error, null, 2));
 
   f = applyErrors(f, error);
   f.isValid = !error;

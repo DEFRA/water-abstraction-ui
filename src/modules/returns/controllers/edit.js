@@ -168,14 +168,33 @@ const postMethod = async (request, h) => {
   const form = handleRequest(methodForm(request), request);
 
   if (form.isValid) {
-    const { isMeterReadings } = getValues(form);
+    const { method } = getValues(form);
 
-    const path = isMeterReadings ? `/admin/return/meter` : '/admin/return/units';
-    return h.redirect(path);
+    const paths = {
+      oneMeter: `/admin/return/meter`,
+      multipleMeters: `/admin/return/multiple-meters`,
+      abstractionVolumes: `/admin/return/units`
+    };
+
+    return h.redirect(paths[method]);
   }
 
   return h.view('water/returns/internal/form', {
     form,
+    documentHeader,
+    return: data,
+    ...request.view
+  });
+};
+
+/**
+ * Message about multiple meters not being supported
+ */
+const getMultipleMeters = async (request, h) => {
+  const data = fetchReturnData(request);
+  const documentHeader = await getWaterLicence(data.licenceNumber);
+
+  return h.view('water/returns/internal/multiple-meters', {
     documentHeader,
     return: data,
     ...request.view
@@ -393,6 +412,7 @@ module.exports = {
   getSubmitted,
   getMethod,
   postMethod,
+  getMultipleMeters,
   getUnits,
   postUnits,
   getSingleTotal,

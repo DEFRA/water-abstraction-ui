@@ -9,18 +9,34 @@ const form = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isSingleTotal', {
-    label: 'How was this amount provided?',
+    label: 'Is it a single amount?',
     mapper: 'booleanMapper',
+    errors: {
+      'any.required': {
+        summary: 'Select if you are reporting a single amount or not',
+        message: 'Select if you are reporting a single amount'
+      }
+    },
     choices: [
       { value: true,
-        label: 'A single total amount',
+        label: 'Yes',
         fields: [
-          fields.text('total', {label: 'Total amount provided'})
+          fields.text('total', {
+            label: 'Enter total amount',
+            errors: {
+              'number.base': {
+                message: 'Enter a total figure'
+              },
+              'number.min': {
+                message: 'Total figure must be greater than 0'
+              }
+            }
+          })
         ]},
-      { value: false, label: 'A number of amounts' }
+      { value: false, label: 'No' }
     ]}));
 
-  f.fields.push(fields.button());
+  f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session
@@ -33,7 +49,7 @@ const form = (request) => {
 
 const schema = {
   isSingleTotal: Joi.boolean().required(),
-  total: Joi.when('isSingleTotal', { is: true, then: Joi.number().required() }),
+  total: Joi.when('isSingleTotal', { is: true, then: Joi.number().required().min(0) }),
   csrf_token: Joi.string().guid().required()
 };
 

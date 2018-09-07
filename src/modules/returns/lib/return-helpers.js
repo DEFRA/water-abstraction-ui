@@ -142,27 +142,10 @@ const applySingleTotal = (data, total) => {
  * @return {Object} - updated return model
  */
 const applyBasis = (data, formValues) => {
+  const { basis } = formValues;
   const f = cloneDeep(data);
 
-  if (formValues.basis === 'records') {
-    set(f, 'reading.type', 'measured');
-    set(f, 'reading.method', null);
-    set(f, 'reading.pumpCapacity', null);
-    set(f, 'reading.hoursRun', null);
-    set(f, 'reading.numberLivestock', null);
-  } else if (formValues.basis === 'pump') {
-    set(f, 'reading.type', 'estimated');
-    set(f, 'reading.method', 'pump');
-    set(f, 'reading.pumpCapacity', formValues.pumpCapacity);
-    set(f, 'reading.hoursRun', formValues.hoursRun);
-    set(f, 'reading.numberLivestock', null);
-  } else if (formValues.basis === 'herd') {
-    set(f, 'reading.type', 'estimated');
-    set(f, 'reading.method', 'herd');
-    set(f, 'reading.pumpCapacity', null);
-    set(f, 'reading.hoursRun', null);
-    set(f, 'reading.numberLivestock', formValues.numberLivestock);
-  }
+  set(f, 'reading.type', basis);
 
   return f;
 };

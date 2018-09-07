@@ -148,6 +148,24 @@ module.exports = {
     }
   },
 
+  getMultipleMeters: {
+    method: 'GET',
+    path: '/admin/return/multiple-meters',
+    handler: controller.getMultipleMeters,
+    config: {
+      auth: {
+        scope: returns
+      },
+      description: 'Messaging around multiple meters not currently supported',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
   getUnits: {
     method: 'GET',
     path: '/admin/return/units',
@@ -304,7 +322,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         }
       }
     }

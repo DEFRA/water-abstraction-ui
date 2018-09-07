@@ -6,15 +6,20 @@ const methodForm = (request) => {
 
   const f = formFactory(action);
 
-  f.fields.push(fields.radio('isMeterReadings', {
-    label: 'How do you want to report your return?',
-    mapper: 'booleanMapper',
+  f.fields.push(fields.radio('method', {
+    label: 'How are you reporting your return?',
+    errors: {
+      'any.required': {
+        message: 'Select readings from one meter, from more than one meter or volumes'
+      }
+    },
     choices: [
-      { value: true, label: 'Meter readings' },
-      { value: false, label: 'Other' }
+      { value: 'oneMeter', label: 'Readings from one meter' },
+      { value: 'multipleMeters', label: 'Readings from more than one meter' },
+      { value: 'abstractionVolumes', label: 'Abstraction volumes' }
     ]}));
 
-  f.fields.push(fields.button());
+  f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;

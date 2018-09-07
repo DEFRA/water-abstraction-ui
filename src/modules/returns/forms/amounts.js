@@ -10,12 +10,17 @@ const amountsForm = (request) => {
   f.fields.push(fields.radio('isNil', {
     label: 'Are there any abstraction amounts to report?',
     mapper: 'booleanMapper',
+    errors: {
+      'any.required': {
+        message: 'Are there any amounts to report?'
+      }
+    },
     choices: [
       { value: false, label: 'Yes' },
       { value: true, label: 'No' }
     ]}));
 
-  f.fields.push(fields.button());
+  f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;

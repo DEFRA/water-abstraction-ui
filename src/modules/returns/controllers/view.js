@@ -1,6 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
+const { get } = require('lodash');
 const {
   getLicenceNumbers,
   getReturnsViewData,
@@ -63,7 +64,7 @@ const getReturn = async (request, h) => {
 
   // Whether the current user can edit this return via digital service
   const canEdit = isInternalReturns && moment(data.startDate).isSameOrAfter('2018-11-01');
-  const showVersions = isInternalUser(request) && data.versions[0].email;
+  const showVersions = isInternalUser(request) && get(data, 'versions[0].email');
 
   const view = {
     total: getReturnTotal(data),

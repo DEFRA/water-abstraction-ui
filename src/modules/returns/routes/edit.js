@@ -69,7 +69,7 @@ module.exports = {
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - submit nil',
           activeNavLink: 'returns'
         }
       }
@@ -87,7 +87,7 @@ module.exports = {
       description: 'Post handler for nil return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - nil submitted',
           activeNavLink: 'returns'
         }
       }
@@ -105,7 +105,6 @@ module.exports = {
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
           activeNavLink: 'returns'
         }
       }
@@ -123,7 +122,7 @@ module.exports = {
       description: 'Ask whether meter readings are used',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
         }
       }
@@ -141,7 +140,7 @@ module.exports = {
       description: 'POST handler for meter readings routing',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
         }
       }
@@ -159,7 +158,7 @@ module.exports = {
       description: 'Messaging around multiple meters not currently supported',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
         }
       }
@@ -177,7 +176,7 @@ module.exports = {
       description: 'Get units used for this return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
         }
       }
@@ -195,7 +194,7 @@ module.exports = {
       description: 'Post handler for units used for this return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
         }
       }
@@ -213,7 +212,7 @@ module.exports = {
       description: 'Get whether a single total was submitted for this return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
         }
       }
@@ -231,7 +230,7 @@ module.exports = {
       description: 'Post handler for single total submitted for this return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
         }
       }
@@ -249,7 +248,7 @@ module.exports = {
       description: 'Get basis for supplied return data',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - are the amounts measured or estimated?',
           activeNavLink: 'returns'
         }
       }
@@ -267,7 +266,7 @@ module.exports = {
       description: 'Post handler for records basis',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - are the amounts measured or estimated?',
           activeNavLink: 'returns'
         }
       }
@@ -285,7 +284,7 @@ module.exports = {
       description: 'Display quantities form',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
         }
       }
@@ -303,7 +302,7 @@ module.exports = {
       description: 'Post handler for quantities',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
         }
       }
@@ -321,7 +320,7 @@ module.exports = {
       description: 'Display confirmation screen of returned quantities',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns',
           showMeta: true
         }
@@ -340,7 +339,7 @@ module.exports = {
       description: 'Post handler for confirmation screen',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns'
         }
       }

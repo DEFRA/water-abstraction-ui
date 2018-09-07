@@ -135,7 +135,8 @@ const getSubmitted = async (request, h) => {
     return: data,
     ...request.view,
     documentHeader,
-    returnUrl
+    returnUrl,
+    pageTitle: `Abstraction return - ${data.isNil ? 'nil' : ''} submitted`
   });
 };
 

@@ -10,75 +10,7 @@
 <div class="grid-row">
   <div class="{{#equal return.reading.units 'm3' }}column-two-thirds{{ else }}column-full{{/equal}}">
 
-    <table>
-      <thead>
-        <tr>
-          <th>
-            {{#equal return.lines.0.timePeriod 'day' }}Day{{/equal}}
-            {{#equal return.lines.0.timePeriod 'week' }}Week ending{{/equal}}
-            {{#equal return.lines.0.timePeriod 'month' }}Month{{/equal}}
-            {{#equal return.lines.0.timePeriod 'year' }}Year{{/equal}}
-          </th>
-          <th class="numeric">
-            {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
-            {{#equal return.reading.units 'l' }}Litres{{/equal}}
-            {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
-            {{#equal return.reading.units 'm3' }}Cubic metres{{/equal}}
-          </th>
-
-          {{#notEqual return.reading.units 'm3' }}
-          <th class="numeric">
-            Cubic metres
-          </th>
-          {{/notEqual}}
-        </tr>
-      </thead>
-      <tbody>
-
-
-        {{#each return.lines }}
-      <tr>
-        <td>
-            {{#equal timePeriod 'day' }}
-              {{ formatISODate startDate format='D MMMM' }}
-            {{/equal}}
-
-            {{#equal timePeriod 'week' }}
-              {{ formatISODate endDate format='D MMMM' }}
-            {{/equal}}
-
-            {{#equal timePeriod 'month' }}
-              {{ formatISODate startDate format='MMMM' }}
-            {{/equal}}
-            {{#equal timePeriod 'year' }}
-              {{ formatISODate startDate format='D MMMM YYYY' }} -
-              {{ formatISODate endDate format='D MMMM YYYY' }}
-            {{/equal}}
-          </td>
-          <td class="numeric">
-            {{ formatQuantity this.quantity }}
-          </td>
-
-          {{#notEqual ../return.reading.units 'm3' }}
-          <td class="numeric">
-            {{ formatQuantity (convertToCubicMetres this.quantity unit=../return.reading.units)  }}
-          </td>
-          {{/notEqual}}
-        </tr>
-        {{/each}}
-      </tbody>
-
-      <tfoot>
-        <tr>
-          <th>Total</th>
-          <td class="numeric">{{ formatQuantity total }}</td>
-          {{#notEqual return.reading.units 'm3' }}
-          <td class="numeric">{{ formatQuantity (convertToCubicMetres total unit=return.reading.units )}}</td>
-          {{/notEqual}}
-        </tr>
-      </tfoot>
-
-    </table>
+    {{> return-quantities-table }}
 
     <br />
   {{>form form }}
@@ -87,11 +19,7 @@
 </div>
 </main>
 
-<style type="text/css">
-table tfoot th, table tfoot td {
-  font-weight: bold;
-}
-</style>
+
 
 {{> footerjs}}
 

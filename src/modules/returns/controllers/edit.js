@@ -11,6 +11,7 @@ const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, single
 const { returns } = require('../../../lib/connectors/water');
 const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = require('../lib/return-helpers');
 const { fetchReturnData, persistReturnData } = require('../lib/session-helpers');
+const { getReturnTotal } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -358,18 +359,13 @@ const getConfirm = async (request, h) => {
   const data = fetchReturnData(request);
   const documentHeader = await getWaterLicence(data.licenceNumber);
 
-  // Calculate total in user units
-  const total = data.lines.reduce((acc, line) => {
-    return acc + line.quantity;
-  }, 0);
-
   const form = confirmForm(request, `/admin/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
     return: data,
     documentHeader,
     form,
-    total,
+    total: getReturnTotal(data),
     ...request.view
   });
 };

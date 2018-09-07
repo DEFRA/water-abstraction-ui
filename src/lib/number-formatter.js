@@ -8,6 +8,7 @@
  * @return {Number}
  */
 const maxPrecision = (number, decimalPlaces) => {
+  console.log(`maxPrecision ${number} ${decimalPlaces}`);
   for (let i = 0; i < decimalPlaces; i++) {
     if (parseFloat(number.toFixed(decimalPlaces)) === parseFloat(number.toFixed(i))) {
       return number.toFixed(i);

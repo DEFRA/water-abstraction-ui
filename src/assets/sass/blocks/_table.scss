@@ -9,6 +9,16 @@ table {
       text-align: center;
     }
   }
+
+  tfoot {
+    &.totals {
+      th, td {
+        font-weight: bold;
+      }
+    }
+  }
+
+
 }
 
 

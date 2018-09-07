@@ -3,7 +3,7 @@ const Boom = require('boom');
 const { get } = require('lodash');
 const moment = require('moment');
 const { documents } = require('../../../lib/connectors/crm');
-const { returns, versions, lines } = require('../../../lib/connectors/returns');
+const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
 
 /**
@@ -137,60 +137,24 @@ const hasGallons = (lines) => {
 };
 
 /**
- * Get return data by ID, provided date is >= April 2008
- * @param {String} returnId
- * @return {Promise} resolves with return row
+ * Gets return total, which can also be null if no values are filled in
+ * @param {Object} ret - return model from water service
+ * @return {Number|null} total or null
  */
-const getReturn = async (returnId) => {
-  const filter = {
-    return_id: returnId,
-    start_date: {
-      $gte: '2008-04-01'
-    }
-  };
-
-  // Load return
-  const { data: [returnData], error: returnError } = await returns.findMany(filter);
-  if (returnError) {
-    throw Boom.badImplementation(returnError);
+const getReturnTotal = (ret) => {
+  if (!ret.lines) {
+    return null;
   }
-  if (!returnData) {
-    throw Boom.notFound(`Return ${returnId} not found`);
-  }
-
-  return returnData;
-};
-
-/**
- * Loads a single return
- * @param {String} returnId
- * @return {Promise} resolves with { return, version, lines }
- */
-const getReturnData = async (returnId) => {
-  const returnData = await getReturn(returnId);
-
-  // Find lines for version
-  const version = await getLatestVersion(returnId);
-  const filter = {
-    version_id: version.version_id,
-    'metadata->>isCurrent': 'true'
-  };
-  const sort = {
-    start_date: 1
-  };
-  const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
-  if (linesError) {
-    throw Boom.badImplementation(linesError);
-  }
-  return {
-    return: returnData,
-    version,
-    lines: linesData
-  };
+  const lines = ret.lines.filter(line => line.quantity !== null);
+  return lines.length === 0 ? null : lines.reduce((acc, line) => {
+    return acc + line.quantity;
+  }, 0);
 };
 
 /**
  * Adds an editable flag to each return in list
+ * This is based on the status of the return, and whether the user
+ * has internal returns role.
  * @param {Array} returns - returned from returns service
  * @param {Object} request - HAPI request interface
  * @return {Array} returns with isEditable flag added
@@ -276,8 +240,8 @@ module.exports = {
   mergeReturnsAndLicenceNames,
   getLatestVersion,
   hasGallons,
-  getReturnData,
   getReturnsViewData,
   isInternalReturnsUser,
-  getInternalRoles
+  getInternalRoles,
+  getReturnTotal
 };

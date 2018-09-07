@@ -3,10 +3,12 @@ const Boom = require('boom');
 
 const {
   getLicenceNumbers,
-  getReturnData,
   getReturnsViewData,
-  isInternalReturnsUser
+  isInternalReturnsUser,
+  getReturnTotal
 } = require('../lib/helpers');
+
+const { returns } = require('../../../lib/connectors/water');
 
 /**
  * Gets and displays a list of returns for the current user,
@@ -45,10 +47,10 @@ const getReturn = async (request, h) => {
   const { entity_id: entityId } = request.auth.credentials;
 
   // Load return data
-  const data = await getReturnData(id);
+  const data = await returns.getReturn(id);
 
   // Load CRM data to check access
-  const { licence_ref: licenceNumber } = data.return;
+  const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
   const isInternalReturns = isInternalReturnsUser(request);
@@ -59,8 +61,9 @@ const getReturn = async (request, h) => {
   }
 
   const view = {
+    total: getReturnTotal(data),
     ...request.view,
-    ...data,
+    return: data,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader
   };

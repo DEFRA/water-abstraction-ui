@@ -7,7 +7,7 @@ function sendNewUserPasswordReset (emailAddress, resetGuid) {
 
 function sendExistingUserPasswordReset (emailAddress, resetGuid) {
   const link = process.env.base_url + '/signin';
-  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=reset_password';
+  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid;
   return Water.sendNotifyMessage('existing_user_verification_email', emailAddress, { link, resetLink });
 }
 
@@ -50,17 +50,16 @@ function sendSecurityCode (licence, accesscode) {
   return Water.sendNotifyMessage('security_code_letter', 'n/a', personalisation);
 }
 
-function sendAccesseNotification (params) {
+function sendAccessNotification (params) {
   return new Promise((resolve, reject) => {
     let messageRef;
-    let link;
+    let link = `${process.env.base_url}`;
 
     if (params.newUser) {
       messageRef = 'share_new_user';
-      link = `${process.env.base_url}/reset_password?utm_source=system&utm_medium=email&utm_campaign=share_new_user`;
+      link = `${link}/reset_password?utm_source=system&utm_medium=email&utm_campaign=share_new_user`;
     } else {
       messageRef = 'share_existing_user';
-      link = `${process.env.base_url}?utm_source=system&utm_medium=email&utm_campaign=share_existing_user`;
     }
 
     const email = params.email;
@@ -75,13 +74,14 @@ function sendAccesseNotification (params) {
         return resolve(true);
       })
       .catch((err) => {
+        console.error(err);
         return resolve(true);
       });
   });
 }
 
 module.exports = {
-  sendAccesseNotification: sendAccesseNotification,
+  sendAccessNotification: sendAccessNotification,
   sendNewUserPasswordReset,
   sendExistingUserPasswordReset,
   sendSecurityCode

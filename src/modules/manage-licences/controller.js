@@ -129,7 +129,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     // User exists
     if (createUserError) {
-      const { error: notifyError } = Notify.sendAccesseNotification({ newUser: false, email, sender });
+      const { error: notifyError } = Notify.sendAccessNotification({ newUser: false, email, sender });
       if (notifyError) {
         throw notifyError;
       }

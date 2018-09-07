@@ -199,8 +199,6 @@ const addEditableFlag = (returns, request) => {
   const isInternal = isInternalUser(request);
   const isInternalReturns = isInternalReturnsUser(request);
 
-  console.log('isInternal', isInternal, 'isInternalReturns', isInternalReturns);
-
   return returns.map(row => {
     const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2018-11-01');
     const isEditable = isAfterSummer2018 &&
@@ -248,8 +246,6 @@ const getReturnsViewData = async (request) => {
   if (licenceNumbers.length) {
     const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
     const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addEditableFlag(data, request), documents));
-
-    console.log(JSON.stringify(returns, null, 2));
 
     view.pagination = pagination;
     view.returns = returns;

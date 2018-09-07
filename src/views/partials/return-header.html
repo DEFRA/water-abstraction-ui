@@ -1,17 +1,14 @@
-{{#if isAdmin}}
-  <h1 class="heading-large">Abstraction return for {{ return.licenceNumber }}</h1>
+
+{{#if documentHeader.document_name }}
+<h1 class="heading-large">
+    <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
+    {{ documentHeader.document_name }}
+  </h1>
 {{else}}
-  {{#if documentHeader.document_name }}
-  <h1 class="heading-large">
-      <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
-      {{ documentHeader.document_name }}
-    </h1>
-  {{else}}
-  <h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
-  {{/if}}
+<h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
 {{/if}}
 
-
+{{#if showMeta }}
 
 <dl class="meta">
 
@@ -61,9 +58,9 @@
 
   </dl>
 
-
-
   <br />
 <p>
 <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
 </p>
+
+{{/if}}

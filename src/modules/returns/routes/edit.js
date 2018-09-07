@@ -22,7 +22,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         }
       }
     }
@@ -44,7 +45,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         },
         formValidator: {
           payload: {

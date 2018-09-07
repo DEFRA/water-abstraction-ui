@@ -15,6 +15,14 @@ module.exports = {
     showAuth: true
   },
 
+  crm: {
+    regimes: {
+      water: {
+        entityId: '0434dc31-a34e-7158-5775-4694af7a60cf'
+      }
+    }
+  },
+
   good: {
     ops: {
       interval: 60000

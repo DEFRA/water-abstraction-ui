@@ -13,6 +13,16 @@ const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = requir
 const { fetchReturnData, persistReturnData } = require('../lib/session-helpers');
 const { getReturnTotal, isInternalUser } = require('../lib/helpers');
 
+const getViewData = async (request, data) => {
+  const documentHeader = await getWaterLicence(data.licenceNumber);
+  return {
+    ...request.view,
+    documentHeader,
+    data,
+    activeNavLink: isInternalUser(request) ? 'view' : 'returns'
+  };
+};
+
 /**
  * Render form to display whether amounts / nil return for this cycle
  * @param {String} request.query.returnId - the return to edit
@@ -21,7 +31,8 @@ const getAmounts = async (request, h) => {
   const { returnId } = request.query;
 
   const data = await returns.getReturn(returnId);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+
+  const view = await getViewData(request, data);
 
   // Check start date
   if (moment(data.startDate).isBefore('2018-11-01')) {
@@ -34,10 +45,9 @@ const getAmounts = async (request, h) => {
   const form = setValues(amountsForm(request), data);
 
   return h.view('water/returns/internal/form', {
-    documentHeader,
+    ...view,
     form,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -47,7 +57,8 @@ const getAmounts = async (request, h) => {
  */
 const postAmounts = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+
+  const view = await getViewData(request, data);
 
   const form = handleRequest(setValues(amountsForm(request), data), request);
 
@@ -63,10 +74,9 @@ const postAmounts = async (request, h) => {
   }
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    return: data,
-    documentHeader,
-    ...request.view
+    return: data
   });
 };
 
@@ -75,15 +85,14 @@ const postAmounts = async (request, h) => {
  */
 const getNilReturn = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = confirmForm(request);
 
   return h.view('water/returns/internal/nil-return', {
+    ...view,
     return: data,
-    form,
-    documentHeader,
-    ...request.view
+    form
   });
 };
 
@@ -92,16 +101,9 @@ const getNilReturn = async (request, h) => {
  */
 const postNilReturn = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = handleRequest(confirmForm(request), request);
-
-  const view = {
-    return: data,
-    documentHeader,
-    form,
-    ...request.view
-  };
 
   if (form.isValid) {
     try {
@@ -113,7 +115,11 @@ const postNilReturn = async (request, h) => {
     }
   }
 
-  return h.view('water/returns/internal/nil-return', view);
+  return h.view('water/returns/internal/nil-return', {
+    ...view,
+    return: data,
+    form
+  });
 };
 
 /**
@@ -123,7 +129,7 @@ const postNilReturn = async (request, h) => {
  */
 const getSubmitted = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   // Clear session
   request.sessionStore.delete('internalReturnFlow');
@@ -132,9 +138,8 @@ const getSubmitted = async (request, h) => {
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId} `;
 
   return h.view('water/returns/internal/submitted', {
+    ...view,
     return: data,
-    ...request.view,
-    documentHeader,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil' : ''} submitted`
   });
@@ -146,15 +151,14 @@ const getSubmitted = async (request, h) => {
  */
 const getMethod = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = methodForm(request);
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -164,7 +168,7 @@ const getMethod = async (request, h) => {
  */
 const postMethod = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = handleRequest(methodForm(request), request);
 
@@ -181,10 +185,9 @@ const postMethod = async (request, h) => {
   }
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -193,12 +196,11 @@ const postMethod = async (request, h) => {
  */
 const getMultipleMeters = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   return h.view('water/returns/internal/multiple-meters', {
-    documentHeader,
-    return: data,
-    ...request.view
+    ...view,
+    return: data
   });
 };
 
@@ -207,17 +209,16 @@ const getMultipleMeters = async (request, h) => {
  */
 const getUnits = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const units = get(data, 'reading.units');
 
   const form = setValues(unitsForm(request), { units });
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -226,7 +227,7 @@ const getUnits = async (request, h) => {
  */
 const postUnits = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = handleRequest(unitsForm(request), request);
 
@@ -240,10 +241,9 @@ const postUnits = async (request, h) => {
   }
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -252,15 +252,14 @@ const postUnits = async (request, h) => {
  */
 const getSingleTotal = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = singleTotalForm(request);
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -269,7 +268,7 @@ const getSingleTotal = async (request, h) => {
  */
 const postSingleTotal = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
 
@@ -286,10 +285,9 @@ const postSingleTotal = async (request, h) => {
   }
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    documentHeader,
-    return: data,
-    ...request.view
+    return: data
   });
 };
 
@@ -298,15 +296,14 @@ const postSingleTotal = async (request, h) => {
  */
 const getBasis = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = basisForm(request);
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    return: data,
-    documentHeader,
-    ...request.view
+    return: data
   });
 };
 
@@ -315,7 +312,7 @@ const getBasis = async (request, h) => {
  */
 const postBasis = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = handleRequest(basisForm(request), request, basisSchema);
 
@@ -328,10 +325,9 @@ const postBasis = async (request, h) => {
   }
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    return: data,
-    documentHeader,
-    ...request.view
+    return: data
   });
 };
 
@@ -340,21 +336,20 @@ const postBasis = async (request, h) => {
  */
 const getQuantities = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = quantitiesForm(request, data);
 
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    return: data,
-    documentHeader,
-    ...request.view
+    return: data
   });
 };
 
 const postQuantities = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const schema = quantitiesSchema(data);
 
@@ -368,10 +363,9 @@ const postQuantities = async (request, h) => {
     return h.redirect(`/admin/return/confirm`);
   }
   return h.view('water/returns/internal/form', {
+    ...view,
     form,
-    return: data,
-    documentHeader,
-    ...request.view
+    return: data
   });
 };
 
@@ -380,16 +374,15 @@ const postQuantities = async (request, h) => {
  */
 const getConfirm = async (request, h) => {
   const data = fetchReturnData(request);
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const view = await getViewData(request, data);
 
   const form = confirmForm(request, `/admin/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
+    ...view,
     return: data,
-    documentHeader,
     form,
-    total: getReturnTotal(data),
-    ...request.view
+    total: getReturnTotal(data)
   });
 };
 

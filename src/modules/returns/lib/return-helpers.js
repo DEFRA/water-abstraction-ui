@@ -206,12 +206,13 @@ const applyQuantities = (data, formValues) => {
  */
 const applyUserDetails = (data, credentials) => {
   const d = cloneDeep(data);
-  const { username, scope } = credentials;
+  const { username, scope, entity_id: entityId } = credentials;
   return {
     ...d,
     user: {
       email: username,
-      type: scope.includes('internal') ? 'internal' : 'external'
+      type: scope.includes('internal') ? 'internal' : 'external',
+      entityId
     }
   };
 };

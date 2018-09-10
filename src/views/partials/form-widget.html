@@ -1,0 +1,13 @@
+
+{{#equal this.options.widget 'button'}}
+  {{>form-button this form=form }}
+{{/equal}}
+{{#equal this.options.widget 'date'}}
+  {{>form-date this form=form }}
+{{/equal}}
+{{#equal this.options.widget 'radio'}}
+  {{>form-radio this form=form }}
+{{/equal}}
+{{#equal this.options.widget 'text'}}
+  {{>form-text this form=form }}
+{{/equal}}

@@ -1,0 +1,27 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  {{>return-header }}
+
+  <h3 class="heading-medium">Check the information before submitting</h3>
+
+
+<div class="grid-row">
+  <div class="{{#equal return.reading.units 'm3' }}column-two-thirds{{ else }}column-full{{/equal}}">
+
+    {{> return-quantities-table }}
+
+    <br />
+  {{>form form }}
+
+  </div>
+</div>
+</main>
+
+
+
+{{> footerjs}}
+
+
+{{> debug}}

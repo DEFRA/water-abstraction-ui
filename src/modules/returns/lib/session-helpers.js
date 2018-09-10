@@ -1,0 +1,48 @@
+const Boom = require('boom');
+const { returns } = require('../../../lib/connectors/water');
+const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
+
+/**
+ * Loads return data from session.
+ * If not found a Boom error is thrown
+ * @param {Object} request - HAPI request interface
+ * @return {Object} - return data model
+ */
+const fetchReturnData = (request) => {
+  const data = request.sessionStore.get('internalReturnFlow');
+
+  if (!data) {
+    throw Boom.badImplementation(`Return not found in session`);
+  }
+  return data;
+};
+
+/**
+ * Saves return data stored in session back to water service
+ * (which in turn updates returns service/NALD tables)
+ * @param {Object} data
+ * @param {Object} request - HAPI request interface
+ * @return {Promise} resolve when data posted to water service
+ */
+const persistReturnData = (data, request) => {
+  const d = applyStatus(applyUserDetails(data, request.auth.credentials));
+
+  // Don't bother sending required return lines/versions
+  delete d.requiredLines;
+  delete d.versions;
+
+  // Post return
+  try {
+    request.log('info', `Posting return`);
+    request.log('info', JSON.stringify(d, null, 2));
+    return returns.postReturn(d);
+  } catch (err) {
+    request.log('error', err);
+    throw err;
+  }
+};
+
+module.exports = {
+  fetchReturnData,
+  persistReturnData
+};

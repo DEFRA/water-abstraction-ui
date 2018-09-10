@@ -15,7 +15,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ document.system_external_id }}</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
 
   {{#if document.document_name }}
   <h1 class="heading-large heading-large--tight-above">
@@ -68,6 +68,11 @@
               {{# notEqual received_date null }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
+              {{else}}
+                {{#if isEditable }}
+                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                  <span class="sr-only">View return from </span>
+                {{/if}}
               {{/notEqual}}
 
               {{# isFirstDayOfMonth start_date }}
@@ -94,6 +99,10 @@
                  </span>
               </a>
               {{/notEqual}}
+
+              {{#if isEditable }}
+              </a>
+              {{/if}}
             </div>
 
             <div class="table-cell">
@@ -122,6 +131,8 @@
                 Return due
               </strong>
               {{/equal}}
+
+
             </div>
           </div>
           {{/each}}

@@ -4,7 +4,7 @@ const { expect } = require('code');
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
-const helpers = require('../../../src/modules/returns/helpers');
+const helpers = require('../../../src/modules/returns/lib/helpers');
 
 lab.experiment('isInternalReturnsUser', () => {
   lab.test('returns false if the user does not have returns permission', async () => {

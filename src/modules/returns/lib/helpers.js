@@ -164,12 +164,13 @@ const addEditableFlag = (returns, request) => {
   const isInternalReturns = isInternalReturnsUser(request);
 
   return returns.map(row => {
-    const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2018-11-01');
+    const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2017-11-01');
     const isEditable = isAfterSummer2018 &&
       (
         (isInternal && isInternalReturns) ||
         (!isInternal && row.status === 'due')
       );
+
     return {
       ...row,
       isEditable
@@ -233,6 +234,17 @@ const getInternalRoles = (isInternalUser, roles) => {
   return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
 };
 
+/**
+ * Redirects to admin path if internal user
+ * @param {Object} request - HAPI request instance
+ * @param {String} path - the path to redirect to without '/admin'
+ * @return {String} path with /admin if internal user
+ */
+const getScopedPath = (request, path) => {
+  const isInternal = isInternalUser(request);
+  return isInternal ? `/admin${path}` : path;
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -244,5 +256,6 @@ module.exports = {
   isInternalReturnsUser,
   isInternalUser,
   getInternalRoles,
-  getReturnTotal
+  getReturnTotal,
+  getScopedPath
 };

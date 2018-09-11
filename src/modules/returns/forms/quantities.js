@@ -3,6 +3,7 @@ const moment = require('moment');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines } = require('../lib/return-helpers');
 const { maxPrecision } = require('../../../lib/number-formatter');
+const { isInternalUser } = require('../lib/helpers');
 
 /**
  * Gets label text for line
@@ -62,7 +63,9 @@ const getLineValues = (lines) => {
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
 
-  const f = formFactory(`/admin/return/quantities`);
+  const action = `${isInternalUser(request) ? '/admin' : ''}/return/quantities`;
+
+  const f = formFactory(action);
 
   const suffix = getSuffix(data.reading.units);
 

@@ -1,8 +1,9 @@
 const { formFactory, fields } = require('../../../lib/forms');
+const { isInternalUser } = require('../lib/helpers');
 
 const methodForm = (request) => {
   const { csrfToken } = request.view;
-  const action = `/admin/return/method`;
+  const action = `${isInternalUser(request) ? '/admin' : ''}/return/method`;
 
   const f = formFactory(action);
 

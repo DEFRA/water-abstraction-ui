@@ -66,15 +66,14 @@
                 Return period
               </h4>
 
-              {{# notEqual received_date null }}
+              {{#if isEditable }}
+              <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                <span class="sr-only">Edit return from </span>
+              {{else}}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
-              {{else}}
-                {{#if isEditable }}
-                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
-                  <span class="sr-only">View return from </span>
-                {{/if}}
-              {{/notEqual}}
+              {{/if}}
+
 
               {{# isFirstDayOfMonth start_date }}
                 {{ formatISODate start_date format='MMMM YYYY' }}
@@ -101,9 +100,7 @@
               </a>
               {{/notEqual}}
 
-              {{#if isEditable }}
               </a>
-              {{/if}}
             </div>
 
             <div class="table-cell">

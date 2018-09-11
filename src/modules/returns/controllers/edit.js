@@ -35,8 +35,8 @@ const getAmounts = async (request, h) => {
   const view = await getViewData(request, data);
 
   // Check start date
-  if (moment(data.startDate).isBefore('2018-11-01')) {
-    throw Error(`Cannot edit return ${returnId}, start date is before 01/11/2018`);
+  if (moment(data.startDate).isBefore('2017-11-01')) {
+    throw Error(`Cannot edit return ${returnId}, start date is before 01/11/2017`);
   }
 
   data.versionNumber = (data.versionNumber || 0) + 1;
@@ -281,7 +281,8 @@ const postSingleTotal = async (request, h) => {
 
     request.sessionStore.set('internalReturnFlow', d);
 
-    return h.redirect('/admin/return/basis');
+    const path = isSingleTotal ? `/admin/return/basis` : `/admin/return/quantities`;
+    return h.redirect(path);
   }
 
   return h.view('water/returns/internal/form', {
@@ -320,8 +321,8 @@ const postBasis = async (request, h) => {
     const d = applyBasis(data, getValues(form));
     request.sessionStore.set('internalReturnFlow', d);
 
-    const path = get(d, 'reading.totalFlag') ? '/admin/return/confirm' : '/admin/return/quantities';
-    return h.redirect(path);
+    // const path = get(d, 'reading.totalFlag') ? '/admin/return/confirm' : '/admin/return/quantities';
+    return h.redirect(`/admin/return/confirm`);
   }
 
   return h.view('water/returns/internal/form', {
@@ -360,7 +361,7 @@ const postQuantities = async (request, h) => {
 
     request.sessionStore.set('internalReturnFlow', d);
 
-    return h.redirect(`/admin/return/confirm`);
+    return h.redirect(`/admin/return/basis`);
   }
   return h.view('water/returns/internal/form', {
     ...view,

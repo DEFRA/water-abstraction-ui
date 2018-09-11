@@ -4,6 +4,7 @@
  * @todo - ensure session data is valid at every step
  */
 const { set, get } = require('lodash');
+const Boom = require('boom');
 const moment = require('moment');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
@@ -15,7 +16,7 @@ const {
   saveSessionData,
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
-const { getReturnTotal, isInternalUser, getScopedPath } = require('../lib/helpers');
+const { getLicenceNumbers, getReturnTotal, isInternalUser, getScopedPath, isInternalReturnsUser } = require('../lib/helpers');
 
 /**
  * Get common view data used by many controllers
@@ -42,11 +43,20 @@ const getAmounts = async (request, h) => {
 
   const data = await returns.getReturn(returnId);
 
+  // Check user can access this licence
+  const { entity_id: entityId } = request.auth.credentials;
+  const isIntReturns = isInternalReturnsUser(request);
+  const documentHeaders = await getLicenceNumbers(entityId, { system_external_id: data.licenceNumber }, isIntReturns);
+
+  if (documentHeaders.length === 0) {
+    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
+  }
+
   const view = await getViewData(request, data);
 
   // Check start date
-  if (moment(data.startDate).isBefore('2018-11-01')) {
-    throw Error(`Cannot edit return ${returnId}, start date is before 01/11/2018`);
+  if (moment(data.endDate).isBefore('2018-10-31')) {
+    throw Error(`Cannot edit return ${returnId}, end date is before 31/10/2018`);
   }
 
   data.versionNumber = (data.versionNumber || 0) + 1;

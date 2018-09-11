@@ -164,7 +164,7 @@ const addEditableFlag = (returns, request) => {
   const isInternalReturns = isInternalReturnsUser(request);
 
   return returns.map(row => {
-    const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2017-11-01');
+    const isAfterSummer2018 = moment(row.end_date).isSameOrAfter('2018-10-31');
     const isEditable = isAfterSummer2018 &&
       (
         (isInternal && isInternalReturns) ||

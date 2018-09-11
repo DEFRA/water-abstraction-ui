@@ -30,7 +30,8 @@
 
   {{# equal returns.length 0 }}
   <p>No returns found.</p>
-  {{/equal}}
+
+  {{ else }}
 
 
   <div class="grid-row">
@@ -143,6 +144,8 @@
 
     </div>
   </div>
+
+    {{/equal}}
 
 
 

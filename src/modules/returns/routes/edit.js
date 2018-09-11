@@ -248,7 +248,7 @@ module.exports = {
       description: 'Get basis for supplied return data',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are the amounts measured or estimated?',
+          pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
         }
       }
@@ -266,7 +266,7 @@ module.exports = {
       description: 'Post handler for records basis',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are the amounts measured or estimated?',
+          pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
         }
       }

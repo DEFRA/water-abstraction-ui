@@ -542,6 +542,8 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
   return 'Abstraction conditions TODO:';
 });
 
+handlebars.registerHelper('yesIfTruthy', value => value ? 'Yes' : '');
+
 handlebars.registerHelper('naldRegion', function (code) {
   const codes = {
     1: 'Anglian',

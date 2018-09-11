@@ -21,19 +21,20 @@ const form = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('basis', {
-    label: 'What is your return based on?',
+    label: 'Are you using estimates?',
     errors: {
       'any.required': {
-        message: 'Select measurements or estimates'
+        message: 'Select if you are using estimates or not'
       }
     },
     choices: [
-      { value: 'measured',
-        label: 'Measurements'
-      },
       {
         value: 'estimated',
-        label: 'Estimates'
+        label: 'Yes'
+      },
+
+      { value: 'measured',
+        label: 'No'
       }
 
     ]}));

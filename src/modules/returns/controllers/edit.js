@@ -305,6 +305,7 @@ const postSingleTotal = async (request, h) => {
     saveSessionData(request, d);
 
     return h.redirect(getScopedPath(request, '/return/basis'));
+
   }
 
   return h.view('water/returns/internal/form', {
@@ -343,8 +344,10 @@ const postBasis = async (request, h) => {
     const d = applyBasis(data, getValues(form));
     saveSessionData(request, d);
 
+
     const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
     return h.redirect(getScopedPath(request, path));
+
   }
 
   return h.view('water/returns/internal/form', {

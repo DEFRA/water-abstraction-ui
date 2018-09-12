@@ -9,7 +9,7 @@ const { isInternalUser } = require('./helpers');
  * @return {String}
  */
 const getSessionKey = (request) => {
-  const isInternal = isInternalUser(request);
+  const isInternal = request.permissions.hasPermission('admin.defra');
   return `${isInternal ? 'internal' : 'external'}ReturnFlow`;
 };
 

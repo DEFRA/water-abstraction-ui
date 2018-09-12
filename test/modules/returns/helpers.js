@@ -6,34 +6,6 @@ const lab = exports.lab = Lab.script();
 
 const helpers = require('../../../src/modules/returns/lib/helpers');
 
-lab.experiment('isInternalReturnsUser', () => {
-  lab.test('returns false if the user does not have returns permission', async () => {
-    const request = {
-      permissions: {
-        returns: {
-          read: false
-        }
-      }
-    };
-
-    const isInternalReturnsUser = helpers.isInternalReturnsUser(request);
-    expect(isInternalReturnsUser).to.be.false();
-  });
-
-  lab.test('there is a result for the user with returns', async () => {
-    const request = {
-      permissions: {
-        returns: {
-          read: true
-        }
-      }
-    };
-
-    const isInternalReturnsUser = helpers.isInternalReturnsUser(request);
-    expect(isInternalReturnsUser).to.be.true();
-  });
-});
-
 lab.experiment('getInternalRoles', () => {
   lab.test('returns the original roles if the user is an internal user', async () => {
     const isInternalUser = true;

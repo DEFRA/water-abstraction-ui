@@ -1,9 +1,10 @@
 const { formFactory, fields } = require('../../../lib/forms');
-const { isInternalUser } = require('../lib/helpers');
 
 const unitsForm = (request) => {
   const { csrfToken } = request.view;
-  const action = `${isInternalUser(request) ? '/admin' : ''}/return/units`;
+
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const action = `${isInternal ? '/admin' : ''}/return/units`;
 
   const f = formFactory(action);
 
@@ -15,7 +16,7 @@ const unitsForm = (request) => {
       }
     },
     choices: [
-      { value: 'm3', label: 'Cubic metres' },
+      { value: 'm³', label: 'Cubic metres' },
       { value: 'l', label: 'Litres' },
       { value: 'Ml', label: 'Megalitres' },
       { value: 'gal', label: 'Gallons' }

@@ -76,8 +76,12 @@ experiment('getPermissions::primary user', () => {
     expect(permissions.returns.read).to.be.true();
   });
 
-  test('can edit returns', async () => {
-    expect(permissions.returns.edit).to.be.true();
+  test('can submit returns', async () => {
+    expect(permissions.returns.submit).to.be.true();
+  });
+
+  test('cannot edit returns', async () => {
+    expect(permissions.returns.edit).to.be.false();
   });
 });
 
@@ -107,6 +111,10 @@ experiment('getPermissions::agent', () => {
 
   test('user does not have admin permission', async () => {
     expect(permissions.admin.defra).to.be.false();
+  });
+
+  test('cannot edit returns', async () => {
+    expect(permissions.returns.edit).to.be.false();
   });
 });
 
@@ -146,8 +154,12 @@ experiment('getPermissions::agent with data returns', () => {
     expect(permissions.returns.read).to.be.true();
   });
 
-  test('can edit returns', async () => {
-    expect(permissions.returns.edit).to.be.true();
+  test('can submit returns', async () => {
+    expect(permissions.returns.submit).to.be.true();
+  });
+
+  test('cannot edit returns', async () => {
+    expect(permissions.returns.edit).to.be.false();
   });
 });
 

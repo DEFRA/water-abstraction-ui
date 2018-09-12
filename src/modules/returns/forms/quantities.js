@@ -3,7 +3,6 @@ const moment = require('moment');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines } = require('../lib/return-helpers');
 const { maxPrecision } = require('../../../lib/number-formatter');
-const { isInternalUser } = require('../lib/helpers');
 
 /**
  * Gets label text for line
@@ -63,7 +62,8 @@ const getLineValues = (lines) => {
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
 
-  const action = `${isInternalUser(request) ? '/admin' : ''}/return/quantities`;
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const action = `${isInternal ? '/admin' : ''}/return/quantities`;
 
   const f = formFactory(action);
 
@@ -74,7 +74,18 @@ const quantitiesForm = (request, data) => {
   for (let line of lines) {
     const name = getName(line);
     const label = getLabel(line);
-    f.fields.push(fields.text(name, { label, suffix }));
+    f.fields.push(fields.text(name, { label,
+      suffix,
+      mapper: 'numberMapper',
+      errors: {
+        'number.base': {
+          message: 'Enter an amount in numbers'
+        },
+        'number.min': {
+          message: 'Enter an amount of 0 or above'
+        }
+      }
+    }));
   }
 
   f.fields.push(fields.button());
@@ -101,7 +112,7 @@ const quantitiesSchema = (data) => {
     const name = getName(line);
     return {
       ...acc,
-      [name]: Joi.number().allow('')
+      [name]: Joi.number().allow(null).min(0)
     };
   }, schema);
 };

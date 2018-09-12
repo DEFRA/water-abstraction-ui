@@ -26,7 +26,7 @@ module.exports = {
           showMeta: true
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -58,7 +58,7 @@ module.exports = {
           }
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -79,7 +79,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -100,7 +100,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -120,7 +120,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -141,7 +141,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -162,7 +162,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -183,7 +183,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -204,7 +204,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -225,7 +225,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -246,7 +246,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -267,7 +267,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -288,7 +288,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -309,7 +309,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -331,7 +331,7 @@ module.exports = {
           showMeta: true
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }
@@ -352,7 +352,7 @@ module.exports = {
           activeNavLink: 'returns'
         },
         hapiRouteAcl: {
-          permissions: ['returns:edit']
+          permissions: ['returns:submit']
         }
       }
     }

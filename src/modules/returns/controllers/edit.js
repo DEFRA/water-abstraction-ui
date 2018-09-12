@@ -5,18 +5,17 @@
  */
 const { set, get } = require('lodash');
 const Boom = require('boom');
-const moment = require('moment');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
-const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = require('../lib/return-helpers');
+const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn, applyExternalUser } = require('../lib/return-helpers');
 const {
   getSessionData,
   saveSessionData,
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
-const { getLicenceNumbers, getReturnTotal, isInternalUser, getScopedPath, isInternalReturnsUser } = require('../lib/helpers');
+const { getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
 
 /**
  * Get common view data used by many controllers
@@ -26,11 +25,12 @@ const { getLicenceNumbers, getReturnTotal, isInternalUser, getScopedPath, isInte
  */
 const getViewData = async (request, data) => {
   const documentHeader = await getWaterLicence(data.licenceNumber);
+  const isInternal = request.permissions.hasPermission('admin.defra');
   return {
     ...request.view,
     documentHeader,
     data,
-    activeNavLink: isInternalUser(request) ? 'view' : 'returns'
+    activeNavLink: isInternal ? 'view' : 'returns'
   };
 };
 
@@ -43,24 +43,23 @@ const getAmounts = async (request, h) => {
 
   const data = await returns.getReturn(returnId);
 
-  // Check user can access this licence
+  // Check CRM ownership of document
   const { entity_id: entityId } = request.auth.credentials;
-  const isIntReturns = isInternalReturnsUser(request);
-  const documentHeaders = await getLicenceNumbers(entityId, { system_external_id: data.licenceNumber }, isIntReturns);
-
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const documentHeaders = await getLicenceNumbers(entityId, { system_external_id: data.licenceNumber }, isInternal);
   if (documentHeaders.length === 0) {
+    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
+  }
+
+  // Check date/roles
+  if (!canEdit(request, data)) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
   }
 
   const view = await getViewData(request, data);
 
-  // Check start date
-  if (moment(data.endDate).isBefore('2018-10-31')) {
-    throw Error(`Cannot edit return ${returnId}, end date is before 31/10/2018`);
-  }
-
   data.versionNumber = (data.versionNumber || 0) + 1;
-  saveSessionData(request, data);
+  saveSessionData(request, applyExternalUser(data));
 
   const form = setValues(amountsForm(request), data);
 
@@ -154,7 +153,7 @@ const getSubmitted = async (request, h) => {
   // Clear session
   deleteSessionData(request);
 
-  const isInternal = isInternalUser(request);
+  const isInternal = request.permissions.hasPermission('admin.defra');
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId} `;
 
   return h.view('water/returns/internal/submitted', {
@@ -258,7 +257,8 @@ const postUnits = async (request, h) => {
     saveSessionData(request, data);
 
     // Only internal staff have screen for single total
-    const path = isInternalUser(request) ? '/return/single-total' : '/return/basis';
+    const isInternal = request.permissions.hasPermission('admin.defra');
+    const path = isInternal ? '/return/single-total' : '/return/basis';
 
     return h.redirect(getScopedPath(request, path));
   }

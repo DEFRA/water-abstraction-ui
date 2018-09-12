@@ -91,10 +91,14 @@ const canViewMutlipleLicences = (scope = [], roles = []) => {
  * Colleagues with returns access granted
  * Internal users with the returns scope
  */
-const canEditReturns = (scope = [], roles = []) => {
+const canSubmitReturns = (scope = [], roles = []) => {
   return isExternal(scope)
     ? isPrimaryUser(roles) || isUserReturnsUser(roles)
     : hasMatch(scope, [scopes.returns]);
+};
+
+const canEditReturns = (scope = [], roles = []) => {
+  return hasMatch(scope, [scopes.returns]);
 };
 
 const canReadReturns = (scope = [], roles = []) => {
@@ -122,6 +126,7 @@ const getPermissions = (credentials = {}) => {
     },
     returns: {
       read: canReadReturns(scope, roles),
+      submit: canSubmitReturns(scope, roles),
       edit: canEditReturns(scope, roles)
     },
     ar: {

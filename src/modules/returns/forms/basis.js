@@ -16,7 +16,8 @@ const mapModelToForm = (data) => {
 
 const form = (request) => {
   const { csrfToken } = request.view;
-  const action = `/admin/return/basis`;
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const action = `${isInternal ? '/admin' : ''}/return/basis`;
 
   const f = formFactory(action);
 

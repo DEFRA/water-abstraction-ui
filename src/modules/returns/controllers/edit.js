@@ -4,22 +4,33 @@
  * @todo - ensure session data is valid at every step
  */
 const { set, get } = require('lodash');
-const moment = require('moment');
+const Boom = require('boom');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
 const { returns } = require('../../../lib/connectors/water');
-const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn } = require('../lib/return-helpers');
-const { fetchReturnData, persistReturnData } = require('../lib/session-helpers');
-const { getReturnTotal, isInternalUser } = require('../lib/helpers');
+const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn, applyExternalUser } = require('../lib/return-helpers');
+const {
+  getSessionData,
+  saveSessionData,
+  deleteSessionData,
+  submitReturnData } = require('../lib/session-helpers');
+const { getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
 
+/**
+ * Get common view data used by many controllers
+ * @param {Object} HAPI request instance
+ * @param {Object} data - the return model
+ * @return {Promise} resolves with view data
+ */
 const getViewData = async (request, data) => {
   const documentHeader = await getWaterLicence(data.licenceNumber);
+  const isInternal = request.permissions.hasPermission('admin.defra');
   return {
     ...request.view,
     documentHeader,
     data,
-    activeNavLink: isInternalUser(request) ? 'view' : 'returns'
+    activeNavLink: isInternal ? 'view' : 'returns'
   };
 };
 
@@ -32,15 +43,23 @@ const getAmounts = async (request, h) => {
 
   const data = await returns.getReturn(returnId);
 
-  const view = await getViewData(request, data);
-
-  // Check start date
-  if (moment(data.startDate).isBefore('2017-11-01')) {
-    throw Error(`Cannot edit return ${returnId}, start date is before 01/11/2017`);
+  // Check CRM ownership of document
+  const { entity_id: entityId } = request.auth.credentials;
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const documentHeaders = await getLicenceNumbers(entityId, { system_external_id: data.licenceNumber }, isInternal);
+  if (documentHeaders.length === 0) {
+    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
   }
 
+  // Check date/roles
+  if (!canEdit(request, data)) {
+    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
+  }
+
+  const view = await getViewData(request, data);
+
   data.versionNumber = (data.versionNumber || 0) + 1;
-  request.sessionStore.set('internalReturnFlow', data);
+  saveSessionData(request, applyExternalUser(data));
 
   const form = setValues(amountsForm(request), data);
 
@@ -56,7 +75,7 @@ const getAmounts = async (request, h) => {
  * @param {String} request.query.returnId - the return to edit
  */
 const postAmounts = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
 
   const view = await getViewData(request, data);
 
@@ -67,10 +86,10 @@ const postAmounts = async (request, h) => {
 
     const d = applyNilReturn(data, isNil);
 
-    request.sessionStore.set('internalReturnFlow', d);
+    saveSessionData(request, d);
 
-    const path = isNil ? '/admin/return/nil-return' : '/admin/return/method';
-    return h.redirect(path);
+    const path = isNil ? '/return/nil-return' : '/return/method';
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/internal/form', {
@@ -84,7 +103,7 @@ const postAmounts = async (request, h) => {
  * Confirmation screen for nil return
  */
 const getNilReturn = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = confirmForm(request);
@@ -100,15 +119,15 @@ const getNilReturn = async (request, h) => {
  * Confirmation screen for nil return
  */
 const postNilReturn = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = handleRequest(confirmForm(request), request);
 
   if (form.isValid) {
     try {
-      await persistReturnData(data, request);
-      return h.redirect('/admin/return/submitted');
+      await submitReturnData(data, request);
+      return h.redirect(getScopedPath(request, '/return/submitted'));
     } catch (error) {
       console.error(error);
       view.error = error;
@@ -128,13 +147,13 @@ const postNilReturn = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   // Clear session
-  request.sessionStore.delete('internalReturnFlow');
+  deleteSessionData(request);
 
-  const isInternal = isInternalUser(request);
+  const isInternal = request.permissions.hasPermission('admin.defra');
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId} `;
 
   return h.view('water/returns/internal/submitted', {
@@ -150,7 +169,7 @@ const getSubmitted = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const getMethod = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = methodForm(request);
@@ -167,7 +186,7 @@ const getMethod = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const postMethod = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = handleRequest(methodForm(request), request);
@@ -176,12 +195,12 @@ const postMethod = async (request, h) => {
     const { method } = getValues(form);
 
     const paths = {
-      oneMeter: `/admin/return/meter`,
-      multipleMeters: `/admin/return/multiple-meters`,
-      abstractionVolumes: `/admin/return/units`
+      oneMeter: `/return/meter`,
+      multipleMeters: `/return/multiple-meters`,
+      abstractionVolumes: `/return/units`
     };
 
-    return h.redirect(paths[method]);
+    return h.redirect(getScopedPath(request, paths[method]));
   }
 
   return h.view('water/returns/internal/form', {
@@ -195,7 +214,7 @@ const postMethod = async (request, h) => {
  * Message about multiple meters not being supported
  */
 const getMultipleMeters = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   return h.view('water/returns/internal/multiple-meters', {
@@ -208,7 +227,7 @@ const getMultipleMeters = async (request, h) => {
  * Form to choose units
  */
 const getUnits = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const units = get(data, 'reading.units');
@@ -226,7 +245,7 @@ const getUnits = async (request, h) => {
  * Post handler for units form
  */
 const postUnits = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = handleRequest(unitsForm(request), request);
@@ -235,9 +254,13 @@ const postUnits = async (request, h) => {
     // Persist chosen units to session
     const { units } = getValues(form);
     set(data, 'reading.units', units);
-    request.sessionStore.set('internalReturnFlow', data);
+    saveSessionData(request, data);
 
-    return h.redirect('/admin/return/single-total');
+    // Only internal staff have screen for single total
+    const isInternal = request.permissions.hasPermission('admin.defra');
+    const path = isInternal ? '/return/single-total' : '/return/basis';
+
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/internal/form', {
@@ -251,7 +274,7 @@ const postUnits = async (request, h) => {
  * Form to choose whether single figure or multiple amounts
  */
 const getSingleTotal = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = singleTotalForm(request);
@@ -267,7 +290,7 @@ const getSingleTotal = async (request, h) => {
  * Post handler for single total
  */
 const postSingleTotal = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
@@ -279,10 +302,10 @@ const postSingleTotal = async (request, h) => {
     const d = isSingleTotal ? applySingleTotal(data, total) : data;
     set(d, 'reading.totalFlag', isSingleTotal);
 
-    request.sessionStore.set('internalReturnFlow', d);
+    saveSessionData(request, d);
 
-    const path = isSingleTotal ? `/admin/return/basis` : `/admin/return/quantities`;
-    return h.redirect(path);
+    return h.redirect(getScopedPath(request, '/return/basis'));
+
   }
 
   return h.view('water/returns/internal/form', {
@@ -296,7 +319,7 @@ const postSingleTotal = async (request, h) => {
  * What is the basis for the return - amounts/pump/herd
  */
 const getBasis = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = basisForm(request);
@@ -312,17 +335,19 @@ const getBasis = async (request, h) => {
  * Post handler for basis form
  */
 const postBasis = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = handleRequest(basisForm(request), request, basisSchema);
 
   if (form.isValid) {
     const d = applyBasis(data, getValues(form));
-    request.sessionStore.set('internalReturnFlow', d);
+    saveSessionData(request, d);
 
-    // const path = get(d, 'reading.totalFlag') ? '/admin/return/confirm' : '/admin/return/quantities';
-    return h.redirect(`/admin/return/confirm`);
+
+    const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
+    return h.redirect(getScopedPath(request, path));
+
   }
 
   return h.view('water/returns/internal/form', {
@@ -336,7 +361,7 @@ const postBasis = async (request, h) => {
  * Screen for user to enter quantities
  */
 const getQuantities = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const form = quantitiesForm(request, data);
@@ -349,7 +374,7 @@ const getQuantities = async (request, h) => {
 };
 
 const postQuantities = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
   const schema = quantitiesSchema(data);
@@ -359,9 +384,9 @@ const postQuantities = async (request, h) => {
     // Persist
     const d = applyQuantities(data, getValues(form));
 
-    request.sessionStore.set('internalReturnFlow', d);
+    saveSessionData(request, d);
 
-    return h.redirect(`/admin/return/basis`);
+    return h.redirect(getScopedPath(request, `/return/confirm`));
   }
   return h.view('water/returns/internal/form', {
     ...view,
@@ -374,10 +399,10 @@ const postQuantities = async (request, h) => {
  * Confirm screen for user to check amounts before submission
  */
 const getConfirm = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
   const view = await getViewData(request, data);
 
-  const form = confirmForm(request, `/admin/return/confirm`);
+  const form = confirmForm(request, `/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
     ...view,
@@ -391,12 +416,12 @@ const getConfirm = async (request, h) => {
  * Confirm return
  */
 const postConfirm = async (request, h) => {
-  const data = fetchReturnData(request);
+  const data = getSessionData(request);
 
   // Post return
-  await persistReturnData(data, request);
+  await submitReturnData(data, request);
 
-  return h.redirect('/admin/return/submitted');
+  return h.redirect(getScopedPath(request, '/return/submitted'));
 };
 
 module.exports = {

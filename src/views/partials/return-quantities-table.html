@@ -14,10 +14,10 @@
             {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
             {{#equal return.reading.units 'l' }}Litres{{/equal}}
             {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
-            {{#equal return.reading.units 'm3' }}Cubic metres{{/equal}}
+            {{#equal return.reading.units 'm³' }}Cubic metres{{/equal}}
           </th>
 
-          {{#notEqual return.reading.units 'm3' }}
+          {{#notEqual return.reading.units 'm³' }}
           <th class="numeric">
             Cubic metres
           </th>
@@ -50,7 +50,7 @@
             {{ formatQuantity this.quantity }}
           </td>
 
-          {{#notEqual ../return.reading.units 'm3' }}
+          {{#notEqual ../return.reading.units 'm³' }}
           <td class="numeric">
             {{ formatQuantity (convertToCubicMetres this.quantity unit=../return.reading.units)  }}
           </td>
@@ -64,7 +64,7 @@
         <tr>
           <th>Total</th>
           <td class="numeric">{{ formatQuantity total }}</td>
-          {{#notEqual return.reading.units 'm3' }}
+          {{#notEqual return.reading.units 'm³' }}
           <td class="numeric">{{ formatQuantity (convertToCubicMetres total unit=return.reading.units )}}</td>
           {{/notEqual}}
         </tr>

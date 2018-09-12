@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { isFinite } = require('lodash');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -68,8 +69,25 @@ const dateMapper = {
   }
 };
 
+const numberMapper = {
+  import: (fieldName, payload) => {
+    const value = payload[fieldName];
+    if (value === '') {
+      return null;
+    }
+    if (isFinite(value)) {
+      return parseFloat(value);
+    }
+    return value;
+  },
+  export: (value) => {
+    return value;
+  }
+};
+
 module.exports = {
   defaultMapper,
   booleanMapper,
-  dateMapper
+  dateMapper,
+  numberMapper
 };

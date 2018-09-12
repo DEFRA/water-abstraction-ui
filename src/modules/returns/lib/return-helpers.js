@@ -92,6 +92,19 @@ const getPeriodStartEnd = (data) => {
 };
 
 /**
+ * Sets up data model for external user
+ * External users do not have the option to enter a single total figure
+ * so this must be set to false so that it validates
+ * @param {Object} data return data model
+ * @return {Object} data updated return data model
+ */
+const applyExternalUser = (data) => {
+  const d = cloneDeep(data);
+  set(d, 'reading.totalFlag', false);
+  return d;
+};
+
+/**
  * Applies single total to lines by distributing the value among all
  * lines within abstraction period
  * Period start day/month
@@ -237,5 +250,6 @@ module.exports = {
   applyUserDetails,
   applyNilReturn,
   getFormLines,
-  applyStatus
+  applyStatus,
+  applyExternalUser
 };

@@ -1,13 +1,12 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const moment = require('moment');
+// const moment = require('moment');
 const { get } = require('lodash');
 const {
   getLicenceNumbers,
   getReturnsViewData,
-  isInternalReturnsUser,
-  isInternalUser,
-  getReturnTotal
+  getReturnTotal,
+  canEdit
 } = require('../lib/helpers');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -55,16 +54,14 @@ const getReturn = async (request, h) => {
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const isInternalReturns = isInternalReturnsUser(request);
-  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternalReturns);
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternal);
 
   if (!documentHeader) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
-  // Whether the current user can edit this return via digital service
-  const canEdit = isInternalReturns && moment(data.startDate).isSameOrAfter('2018-11-01');
-  const showVersions = isInternalUser(request) && get(data, 'versions[0].email');
+  const showVersions = isInternal && get(data, 'versions[0].email');
 
   const view = {
     total: getReturnTotal(data),
@@ -72,7 +69,7 @@ const getReturn = async (request, h) => {
     return: data,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
-    canEdit,
+    canEdit: canEdit(request, data),
     showVersions
   };
   return h.view('water/returns/return', view);

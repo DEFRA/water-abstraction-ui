@@ -1,17 +1,17 @@
 const Joi = require('joi');
 const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
-const external = constants.scope.external;
+const returns = constants.scope.returns;
 const { VALID_GUID } = require('../../../lib/validators');
 
 module.exports = {
   getAmounts: {
     method: 'GET',
-    path: '/return',
+    path: '/admin/return',
     handler: controller.getAmounts,
     options: {
       auth: {
-        scope: 'external'
+        scope: returns
       },
       description: 'Form to start the return process for a return, asks if nil return',
       validate: {
@@ -24,20 +24,17 @@ module.exports = {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
           activeNavLink: 'returns',
           showMeta: true
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
   },
   postAmounts: {
     method: 'POST',
-    path: '/return',
+    path: '/admin/return',
     handler: controller.postAmounts,
     options: {
       auth: {
-        scope: 'external'
+        scope: returns
       },
       description: 'Form handler for nil returns',
       validate: {
@@ -56,9 +53,6 @@ module.exports = {
             csrf_token: VALID_GUID,
             isNil: Joi.string().required().valid('Yes', 'No')
           }
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -66,20 +60,17 @@ module.exports = {
 
   getNilReturn: {
     method: 'GET',
-    path: '/return/nil-return',
+    path: '/admin/return/nil-return',
     handler: controller.getNilReturn,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -87,20 +78,17 @@ module.exports = {
 
   postNilReturn: {
     method: 'POST',
-    path: '/return/nil-return',
+    path: '/admin/return/nil-return',
     handler: controller.postNilReturn,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Post handler for nil return',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - nil submitted',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -108,19 +96,16 @@ module.exports = {
 
   getSubmitted: {
     method: 'GET',
-    path: '/return/submitted',
+    path: '/admin/return/submitted',
     handler: controller.getSubmitted,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -128,20 +113,17 @@ module.exports = {
 
   getMethod: {
     method: 'GET',
-    path: '/return/method',
+    path: '/admin/return/method',
     handler: controller.getMethod,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Ask whether meter readings are used',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -149,20 +131,17 @@ module.exports = {
 
   postMethod: {
     method: 'POST',
-    path: '/return/method',
+    path: '/admin/return/method',
     handler: controller.postMethod,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'POST handler for meter readings routing',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -170,20 +149,17 @@ module.exports = {
 
   getMultipleMeters: {
     method: 'GET',
-    path: '/return/multiple-meters',
+    path: '/admin/return/multiple-meters',
     handler: controller.getMultipleMeters,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Messaging around multiple meters not currently supported',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -191,20 +167,17 @@ module.exports = {
 
   getUnits: {
     method: 'GET',
-    path: '/return/units',
+    path: '/admin/return/units',
     handler: controller.getUnits,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Get units used for this return',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -212,20 +185,53 @@ module.exports = {
 
   postUnits: {
     method: 'POST',
-    path: '/return/units',
+    path: '/admin/return/units',
     handler: controller.postUnits,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Post handler for units used for this return',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
+        }
+      }
+    }
+  },
+
+  getSingleTotal: {
+    method: 'GET',
+    path: '/admin/return/single-total',
+    handler: controller.getSingleTotal,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Get whether a single total was submitted for this return',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - is it a single amount?',
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  postSingleTotal: {
+    method: 'POST',
+    path: '/admin/return/single-total',
+    handler: controller.postSingleTotal,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Post handler for single total submitted for this return',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - is it a single amount?',
+          activeNavLink: 'returns'
         }
       }
     }
@@ -233,20 +239,17 @@ module.exports = {
 
   getBasis: {
     method: 'GET',
-    path: '/return/basis',
+    path: '/admin/return/basis',
     handler: controller.getBasis,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Get basis for supplied return data',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -254,20 +257,17 @@ module.exports = {
 
   postBasis: {
     method: 'POST',
-    path: '/return/basis',
+    path: '/admin/return/basis',
     handler: controller.postBasis,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Post handler for records basis',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -275,20 +275,17 @@ module.exports = {
 
   getQuantities: {
     method: 'GET',
-    path: '/return/quantities',
+    path: '/admin/return/quantities',
     handler: controller.getQuantities,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Display quantities form',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -296,20 +293,17 @@ module.exports = {
 
   postQuantities: {
     method: 'POST',
-    path: '/return/quantities',
+    path: '/admin/return/quantities',
     handler: controller.postQuantities,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Post handler for quantities',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -317,11 +311,11 @@ module.exports = {
 
   getConfirm: {
     method: 'GET',
-    path: '/return/confirm',
+    path: '/admin/return/confirm',
     handler: controller.getConfirm,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Display confirmation screen of returned quantities',
       plugins: {
@@ -329,9 +323,6 @@ module.exports = {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns',
           showMeta: true
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -339,20 +330,17 @@ module.exports = {
 
   postConfirm: {
     method: 'POST',
-    path: '/return/confirm',
+    path: '/admin/return/confirm',
     handler: controller.postConfirm,
     options: {
       auth: {
-        scope: external
+        scope: returns
       },
       description: 'Post handler for confirmation screen',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }

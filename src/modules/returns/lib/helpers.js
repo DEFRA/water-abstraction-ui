@@ -1,6 +1,5 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { get } = require('lodash');
 const moment = require('moment');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
@@ -12,9 +11,9 @@ const { externalRoles } = require('../../../lib/constants');
  * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, filter = {}, isInternalReturnsUser) => {
+const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
   filter.entity_id = entityId;
-  filter.roles = getInternalRoles(isInternalReturnsUser, filter.roles);
+  filter.roles = getInternalRoles(isInternal, filter.roles);
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
@@ -152,6 +151,35 @@ const getReturnTotal = (ret) => {
 };
 
 /**
+ * Whether the user of the current request can edit the supplied return row
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} return - the return row from the return service or water service model
+ * @return {Boolean}
+ */
+const canEdit = (request, ret) => {
+  const endDate = ret.endDate || ret.end_date;
+  const { status } = ret;
+  const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
+  const canSubmit = request.permissions.hasPermission('returns.submit');
+  const canEdit = request.permissions.hasPermission('returns.edit');
+
+  return isAfterSummer2018 &&
+    (
+      (canEdit) ||
+      (canSubmit && (status === 'due'))
+    );
+};
+
+/**
+ * Checks whether return has been received
+ * @param {Object} ret
+ * @return {Boolean}
+ */
+const returnIsReceived = (ret) => {
+  return ret.date_received !== null;
+};
+
+/**
  * Adds an editable flag to each return in list
  * This is based on the status of the return, and whether the user
  * has internal returns role.
@@ -160,19 +188,15 @@ const getReturnTotal = (ret) => {
  * @return {Array} returns with isEditable flag added
  */
 const addEditableFlag = (returns, request) => {
-  const isInternal = isInternalUser(request);
-  const isInternalReturns = isInternalReturnsUser(request);
-
   return returns.map(row => {
-    const isAfterSummer2018 = moment(row.start_date).isSameOrAfter('2018-11-01');
-    const isEditable = isAfterSummer2018 &&
-      (
-        (isInternal && isInternalReturns) ||
-        (!isInternal && row.status === 'due')
-      );
+    const isEditable = canEdit(request, row);
+    const isReceived = returnIsReceived(row);
+    const isClickable = isEditable || isReceived;
     return {
       ...row,
-      isEditable
+      isEditable,
+      isReceived,
+      isClickable
     };
   });
 };
@@ -194,10 +218,10 @@ const getReturnsViewData = async (request) => {
 
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
-  const isInternalReturns = isInternalReturnsUser(request);
-  filter.roles = getInternalRoles(isInternalReturns, filter.roles);
 
-  const documents = await getLicenceNumbers(entityId, filter, isInternalReturns);
+  const isInternal = request.permissions.hasPermission('admin.defra');
+
+  const documents = await getLicenceNumbers(entityId, filter, isInternal);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const view = {
@@ -219,18 +243,22 @@ const getReturnsViewData = async (request) => {
 };
 
 /**
- * Does the hapi request object represent an internal user with returns access?
- */
-const isInternalReturnsUser = request => get(request, 'permissions.returns.read', false);
-
-const isInternalUser = request => get(request, 'permissions.admin.defra', false);
-
-/**
  * If the user is an external user, add the CRM roles that the requesting user
  * would need to have one of, in order to be authorised to view a return.
  */
 const getInternalRoles = (isInternalUser, roles) => {
   return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
+};
+
+/**
+ * Redirects to admin path if internal user
+ * @param {Object} request - HAPI request instance
+ * @param {String} path - the path to redirect to without '/admin'
+ * @return {String} path with /admin if internal user
+ */
+const getScopedPath = (request, path) => {
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  return isInternal ? `/admin${path}` : path;
 };
 
 module.exports = {
@@ -241,8 +269,10 @@ module.exports = {
   getLatestVersion,
   hasGallons,
   getReturnsViewData,
-  isInternalReturnsUser,
-  isInternalUser,
+  // isInternalReturnsUser,
+  // isInternalUser,
   getInternalRoles,
-  getReturnTotal
+  getReturnTotal,
+  getScopedPath,
+  canEdit
 };

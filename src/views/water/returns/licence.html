@@ -66,15 +66,15 @@
                 Return period
               </h4>
 
-              {{# notEqual received_date null }}
+              {{#if isReceived }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
               {{else}}
                 {{#if isEditable }}
                 <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
-                  <span class="sr-only">View return from </span>
+                  <span class="sr-only">Edit return from </span>
                 {{/if}}
-              {{/notEqual}}
+              {{/if}}
 
               {{# isFirstDayOfMonth start_date }}
                 {{ formatISODate start_date format='MMMM YYYY' }}
@@ -91,7 +91,7 @@
               {{/isLastDayOfMonth }}
 
 
-              {{# notEqual received_date null }}
+              {{#if isClickable }}
                 <span class="sr-only">for
                   {{#each metadata.purposes }}
                   {{ tertiary.description }}
@@ -99,11 +99,8 @@
                   at {{{ titleCase metadata.description  }}}
                  </span>
               </a>
-              {{/notEqual}}
-
-              {{#if isEditable }}
-              </a>
               {{/if}}
+
             </div>
 
             <div class="table-cell">
@@ -127,7 +124,7 @@
                 Status
               </h4>
 
-              {{# equal received_date null }}
+              {{# equal status 'due' }}
               <strong class="badge badge--success badge--caps">
                 Return due
               </strong>

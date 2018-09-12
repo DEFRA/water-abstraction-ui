@@ -2,7 +2,8 @@ const { formFactory, fields } = require('../../../lib/forms');
 
 const methodForm = (request) => {
   const { csrfToken } = request.view;
-  const action = `/admin/return/method`;
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  const action = `${isInternal ? '/admin' : ''}/return/method`;
 
   const f = formFactory(action);
 

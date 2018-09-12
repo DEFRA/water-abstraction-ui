@@ -1,6 +1,17 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
+const { isInternalUser } = require('./helpers');
+
+/**
+ * Gets the key to use for storing return data in user session
+ * @param {Object} request
+ * @return {String}
+ */
+const getSessionKey = (request) => {
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  return `${isInternal ? 'internal' : 'external'}ReturnFlow`;
+};
 
 /**
  * Loads return data from session.
@@ -8,13 +19,34 @@ const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
  * @param {Object} request - HAPI request interface
  * @return {Object} - return data model
  */
-const fetchReturnData = (request) => {
-  const data = request.sessionStore.get('internalReturnFlow');
+const getSessionData = (request) => {
+  const sessionKey = getSessionKey(request);
+
+  const data = request.sessionStore.get(sessionKey);
 
   if (!data) {
     throw Boom.badImplementation(`Return not found in session`);
   }
   return data;
+};
+
+/**
+ * Save return data back to session
+ * @param {Object} request - HAPI request interface
+ * @param {Object} data - current state of return flow
+ */
+const saveSessionData = (request, data) => {
+  const sessionKey = getSessionKey(request);
+  request.sessionStore.set(sessionKey, data);
+};
+
+/**
+ * Delete return data in session
+ * @param {Object} request - HAPI request interface
+ */
+const deleteSessionData = (request) => {
+  const sessionKey = getSessionKey(request);
+  request.sessionStore.delete(sessionKey);
 };
 
 /**
@@ -24,7 +56,7 @@ const fetchReturnData = (request) => {
  * @param {Object} request - HAPI request interface
  * @return {Promise} resolve when data posted to water service
  */
-const persistReturnData = (data, request) => {
+const submitReturnData = (data, request) => {
   const d = applyStatus(applyUserDetails(data, request.auth.credentials));
 
   // Don't bother sending required return lines/versions
@@ -43,6 +75,9 @@ const persistReturnData = (data, request) => {
 };
 
 module.exports = {
-  fetchReturnData,
-  persistReturnData
+  getSessionKey,
+  getSessionData,
+  saveSessionData,
+  deleteSessionData,
+  submitReturnData
 };

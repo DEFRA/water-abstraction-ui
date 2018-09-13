@@ -53,12 +53,15 @@
                 Licence
               </h3>
 
-              {{#if isEditable }}
-              <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
-                <span class="sr-only">Edit {{add ../year 1}} return for licence </span>
-              {{else}}
+
+              {{#if isReceived }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
-                <span class="sr-only">View {{add ../year 1}} return for licence </span>
+                <span class="sr-only">View return from </span>
+              {{else}}
+                {{#if isEditable }}
+                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                  <span class="sr-only">Edit return from </span>
+                {{/if}}
               {{/if}}
 
               {{#if licenceName }}
@@ -80,7 +83,9 @@
                 {{/equal}}
                </span>
 
+               {{#if isClickable }}
               </a>
+              {{/if}}
 
 
             </div>

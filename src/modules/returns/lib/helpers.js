@@ -146,7 +146,7 @@ const getReturnTotal = (ret) => {
   }
   const lines = ret.lines.filter(line => line.quantity !== null);
   return lines.length === 0 ? null : lines.reduce((acc, line) => {
-    return acc + line.quantity;
+    return acc + parseFloat(line.quantity);
   }, 0);
 };
 

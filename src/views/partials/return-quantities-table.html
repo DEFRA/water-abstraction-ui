@@ -1,0 +1,94 @@
+<div class="grid-row">
+  <div class="{{#equal return.reading.units 'm³' }}column-two-thirds{{ else }}column-full{{/equal}}">
+
+
+    <div class="table medium-space table-return-quantities">                                          <!-- a table -->
+
+            <div class="table-row table-head">                                      <!-- the table head -->
+              <div class="table-cell bold-small column-33">
+                {{#equal return.lines.0.timePeriod 'day' }}Day{{/equal}}
+                {{#equal return.lines.0.timePeriod 'week' }}Week ending{{/equal}}
+                {{#equal return.lines.0.timePeriod 'month' }}Month{{/equal}}
+                {{#equal return.lines.0.timePeriod 'year' }}Year{{/equal}}
+              </div>
+              <div class="table-cell bold-small column-33 numbers">
+                {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
+                {{#equal return.reading.units 'l' }}Litres{{/equal}}
+                {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
+                {{#equal return.reading.units 'm³' }}Cubic metres{{/equal}}
+              </div>
+              {{#notEqual return.reading.units 'm³' }}
+              <div class="table-cell bold-small column-33 numbers">
+                Cubic metres
+              </div>
+              {{/notEqual}}
+
+            </div>
+
+            {{#each return.lines }}
+            <div class="table-row medium-space">                                    <!-- a data row starts -->
+
+              <div class="table-cell">
+                <h3>
+                {{#equal timePeriod 'day' }}
+                  {{ formatISODate startDate format='D MMMM' }}
+                {{/equal}}
+
+                {{#equal timePeriod 'week' }}
+                  {{ formatISODate endDate format='D MMMM' }}
+                {{/equal}}
+
+                {{#equal timePeriod 'month' }}
+                  {{ formatISODate startDate format='MMMM' }}
+                {{/equal}}
+                {{#equal timePeriod 'year' }}
+                  {{ formatISODate startDate format='D MMMM YYYY' }} -
+                  {{ formatISODate endDate format='D MMMM YYYY' }}
+                {{/equal}}
+                </h3>
+              </div>
+              <div class="table-cell numbers">
+                <h4 class="context">
+                  {{#equal ../return.reading.units 'gal' }}Gallons{{/equal}}
+                  {{#equal ../return.reading.units 'l' }}Litres{{/equal}}
+                  {{#equal ../return.reading.units 'Ml' }}Megalitres{{/equal}}
+                  {{#equal ../return.reading.units 'm³' }}Cubic metres{{/equal}}
+                </h4>
+                {{ formatQuantity quantity }}
+              </div>
+
+              {{#notEqual ../return.reading.units 'm³' }}
+              <div class="table-cell numbers">
+                <h4 class="context">Cubic metres</h4>
+                {{ formatQuantity (convertToCubicMetres this.quantity unit=../return.reading.units)  }}
+              </div>
+              {{/notEqual}}
+
+            </div>
+            {{/each}}
+
+            <div class="table-row medium-space table-foot">
+              <div class="table-cell">
+                <h3>Total</h3>
+              </div>
+              <div class="table-cell numbers">
+                <h4 class="context">
+                  {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
+                  {{#equal return.reading.units 'l' }}Litres{{/equal}}
+                  {{#equal return.reading.units 'Ml' }}Megalitres{{/equal}}
+                  {{#equal return.reading.units 'm³' }}Cubic metres{{/equal}}
+                </h4>
+                {{ formatQuantity total }}
+              </div>
+              {{#notEqual return.reading.units 'm³' }}
+              <div class="table-cell numbers">
+                <h4 class="context">Cubic metres</h4>
+                {{ formatQuantity (convertToCubicMetres total unit=return.reading.units )}}
+              </div>
+              {{/notEqual}}
+            </div>
+          </div>
+
+
+  </div>
+</div>

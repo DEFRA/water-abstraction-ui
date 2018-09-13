@@ -53,12 +53,16 @@
                 Licence
               </h3>
 
-              {{# notEqual received_date null }}
-              <a href="/returns/return?id={{ return_id }}">
-              {{/notEqual}}
 
-
-              <span class="sr-only">View {{add ../year 1}} return for licence </span>
+              {{#if isReceived }}
+              <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
+                <span class="sr-only">View return from </span>
+              {{else}}
+                {{#if isEditable }}
+                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                  <span class="sr-only">Edit return from </span>
+                {{/if}}
+              {{/if}}
 
               {{#if licenceName }}
               {{ licenceName }}
@@ -79,10 +83,9 @@
                 {{/equal}}
                </span>
 
-              {{# notEqual received_date null }}
+               {{#if isClickable }}
               </a>
-              {{/notEqual}}
-
+              {{/if}}
 
 
             </div>
@@ -107,7 +110,7 @@
                 Status
               </h4>
 
-              {{# equal received_date null }}
+              {{# equal status 'due' }}
               <strong class="badge badge--success badge--caps">
                 Return due
               </strong>

@@ -1,9 +1,9 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { get } = require('lodash');
-const { documents } = require('../../lib/connectors/crm');
-const { returns, versions, lines } = require('../../lib/connectors/returns');
-const { externalRoles } = require('../../lib/constants');
+const moment = require('moment');
+const { documents } = require('../../../lib/connectors/crm');
+const { returns, versions } = require('../../../lib/connectors/returns');
+const { externalRoles } = require('../../../lib/constants');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -11,9 +11,9 @@ const { externalRoles } = require('../../lib/constants');
  * @param {String} licenceNumber - find a particular licence number
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, filter = {}, isInternalReturnsUser) => {
+const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
   filter.entity_id = entityId;
-  filter.roles = getInternalRoles(isInternalReturnsUser, filter.roles);
+  filter.roles = getInternalRoles(isInternal, filter.roles);
 
   const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
 
@@ -136,56 +136,70 @@ const hasGallons = (lines) => {
 };
 
 /**
- * Get return data by ID, provided date is >= April 2008
- * @param {String} returnId
- * @return {Promise} resolves with return row
+ * Gets return total, which can also be null if no values are filled in
+ * @param {Object} ret - return model from water service
+ * @return {Number|null} total or null
  */
-const getReturn = async (returnId) => {
-  const filter = {
-    return_id: returnId,
-    start_date: {
-      $gte: '2008-04-01'
-    }
-  };
-
-  // Load return
-  const { data: [returnData], error: returnError } = await returns.findMany(filter);
-  if (returnError) {
-    throw Boom.badImplementation(returnError);
+const getReturnTotal = (ret) => {
+  if (!ret.lines) {
+    return null;
   }
-  if (!returnData) {
-    throw Boom.notFound(`Return ${returnId} not found`);
-  }
-
-  return returnData;
+  const lines = ret.lines.filter(line => line.quantity !== null);
+  return lines.length === 0 ? null : lines.reduce((acc, line) => {
+    return acc + parseFloat(line.quantity);
+  }, 0);
 };
 
 /**
- * Loads a single return
- * @param {String} returnId
- * @return {Promise} resolves with { return, version, lines }
+ * Whether the user of the current request can edit the supplied return row
+ * @param {Object} request - the HAPI HTTP request
+ * @param {Object} return - the return row from the return service or water service model
+ * @return {Boolean}
  */
-const getReturnData = async (returnId) => {
-  const returnData = await getReturn(returnId);
+const canEdit = (request, ret) => {
+  const endDate = ret.endDate || ret.end_date;
+  const { status } = ret;
+  const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
+  const canSubmit = request.permissions.hasPermission('returns.submit');
+  const canEdit = request.permissions.hasPermission('returns.edit');
 
-  // Find lines for version
-  const version = await getLatestVersion(returnId);
-  const filter = {
-    version_id: version.version_id,
-    'metadata->>isCurrent': 'true'
-  };
-  const sort = {
-    start_date: 1
-  };
-  const { data: linesData, error: linesError } = await lines.findMany(filter, sort, { page: 1, perPage: 365 });
-  if (linesError) {
-    throw Boom.badImplementation(linesError);
-  }
-  return {
-    return: returnData,
-    version,
-    lines: linesData
-  };
+  return isAfterSummer2018 &&
+    (
+      (canEdit) ||
+      (canSubmit && (status === 'due'))
+    );
+};
+
+/**
+ * Checks whether return has been received
+ * @param {Object} ret
+ * @return {Boolean}
+ */
+const returnIsReceived = (ret) => {
+  const { received_date: date } = ret;
+  return date !== null;
+};
+
+/**
+ * Adds an editable flag to each return in list
+ * This is based on the status of the return, and whether the user
+ * has internal returns role.
+ * @param {Array} returns - returned from returns service
+ * @param {Object} request - HAPI request interface
+ * @return {Array} returns with isEditable flag added
+ */
+const addEditableFlag = (returns, request) => {
+  return returns.map(row => {
+    const isEditable = canEdit(request, row);
+    const isReceived = returnIsReceived(row);
+    const isClickable = isEditable || isReceived;
+    return {
+      ...row,
+      isEditable,
+      isReceived,
+      isClickable
+    };
+  });
 };
 
 /**
@@ -205,10 +219,10 @@ const getReturnsViewData = async (request) => {
 
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
-  const isInternalReturns = isInternalReturnsUser(request);
-  filter.roles = getInternalRoles(isInternalReturns, filter.roles);
 
-  const documents = await getLicenceNumbers(entityId, filter, isInternalReturns);
+  const isInternal = request.permissions.hasPermission('admin.defra');
+
+  const documents = await getLicenceNumbers(entityId, filter, isInternal);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const view = {
@@ -220,7 +234,7 @@ const getReturnsViewData = async (request) => {
 
   if (licenceNumbers.length) {
     const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(data, documents));
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addEditableFlag(data, request), documents));
 
     view.pagination = pagination;
     view.returns = returns;
@@ -230,16 +244,22 @@ const getReturnsViewData = async (request) => {
 };
 
 /**
- * Does the hapi request object represent an internal user with returns access?
- */
-const isInternalReturnsUser = request => get(request, 'permissions.returns.read', false);
-
-/**
  * If the user is an external user, add the CRM roles that the requesting user
  * would need to have one of, in order to be authorised to view a return.
  */
 const getInternalRoles = (isInternalUser, roles) => {
   return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
+};
+
+/**
+ * Redirects to admin path if internal user
+ * @param {Object} request - HAPI request instance
+ * @param {String} path - the path to redirect to without '/admin'
+ * @return {String} path with /admin if internal user
+ */
+const getScopedPath = (request, path) => {
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  return isInternal ? `/admin${path}` : path;
 };
 
 module.exports = {
@@ -249,8 +269,11 @@ module.exports = {
   mergeReturnsAndLicenceNames,
   getLatestVersion,
   hasGallons,
-  getReturnData,
   getReturnsViewData,
-  isInternalReturnsUser,
-  getInternalRoles
+  // isInternalReturnsUser,
+  // isInternalUser,
+  getInternalRoles,
+  getReturnTotal,
+  getScopedPath,
+  canEdit
 };

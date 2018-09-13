@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
-const Lab = require('lab')
-const lab = exports.lab = Lab.script()
-const { expect } = require('code')
+const Lab = require('lab');
+const { experiment, test } = exports.lab = Lab.script();
+const { expect } = require('code');
 
 const view = require('../../src/lib/view');
 
@@ -18,7 +18,8 @@ const getBaseRequest = () => ({
   url: {},
   permissions: {
     admin: {},
-    licences: {}
+    licences: {},
+    returns: {}
   },
   auth: {
     credentials: {}
@@ -26,19 +27,17 @@ const getBaseRequest = () => ({
   info: {}
 });
 
-lab.experiment('lib/view.contextDefaults', () => {
-
-  lab.test('isAuthenticated is false when no sid in state', async () => {
+experiment('lib/view.contextDefaults', () => {
+  test('isAuthenticated is false when no sid in state', async () => {
     const request = getBaseRequest();
     const viewContext = view.contextDefaults(request);
     expect(viewContext.isAuthenticated).to.be.false();
   });
 
-  lab.test('isAuthenticated is true when the sid is in state', async () => {
+  test('isAuthenticated is true when the sid is in state', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };
     const viewContext = view.contextDefaults(request);
     expect(viewContext.isAuthenticated).to.be.true();
   });
 });
-

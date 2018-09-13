@@ -152,6 +152,7 @@ function updatePasswordWithGuid (resetGuid, password) {
   }, {
     password,
     reset_required: 0,
+    bad_logins: 0,
     reset_guid: null
   });
 }

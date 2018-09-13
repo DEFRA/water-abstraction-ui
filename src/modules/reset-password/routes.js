@@ -180,7 +180,8 @@ module.exports = {
     handler: controller.postChangePassword
   },
 
-  getCreatePassword: { method: 'GET',
+  getCreatePassword: {
+    method: 'GET',
     path: '/create-password',
     handler: controller.getChangePassword,
     config: {
@@ -197,10 +198,11 @@ module.exports = {
           create: true
         }
       }
+    }
+  },
 
-    }},
-
-  postCreatePassword: { method: 'POST',
+  postCreatePassword: {
+    method: 'POST',
     path: '/create-password',
     config: { auth: false,
       validate: {
@@ -229,5 +231,4 @@ module.exports = {
     },
     handler: controller.postChangePassword
   }
-
 };

@@ -15,7 +15,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ document.system_external_id }}</a>
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
 
   {{#if document.document_name }}
   <h1 class="heading-large heading-large--tight-above">
@@ -30,7 +30,8 @@
 
   {{# equal returns.length 0 }}
   <p>No returns found.</p>
-  {{/equal}}
+
+  {{ else }}
 
 
   <div class="grid-row">
@@ -65,10 +66,15 @@
                 Return period
               </h4>
 
-              {{# notEqual received_date null }}
+              {{#if isReceived }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
-              {{/notEqual}}
+              {{else}}
+                {{#if isEditable }}
+                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                  <span class="sr-only">Edit return from </span>
+                {{/if}}
+              {{/if}}
 
               {{# isFirstDayOfMonth start_date }}
                 {{ formatISODate start_date format='MMMM YYYY' }}
@@ -85,7 +91,7 @@
               {{/isLastDayOfMonth }}
 
 
-              {{# notEqual received_date null }}
+              {{#if isClickable }}
                 <span class="sr-only">for
                   {{#each metadata.purposes }}
                   {{ tertiary.description }}
@@ -93,7 +99,8 @@
                   at {{{ titleCase metadata.description  }}}
                  </span>
               </a>
-              {{/notEqual}}
+              {{/if}}
+
             </div>
 
             <div class="table-cell">
@@ -117,11 +124,13 @@
                 Status
               </h4>
 
-              {{# equal received_date null }}
+              {{# equal status 'due' }}
               <strong class="badge badge--success badge--caps">
                 Return due
               </strong>
               {{/equal}}
+
+
             </div>
           </div>
           {{/each}}
@@ -132,6 +141,8 @@
 
     </div>
   </div>
+
+    {{/equal}}
 
 
 

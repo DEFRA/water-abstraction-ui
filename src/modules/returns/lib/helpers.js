@@ -176,7 +176,8 @@ const canEdit = (request, ret) => {
  * @return {Boolean}
  */
 const returnIsReceived = (ret) => {
-  return ret.date_received !== null;
+  const { received_date: date } = ret;
+  return date !== null;
 };
 
 /**

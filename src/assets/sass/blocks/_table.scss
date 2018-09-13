@@ -10,15 +10,6 @@ table {
     }
   }
 
-  tfoot {
-    &.totals {
-      th, td {
-        font-weight: bold;
-      }
-    }
-  }
-
-
 }
 
 
@@ -30,7 +21,31 @@ table {
     display: table;
     width: 100%;
   }
+
+  &-return-quantities {
+    h3 {
+      font-weight: bold;
+      @media (min-width: 768px) {
+        font-weight: normal;
+      }
+    }
+
+    .table-foot {
+      @media (min-width: 768px) {
+        font-weight: bold;
+      }
+
+      h3 {
+        @media (min-width: 768px) {
+          font-weight: bold;
+        }
+      }
+    }
+
+  }
 }
+
+
 
 .table-row {
 
@@ -50,12 +65,16 @@ table {
 
 }
 
+
+
 .table-head {
   display: none;
   @media (min-width: 768px) {
     display: table-row;
   }
 }
+
+
 
 .table-cell {
   font-size: inherit;
@@ -73,6 +92,12 @@ table {
   &--date {
     @media (min-width: 768px) {
       min-width: 170px;
+    }
+  }
+
+  &.numbers {
+    @media (min-width: 768px) {
+      text-align: right;
     }
   }
 }

@@ -77,6 +77,8 @@ const quantitiesForm = (request, data) => {
     f.fields.push(fields.text(name, { label,
       suffix,
       mapper: 'numberMapper',
+      type: 'number',
+      controlClass: 'form-control form-control-small',
       errors: {
         'number.base': {
           message: 'Enter an amount in numbers'

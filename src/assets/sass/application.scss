@@ -563,3 +563,11 @@ nav.tabs {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+
+/* returns form fields */
+.form-control-small {
+  @media screen and (min-width: 641px) {
+    width: 20rem;
+  }
+}

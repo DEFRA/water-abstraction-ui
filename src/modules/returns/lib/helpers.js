@@ -27,11 +27,12 @@ const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
 };
 
 /**
- * Get the returns for a list of licence numbers
- * @param {Array} list of licence numbers to get returns data for
- * @return {Promise} resolves with returns
+ * Gets the filter to use for retrieving licences from returns service
+ * @param {Array} licenceNumbers
+ * @param {Boolean} isInternal
+ * @return {Object} filter
  */
-const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) => {
+const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
   const { testMode } = config;
 
   const filter = {
@@ -57,6 +58,17 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
       $lte: moment().format('YYYY-MM-DD')
     };
   }
+
+  return filter;
+};
+
+/**
+ * Get the returns for a list of licence numbers
+ * @param {Array} list of licence numbers to get returns data for
+ * @return {Promise} resolves with returns
+ */
+const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) => {
+  const filter = getLicenceReturnsFilter(licenceNumbers, isInternal);
 
   const sort = {
     start_date: -1,

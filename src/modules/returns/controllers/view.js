@@ -1,6 +1,5 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-// const moment = require('moment');
 const { get } = require('lodash');
 const {
   getLicenceNumbers,
@@ -57,7 +56,9 @@ const getReturn = async (request, h) => {
   const isInternal = request.permissions.hasPermission('admin.defra');
   const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternal);
 
-  if (!documentHeader) {
+  const canView = documentHeader && (isInternal || (data.isCurrent && data.metadata.isCurrent));
+
+  if (!canView) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 

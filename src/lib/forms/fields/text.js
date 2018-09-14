@@ -2,7 +2,9 @@ const textFactory = (name, opts = {}, value) => {
   const defaults = {
     label: '',
     widget: 'text',
-    required: true
+    required: true,
+    type: 'text',
+    controlClass: 'form-control'
   };
   const options = {
     ...defaults,

@@ -23,6 +23,8 @@ const form = (request) => {
         fields: [
           fields.text('total', {
             label: 'Enter total amount',
+            type: 'number',
+            controlClass: 'form-control form-control-small',
             errors: {
               'number.base': {
                 message: 'Enter a total figure'

@@ -1,27 +1,9 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.10.1
+version: v1.12.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  'npm:hoek:20180212':
-    - blipp > joi > topo > hoek:
-        reason: No update for HAPI16
-        expires: '2018-03-23T12:46:42.040Z'
-    - blipp > joi > hoek:
-        reason: No update for HAPI16
-        expires: '2018-03-23T12:46:42.040Z'
-    - blipp > hoek:
-        reason: No update for HAPI16
-        expires: '2018-03-23T12:46:42.040Z'
-  'npm:lodash:20180130':
-    - hapi-cookie > lodash:
-        reason: No update for HAPI16
-        expires: '2018-03-23T12:46:42.040Z'
   'npm:chownr:20180731':
     - nunjucks > chokidar > fsevents > node-pre-gyp > tar > chownr:
         reason: None given
-        expires: '2018-10-14T13:16:23.656Z'
-# patches apply the minimum changes required to fix a vulnerability
-patch:
-  'npm:lodash:20180130':
-    - hapi-route-acl > lodash:
-        patched: '2018-07-02T21:30:00.808Z'
+        expires: '2018-10-14T13:26:39.235Z'
+patch: {}

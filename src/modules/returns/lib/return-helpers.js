@@ -234,7 +234,10 @@ const applyNilReturn = (data, isNil) => {
  * @param {Object} data - return data model
  * @return {Object} updated return data model
  */
-const applyStatus = (data, status = 'complete') => {
+const applyStatus = (data, status = 'completed') => {
+  if (!['completed', 'due', 'received'].includes(status)) {
+    throw Boom.badImplementation(`Invalid return status ${status}`);
+  }
   const d = cloneDeep(data);
   if (!d.receivedDate) {
     d.receivedDate = moment().format('YYYY-MM-DD');

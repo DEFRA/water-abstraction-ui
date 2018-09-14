@@ -101,6 +101,7 @@ const getPeriodStartEnd = (data) => {
 const applyExternalUser = (data) => {
   const d = cloneDeep(data);
   set(d, 'reading.totalFlag', false);
+  set(d, 'reading.total', null);
   return d;
 };
 

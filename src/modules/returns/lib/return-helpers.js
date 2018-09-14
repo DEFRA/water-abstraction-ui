@@ -1,5 +1,6 @@
 const { cloneDeep, set, mapValues } = require('lodash');
 const moment = require('moment');
+const Boom = require('boom');
 
 /**
  * Checks whether a supplied day/month is the same or after a reference day/month
@@ -234,7 +235,10 @@ const applyNilReturn = (data, isNil) => {
  * @param {Object} data - return data model
  * @return {Object} updated return data model
  */
-const applyStatus = (data, status = 'complete') => {
+const applyStatus = (data, status = 'completed') => {
+  if (!['completed', 'due', 'received'].includes(status)) {
+    throw Boom.badImplementation(`Invalid return status ${status}`);
+  }
   const d = cloneDeep(data);
   if (!d.receivedDate) {
     d.receivedDate = moment().format('YYYY-MM-DD');

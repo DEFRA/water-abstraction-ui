@@ -52,7 +52,7 @@ const getAmounts = async (request, h) => {
   }
 
   // Check date/roles
-  if (!canEdit(request, data)) {
+  if (!canEdit(request.permissions, data)) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
   }
 

@@ -4,6 +4,8 @@ const moment = require('moment');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
+const { hasPermission } = require('../../../lib/permissions');
+const config = require('../../../../config');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -25,22 +27,48 @@ const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
 };
 
 /**
- * Get the returns for a list of licence numbers
- * @param {Array} list of licence numbers to get returns data for
- * @return {Promise} resolves with returns
+ * Gets the filter to use for retrieving licences from returns service
+ * @param {Array} licenceNumbers
+ * @param {Boolean} isInternal
+ * @return {Object} filter
  */
-const getLicenceReturns = async (licenceNumbers, page = 1) => {
+const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
+  const { testMode } = config;
+
   const filter = {
     regime: 'water',
     licence_type: 'abstraction',
     licence_ref: {
       $in: licenceNumbers
     },
-    'metadata->>isCurrent': 'true',
     start_date: {
       $gte: '2008-04-01'
     }
   };
+
+  // External users can only view returns for the current version of a licence
+  if (!isInternal) {
+    filter['metadata->>isCurrent'] = 'true';
+  }
+
+  // External users on production-like environments can only view returns where
+  // return cycle is in the past
+  if (!isInternal && !testMode) {
+    filter.end_date = {
+      $lte: moment().format('YYYY-MM-DD')
+    };
+  }
+
+  return filter;
+};
+
+/**
+ * Get the returns for a list of licence numbers
+ * @param {Array} list of licence numbers to get returns data for
+ * @return {Promise} resolves with returns
+ */
+const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) => {
+  const filter = getLicenceReturnsFilter(licenceNumbers, isInternal);
 
   const sort = {
     start_date: -1,
@@ -154,19 +182,22 @@ const getReturnTotal = (ret) => {
  * Whether the user of the current request can edit the supplied return row
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} return - the return row from the return service or water service model
+ * @param {String} [today] - allows today's date to be set for test purposes, defaults to current timestamp
  * @return {Boolean}
  */
-const canEdit = (request, ret) => {
+const canEdit = (permissions, ret, today = null) => {
+  const { testMode } = config;
   const endDate = ret.endDate || ret.end_date;
   const { status } = ret;
   const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
-  const canSubmit = request.permissions.hasPermission('returns.submit');
-  const canEdit = request.permissions.hasPermission('returns.edit');
+  const canSubmit = hasPermission('returns.submit', permissions);
+  const canEdit = hasPermission('returns.edit', permissions);
+  const isPast = moment(today).isSameOrAfter(endDate);
 
   return isAfterSummer2018 &&
     (
       (canEdit) ||
-      (canSubmit && (status === 'due'))
+      (canSubmit && (status === 'due') && (testMode || isPast))
     );
 };
 
@@ -190,7 +221,7 @@ const returnIsReceived = (ret) => {
  */
 const addEditableFlag = (returns, request) => {
   return returns.map(row => {
-    const isEditable = canEdit(request, row);
+    const isEditable = canEdit(request.permissions, row);
     const isReceived = returnIsReceived(row);
     const isClickable = isEditable || isReceived;
     return {
@@ -233,7 +264,7 @@ const getReturnsViewData = async (request) => {
   };
 
   if (licenceNumbers.length) {
-    const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, isInternal);
     const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addEditableFlag(data, request), documents));
 
     view.pagination = pagination;
@@ -270,8 +301,6 @@ module.exports = {
   getLatestVersion,
   hasGallons,
   getReturnsViewData,
-  // isInternalReturnsUser,
-  // isInternalUser,
   getInternalRoles,
   getReturnTotal,
   getScopedPath,

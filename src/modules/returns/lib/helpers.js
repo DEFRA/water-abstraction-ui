@@ -97,7 +97,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
  */
 const groupReturnsByYear = (data) => {
   const grouped = data.reduce((acc, row) => {
-    const year = parseInt(row.start_date.substr(0, 4));
+    const year = parseInt(row.end_date.substr(0, 4));
     if (!(year in acc)) {
       acc[year] = {
         year,

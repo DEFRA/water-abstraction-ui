@@ -5,6 +5,10 @@
 const {
   APIClient
 } = require('hapi-pg-rest-api');
+const Boom = require('boom');
+const { crm } = require('../../../../config');
+const { entityId: waterRegimeEntityId } = crm.regimes.water;
+
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
@@ -173,6 +177,30 @@ client.getFilteredLicences = function (filter, sort = {}, pagination = {
       Authorization: process.env.JWT_TOKEN
     }
   });
+};
+
+/**
+ * Finds a single water abstraction licence in CRM
+ * by licence number
+ * @param {String} licenceRef - the licence number
+ * @return {Promise} resolves with document header
+ */
+client.getWaterLicence = async (licenceRef) => {
+  if (!licenceRef) {
+    throw Boom.badImplementation('Licence number is required');
+  }
+  const filter = {
+    regime_entity_id: waterRegimeEntityId,
+    system_external_id: licenceRef
+  };
+  const { error, data: [document] } = await client.findMany(filter);
+  if (error) {
+    throw Boom.badImplementation(error);
+  }
+  if (!document) {
+    throw Boom.notFound(`Water licence number ${licenceRef} not found in CRM`);
+  }
+  return document;
 };
 
 module.exports = client;

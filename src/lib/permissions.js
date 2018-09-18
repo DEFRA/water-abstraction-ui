@@ -2,7 +2,9 @@
 
 // Using lodash functions over some native functions because
 // they are forgiving to undefined.
-const { size, find, includes, intersection, get, uniq } = require('lodash');
+const { size, find, includes, intersection, get, uniq, isBoolean } = require('lodash');
+const Boom = require('boom');
+const { scope: scopes, externalRoles } = require('./constants');
 
 /**
  * Permissions module
@@ -47,45 +49,62 @@ const hasMatch = (requiredScopes, userScopes) => {
  * Does the role object have a role property of 'primary_user'?
  * { role: 'primary_user' }
  */
-const isPrimaryUserRole = role => get(role, 'role') === 'primary_user';
+const isPrimaryUserRole = role => get(role, 'role') === externalRoles.licenceHolder;
 
 /**
  * Is this a role with a role value of user_returns.
  * { role: 'user_returns' }
  */
-const isUserReturnsRole = role => get(role, 'role') === 'user_returns';
+const isUserReturnsRole = role => get(role, 'role') === externalRoles.colleagueWithReturns;
 
 /**
  * Checks if there is a scope called 'external'
  *
  * @param scope An array of strings
  */
-const isExternal = scope => includes(scope, 'external');
+const isExternal = scope => includes(scope, scopes.external);
 
-const isVmlAdmin = scope => hasMatch(['internal', 'ar_user', 'ar_approver'], scope);
+const isVmlAdmin = scope => hasMatch(scopes.allAdmin, scope);
 const isPrimaryUser = roles => !!find(roles, isPrimaryUserRole);
 const isUserReturnsUser = roles => !!find(roles, isUserReturnsRole);
 
 const canReadLicence = entityId => !!entityId;
-const canEditAbstractionReform = scope => hasMatch(['ar_user', 'ar_approver'], scope);
+const canEditAbstractionReform = scope => hasMatch([
+  scopes.abstractionReformUser,
+  scopes.abstractionReformApprover
+], scope);
 
-const canApproveAbstractionReform = scope => includes(scope, 'ar_approver');
+const canApproveAbstractionReform = scope => includes(scope, scopes.abstractionReformApprover);
 
 const canEditLicence = (scope, roles) => {
   return isExternal(scope) && size(roles) === 1 && isPrimaryUser(roles);
 };
 
 const canViewMutlipleLicences = (scope = [], roles = []) => {
-  return isExternal(scope) && countRoles(roles, ['user', 'primary_user']) > 1;
+  return isExternal(scope) && countRoles(roles, [externalRoles.colleague, externalRoles.licenceHolder]) > 1;
 };
 
-const canPerformReturns = (scope = [], roles = []) => {
-  return isExternal(scope) &&
-    (isPrimaryUser(roles) || isUserReturnsUser(roles));
+/**
+ * Users who can edit returns:
+ *
+ * Licence Holders
+ * Colleagues with returns access granted
+ * Internal users with the returns scope
+ */
+const canSubmitReturns = (scope = [], roles = []) => {
+  return isExternal(scope)
+    ? isPrimaryUser(roles) || isUserReturnsUser(roles)
+    : hasMatch(scope, [scopes.returns]);
 };
 
-const canViewInternalReturns = (scope = []) => {
-  return scope.includes('internal') && scope.includes('returns');
+const canEditReturns = (scope = [], roles = []) => {
+  return hasMatch(scope, [scopes.returns]);
+};
+
+const canReadReturns = (scope = [], roles = []) => {
+  return isVmlAdmin(scope) ||
+    isPrimaryUser(roles) ||
+    isUserReturnsUser(roles);
 };
 
 /**
@@ -100,14 +119,15 @@ const getPermissions = (credentials = {}) => {
     licences: {
       read: canReadLicence(entityId),
       edit: canEditLicence(scope, roles),
-      multi: canViewMutlipleLicences(scope, roles),
-      returns: canPerformReturns(scope, roles)
+      multi: canViewMutlipleLicences(scope, roles)
     },
     admin: {
       defra: isVmlAdmin(scope)
     },
     returns: {
-      read: canViewInternalReturns(scope)
+      read: canReadReturns(scope, roles),
+      submit: canSubmitReturns(scope, roles),
+      edit: canEditReturns(scope, roles)
     },
     ar: {
       read: canEditAbstractionReform(scope),
@@ -139,7 +159,23 @@ const getCompanyPermissions = (credentials = {}) => {
   }, {});
 };
 
+/**
+ * Checks whether the user has a particular permission
+ * if the permission string is invalid an error is thrown
+ * @param {String} permission - the permission string, e.g. admin.defra
+ * @param {Object} permissions - the permissions object
+ * @return {Boolean}
+ */
+const hasPermission = (permission, permissions) => {
+  const isGranted = get(permissions, permission);
+  if (!isBoolean(isGranted)) {
+    throw Boom.badImplementation(`Attempt to check invalid permission ${permission}`);
+  }
+  return isGranted;
+};
+
 module.exports = {
   getPermissions,
-  getCompanyPermissions
+  getCompanyPermissions,
+  hasPermission
 };

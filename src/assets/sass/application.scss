@@ -544,3 +544,30 @@ nav.tabs {
     margin-top: 15px;
   }
 }
+
+
+
+
+/* Returns versions list */
+.version {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.this-version {
+  border-color: $link-colour;
+}
+.spaceless {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+
+/* returns form fields */
+.form-control-small {
+  @media screen and (min-width: 641px) {
+    width: 20rem;
+  }
+}

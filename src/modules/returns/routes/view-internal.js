@@ -1,4 +1,5 @@
-const { getReturnsForLicence, getReturn } = require('./external-routes');
+const Joi = require('joi');
+const { getReturnsForLicence, getReturn } = require('./view');
 
 module.exports = {
   getAdminReturnsForLicence: {
@@ -7,7 +8,7 @@ module.exports = {
     config: {
       ...getReturnsForLicence.config,
       auth: {
-        scope: ['returns']
+        scope: ['internal']
       }
     }
   },
@@ -17,12 +18,19 @@ module.exports = {
     path: '/admin/returns/return',
     config: {
       ...getReturn.config,
+      validate: {
+        query: {
+          id: Joi.string().required(),
+          version: Joi.number().optional().min(1)
+        }
+      },
       auth: {
-        scope: ['returns']
+        scope: ['internal']
       },
       plugins: {
         viewContext: {
-          activeNavLink: 'view'
+          activeNavLink: 'view',
+          showMeta: true
         }
       }
     }

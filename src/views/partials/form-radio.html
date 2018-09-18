@@ -1,0 +1,34 @@
+
+
+<div class="form-group {{#if errors }}form-group-error{{/if}}">
+  <fieldset id="{{ name }}">
+
+    <legend>
+      <h2 class="heading-medium">
+        {{ options.label }}
+      </h2>
+
+      {{#each errors}}
+      <span class="error-message">{{ message }}</span>
+      {{/each}}
+    </legend>
+
+    {{#each options.choices }}
+    <div class="multiple-choice" {{#if this.fields.length }}data-target="{{ ../name }}_{{ @index }}_panel"{{/if}}>
+      <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this.value }}" {{#equal ../value this.value}}checked{{/equal}}>
+      <label for="radio-inline-{{@index}}">{{ this.label }}</label>
+    </div>
+
+    <!-- render child fields -->
+    {{#if this.fields.length}}
+      <div class="panel panel-border-narrow js-hidden" id="{{ ../name }}_{{ @index }}_panel">
+      {{#each this.fields }}
+        {{>form-widget this form=../../form parent=../this }}
+      {{/each}}
+      </div>
+    {{/if}}
+
+    {{/each}}
+
+  </fieldset>
+</div>

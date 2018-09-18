@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const controller = require('./controller');
+const controller = require('../controllers/view');
 
 module.exports = {
   getAllReturns: {
@@ -17,6 +17,9 @@ module.exports = {
         viewContext: {
           pageTitle: 'Your returns',
           activeNavLink: 'returns'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:read']
         }
       }
     }
@@ -39,6 +42,9 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'view'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:read']
         }
       }
     }
@@ -57,10 +63,11 @@ module.exports = {
       },
       plugins: {
         hapiRouteAcl: {
-          permissions: ['licences:returns']
+          permissions: ['returns:read']
         },
         viewContext: {
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         }
       }
     }

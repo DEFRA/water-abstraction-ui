@@ -16,6 +16,8 @@ const { pick, reduce } = require('lodash');
 const Joi = require('joi');
 
 const commaNumber = require('comma-number');
+const { convertToCubicMetres } = require('../lib/unit-conversion');
+const { maxPrecision } = require('../lib/number-formatter.js');
 
 /**
  * Formats numbers with commas to separate thousands, eg. 1,000
@@ -61,10 +63,6 @@ function paginationLink (url, params, page, options = {}) {
 }
 
 handlebars.registerHelper('pagination', function (pagination, options) {
-  if (typeof (pagination) !== 'object') {
-    return;
-  }
-
   const { url = '/', params = {} } = options.hash;
   const { page, pageCount } = pagination;
 
@@ -545,6 +543,75 @@ handlebars.registerHelper('abstractionConditions', function (quantities) {
 });
 
 handlebars.registerHelper('yesIfTruthy', value => value ? 'Yes' : '');
+
+handlebars.registerHelper('naldRegion', function (code) {
+  const codes = {
+    1: 'Anglian',
+    2: 'Midlands',
+    3: 'North east',
+    4: 'North west',
+    5: 'South west',
+    6: 'Southern',
+    7: 'Thames'
+  };
+
+  return codes[code];
+});
+
+/**
+ * Accepts an object containing period start/end month/day
+ * and returns a string in the format 20 January to 30 December
+ * @param {Object} metadata
+ * @return {String} formatted date
+ */
+handlebars.registerHelper('returnPeriod', function (metadata) {
+  const { periodEndDay,
+    periodEndMonth,
+    periodStartDay,
+    periodStartMonth} = metadata;
+
+  const start = moment().month(periodStartMonth - 1).date(periodStartDay);
+  const end = moment().month(periodEndMonth - 1).date(periodEndDay);
+
+  return start.format('D MMMM') + ' to ' + end.format('D MMMM');
+});
+
+/**
+ * Converts a value in cubic metres to the specified user unit
+ * @param {Object} metadata
+ * @return {String} formatted date
+ */
+handlebars.registerHelper('convertToCubicMetres', (value, options) => {
+  const { unit } = options.hash;
+  return convertToCubicMetres(value, unit);
+});
+
+/**
+ * Formats a number to 3 DP and comma separates 000's
+ */
+handlebars.registerHelper('formatQuantity', (value) => {
+  return commaNumber(maxPrecision(value, 3));
+});
+
+/**
+ * Each iterates in reverse order
+ * @see {@link https://github.com/diy/handlebars-helpers/blob/master/lib/each-reverse.js}
+ */
+function eachReverse (context) {
+  var options = arguments[arguments.length - 1];
+  var ret = '';
+
+  if (context && context.length > 0) {
+    for (var i = context.length - 1; i >= 0; i--) {
+      ret += options.fn(context[i]);
+    }
+  } else {
+    ret = options.inverse(this);
+  }
+
+  return ret;
+};
+handlebars.registerHelper('eachReverse', eachReverse);
 
 const Path = require('path');
 

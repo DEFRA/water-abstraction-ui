@@ -6,6 +6,7 @@ const rp = require('request-promise-native').defaults({
 const { APIClient } = require('hapi-pg-rest-api');
 
 const notifications = require('./water-service/notifications');
+const returns = require('./water-service/returns');
 
 function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
@@ -154,6 +155,7 @@ module.exports = {
   notifications,
   getRiverLevel,
   gaugingStations,
+  returns,
   getReturnsLogs,
   getReturnsLines
 };

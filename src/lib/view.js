@@ -1,5 +1,12 @@
 const { get } = require('lodash');
 
+const getSurveyType = (isAuthenticated, isDefraAdmin) => {
+  if (isAuthenticated) {
+    return isDefraAdmin ? 'internal' : 'external';
+  }
+  return 'anonymous';
+};
+
 function viewContextDefaults (request) {
   var viewContext = {};
 
@@ -119,6 +126,10 @@ function viewContextDefaults (request) {
 
   viewContext.env = process.env.NODEENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
+  viewContext.surveyType = getSurveyType(
+    viewContext.isAuthenticated,
+    get(viewContext, 'permissions.admin.defra', false)
+  );
 
   return viewContext;
 }

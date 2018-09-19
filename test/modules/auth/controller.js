@@ -14,7 +14,13 @@ lab.experiment('getSignout', () => {
   lab.beforeEach(async () => {
     request = {
       sessionStore: { destroy: sinon.stub().resolves(true) },
-      cookieAuth: { clear: sinon.spy() }
+      cookieAuth: { clear: sinon.spy() },
+      permissions: {
+        admin: {
+          defra: false
+        }
+      },
+      params: {}
     };
 
     h = { redirect: sinon.spy() };
@@ -24,7 +30,7 @@ lab.experiment('getSignout', () => {
 
   lab.test('redirects to the signed-out route', async () => {
     const redirectTo = h.redirect.lastCall.args[0];
-    expect(redirectTo).to.equal('/signed-out');
+    expect(redirectTo).to.equal('/signed-out?u=e');
   });
 
   lab.test('the session is destroyed', async () => {
@@ -42,7 +48,8 @@ lab.experiment('getSignedOut', () => {
   lab.beforeEach(async () => {
     sinon.stub(View, 'contextDefaults').returns({});
     const request = {
-      log: sinon.spy()
+      log: sinon.spy(),
+      query: { u: 'e' }
     };
     h = { view: sinon.spy() };
     await controller.getSignedOut(request, h);
@@ -55,5 +62,10 @@ lab.experiment('getSignedOut', () => {
   lab.test('sets the page title', async () => {
     const viewContext = h.view.lastCall.args[1];
     expect(viewContext.pageTitle).to.equal('You are signed out');
+  });
+
+  lab.test('sets the surveyType', async () => {
+    const viewContext = h.view.lastCall.args[1];
+    expect(viewContext.surveyType).to.equal('external');
   });
 });

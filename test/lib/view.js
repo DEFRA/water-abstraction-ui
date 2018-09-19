@@ -19,7 +19,8 @@ const getBaseRequest = () => ({
   permissions: {
     admin: {},
     licences: {},
-    returns: {}
+    returns: {},
+    ar: {}
   },
   auth: {
     credentials: {}
@@ -39,5 +40,29 @@ experiment('lib/view.contextDefaults', () => {
     request.state.sid = { sid: 'test-sid' };
     const viewContext = view.contextDefaults(request);
     expect(viewContext.isAuthenticated).to.be.true();
+  });
+
+  test('surveyType is anonymous for a logged out user', async () => {
+    const request = getBaseRequest();
+    const viewContext = view.contextDefaults(request);
+    expect(viewContext.surveyType).to.equal('anonymous');
+  });
+
+  test('surveyType is external for a logged in vml user', async () => {
+    const request = getBaseRequest();
+    request.state.sid = { sid: 'test-sid' };
+    request.permissions.admin.defra = false;
+
+    const viewContext = view.contextDefaults(request);
+    expect(viewContext.surveyType).to.equal('external');
+  });
+
+  test('surveyType is internal for a logged in admin user', async () => {
+    const request = getBaseRequest();
+    request.state.sid = { sid: 'test-sid' };
+    request.permissions.admin.defra = true;
+
+    const viewContext = view.contextDefaults(request);
+    expect(viewContext.surveyType).to.equal('internal');
   });
 });

@@ -36,13 +36,14 @@ function getSignin (request, reply) {
  * @param {Object} reply - the HAPI response toolkit
  */
 async function getSignout (request, h) {
+  const params = `?u=${request.permissions.admin.defra ? 'i' : 'e'}`;
   try {
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
   } catch (error) {
     request.log('error', error);
   }
-  return h.redirect('/signed-out');
+  return h.redirect(`/signed-out${params}`);
 }
 
 /**
@@ -52,6 +53,9 @@ async function getSignout (request, h) {
  */
 async function getSignedOut (request, h) {
   const viewContext = View.contextDefaults(request);
+  const surveyType = { i: 'internal', e: 'external' };
+
+  viewContext.surveyType = surveyType[request.query.u] || 'anonymous';
   viewContext.pageTitle = 'You are signed out';
   return h.view('water/auth/signed-out', viewContext);
 }

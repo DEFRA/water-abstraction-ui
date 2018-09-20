@@ -1,5 +1,7 @@
-const { cloneDeep, set, mapValues } = require('lodash');
+const Boom = require('boom');
+const { get, omit, cloneDeep, set, mapValues } = require('lodash');
 const moment = require('moment');
+const { maxPrecision } = require('../../../lib/number-formatter');
 
 /**
  * Checks whether a supplied day/month is the same or after a reference day/month
@@ -164,6 +166,10 @@ const applyBasis = (data, formValues) => {
   return f;
 };
 
+const applyMethod = (data, method) => {
+  return set(cloneDeep(data), 'reading.method', method);
+};
+
 /**
  * Returns form lines
  * @param {Object} returns data model
@@ -171,6 +177,10 @@ const applyBasis = (data, formValues) => {
  */
 const getFormLines = (data) => {
   return data.lines && data.lines.length ? data.lines : data.requiredLines;
+};
+
+const getMeter = data => {
+  return get(data, 'meters[0]', {});
 };
 
 /**
@@ -246,6 +256,101 @@ const applyStatus = (data, status = 'completed') => {
   return d;
 };
 
+const applyMeterDetails = (data, formValues) => {
+  const clone = cloneDeep(data);
+  const details = {
+    manufacturer: formValues.manufacturer,
+    serialNumber: formValues.serialNumber,
+    startReading: formValues.startReading,
+    multiplier: formValues.isMultiplier ? 10 : 1
+  };
+
+  const meter = Object.assign(getMeter(data), details);
+  return set(clone, 'meters', [meter]);
+};
+
+const applyMeterUnits = (data, formValues) => {
+  const { units } = formValues;
+  if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
+    const clone = cloneDeep(data);
+    set(clone, 'meters[0].units', units);
+    set(clone, 'reading.units', units);
+    return set(clone, 'reading.type', 'measured');
+  }
+  throw new Error('Unexpected unit');
+};
+
+/**
+ * Gets label text for line
+ * @param {Object} line from requiredLines array
+ * @return {String} label
+ */
+const getLineLabel = (line) => {
+  if (line.timePeriod === 'day') {
+    return moment(line.startDate).format('D MMMM');
+  }
+  if (line.timePeriod === 'week') {
+    return 'Week ending ' + moment(line.endDate).format('D MMMM');
+  }
+  if (line.timePeriod === 'month') {
+    return moment(line.startDate).format('MMMM');
+  }
+  if (line.timePeriod === 'year') {
+    return moment(line.startDate).format('D MMMM YYYY - ') + moment(line.endDate).format('D MMMM YYYY');
+  }
+};
+
+/**
+ * Get form field name
+ * @param {Object} line
+ * @return {String} field name
+ */
+const getLineName = (line) => {
+  return line.startDate + '_' + line.endDate;
+};
+
+const getLineValues = (lines) => {
+  return lines.reduce((acc, line) => {
+    const name = getLineName(line);
+    return {
+      ...acc,
+      [name]: maxPrecision(line.quantity, 3)
+    };
+  }, {});
+};
+
+const applyMeterReadings = (data, formValues) => {
+  const updated = cloneDeep(data);
+  const lines = getFormLines(updated);
+  const { startReading, multiplier = 1 } = data.meters[0];
+
+  const input = {
+    lines: [],
+    lastMeterReading: startReading
+  };
+
+  const readings = lines.reduce((acc, line) => {
+    // get the meter reading, or set to null if zero or null
+    const meterReading = formValues[getLineName(line)] || null;
+    let quantity = null;
+
+    if (meterReading) {
+      // get the quantity and multiply. Set to null for zero.
+      quantity = ((meterReading - acc.lastMeterReading) * multiplier) || null;
+      acc.lastMeterReading = meterReading;
+    }
+
+    acc.lines.push({
+      ...line,
+      quantity
+    });
+    return acc;
+  }, input);
+
+  updated.lines = readings.lines;
+  return set(updated, 'meters[0].readings', omit(formValues, 'csrf_token'));
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
@@ -255,5 +360,13 @@ module.exports = {
   applyNilReturn,
   getFormLines,
   applyStatus,
-  applyExternalUser
+  applyExternalUser,
+  applyMeterDetails,
+  applyMeterUnits,
+  getLineLabel,
+  getLineName,
+  getLineValues,
+  applyMeterReadings,
+  applyMethod,
+  getMeter
 };

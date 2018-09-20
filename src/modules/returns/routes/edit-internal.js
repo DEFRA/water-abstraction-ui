@@ -3,6 +3,29 @@ const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
 const { VALID_GUID } = require('../../../lib/validators');
+const { upperFirst } = require('lodash');
+
+const getHandlerName = (method, path, pathExclude) => {
+  return method.toLowerCase() + path.replace(pathExclude, '').split('/').map(upperFirst).join('');
+};
+
+const createMeterRoute = (method, path, description) => {
+  return {
+    method,
+    path,
+    handler: controller[getHandlerName(method, path, '/admin/return/')],
+    options: {
+      auth: { scope: returns },
+      description,
+      plugins: {
+        viewContext: { activeNavLink: 'returns' }
+      }
+    }
+  };
+};
+
+const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
+const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
 
 module.exports = {
   getAmounts: {
@@ -344,6 +367,36 @@ module.exports = {
         }
       }
     }
-  }
+  },
+
+  getMeterDetails: createGetMeterRoute(
+    '/admin/return/meter/details',
+    'Shows the view allowing an admin user to enter meter details'
+  ),
+
+  postMeterDetails: createPostMeterRoute(
+    '/admin/return/meter/details',
+    'POST handler for meter details'
+  ),
+
+  getMeterUnits: createGetMeterRoute(
+    '/admin/return/meter/units',
+    'Shows the view allowing an admin user to enter meter units'
+  ),
+
+  postMeterUnits: createPostMeterRoute(
+    '/admin/return/meter/units',
+    'POST handler for meter units'
+  ),
+
+  getMeterReadings: createGetMeterRoute(
+    '/admin/return/meter/readings',
+    'Shows the view allowing an admin user to enter meter readings'
+  ),
+
+  postMeterReadings: createPostMeterRoute(
+    '/admin/return/meter/readings',
+    'POST handler for meter readings'
+  )
 
 };

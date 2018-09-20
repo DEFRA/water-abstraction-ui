@@ -1,0 +1,16 @@
+
+/* returns form fields */
+.form-control--small {
+  @media screen and (min-width: 641px) {
+    width: 20rem;
+  }
+}
+
+.form-control--reading {
+  text-align: right;
+  font-family: monospace;
+
+  @media screen and (min-width: 641px) {
+    width: 16rem;
+  }
+}

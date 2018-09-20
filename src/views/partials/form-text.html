@@ -20,7 +20,7 @@
   {{#if options.multiline }}
   <textarea {{#if options.rows }}rows={{ options.rows }}{{/if}} class="{{ options.controlClass }}" id="{{ name }}" type="{{ options.type }}" name="{{ name }}">{{ value }}</textarea>
   {{else}}
-  <input class="{{ options.controlClass }}" id="{{ name }}" type="{{ options.type }}" name="{{ name }}" value="{{ value }}">
+  <input class="{{ options.controlClass }}" id="{{ name }}" type="{{ options.type }}" name="{{ name }}" value="{{ value }}" {{#unless options.autoComplete}}autocomplete="off"{{/unless}} />
   {{/if}}
 
   <span class="form-suffix">

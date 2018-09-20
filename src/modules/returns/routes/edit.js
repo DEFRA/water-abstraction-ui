@@ -4,6 +4,46 @@ const constants = require('../../../lib/constants');
 const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
+const createGetMeterRoute = (path, handler, description) => ({
+  method: 'GET',
+  path,
+  handler,
+  options: {
+    auth: {
+      scope: external
+    },
+    description,
+    plugins: {
+      viewContext: {
+        activeNavLink: 'returns'
+      },
+      hapiRouteAcl: {
+        permissions: ['returns:submit']
+      }
+    }
+  }
+});
+
+const createPostMeterRoute = (path, handler, description) => ({
+  method: 'POST',
+  path,
+  handler,
+  options: {
+    auth: {
+      scope: external
+    },
+    description,
+    plugins: {
+      viewContext: {
+        activeNavLink: 'returns'
+      },
+      hapiRouteAcl: {
+        permissions: ['returns:submit']
+      }
+    }
+  }
+});
+
 module.exports = {
   getAmounts: {
     method: 'GET',
@@ -356,6 +396,41 @@ module.exports = {
         }
       }
     }
-  }
+  },
 
+  getMeterDetails: createGetMeterRoute(
+    '/return/meter/details',
+    controller.getMeterDetails,
+    'Shows the view allowing a user to enter meter details'
+  ),
+
+  postMeterDetails: createPostMeterRoute(
+    '/return/meter/details',
+    controller.postMeterDetails,
+    'POST handler for meter details'
+  ),
+
+  getMeterUnits: createGetMeterRoute(
+    '/return/meter/units',
+    controller.getMeterUnits,
+    'Shows the view allowing to select the meter units'
+  ),
+
+  postMeterUnits: createPostMeterRoute(
+    '/return/meter/units',
+    controller.postMeterUnits,
+    'POST handler for meter units'
+  ),
+
+  getMeterReadings: createGetMeterRoute(
+    '/return/meter/readings',
+    controller.getMeterReadings,
+    'Shows the view to capture the users meter readings'
+  ),
+
+  postMeterReadings: createPostMeterRoute(
+    '/return/meter/readings',
+    controller.postMeterReadings,
+    'POST handler for meter readings'
+  )
 };

@@ -1,0 +1,24 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  {{>form-errors form }}
+
+  {{>return-header }}
+
+  <h3 class="heading-medium">Meter readings</h3>
+
+  <p class="text">Enter readings for the end of each {{ return.frequency }}</p>
+
+  <div class="panel panel-border-wide">
+    <p class="spaceless">Meter {{ return.meters.0.serialNumber }}</p>
+    <p class="spaceless">Initial reading {{ return.meters.0.startReading }}</p>
+  </div>
+
+  {{>form form }}
+
+</main>
+
+{{> footerjs}}
+{{> debug}}

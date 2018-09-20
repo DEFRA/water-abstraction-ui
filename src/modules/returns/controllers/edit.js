@@ -7,14 +7,30 @@ const { set, get } = require('lodash');
 const Boom = require('boom');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
-const { amountsForm, methodForm, confirmForm, unitsForm, singleTotalForm, singleTotalSchema, basisForm, basisSchema, quantitiesForm, quantitiesSchema } = require('../forms/');
+
+const {
+  amountsForm, methodForm, confirmForm, unitsForm,
+  singleTotalForm, singleTotalSchema,
+  basisForm, basisSchema,
+  quantitiesForm, quantitiesSchema,
+  meterDetailsForm, meterDetailsSchema,
+  meterUnitsForm, meterUnitsSchema,
+  meterReadingsForm, meterReadingsSchema
+} = require('../forms/');
+
 const { returns } = require('../../../lib/connectors/water');
-const { applySingleTotal, applyBasis, applyQuantities, applyNilReturn, applyExternalUser } = require('../lib/return-helpers');
+
+const {
+  applySingleTotal, applyBasis, applyQuantities,
+  applyNilReturn, applyExternalUser, applyMeterDetails,
+  applyMeterUnits, applyMeterReadings, applyMethod } = require('../lib/return-helpers');
+
 const {
   getSessionData,
   saveSessionData,
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
+
 const { getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
 
 /**
@@ -171,8 +187,7 @@ const getSubmitted = async (request, h) => {
 const getMethod = async (request, h) => {
   const data = getSessionData(request);
   const view = await getViewData(request, data);
-
-  const form = methodForm(request);
+  const form = methodForm(request, data);
 
   return h.view('water/returns/internal/form', {
     ...view,
@@ -193,9 +208,10 @@ const postMethod = async (request, h) => {
 
   if (form.isValid) {
     const { method } = getValues(form);
+    saveSessionData(request, applyMethod(data, method));
 
     const paths = {
-      oneMeter: `/return/meter`,
+      oneMeter: `/return/meter/details`,
       multipleMeters: `/return/multiple-meters`,
       abstractionVolumes: `/return/units`
     };
@@ -421,6 +437,96 @@ const postConfirm = async (request, h) => {
   return h.redirect(getScopedPath(request, '/return/submitted'));
 };
 
+const getMeterDetails = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = meterDetailsForm(request, data);
+
+  return h.view('water/returns/meter-details', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const postMeterDetails = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema);
+
+  if (form.isValid) {
+    const updated = applyMeterDetails(data, getValues(form));
+    saveSessionData(request, updated);
+    return h.redirect(getScopedPath(request, `/return/meter/units`));
+  }
+
+  return h.view('water/returns/meter-details', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const getMeterUnits = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = meterUnitsForm(request, data);
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const postMeterUnits = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = handleRequest(meterUnitsForm(request, data), request, meterUnitsSchema);
+
+  if (form.isValid) {
+    const updated = applyMeterUnits(data, getValues(form));
+    saveSessionData(request, updated);
+    return h.redirect(getScopedPath(request, `/return/meter/readings`));
+  }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const getMeterReadings = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = meterReadingsForm(request, data);
+
+  return h.view('water/returns/meter-readings', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const postMeterReadings = async (request, h) => {
+  const data = getSessionData(request);
+  const view = await getViewData(request, data);
+  const form = handleRequest(meterReadingsForm(request, data), request, meterReadingsSchema(data));
+
+  if (form.isValid) {
+    const updated = applyMeterReadings(data, getValues(form));
+    saveSessionData(request, updated);
+    return h.redirect(getScopedPath(request, `/return/confirm`));
+  }
+
+  return h.view('water/returns/meter-readings', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
 module.exports = {
   getAmounts,
   postAmounts,
@@ -439,5 +545,11 @@ module.exports = {
   getQuantities,
   postQuantities,
   getConfirm,
-  postConfirm
+  postConfirm,
+  getMeterDetails,
+  postMeterDetails,
+  getMeterUnits,
+  postMeterUnits,
+  getMeterReadings,
+  postMeterReadings
 };

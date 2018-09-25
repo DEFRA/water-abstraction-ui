@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { isFinite } = require('lodash');
+const { extractLicenceNumbers } = require('../licence-helpers');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -85,9 +86,23 @@ const numberMapper = {
   }
 };
 
+/**
+ * Delimited mapper - for a pasted set of licence numbers, splits string on common
+ * delimiters , newlines, tabs, semicolon
+ */
+const licenceNumbersMapper = {
+  import: (fieldName, payload) => {
+    return extractLicenceNumbers(payload[fieldName]);
+  },
+  export: (value) => {
+    return value.join(', ');
+  }
+};
+
 module.exports = {
   defaultMapper,
   booleanMapper,
   dateMapper,
-  numberMapper
+  numberMapper,
+  licenceNumbersMapper
 };

@@ -6,6 +6,7 @@ const { getContext } = require('./lib/context.js');
 const documents = require('../../lib/connectors/crm/documents');
 const { forceArray } = require('../../lib/helpers');
 const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
+const { getNotificationsList } = require('./lib/notifications-list');
 
 /**
  * Renders page with list of notifications that can be selected
@@ -18,11 +19,13 @@ async function getIndex (request, reply) {
   };
   const { data: tasks, error } = await taskConfig.findMany(filter);
 
+  const notifications = getNotificationsList(tasks, request.permissions);
+
   if (error) {
     return reply(error);
   }
 
-  return reply.view('water/notifications/index', { tasks, ...request.view });
+  return reply.view('water/notifications/index', { notifications, ...request.view });
 }
 
 /**

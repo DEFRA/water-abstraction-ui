@@ -14,6 +14,9 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
         }
       }
     },
@@ -30,6 +33,9 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
         }
       }
     },
@@ -46,6 +52,9 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
         }
       }
     },
@@ -62,6 +71,9 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Paper forms have been sent'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
         }
       }
     },

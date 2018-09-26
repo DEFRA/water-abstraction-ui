@@ -53,27 +53,25 @@ const getPaperFormFilter = (licenceNumbers, refDate) => {
 };
 
 /**
+ * Send paper form
+ * @param {Array} licenceNumbers
+ * @param {String} issuer - email address
+ * @return {Promise} resolves with preview data
+ */
+const sendPaperForms = (licenceNumbers, issuer, isPreview = false) => {
+  const filter = getPaperFormFilter(licenceNumbers);
+  const options = buildRequest(filter, issuer, 'send paper forms', 'pdf.return_form', !isPreview);
+  return rp(options);
+};
+
+/**
  * Preview sending of paper form
  * @param {Array} licenceNumbers
  * @param {String} issuer - email address
  * @return {Promise} resolves with preview data
  */
 const previewPaperForms = (licenceNumbers, issuer) => {
-  const filter = getPaperFormFilter(licenceNumbers);
-  const options = buildRequest(filter, issuer, 'send paper forms', 'pdf.return_form', false);
-  return rp(options);
-};
-
-/**
- * Send paper form
- * @param {Array} licenceNumbers
- * @param {String} issuer - email address
- * @return {Promise} resolves with preview data
- */
-const sendPaperForms = (licenceNumbers, issuer) => {
-  const filter = getPaperFormFilter(licenceNumbers);
-  const options = buildRequest(filter, issuer, 'send paper forms', 'pdf.return_form', true);
-  return rp(options);
+  return sendPaperForms(licenceNumbers, issuer, true);
 };
 
 module.exports = {

@@ -1,5 +1,4 @@
 const moment = require('moment');
-const { isFinite } = require('lodash');
 const { extractLicenceNumbers } = require('../licence-helpers');
 
 /**
@@ -15,7 +14,7 @@ const defaultMapper = {
 };
 
 /**
- * Boolean mapper - simply extracts the value of the named field
+ * Boolean mapper - maps a boolean value to a string 'true' or 'false'
  */
 const booleanMapper = {
   import: (fieldName, payload) => {
@@ -76,7 +75,7 @@ const numberMapper = {
     if (value === '') {
       return null;
     }
-    if (isFinite(value)) {
+    if (!isNaN(value)) {
       return parseFloat(value);
     }
     return value;

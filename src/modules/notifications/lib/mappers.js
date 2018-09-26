@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { extractLicenceNumbers } = require('../../../lib/licence-helpers');
+const { licenceNumbersMapper } = require('../../../lib/forms/mappers');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -10,19 +10,6 @@ const defaultMapper = {
   },
   export: (value) => {
     return value;
-  }
-};
-
-/**
- * Delimited mapper - for a pasted set of licence numbers, splits string on common
- * delimiters , newlines, tabs, semicolon
- */
-const licenceNumbersMapper = {
-  import: (fieldName, payload) => {
-    return extractLicenceNumbers(payload[fieldName]);
-  },
-  export: (value) => {
-    return value.join(', ');
   }
 };
 

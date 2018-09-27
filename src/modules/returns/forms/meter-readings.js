@@ -3,6 +3,26 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
 const { get } = require('lodash');
 
+const getLineTextInput = line => {
+  const name = getLineName(line);
+  const label = getLineLabel(line);
+  return fields.text(name, {
+    label,
+    autoComplete: false,
+    mapper: 'numberMapper',
+    type: 'number',
+    controlClass: 'form-control form-control--reading',
+    errors: {
+      'number.min': {
+        message: 'Reading must be equal to or greater than the previous reading'
+      },
+      'number.startReading': {
+        message: 'Reading must be equal to or greater than the start reading'
+      }
+    }
+  });
+};
+
 const form = (request, data) => {
   const { csrfToken } = request.view;
 
@@ -13,25 +33,8 @@ const form = (request, data) => {
 
   const lines = getFormLines(data);
 
-  for (let line of lines) {
-    const name = getLineName(line);
-    const label = getLineLabel(line);
-    f.fields.push(fields.text(name, {
-      label,
-      autoComplete: false,
-      mapper: 'numberMapper',
-      type: 'number',
-      controlClass: 'form-control form-control--reading',
-      errors: {
-        'number.min': {
-          message: 'Reading must be equal to or greater than the previous reading'
-        },
-        'number.startReading': {
-          message: 'Reading must be equal to or greater than the start reading'
-        }
-      }
-    }));
-  }
+  // add a text field for each required meter reading
+  lines.forEach(line => f.fields.push(getLineTextInput(line)));
 
   f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

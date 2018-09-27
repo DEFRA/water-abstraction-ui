@@ -14,8 +14,7 @@ const {
   basisForm, basisSchema,
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
-  meterUnitsForm, meterUnitsSchema,
-  meterReadingsForm, meterReadingsSchema
+  meterUnitsForm, meterReadingsForm, meterReadingsSchema
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -245,10 +244,7 @@ const getMultipleMeters = async (request, h) => {
 const getUnits = async (request, h) => {
   const data = getSessionData(request);
   const view = await getViewData(request, data);
-
-  const units = get(data, 'reading.units');
-
-  const form = setValues(unitsForm(request), { units });
+  const form = unitsForm(request, data);
 
   return h.view('water/returns/internal/form', {
     ...view,
@@ -482,7 +478,7 @@ const getMeterUnits = async (request, h) => {
 const postMeterUnits = async (request, h) => {
   const data = getSessionData(request);
   const view = await getViewData(request, data);
-  const form = handleRequest(meterUnitsForm(request, data), request, meterUnitsSchema);
+  const form = handleRequest(meterUnitsForm(request, data), request);
 
   if (form.isValid) {
     const updated = applyMeterUnits(data, getValues(form));

@@ -4,8 +4,8 @@ const constants = require('../../../lib/constants');
 const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
-const createGetMeterRoute = (path, handler, description) => ({
-  method: 'GET',
+const createMeterRoute = (method, path, handler, description) => ({
+  method,
   path,
   handler,
   options: {
@@ -24,25 +24,8 @@ const createGetMeterRoute = (path, handler, description) => ({
   }
 });
 
-const createPostMeterRoute = (path, handler, description) => ({
-  method: 'POST',
-  path,
-  handler,
-  options: {
-    auth: {
-      scope: external
-    },
-    description,
-    plugins: {
-      viewContext: {
-        activeNavLink: 'returns'
-      },
-      hapiRouteAcl: {
-        permissions: ['returns:submit']
-      }
-    }
-  }
-});
+const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
+const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
 
 module.exports = {
   getAmounts: {

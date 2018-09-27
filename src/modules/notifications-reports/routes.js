@@ -22,6 +22,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
+          activeNavLink: 'reports',
           pageTitle: 'Notification report',
           activeNavLink: 'notifications'
         }

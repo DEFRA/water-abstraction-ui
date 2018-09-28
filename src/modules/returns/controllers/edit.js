@@ -5,7 +5,6 @@
  */
 const { set, get } = require('lodash');
 const Boom = require('boom');
-const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 const { handleRequest, setValues, getValues } = require('../../../lib/forms');
 
 const {
@@ -25,29 +24,11 @@ const {
   applyMeterUnits, applyMeterReadings, applyMethod } = require('../lib/return-helpers');
 
 const {
-  getSessionData,
   saveSessionData,
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
-
-/**
- * Get common view data used by many controllers
- * @param {Object} HAPI request instance
- * @param {Object} data - the return model
- * @return {Promise} resolves with view data
- */
-const getViewData = async (request, data) => {
-  const documentHeader = await getWaterLicence(data.licenceNumber);
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  return {
-    ...request.view,
-    documentHeader,
-    data,
-    activeNavLink: isInternal ? 'view' : 'returns'
-  };
-};
+const { getViewData, getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -90,10 +71,7 @@ const getAmounts = async (request, h) => {
  * @param {String} request.query.returnId - the return to edit
  */
 const postAmounts = async (request, h) => {
-  const data = getSessionData(request);
-
-  const view = await getViewData(request, data);
-
+  const { view, data } = request.returns;
   const form = handleRequest(setValues(amountsForm(request), data), request);
 
   if (form.isValid) {
@@ -118,15 +96,12 @@ const postAmounts = async (request, h) => {
  * Confirmation screen for nil return
  */
 const getNilReturn = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
-  const form = confirmForm(request);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/nil-return', {
     ...view,
     return: data,
-    form
+    form: confirmForm(request)
   });
 };
 
@@ -134,9 +109,7 @@ const getNilReturn = async (request, h) => {
  * Confirmation screen for nil return
  */
 const postNilReturn = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
+  const { data, view } = request.returns;
   const form = handleRequest(confirmForm(request), request);
 
   if (form.isValid) {
@@ -162,13 +135,11 @@ const postNilReturn = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { data, view, isInternal } = request.returns;
 
   // Clear session
   deleteSessionData(request);
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId} `;
 
   return h.view('water/returns/internal/submitted', {
@@ -184,13 +155,11 @@ const getSubmitted = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const getMethod = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-  const form = methodForm(request, data);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: methodForm(request, data),
     return: data
   });
 };
@@ -200,9 +169,7 @@ const getMethod = async (request, h) => {
  * whether user is submitting meter readings or other
  */
 const postMethod = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
+  const { data, view } = request.returns;
   const form = handleRequest(methodForm(request), request);
 
   if (form.isValid) {
@@ -229,12 +196,9 @@ const postMethod = async (request, h) => {
  * Message about multiple meters not being supported
  */
 const getMultipleMeters = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
   return h.view('water/returns/internal/multiple-meters', {
-    ...view,
-    return: data
+    ...request.returns.view,
+    return: request.returns.data
   });
 };
 
@@ -242,13 +206,11 @@ const getMultipleMeters = async (request, h) => {
  * Form to choose units
  */
 const getUnits = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-  const form = unitsForm(request, data);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: unitsForm(request, data),
     return: data
   });
 };
@@ -257,9 +219,7 @@ const getUnits = async (request, h) => {
  * Post handler for units form
  */
 const postUnits = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
+  const { data, view, isInternal } = request.returns;
   const form = handleRequest(unitsForm(request), request);
 
   if (form.isValid) {
@@ -269,7 +229,6 @@ const postUnits = async (request, h) => {
     saveSessionData(request, data);
 
     // Only internal staff have screen for single total
-    const isInternal = request.permissions.hasPermission('admin.defra');
     const path = isInternal ? '/return/single-total' : '/return/basis';
 
     return h.redirect(getScopedPath(request, path));
@@ -286,14 +245,11 @@ const postUnits = async (request, h) => {
  * Form to choose whether single figure or multiple amounts
  */
 const getSingleTotal = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
-  const form = singleTotalForm(request);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: singleTotalForm(request),
     return: data
   });
 };
@@ -302,8 +258,7 @@ const getSingleTotal = async (request, h) => {
  * Post handler for single total
  */
 const postSingleTotal = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { data, view } = request.returns;
 
   const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
 
@@ -330,14 +285,11 @@ const postSingleTotal = async (request, h) => {
  * What is the basis for the return - amounts/pump/herd
  */
 const getBasis = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
-  const form = basisForm(request);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: basisForm(request),
     return: data
   });
 };
@@ -346,9 +298,7 @@ const getBasis = async (request, h) => {
  * Post handler for basis form
  */
 const postBasis = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
+  const { data, view } = request.returns;
   const form = handleRequest(basisForm(request), request, basisSchema);
 
   if (form.isValid) {
@@ -370,21 +320,17 @@ const postBasis = async (request, h) => {
  * Screen for user to enter quantities
  */
 const getQuantities = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
-  const form = quantitiesForm(request, data);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: quantitiesForm(request, data),
     return: data
   });
 };
 
 const postQuantities = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { data, view } = request.returns;
 
   const schema = quantitiesSchema(data);
 
@@ -408,15 +354,12 @@ const postQuantities = async (request, h) => {
  * Confirm screen for user to check amounts before submission
  */
 const getConfirm = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-
-  const form = confirmForm(request, `/return/confirm`);
+  const { data, view } = request.returns;
 
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
-    form,
+    form: confirmForm(request, `/return/confirm`),
     total: getReturnTotal(data)
   });
 };
@@ -425,29 +368,23 @@ const getConfirm = async (request, h) => {
  * Confirm return
  */
 const postConfirm = async (request, h) => {
-  const data = getSessionData(request);
-
   // Post return
-  await submitReturnData(data, request);
+  await submitReturnData(request.returns.data, request);
 
   return h.redirect(getScopedPath(request, '/return/submitted'));
 };
 
 const getMeterDetails = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-  const form = meterDetailsForm(request, data);
-
+  const { view, data } = request.returns;
   return h.view('water/returns/meter-details', {
     ...view,
-    form,
+    form: meterDetailsForm(request, data),
     return: data
   });
 };
 
 const postMeterDetails = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { view, data } = request.returns;
   const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema);
 
   if (form.isValid) {
@@ -464,20 +401,17 @@ const postMeterDetails = async (request, h) => {
 };
 
 const getMeterUnits = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-  const form = meterUnitsForm(request, data);
+  const { view, data } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form,
+    form: meterUnitsForm(request, data),
     return: data
   });
 };
 
 const postMeterUnits = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { view, data } = request.returns;
   const form = handleRequest(meterUnitsForm(request, data), request);
 
   if (form.isValid) {
@@ -494,20 +428,17 @@ const postMeterUnits = async (request, h) => {
 };
 
 const getMeterReadings = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
-  const form = meterReadingsForm(request, data);
+  const { view, data } = request.returns;
 
   return h.view('water/returns/meter-readings', {
     ...view,
-    form,
+    form: meterReadingsForm(request, data),
     return: data
   });
 };
 
 const postMeterReadings = async (request, h) => {
-  const data = getSessionData(request);
-  const view = await getViewData(request, data);
+  const { view, data } = request.returns;
   const form = handleRequest(meterReadingsForm(request, data), request, meterReadingsSchema(data));
 
   if (form.isValid) {

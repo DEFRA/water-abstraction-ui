@@ -18,7 +18,8 @@ const createMeterRoute = (method, path, description) => {
       auth: { scope: returns },
       description,
       plugins: {
-        viewContext: { activeNavLink: 'returns' }
+        viewContext: { activeNavLink: 'returns' },
+        returns: true
       }
     }
   };
@@ -76,7 +77,8 @@ module.exports = {
             csrf_token: VALID_GUID,
             isNil: Joi.string().required().valid('Yes', 'No')
           }
-        }
+        },
+        returns: true
       }
     }
   },
@@ -94,7 +96,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -112,7 +115,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - nil submitted',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -129,7 +133,8 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -147,7 +152,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -165,7 +171,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -183,7 +190,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -201,7 +209,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -219,7 +228,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -237,7 +247,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -255,7 +266,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -273,7 +285,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -291,7 +304,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -309,7 +323,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -327,7 +342,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -346,7 +362,8 @@ module.exports = {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns',
           showMeta: true
-        }
+        },
+        returns: true
       }
     }
   },
@@ -364,7 +381,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },

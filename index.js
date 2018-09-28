@@ -16,6 +16,7 @@ const config = require('./config');
 const { acl, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
+const returnsPlugin = require('./src/modules/returns/plugin.js');
 
 // Initialise logger
 const logger = require('./src/lib/logger');
@@ -61,6 +62,8 @@ async function start () {
       }
     });
     await server.register(Object.values(plugins));
+
+    await server.register({ plugin: returnsPlugin });
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {

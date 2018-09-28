@@ -1,7 +1,6 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
-const { isInternalUser } = require('./helpers');
 
 /**
  * Gets the key to use for storing return data in user session

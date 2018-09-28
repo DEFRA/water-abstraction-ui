@@ -1,37 +1,6 @@
 const Joi = require('joi');
-const moment = require('moment');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
-const { getFormLines } = require('../lib/return-helpers');
-const { maxPrecision } = require('../../../lib/number-formatter');
-
-/**
- * Gets label text for line
- * @param {Object} line from requiredLines array
- * @return {String} label
- */
-const getLabel = (line) => {
-  if (line.timePeriod === 'day') {
-    return moment(line.startDate).format('D MMMM');
-  }
-  if (line.timePeriod === 'week') {
-    return 'Week ending ' + moment(line.endDate).format('D MMMM');
-  }
-  if (line.timePeriod === 'month') {
-    return moment(line.startDate).format('MMMM');
-  }
-  if (line.timePeriod === 'year') {
-    return moment(line.startDate).format('D MMMM YYYY - ') + moment(line.endDate).format('D MMMM YYYY');
-  }
-};
-
-/**
- * Get form field name
- * @param {Object} line
- * @return {String} field name
- */
-const getName = (line) => {
-  return line.startDate + '_' + line.endDate;
-};
+const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
 
 /**
  * Get field suffix - this is the units used for this return
@@ -49,16 +18,6 @@ const getSuffix = (unit) => {
   return units[u];
 };
 
-const getLineValues = (lines) => {
-  return lines.reduce((acc, line) => {
-    const name = getName(line);
-    return {
-      ...acc,
-      [name]: maxPrecision(line.quantity, 3)
-    };
-  }, {});
-};
-
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
 
@@ -72,13 +31,15 @@ const quantitiesForm = (request, data) => {
   const lines = getFormLines(data);
 
   for (let line of lines) {
-    const name = getName(line);
-    const label = getLabel(line);
-    f.fields.push(fields.text(name, { label,
+    const name = getLineName(line);
+    const label = getLineLabel(line);
+    f.fields.push(fields.text(name, {
+      label,
+      autoComplete: false,
       suffix,
       mapper: 'numberMapper',
       type: 'number',
-      controlClass: 'form-control form-control-small',
+      controlClass: 'form-control form-control--small',
       errors: {
         'number.base': {
           message: 'Enter an amount in numbers'
@@ -111,7 +72,7 @@ const quantitiesSchema = (data) => {
   const lines = getFormLines(data);
 
   return lines.reduce((acc, line) => {
-    const name = getName(line);
+    const name = getLineName(line);
     return {
       ...acc,
       [name]: Joi.number().allow(null).min(0)

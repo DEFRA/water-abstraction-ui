@@ -19,7 +19,8 @@ const createMeterRoute = (method, path, handler, description) => ({
       },
       hapiRouteAcl: {
         permissions: ['returns:submit']
-      }
+      },
+      returns: true
     }
   }
 });
@@ -82,7 +83,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -103,7 +105,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -124,7 +127,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -144,7 +148,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -165,7 +170,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -186,7 +192,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -207,7 +214,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -228,7 +236,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -249,7 +258,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -270,7 +280,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -291,7 +302,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -312,7 +324,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -333,7 +346,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -355,7 +369,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },
@@ -376,7 +391,8 @@ module.exports = {
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
-        }
+        },
+        returns: true
       }
     }
   },

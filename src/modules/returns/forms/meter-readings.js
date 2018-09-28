@@ -77,7 +77,7 @@ const getReadingValidator = (startReading, lines, index) => {
       is: Joi.number().strict().required(),
 
       // ensure this value is at the same the value
-      then: Joi.number().allow(null).min(Joi.ref(name)),
+      then: Joi.number().required().allow(null).min(Joi.ref(name)),
 
       // if the target value is null, then just validate against
       // the meter start reading.

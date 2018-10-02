@@ -66,3 +66,40 @@ experiment('lib/view.contextDefaults', () => {
     expect(viewContext.surveyType).to.equal('internal');
   });
 });
+
+experiment('lib/view.getTracking', () => {
+  const internal = {
+    scope: ['internal'],
+    lastlogin: '2018-10-24'
+  };
+
+  const external = {
+    scope: [],
+    lastlogin: null
+  };
+
+  test('Should handle case where user is not logged in', async () => {
+    const tracking = view.getTracking(null);
+    expect(tracking).to.equal({
+      usertype: 'not_logged_in'
+    });
+  });
+
+  test('Existing internal user', async () => {
+    const tracking = view.getTracking(internal);
+    expect(tracking).to.equal({
+      usertype: 'internal',
+      lastlogin: '2018-10-24',
+      newuser: false
+    });
+  });
+
+  test('New external user', async () => {
+    const tracking = view.getTracking(external);
+    expect(tracking).to.equal({
+      usertype: 'external',
+      lastlogin: null,
+      newuser: true
+    });
+  });
+});

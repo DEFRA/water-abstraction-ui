@@ -6,6 +6,7 @@ const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
 const { hasPermission } = require('../../../lib/permissions');
 const config = require('../../../../config');
+const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -293,6 +294,23 @@ const getScopedPath = (request, path) => {
   return isInternal ? `/admin${path}` : path;
 };
 
+/**
+ * Get common view data used by many controllers
+ * @param {Object} HAPI request instance
+ * @param {Object} data - the return model
+ * @return {Promise} resolves with view data
+ */
+const getViewData = async (request, data) => {
+  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const isInternal = request.permissions.hasPermission('admin.defra');
+  return {
+    ...request.view,
+    documentHeader,
+    data,
+    activeNavLink: isInternal ? 'view' : 'returns'
+  };
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -304,5 +322,6 @@ module.exports = {
   getInternalRoles,
   getReturnTotal,
   getScopedPath,
-  canEdit
+  canEdit,
+  getViewData
 };

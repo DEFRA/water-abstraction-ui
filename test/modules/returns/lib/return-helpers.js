@@ -3,11 +3,17 @@
 const Lab = require('lab');
 const moment = require('moment');
 const lab = exports.lab = Lab.script();
+const { omit } = require('lodash');
 
 const { expect } = require('code');
 const testReturn = require('./test-return');
 
-const { isDateWithinAbstractionPeriod, applySingleTotal, applyBasis, applyQuantities, applyNilReturn, applyExternalUser, applyStatus, applyUserDetails } = require('../../../../src/modules/returns/lib/return-helpers');
+const {
+  isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
+  applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
+  applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
+  applyMethod, getMeter
+} = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
   periodStartDay: 5,
@@ -28,6 +34,14 @@ const allYear = {
   periodStartMonth: 1,
   periodEndDay: 31,
   periodEndMonth: 12
+};
+
+const getTestReturnWithMeter = (meter = {
+  startReading: 100,
+  multiplier: 1,
+  units: 'm³'
+}) => {
+  return Object.assign({}, testReturn, { meters: [meter] });
 };
 
 lab.experiment('Test isDateWithinAbstractionPeriod', () => {
@@ -176,5 +190,218 @@ lab.experiment('Return reducers', () => {
     expect(data.user.email).to.equal('test@example.com');
     expect(data.user.type).to.equal('internal');
     expect(data.user.entityId).to.equal('01234');
+  });
+});
+
+lab.experiment('applyMeterDetails', () => {
+  let data;
+  let formValues;
+
+  lab.beforeEach(async () => {
+    formValues = {
+      manufacturer: 'test-manufacturer',
+      serialNumber: 'test-serial',
+      startReading: 1544,
+      csrf_token: 'c7c72434-5844-4827-25d5-6dac3c31136d'
+    };
+    data = applyMeterDetails({}, formValues);
+  });
+
+  lab.test('adds the manufacturer', async () => {
+    expect(data.meters[0].manufacturer).to.equal('test-manufacturer');
+  });
+
+  lab.test('adds the serial number', async () => {
+    expect(data.meters[0].serialNumber).to.equal('test-serial');
+  });
+
+  lab.test('adds the start reading number', async () => {
+    expect(data.meters[0].startReading).to.equal(1544);
+  });
+
+  lab.test('sets multiplier to 1 if undefined', async () => {
+    expect(data.meters[0].multiplier).to.equal(1);
+  });
+
+  lab.test('sets multiplier to 10 if true', async () => {
+    formValues.isMultiplier = true;
+    data = applyMeterDetails({}, formValues);
+    expect(data.meters[0].multiplier).to.equal(10);
+  });
+
+  lab.test('does not overwrite existing readings', async () => {
+    const earlierData = {
+      meters: [{
+        readings: {
+          one: 1
+        }
+      }]
+    };
+    const latestData = applyMeterDetails(earlierData, formValues);
+    expect(latestData.meters[0].readings.one).to.equal(1);
+  });
+});
+
+lab.experiment('applyMeterUnits', () => {
+  const getFormValues = units => ({ units });
+
+  lab.test('assigns the units if "l"', async () => {
+    const data = applyMeterUnits({}, getFormValues('l'));
+    expect(data.meters[0].units).to.equal('l');
+    expect(data.reading.units).to.equal('l');
+  });
+
+  lab.test('assigns the units if "m³"', async () => {
+    const data = applyMeterUnits({}, getFormValues('m³'));
+    expect(data.meters[0].units).to.equal('m³');
+    expect(data.reading.units).to.equal('m³');
+  });
+
+  lab.test('assigns the units if "Ml"', async () => {
+    const data = applyMeterUnits({}, getFormValues('Ml'));
+    expect(data.meters[0].units).to.equal('Ml');
+    expect(data.reading.units).to.equal('Ml');
+  });
+
+  lab.test('assigns the units if "gal"', async () => {
+    const data = applyMeterUnits({}, getFormValues('gal'));
+    expect(data.meters[0].units).to.equal('gal');
+    expect(data.reading.units).to.equal('gal');
+  });
+
+  lab.test('sets reading type to measured', async () => {
+    const data = applyMeterUnits({}, getFormValues('gal'));
+    expect(data.reading.type).to.equal('measured');
+  });
+
+  lab.test('throws for an unexpected value', async () => {
+    expect(() => {
+      applyMeterUnits({}, getFormValues('oz'));
+    }).to.throw();
+  });
+});
+
+lab.experiment('applyMeterReadings', () => {
+  lab.test('keeps a copy of the readings against the meter', async () => {
+    const returnData = getTestReturnWithMeter();
+
+    const formValues = {
+      '2017-11-01_2017-11-30': 1,
+      '2017-12-01_2017-12-31': 2,
+      '2018-01-01_2018-01-31': 3,
+      csrf_token: '00000000-0000-0000-0000-000000000000'
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.meters[0].readings).to.equal(omit(formValues, 'csrf_token'));
+  });
+
+  lab.test('sets abstraction volumes to null for null meter readings', async () => {
+    const returnData = getTestReturnWithMeter();
+    const formValues = {
+      '2017-11-01_2017-11-30': null,
+      '2017-12-01_2017-12-31': null,
+      '2018-01-01_2018-01-31': null
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: null },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: null }
+    ]);
+  });
+
+  lab.test('sets abstraction volumes based on the start reading', async () => {
+    const returnData = getTestReturnWithMeter();
+    const formValues = {
+      '2017-11-01_2017-11-30': 150,
+      '2017-12-01_2017-12-31': 250,
+      '2018-01-01_2018-01-31': 255
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 50 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 100 },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 5 }
+    ]);
+  });
+
+  lab.test('handles the multiplier', async () => {
+    const tenTimesMeter = { startReading: 100, multiplier: 10, units: 'm³' };
+    const returnData = getTestReturnWithMeter(tenTimesMeter);
+    const formValues = {
+      '2017-11-01_2017-11-30': 150,
+      '2017-12-01_2017-12-31': 250,
+      '2018-01-01_2018-01-31': 255
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 500 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 1000 },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 50 }
+    ]);
+  });
+
+  lab.test('handles a mixture of null and numeric meter readings', async () => {
+    const returnData = getTestReturnWithMeter();
+    const formValues = {
+      '2017-11-01_2017-11-30': 150,
+      '2017-12-01_2017-12-31': null,
+      '2018-01-01_2018-01-31': 255
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 50 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 105 }
+    ]);
+  });
+
+  lab.test('sets the volume to null for identical meter readings', async () => {
+    const returnData = getTestReturnWithMeter();
+    const formValues = {
+      '2017-11-01_2017-11-30': 100,
+      '2017-12-01_2017-12-31': 100,
+      '2018-01-01_2018-01-31': 250
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: null },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 150 }
+    ]);
+  });
+});
+
+lab.experiment('applyMethod', () => {
+  lab.test('adds the method to the reading object', async () => {
+    const returnData = getTestReturnWithMeter();
+    const data = applyMethod(returnData, 'oneMeter');
+    expect(data.reading.method).to.equal('oneMeter');
+  });
+});
+
+lab.experiment('getMeter', () => {
+  lab.test('return an empty object when no meter data', async () => {
+    expect(getMeter(testReturn)).to.equal({});
+  });
+
+  lab.test('returns the meter if present', async () => {
+    expect(getMeter(getTestReturnWithMeter())).to.equal({
+      startReading: 100,
+      multiplier: 1,
+      units: 'm³'
+    });
   });
 });

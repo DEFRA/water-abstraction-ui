@@ -3,6 +3,30 @@ const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
 const { VALID_GUID } = require('../../../lib/validators');
+const { upperFirst } = require('lodash');
+
+const getHandlerName = (method, path, pathExclude) => {
+  return method.toLowerCase() + path.replace(pathExclude, '').split('/').map(upperFirst).join('');
+};
+
+const createMeterRoute = (method, path, description) => {
+  return {
+    method,
+    path,
+    handler: controller[getHandlerName(method, path, '/admin/return/')],
+    options: {
+      auth: { scope: returns },
+      description,
+      plugins: {
+        viewContext: { activeNavLink: 'returns' },
+        returns: true
+      }
+    }
+  };
+};
+
+const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
+const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
 
 module.exports = {
   getAmounts: {
@@ -53,7 +77,8 @@ module.exports = {
             csrf_token: VALID_GUID,
             isNil: Joi.string().required().valid('Yes', 'No')
           }
-        }
+        },
+        returns: true
       }
     }
   },
@@ -71,7 +96,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -89,7 +115,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - nil submitted',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -106,7 +133,8 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -124,7 +152,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -142,7 +171,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -160,7 +190,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -178,7 +209,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -196,7 +228,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -214,7 +247,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -232,7 +266,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single amount?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -250,7 +285,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -268,7 +304,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -286,7 +323,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -304,7 +342,8 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
   },
@@ -323,7 +362,8 @@ module.exports = {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns',
           showMeta: true
-        }
+        },
+        returns: true
       }
     }
   },
@@ -341,9 +381,40 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns'
-        }
+        },
+        returns: true
       }
     }
-  }
+  },
+
+  getMeterDetails: createGetMeterRoute(
+    '/admin/return/meter/details',
+    'Shows the view allowing an admin user to enter meter details'
+  ),
+
+  postMeterDetails: createPostMeterRoute(
+    '/admin/return/meter/details',
+    'POST handler for meter details'
+  ),
+
+  getMeterUnits: createGetMeterRoute(
+    '/admin/return/meter/units',
+    'Shows the view allowing an admin user to enter meter units'
+  ),
+
+  postMeterUnits: createPostMeterRoute(
+    '/admin/return/meter/units',
+    'POST handler for meter units'
+  ),
+
+  getMeterReadings: createGetMeterRoute(
+    '/admin/return/meter/readings',
+    'Shows the view allowing an admin user to enter meter readings'
+  ),
+
+  postMeterReadings: createPostMeterRoute(
+    '/admin/return/meter/readings',
+    'POST handler for meter readings'
+  )
 
 };

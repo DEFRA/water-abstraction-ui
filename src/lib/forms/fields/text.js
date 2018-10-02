@@ -4,7 +4,8 @@ const textFactory = (name, opts = {}, value) => {
     widget: 'text',
     required: true,
     type: 'text',
-    controlClass: 'form-control'
+    controlClass: 'form-control',
+    autoComplete: true
   };
   const options = {
     ...defaults,

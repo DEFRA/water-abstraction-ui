@@ -18,8 +18,6 @@ const getReturn = (returnId, versionNumber) => {
     qs.versionNumber = versionNumber;
   };
 
-  console.log(qs);
-
   return rp({
     method: 'GET',
     uri: endpoint,

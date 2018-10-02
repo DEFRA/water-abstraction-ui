@@ -7,6 +7,27 @@ const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   return 'anonymous';
 };
 
+/**
+ * Get GA tracking details given user credentials
+ * @param {Object} credentials
+ * @return {Object} tracking
+ */
+const getTracking = (credentials) => {
+  if (credentials) {
+    const { lastlogin: lastLogin, scope = [] } = credentials;
+
+    return {
+      usertype: scope.includes('internal') ? 'internal' : 'external',
+      newuser: lastLogin === null,
+      lastlogin: lastLogin
+    };
+  };
+
+  return {
+    usertype: 'not_logged_in'
+  };
+};
+
 function viewContextDefaults (request) {
   var viewContext = {};
 
@@ -118,11 +139,15 @@ function viewContextDefaults (request) {
 
   viewContext.permissions = request.permissions;
 
+  viewContext.tracking = getTracking(request.auth.credentials);
+
+  /*
   if (request.auth.credentials) {
     viewContext.tracking = request.auth.credentials.user_data;
   } else {
     viewContext.tracking = { usertype: 'not_logged_in' };
   }
+  */
 
   viewContext.env = process.env.NODEENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
@@ -135,5 +160,6 @@ function viewContextDefaults (request) {
 }
 
 module.exports = {
-  contextDefaults: viewContextDefaults
+  contextDefaults: viewContextDefaults,
+  getTracking
 };

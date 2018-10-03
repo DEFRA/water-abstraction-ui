@@ -1,6 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
+const { get } = require('lodash');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
@@ -34,7 +35,7 @@ const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
  * @return {Object} filter
  */
 const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
-  const { testMode } = config;
+  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
 
   const filter = {
     regime: 'water',
@@ -54,7 +55,7 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
 
   // External users on production-like environments can only view returns where
   // return cycle is in the past
-  if (!isInternal && !testMode) {
+  if (!isInternal && !showFutureReturns) {
     filter.end_date = {
       $lte: moment().format('YYYY-MM-DD')
     };
@@ -187,7 +188,7 @@ const getReturnTotal = (ret) => {
  * @return {Boolean}
  */
 const canEdit = (permissions, ret, today = null) => {
-  const { testMode } = config;
+  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
   const endDate = ret.endDate || ret.end_date;
   const { status } = ret;
   const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
@@ -198,7 +199,7 @@ const canEdit = (permissions, ret, today = null) => {
   return isAfterSummer2018 &&
     (
       (canEdit) ||
-      (canSubmit && (status === 'due') && (testMode || isPast))
+      (canSubmit && (status === 'due') && (showFutureReturns || isPast))
     );
 };
 

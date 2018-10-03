@@ -227,5 +227,6 @@ module.exports = {
   formFactory,
   handleRequest,
   fields,
-  schemaFactory
+  schemaFactory,
+  importData
 };

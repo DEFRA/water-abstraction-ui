@@ -18,6 +18,9 @@ const getLineTextInput = line => {
       },
       'number.startReading': {
         message: 'Reading must be equal to or greater than the start reading'
+      },
+      'number.lastReading': {
+        message: 'Reading must be equal to or greater than the previous reading'
       }
     }
   });
@@ -43,69 +46,57 @@ const form = (request, data) => {
   return setValues(f, readings);
 };
 
-const getMeterStartReadingValidator = startReading => {
-  return Joi.number().allow(null).min(startReading).error(() => {
-    return { type: 'number.startReading' };
-  });
-};
+const getStartReading = data => get(data, 'meters[0].startReading', 0);
+
+const getMeterReadingValidator = (type, minValue) => Joi
+  .number()
+  .allow(null)
+  .min(minValue)
+  .error(() => ({ type }));
+
+const getStartReadingValidator = data => getMeterReadingValidator(
+  'number.startReading',
+  getStartReading(data)
+);
+
+const getRecentReadingValidator = getMeterReadingValidator.bind(
+  null, 'number.lastReading'
+);
 
 /**
- * Creates a validator for the line at the given index.
+ * The schema for the meter readings is created dynamically
+ * based on the actual data submitted to facilitate the validation
+ * of the meter readings which follow these rules
  *
- * The lines are in date order so the first validator only
- * validates that the value is either empty or, greater than or equal
- * to the meter start reading.
+ *  - can be null (empty)
+ *  - must be greater than or equal to the start meter reading
+ *  - must be greater that any earlier readings
  *
- * For all the rest of the lines, the value is validated to ensure
- * that the value is null, or greater than or equal to the previous
- * readings and the meter start reading.
+ * @param {object} data The returns model
+ * @param {object} internalData The request payload after all internal
+ * mappers are applied.
  */
-const getReadingValidator = (startReading, lines, index) => {
-  const startReadingMin = getMeterStartReadingValidator(startReading);
-
-  if (index === 0) {
-    return startReadingMin;
-  }
-
-  let validator = Joi.number().allow(null);
-
-  // get the preceeding lines
-  lines.slice(0, index).forEach(line => {
-    const name = getLineName(line);
-    validator = validator.when(name, {
-      // If the target value is entered and is numeric
-      is: Joi.number().strict().required(),
-
-      // ensure this value is at the same the value
-      then: Joi.number().required().allow(null).min(Joi.ref(name)),
-
-      // if the target value is null, then just validate against
-      // the meter start reading.
-      otherwise: startReadingMin
-    });
-  });
-
-  return validator;
-};
-
-const schema = (data) => {
-  let schema = {
+const schema = (data, internalData) => {
+  const baseSchema = {
     csrf_token: Joi.string().guid().required()
   };
 
   const lines = getFormLines(data);
-  const startReading = get(data, 'meters[0].startReading', 0);
+  const startValidator = getStartReadingValidator(data);
+  let lastReading = false;
 
-  schema = lines.reduce((acc, line, currentIndex) => {
+  return lines.reduce((acc, line, currentIndex) => {
     const name = getLineName(line);
-    const obj = {
-      ...acc,
-      [name]: getReadingValidator(startReading, lines, currentIndex)
-    };
-    return obj;
-  }, schema);
+    const validator = (currentIndex === 0 || lastReading === false)
+      ? startValidator
+      : startValidator.concat(getRecentReadingValidator(lastReading));
 
-  return schema;
+    if (internalData[name] !== null) {
+      // This line has data, keep track for future validations.
+      lastReading = internalData[name];
+    }
+    return { ...acc, [name]: validator };
+  }, baseSchema);
 };
 
 module.exports = {

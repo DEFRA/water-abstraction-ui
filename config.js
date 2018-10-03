@@ -1,6 +1,8 @@
+const testMode = parseInt(process.env.test_mode) === 1;
+
 module.exports = {
 
-  testMode: parseInt(process.env.test_mode) === 1,
+  testMode,
 
   idm: {
     application: 'water_vml'
@@ -55,6 +57,10 @@ module.exports = {
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/welcome',
     isHttpOnly: true
+  },
+
+  returns: {
+    showFutureReturns: testMode || (process.env.NODE_ENV === 'preprod')
   },
 
   sanitize: {

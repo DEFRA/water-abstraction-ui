@@ -62,7 +62,7 @@
           <div class="table-row medium-space {{# notEqual received_date null }}clickable{{/notEqual }}">                                    <!-- a data row starts -->
 
             <div class="table-cell">
-              <h3 class="context">
+              <h4 class="context">
                 Return period
               </h4>
 
@@ -94,7 +94,8 @@
               {{#if isClickable }}
                 <span class="sr-only">for
                   {{#each metadata.purposes }}
-                  {{ tertiary.description }}
+                  {{titleCase alias}}
+                  {{#unless alias}}{{titleCase tertiary.description}}{{/unless}}
                   {{/each }}
                   at {{{ titleCase metadata.description  }}}
                  </span>
@@ -108,7 +109,8 @@
                 Purpose
               </h4>
               {{#each metadata.purposes }}
-              {{ tertiary.description }}
+              {{titleCase alias}}
+              {{#unless alias}}{{titleCase tertiary.description}}{{/unless}}
               {{/each }}
             </div>
             <div class="table-cell">

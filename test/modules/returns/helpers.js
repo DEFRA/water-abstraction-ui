@@ -1,5 +1,4 @@
 'use strict';
-const moment = require('moment');
 const { expect } = require('code');
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
@@ -53,10 +52,6 @@ lab.experiment('canEdit', () => {
     status: 'completed'
   };
 
-  const futureReturn = {
-    end_date: moment().add(1, 'years').format('YYYY-MM-DD')
-  };
-
   lab.test('Internal user cannot edit return if before summer 2018 cycle', async () => {
     expect(helpers.canEdit(internalUser, pre2018Return)).to.equal(false);
   });
@@ -79,16 +74,22 @@ lab.experiment('canEdit', () => {
 
   lab.test('External user cannot edit return if after summer 2018 cycle and in the future in production', async () => {
     const testMode = config.testMode;
+    const showFutureReturns = config.returns.showFutureReturns;
     config.testMode = false;
+    config.returns.showFutureReturns = false;
     expect(helpers.canEdit(externalUser, post2018Return, '2018-10-30')).to.equal(false);
     config.testMode = testMode;
+    config.returns.showFutureReturns = showFutureReturns;
   });
 
   lab.test('External user can edit return if after summer 2018 cycle and in test environments', async () => {
     const testMode = config.testMode;
+    const showFutureReturns = config.returns.showFutureReturns;
     config.testMode = true;
+    config.returns.showFutureReturns = true;
     expect(helpers.canEdit(externalUser, post2018Return, '2018-10-30')).to.equal(true);
     config.testMode = testMode;
+    config.returns.showFutureReturns = showFutureReturns;
   });
 
   lab.test('External user cannot edit completed returns', async () => {

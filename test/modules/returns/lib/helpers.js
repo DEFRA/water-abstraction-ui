@@ -1,26 +1,27 @@
 'use strict';
+const moment = require('moment');
 const { expect } = require('code');
 const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = Lab.script();
 
-const helpers = require('../../../src/modules/returns/lib/helpers');
-const config = require('../../../config');
+const helpers = require('../../../../src/modules/returns/lib/helpers');
+const config = require('../../../../config');
 
-lab.experiment('getInternalRoles', () => {
-  lab.test('returns the original roles if the user is an internal user', async () => {
+experiment('getInternalRoles', () => {
+  test('returns the original roles if the user is an internal user', async () => {
     const isInternalUser = true;
     const roles = helpers.getInternalRoles(isInternalUser, ['test_role']);
     expect(roles).to.only.include('test_role');
   });
 
-  lab.test('returns replaces the original roles with the expected roles if the user is an external user', async () => {
+  test('returns replaces the original roles with the expected roles if the user is an external user', async () => {
     const isInternalUser = false;
     const roles = helpers.getInternalRoles(isInternalUser, ['test_role']);
     expect(roles).to.only.include(['primary_user', 'user_returns']);
   });
 });
 
-lab.experiment('canEdit', () => {
+experiment('canEdit', () => {
   const internalUser = {
     returns: {
       read: true,
@@ -52,27 +53,27 @@ lab.experiment('canEdit', () => {
     status: 'completed'
   };
 
-  lab.test('Internal user cannot edit return if before summer 2018 cycle', async () => {
+  test('Internal user cannot edit return if before summer 2018 cycle', async () => {
     expect(helpers.canEdit(internalUser, pre2018Return)).to.equal(false);
   });
 
-  lab.test('Internal user can edit return if after summer 2018 cycle', async () => {
+  test('Internal user can edit return if after summer 2018 cycle', async () => {
     expect(helpers.canEdit(internalUser, post2018Return)).to.equal(true);
   });
 
-  lab.test('Internal user can edit completed return if after summer 2018 cycle', async () => {
+  test('Internal user can edit completed return if after summer 2018 cycle', async () => {
     expect(helpers.canEdit(internalUser, post2018CompletedReturn)).to.equal(true);
   });
 
-  lab.test('External user cannot edit return if before summer 2018 cycle', async () => {
+  test('External user cannot edit return if before summer 2018 cycle', async () => {
     expect(helpers.canEdit(externalUser, pre2018Return)).to.equal(false);
   });
 
-  lab.test('External user can edit return if after summer 2018 cycle and in the past', async () => {
+  test('External user can edit return if after summer 2018 cycle and in the past', async () => {
     expect(helpers.canEdit(externalUser, post2018Return, '2018-10-31')).to.equal(true);
   });
 
-  lab.test('External user cannot edit return if after summer 2018 cycle and in the future in production', async () => {
+  test('External user cannot edit return if after summer 2018 cycle and in the future in production', async () => {
     const testMode = config.testMode;
     const showFutureReturns = config.returns.showFutureReturns;
     config.testMode = false;
@@ -82,7 +83,7 @@ lab.experiment('canEdit', () => {
     config.returns.showFutureReturns = showFutureReturns;
   });
 
-  lab.test('External user can edit return if after summer 2018 cycle and in test environments', async () => {
+  test('External user can edit return if after summer 2018 cycle and in test environments', async () => {
     const testMode = config.testMode;
     const showFutureReturns = config.returns.showFutureReturns;
     config.testMode = true;
@@ -92,7 +93,24 @@ lab.experiment('canEdit', () => {
     config.returns.showFutureReturns = showFutureReturns;
   });
 
-  lab.test('External user cannot edit completed returns', async () => {
+  test('External user cannot edit completed returns', async () => {
     expect(helpers.canEdit(externalUser, post2018CompletedReturn, '2018-10-31')).to.equal(false);
+  });
+});
+
+experiment('isReturnPastDueDate', () => {
+  test('is true when the due date is before today', async () => {
+    const yesterday = moment().add(-1, 'days').format('YYYY-MM-DD');
+    expect(helpers.isReturnPastDueDate({ due_date: yesterday })).to.be.true();
+  });
+
+  test('is false when the due date is today', async () => {
+    const today = moment().format('YYYY-MM-DD');
+    expect(helpers.isReturnPastDueDate({ due_date: today })).to.be.false();
+  });
+
+  test('is false when the due date is after today', async () => {
+    const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+    expect(helpers.isReturnPastDueDate({ due_date: tomorrow })).to.be.false();
   });
 });

@@ -1,0 +1,7 @@
+{{# equal status 'due' }}
+  {{#if isPastDueDate}}
+    <strong class="badge badge--warning badge--caps badge--no-wrap">Return not received</strong>
+  {{else}}
+    <strong class="badge badge--success badge--caps badge--no-wrap">Return due</strong>
+  {{/if}}
+{{/equal}}

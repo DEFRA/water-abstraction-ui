@@ -4,6 +4,7 @@
 module.exports = {
   // This version global seems to be introduced by sinon.
   globals: 'version',
+  verbose: true,
 
   'coverage-exclude': [
     'data',

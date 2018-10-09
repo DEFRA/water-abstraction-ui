@@ -106,15 +106,8 @@
               </span>
             </div>
             <div class="table-cell">
-              <h4 class="context">
-                Status
-              </h4>
-
-              {{# equal status 'due' }}
-              <strong class="badge badge--success badge--caps">
-                Return due
-              </strong>
-              {{/equal}}
+              <h4 class="context">Status</h4>
+              {{> return-due-badge}}
             </div>
           </div>
           {{/each}}

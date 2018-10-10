@@ -1,40 +1,26 @@
-const Joi = require('joi');
-const { cloneDeep, isObject } = require('lodash');
+const { cloneDeep } = require('lodash');
 const fields = require('./fields');
 const mappers = require('./mappers');
+const { mapFields } = require('./mapFields');
+const validationAdapterFactory = require('./validationAdapters');
 
-const formFactory = (action, method = 'POST') => {
+/**
+ * Creates the form skeleton which will have fields added to.
+ *
+ * @param {string} action URL for handling the submission of the form
+ * @param {string} method='POST' Which HTTP method will be used to handle the form submit
+ * @param {string} validationType='joi' Which type of validation adapter is used for form validation and error messages
+ */
+const formFactory = (action, method = 'POST', validationType = 'joi') => {
   return {
     action,
     method,
     isSubmitted: false,
     isValid: undefined,
     fields: [],
-    errors: []
+    errors: [],
+    validationType
   };
-};
-
-/**
- * Generates a Joi validation schema given a form schema
- * @param {Object} form
- * @return {Object} Joi schema
- */
-const schemaFactory = (form) => {
-  const schema = {};
-
-  mapFields(form, (field) => {
-    let s = Joi.string();
-
-    if (field.options.choices) {
-      s = s.valid(field.options.choices.map(choice => choice.value));
-    }
-    if (field.options.required) {
-      s = s.required();
-    }
-    schema[field.name] = s;
-  });
-
-  return schema;
 };
 
 /**
@@ -91,35 +77,6 @@ const getCustomErrors = (form) => {
 };
 
 /**
- * Applies the supplied function to every field
- * using a deep traversal
- * Mutates the supplied object
- */
-const map = (f, fn) => {
-  const form = cloneDeep(f);
-  if (isObject(form)) {
-    if ('fields' in form) {
-      form.fields = form.fields.map(fn);
-    }
-    for (let key in form) {
-      if (isObject(form[key])) {
-        form[key] = map(form[key], fn);
-      }
-    }
-  }
-  return form;
-};
-
-/**
- * Finds all fields in form, and applies the supplied function
- * to that field
- */
-const mapFields = (form, fn) => {
-  const f = cloneDeep(form);
-  return map(f, fn);
-};
-
-/**
  * Import data from request to internal format, passing through mappers
  * @param {Object} form - form description
  * @param {Object} POST/GET payload
@@ -137,85 +94,32 @@ const importData = (form, payload) => {
   return data;
 };
 
-/**
- * Formats error object from Joi into an easy format, and includes
- * custom error messages from the object provided
- * @param {Object} error - Joi error from schema.validate()
- * @param {Object} customErrors - custom error messages
- * @return {Array} formatted error messages
- */
-const formatErrors = (error, customErrors) => {
-  return error.details.map(err => {
-    const name = err.context.key;
-    const { type, message } = err;
-
-    // Use custom error messages
-    if ((name in customErrors) && (type in customErrors[name])) {
-      const custom = customErrors[name][type];
-      return {
-        name,
-        message: custom.message,
-        summary: custom.summary || custom.message
-      };
-    }
-
-    // Use default Joi message
-    return {
-      name,
-      message,
-      summary: message
-    };
-  });
-};
-
-/**
- * Applies Joi errors to fields and returns a new form object
- * @param {Object} form
- * @param {Array} error - returned from Joi.validate()
- * @return {Object} form with errors populated on fields
- */
-const applyErrors = (form, error) => {
-  if (!error) {
-    return form;
-  }
-
-  // Get array of error messages with custom error messaging
-  const formattedErrors = formatErrors(error, getCustomErrors(form));
-
-  const f = mapFields(form, (field) => {
-    const errors = formattedErrors.filter(err => {
-      return err.name === field.name;
-    });
-    return {
-      ...field,
-      errors
-    };
-  });
-  f.errors = formattedErrors;
-  return f;
-};
+const getPayload = (form, request) => form.method === 'POST'
+  ? request.payload
+  : request.query;
 
 /**
  * Handles HTTP request on form object
  * @param {Object} form - form config object
  * @param {Object} request - HAPI HTTP request
  */
-const handleRequest = (form, request, joiSchema) => {
+const handleRequest = (form, request, validationSchema) => {
+  const apapter = validationAdapterFactory.load(form.validationType);
   let f = cloneDeep(form);
   f.isSubmitted = true;
-  const payload = f.method === 'POST' ? request.payload : request.query;
+  const payload = getPayload(form, request);
   const requestData = importData(f, payload);
 
-  const schema = joiSchema || schemaFactory(form);
+  const schema = validationSchema || apapter.createSchemaFromForm(form);
 
   // Perform Joi validation on form data
-  const { error, value } = Joi.validate(requestData, schema, {
+  const { error, value } = apapter.validate(requestData, schema, {
     abortEarly: false
   });
 
   console.log(JSON.stringify(error, null, 2));
 
-  f = applyErrors(f, error);
+  f = apapter.applyErrors(f, error, getCustomErrors(form));
   f.isValid = !error;
 
   return setValues(f, value);
@@ -227,6 +131,5 @@ module.exports = {
   formFactory,
   handleRequest,
   fields,
-  schemaFactory,
   importData
 };

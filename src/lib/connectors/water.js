@@ -145,6 +145,20 @@ const getReturnsLines = async (regionCode, formatId, dateFrom) => {
   });
 };
 
+const picklists = new APIClient(rp, {
+  endpoint: `${process.env.WATER_URI}/picklists`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
+  }
+});
+
+const picklistItems = new APIClient(rp, {
+  endpoint: `${process.env.WATER_URI}/picklist-items`,
+  headers: {
+    Authorization: process.env.JWT_TOKEN
+  }
+});
+
 module.exports = {
   sendNotifyMessage,
   pendingImport,
@@ -157,5 +171,7 @@ module.exports = {
   gaugingStations,
   returns,
   getReturnsLogs,
-  getReturnsLines
+  getReturnsLines,
+  picklists,
+  picklistItems
 };

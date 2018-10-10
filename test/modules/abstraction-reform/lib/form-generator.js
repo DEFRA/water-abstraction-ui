@@ -4,7 +4,7 @@ const { expect } = require('code');
 const sinon = require('sinon');
 
 const apiHelpers = require('../../../../src/modules/abstraction-reform/lib/api-helpers');
-const { dereference, picklistSchemaFactory, schemaToForm } = require('../../../../src/modules/abstraction-reform/lib/form-generator');
+const { dereference, picklistSchemaFactory, schemaToForm, guessLabel } = require('../../../../src/modules/abstraction-reform/lib/form-generator');
 
 const lab = exports.lab = Lab.script();
 
@@ -232,6 +232,13 @@ lab.experiment('Test schema to form creation', () => {
       'isValid': undefined,
       'errors': []
     });
+  });
+});
+
+lab.experiment('Test guessLabel', () => {
+  lab.test('It should generate a human-readable label given a snake case fieldname', async () => {
+    const str = guessLabel('some_test__name');
+    expect(str).to.equal('Some test name');
   });
 });
 

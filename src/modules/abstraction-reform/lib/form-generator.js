@@ -79,7 +79,7 @@ const dereference = async (schema) => {
  * @return {String} label
  */
 const guessLabel = (str) => {
-  return sentenceCase(str.replace(/_/, ' '));
+  return sentenceCase(str.replace(/_+/g, ' '));
 };
 
 /**
@@ -127,5 +127,6 @@ const schemaToForm = (action, schema) => {
 module.exports = {
   dereference,
   picklistSchemaFactory,
-  schemaToForm
+  schemaToForm,
+  guessLabel
 };

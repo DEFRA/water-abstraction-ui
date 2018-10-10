@@ -89,7 +89,7 @@ const guessLabel = (str) => {
  * @param {Object} schema - JSON schema object
  */
 const schemaToForm = (action, schema) => {
-  const f = formFactory(action);
+  const f = formFactory(action, 'POST', 'json-schema');
 
   each(schema.properties, (item, key) => {
     const label = guessLabel(key);

@@ -104,22 +104,22 @@ const getPayload = (form, request) => form.method === 'POST'
  * @param {Object} request - HAPI HTTP request
  */
 const handleRequest = (form, request, validationSchema) => {
-  const apapter = validationAdapterFactory.load(form.validationType);
+  const adapter = validationAdapterFactory.load(form.validationType);
   let f = cloneDeep(form);
   f.isSubmitted = true;
   const payload = getPayload(form, request);
   const requestData = importData(f, payload);
 
-  const schema = validationSchema || apapter.createSchemaFromForm(form);
+  const schema = validationSchema || adapter.createSchemaFromForm(form);
 
   // Perform Joi validation on form data
-  const { error, value } = apapter.validate(requestData, schema, {
+  const { error, value } = adapter.validate(requestData, schema, {
     abortEarly: false
   });
 
   console.log(JSON.stringify(error, null, 2));
 
-  f = apapter.applyErrors(f, error, getCustomErrors(form));
+  f = adapter.applyErrors(f, error, getCustomErrors(form));
   f.isValid = !error;
 
   return setValues(f, value);

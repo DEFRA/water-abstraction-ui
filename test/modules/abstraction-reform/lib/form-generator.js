@@ -125,112 +125,113 @@ lab.experiment('Test schema to form creation', () => {
     const form = schemaToForm('/some/action', schema);
 
     expect(form).to.equal({
-      'action': '/some/action',
-      'method': 'POST',
-      'isSubmitted': false,
-      'fields': [
+      action: '/some/action',
+      method: 'POST',
+      isSubmitted: false,
+      fields: [
         {
-          'name': 'choice',
-          'options': {
-            'choices': [
+          name: 'choice',
+          options: {
+            choices: [
               'Red',
               'Yellow',
               'Blue'
             ],
-            'label': 'Choice',
-            'widget': 'radio',
-            'required': true,
-            'mapper': 'defaultMapper'
+            label: 'Choice',
+            widget: 'radio',
+            required: true,
+            mapper: 'defaultMapper'
           },
-          'errors': [],
-          'value': undefined
+          errors: [],
+          value: undefined
         },
         {
-          'name': 'object_choice',
-          'options': {
-            'choices': [
+          name: 'object_choice',
+          options: {
+            choices: [
               {
-                'id': 'r',
-                'value': 'Red'
+                id: 'r',
+                value: 'Red'
               },
               {
-                'id': 'y',
-                'value': 'Yellow'
+                id: 'y',
+                value: 'Yellow'
               },
               {
-                'id': 'b',
-                'value': 'Blue'
+                id: 'b',
+                value: 'Blue'
               }
             ],
-            'label': 'Object choice',
-            'widget': 'radio',
-            'required': true,
-            'key': 'id',
-            'mapper': 'objectMapper'
+            label: 'Object choice',
+            widget: 'radio',
+            required: true,
+            key: 'id',
+            mapper: 'objectMapper'
           },
-          'errors': [],
-          'value': undefined
+          errors: [],
+          value: undefined
         },
         {
-          'name': 'string',
-          'options': {
-            'label': 'String',
-            'widget': 'text',
-            'required': true,
-            'type': 'text',
-            'controlClass': 'form-control',
-            'autoComplete': true,
-            'mapper': 'defaultMapper'
+          name: 'string',
+          options: {
+            label: 'String',
+            widget: 'text',
+            required: true,
+            type: 'text',
+            controlClass: 'form-control',
+            autoComplete: true,
+            mapper: 'defaultMapper'
           },
-          'errors': [],
-          'value': undefined
+          errors: [],
+          value: undefined
         },
         {
-          'name': 'number',
-          'options': {
-            'label': 'Number',
-            'widget': 'text',
-            'required': true,
-            'type': 'text',
-            'controlClass': 'form-control',
-            'autoComplete': true,
-            'mapper': 'numberMapper'
+          name: 'number',
+          options: {
+            label: 'Number',
+            widget: 'text',
+            required: true,
+            type: 'text',
+            controlClass: 'form-control',
+            autoComplete: true,
+            mapper: 'numberMapper'
           },
-          'errors': [],
-          'value': undefined
+          errors: [],
+          value: undefined
         },
         {
-          'name': 'boolean',
-          'options': {
-            'choices': [
+          name: 'boolean',
+          options: {
+            choices: [
               {
-                'value': false,
-                'label': 'Yes'
+                value: false,
+                label: 'Yes'
               },
               {
-                'value': true,
-                'label': 'No'
+                value: true,
+                label: 'No'
               }
             ],
-            'label': 'Boolean',
-            'widget': 'radio',
-            'required': true,
-            'mapper': 'booleanMapper'
+            label: 'Boolean',
+            widget: 'radio',
+            required: true,
+            mapper: 'booleanMapper'
           },
-          'errors': [],
-          'value': undefined
+          errors: [],
+          value: undefined
         },
         {
-          'name': null,
-          'options': {
-            'widget': 'button',
-            'label': 'Submit'
+          name: null,
+          options: {
+            widget: 'button',
+            label: 'Submit'
           },
-          'value': undefined
+          value: undefined
         }
       ],
-      'isValid': undefined,
-      'errors': []
+      isValid: undefined,
+      errors: [],
+      validationType: 'json-schema'
     });
   });
 });

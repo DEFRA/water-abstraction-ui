@@ -1,0 +1,21 @@
+{
+  "id" : "/wr22/2.1",
+  "type" : "object",
+  "properties" : {
+    "water_body_name" : {
+      "$ref" : "water://picklists/water_bodies.json"
+    },
+    "measurement_point" : {
+      "$ref" : "water://picklists/measurement_point.json"
+    },
+    "measurement_point_ngr" : {
+      "$ref" : "water://types/ngr.json"
+    },
+    "hol_rate_level" : {
+      "type" : "number"
+    },
+    "point" : {
+      "$ref" : "water://type/ngr.json"
+    }
+  }
+}

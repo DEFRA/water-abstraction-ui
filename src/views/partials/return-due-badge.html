@@ -1,7 +1,7 @@
 {{# equal status 'due' }}
   {{#if isPastDueDate}}
-    <strong class="badge badge--warning badge--caps badge--no-wrap">Return not received</strong>
+    <strong class="badge badge--info badge--caps badge--no-wrap">Overdue</strong>
   {{else}}
-    <strong class="badge badge--success badge--caps badge--no-wrap">Return due</strong>
+    <strong class="badge badge--success badge--caps badge--no-wrap">Due</strong>
   {{/if}}
 {{/equal}}

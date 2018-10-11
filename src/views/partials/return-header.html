@@ -39,7 +39,8 @@
     </dt>
     <dd class="meta__description">
       {{#each return.metadata.purposes }}
-        {{ tertiary.description }}
+        {{ titleCase alias }}
+        {{#unless alias}}{{ tertiary.description }}{{/unless}}
       {{/each}}
     </dd>
     <dt class="meta__label">

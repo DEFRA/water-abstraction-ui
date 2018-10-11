@@ -65,23 +65,72 @@ lab.experiment('Dropdown fields', () => {
     dom = new DOMParser().parseFromString(response.payload);
   });
 
-  lab.test('It should render a dropdown with scalar values', async () => {
+  lab.test('It should render a dropdown with simple values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_1');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
     expect(options).to.have.length(4);
-    expect(options[1].firstChild.nodeValue).to.equal(simple[0]);
-    expect(options[2].firstChild.nodeValue).to.equal(simple[1]);
-    expect(options[3].firstChild.nodeValue).to.equal(simple[2]);
 
+    const text = options.map(option => option.firstChild.nodeValue);
+    expect(text).to.equal(['(Select)', 'Red', 'Green', 'Blue']);
+
+    // Check no option selected
     const selected = options.map(option => option.getAttribute('selected'));
     expect(selected).to.equal([ '', '', '', '' ]);
+
+    // Check option values
+    const values = options.map(option => option.getAttribute('value'));
+    expect(values).to.equal([ '', 'Red', 'Green', 'Blue' ]);
   });
 
-  lab.test('It should select the correct dropdown option', async () => {
+  lab.test('It should select the correct dropdown option for simple values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_2');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
 
     const selected = options.map(option => option.getAttribute('selected'));
     expect(selected).to.equal([ '', '', 'selected', '' ]);
+  });
+
+  lab.test('It should render a dropdown with complex values', async () => {
+    const dropdown = dom.getElementById('dropdown-dropdown_3');
+    const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
+    expect(options).to.have.length(4);
+
+    const text = options.map(option => option.firstChild.nodeValue);
+    expect(text).to.equal(['(Select)', 'Red', 'Green', 'Blue']);
+
+    // Check no option selected
+    const selected = options.map(option => option.getAttribute('selected'));
+    expect(selected).to.equal([ '', '', '', '' ]);
+
+    // Check option values
+    const values = options.map(option => option.getAttribute('value'));
+    expect(values).to.equal([ '', 'r', 'g', 'b' ]);
+  });
+
+  lab.test('It should select the correct dropdown option for complex values', async () => {
+    const dropdown = dom.getElementById('dropdown-dropdown_4');
+    const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
+
+    const selected = options.map(option => option.getAttribute('selected'));
+
+    expect(selected).to.equal([ '', '', '', 'selected' ]);
+  });
+
+  lab.test('It should render a field in an error state', async () => {
+    const dropdown = dom.getElementById('dropdown-dropdown_5');
+
+    // Dropdown should have error class
+    expect(dropdown.getAttribute('class').split(' ').includes('form-control-error')).to.equal(true);
+
+    // Parent should have error class
+    const parent = dropdown.parentNode;
+    expect(parent.getAttribute('class').split(' ').includes('form-group-error')).to.equal(true);
+
+    // Error message should appear
+    const label = parent.getElementsByTagName('label')[0];
+    const error = label.getElementsByTagName('span')[0];
+
+    expect(error.getAttribute('class')).to.equal('error-message');
+    expect(error.firstChild.nodeValue).to.equal('Error with dropdown 5');
   });
 });

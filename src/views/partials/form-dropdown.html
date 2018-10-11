@@ -11,7 +11,7 @@
       {{/each}}
     </label>
 
-    <select id="dropdown-{{ name }}" class="form-control" name="{{ name }}">
+    <select id="dropdown-{{ name }}" class="form-control {{#if errors }}form-control-error{{/if}}" name="{{ name }}">
       <option>(Select)</option>
       {{#each options.choices }}
         {{#if ../options.key }}

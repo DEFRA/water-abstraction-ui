@@ -112,10 +112,7 @@ const handleRequest = (form, request, validationSchema) => {
 
   const schema = validationSchema || adapter.createSchemaFromForm(form);
 
-  // Perform Joi validation on form data
-  const { error, value } = adapter.validate(requestData, schema, {
-    abortEarly: false
-  });
+  const { error, value } = adapter.validate(requestData, schema);
 
   request.log('info', JSON.stringify(error, null, 2));
 

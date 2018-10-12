@@ -126,14 +126,15 @@ gulp.task('standard', () => {
 });
 
 // Build task
-gulp.task('build', done => runSequence(
+gulp.task('build', gulp.series(
   'clean',
   'copy-govuk-files',
   'install-govuk-files',
   'copy-static-assets',
   'sass',
-  done
+  done => done()
 ));
 
 // Default task
-gulp.task('default', ['build']);
+gulp.task('default', gulp.series('build'));
+

@@ -19,7 +19,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "codecov": "^3.0.0",
+    "codecov": "^3.1.0",
     "del": "^3.0.0",
     "eslint": "^4.17.0",
     "eslint-config-standard": "^11.0.0-beta.0",
@@ -27,7 +27,7 @@
     "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-run-sequence": "^0.3.2",
     "gulp-sass": "^3.1.0",
@@ -36,14 +36,13 @@
     "gulp-standard": "^10.1.2",
     "gulp-uglify": "^3.0.0",
     "lab": "^14.3.2",
-    "run-sequence": "^2.2.1",
     "sinon": "^4.2.2",
     "snyk": "^1.89.0",
     "standard": "^10.0.3",
     "xmldom": "^0.1.27"
   },
   "dependencies": {
-    "airbrake-js": "^1.1.2",
+    "airbrake-js": "^1.5.0",
     "async-waterfall": "^0.1.5",
     "atob": "^2.1.1",
     "aws-sdk": "^2.190.0",

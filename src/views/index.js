@@ -626,12 +626,12 @@ const footerSupportLinks = `
 
 const defaultContext = {
   assetPath: '/public/',
-  topOfPage: 'Login Handler',
+  topOfPage: null,
   head: '<link href="public/stylesheets/overrides.css" media="screen" rel="stylesheet" />',
   pageTitle: ' Generic Page',
   htmlLang: 'en',
   bodyClasses: 'some classes here',
-  bodyStart: 'Body Start',
+  bodyStart: null,
   skipLinkMessage: 'Skip to main content',
   cookieMessage: 'GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>',
   headerClass: 'some classes here',

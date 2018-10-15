@@ -34,7 +34,7 @@
   </head>
 
   <body class="{{ bodyClasses }}">
-    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script nonce={{nonces.script}}>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
 
     {{{ bodyStart }}}
 
@@ -125,6 +125,6 @@
     {{{ bodyEnd }}}
 
 
-    <script>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
+    <script nonce={{nonces.script}}>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
   </body>
 </html>

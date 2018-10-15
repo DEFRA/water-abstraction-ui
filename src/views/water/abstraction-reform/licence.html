@@ -1,9 +1,9 @@
 {{> styles}}
 
-<style type="text/css">
+<style nonce="{{nonces.style}}">
 table thead th {
-   width: 33%;
-   vertical-align: top;
+  width: 33%;
+  vertical-align: top;
 }
 table tbody td, table tbody th {
   vertical-align: top;
@@ -57,12 +57,10 @@ table tbody td, table tbody th {
       <h1 class="heading-xlarge">
           <span class="heading-secondary">Review licence data</span>
           {{ licence.licence_data_value.LIC_NO }}
-          <span class="heading-small spaceless" style="display: block; margin-top: 0;">
+          <div class="heading-small spaceless">
               Last edited {{ formatISODate lastEdit.timestamp }}
-          </span>
+          </div>
       </h1>
-
-
 
       {{# if data.notes }}
       <details role="group" >

@@ -8,7 +8,7 @@
     <div class="column-two-thirds">
 
       {{#equal error.name 'AddressInvalidError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'select_address_address_not_selected'})
       </script>
 

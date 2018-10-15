@@ -35,9 +35,9 @@
 
       <!--[if gt IE 8]><!--><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-7da20ae18cf7127910ec59331f75ffed6f00cff1969dc9366894e01ffa56a2da.css" crossorigin="anonymous" integrity="sha256-faIK4Yz3EnkQ7FkzH3X/7W8Az/GWnck2aJTgH/pWoto=">
 <!--<![endif]-->
-<!--[if IE 6]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie6-91e47d8adde0b3b628a6ed931338a16655c4a79c5bba5cdb7f6389f1f077b63c.css" /><script>var ieVersion = 6;</script><![endif]-->
-<!--[if IE 7]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie7-04243275a77f0c908ff266e33890a959888bad90ec0be5857456866ab86e059b.css" /><script>var ieVersion = 7;</script><![endif]-->
-<!--[if IE 8]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie8-fac25ec78515a5484990fb50fada4cd02304969d4e279ba91562a8ff91d4d8e8.css" /><script>var ieVersion = 8;</script><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie6-91e47d8adde0b3b628a6ed931338a16655c4a79c5bba5cdb7f6389f1f077b63c.css" /><script nonce="{{nonces.script}}">var ieVersion = 6;</script><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie7-04243275a77f0c908ff266e33890a959888bad90ec0be5857456866ab86e059b.css" /><script nonce="{{nonces.script}}">var ieVersion = 7;</script><![endif]-->
+<!--[if IE 8]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/static/core-layout-ie8-fac25ec78515a5484990fb50fada4cd02304969d4e279ba91562a8ff91d4d8e8.css" /><script nonce="{{nonces.script}}">var ieVersion = 8;</script><![endif]-->
 
 <link rel="stylesheet" media="print" href="https://assets.publishing.service.gov.uk/static/core-layout-print-17ae04fa41ad116c2d3a329800a3160d98adf170d561703b3836dad57f2b994d.css" crossorigin="anonymous" integrity="sha256-F64E+kGtEWwtOjKYAKMWDZit8XDVYXA7ODba1X8rmU0=">
 
@@ -56,11 +56,11 @@
 <meta name="govuk:content-has-history" content="true">
 <meta name="description" content="Maintain, monitor and review your abstraction or impoundment licence. ">
 <meta name="govuk:content-id" content="5f4e2db0-7631-11e4-a3cb-005056011aef">
-<!--[if IE 6]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie6-24750360395a9900ad4753672b3aa5acaf0c67214ed4074371d4aafa0feffbaa.css" /><script>var ieVersion = 6;</script><![endif]--><!--[if IE 7]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie7-24750360395a9900ad4753672b3aa5acaf0c67214ed4074371d4aafa0feffbaa.css" /><script>var ieVersion = 7;</script><![endif]--><!--[if IE 8]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie8-59d512a52c55764e239c5d870808ddb2ca37295c2f7aeda76b8a276894377485.css" /><script>var ieVersion = 8;</script><![endif]--><meta name="govuk:rendering-application" content="government-frontend">
+<!--[if IE 6]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie6-24750360395a9900ad4753672b3aa5acaf0c67214ed4074371d4aafa0feffbaa.css" /><script nonce="{{nonces.script}}">var ieVersion = 6;</script><![endif]--><!--[if IE 7]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie7-24750360395a9900ad4753672b3aa5acaf0c67214ed4074371d4aafa0feffbaa.css" /><script nonce="{{nonces.script}}">var ieVersion = 7;</script><![endif]--><!--[if IE 8]><link rel="stylesheet" media="screen" href="https://assets.publishing.service.gov.uk/government-frontend/application-ie8-59d512a52c55764e239c5d870808ddb2ca37295c2f7aeda76b8a276894377485.css" /><script nonce="{{nonces.script}}">var ieVersion = 8;</script><![endif]--><meta name="govuk:rendering-application" content="government-frontend">
 </head>
 
   <body>
-    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script nonce="{{nonces.script}}">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
 
 
 
@@ -595,23 +595,21 @@
 <script src="https://assets.publishing.service.gov.uk/static/header-footer-only-8ebb2100d4f59fb7e4eedb9c61672156ca92be731dc4a1ea6e9a7a218904e534.js" crossorigin="anonymous" integrity="sha256-jrshANT1n7fk7tucYWchVsqSvnMdxKHqbpp6IYkE5TQ="></script>
 <script src="https://assets.publishing.service.gov.uk/static/surveys-8bfddec9d8aa8530dbad519c47440577d01ae78b506a9f2025a01f4f9ee807c4.js" crossorigin="anonymous" integrity="sha256-i/3eydiqhTDbrVGcR0QFd9Aa54tQap8gJaAfT57oB8Q="></script>
 
-
-
-    <script>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
+<script nonce={{nonces.script}}>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
   <script src="https://assets.publishing.service.gov.uk/government-frontend/application-b6af057ac563794cd9a306086ff7e990546cebe83309153e4e2bb7763c141cd9.js" crossorigin="anonymous" integrity="sha256-tq8FesVjeUzZowYIb/fpkFRs6+gzCRU+Tiu3djwUHNk="></script>
 
   
 <!-- Google analytics embedded using GTM -->
 
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+<script nonce={{nonces.script}}>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W64QRBS');</script>
 <!-- End Google Tag Manager -->
 
-<script>
+<script nonce={{nonces.script}}>
 window.dataLayer = window.dataLayer || [];
 var ev={
   'event' : 'pageview',
@@ -621,7 +619,7 @@ var ev={
 }
 window.dataLayer.push(ev);
 </script>
-  
+
   </body>
 </html>
 

@@ -58,11 +58,7 @@
       font-weight: bold;
     }
   }
-
 }
-
-
-
 
 /* Sub-list in data-table */
 .sub-list {
@@ -91,7 +87,9 @@
         padding-top: 0;
       }
     }
-
   }
+}
 
+.greyline {
+  border-bottom: 1px solid #bfc1c3;
 }

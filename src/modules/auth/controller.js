@@ -2,6 +2,7 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
+const { get } = require('lodash');
 const IDM = require('../../lib/connectors/idm');
 const View = require('../../lib/view');
 const signIn = require('../../lib/sign-in');
@@ -97,7 +98,10 @@ async function postSignin (request, reply) {
 
     // Resolves Chrome issue where it won't set cookie and redirect in same request
     // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}
-    return reply.response(`<meta http-equiv="refresh" content="0; url=${redirectPath}" /><script>location.href='${redirectPath}';</script>`);
+    const nonce = get(request, 'plugins.blankie.nonces.script', {});
+    const meta = `<meta http-equiv="refresh" content="0; url=${redirectPath}" />`;
+    const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`;
+    return reply.response(`${meta}${script}`);
   } catch (error) {
     if (error.statusCode === 401) {
       return authValidationErrorResponse(request, reply);

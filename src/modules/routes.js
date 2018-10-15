@@ -16,6 +16,7 @@ const abstractionReformRoutes = require('./abstraction-reform/routes');
 const returnsRoutes = require('./returns/routes');
 const naldPOCRoutes = require('./nald-poc/routes');
 const returnNotificationRoutes = require('./returns-notifications/routes');
+const cspRoutes = require('./csp/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -35,5 +36,6 @@ module.exports = [
   ...Object.values(abstractionReformRoutes),
   ...Object.values(returnsRoutes),
   ...Object.values(naldPOCRoutes),
-  ...Object.values(returnNotificationRoutes)
+  ...Object.values(returnNotificationRoutes),
+  ...Object.values(cspRoutes)
 ];

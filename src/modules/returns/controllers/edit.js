@@ -5,7 +5,7 @@
  */
 const { set, get } = require('lodash');
 const Boom = require('boom');
-const { handleRequest, setValues, getValues } = require('../../../lib/forms');
+const { importData, handleRequest, setValues, getValues } = require('../../../lib/forms');
 
 const {
   amountsForm, methodForm, confirmForm, unitsForm,
@@ -439,7 +439,17 @@ const getMeterReadings = async (request, h) => {
 
 const postMeterReadings = async (request, h) => {
   const { view, data } = request.returns;
-  const form = handleRequest(meterReadingsForm(request, data), request, meterReadingsSchema(data));
+
+  const readingsForm = meterReadingsForm(request, data);
+
+  // Get the internal repreentation of the data to pass to the schema
+  // which needs the current user input in order to generate the
+  // schema to cater for checking if the readings are not lower than
+  // previous readings.
+  const internalData = importData(readingsForm, request.payload);
+  const schema = meterReadingsSchema(data, internalData);
+
+  const form = handleRequest(readingsForm, request, schema);
 
   if (form.isValid) {
     const updated = applyMeterReadings(data, getValues(form));

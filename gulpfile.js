@@ -4,7 +4,6 @@ const sourcemaps = require('gulp-sourcemaps');
 const standard = require('gulp-standard');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
-const runSequence = require('gulp-run-sequence');
 const del = require('del');
 
 const paths = {
@@ -30,11 +29,11 @@ gulp.task('copy-govuk-elements-sass', () => {
     .pipe(gulp.dest(paths.govukModules + '/govuk-elements-sass/'));
 });
 
-gulp.task('copy-govuk-files', done => runSequence(
+gulp.task('copy-govuk-files', gulp.series(
   'copy-govuk-toolkit',
   'copy-govuk-template',
   'copy-govuk-elements-sass',
-  done
+  done => done()
 ));
 
 // Install the govuk files into our application
@@ -57,11 +56,11 @@ gulp.task('copy-template-view', () => {
     .pipe(gulp.dest('views/govuk_template_mustache'));
 });
 
-gulp.task('install-govuk-files', done => runSequence(
+gulp.task('install-govuk-files', gulp.series(
   'copy-template-assets',
   'copy-template-view',
   'copy-frontend-toolkit-assets',
-  done
+  done => done()
 ));
 
 gulp.task('combine-minify-js', () => {
@@ -87,10 +86,10 @@ gulp.task('copy-static-assets-orig', () => {
     .pipe(gulp.dest(paths.public));
 });
 
-gulp.task('copy-static-assets', done => runSequence(
+gulp.task('copy-static-assets', gulp.series(
   'copy-static-assets-orig',
   'combine-minify-js',
-  done
+  done => done()
 ));
 
 // Build the sass-proto
@@ -126,14 +125,14 @@ gulp.task('standard', () => {
 });
 
 // Build task
-gulp.task('build', done => runSequence(
+gulp.task('build', gulp.series(
   'clean',
   'copy-govuk-files',
   'install-govuk-files',
   'copy-static-assets',
   'sass',
-  done
+  done => done()
 ));
 
 // Default task
-gulp.task('default', ['build']);
+gulp.task('default', gulp.series('build'));

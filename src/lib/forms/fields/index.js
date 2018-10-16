@@ -4,6 +4,7 @@ const hidden = require('./hidden');
 const radio = require('./radio');
 const text = require('./text');
 const checkbox = require('./checkbox');
+const dropdown = require('./dropdown');
 
 module.exports = {
   button,
@@ -11,5 +12,6 @@ module.exports = {
   hidden,
   radio,
   text,
-  checkbox
+  checkbox,
+  dropdown
 };

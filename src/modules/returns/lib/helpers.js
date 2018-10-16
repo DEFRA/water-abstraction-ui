@@ -1,6 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
+const { get } = require('lodash');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
@@ -34,7 +35,7 @@ const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
  * @return {Object} filter
  */
 const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
-  const { testMode } = config;
+  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
 
   const filter = {
     regime: 'water',
@@ -54,7 +55,7 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
 
   // External users on production-like environments can only view returns where
   // return cycle is in the past
-  if (!isInternal && !testMode) {
+  if (!isInternal && !showFutureReturns) {
     filter.end_date = {
       $lte: moment().format('YYYY-MM-DD')
     };
@@ -76,7 +77,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     licence_ref: 1
   };
 
-  const columns = ['return_id', 'licence_ref', 'start_date', 'end_date', 'metadata', 'status', 'received_date'];
+  const columns = ['return_id', 'licence_ref', 'start_date', 'end_date', 'metadata', 'status', 'received_date', 'due_date'];
 
   const requestPagination = {
     page,
@@ -187,7 +188,7 @@ const getReturnTotal = (ret) => {
  * @return {Boolean}
  */
 const canEdit = (permissions, ret, today = null) => {
-  const { testMode } = config;
+  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
   const endDate = ret.endDate || ret.end_date;
   const { status } = ret;
   const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
@@ -198,7 +199,7 @@ const canEdit = (permissions, ret, today = null) => {
   return isAfterSummer2018 &&
     (
       (canEdit) ||
-      (canSubmit && (status === 'due') && (testMode || isPast))
+      (canSubmit && (status === 'due') && (showFutureReturns || isPast))
     );
 };
 
@@ -212,24 +213,37 @@ const returnIsReceived = (ret) => {
   return date !== null;
 };
 
+const isReturnPastDueDate = returnRow => {
+  const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
+  const today = moment().startOf('day');
+  return dueDate.isBefore(today);
+};
+
 /**
+ * Adds some flags to the returns to help with view rendering
+ *
  * Adds an editable flag to each return in list
  * This is based on the status of the return, and whether the user
  * has internal returns role.
+ *
+ * Adds isPastDueDate flag to help with badge selection.
+ *
  * @param {Array} returns - returned from returns service
  * @param {Object} request - HAPI request interface
  * @return {Array} returns with isEditable flag added
  */
-const addEditableFlag = (returns, request) => {
+const addFlags = (returns, request) => {
   return returns.map(row => {
     const isEditable = canEdit(request.permissions, row);
     const isReceived = returnIsReceived(row);
     const isClickable = isEditable || isReceived;
+
     return {
       ...row,
       isEditable,
       isReceived,
-      isClickable
+      isClickable,
+      isPastDueDate: isReturnPastDueDate(row)
     };
   });
 };
@@ -266,7 +280,7 @@ const getReturnsViewData = async (request) => {
 
   if (licenceNumbers.length) {
     const { data, pagination } = await getLicenceReturns(licenceNumbers, page, isInternal);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addEditableFlag(data, request), documents));
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addFlags(data, request), documents));
 
     view.pagination = pagination;
     view.returns = returns;
@@ -323,5 +337,6 @@ module.exports = {
   getReturnTotal,
   getScopedPath,
   canEdit,
-  getViewData
+  getViewData,
+  isReturnPastDueDate
 };

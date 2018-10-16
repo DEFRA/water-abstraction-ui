@@ -1,6 +1,5 @@
 .badge {
 
-
   min-width: 4rem;
   line-height: 2.25rem;
   display: inline-block;
@@ -11,18 +10,25 @@
   padding: 3px 5px 0 5px;
   background: $grey-4;
   letter-spacing: 1px;
+  color: $page-colour;
   
   &--error {
-    color: $page-colour;
     background: $error-colour;
   }
 
   &--success {
-    color: $page-colour;
     background: $button-colour;
+  }
+
+  &--info {
+    background: #6f777b;
   }
 
   &--caps {
     text-transform: uppercase;
+  }
+
+  &--no-wrap {
+    white-space: nowrap;
   }
 }

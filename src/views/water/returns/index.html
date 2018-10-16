@@ -87,14 +87,14 @@
               </a>
               {{/if}}
 
-
             </div>
             <div class="table-cell">
               <h4 class="context">
                 Purpose
               </h4>
               {{#each metadata.purposes }}
-              {{ tertiary.description }}
+              {{titleCase alias}}
+              {{#unless alias}}{{titleCase tertiary.description}}{{/unless}}
               {{/each }}
             </div>
             <div class="table-cell">
@@ -106,33 +106,20 @@
               </span>
             </div>
             <div class="table-cell">
-              <h4 class="context">
-                Status
-              </h4>
-
-              {{# equal status 'due' }}
-              <strong class="badge badge--success badge--caps">
-                Return due
-              </strong>
-              {{/equal}}
+              <h4 class="context">Status</h4>
+              {{> return-due-badge}}
             </div>
           </div>
           {{/each}}
 
-
         </div>
-
     </div>
   </div>
   {{/each}}
-
 
   {{{ pagination pagination url='/returns' }}}
 
 </main>
 
-
 {{> footerjs}}
-
-
 {{> debug}}

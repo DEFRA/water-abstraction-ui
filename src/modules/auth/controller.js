@@ -98,10 +98,7 @@ async function postSignin (request, reply) {
 
     // Resolves Chrome issue where it won't set cookie and redirect in same request
     // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}
-    const nonce = get(request, 'plugins.blankie.nonces.script', {});
-    const meta = `<meta http-equiv="refresh" content="0; url=${redirectPath}" />`;
-    const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`;
-    return reply.response(`${meta}${script}`);
+    return reply.response(getLoginRedirectHtml(request, redirectPath));
   } catch (error) {
     if (error.statusCode === 401) {
       return authValidationErrorResponse(request, reply);
@@ -109,6 +106,13 @@ async function postSignin (request, reply) {
     throw error;
   }
 }
+
+const getLoginRedirectHtml = (request, redirectPath) => {
+  const nonce = get(request, 'plugins.blankie.nonces.script', {});
+  const meta = `<meta http-equiv="refresh" content="0; url=${redirectPath}" />`;
+  const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`;
+  return meta + script;
+};
 
 module.exports = {
   getWelcome,

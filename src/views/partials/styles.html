@@ -1,6 +1,5 @@
-
-  <script src="/public/javascripts/jquery-2.2.4.min.js"></script>
-  <script>
+<script src="/public/javascripts/jquery-2.2.4.min.js"></script>
+<script nonce={{nonces.script}}>
   if (!GOVUK){
     var GOVUK={details:{init:function(){}}}
   }
@@ -8,7 +7,7 @@
     GOVUK.details={init:function(){}}
     var GOVUK={details:{init:function(){}}}
   }
-  </script>
+</script>
 
 <link href="/public/stylesheets/screen-fec0f5ae66419b405bcb5a41e87deef2ef53d41bbd7650baeedd9074ba2ed2d0.css" rel="stylesheet" />
 
@@ -25,7 +24,7 @@
 <!--[if gt IE 8]><!--><link href="/public/stylesheets/application.css"  rel="stylesheet" type="text/css"><!--<![endif]-->
 <!--[if IE 8]><link href="/public/stylesheets/application-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
 
-<script language="javascript">
+<script nonce={{nonces.script}}>
   function sendEvent(eventConfig){
     if(typeof dataLayer != 'undefined'){
       try{

@@ -10,7 +10,7 @@
       <form novalidate action="/register" method="post" class="form">
 
           {{#if error}}
-          <script>
+          <script nonce="{{nonces.script}}">
             sendEvent({category:'error', action:'register_email_invalid_email_address'})
           </script>
 

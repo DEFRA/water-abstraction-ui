@@ -11,7 +11,7 @@
     <div class="column-two-thirds">
 
       {{#equal error.name 'LicenceNotSelectedError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'select_licence_licence_not_selected'})
       </script>
 

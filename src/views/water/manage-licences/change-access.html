@@ -27,15 +27,3 @@
 </main>
 
 {{> footerjs}}
-
-<script>
-  $(function () {
-    var $submitChange = $('#submitChange');
-    $submitChange.prop('disabled', true);
-    $('#returns').on('change', function () {
-      var initial = $(this).data('initial');
-      var checked = $(this).prop('checked');
-      $submitChange.prop('disabled', initial === checked);
-    });
-  });
-</script>

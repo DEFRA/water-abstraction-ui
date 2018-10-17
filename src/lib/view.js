@@ -35,6 +35,7 @@ function viewContextDefaults (request) {
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
+  viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
 
   // H1 page title
   viewContext.pageTitle = 'Water Abstraction';

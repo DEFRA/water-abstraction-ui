@@ -300,11 +300,20 @@ async function postChangeAccess (request, h) {
   const { entity_id: entityID } = request.auth.credentials;
   const { returns, colleagueEntityID, returnsEntityRoleID } = request.payload;
 
-  const response = returns
-    ? await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns')
-    : await CRM.entityRoles.deleteColleagueRole(entityID, returnsEntityRoleID);
+  try {
+    returns
+      ? await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns')
+      : await CRM.entityRoles.deleteColleagueRole(entityID, returnsEntityRoleID);
+  } catch (error) {
+    // If a 404, the user may be deleting the role, when it is not actually set up.
+    // In that case continue to the redirect below.
+    // If anything else, this was not expected so re-throw
+    if (error.statusCode !== 404) {
+      throw error;
+    }
+  }
 
-  return response.error || h.redirect('/manage_licences/access');
+  return h.redirect('/manage_licences/access');
 };
 
 module.exports = {

@@ -73,6 +73,15 @@ module.exports = {
     router: {
       stripTrailingSlash: true
     }
-  }
+  },
 
+  blankie: {
+    frameSrc: ['self', 'www.smartsurvey.co.uk'],
+    scriptSrc: ['self', '*.google-analytics.com', '*.googletagmanager.com'],
+    fontSrc: ['self', 'assets.publishing.service.gov.uk', 'data:'],
+    imgSrc: ['self', '*.google-analytics.com'],
+    connectSrc: '*.google-analytics.com',
+    reportOnly: true,
+    reportUri: '/csp/report'
+  }
 };

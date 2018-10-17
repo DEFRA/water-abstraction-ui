@@ -5,7 +5,7 @@
 
 
   {{#if errors }}
-  <script>
+  <script nonce="{{nonces.script}}">
     sendEvent({category:'error', action:'rename_licence_invalid_name'})
   </script>
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">

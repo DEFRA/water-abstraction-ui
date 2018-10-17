@@ -10,6 +10,8 @@ const HapiSanitizePayload = require('hapi-sanitize-payload');
 const Inert = require('inert');
 const Vision = require('vision');
 const HapiAuthJWT2 = require('hapi-auth-jwt2');
+const Blankie = require('blankie');
+const Scooter = require('scooter');
 
 // -------------- Require project code -----------------
 const config = require('./config');
@@ -32,6 +34,11 @@ const server = Hapi.server(config.server);
 async function start () {
   try {
     // Third-party plugins
+    await server.register([Scooter, {
+      plugin: Blankie,
+      options: config.blankie
+    }]);
+
     await server.register({
       plugin: Good,
       options: { ...config.good,
@@ -52,6 +59,7 @@ async function start () {
       plugin: HapiSanitizePayload,
       options: config.sanitize
     });
+
     await server.register([Inert, Vision]);
 
     // App plugins
@@ -61,6 +69,7 @@ async function start () {
         permissionsFunc
       }
     });
+
     await server.register(Object.values(plugins));
 
     await server.register({ plugin: returnsPlugin });

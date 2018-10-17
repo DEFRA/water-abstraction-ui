@@ -556,3 +556,17 @@ nav.tabs {
   border-color: $link-colour;
 }
 
+.survey-frame {
+  width: 100%;
+  height: 800px;
+  border: 0;
+  padding-bottom: 4px;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 250px;
+}

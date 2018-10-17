@@ -6,7 +6,7 @@
     <div class="column-two-thirds">
 
       {{#if error}}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'security_code_not_entered'})
       </script>
 

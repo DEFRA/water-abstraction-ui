@@ -177,25 +177,6 @@ module.exports = {
     }
   },
 
-  getMultipleMeters: {
-    method: 'GET',
-    path: '/admin/return/multiple-meters',
-    handler: controller.getMultipleMeters,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Messaging around multiple meters not currently supported',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
   getUnits: {
     method: 'GET',
     path: '/admin/return/units',

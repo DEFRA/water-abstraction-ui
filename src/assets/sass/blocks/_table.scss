@@ -23,6 +23,9 @@ table {
   }
 
   &-return-quantities {
+
+    table-layout: fixed;
+
     h3 {
       font-weight: bold;
       @media (min-width: 768px) {
@@ -87,6 +90,13 @@ table {
   @media (min-width: 768px) {
     display: table-cell;
     vertical-align: middle;
+  }
+
+  &--desktop {
+    display: none;
+    @media (min-width: 768px) {
+      display: table-cell;
+    }
   }
 
   &--date {

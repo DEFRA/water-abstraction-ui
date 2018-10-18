@@ -8,6 +8,10 @@ const {
   canEdit
 } = require('../lib/helpers');
 
+const {
+  getLinesWithReadings
+} = require('../lib/return-helpers');
+
 const { returns } = require('../../../lib/connectors/water');
 
 /**
@@ -49,6 +53,8 @@ const getReturn = async (request, h) => {
   // Load return data
   const data = await returns.getReturn(id, version);
 
+  const lines = getLinesWithReadings(data);
+
   // Load CRM data to check access
   const { licenceNumber } = data;
 
@@ -68,6 +74,7 @@ const getReturn = async (request, h) => {
     total: getReturnTotal(data),
     ...request.view,
     return: data,
+    lines,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
     canEdit: canEdit(request.permissions, data),

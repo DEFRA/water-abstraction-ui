@@ -163,11 +163,32 @@ const applyBasis = (data, formValues) => {
 
   set(f, 'reading.type', basis);
 
+  delete f.meters;
+
   return f;
 };
 
+/**
+ * Applies the method of return - either volumes or meter readings
+ * @param {Object} - return model
+ * @param {String} - abstractionVolumes | oneMeter
+ * @return {Object} - updated return model
+ */
 const applyMethod = (data, method) => {
-  return set(cloneDeep(data), 'reading.method', method);
+  const d = cloneDeep(data);
+
+  set(d, 'reading.method', method);
+
+  if (method === 'abstractionVolumes') {
+    const meters = d.meters || [];
+    for (let meter of meters) {
+      delete meter.readings;
+      delete meter.startReading;
+      delete meter.units;
+    }
+  }
+
+  return d;
 };
 
 /**
@@ -235,6 +256,8 @@ const applyNilReturn = (data, isNil) => {
   d.isNil = isNil;
   if (isNil) {
     delete d.lines;
+    delete d.meters;
+    delete d.reading;
   }
   return d;
 };

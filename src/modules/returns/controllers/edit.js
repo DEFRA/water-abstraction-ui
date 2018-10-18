@@ -295,6 +295,20 @@ const getBasis = async (request, h) => {
 };
 
 /**
+ * Gets next page in flow when posting basis form
+ * @param {Object} data - return flow data
+ * @return {String} redirect path
+ */
+const postBasisRedirectPath = (data) => {
+  const isMeasured = get(data, 'reading.type') === 'measured';
+  const isTotal = get(data, 'reading.totalFlag', false);
+  if (isMeasured) {
+    return `/return/meter/details`;
+  }
+  return isTotal ? '/return/confirm' : '/return/quantities';
+};
+
+/**
  * Post handler for basis form
  */
 const postBasis = async (request, h) => {
@@ -305,8 +319,8 @@ const postBasis = async (request, h) => {
     const d = applyBasis(data, getValues(form));
     saveSessionData(request, d);
 
-    const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
-    return h.redirect(getScopedPath(request, path));
+    const path = postBasisRedirectPath(d);
+    h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/internal/form', {
@@ -383,14 +397,33 @@ const getMeterDetails = async (request, h) => {
   });
 };
 
+/**
+ * Gets next page in flow when posting meter details
+ * @param {Object} data - return flow data
+ * @return {String} redirect path
+ */
+const postMeterDetailsRedirectPath = (data) => {
+  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+  const isSingleTotal = get(data, 'reading.totalFlag', false);
+
+  if (isVolumes) {
+    return isSingleTotal ? `/return/confirm` : `/return/quantities`;
+  } else {
+    return `/return/meter/units`;
+  }
+};
+
 const postMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
-  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema);
+  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema(data));
 
   if (form.isValid) {
     const updated = applyMeterDetails(data, getValues(form));
     saveSessionData(request, updated);
-    return h.redirect(getScopedPath(request, `/return/meter/units`));
+
+    const path = postMeterDetailsRedirectPath(data);
+
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/meter-details', {

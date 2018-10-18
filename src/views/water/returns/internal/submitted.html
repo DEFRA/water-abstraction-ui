@@ -1,4 +1,10 @@
 {{> styles}}
+
+<style nonce={{nonces.style}}>
+.tight {
+  margin-top: .5em;
+}
+</style>
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
@@ -9,7 +15,7 @@
         <br />
 
         <div class="govuk-box-highlight">
-          <h1 class="heading-large tight" style="margin-top: 0.5em;">
+          <h1 class="heading-large tight">
             Return submitted
           </h1>
 
@@ -23,10 +29,8 @@
 
             </p>
         </div>
-
       </div>
     </div>
-
 
     <div class="grid-row small-space">
     <div class="column-two-thirds">
@@ -35,11 +39,7 @@
       </p>
     </div>
   </div>
-
 </main>
 
-
 {{> footerjs}}
-
-
 {{> debug}}

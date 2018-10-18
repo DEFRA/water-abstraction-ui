@@ -33,13 +33,14 @@ $path: "/public/images/";
 @import "blocks/navbar";
 @import "blocks/table";
 @import "blocks/notification-preview";
-@import "blocks/notification-report-table";
+@import "blocks/notification-report";
 @import "blocks/badge";
 @import "blocks/flex";
 @import "blocks/unit-selector";
 @import "blocks/space";
 @import "blocks/meta";
 @import "blocks/forms";
+@import "blocks/text";
 
 * {
 family: "nta", Arial, sans-serif;
@@ -569,4 +570,8 @@ nav.tabs {
   text-overflow: ellipsis;
   display: block;
   max-width: 250px;
+}
+
+.display-none {
+  display: none;
 }

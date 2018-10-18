@@ -1,9 +1,9 @@
 <table>
   {{#each obj}}
   <tr>
-    <td style="vertical-align:top">
+    <td>
       {{@key}}</td>
-    <td style="vertical-align:top" colspan=6>{{this}}
+    <td colspan=6>{{this}}
       <br> {{#>node obj=this}}{{/node}}
     </td>
   </tr>

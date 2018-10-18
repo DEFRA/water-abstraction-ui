@@ -92,6 +92,13 @@ table {
     vertical-align: middle;
   }
 
+  &--desktop {
+    display: none;
+    @media (min-width: 768px) {
+      display: table-cell;
+    }
+  }
+
   &--date {
     @media (min-width: 768px) {
       min-width: 170px;

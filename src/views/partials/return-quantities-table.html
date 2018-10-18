@@ -18,8 +18,7 @@
 
 
               {{#equal return.reading.method 'oneMeter' }}
-              <div class="table-cell bold-small column-33 numbers">Start reading</div>
-              <div class="table-cell bold-small column-33 numbers">End reading</div>
+              <div class="table-cell bold-small column-33 numbers">Reading</div>
               {{/equal}}
 
               <div class="table-cell bold-small column-33 numbers">
@@ -35,6 +34,27 @@
               {{/notEqual}}
 
             </div>
+
+
+  {{#equal return.reading.method 'oneMeter' }}
+  <div class="table-row medium-space">                                    <!-- a data row starts -->
+
+    <div class="table-cell">
+      <h3>Start reading</h3>
+    </div>
+
+    <div class="table-cell numbers">
+      {{ formatQuantity return.meters.0.startReading }}
+    </div>
+
+    <div class="table-cell"></div>
+    {{#notEqual return.reading.units 'm³' }}
+        <div class="table-cell"></div>
+    {{/notEqual}}
+
+  </div>
+    {{/equal}}
+
 
             {{#each lines }}
             <div class="table-row medium-space">                                    <!-- a data row starts -->
@@ -60,10 +80,6 @@
               </div>
 
               {{#equal ../return.reading.method 'oneMeter' }}
-              <div class="table-cell numbers">
-                <h4 class="context">Start reading</h4>
-                {{ formatQuantity this.startReading }}
-              </div>
               <div class="table-cell numbers">
                 <h4 class="context">Start reading</h4>
                 {{ formatQuantity this.endReading }}
@@ -96,7 +112,6 @@
                 <h3>Total</h3>
               </div>
                {{#equal return.reading.method 'oneMeter' }}
-               <div class="table-cell numbers"></div>
                <div class="table-cell numbers"></div>
 
                {{/equal}}

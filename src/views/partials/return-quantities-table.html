@@ -11,6 +11,13 @@
                 {{#equal return.lines.0.timePeriod 'month' }}Month{{/equal}}
                 {{#equal return.lines.0.timePeriod 'year' }}Year{{/equal}}
               </div>
+
+
+              {{#equal return.reading.method 'oneMeter' }}
+              <div class="table-cell bold-small column-33 numbers">Start reading</div>
+              <div class="table-cell bold-small column-33 numbers">End reading</div>
+              {{/equal}}
+
               <div class="table-cell bold-small column-33 numbers">
                 {{#equal return.reading.units 'gal' }}Gallons{{/equal}}
                 {{#equal return.reading.units 'l' }}Litres{{/equal}}
@@ -25,7 +32,7 @@
 
             </div>
 
-            {{#each return.lines }}
+            {{#each lines }}
             <div class="table-row medium-space">                                    <!-- a data row starts -->
 
               <div class="table-cell">
@@ -47,6 +54,19 @@
                 {{/equal}}
                 </h3>
               </div>
+
+              {{#equal ../return.reading.method 'oneMeter' }}
+              <div class="table-cell numbers">
+                <h4 class="context">Start reading</h4>
+                {{ formatQuantity this.startReading }}
+              </div>
+              <div class="table-cell numbers">
+                <h4 class="context">Start reading</h4>
+                {{ formatQuantity this.endReading }}
+              </div>
+              {{/equal}}
+
+
               <div class="table-cell numbers">
                 <h4 class="context">
                   {{#equal ../return.reading.units 'gal' }}Gallons{{/equal}}
@@ -71,6 +91,11 @@
               <div class="table-cell">
                 <h3>Total</h3>
               </div>
+               {{#equal return.reading.method 'oneMeter' }}
+               <div class="table-cell numbers"></div>
+               <div class="table-cell numbers"></div>
+
+               {{/equal}}
               <div class="table-cell numbers">
                 <h4 class="context">
                   {{#equal return.reading.units 'gal' }}Gallons{{/equal}}

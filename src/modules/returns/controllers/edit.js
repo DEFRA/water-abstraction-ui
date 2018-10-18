@@ -21,7 +21,9 @@ const { returns } = require('../../../lib/connectors/water');
 const {
   applySingleTotal, applyBasis, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
-  applyMeterUnits, applyMeterReadings, applyMethod } = require('../lib/return-helpers');
+  applyMeterUnits, applyMeterReadings, applyMethod,
+  getLinesWithReadings
+} = require('../lib/return-helpers');
 
 const {
   saveSessionData,
@@ -178,7 +180,6 @@ const postMethod = async (request, h) => {
 
     const paths = {
       oneMeter: `/return/meter/details`,
-      multipleMeters: `/return/multiple-meters`,
       abstractionVolumes: `/return/units`
     };
 
@@ -189,16 +190,6 @@ const postMethod = async (request, h) => {
     ...view,
     form,
     return: data
-  });
-};
-
-/**
- * Message about multiple meters not being supported
- */
-const getMultipleMeters = async (request, h) => {
-  return h.view('water/returns/internal/multiple-meters', {
-    ...request.returns.view,
-    return: request.returns.data
   });
 };
 
@@ -320,7 +311,7 @@ const postBasis = async (request, h) => {
     saveSessionData(request, d);
 
     const path = postBasisRedirectPath(d);
-    h.redirect(getScopedPath(request, path));
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/internal/form', {
@@ -370,9 +361,12 @@ const postQuantities = async (request, h) => {
 const getConfirm = async (request, h) => {
   const { data, view } = request.returns;
 
+  const lines = getLinesWithReadings(data);
+
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
+    lines,
     form: confirmForm(request, `/return/confirm`),
     total: getReturnTotal(data)
   });
@@ -505,7 +499,6 @@ module.exports = {
   getSubmitted,
   getMethod,
   postMethod,
-  getMultipleMeters,
   getUnits,
   postUnits,
   getSingleTotal,

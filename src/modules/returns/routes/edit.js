@@ -198,28 +198,6 @@ module.exports = {
     }
   },
 
-  getMultipleMeters: {
-    method: 'GET',
-    path: '/return/multiple-meters',
-    handler: controller.getMultipleMeters,
-    options: {
-      auth: {
-        scope: external
-      },
-      description: 'Messaging around multiple meters not currently supported',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
-        returns: true
-      }
-    }
-  },
-
   getUnits: {
     method: 'GET',
     path: '/return/units',

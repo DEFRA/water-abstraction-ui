@@ -184,6 +184,7 @@ const applyMethod = (data, method) => {
     for (let meter of meters) {
       delete meter.readings;
       delete meter.startReading;
+      delete meter.units;
     }
   }
 

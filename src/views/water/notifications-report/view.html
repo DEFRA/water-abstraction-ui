@@ -8,15 +8,15 @@
 
         <a class="link-back link-back--space-above" href="/admin/notifications/-licences">Back</a>
 
-        <h1 class="heading-xlarge heading-large--tight-above" style="margin-bottom: 0;">
+        <h1 class="heading-xlarge heading-large--tight-above spaceless">
             <span class="heading-secondary">{{ pageTitle }}</span>
             {{ event.metadata.name }}
         </h1>
 
-        <h2 class="heading-small" style="margin-top: 0; padding-top: 8px; color: #6f777b;">
+        <h2 class="heading-small notification-report-reference">
           {{ event.reference_code  }}
         </h2>
-        <h2 class="heading-small" style="margin-top: 0; padding-top: 8px;">
+        <h2 class="heading-small notification-report-date">
           {{ formatISODate event.created  }},
           {{ formatISOTime event.created  }}
         </h2>
@@ -38,7 +38,7 @@
                     <th class="text" scope="col">
                         Method
                     </th>
-                    <th class="numeric" scope="col" style="text-align: center;">
+                    <th class="numeric center-text" scope="col">
                       Status
                     </th>
                   </tr>
@@ -61,7 +61,7 @@
                     <td class="text">
                       {{ sentenceCase message_type }}
                     </td>
-                    <td class="text" style="text-align: center;">
+                    <td class="text center-text">
                       {{#equal status 'error'}}
                         {{>notify-status-badge 'permanent-failure' }}
                       {{else}}

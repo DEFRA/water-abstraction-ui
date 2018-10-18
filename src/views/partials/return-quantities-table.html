@@ -1,6 +1,10 @@
 <div class="grid-row">
-  <div class="{{#equal return.reading.units 'm³' }}column-two-thirds{{ else }}column-full{{/equal}}">
 
+  {{#equal return.reading.method 'oneMeter' }}
+    <div class="column-full">
+  {{else}}
+    <div class="{{#equal return.reading.units 'm³' }}column-two-thirds{{ else }}column-full{{/equal}}">
+  {{/equal}}
 
     <div class="table medium-space table-return-quantities">                                          <!-- a table -->
 

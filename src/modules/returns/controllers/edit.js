@@ -305,8 +305,14 @@ const postBasis = async (request, h) => {
     const d = applyBasis(data, getValues(form));
     saveSessionData(request, d);
 
-    const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
-    return h.redirect(getScopedPath(request, path));
+    const isMeasured = get(d, 'reading.type') === 'measured';
+
+    if (isMeasured) {
+      return h.redirect(getScopedPath(request, `/return/meter/details`));
+    } else {
+      const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
+      return h.redirect(getScopedPath(request, path));
+    }
   }
 
   return h.view('water/returns/internal/form', {
@@ -385,12 +391,23 @@ const getMeterDetails = async (request, h) => {
 
 const postMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
-  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema);
+  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema(data));
 
   if (form.isValid) {
     const updated = applyMeterDetails(data, getValues(form));
     saveSessionData(request, updated);
-    return h.redirect(getScopedPath(request, `/return/meter/units`));
+
+    const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+    const isSingleTotal = get(data, 'reading.totalFlag', false);
+
+    let path;
+    if (isVolumes) {
+      path = isSingleTotal ? `/return/confirm` : `/return/quantities`;
+    } else {
+      path = `/return/meter/units`;
+    }
+
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/meter-details', {

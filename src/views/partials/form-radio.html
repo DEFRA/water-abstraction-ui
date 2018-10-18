@@ -16,7 +16,12 @@
     {{#each options.choices }}
     <div class="multiple-choice" {{#if this.fields.length }}data-target="{{ ../name }}_{{ @index }}_panel"{{/if}}>
       <input id="radio-inline-{{@index}}" type="radio" name="{{ ../name }}" value="{{ this.value }}" {{#equal ../value this.value}}checked{{/equal}}>
-      <label for="radio-inline-{{@index}}">{{ this.label }}</label>
+      <label for="radio-inline-{{@index}}">
+        {{ this.label }}
+        {{#if this.hint }}
+        <span class="form-hint">{{ this.hint }}</span>
+        {{/if}}
+      </label>
     </div>
 
     <!-- render child fields -->

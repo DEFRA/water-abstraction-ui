@@ -320,7 +320,7 @@ const postBasis = async (request, h) => {
     saveSessionData(request, d);
 
     const path = postBasisRedirectPath(d);
-    h.redirect(getScopedPath(request, path));
+    return h.redirect(getScopedPath(request, path));
   }
 
   return h.view('water/returns/internal/form', {

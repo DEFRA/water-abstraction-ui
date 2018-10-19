@@ -44,7 +44,7 @@ const next = {
     return getPath(isInternal ? STEP_SINGLE_TOTAL : STEP_BASIS, request, data);
   },
   [STEP_SINGLE_TOTAL]: (request, data) => {
-    return getPath(STEP_UNITS, request, data);
+    return getPath(STEP_BASIS, request, data);
   },
   [STEP_BASIS]: (request, data) => {
     const isMeasured = get(data, 'reading.type') === 'measured';

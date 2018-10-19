@@ -276,7 +276,7 @@ const postSingleTotal = async (request, h) => {
 
     saveSessionData(request, d);
 
-    return h.redirect(getScopedPath(request, '/return/basis'));
+    return h.redirect(getNextPath(STEP_SINGLE_TOTAL, request, d));
   }
 
   return h.view('water/returns/internal/form', {

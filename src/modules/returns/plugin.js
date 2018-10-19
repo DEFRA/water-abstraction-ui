@@ -12,38 +12,44 @@ const redirectToReturn = (request, h) => {
   return h.redirect(path).takeover();
 };
 
+const preHandler = async (request, h) => {
+  const { returnId } = request.query;
+
+  try {
+    const data = getSessionData(request);
+    const view = await getViewData(request, data);
+
+    // If no return ID in session, then throw error
+    if (returnId !== data.returnId) {
+      throw Boom.notFound(`Session return ${data.returnId} does match return in query ${returnId}`);
+    }
+
+    request.returns = {
+      data,
+      view,
+      isInternal: request.permissions.hasPermission('admin.defra')
+    };
+  } catch (err) {
+    // Return data was not found in session
+    if (returnId) {
+      return redirectToReturn(request, h);
+    }
+
+    throw err;
+  }
+
+  return h.continue;
+};
+
 const returnsPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, h) => {
-        if (request.route.settings.plugins.returns) {
-          const { returnId } = request.query;
-
-          try {
-            const data = getSessionData(request);
-            const view = await getViewData(request, data);
-
-            // If no return ID in session, then throw error
-            if (returnId !== data.returnId) {
-              throw Boom.notFound(`Session return ${data.returnId} does match return in query ${returnId}`);
-            }
-
-            request.returns = {
-              data,
-              view,
-              isInternal: request.permissions.hasPermission('admin.defra')
-            };
-          } catch (err) {
-            // Return data was not found in session
-            if (returnId) {
-              return redirectToReturn(request, h);
-            }
-
-            throw err;
-          }
+        if (!request.route.settings.plugins.returns) {
+          return h.continue;
         }
-        return h.continue;
+        return preHandler(request, h);
       }
     });
   },

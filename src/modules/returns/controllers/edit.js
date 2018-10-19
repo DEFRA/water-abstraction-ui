@@ -135,7 +135,7 @@ const postNilReturn = async (request, h) => {
   if (form.isValid) {
     try {
       await submitReturnData(data, request);
-      return h.redirect(getScopedPath(request, '/return/submitted'));
+      return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {
       console.error(error);
       view.error = error;

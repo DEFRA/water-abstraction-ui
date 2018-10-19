@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { STEP_BASIS, getPath } = require('../lib/flow-helpers');
 
 /**
  * Maps data in model to basis form
@@ -16,8 +17,8 @@ const mapModelToForm = (data) => {
 
 const form = (request) => {
   const { csrfToken } = request.view;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/basis`;
+
+  const action = getPath(STEP_BASIS, request);
 
   const f = formFactory(action);
 

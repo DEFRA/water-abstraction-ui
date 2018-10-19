@@ -1,10 +1,10 @@
 const { formFactory, fields } = require('../../../lib/forms');
+const { STEP_START, getPath } = require('../lib/flow-helpers');
 
 const amountsForm = (request) => {
-  const { returnId } = request.query;
   const { csrfToken } = request.view;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return?returnId=${returnId}`;
+
+  const action = getPath(STEP_START, request);
 
   const f = formFactory(action);
 

@@ -1,10 +1,11 @@
 const { get } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
+const { STEP_METHOD, getPath } = require('../lib/flow-helpers');
 
 const methodForm = (request, data) => {
   const { csrfToken } = request.view;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/method`;
+  const action = getPath(STEP_METHOD, request);
+
   const method = get(data, 'reading.method');
 
   const f = formFactory(action);

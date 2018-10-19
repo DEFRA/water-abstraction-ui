@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
 const { get } = require('lodash');
+const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
 
 const getLineTextInput = line => {
   const name = getLineName(line);
@@ -29,8 +30,7 @@ const getLineTextInput = line => {
 const form = (request, data) => {
   const { csrfToken } = request.view;
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/meter/readings`;
+  const action = getPath(STEP_METER_READINGS, request);
 
   const f = formFactory(action);
 

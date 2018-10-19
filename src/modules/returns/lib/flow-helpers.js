@@ -21,16 +21,19 @@ const STEP_SUBMITTED = '/return/submitted';
  * @return {String} path
  */
 const getPath = (path, request, data) => {
-  const returnId = get(data, 'returnId', null);
+  const returnId = get(data, 'returnId', request.query.returnId);
   const isInternal = request.permissions.hasPermission('admin.defra');
   const scopedPath = (isInternal ? `/admin${path}` : path);
-  return returnId ? `${scopedPath}?returnId=${returnId}` : scopedPath;
+  return `${scopedPath}?returnId=${returnId}`;
 };
 
 const next = {
   [STEP_START]: (request, data) => {
     const isNil = get(data, 'isNil', false);
     return getPath(isNil ? STEP_NIL_RETURN : STEP_METHOD, request, data);
+  },
+  [STEP_NIL_RETURN]: (request, data) => {
+    return getPath(STEP_SUBMITTED, request, data);
   },
   [STEP_METHOD]: (request, data) => {
     const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
@@ -153,6 +156,7 @@ module.exports = {
   STEP_METER_UNITS,
   STEP_METER_READINGS,
   STEP_CONFIRM,
+  getPath,
   getNextPath,
   getPreviousPath
 };

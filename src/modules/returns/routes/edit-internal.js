@@ -95,7 +95,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         },
         returns: true
       }

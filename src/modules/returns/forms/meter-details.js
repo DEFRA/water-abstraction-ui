@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter } = require('../lib/return-helpers');
+const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 
 const textFieldManufacturer = fields.text('manufacturer', {
   label: 'Manufacturer',
@@ -37,8 +38,7 @@ const form = (request, data) => {
 
   const { csrfToken } = request.view;
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/meter/details`;
+  const action = getPath(STEP_METER_DETAILS, request);
 
   const f = formFactory(action);
   const meter = getMeter(data);

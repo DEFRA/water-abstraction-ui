@@ -17,6 +17,10 @@ const converter = (value, unit, multipliers) => {
     return null;
   }
 
+  if (unit === null) {
+    return null;
+  }
+
   if (unit in multipliers) {
     return value * multipliers[unit];
   }

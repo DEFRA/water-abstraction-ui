@@ -1,5 +1,6 @@
 const { get } = require('lodash');
 const { setValues, formFactory, fields } = require('../../../lib/forms');
+const { STEP_UNITS, STEP_METER_UNITS, getPath } = require('../lib/flow-helpers');
 
 const choices = [
   { value: 'm³', label: 'Cubic metres' },
@@ -21,12 +22,12 @@ const getUnitsRadioButtons = label => {
 };
 
 const create = (options = {}) => {
-  const { labelText, actionUrl } = options;
+  const { labelText, isMeterUnits } = options;
 
   const unitsForm = (request, data) => {
     const { csrfToken } = request.view;
-    const isInternal = request.permissions.hasPermission('admin.defra');
-    const action = `${isInternal ? '/admin' : ''}${actionUrl}`;
+
+    const action = getPath(isMeterUnits ? STEP_METER_UNITS : STEP_UNITS, request);
     const f = formFactory(action);
 
     f.fields.push(getUnitsRadioButtons(labelText));

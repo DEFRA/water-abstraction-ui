@@ -1,10 +1,12 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { STEP_SINGLE_TOTAL, getPath } = require('../lib/flow-helpers');
 
 const form = (request) => {
   const { csrfToken } = request.view;
-  const action = `/admin/return/single-total`;
+
+  const action = getPath(STEP_SINGLE_TOTAL, request);
 
   const f = formFactory(action);
 

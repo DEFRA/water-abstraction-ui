@@ -7,16 +7,16 @@ const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 const textFieldManufacturer = fields.text('manufacturer', {
   label: 'Manufacturer',
   errors: {
-    'any.required': { message: 'Select a manufacturer' },
-    'any.empty': { message: 'Select a manufacturer' }
+    'any.required': { message: 'Enter a manufacturer' },
+    'any.empty': { message: 'Enter a manufacturer' }
   }
 });
 
 const textFieldSerialNumber = fields.text('serialNumber', {
   label: 'Serial number',
   errors: {
-    'any.required': { message: 'Select a serial number' },
-    'any.empty': { message: 'Select a serial number' }
+    'any.required': { message: 'Enter a serial number' },
+    'any.empty': { message: 'Enter a serial number' }
   }
 });
 

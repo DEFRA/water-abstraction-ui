@@ -81,7 +81,7 @@ const meterDetailsSchema = (data) => {
   };
 
   if (!isVolumes) {
-    schema.startReading = Joi.number().positive().required();
+    schema.startReading = Joi.number().positive().allow(0).required();
   }
 
   return schema;

@@ -46,7 +46,7 @@ const {
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getViewData, getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle

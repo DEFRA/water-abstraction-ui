@@ -26,6 +26,13 @@ lab.experiment('Test unit conversion helpers', () => {
     Code.expect(convertToCubicMetres(null, 'gal')).to.equal(null);
   });
 
+  lab.test('convertToCubicMetres should return null if undefined value given', async () => {
+    Code.expect(convertToCubicMetres(undefined, 'm³')).to.equal(null);
+    Code.expect(convertToCubicMetres(undefined, 'l')).to.equal(null);
+    Code.expect(convertToCubicMetres(undefined, 'Ml')).to.equal(null);
+    Code.expect(convertToCubicMetres(undefined, 'gal')).to.equal(null);
+  });
+
   lab.test('convertToUserUnit should convert known units', async () => {
     Code.expect(convertToUserUnit(100, 'm³')).to.equal(100);
     Code.expect(convertToUserUnit(100, 'l')).to.equal(100000);

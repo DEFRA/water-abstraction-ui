@@ -15,7 +15,7 @@ const mapModelToForm = (data) => {
   };
 };
 
-const form = (request) => {
+const form = (request, data) => {
   const { csrfToken } = request.view;
 
   const action = getPath(STEP_BASIS, request);
@@ -30,24 +30,15 @@ const form = (request) => {
       }
     },
     choices: [
-
-      { value: 'measured',
-        label: 'Yes'
-      },
-      {
-        value: 'estimated',
-        label: 'No'
-      }
-
+      { value: 'measured', label: 'Yes' },
+      { value: 'estimated', label: 'No' }
     ]}));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session
-  const data = request.sessionStore.get('internalReturnFlow');
   const values = mapModelToForm(data);
-
   return setValues(f, values);
 };
 

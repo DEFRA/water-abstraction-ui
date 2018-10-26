@@ -50,7 +50,8 @@ $(function () {
   });
 
   // Back link uses browser history
-  $('.link-back').on('click', function (ev) {
+  // Can be overridden by adding the data-no-js attribute
+  $('.link-back:not([data-no-js])').on('click', function (ev) {
     window.history.back();
     ev.preventDefault();
     return false;

@@ -79,7 +79,7 @@ module.exports = {
     frameSrc: ['self', 'www.smartsurvey.co.uk'],
     scriptSrc: ['self', '*.google-analytics.com', '*.googletagmanager.com'],
     fontSrc: ['self', 'assets.publishing.service.gov.uk', 'data:'],
-    imgSrc: ['self', '*.google-analytics.com'],
+    imgSrc: ['self', '*.google-analytics.com', '*.googletagmanager.com'],
     connectSrc: '*.google-analytics.com',
     reportOnly: true,
     reportUri: '/csp/report'

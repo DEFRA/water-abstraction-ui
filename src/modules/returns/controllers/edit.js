@@ -46,7 +46,7 @@ const {
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getViewData, getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -191,7 +191,7 @@ const getMethod = async (request, h) => {
  */
 const postMethod = async (request, h) => {
   const { data, view } = request.returns;
-  const form = handleRequest(methodForm(request), request);
+  const form = handleRequest(methodForm(request, data), request);
 
   if (form.isValid) {
     const { method } = getValues(form);
@@ -227,7 +227,7 @@ const getUnits = async (request, h) => {
  */
 const postUnits = async (request, h) => {
   const { data, view } = request.returns;
-  const form = handleRequest(unitsForm(request), request);
+  const form = handleRequest(unitsForm(request, data), request);
 
   if (form.isValid) {
     // Persist chosen units to session
@@ -253,7 +253,7 @@ const getSingleTotal = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form: singleTotalForm(request),
+    form: singleTotalForm(request, data),
     return: data,
     back: getPreviousPath(STEP_SINGLE_TOTAL, request, data)
   });
@@ -265,7 +265,7 @@ const getSingleTotal = async (request, h) => {
 const postSingleTotal = async (request, h) => {
   const { data, view } = request.returns;
 
-  const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
+  const form = handleRequest(singleTotalForm(request, data), request, singleTotalSchema);
 
   if (form.isValid) {
     // Persist to session
@@ -294,7 +294,7 @@ const getBasis = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form: basisForm(request),
+    form: basisForm(request, data),
     return: data,
     back: getPreviousPath(STEP_BASIS, request, data)
   });
@@ -305,7 +305,7 @@ const getBasis = async (request, h) => {
  */
 const postBasis = async (request, h) => {
   const { data, view } = request.returns;
-  const form = handleRequest(basisForm(request), request, basisSchema);
+  const form = handleRequest(basisForm(request, data), request, basisSchema);
 
   if (form.isValid) {
     const d = applyBasis(data, getValues(form));

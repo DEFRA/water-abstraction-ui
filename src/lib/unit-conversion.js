@@ -1,3 +1,5 @@
+const { isNil } = require('lodash');
+
 class InvalidUnitError extends Error {
   constructor (...args) {
     super(...args);
@@ -13,11 +15,7 @@ class InvalidUnitError extends Error {
  * @return {Number|null} converted value
  */
 const converter = (value, unit, multipliers) => {
-  if (value === null) {
-    return null;
-  }
-
-  if (unit === null) {
+  if (isNil(value) || isNil(unit)) {
     return null;
   }
 

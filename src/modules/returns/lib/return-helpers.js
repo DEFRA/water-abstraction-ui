@@ -263,11 +263,13 @@ const applyMeterReadings = (data, formValues) => {
   };
 
   const readings = lines.reduce((acc, line) => {
+    const value = formValues[getLineName(line)];
+
     // get the meter reading, or set to null if zero or null
-    const meterReading = formValues[getLineName(line)] || null;
+    const meterReading = value === '' ? null : value;
     let quantity = null;
 
-    if (meterReading) {
+    if (meterReading !== null) {
       // get the quantity and multiply. Set to null for zero.
       quantity = ((meterReading - acc.lastMeterReading) * multiplier);
       acc.lastMeterReading = meterReading;

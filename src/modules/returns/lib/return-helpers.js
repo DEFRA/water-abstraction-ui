@@ -41,7 +41,7 @@ const applySingleTotal = (data, total) => {
   // Find which return lines are within abstraction period
   if (lines) {
     const indexes = lines.reduce((acc, line, index) => {
-      if (isDateWithinAbstractionPeriod(line.startDate, options) || isDateWithinAbstractionPeriod(line.endDate, options)) {
+      if (isDateWithinAbstractionPeriod(line.endDate, options)) {
         acc.push(index);
       }
       return acc;

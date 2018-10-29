@@ -366,7 +366,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('sets the volume to null for identical meter readings', async () => {
+  lab.test('sets the volume to 0 for identical meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       '2017-11-01_2017-11-30': 100,
@@ -377,8 +377,8 @@ lab.experiment('applyMeterReadings', () => {
     const data = applyMeterReadings(returnData, formValues);
 
     expect(data.lines).to.equal([
-      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: null },
-      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 0 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 0 },
       { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 150 }
     ]);
   });

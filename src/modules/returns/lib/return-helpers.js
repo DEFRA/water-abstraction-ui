@@ -269,7 +269,7 @@ const applyMeterReadings = (data, formValues) => {
 
     if (meterReading) {
       // get the quantity and multiply. Set to null for zero.
-      quantity = ((meterReading - acc.lastMeterReading) * multiplier) || null;
+      quantity = ((meterReading - acc.lastMeterReading) * multiplier);
       acc.lastMeterReading = meterReading;
     }
 

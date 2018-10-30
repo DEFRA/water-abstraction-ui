@@ -52,7 +52,7 @@ const applySingleTotal = (data, total) => {
     d.lines = lines.map((line, i) => {
       return {
         ...line,
-        quantity: indexes.includes(i) ? perMonth : 0
+        quantity: indexes.includes(i) ? perMonth : null
       };
     });
   }

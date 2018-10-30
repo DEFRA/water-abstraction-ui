@@ -72,7 +72,7 @@ lab.experiment('Test isDateWithinAbstractionPeriod', () => {
 });
 
 lab.experiment('Return reducers', () => {
-  lab.test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period', async () => {
+  lab.test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period, with null outside abstraction period', async () => {
     const data = applySingleTotal(testReturn, 100);
     expect(data.reading.totalFlag).to.equal(true);
     expect(data.reading.total).to.equal(100);
@@ -84,7 +84,7 @@ lab.experiment('Return reducers', () => {
       { startDate: '2017-12-01',
         endDate: '2017-12-31',
         period: 'month',
-        quantity: 0 },
+        quantity: null },
       { startDate: '2018-01-01',
         endDate: '2018-01-31',
         period: 'month',

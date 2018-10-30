@@ -14,10 +14,9 @@
   <h1 class="heading-large heading-large--tight-above">Conditions held for licence number {{ licenceData.licenceNumber }}</h1>
   {{/if}}
 
-
   <div class="grid-row">
     <div class="column-two-thirds">
-        <div class="notice" style="border: none; margin: 0; padding: 0;">
+      <div class="notice">
           <i class="icon icon-important">
             <span class="visually-hidden">Warning</span>
           </i>
@@ -31,11 +30,8 @@
     <br />
 
   {{#equal licenceData.conditions.length 0}}
-  <p>
-  Sorry, we do not hold any information about your conditions on our system yet.
-  </p><p>
-  Please check the paper copy of your licence for this information.
-  </p>
+  <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
+  <p>Please check the paper copy of your licence for this information.</p>
   {{/equal}}
 
   {{#each licenceData.conditions }}

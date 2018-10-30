@@ -327,8 +327,6 @@ handlebars.registerHelper('join', function (values, separator = ',') {
 });
 
 handlebars.registerHelper('encode', function (value) {
-  console.log(value);
-  console.log(encodeURIComponent(value.hash.value));
   return encodeURIComponent(value.hash.value);
 });
 
@@ -408,32 +406,21 @@ handlebars.registerHelper('isLastDayOfMonth', function (date, options) {
 });
 
 handlebars.registerHelper('formatDate', function (dateInput) {
-  console.log('formatDate');
-
-  console.log(dateInput);
   var date = moment(dateInput, 'DD/MM/YYYY');
-  console.log(date);
   var isFutureDate = moment().isBefore(date);
   if (isFutureDate) {
     date.subtract('year', 100);
   }
-  console.log('Future date:' + isFutureDate);
-
   return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
 });
 
-handlebars.registerHelper('formatSortableDate', function (dateInput) {
-  const date = moment(dateInput, 'YYYYMMDD');
-  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
-});
+const changeDateFormatting = (dateInput, inputFormat, outputFormat = 'D MMMM YYYY') => {
+  const date = moment(dateInput, inputFormat);
+  return date.isValid() ? date.format(outputFormat) : dateInput;
+};
 
-handlebars.registerHelper('formatTS', function (dateInput) {
-  console.log('formatDate');
-
-  console.log(dateInput);
-  var date = moment(dateInput, 'YYYY-MM-DD');
-  return date.isValid() ? date.format('D MMMM YYYY') : dateInput;
-});
+handlebars.registerHelper('formatSortableDate', dateInput => changeDateFormatting(dateInput, 'YYYYMMDD'));
+handlebars.registerHelper('formatTS', dateInput => changeDateFormatting(dateInput, 'YYYY-MM-DD'));
 
 handlebars.registerHelper('formatToDate', function (dateInput, defaultValue) {
   if (dateInput === null) {
@@ -626,12 +613,12 @@ const footerSupportLinks = `
 
 const defaultContext = {
   assetPath: '/public/',
-  topOfPage: 'Login Handler',
+  topOfPage: null,
   head: '<link href="public/stylesheets/overrides.css" media="screen" rel="stylesheet" />',
   pageTitle: ' Generic Page',
   htmlLang: 'en',
   bodyClasses: 'some classes here',
-  bodyStart: 'Body Start',
+  bodyStart: null,
   skipLinkMessage: 'Skip to main content',
   cookieMessage: 'GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>',
   headerClass: 'some classes here',

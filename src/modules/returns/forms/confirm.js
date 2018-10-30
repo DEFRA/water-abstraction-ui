@@ -1,11 +1,10 @@
 const { formFactory, fields } = require('../../../lib/forms');
+const { getPath } = require('../lib/flow-helpers');
 
 const confirmForm = (request, action = `/return/nil-return`) => {
   const { csrfToken } = request.view;
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const scopedAction = `${isInternal ? '/admin' : ''}${action}`;
-
+  const scopedAction = getPath(action, request);
   const f = formFactory(scopedAction);
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

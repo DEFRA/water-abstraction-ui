@@ -101,7 +101,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         },
         hapiRouteAcl: {
           permissions: ['returns:submit']
@@ -185,28 +186,6 @@ module.exports = {
         scope: external
       },
       description: 'POST handler for meter readings routing',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
-        returns: true
-      }
-    }
-  },
-
-  getMultipleMeters: {
-    method: 'GET',
-    path: '/return/multiple-meters',
-    handler: controller.getMultipleMeters,
-    options: {
-      auth: {
-        scope: external
-      },
-      description: 'Messaging around multiple meters not currently supported',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',

@@ -1,21 +1,9 @@
 {{> styles}}
-<style type="text/css">
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 250px;
-}
-.table-cell {
-
-}
-</style>
 
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
+  <a data-no-js class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
 
   {{#if document.document_name }}
   <h1 class="heading-large heading-large--tight-above">
@@ -26,21 +14,13 @@
   <h1 class="heading-large heading-large--tight-above">Returns for licence number {{ document.system_external_id }}</h1>
   {{/if}}
 
-
-
   {{# equal returns.length 0 }}
   <p>No returns found.</p>
-
   {{ else }}
-
 
   <div class="grid-row">
     <div class="column-full">
-
-
       <div class="table big-space">                                          <!-- a table -->
-
-
           <div class="table-row table-head">                                      <!-- the table head -->
             <div class="table-cell bold-small">
               Return period
@@ -55,7 +35,6 @@
               Status
             </div>
           </div>
-
 
         {{# each returns }}
           {{#each returns }}
@@ -129,7 +108,7 @@
           {{/each}}
         {{/each}}
 
-        </div>
+      </div>
     </div>
   </div>
 

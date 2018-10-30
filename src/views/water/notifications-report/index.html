@@ -4,77 +4,68 @@
 
   <h1 class="heading-large">{{ pageTitle }}</h1>
 
-
   <div class="grid-row">
     <div class="column-full">
-
       <table>
-              <tbody><tr class="clickable">
-                  <td class="text" scope="col">
-                    <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="created"}}}#results">
-                      <span class="sr-only">Sort by date</span>
-                      <span aria-hidden="true">Date</span>
-                      {{{ sortIcon  direction=query.direction sort=query.sort field="created" }}}
-                    </a>
-                  </td><td scope="col">
-                    <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="notification"}}}#results">
-                      <span class="sr-only">Sort by notification type</span>
-                      <span aria-hidden="true">Notification</span>
-                      {{{ sortIcon  direction=query.direction sort=query.sort field="notification" }}}
-                    </a>
-                  </td><td class="text" scope="col">
-                    <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="issuer"}}}#results">
-                      <span class="sr-only">Sort by sender</span>
-                      <span aria-hidden="true">Sent by</span>
-                      {{{ sortIcon  direction=query.direction sort=query.sort field="issuer" }}}
-                    </a>
-                  </td><td class="numeric" scope="col">
-                    <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="recipients"}}}#results">
-                      <span class="sr-only">Sort by number of recipients</span>
-                      <span aria-hidden="true">Recipients</span>
-                      {{{ sortIcon  direction=query.direction sort=query.sort field="recipients" }}}
-                    </a>
-                  </td><td class="text text-right" scope="col">
-                    <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="status"}}}#results">
-                      <span class="sr-only">Sort by number of errors</span>
-                      <span aria-hidden="true">Problems</span>
-                      {{{ sortIcon  direction=query.direction sort=query.sort field="status" }}}
-                    </a>
-                </td></tr>
+        <tbody>
+          <tr class="clickable">
+            <td class="text" scope="col">
+              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="created"}}}#results">
+                <span class="sr-only">Sort by date</span>
+                <span aria-hidden="true">Date</span>
+                {{{ sortIcon  direction=query.direction sort=query.sort field="created" }}}
+              </a>
+            </td>
+            <td scope="col">
+              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="notification"}}}#results">
+                <span class="sr-only">Sort by notification type</span>
+                <span aria-hidden="true">Notification</span>
+                {{{ sortIcon  direction=query.direction sort=query.sort field="notification" }}}
+              </a>
+            </td>
+            <td class="text" scope="col">
+              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="issuer"}}}#results">
+                <span class="sr-only">Sort by sender</span>
+                <span aria-hidden="true">Sent by</span>
+                {{{ sortIcon  direction=query.direction sort=query.sort field="issuer" }}}
+              </a>
+            </td>
+            <td class="numeric" scope="col">
+              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="recipients"}}}#results">
+                <span class="sr-only">Sort by number of recipients</span>
+                <span aria-hidden="true">Recipients</span>
+                {{{ sortIcon  direction=query.direction sort=query.sort field="recipients" }}}
+              </a>
+            </td>
+            <td class="text text-right" scope="col">
+              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="status"}}}#results">
+                <span class="sr-only">Sort by number of errors</span>
+                <span aria-hidden="true">Problems</span>
+                {{{ sortIcon  direction=query.direction sort=query.sort field="status" }}}
+              </a>
+            </td>
+          </tr>
 
-
-              </tbody><tbody>
-
-                {{#each events}}
-                <tr class="clickable">
-                  <td class="text">{{ formatISODate this.created }}</td>
-                  <td scope="row"><a href="/admin/notifications/report/{{ this.event_id }}">{{ this.metadata.name }}</a>
-                  </td>
-                  <td class="text">{{ this.issuer }}</td>
-                  <td class="numeric">{{ this.metadata.recipients }}</td>
-                  <td style="text-align: center;">
-                    {{#if this.metadata.error }}
-                    <span class="badge badge--error">
-                      {{ this.metadata.error}}
-                    </span>
-                    {{/if}}
-
-                  </td>
-                </tr>
-                {{/each}}
-
-
-              </tbody>
-            </table>
-
-
+          {{#each events}}
+          <tr class="clickable">
+            <td class="text">{{ formatISODate this.created }}</td>
+            <td scope="row"><a href="/admin/notifications/report/{{ this.event_id }}">{{ this.metadata.name }}</a></td>
+            <td class="text">{{ this.issuer }}</td>
+            <td class="numeric">{{ this.metadata.recipients }}</td>
+            <td class="center-text">
+              {{#if this.metadata.error }}
+              <span class="badge badge--error">
+                {{ this.metadata.error}}
+              </span>
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
   </div>
-
 </main>
 
-
 {{> footerjs}}
-
-
 {{> debug}}

@@ -95,7 +95,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
-          activeNavLink: 'returns'
+          activeNavLink: 'returns',
+          showMeta: true
         },
         returns: true
       }
@@ -167,25 +168,6 @@ module.exports = {
         scope: returns
       },
       description: 'POST handler for meter readings routing',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getMultipleMeters: {
-    method: 'GET',
-    path: '/admin/return/multiple-meters',
-    handler: controller.getMultipleMeters,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Messaging around multiple meters not currently supported',
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',

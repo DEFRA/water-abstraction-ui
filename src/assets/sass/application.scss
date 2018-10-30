@@ -33,13 +33,14 @@ $path: "/public/images/";
 @import "blocks/navbar";
 @import "blocks/table";
 @import "blocks/notification-preview";
-@import "blocks/notification-report-table";
+@import "blocks/notification-report";
 @import "blocks/badge";
 @import "blocks/flex";
 @import "blocks/unit-selector";
 @import "blocks/space";
 @import "blocks/meta";
 @import "blocks/forms";
+@import "blocks/text";
 
 * {
 family: "nta", Arial, sans-serif;
@@ -556,3 +557,21 @@ nav.tabs {
   border-color: $link-colour;
 }
 
+.survey-frame {
+  width: 100%;
+  height: 800px;
+  border: 0;
+  padding-bottom: 4px;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 250px;
+}
+
+.display-none {
+  display: none;
+}

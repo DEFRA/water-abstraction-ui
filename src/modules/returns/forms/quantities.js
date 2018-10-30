@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
+const { STEP_QUANTITIES, getPath } = require('../lib/flow-helpers');
 
 /**
  * Get field suffix - this is the units used for this return
@@ -21,8 +22,7 @@ const getSuffix = (unit) => {
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/quantities`;
+  const action = getPath(STEP_QUANTITIES, request);
 
   const f = formFactory(action);
 

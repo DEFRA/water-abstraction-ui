@@ -12,7 +12,7 @@ const {
   isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter
+  applyMethod, getMeter, getLinesWithReadings
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -72,7 +72,7 @@ lab.experiment('Test isDateWithinAbstractionPeriod', () => {
 });
 
 lab.experiment('Return reducers', () => {
-  lab.test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period', async () => {
+  lab.test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period, with null outside abstraction period', async () => {
     const data = applySingleTotal(testReturn, 100);
     expect(data.reading.totalFlag).to.equal(true);
     expect(data.reading.total).to.equal(100);
@@ -84,7 +84,7 @@ lab.experiment('Return reducers', () => {
       { startDate: '2017-12-01',
         endDate: '2017-12-31',
         period: 'month',
-        quantity: 0 },
+        quantity: null },
       { startDate: '2018-01-01',
         endDate: '2018-01-31',
         period: 'month',
@@ -297,7 +297,7 @@ lab.experiment('applyMeterReadings', () => {
     expect(data.meters[0].readings).to.equal(omit(formValues, 'csrf_token'));
   });
 
-  lab.test('sets abstraction volumes to null for null meter readings', async () => {
+  lab.test('sets abstraction volumes to 0 for null meter readings inside abstraction period, and null outside', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       '2017-11-01_2017-11-30': null,
@@ -308,9 +308,9 @@ lab.experiment('applyMeterReadings', () => {
     const data = applyMeterReadings(returnData, formValues);
 
     expect(data.lines).to.equal([
-      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: null },
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 0 },
       { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
-      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: null }
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 0 }
     ]);
   });
 
@@ -366,7 +366,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('sets the volume to null for identical meter readings', async () => {
+  lab.test('sets the volume to 0 for identical meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       '2017-11-01_2017-11-30': 100,
@@ -377,8 +377,8 @@ lab.experiment('applyMeterReadings', () => {
     const data = applyMeterReadings(returnData, formValues);
 
     expect(data.lines).to.equal([
-      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: null },
-      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: null },
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 0 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 0 },
       { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 150 }
     ]);
   });
@@ -403,5 +403,75 @@ lab.experiment('getMeter', () => {
       multiplier: 1,
       units: 'm³'
     });
+  });
+});
+
+lab.experiment('getLinesWithReadings', () => {
+  const meter = {
+    startReading: 5,
+    readings: {
+      '2017-10-01_2017-10-31': 10,
+      '2017-11-01_2017-11-30': 15,
+      '2017-12-01_2017-12-31': null,
+      '2018-01-01_2018-01-31': 17
+    }
+  };
+
+  const lines = [{
+    startDate: '2017-10-01',
+    endDate: '2017-10-31',
+    quantity: 5
+  },
+  {
+    startDate: '2017-11-01',
+    endDate: '2017-11-30',
+    quantity: 5
+  }, {
+    startDate: '2017-12-01',
+    endDate: '2017-12-31',
+    quantity: null
+  }, {
+    startDate: '2018-01-01',
+    endDate: '2018-01-31',
+    quantity: 2
+  }];
+
+  lab.test('returns lines unchanged if using volumes', async () => {
+    const data = {
+      reading: {
+        method: 'abstractionVolumes'
+      },
+      meters: [meter],
+      lines
+    };
+    expect(getLinesWithReadings(data)).to.equal(data.lines);
+  });
+
+  lab.test('adds meter readings to lines if using one meter', async () => {
+    const data = {
+      reading: {
+        method: 'oneMeter'
+      },
+      meters: [meter],
+      lines
+    };
+    expect(getLinesWithReadings(data)).to.equal([ { startDate: '2017-10-01',
+      endDate: '2017-10-31',
+      quantity: 5,
+      startReading: 5,
+      endReading: 10 },
+    { startDate: '2017-11-01',
+      endDate: '2017-11-30',
+      quantity: 5,
+      startReading: 10,
+      endReading: 15 },
+    { startDate: '2017-12-01',
+      endDate: '2017-12-31',
+      quantity: null },
+    { startDate: '2018-01-01',
+      endDate: '2018-01-31',
+      quantity: 2,
+      startReading: 15,
+      endReading: 17 } ]);
   });
 });

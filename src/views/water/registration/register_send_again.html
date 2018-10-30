@@ -11,7 +11,7 @@
       <form novalidate action="/send-again" method="post" class="form">
 
           {{#if error}}
-          <script>
+          <script nonce="{{nonces.script}}">
             sendEvent({category:'error', action:'register_send_again_invalid_email_address'})
           </script>
 

@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { STEP_BASIS, getPath } = require('../lib/flow-helpers');
 
 /**
  * Maps data in model to basis form
@@ -14,39 +15,30 @@ const mapModelToForm = (data) => {
   };
 };
 
-const form = (request) => {
+const form = (request, data) => {
   const { csrfToken } = request.view;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/basis`;
+
+  const action = getPath(STEP_BASIS, request);
 
   const f = formFactory(action);
 
   f.fields.push(fields.radio('basis', {
-    label: 'Are you using estimates?',
+    label: 'Did you use one or more meters to calculate the volumes?',
     errors: {
       'any.required': {
-        message: 'Select if you are using estimates or not'
+        message: 'Select if you are using one or more meters or not'
       }
     },
     choices: [
-      {
-        value: 'estimated',
-        label: 'Yes'
-      },
-
-      { value: 'measured',
-        label: 'No'
-      }
-
+      { value: 'measured', label: 'Yes' },
+      { value: 'estimated', label: 'No' }
     ]}));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   // Populate state from session
-  const data = request.sessionStore.get('internalReturnFlow');
   const values = mapModelToForm(data);
-
   return setValues(f, values);
 };
 

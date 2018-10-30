@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { set, get } = require('lodash');
+const { set } = require('lodash');
 const Boom = require('boom');
 const { importData, handleRequest, setValues, getValues } = require('../../../lib/forms');
 
@@ -21,14 +21,32 @@ const { returns } = require('../../../lib/connectors/water');
 const {
   applySingleTotal, applyBasis, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
-  applyMeterUnits, applyMeterReadings, applyMethod } = require('../lib/return-helpers');
+  applyMeterUnits, applyMeterReadings, applyMethod,
+  getLinesWithReadings
+} = require('../lib/return-helpers');
+
+const {
+  STEP_START,
+  STEP_NIL_RETURN,
+  STEP_METHOD,
+  STEP_UNITS,
+  STEP_SINGLE_TOTAL,
+  STEP_BASIS,
+  STEP_QUANTITIES,
+  STEP_METER_DETAILS,
+  STEP_METER_UNITS,
+  STEP_METER_READINGS,
+  STEP_CONFIRM,
+  getNextPath,
+  getPreviousPath
+} = require('../lib/flow-helpers');
 
 const {
   saveSessionData,
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getViewData, getLicenceNumbers, getReturnTotal, getScopedPath, canEdit } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -62,7 +80,8 @@ const getAmounts = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_START, request, data)
   });
 };
 
@@ -78,11 +97,11 @@ const postAmounts = async (request, h) => {
     const { isNil } = getValues(form);
 
     const d = applyNilReturn(data, isNil);
-
     saveSessionData(request, d);
 
-    const path = isNil ? '/return/nil-return' : '/return/method';
-    return h.redirect(getScopedPath(request, path));
+    const path = getNextPath(STEP_START, request, d);
+
+    return h.redirect(path);
   }
 
   return h.view('water/returns/internal/form', {
@@ -101,7 +120,8 @@ const getNilReturn = async (request, h) => {
   return h.view('water/returns/internal/nil-return', {
     ...view,
     return: data,
-    form: confirmForm(request)
+    form: confirmForm(request),
+    back: getPreviousPath(STEP_NIL_RETURN, request, data)
   });
 };
 
@@ -115,7 +135,7 @@ const postNilReturn = async (request, h) => {
   if (form.isValid) {
     try {
       await submitReturnData(data, request);
-      return h.redirect(getScopedPath(request, '/return/submitted'));
+      return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {
       console.error(error);
       view.error = error;
@@ -160,7 +180,8 @@ const getMethod = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form: methodForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_METHOD, request, data)
   });
 };
 
@@ -170,35 +191,20 @@ const getMethod = async (request, h) => {
  */
 const postMethod = async (request, h) => {
   const { data, view } = request.returns;
-  const form = handleRequest(methodForm(request), request);
+  const form = handleRequest(methodForm(request, data), request);
 
   if (form.isValid) {
     const { method } = getValues(form);
-    saveSessionData(request, applyMethod(data, method));
+    const d = applyMethod(data, method);
+    saveSessionData(request, d);
 
-    const paths = {
-      oneMeter: `/return/meter/details`,
-      multipleMeters: `/return/multiple-meters`,
-      abstractionVolumes: `/return/units`
-    };
-
-    return h.redirect(getScopedPath(request, paths[method]));
+    return h.redirect(getNextPath(STEP_METHOD, request, d));
   }
 
   return h.view('water/returns/internal/form', {
     ...view,
     form,
     return: data
-  });
-};
-
-/**
- * Message about multiple meters not being supported
- */
-const getMultipleMeters = async (request, h) => {
-  return h.view('water/returns/internal/multiple-meters', {
-    ...request.returns.view,
-    return: request.returns.data
   });
 };
 
@@ -211,7 +217,8 @@ const getUnits = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form: unitsForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_UNITS, request, data)
   });
 };
 
@@ -219,8 +226,8 @@ const getUnits = async (request, h) => {
  * Post handler for units form
  */
 const postUnits = async (request, h) => {
-  const { data, view, isInternal } = request.returns;
-  const form = handleRequest(unitsForm(request), request);
+  const { data, view } = request.returns;
+  const form = handleRequest(unitsForm(request, data), request);
 
   if (form.isValid) {
     // Persist chosen units to session
@@ -228,10 +235,7 @@ const postUnits = async (request, h) => {
     set(data, 'reading.units', units);
     saveSessionData(request, data);
 
-    // Only internal staff have screen for single total
-    const path = isInternal ? '/return/single-total' : '/return/basis';
-
-    return h.redirect(getScopedPath(request, path));
+    return h.redirect(getNextPath(STEP_UNITS, request, data));
   }
 
   return h.view('water/returns/internal/form', {
@@ -249,8 +253,9 @@ const getSingleTotal = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form: singleTotalForm(request),
-    return: data
+    form: singleTotalForm(request, data),
+    return: data,
+    back: getPreviousPath(STEP_SINGLE_TOTAL, request, data)
   });
 };
 
@@ -260,7 +265,7 @@ const getSingleTotal = async (request, h) => {
 const postSingleTotal = async (request, h) => {
   const { data, view } = request.returns;
 
-  const form = handleRequest(singleTotalForm(request), request, singleTotalSchema);
+  const form = handleRequest(singleTotalForm(request, data), request, singleTotalSchema);
 
   if (form.isValid) {
     // Persist to session
@@ -271,7 +276,7 @@ const postSingleTotal = async (request, h) => {
 
     saveSessionData(request, d);
 
-    return h.redirect(getScopedPath(request, '/return/basis'));
+    return h.redirect(getNextPath(STEP_SINGLE_TOTAL, request, d));
   }
 
   return h.view('water/returns/internal/form', {
@@ -289,8 +294,9 @@ const getBasis = async (request, h) => {
 
   return h.view('water/returns/internal/form', {
     ...view,
-    form: basisForm(request),
-    return: data
+    form: basisForm(request, data),
+    return: data,
+    back: getPreviousPath(STEP_BASIS, request, data)
   });
 };
 
@@ -299,14 +305,13 @@ const getBasis = async (request, h) => {
  */
 const postBasis = async (request, h) => {
   const { data, view } = request.returns;
-  const form = handleRequest(basisForm(request), request, basisSchema);
+  const form = handleRequest(basisForm(request, data), request, basisSchema);
 
   if (form.isValid) {
     const d = applyBasis(data, getValues(form));
     saveSessionData(request, d);
 
-    const path = get(d, 'reading.totalFlag') ? '/return/confirm' : '/return/quantities';
-    return h.redirect(getScopedPath(request, path));
+    return h.redirect(getNextPath(STEP_BASIS, request, d));
   }
 
   return h.view('water/returns/internal/form', {
@@ -325,7 +330,8 @@ const getQuantities = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form: quantitiesForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_QUANTITIES, request, data)
   });
 };
 
@@ -338,10 +344,9 @@ const postQuantities = async (request, h) => {
   if (form.isValid) {
     // Persist
     const d = applyQuantities(data, getValues(form));
-
     saveSessionData(request, d);
 
-    return h.redirect(getScopedPath(request, `/return/confirm`));
+    return h.redirect(getNextPath(STEP_QUANTITIES, request, d));
   }
   return h.view('water/returns/internal/form', {
     ...view,
@@ -356,11 +361,15 @@ const postQuantities = async (request, h) => {
 const getConfirm = async (request, h) => {
   const { data, view } = request.returns;
 
+  const lines = getLinesWithReadings(data);
+
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
+    lines,
     form: confirmForm(request, `/return/confirm`),
-    total: getReturnTotal(data)
+    total: getReturnTotal(data),
+    back: getPreviousPath(STEP_CONFIRM, request, data)
   });
 };
 
@@ -370,8 +379,7 @@ const getConfirm = async (request, h) => {
 const postConfirm = async (request, h) => {
   // Post return
   await submitReturnData(request.returns.data, request);
-
-  return h.redirect(getScopedPath(request, '/return/submitted'));
+  return h.redirect(getNextPath(STEP_CONFIRM, request, request.returns.data));
 };
 
 const getMeterDetails = async (request, h) => {
@@ -379,18 +387,20 @@ const getMeterDetails = async (request, h) => {
   return h.view('water/returns/meter-details', {
     ...view,
     form: meterDetailsForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_METER_DETAILS, request, data)
   });
 };
 
 const postMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
-  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema);
+  const form = handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema(data));
 
   if (form.isValid) {
-    const updated = applyMeterDetails(data, getValues(form));
-    saveSessionData(request, updated);
-    return h.redirect(getScopedPath(request, `/return/meter/units`));
+    const d = applyMeterDetails(data, getValues(form));
+    saveSessionData(request, d);
+
+    return h.redirect(getNextPath(STEP_METER_DETAILS, request, d));
   }
 
   return h.view('water/returns/meter-details', {
@@ -406,7 +416,8 @@ const getMeterUnits = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form: meterUnitsForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_METER_UNITS, request, data)
   });
 };
 
@@ -415,9 +426,10 @@ const postMeterUnits = async (request, h) => {
   const form = handleRequest(meterUnitsForm(request, data), request);
 
   if (form.isValid) {
-    const updated = applyMeterUnits(data, getValues(form));
-    saveSessionData(request, updated);
-    return h.redirect(getScopedPath(request, `/return/meter/readings`));
+    const d = applyMeterUnits(data, getValues(form));
+    saveSessionData(request, d);
+
+    return h.redirect(getNextPath(STEP_METER_UNITS, request, d));
   }
 
   return h.view('water/returns/internal/form', {
@@ -433,7 +445,8 @@ const getMeterReadings = async (request, h) => {
   return h.view('water/returns/meter-readings', {
     ...view,
     form: meterReadingsForm(request, data),
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_METER_READINGS, request, data)
   });
 };
 
@@ -452,9 +465,9 @@ const postMeterReadings = async (request, h) => {
   const form = handleRequest(readingsForm, request, schema);
 
   if (form.isValid) {
-    const updated = applyMeterReadings(data, getValues(form));
-    saveSessionData(request, updated);
-    return h.redirect(getScopedPath(request, `/return/confirm`));
+    const d = applyMeterReadings(data, getValues(form));
+    saveSessionData(request, d);
+    return h.redirect(getNextPath(STEP_METER_READINGS, request, d));
   }
 
   return h.view('water/returns/meter-readings', {
@@ -472,7 +485,6 @@ module.exports = {
   getSubmitted,
   getMethod,
   postMethod,
-  getMultipleMeters,
   getUnits,
   postUnits,
   getSingleTotal,

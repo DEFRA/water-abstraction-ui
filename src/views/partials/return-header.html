@@ -10,12 +10,12 @@
 
 {{#if showMeta }}
 
-<dl class="meta">
+<dl class="meta small-space">
 
 
   {{#if isAdmin }}
   <dt class="meta__label">
-    NALD reference
+    Return reference
   </dt>
   <dd class="meta__description">
     {{ return.metadata.nald.formatId }}
@@ -59,9 +59,8 @@
 
   </dl>
 
-  <br />
-<p>
-<a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
+<p class="medium-space">
+  <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
 </p>
 
 {{/if}}

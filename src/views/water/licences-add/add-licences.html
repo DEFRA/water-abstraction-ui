@@ -8,7 +8,7 @@
 
 
       {{#equal error.name 'ValidationError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'add_licence_validation_error'})
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
@@ -22,7 +22,7 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceNotFoundError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'add_licence_licence_not_found_error'})
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
@@ -40,7 +40,7 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceSimilarityError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'add_licence_licence_similarity_error'})
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
@@ -58,7 +58,7 @@
       {{/equal}}
 
       {{#equal error.name 'LicenceMissingError' }}
-      <script>
+      <script nonce="{{nonces.script}}">
         sendEvent({category:'error', action:'add_licence_licence_missing_error'})
       </script>
 

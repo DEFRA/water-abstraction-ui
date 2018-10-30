@@ -9,7 +9,7 @@
       <form novalidate action="/signin" method="post" class="form">
 
         {{#equal query.flash 'password-reset'}}
-        <div style="border-top: none;" class="panel panel-border-wide" role="alert" tabindex="-1">
+        <div class="panel panel-border-wide" role="alert" tabindex="-1">
             <h2 class="heading-medium">
               Your password has been reset
             </h2>
@@ -21,7 +21,7 @@
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
           {{#if errors.authentication}}
 
-            <script>
+            <script nonce="{{nonces.script}}">
               sendEvent({category:'error', action:'invalid_password'})
             </script>
 

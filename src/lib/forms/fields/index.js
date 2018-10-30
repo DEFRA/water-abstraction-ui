@@ -5,6 +5,7 @@ const radio = require('./radio');
 const text = require('./text');
 const checkbox = require('./checkbox');
 const dropdown = require('./dropdown');
+const paragraph = require('./paragraph');
 
 module.exports = {
   button,
@@ -13,5 +14,6 @@ module.exports = {
   radio,
   text,
   checkbox,
-  dropdown
+  dropdown,
+  paragraph
 };

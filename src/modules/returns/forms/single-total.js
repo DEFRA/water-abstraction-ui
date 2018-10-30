@@ -1,10 +1,12 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { STEP_SINGLE_TOTAL, getPath } = require('../lib/flow-helpers');
 
-const form = (request) => {
+const form = (request, data) => {
   const { csrfToken } = request.view;
-  const action = `/admin/return/single-total`;
+
+  const action = getPath(STEP_SINGLE_TOTAL, request);
 
   const f = formFactory(action);
 
@@ -41,8 +43,6 @@ const form = (request) => {
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  // Populate state from session
-  const data = request.sessionStore.get('internalReturnFlow');
   const isSingleTotal = get(data, 'reading.totalFlag');
   const total = get(data, 'reading.total');
 

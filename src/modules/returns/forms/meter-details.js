@@ -1,20 +1,22 @@
 const Joi = require('joi');
+const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter } = require('../lib/return-helpers');
+const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 
 const textFieldManufacturer = fields.text('manufacturer', {
   label: 'Manufacturer',
   errors: {
-    'any.required': { message: 'Select a manufacturer' },
-    'any.empty': { message: 'Select a manufacturer' }
+    'any.required': { message: 'Enter a manufacturer' },
+    'any.empty': { message: 'Enter a manufacturer' }
   }
 });
 
 const textFieldSerialNumber = fields.text('serialNumber', {
   label: 'Serial number',
   errors: {
-    'any.required': { message: 'Select a serial number' },
-    'any.empty': { message: 'Select a serial number' }
+    'any.required': { message: 'Enter a serial number' },
+    'any.empty': { message: 'Enter a serial number' }
   }
 });
 
@@ -27,18 +29,30 @@ const textFieldStartReading = fields.text('startReading', {
   }
 });
 
+const introText = fields.paragraph(null, {
+  text: 'You only need to tell us about one meter.'
+});
+
 const form = (request, data) => {
+  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+
   const { csrfToken } = request.view;
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const action = `${isInternal ? '/admin' : ''}/return/meter/details`;
+  const action = getPath(STEP_METER_DETAILS, request);
 
   const f = formFactory(action);
   const meter = getMeter(data);
 
+  if (isVolumes) {
+    f.fields.push(introText);
+  }
+
   f.fields.push(textFieldManufacturer);
   f.fields.push(textFieldSerialNumber);
-  f.fields.push(textFieldStartReading);
+
+  if (!isVolumes) {
+    f.fields.push(textFieldStartReading);
+  }
 
   f.fields.push(fields.checkbox('isMultiplier', {
     label: 'This meter has a ×10 display',
@@ -51,15 +65,29 @@ const form = (request, data) => {
   return setValues(f, meter);
 };
 
-const schema = {
-  manufacturer: Joi.string().required(),
-  serialNumber: Joi.string().required(),
-  startReading: Joi.number().positive().required(),
-  isMultiplier: Joi.boolean().truthy('multiply').falsy('').optional(),
-  csrf_token: Joi.string().guid().required()
+/**
+ * Gets Joi the schema for the meter details form
+ * @param {Object} data - return data model
+ * @return {Object} Joi schema
+ */
+const meterDetailsSchema = (data) => {
+  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+
+  const schema = {
+    manufacturer: Joi.string().required(),
+    serialNumber: Joi.string().required(),
+    isMultiplier: Joi.boolean().truthy('multiply').falsy('').optional(),
+    csrf_token: Joi.string().guid().required()
+  };
+
+  if (!isVolumes) {
+    schema.startReading = Joi.number().positive().allow(0).required();
+  }
+
+  return schema;
 };
 
 module.exports = {
   meterDetailsForm: form,
-  meterDetailsSchema: schema
+  meterDetailsSchema
 };

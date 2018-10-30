@@ -1,0 +1,16 @@
+.center-text {
+  text-align: center;
+}
+
+// -------------------------------------------------------
+// Ugliness here because the numeric class is prefixed
+// with table in the imported styles. This is required to
+// have a higher specificity.
+.numeric.center-text {
+  text-align: center;
+}
+
+.text.center-text {
+  text-align: center;
+}
+// -------------------------------------------------------

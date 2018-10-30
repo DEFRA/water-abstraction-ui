@@ -1,98 +1,8 @@
 const Boom = require('boom');
-const { get, omit, cloneDeep, set, mapValues } = require('lodash');
+const { get, omit, cloneDeep, set } = require('lodash');
 const moment = require('moment');
 const { maxPrecision } = require('../../../lib/number-formatter');
-
-/**
- * Checks whether a supplied day/month is the same or after a reference day/month
- * @param {Number} day - the day to test
- * @param {Number} month - the month to test
- * @param {Number} refDay - the reference day
- * @param {Number} refMonth - the reference month
- * @return {Boolean}
- */
-const isSameOrAfter = (day, month, refDay, refMonth) => {
-  if (month > refMonth) {
-    return true;
-  }
-  return ((month === refMonth) && (day >= refDay));
-};
-
-/**
- * Checks whether a supplied day/month is the same or before a reference day/month
- * @param {Number} day - the day to test
- * @param {Number} month - the month to test
- * @param {Number} refDay - the reference day
- * @param {Number} refMonth - the reference month
- * @return {Boolean}
- */
-const isSameOrBefore = (day, month, refDay, refMonth) => {
-  if (month < refMonth) {
-    return true;
-  }
-  return (month === refMonth) && (day <= refDay);
-};
-
-/**
- * Checks whether the specified date is within the abstraction period
- * @param {String} date - the date to test, format YYYY-MM-DD
- * @param {Object} options - abstraction period
- * @param {Number} options.periodStartDay - abstraction period start day of the month
- * @param {Number} options.periodStartMonth - abstraction period start month
- * @param {Number} options.periodEndDay - abstraction period end day of the month
- * @param {Number} options.periodEndMonth - abstraction period end month
- * @return {Boolean} whether supplied date is within abstraction period
- */
-const isDateWithinAbstractionPeriod = (date, options) => {
-  const {
-    periodEndDay,
-    periodEndMonth,
-    periodStartDay,
-    periodStartMonth
-  } = options;
-
-  // Month and day of test date
-  const month = moment(date).month() + 1;
-  const day = moment(date).date();
-
-  // Period start date is >= period end date
-  if (isSameOrAfter(periodEndDay, periodEndMonth, periodStartDay, periodStartMonth)) {
-    return isSameOrAfter(day, month, periodStartDay, periodStartMonth) &&
-      isSameOrBefore(day, month, periodEndDay, periodEndMonth);
-  } else {
-    const prevYear = isSameOrAfter(day, month, 1, 1) &&
-     isSameOrBefore(day, month, periodEndDay, periodEndMonth);
-
-    const thisYear = isSameOrAfter(day, month, periodStartDay, periodStartMonth) &&
-     isSameOrBefore(day, month, 31, 12);
-
-    return prevYear || thisYear;
-  }
-};
-
-/**
- * Gets period start/end from NALD metadata in return,
- * and converts to integers
- * @param {Object} data
- * @return {Object} only contains period start/end data as integers
- */
-const getPeriodStartEnd = (data) => {
-  // Get period start/end and convert to integers
-  const {
-    periodEndDay,
-    periodEndMonth,
-    periodStartDay,
-    periodStartMonth
-  } = data.metadata.nald;
-
-  return mapValues({
-    periodEndDay,
-    periodEndMonth,
-    periodStartDay,
-    periodStartMonth
-  }, parseInt);
-};
-
+const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
 /**
  * Sets up data model for external user
  * External users do not have the option to enter a single total figure
@@ -131,7 +41,7 @@ const applySingleTotal = (data, total) => {
   // Find which return lines are within abstraction period
   if (lines) {
     const indexes = lines.reduce((acc, line, index) => {
-      if (isDateWithinAbstractionPeriod(line.startDate, options) || isDateWithinAbstractionPeriod(line.endDate, options)) {
+      if (isDateWithinAbstractionPeriod(line.endDate, options)) {
         acc.push(index);
       }
       return acc;
@@ -142,7 +52,7 @@ const applySingleTotal = (data, total) => {
     d.lines = lines.map((line, i) => {
       return {
         ...line,
-        quantity: indexes.includes(i) ? perMonth : 0
+        quantity: indexes.includes(i) ? perMonth : null
       };
     });
   }
@@ -163,11 +73,32 @@ const applyBasis = (data, formValues) => {
 
   set(f, 'reading.type', basis);
 
+  delete f.meters;
+
   return f;
 };
 
+/**
+ * Applies the method of return - either volumes or meter readings
+ * @param {Object} - return model
+ * @param {String} - abstractionVolumes | oneMeter
+ * @return {Object} - updated return model
+ */
 const applyMethod = (data, method) => {
-  return set(cloneDeep(data), 'reading.method', method);
+  const d = cloneDeep(data);
+
+  set(d, 'reading.method', method);
+
+  if (method === 'abstractionVolumes') {
+    const meters = d.meters || [];
+    for (let meter of meters) {
+      delete meter.readings;
+      delete meter.startReading;
+      delete meter.units;
+    }
+  }
+
+  return d;
 };
 
 /**
@@ -192,13 +123,17 @@ const getMeter = data => {
 const applyQuantities = (data, formValues) => {
   const f = cloneDeep(data);
 
+  const options = getPeriodStartEnd(f);
+
   const lines = getFormLines(f);
 
   f.lines = lines.map(line => {
+    const defaultValue = getDefaultQuantity(line, options);
+
     const name = line.startDate + '_' + line.endDate;
     return {
       ...line,
-      quantity: formValues[name]
+      quantity: formValues[name] || defaultValue
     };
   });
 
@@ -235,6 +170,8 @@ const applyNilReturn = (data, isNil) => {
   d.isNil = isNil;
   if (isNil) {
     delete d.lines;
+    delete d.meters;
+    delete d.reading;
   }
   return d;
 };
@@ -319,10 +256,22 @@ const getLineValues = (lines) => {
   }, {});
 };
 
+/**
+ * Gets default quantity.  If within abstraction period, this is 0, otherwise null
+ * @param {Object} line - return line
+ * @param {Object} options - return options containing abs period data
+ * @return {Number|null}
+ */
+const getDefaultQuantity = (line, options) => {
+  return isDateWithinAbstractionPeriod(line.endDate, options) ? 0 : null;
+};
+
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
   const lines = getFormLines(updated);
   const { startReading, multiplier = 1 } = data.meters[0];
+
+  const options = getPeriodStartEnd(updated);
 
   const input = {
     lines: [],
@@ -330,13 +279,17 @@ const applyMeterReadings = (data, formValues) => {
   };
 
   const readings = lines.reduce((acc, line) => {
-    // get the meter reading, or set to null if zero or null
-    const meterReading = formValues[getLineName(line)] || null;
-    let quantity = null;
+    const value = formValues[getLineName(line)];
 
-    if (meterReading) {
+    // get the meter reading, or set to null if zero or null
+    const meterReading = value === '' ? null : value;
+
+    // The quantity defaults to null, or 0 within authorised abstraction period
+    let quantity = getDefaultQuantity(line, options);
+
+    if (meterReading !== null) {
       // get the quantity and multiply. Set to null for zero.
-      quantity = ((meterReading - acc.lastMeterReading) * multiplier) || null;
+      quantity = ((meterReading - acc.lastMeterReading) * multiplier);
       acc.lastMeterReading = meterReading;
     }
 
@@ -349,6 +302,39 @@ const applyMeterReadings = (data, formValues) => {
 
   updated.lines = readings.lines;
   return set(updated, 'meters[0].readings', omit(formValues, 'csrf_token'));
+};
+
+/**
+ * Gets line data, including meter readings if present
+ * @param {Object} data
+ * @return {Array} lines
+ */
+const getLinesWithReadings = (data) => {
+  const method = get(data, 'reading.method');
+  if (method === 'abstractionVolumes') {
+    return data.lines;
+  }
+
+  let previousReading = get(data, 'meters[0].startReading');
+
+  return data.lines.map(row => {
+    if (row.quantity === null) {
+      return row;
+    }
+
+    const readingKey = `${row.startDate}_${row.endDate}`;
+    const reading = get(data, `meters[0].readings.${readingKey}`);
+
+    const newRow = {
+      ...row,
+      startReading: previousReading,
+      endReading: reading
+    };
+
+    previousReading = reading || previousReading;
+
+    return newRow;
+  });
 };
 
 module.exports = {
@@ -368,5 +354,6 @@ module.exports = {
   getLineValues,
   applyMeterReadings,
   applyMethod,
-  getMeter
+  getMeter,
+  getLinesWithReadings
 };

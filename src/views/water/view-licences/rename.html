@@ -5,7 +5,7 @@
 
 
   {{#if errors }}
-  <script>
+  <script nonce="{{nonces.script}}">
     sendEvent({category:'error', action:'rename_licence_invalid_name'})
   </script>
   <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
@@ -56,7 +56,7 @@
 
       </label>
 
-      <input minlength="2" maxlength="32" style="background: #fff" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{#if payload }}{{ payload.name }}{{ else }}{{ name }}{{/if}}" />
+      <input minlength="2" maxlength="32" type="text" class="form-control {{#if error }}form-control-error{{/if}}" id="name" name="name" value="{{#if payload }}{{ payload.name }}{{ else }}{{ name }}{{/if}}" />
 
     </div>
 

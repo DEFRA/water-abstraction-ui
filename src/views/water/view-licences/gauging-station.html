@@ -14,7 +14,7 @@
 
           <div class="grid-row">
               <div class="column-two-thirds">
-                <div class="notice" style="border: none; margin: 0 0 15px 0; padding: 0;">
+                <div class="notice">
                   <i class="icon icon-important">
                     <span class="visually-hidden">Warning</span>
                   </i>
@@ -49,7 +49,7 @@
                   <span data-unit-label>Cubic metres per day</span>
                 </div>
 
-                <div style="display: none;">
+                <div class="display-none">
                   <label class="sr-only" for="unit-selector">Select units</label>
                   <select id="unit-selector" class="form-control unit-selector" name="unit-selector">
                       <option selected value="cms">Cubic metres per second</option>
@@ -140,7 +140,7 @@
 {{> footerjs}}
 {{> debug}}
 
-<script>
+<script nonce="{{nonces.script}}">
 
 $(function() {
 

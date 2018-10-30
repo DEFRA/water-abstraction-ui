@@ -128,7 +128,7 @@ const applyQuantities = (data, formValues) => {
   const lines = getFormLines(f);
 
   f.lines = lines.map(line => {
-    const defaultValue = isDateWithinAbstractionPeriod(line.endDate, options) ? 0 : null;
+    const defaultValue = getDefaultQuantity(line, options);
 
     const name = line.startDate + '_' + line.endDate;
     return {
@@ -256,6 +256,16 @@ const getLineValues = (lines) => {
   }, {});
 };
 
+/**
+ * Gets default quantity.  If within abstraction period, this is 0, otherwise null
+ * @param {Object} line - return line
+ * @param {Object} options - return options containing abs period data
+ * @return {Number|null}
+ */
+const getDefaultQuantity = (line, options) => {
+  return isDateWithinAbstractionPeriod(line.endDate, options) ? 0 : null;
+};
+
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
   const lines = getFormLines(updated);
@@ -275,7 +285,7 @@ const applyMeterReadings = (data, formValues) => {
     const meterReading = value === '' ? null : value;
 
     // The quantity defaults to null, or 0 within authorised abstraction period
-    let quantity = isDateWithinAbstractionPeriod(line.endDate, options) ? 0 : null;
+    let quantity = getDefaultQuantity(line, options);
 
     if (meterReading !== null) {
       // get the quantity and multiply. Set to null for zero.

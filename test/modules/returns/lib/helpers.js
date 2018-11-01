@@ -73,6 +73,10 @@ experiment('canEdit', () => {
     expect(helpers.canEdit(externalUser, post2018Return, '2018-10-31')).to.equal(true);
   });
 
+  test('External user can edit return if after summer 2018 cycle', async () => {
+    expect(helpers.canEdit(externalUser, post2018Return)).to.equal(true);
+  });
+
   test('External user cannot edit return if after summer 2018 cycle and in the future in production', async () => {
     const testMode = config.testMode;
     const showFutureReturns = config.returns.showFutureReturns;

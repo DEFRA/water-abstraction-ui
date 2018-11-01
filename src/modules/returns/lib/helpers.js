@@ -187,7 +187,7 @@ const getReturnTotal = (ret) => {
  * @param {String} [today] - allows today's date to be set for test purposes, defaults to current timestamp
  * @return {Boolean}
  */
-const canEdit = (permissions, ret, today = null) => {
+const canEdit = (permissions, ret, today) => {
   const showFutureReturns = get(config, 'returns.showFutureReturns', false);
   const endDate = ret.endDate || ret.end_date;
   const { status } = ret;

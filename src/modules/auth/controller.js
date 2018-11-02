@@ -14,7 +14,7 @@ const { destroySession, authValidationErrorResponse } = require('./helpers');
  * Welcome page before routing to signin/register
  */
 function getWelcome (request, reply) {
-  var viewContext = View.contextDefaults(request);
+  const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Choose an option to view your licences';
   return reply.view('water/welcome', viewContext);
 }
@@ -25,7 +25,7 @@ function getWelcome (request, reply) {
  * @param {Object} reply - the HAPI HTTP response
  */
 function getSignin (request, reply) {
-  var viewContext = View.contextDefaults(request);
+  const viewContext = View.contextDefaults(request);
   viewContext.pageTitle = 'Sign in';
   viewContext.customTitle = 'Sign in - Manage your water abstraction or impoundment licence';
   return reply.view('water/auth/signin', viewContext);

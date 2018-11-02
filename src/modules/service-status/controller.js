@@ -42,7 +42,7 @@ async function serviceStatus (request, reply) {
       data.crm[d.datapoint] = d.value;
     });
   } catch (e) {
-    console.log(e);
+    request.log('error', e);
     html += `<tr><td>CRM Documents</td><td>ERROR</td></tr>`;
     errors++;
   }

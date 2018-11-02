@@ -8,6 +8,8 @@ const rp = require('request-promise-native').defaults({
   strictSSL: false
 });
 
+const logger = require('../../logger');
+
 // Create API client
 const client = new APIClient(rp, {
   endpoint: `${process.env.CRM_URI}/entity/{entityId}/roles`,
@@ -46,7 +48,7 @@ client.addColleagueRole = async function (entityID, colleagueEntityID, role = 'u
     const response = await rp(options);
     return response;
   } catch (error) {
-    console.error(error);
+    logger.error('error', error);
     throw error;
   }
 };

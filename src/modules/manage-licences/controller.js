@@ -165,7 +165,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
-    console.error(err);
+    request.log('error', err);
     throw err;
   }
 }
@@ -198,7 +198,7 @@ async function getRemoveAccess (request, reply, context = {}) {
     viewContext.pageTitle = 'You are about to remove access';
     return reply.view('water/manage-licences/remove-access', viewContext);
   } catch (error) {
-    console.log(error);
+    request.log('error', error);
     throw error;
   }
 }
@@ -225,7 +225,6 @@ const removeColleague = async (regimeId, companyId, entityId, colleagueId) => {
   }
 
   for (let role of roles) {
-    console.log(entityId, role.entity_role_id);
     await CRM.entityRoles.deleteColleagueRole(entityId, role.entity_role_id);
   }
 };

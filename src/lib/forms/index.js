@@ -117,7 +117,7 @@ const handleRequest = (form, request, validationSchema) => {
     abortEarly: false
   });
 
-  console.log(JSON.stringify(error, null, 2));
+  request.log('info', JSON.stringify(error, null, 2));
 
   f = adapter.applyErrors(f, error, getCustomErrors(form));
   f.isValid = !error;

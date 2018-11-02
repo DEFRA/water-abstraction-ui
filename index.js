@@ -98,14 +98,13 @@ async function start () {
 
     await server.start();
 
-    server.log(`Server started on ${server.info.uri} port ${server.info.port}`);
+    server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`);
   } catch (err) {
-    logger.error(err);
+    logger.error(['error'], err);
   }
 
   return server;
 }
 
-start();
-
 module.exports = server;
+start();

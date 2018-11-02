@@ -137,7 +137,7 @@ const postNilReturn = async (request, h) => {
       await submitReturnData(data, request);
       return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {
-      console.error(error);
+      request.log('error', error);
       view.error = error;
     }
   }

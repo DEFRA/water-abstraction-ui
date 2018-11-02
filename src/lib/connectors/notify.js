@@ -1,4 +1,5 @@
 const Water = require('./water');
+const logger = require('../logger');
 
 function sendNewUserPasswordReset (emailAddress, resetGuid) {
   const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
@@ -74,7 +75,7 @@ function sendAccessNotification (params) {
         return resolve(true);
       })
       .catch((err) => {
-        console.error(err);
+        logger.error(['error'], err);
         return resolve(true);
       });
   });

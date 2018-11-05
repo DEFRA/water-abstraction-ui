@@ -64,7 +64,7 @@ const dateMapper = {
   export: (value) => {
     const parts = value.split('-');
     return {
-      date: parts[2],
+      day: parts[2],
       month: parts[1],
       year: parts[0]
     };

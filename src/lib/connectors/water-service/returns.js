@@ -1,3 +1,5 @@
+const { pick } = require('lodash');
+
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
@@ -47,7 +49,32 @@ const postReturn = (data) => {
   });
 };
 
+/**
+ * Patch return header.  This method is on the water service, but only
+ * updates limited info in the return row itself - status, received date
+ * (and later under query flag)
+ * @param {Object} return data
+ * @return {Promise} resolves when patch complete
+ */
+const patchReturn = (data) => {
+  const { returnId } = data;
+
+  const body = pick(data, ['returnId', 'status', 'receivedDate', 'user']);
+
+  return rp({
+    method: 'PATCH',
+    uri: `${endpoint}/header`,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    body,
+    json: true,
+    qs: { returnId }
+  });
+};
+
 module.exports = {
   getReturn,
-  postReturn
+  postReturn,
+  patchReturn
 };

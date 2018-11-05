@@ -1,6 +1,6 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
-const { applyUserDetails, applyStatus } = require('../lib/return-helpers');
+const { applyUserDetails } = require('../lib/return-helpers');
 
 /**
  * Gets the key to use for storing return data in user session
@@ -56,7 +56,7 @@ const deleteSessionData = (request) => {
  * @return {Promise} resolve when data posted to water service
  */
 const submitReturnData = (data, request) => {
-  const d = applyStatus(applyUserDetails(data, request.auth.credentials));
+  const d = applyUserDetails(data, request.auth.credentials);
 
   // Don't bother sending required return lines/versions
   delete d.requiredLines;

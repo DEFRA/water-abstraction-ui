@@ -581,6 +581,15 @@ handlebars.registerHelper('formatQuantity', (value) => {
 });
 
 /**
+ * Splits a string to array, and gets the numbered segment
+ */
+handlebars.registerHelper('splitString', (value, options) => {
+  const { index = 0, separator = ',' } = options.hash;
+  const segments = (value || '').split(separator);
+  return segments[index];
+});
+
+/**
  * Each iterates in reverse order
  * @see {@link https://github.com/diy/handlebars-helpers/blob/master/lib/each-reverse.js}
  */

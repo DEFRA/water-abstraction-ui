@@ -20,6 +20,14 @@ lab.experiment('Test splitString', () => {
   lab.test('Should support custom separator', async () => {
     expect(splitString('some,string,here|hello', 1, '|')).to.equal('hello');
   });
+
+  lab.test('Should default to empty string if none supplied', async () => {
+    expect(splitString()).to.equal('');
+  });
+
+  lab.test('Should default to empty string if none supplied', async () => {
+    expect(splitString('', 1)).to.equal(undefined);
+  });
 });
 
 exports.lab = lab;

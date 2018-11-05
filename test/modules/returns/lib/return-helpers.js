@@ -180,6 +180,13 @@ lab.experiment('Return reducers', () => {
     expect(data2.receivedDate).to.equal('2017-06-06');
   });
 
+  lab.test('applyStatus should throw error if invalid status', async () => {
+    const func = () => {
+      applyStatus(testReturn, 'the-dog-chewed-it-up');
+    };
+    expect(func).to.throw();
+  });
+
   lab.test('applyUserDetails should set user details on the return object', async () => {
     const data = applyUserDetails(testReturn, {
       username: 'test@example.com',

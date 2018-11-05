@@ -29,6 +29,59 @@ const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
 const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
 
 module.exports = {
+  getInternalRouting: {
+    method: 'GET',
+    path: '/admin/return/internal',
+    handler: controller.getInternalRouting,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Form to route internal user to return flows',
+      validate: {
+        query: {
+          returnId: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - what do you want to do with this return?',
+          activeNavLink: 'returns',
+          showMeta: true
+        }
+      }
+    }
+  },
+
+  postInternalRouting: {
+    method: 'POST',
+    path: '/admin/return/internal',
+    handler: controller.postInternalRouting,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Form handler for internal routing',
+      validate: {
+        query: {
+          returnId: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - what do you want to do with this return?',
+          activeNavLink: 'returns',
+          showMeta: true
+        },
+        formValidator: {
+          payload: {
+            csrf_token: VALID_GUID
+          }
+        }
+      }
+    }
+  },
+
   getAmounts: {
     method: 'GET',
     path: '/admin/return',

@@ -38,7 +38,7 @@
 
         {{# each returns }}
           {{#each returns }}
-          <div class="table-row medium-space {{# notEqual received_date null }}clickable{{/notEqual }}">                                    <!-- a data row starts -->
+          <div class="table-row medium-space {{# if isClickable }}clickable{{/if }}">                                    <!-- a data row starts -->
 
             <div class="table-cell">
               <h4 class="context">
@@ -50,7 +50,7 @@
                 <span class="sr-only">View return from </span>
               {{else}}
                 {{#if isEditable }}
-                <a href="{{#if ../../isAdmin}}/admin{{/if}}/return?returnId={{ return_id }}">
+                <a href="{{#if ../../isAdmin}}/admin/return/internal{{else}}/return{{/if}}?returnId={{ return_id }}">
                   <span class="sr-only">Edit return from </span>
                 {{/if}}
               {{/if}}

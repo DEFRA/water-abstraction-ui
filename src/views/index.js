@@ -18,6 +18,7 @@ const Joi = require('joi');
 const commaNumber = require('comma-number');
 const { convertToCubicMetres } = require('../lib/unit-conversion');
 const { maxPrecision } = require('../lib/number-formatter.js');
+const { splitString } = require('../lib/string-formatter.js');
 
 /**
  * Formats numbers with commas to separate thousands, eg. 1,000
@@ -578,6 +579,14 @@ handlebars.registerHelper('convertToCubicMetres', (value, options) => {
  */
 handlebars.registerHelper('formatQuantity', (value) => {
   return commaNumber(maxPrecision(value, 3));
+});
+
+/**
+ * Splits a string to array, and gets the numbered segment
+ */
+handlebars.registerHelper('splitString', (value, options) => {
+  const { index = 0, separator = ',' } = options.hash;
+  return splitString(value, index, separator);
 });
 
 /**

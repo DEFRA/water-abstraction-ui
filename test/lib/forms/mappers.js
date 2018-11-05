@@ -4,7 +4,7 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const { licenceNumbersMapper, numberMapper, booleanMapper, defaultMapper } = require('../../../src/lib/forms/mappers.js');
+const { licenceNumbersMapper, numberMapper, booleanMapper, defaultMapper, dateMapper } = require('../../../src/lib/forms/mappers.js');
 
 lab.experiment('Test defaultMapper', () => {
   const payload = {
@@ -112,5 +112,26 @@ lab.experiment('Test booleanMapper', () => {
   });
   lab.test('Should export other values as undefined', async () => {
     expect(booleanMapper.export('hello')).to.equal(undefined);
+  });
+});
+
+lab.experiment('Test dateMapper', () => {
+  const payload = {
+    'field-day': '1',
+    'field-month': '5',
+    'field-year': '2018'
+  };
+
+  lab.test('Should import date from separate day/month/year fields and convert to ISO 8601', async () => {
+    expect(dateMapper.import('field', payload)).to.equal('2018-05-01');
+  });
+
+  lab.test('Should export date as separate components for day/month/year', async () => {
+    const value = dateMapper.export('2018-05-01');
+    expect(value).to.equal({
+      day: '01',
+      month: '05',
+      year: '2018'
+    });
   });
 });

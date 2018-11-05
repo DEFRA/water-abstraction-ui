@@ -193,25 +193,23 @@ class CSVTransformer extends BaseTransformer {
    * Load data into the transformer
    * @param {Object} data - data loaded from NALD
    */
-  async load(data) {
+  async load (data) {
     data = this.transformNull(data);
 
     this.data = {
-        licenceNumber : data.id,
-        licenceHolderTitle: data.salutation,
-        licenceHolderInitials : data.initials,
-        licenceHolderName : data.name,
-        effectiveDate : data.effectiveFrom,
-        expiryDate: data.effectiveTo == 'No expiry' ? null : data.effectiveTo,
-        conditions: await this.conditionFormatter(data.purposes),
-        points: this.pointsFormatter(data.purposes),
-        purposes : this.purposesFormatter(data.purposes),
-        uniquePurposeNames : this.uniquePurposeNamesFormatter(data.purposes),
-        abstractionPeriods : this.periodsFormatter(data.purposes),
-        contacts : this.contactsFormatter(data)
-      };
-
-      console.log(JSON.stringify(this.data, null, 2));
+      licenceNumber: data.id,
+      licenceHolderTitle: data.salutation,
+      licenceHolderInitials: data.initials,
+      licenceHolderName: data.name,
+      effectiveDate: data.effectiveFrom,
+      expiryDate: data.effectiveTo === 'No expiry' ? null : data.effectiveTo,
+      conditions: await this.conditionFormatter(data.purposes),
+      points: this.pointsFormatter(data.purposes),
+      purposes: this.purposesFormatter(data.purposes),
+      uniquePurposeNames: this.uniquePurposeNamesFormatter(data.purposes),
+      abstractionPeriods: this.periodsFormatter(data.purposes),
+      contacts: this.contactsFormatter(data)
+    };
   }
 
   /**

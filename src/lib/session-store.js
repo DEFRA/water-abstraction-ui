@@ -8,6 +8,7 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
+const logger = require('./logger');
 
 class NoSessionCookieError extends Error {
   constructor (message) {
@@ -138,7 +139,7 @@ class SessionStore {
    */
   async destroy () {
     const sessionId = this.getSessionCookieId();
-    console.log(`Destroy session ${sessionId}`);
+    logger.log('info', `Destroy session ${sessionId}`);
     const {error} = await this.apiClient.delete(sessionId);
     if (error) {
       throw error;

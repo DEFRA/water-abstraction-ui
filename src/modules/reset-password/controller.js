@@ -25,7 +25,7 @@ async function postResetPassword (request, reply) {
   try {
     await IDM.resetPassword(request.payload.email_address);
   } catch (error) {
-    console.log(error);
+    request.log('error', error);
     // Note: we don't do anything differently as we don't wish to reveal if
     // account exists
   }

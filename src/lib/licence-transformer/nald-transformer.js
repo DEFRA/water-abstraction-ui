@@ -67,8 +67,6 @@ class NALDTransformer extends BaseTransformer {
       returnFormats: this.formatsFormatter(data.data.current_version.formats)
     };
 
-    // console.log(JSON.stringify(this.data, null, 2));
-
     return this.data;
   }
 
@@ -487,7 +485,6 @@ class NALDTransformer extends BaseTransformer {
     const points = [];
     purposes.forEach((purpose) => {
       purpose.purposePoints.forEach((purposePoint) => {
-        console.log(purposePoint);
         const { NAME } = purposePoint.point_source;
         points.push({
           name: NAME

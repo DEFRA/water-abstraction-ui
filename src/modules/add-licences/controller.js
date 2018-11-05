@@ -113,7 +113,8 @@ async function postLicenceAdd (request, reply) {
 
     return reply.redirect('/select-licences');
   } catch (err) {
-    console.log(err);
+    request.log('error', err);
+
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
       return reply.view('water/licences-add/add-licences', viewContext);
@@ -224,7 +225,6 @@ async function postLicenceSelect (request, reply) {
 
     return reply.redirect('/select-address');
   } catch (err) {
-    // console.log(err);
     if (err.name === 'NoLicencesSelectedError') {
       return reply.redirect('/select-licences?error=noLicenceSelected');
     }
@@ -277,8 +277,6 @@ async function getAddressSelect (request, reply) {
     return reply.view('water/licences-add/select-address', viewContext);
   } catch (err) {
     throw err;
-    // console.log(err);
-    // errorHandler(request, reply)(err);
   }
 }
 
@@ -392,8 +390,6 @@ async function getSecurityCode (request, reply) {
     return reply.view('water/licences-add/security-code', viewContext);
   } catch (error) {
     throw error;
-    // console.error(error);
-    // errorHandler(request, reply)(error);
   }
 }
 
@@ -427,7 +423,7 @@ async function postSecurityCode (request, reply) {
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
   } catch (error) {
-    console.error(error);
+    request.log('error', error);
 
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {

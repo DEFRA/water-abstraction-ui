@@ -5,7 +5,7 @@ const { meterDetailsForm, meterDetailsSchema } = require('./meter-details');
 const meterUnitsForm = require('./meter-units');
 const { meterReadingsForm, meterReadingsSchema } = require('./meter-readings');
 const { internalRoutingForm } = require('./internal-routing');
-const { logReceiptForm } = require('./log-receipt');
+const { logReceiptForm, logReceiptSchema } = require('./log-receipt');
 
 module.exports = {
   amountsForm: require('./amounts'),
@@ -24,5 +24,6 @@ module.exports = {
   meterReadingsForm,
   meterReadingsSchema,
   internalRoutingForm,
-  logReceiptForm
+  logReceiptForm,
+  logReceiptSchema
 };

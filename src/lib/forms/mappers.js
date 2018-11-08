@@ -1,4 +1,5 @@
 const { extractLicenceNumbers } = require('../licence-helpers');
+const moment = require('moment');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -51,6 +52,18 @@ const formatDateSegment = (value, length = 2) => {
 };
 
 /**
+ * Formats a year segment.  If a 2 digit year is entered, this is corrected
+ * to a 4 digit date
+ * @param {String} year 2/4 digit
+ * @return {String} year 4 digit
+ */
+const formatYearSegment = (year) => {
+  const str = year.trim();
+  const currentYear = moment().format('YYYY');
+  return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+};
+
+/**
  * Date mapper - combines the day month and year form values to a single
  * string formatted as YYYY-MM-DD
  */
@@ -59,7 +72,7 @@ const dateMapper = {
     const day = payload[fieldName + '-day'];
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
-    return `${formatDateSegment(year, 4)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
+    return `${formatYearSegment(year)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
   },
   export: (value) => {
     const parts = value.split('-');

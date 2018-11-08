@@ -40,12 +40,12 @@ experiment('internalRoutingForm', () => {
                 'label': 'Enter and submit it'
               }
             ],
-            'label': 'What would you like to do with this return?',
+            'label': 'What do you want to do with this return?',
             'widget': 'radio',
             'required': true,
             'errors': {
               'any.required': {
-                'message': 'Select what you would like to do with this return'
+                'message': 'Select what you want to do with this return'
               }
             }
           },

@@ -83,6 +83,7 @@
     "path": "^0.12.7",
     "pg": "^7.4.1",
     "randomatic": "^3.0.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "scooter": "^5.0.0",
     "sentence-case": "^2.1.1",

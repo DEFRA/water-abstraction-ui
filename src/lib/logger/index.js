@@ -45,7 +45,8 @@ const init = (config = {}) => {
       host: options.airbrakeHost,
       projectId: true,
       level: options.airbrakeLevel,
-      env: process.env.NODE_ENV
+      env: process.env.NODE_ENV,
+      proxy: process.env.proxy
     };
     logger.add(Airbrake, airbrakeOptions);
   }

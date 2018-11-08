@@ -14,7 +14,8 @@ const {
 } = require('../lib/flow-helpers');
 
 const {
-  logReceiptForm
+  logReceiptForm,
+  logReceiptSchema
 } = require('../forms/');
 
 /**
@@ -43,7 +44,7 @@ const postLogReceipt = async (request, h) => {
   const data = await returns.getReturn(returnId);
   const view = await getViewData(request, data);
 
-  const form = handleRequest(logReceiptForm(request, data), request);
+  const form = handleRequest(logReceiptForm(request, data), request, logReceiptSchema());
 
   if (form.isValid) {
     // Apply received date and status to return data

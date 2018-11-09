@@ -103,7 +103,7 @@ function viewContextDefaults (request) {
     if (request.permissions && request.permissions.returns.read) {
       viewContext.mainNavLinks.push({
         id: 'returns',
-        text: 'View returns',
+        text: 'Manage returns',
         url: '/returns'
       });
     }

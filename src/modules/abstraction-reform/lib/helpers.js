@@ -1,6 +1,6 @@
 const deepMap = require('deep-map');
 const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
-const { getPurposes, getPoints, getConditions } = require('./licence-helpers');
+const { getPurposes, getPoints, getConditions, getCurrentVersion } = require('./licence-helpers');
 
 /**
  * Returns obj with non-scalar values removed
@@ -71,6 +71,12 @@ const prepareData = (licence, finalState) => {
     reform: filterScalars(finalState.licence)
   };
 
+  // Current version
+  const currentVersion = {
+    base: filterScalars(getCurrentVersion(licence.licence_data_value)),
+    reform: filterScalars(getCurrentVersion(finalState.licence))
+  };
+
   // Prepare purposes
   // @TODO - we will need to compare to check for deleted/added items
   const purposes = getPurposes(licence.licence_data_value).map((purpose, index) => {
@@ -98,6 +104,7 @@ const prepareData = (licence, finalState) => {
 
   return {
     licence: base,
+    currentVersion,
     purposes,
     points,
     conditions,

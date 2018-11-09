@@ -76,6 +76,16 @@ const getCondition = (data, conditionId) => {
   return find(getConditions(data), {ID: conditionId});
 };
 
+/**
+ * Get the current licence version
+ * @param {Object} data - all licence data
+ * @return {Object} current version
+ */
+
+const getCurrentVersion = (data) => {
+  return data.data.current_version.licence;
+};
+
 module.exports = {
   getPurposes,
   getPurpose,
@@ -83,5 +93,6 @@ module.exports = {
   getPoints,
   getPoint,
   getConditions,
-  getCondition
+  getCondition,
+  getCurrentVersion
 };

@@ -1,5 +1,5 @@
 const update = require('immutability-helper');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_CURRENT_VERSION } = require('./action-types');
 const { STATUS_IN_PROGRESS } = require('./statuses');
 const { findIndex } = require('lodash');
 
@@ -139,6 +139,25 @@ const editCondition = (state, action) => {
   return update(state, query);
 };
 
+const editCurrentVersion = (state, action) => {
+  const { data } = action.payload;
+
+  const query = {
+    ...getBaseQuery(action),
+    licence: {
+      data: {
+        current_version: {
+          licence: {
+            $merge: data
+          }
+        }
+      }
+    }
+  };
+
+  return update(state, query);
+};
+
 const setState = (state, action) => {
   const { status, notes, user, timestamp } = action.payload;
 
@@ -173,6 +192,9 @@ const reducer = (state, action) => {
 
     case SET_STATUS:
       return setState(state, action);
+
+    case EDIT_CURRENT_VERSION:
+      return editCurrentVersion(state, action);
 
     default:
       return state;

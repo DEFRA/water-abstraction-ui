@@ -83,6 +83,11 @@ lab.experiment('Test abstraction reform reducer', () => {
 
     expect(version.STATUS).to.equal('SUPER');
     expect(version.LIC_SIG_DATE).to.equal('01/11/2018');
+
+    const { versions } = nextState.licence.data;
+
+    expect(versions[0].STATUS).to.equal('SUPER');
+    expect(versions[0].LIC_SIG_DATE).to.equal('01/11/2018');
   });
 });
 

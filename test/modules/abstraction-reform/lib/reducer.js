@@ -2,7 +2,7 @@ const Lab = require('lab');
 const { expect } = require('code');
 
 const reducer = require('../../../../src/modules/abstraction-reform/lib/reducer');
-const { createEditLicence, createEditPurpose, createEditPoint, createEditCondition, createSetStatus, createEditCurrentVersion } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
+const { createEditLicence, createEditPurpose, createEditPoint, createEditCondition, createSetStatus, createEditVersion } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
 const lab = exports.lab = Lab.script();
@@ -72,10 +72,10 @@ lab.experiment('Test abstraction reform reducer', () => {
   });
 
   lab.test('Test editing current licence version', async () => {
-    const action = createEditCurrentVersion({
+    const action = createEditVersion({
       STATUS: 'SUPER',
       LIC_SIG_DATE: '01/11/2018'
-    }, user);
+    }, user, 100, 0);
 
     const nextState = reducer({ licence }, action);
 

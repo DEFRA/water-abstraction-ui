@@ -81,9 +81,73 @@ const getCondition = (data, conditionId) => {
  * @param {Object} data - all licence data
  * @return {Object} current version
  */
-
 const getCurrentVersion = (data) => {
-  return data.data.current_version.licence;
+  return find(data.data.versions, (version) => version.STATUS === 'CURR');
+};
+
+/**
+ * Gets a licence version.
+ * @param {Object} data
+ * @param {String} issueNumber - the licence issue number
+ * @param {String} incrementNumber - the increment number
+ * @return {Object}
+ */
+const getVersion = (data, issueNumber, incrementNumber) => {
+  return find(data.data.versions, (version) => {
+    return (version.ISSUE_NO === issueNumber) && (version.INCR_NO === incrementNumber);
+  });
+};
+
+/**
+ * Get the licence holder party for the current licence version
+ * @param {Object} data - all licence data
+ * @return {Object} current version
+ */
+const getCurrentVersionParty = (data) => {
+  return data.data.current_version.party;
+};
+
+/**
+ * Gets party by ID from licence data
+ * @param {Object} data - licence data object
+ * @param {Number} partyId - the party ID
+ * @return {Object} party data
+ */
+const getParty = (data, partyId) => {
+  for (let version of data.data.versions) {
+    for (let party of version.parties) {
+      if (party.ID === partyId) {
+        return party;
+      }
+    }
+  }
+};
+
+/**
+ * Gets address by ID from licence data
+ * @param {Object} data - licence data object
+ * @param {Number} addressId - the address ID
+ * @return {Object} party data
+ */
+const getAddress = (data, addressId) => {
+  for (let version of data.data.versions) {
+    for (let party of version.parties) {
+      for (let contact of party.contacts) {
+        if (contact.AADD_ID === addressId) {
+          return contact.party_address;
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Get the licence holder party for the current licence version
+ * @param {Object} data - all licence data
+ * @return {Object} current version
+ */
+const getCurrentVersionAddress = (data) => {
+  return data.data.current_version.address;
 };
 
 module.exports = {
@@ -94,5 +158,10 @@ module.exports = {
   getPoint,
   getConditions,
   getCondition,
-  getCurrentVersion
+  getCurrentVersion,
+  getCurrentVersionParty,
+  getCurrentVersionAddress,
+  getVersion,
+  getParty,
+  getAddress
 };

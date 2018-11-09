@@ -86,114 +86,41 @@ table tbody td, table tbody th {
       {{#if canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
       {{/if}}
-      <br />
-      <br />
 
-      <table>
-        <thead>
-          <tr>
-            <th>NALD field</th>
-            <th>NALD data</th>
-            <th>New value</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each data.licence.base }}
-        <tr>
-          <th>{{ @key }}</th>
-          <td class="td td--nald">{{ this }}</td>
-          <td class="td td--ar">
-            {{#notEqual this (lookup ../data.licence.reform @key )}}
-              {{lookup ../data.licence.reform @key }}
-            {{/notEqual}}
-          </td>
-        </tr>
-        {{/each}}
-        </tbody>
-      </table>
-
-      <br />
-      <br />
-      <br />
-      <br />
+      {{>ar-comparison-table data.licence }}
 
 
 
-      <h2 class="heading-medium" id="current-version">Current licence version</h2>
 
+      <h2 class="heading-medium" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Current licence version</h2>
       {{#if canEdit }}
-      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/current-version">Edit current licence version</a>
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
       {{/if}}
-      <br />
-      <br />
+      {{>ar-comparison-table data.currentVersion }}
 
-      <table>
-        <thead>
-          <tr>
-            <th>NALD field</th>
-            <th>NALD data</th>
-            <th>New value</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each data.currentVersion.base }}
-        <tr>
-          <th>{{ @key }}</th>
-          <td class="td td--nald">{{ this }}</td>
-          <td class="td td--ar">
-            {{#notEqual this (lookup ../data.currentVersion.reform @key )}}
-              {{lookup ../data.currentVersion.reform @key }}
-            {{/notEqual}}
-          </td>
-        </tr>
-        {{/each}}
-        </tbody>
-      </table>
 
-      <br />
-      <br />
-      <br />
-      <br />
+      <h2 class="heading-medium" id="party-{{ data.party.base.ID }}">Licence holder party</h2>
+      {{#if canEdit }}
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
+      {{/if}}
+      {{>ar-comparison-table data.party }}
+
+
+      <h2 class="heading-medium" id="address-{{ data.address.base.ID }}">Licence holder address</h2>
+      {{#if canEdit }}
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
+      {{/if}}
+      {{>ar-comparison-table data.address }}
 
 
       {{#each data.purposes as |purpose| }}
-
       <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose {{ purpose.base.ID }}</h2>
 
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
       {{/if}}
 
-      <br />
-      <br />
-
-      <table>
-        <thead>
-          <tr>
-            <th>NALD field</th>
-            <th>NALD data</th>
-            <th>New value</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each purpose.base }}
-        <tr>
-          <th>{{ @key }}</th>
-          <td class="td td--nald">{{ this }}</td>
-          <td class="td td--ar">{{#notEqual this (lookup purpose.reform @key )}}
-            {{lookup purpose.reform @key }}
-              {{/notEqual}}
-          </td>
-        </tr>
-        {{/each}}
-        </tbody>
-      </table>
-
-      <br />
-      <br />
-      <br />
-      <br />
-
+      {{>ar-comparison-table purpose }}
       {{/each}}
 
 
@@ -207,37 +134,7 @@ table tbody td, table tbody th {
       {{#if ../canEdit }}
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
       {{/if}}
-
-      <br />
-      <br />
-
-      <table>
-        <thead>
-          <tr>
-            <th>NALD field</th>
-            <th>NALD data</th>
-            <th>New value</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each point.base }}
-        <tr>
-          <th>{{ @key }}</th>
-          <td class="td td--nald">{{ this }}</td>
-          <td class="td td--ar">{{#notEqual this (lookup point.reform @key )}}
-            {{lookup point.reform @key }}
-              {{/notEqual}}
-          </td>
-        </tr>
-        {{/each}}
-        </tbody>
-      </table>
-
-      <br />
-      <br />
-      <br />
-      <br />
-
+      {{>ar-comparison-table point }}
       {{/each}}
 
       {{#each data.conditions as |condition| }}
@@ -249,32 +146,8 @@ table tbody td, table tbody th {
       <a href="/admin/abstraction-reform/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
       {{/if}}
 
-      <table>
-        <thead>
-          <tr>
-            <th>NALD field</th>
-            <th>NALD data</th>
-            <th>New value</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each condition.base }}
-        <tr>
-          <th>{{ @key }}</th>
-          <td class="td td--nald">{{ this }}</td>
-          <td class="td td--ar">{{#notEqual this (lookup condition.reform @key )}}
-            {{lookup condition.reform @key }}
-              {{/notEqual}}
-          </td>
-        </tr>
-        {{/each}}
-        </tbody>
-      </table>
+      {{>ar-comparison-table condition }}
 
-      <br />
-      <br />
-      <br />
-      <br />
 
       {{/each}}
     </div>

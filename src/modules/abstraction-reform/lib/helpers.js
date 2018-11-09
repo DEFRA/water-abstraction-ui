@@ -1,6 +1,6 @@
 const deepMap = require('deep-map');
-const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
-const { getPurposes, getPoints, getConditions, getCurrentVersion } = require('./licence-helpers');
+const { pickBy, isArray, isObject, mapValues, pick, setWith } = require('lodash');
+const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
 
 /**
  * Returns obj with non-scalar values removed
@@ -77,6 +77,18 @@ const prepareData = (licence, finalState) => {
     reform: filterScalars(getCurrentVersion(finalState.licence))
   };
 
+  // Current version party
+  const party = {
+    base: filterScalars(getCurrentVersionParty(licence.licence_data_value)),
+    reform: filterScalars(getCurrentVersionParty(finalState.licence))
+  };
+
+  // Current version address
+  const address = {
+    base: filterScalars(getCurrentVersionAddress(licence.licence_data_value)),
+    reform: filterScalars(getCurrentVersionAddress(finalState.licence))
+  };
+
   // Prepare purposes
   // @TODO - we will need to compare to check for deleted/added items
   const purposes = getPurposes(licence.licence_data_value).map((purpose, index) => {
@@ -108,8 +120,44 @@ const prepareData = (licence, finalState) => {
     purposes,
     points,
     conditions,
-    notes: finalState.notes
+    notes: finalState.notes,
+    party,
+    address
   };
+};
+
+/**
+ * Like lodash set, but always creates an object
+ * even if key is numeric
+ * @param {Object} object
+ * @param {String} path
+ * @param {Mixed} value
+ * @return {Object}
+ */
+const setObject = (obj, path, value) => {
+  return setWith(obj, path, value, (obj) => obj || {});
+};
+
+/**
+ * Checks for match for items with integer ids
+ * @param {Object} item
+ * @param {Number} item.ID
+ * @param {Number} id - ID to check item ID against
+ * @return {Boolean}
+ */
+const isMatch = (item, id) => {
+  return parseInt(item.ID) === parseInt(id);
+};
+
+/**
+ * Checks if version matches the supplied issue and increment number
+ * @param {Object} version
+ * @param {Number} issueNumber
+ * @param {Number} incrementNumber
+ * @return {Boolean}
+ */
+const isVersion = (version, issueNumber, incrementNumber) => {
+  return issueNumber === parseInt(version.ISSUE_NO) && incrementNumber === parseInt(version.INCR_NO);
 };
 
 module.exports = {
@@ -117,5 +165,8 @@ module.exports = {
   generateJsonSchema,
   extractData,
   transformNulls,
-  prepareData
+  prepareData,
+  setObject,
+  isMatch,
+  isVersion
 };

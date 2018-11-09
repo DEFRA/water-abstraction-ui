@@ -1,31 +1,10 @@
 {
   "type": "object",
   "properties": {
-    "CODE": {
-      "type": "string"
-    },
-    "DESCR": {
-      "type": "string"
-    },
     "APP_NO": {
       "type": "string"
     },
     "STATUS": {
-      "type": "string"
-    },
-    "AABL_ID": {
-      "type": "string"
-    },
-    "INCR_NO": {
-      "type": "string"
-    },
-    "DISABLED": {
-      "type": "string"
-    },
-    "DISP_ORD": {
-      "type": "string"
-    },
-    "ISSUE_NO": {
       "type": "string"
     },
     "VOL_CONV": {
@@ -73,7 +52,7 @@
     "EFF_END_DATE": {
       "type": "string"
     },
-    "EXPIRY_DATE": {
+    "EXPIRY_DATE1": {
       "type": "string"
     },
     "LIC_DOC_FLAG": {

@@ -4,8 +4,8 @@ const shallowDiff = require('shallow-diff');
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
 const { getPermissions } = require('./lib/permissions');
-const { getPurpose, getLicence, getPoint, getCondition } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus } = require('./lib/action-creators');
+const { getPurpose, getLicence, getPoint, getCondition, getCurrentVersion } = require('./lib/licence-helpers');
+const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditCurrentVersion } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
 const { search, recent } = require('./lib/search');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./lib/statuses');
@@ -31,6 +31,11 @@ const objectConfig = {
     schema: require('./schema/condition.json'),
     getter: getCondition,
     actionCreator: createEditCondition
+  },
+  'current-version': {
+    schema: require('./schema/current-version.json'),
+    getter: getCurrentVersion,
+    actionCreator: createEditCurrentVersion
   }
 };
 
@@ -110,12 +115,14 @@ const getEditObject = async (request, h) => {
 
   const data = extractData(getter(finalState.licence, id), schema);
 
+  const formAction = `/admin/abstraction-reform/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
+
   const view = {
     ...request.view,
     documentId,
     licence,
     pageTitle: `Edit ${type}`,
-    formAction: `/admin/abstraction-reform/licence/${documentId}/edit/${type}/${id}`,
+    formAction,
     data,
     schema
   };
@@ -162,7 +169,8 @@ const postEditObject = async (request, h) => {
     await update(arLicence.licence_id, {actions, status, lastEdit});
   }
 
-  return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${type}-${id}`);
+  let path = `/admin/abstraction-reform/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
+  return h.redirect(path);
 };
 
 /**

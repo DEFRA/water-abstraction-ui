@@ -46,7 +46,7 @@ module.exports = {
 
   getEditObject: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id}',
+    path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id?}',
     handler: controller.getEditObject,
     options: {
       auth: { scope: allowedScopes },
@@ -62,7 +62,7 @@ module.exports = {
 
   postEditObject: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id}',
+    path: '/admin/abstraction-reform/licence/{documentId}/edit/{type}/{id?}',
     handler: controller.postEditObject,
     options: {
       auth: { scope: allowedScopes },

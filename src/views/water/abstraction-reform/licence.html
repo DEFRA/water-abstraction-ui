@@ -117,6 +117,45 @@ table tbody td, table tbody th {
       <br />
       <br />
 
+
+
+      <h2 class="heading-medium" id="current-version">Current licence version</h2>
+
+      {{#if canEdit }}
+      <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/current-version">Edit current licence version</a>
+      {{/if}}
+      <br />
+      <br />
+
+      <table>
+        <thead>
+          <tr>
+            <th>NALD field</th>
+            <th>NALD data</th>
+            <th>New value</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each data.currentVersion.base }}
+        <tr>
+          <th>{{ @key }}</th>
+          <td class="td td--nald">{{ this }}</td>
+          <td class="td td--ar">
+            {{#notEqual this (lookup ../data.currentVersion.reform @key )}}
+              {{lookup ../data.currentVersion.reform @key }}
+            {{/notEqual}}
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
+
+      <br />
+      <br />
+      <br />
+      <br />
+
+
       {{#each data.purposes as |purpose| }}
 
       <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose {{ purpose.base.ID }}</h2>

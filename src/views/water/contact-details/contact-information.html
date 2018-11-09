@@ -8,7 +8,7 @@
   <div class="grid-row">
     <div class="column-two-thirds">
       <h1 class="heading-large">{{ pageTitle }}</h1>
-      <p>This is the information that will be available to your public contacts.</p>
+      <p>This will be visible to your public contacts</p>
 
       {{#if error }}
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -21,7 +21,7 @@
       {{/if}}
 
       <form novalidate action="/admin/contact-information" method="post" class="form">
-        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" /> 
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
         {{>contact-details-name-and-role}}
 {{>contact-details-addresses}}
         <button class="button">Update your contact information</button>
@@ -29,4 +29,3 @@
     </div>
   </div>
 </main>
-

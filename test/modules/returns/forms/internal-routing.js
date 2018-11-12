@@ -18,6 +18,13 @@ experiment('internalRoutingForm', () => {
     }
   };
 
+  test('it should have correct action', async () => {
+    const data = {};
+    const form = internalRoutingForm(request, data);
+
+    expect(form.action).to.equal('/admin/return/internal?returnId=abc');
+  });
+
   test('it should include a CSRF token', async () => {
     const data = {};
     const form = internalRoutingForm(request, data);

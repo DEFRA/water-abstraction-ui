@@ -180,6 +180,7 @@ module.exports = {
   STEP_METER_READINGS,
   STEP_CONFIRM,
   STEP_SUBMITTED,
+  STEP_QUERY_LOGGED,
   getPath,
   getNextPath,
   getPreviousPath

@@ -2,7 +2,7 @@
  * Helpers for finding data values within licence
  */
 
-const { find } = require('lodash');
+const { find, flatMap } = require('lodash');
 
 /**
  * Get purposes
@@ -31,17 +31,18 @@ const getLicence = (data) => {
   return data;
 };
 
+const purposePointMapper = purpose => purpose.purposePoints.map(row => row.point_detail);
+const purposeConditionMapper = purpose => purpose.licenceConditions;
+const versionPartiesMapper = version => version.parties;
+const partyAddressesMapper = party => party.contacts.map(contact => contact.party_address);
+
 /**
  * Gets points from the supplied licence data
  * @param {Object} data - permit data for licence
  * @return {Array} array of licence points
  */
 const getPoints = (data) => {
-  const purposes = getPurposes(data);
-  return purposes.reduce((acc, purpose) => {
-    const points = purpose.purposePoints.map(row => row.point_detail);
-    return [...acc, ...points];
-  }, []);
+  return flatMap(getPurposes(data), purposePointMapper);
 };
 
 /**
@@ -51,7 +52,7 @@ const getPoints = (data) => {
  * @return {Object} point
  */
 const getPoint = (data, pointId) => {
-  return find(getPoints(data), {ID: pointId});
+  return find(getPoints(data), { ID: pointId });
 };
 
 /**
@@ -60,10 +61,7 @@ const getPoint = (data, pointId) => {
  * @return {Array} array of licence conditions
  */
 const getConditions = (data) => {
-  const purposes = getPurposes(data);
-  return purposes.reduce((acc, purpose) => {
-    return [...acc, ...purpose.licenceConditions];
-  }, []);
+  return flatMap(getPurposes(data), purposeConditionMapper);
 };
 
 /**
@@ -73,7 +71,7 @@ const getConditions = (data) => {
  * @return {Object} condition
  */
 const getCondition = (data, conditionId) => {
-  return find(getConditions(data), {ID: conditionId});
+  return find(getConditions(data), { ID: conditionId });
 };
 
 /**
@@ -82,7 +80,8 @@ const getCondition = (data, conditionId) => {
  * @return {Object} current version
  */
 const getCurrentVersion = (data) => {
-  return find(data.data.versions, (version) => version.STATUS === 'CURR');
+  const { ISSUE_NO: issue, INCR_NO: increment } = data.data.current_version.licence;
+  return find(data.data.versions, { ISSUE_NO: issue, INCR_NO: increment });
 };
 
 /**
@@ -114,10 +113,7 @@ const getCurrentVersionParty = (data) => {
  * @return {Array} parties list
  */
 const getParties = (data) => {
-  const { versions } = data.data;
-  return versions.reduce((acc, version) => {
-    return [...acc, ...version.parties];
-  }, []);
+  return flatMap(data.data.versions, versionPartiesMapper);
 };
 
 /**
@@ -139,11 +135,7 @@ const getParty = (data, partyId) => {
  */
 const getAddresses = (data) => {
   const parties = getParties(data);
-
-  return parties.reduce((acc, party) => {
-    const addresses = party.contacts.map(contact => contact.party_address);
-    return [...acc, ...addresses];
-  }, []);
+  return flatMap(parties, partyAddressesMapper);
 };
 
 /**

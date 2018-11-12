@@ -12,7 +12,7 @@ const {
   isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings
+  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -480,5 +480,16 @@ lab.experiment('getLinesWithReadings', () => {
       quantity: 2,
       startReading: 15,
       endReading: 17 } ]);
+  });
+});
+
+lab.experiment('applyUnderQuery', () => {
+  lab.test('set under query flag', async () => {
+    const ret = applyUnderQuery(testReturn, { isUnderQuery: true });
+    expect(ret.isUnderQuery).to.equal(true);
+  });
+  lab.test('clear under query flag', async () => {
+    const ret = applyUnderQuery(testReturn, { isUnderQuery: false });
+    expect(ret.isUnderQuery).to.equal(false);
   });
 });

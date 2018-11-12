@@ -3,6 +3,7 @@ const { get } = require('lodash');
 const STEP_INTERNAL_ROUTING = '/return/internal';
 const STEP_LOG_RECEIPT = '/return/log-receipt';
 const STEP_RECEIPT_LOGGED = '/return/receipt-logged';
+const STEP_QUERY_LOGGED = '/return/query-logged';
 const STEP_START = '/return';
 const STEP_NIL_RETURN = '/return/nil-return';
 const STEP_METHOD = '/return/method';
@@ -35,7 +36,9 @@ const next = {
     const action = get(data, 'action');
     const actions = {
       log_receipt: STEP_LOG_RECEIPT,
-      submit: STEP_START
+      submit: STEP_START,
+      set_under_query: STEP_QUERY_LOGGED,
+      clear_under_query: STEP_QUERY_LOGGED
     };
     return getPath(actions[action], request);
   },

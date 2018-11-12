@@ -1,9 +1,64 @@
 const Joi = require('joi');
-const controller = require('../controllers/log-receipt');
+const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
+const { VALID_GUID } = require('../../../lib/validators');
 
 module.exports = {
+
+  getInternalRouting: {
+    method: 'GET',
+    path: '/admin/return/internal',
+    handler: controller.getInternalRouting,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Form to route internal user to return flows',
+      validate: {
+        query: {
+          returnId: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - what do you want to do with this return?',
+          activeNavLink: 'returns',
+          showMeta: true
+        }
+      }
+    }
+  },
+
+  postInternalRouting: {
+    method: 'POST',
+    path: '/admin/return/internal',
+    handler: controller.postInternalRouting,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Form handler for internal routing',
+      validate: {
+        query: {
+          returnId: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - what do you want to do with this return?',
+          activeNavLink: 'returns',
+          showMeta: true
+        },
+        formValidator: {
+          payload: {
+            csrf_token: VALID_GUID
+          }
+        }
+      }
+    }
+  },
+
   getLogReceipt: {
     method: 'GET',
     path: '/admin/return/log-receipt',
@@ -76,6 +131,30 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return received',
+          activeNavLink: 'returns',
+          showMeta: false
+        }
+      }
+    }
+  },
+
+  getQueryLogged: {
+    method: 'GET',
+    path: '/admin/return/query-logged',
+    handler: controller.getQueryLogged,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Success page for set/clear under query flag',
+      validate: {
+        query: {
+          returnId: Joi.string().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return query received',
           activeNavLink: 'returns',
           showMeta: false
         }

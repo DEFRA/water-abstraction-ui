@@ -1,77 +1,69 @@
+const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const { internalRoutingForm } = require('../../../../src/modules/returns/forms/internal-routing');
 
 experiment('internalRoutingForm', () => {
-  test('should generate a form object from request', async () => {
-    const request = {
-      view: {
-        csrfToken: 'xyz'
-      },
-      query: {
-        returnId: 'abc'
-      },
-      permissions: {
-        hasPermission: () => {
-          return true;
-        }
+  const request = {
+    view: {
+      csrfToken: 'xyz'
+    },
+    query: {
+      returnId: 'abc'
+    },
+    permissions: {
+      hasPermission: () => {
+        return true;
       }
-    };
+    }
+  };
 
-    const form = internalRoutingForm(request);
+  test('it should have correct action', async () => {
+    const data = {};
+    const form = internalRoutingForm(request, data);
 
-    expect(form).to.equal({
-      'isValid': undefined,
-      'action': '/admin/return/internal?returnId=abc',
-      'method': 'POST',
-      'isSubmitted': false,
-      'fields': [
-        {
-          'name': 'action',
-          'value': undefined,
-          'options': {
-            'choices': [
-              {
-                'value': 'log_receipt',
-                'label': 'Log receipt (and come back to it later)'
-              },
-              {
-                'value': 'submit',
-                'label': 'Enter and submit it'
-              }
-            ],
-            'label': 'What do you want to do with this return?',
-            'widget': 'radio',
-            'required': true,
-            'errors': {
-              'any.required': {
-                'message': 'Select what you want to do with this return'
-              }
-            }
-          },
-          'errors': []
-        },
-        {
-          'name': null,
-          'value': undefined,
-          'options': {
-            'widget': 'button',
-            'label': 'Continue'
-          }
-        },
-        {
-          'name': 'csrf_token',
-          'value': 'xyz',
-          'options': {
-            'widget': 'text',
-            'type': 'hidden',
-            'label': null,
-            'required': true
-          }
-        }
-      ],
-      'errors': [],
-      'validationType': 'joi'
-    });
+    expect(form.action).to.equal('/admin/return/internal?returnId=abc');
+  });
+
+  test('it should include a CSRF token', async () => {
+    const data = {};
+    const form = internalRoutingForm(request, data);
+
+    const field = find(form.fields, { name: 'csrf_token' });
+    expect(field.options.widget).to.equal('text');
+    expect(field.options.type).to.equal('hidden');
+    expect(field.value).to.equal('xyz');
+  });
+
+  test('it should display correct choices if return not received and not under query', async () => {
+    const data = { receivedDate: null, isUnderQuery: false };
+    const form = internalRoutingForm(request, data);
+    const radio = find(form.fields, { name: 'action' });
+    const fieldValues = radio.options.choices.map(choice => choice.value);
+    expect(fieldValues).to.equal([ 'log_receipt', 'submit', 'set_under_query' ]);
+  });
+
+  test('it should display correct choices if return not received and is under query', async () => {
+    const data = { receivedDate: null, isUnderQuery: true };
+    const form = internalRoutingForm(request, data);
+    const radio = find(form.fields, { name: 'action' });
+    const fieldValues = radio.options.choices.map(choice => choice.value);
+    expect(fieldValues).to.equal([ 'log_receipt', 'submit', 'clear_under_query' ]);
+  });
+
+  test('it should display correct choices if return is received and not under query', async () => {
+    const data = { receivedDate: '2018-11-12', isUnderQuery: false };
+    const form = internalRoutingForm(request, data);
+    const radio = find(form.fields, { name: 'action' });
+    const fieldValues = radio.options.choices.map(choice => choice.value);
+    expect(fieldValues).to.equal([ 'submit', 'set_under_query' ]);
+  });
+
+  test('it should display correct choices if return not received and is under query', async () => {
+    const data = { receivedDate: '2018-11-12', isUnderQuery: true };
+    const form = internalRoutingForm(request, data);
+    const radio = find(form.fields, { name: 'action' });
+    const fieldValues = radio.options.choices.map(choice => choice.value);
+    expect(fieldValues).to.equal([ 'submit', 'clear_under_query' ]);
   });
 });

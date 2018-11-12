@@ -2,12 +2,12 @@ const viewRoutes = require('./routes/view');
 const viewInternalRoutes = require('./routes/view-internal');
 const editRoutes = require('./routes/edit');
 const editInternalRoutes = require('./routes/edit-internal');
-const logReceiptRoutes = require('./routes/log-receipt');
+const internalRoutes = require('./routes/internal');
 
 module.exports = [
   ...Object.values(viewRoutes),
   ...Object.values(viewInternalRoutes),
   ...Object.values(editRoutes),
   ...Object.values(editInternalRoutes),
-  ...Object.values(logReceiptRoutes)
+  ...Object.values(internalRoutes)
 ];

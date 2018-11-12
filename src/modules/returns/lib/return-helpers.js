@@ -310,6 +310,20 @@ const applyMeterReadings = (data, formValues) => {
 };
 
 /**
+ * Applies under query
+ * @param {Object} data - current return model data
+ * @param {Object} formValues - data collected from form
+ * @param {Boolean} formValues.isUnderQuery
+ * @return {Object} new return model state
+ */
+const applyUnderQuery = (data, formValues) => {
+  const updated = cloneDeep(data);
+  const { isUnderQuery } = formValues;
+  updated.isUnderQuery = !!isUnderQuery;
+  return updated;
+};
+
+/**
  * Gets line data, including meter readings if present
  * @param {Object} data
  * @return {Array} lines
@@ -360,5 +374,6 @@ module.exports = {
   applyMeterReadings,
   applyMethod,
   getMeter,
-  getLinesWithReadings
+  getLinesWithReadings,
+  applyUnderQuery
 };

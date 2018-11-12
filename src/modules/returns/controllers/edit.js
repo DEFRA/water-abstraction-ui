@@ -13,8 +13,7 @@ const {
   basisForm, basisSchema,
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
-  meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  internalRoutingForm
+  meterUnitsForm, meterReadingsForm, meterReadingsSchema
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -27,7 +26,6 @@ const {
 } = require('../lib/return-helpers');
 
 const {
-  STEP_INTERNAL_ROUTING,
   STEP_START,
   STEP_NIL_RETURN,
   STEP_METHOD,
@@ -40,8 +38,7 @@ const {
   STEP_METER_READINGS,
   STEP_CONFIRM,
   getNextPath,
-  getPreviousPath,
-  getPath
+  getPreviousPath
 } = require('../lib/flow-helpers');
 
 const {
@@ -50,54 +47,6 @@ const {
   submitReturnData } = require('../lib/session-helpers');
 
 const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
-
-/**
- * For internal users, routing page to decide what to do with return
- * @param {String} request.query.returnId - return ID string
- */
-const getInternalRouting = async (request, h) => {
-  const { returnId } = request.query;
-
-  const data = await returns.getReturn(returnId);
-  const view = await getViewData(request, data);
-
-  if (data.receivedDate) {
-    return h.redirect(getPath(STEP_START, request));
-  }
-
-  const form = internalRoutingForm(request);
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
-  });
-};
-
-/**
- * Post handler for internal returns
- */
-const postInternalRouting = async (request, h) => {
-  const { returnId } = request.query;
-
-  const data = await returns.getReturn(returnId);
-  const view = await getViewData(request, data);
-
-  const form = handleRequest(internalRoutingForm(request), request);
-
-  if (form.isValid) {
-    const path = getNextPath(STEP_INTERNAL_ROUTING, request, getValues(form));
-    return h.redirect(path);
-  } else {
-    return h.view('water/returns/internal/form', {
-      ...view,
-      form,
-      return: data,
-      back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
-    });
-  }
-};
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -531,8 +480,6 @@ const postMeterReadings = async (request, h) => {
 };
 
 module.exports = {
-  getInternalRouting,
-  postInternalRouting,
   getAmounts,
   postAmounts,
   getNilReturn,

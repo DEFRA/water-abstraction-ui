@@ -7,7 +7,7 @@ const {
   STEP_INTERNAL_ROUTING, STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
   STEP_START, STEP_NIL_RETURN, STEP_METHOD, STEP_UNITS, STEP_SINGLE_TOTAL,
   STEP_BASIS, STEP_QUANTITIES, STEP_METER_DETAILS, STEP_METER_UNITS,
-  STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED,
+  STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED, STEP_QUERY_LOGGED,
   getPath, getNextPath
 } = require('../../../../src/modules/returns/lib/flow-helpers');
 
@@ -63,6 +63,20 @@ experiment('getNextPath: STEP_INTERNAL_ROUTING', () => {
       action: 'submit'
     };
     expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_START}?returnId=${returnId}`);
+  });
+
+  test('Redirects to problem logged if option selected', async () => {
+    const data = {
+      action: 'set_under_query'
+    };
+    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
+  });
+
+  test('Redirects to problem logged if option selected', async () => {
+    const data = {
+      action: 'clear_under_query'
+    };
+    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
   });
 });
 

@@ -59,7 +59,7 @@ const postReturn = (data) => {
 const patchReturn = (data) => {
   const { returnId } = data;
 
-  const body = pick(data, ['returnId', 'status', 'receivedDate', 'user']);
+  const body = pick(data, ['returnId', 'status', 'receivedDate', 'user', 'isUnderQuery']);
 
   return rp({
     method: 'PATCH',

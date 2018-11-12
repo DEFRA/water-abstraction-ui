@@ -7,7 +7,7 @@ const lab = exports.lab = Lab.script();
 const sinon = require('sinon');
 const client = require('../../../src/lib/connectors/water-service/notifications');
 
-if (process.env.test_mode) {
+if (process.env.TEST_MODE) {
   lab.experiment('findLastEmail', () => {
     lab.beforeEach(async () => {
       sinon.stub(client, 'getLatestEmailByAddress');

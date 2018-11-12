@@ -4,14 +4,8 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const Code = require('code');
-const DOMParser = require('xmldom').DOMParser;
 
 const server = require('../../index');
-
-// const CookieService = require('../../src/services/cookie.service')
-
-// let validateCookieStub
-
 const routePath = '/reset_password';
 
 lab.experiment('Check signin', () => {

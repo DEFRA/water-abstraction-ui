@@ -4,8 +4,8 @@ const shallowDiff = require('shallow-diff');
 const { load, update } = require('./lib/loader');
 const { extractData, transformNulls, prepareData } = require('./lib/helpers');
 const { getPermissions } = require('./lib/permissions');
-const { getPurpose, getLicence, getPoint, getCondition, getCurrentVersion } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditCurrentVersion } = require('./lib/action-creators');
+const { getPurpose, getLicence, getPoint, getCondition, getVersion, getParty, getAddress } = require('./lib/licence-helpers');
+const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('./lib/action-creators');
 const { stateManager, getInitialState } = require('./lib/state-manager');
 const { search, recent } = require('./lib/search');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./lib/statuses');
@@ -32,10 +32,20 @@ const objectConfig = {
     getter: getCondition,
     actionCreator: createEditCondition
   },
-  'current-version': {
-    schema: require('./schema/current-version.json'),
-    getter: getCurrentVersion,
-    actionCreator: createEditCurrentVersion
+  version: {
+    schema: require('./schema/version.json'),
+    getter: getVersion,
+    actionCreator: createEditVersion
+  },
+  party: {
+    schema: require('./schema/party.json'),
+    getter: getParty,
+    actionCreator: createEditParty
+  },
+  address: {
+    schema: require('./schema/address.json'),
+    getter: getAddress,
+    actionCreator: createEditAddress
   }
 };
 
@@ -94,6 +104,17 @@ const getViewLicence = async (request, h) => {
 };
 
 /**
+ * Gets additional arguments to supply to getter
+ * This allows multiple args to be supplied in a single route param
+ * E.g. for licence versions where there is an issue number and increment number
+ * @param {String} compound ID separated by _
+ * @return {Array} arguments
+ */
+const getAdditionalArgs = (id) => {
+  return id ? id.split('_') : [];
+};
+
+/**
  * Edit an object from within the licence
  * @param {String} request.params.documentId - CRM document ID for licence
  * @param {String} request.params.type - type of entity, purpose, point etc
@@ -101,6 +122,7 @@ const getViewLicence = async (request, h) => {
  */
 const getEditObject = async (request, h) => {
   const {documentId, type, id} = request.params;
+  const args = getAdditionalArgs(id);
 
   // Load licence / AR licence from CRM
   const { licence, finalState } = await load(documentId);
@@ -113,7 +135,7 @@ const getEditObject = async (request, h) => {
 
   const { schema, getter } = objectConfig[type];
 
-  const data = extractData(getter(finalState.licence, id), schema);
+  const data = extractData(getter(finalState.licence, ...args), schema);
 
   const formAction = `/admin/abstraction-reform/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
 
@@ -135,6 +157,7 @@ const getEditObject = async (request, h) => {
  */
 const postEditObject = async (request, h) => {
   const { documentId, type, id } = request.params;
+  const args = getAdditionalArgs(id);
   const { csrf_token: csrfToken, ...rawPayload } = request.payload;
 
   const payload = transformNulls(rawPayload);
@@ -150,13 +173,16 @@ const postEditObject = async (request, h) => {
 
   const { schema, getter, actionCreator } = objectConfig[type];
 
-  const data = extractData(getter(finalState.licence, id), schema);
+  const data = extractData(getter(finalState.licence, ...args), schema);
 
   // Compare object data with form payload
   const diff = shallowDiff(data, payload);
+
+  console.log('DIFF>>', data, payload, diff);
+
   if (diff.updated.length) {
     // Add the new action to the list of actions
-    const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, id);
+    const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, ...args);
     const { actions } = arLicence.licence_data_value;
     actions.push(action);
 

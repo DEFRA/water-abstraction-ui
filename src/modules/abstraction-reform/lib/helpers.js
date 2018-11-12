@@ -1,6 +1,6 @@
 const deepMap = require('deep-map');
-const { pickBy, isArray, isObject, mapValues, pick } = require('lodash');
-const { getPurposes, getPoints, getConditions, getCurrentVersion } = require('./licence-helpers');
+const { pickBy, isArray, isObject, mapValues, pick, setWith } = require('lodash');
+const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
 
 /**
  * Returns obj with non-scalar values removed
@@ -59,23 +59,42 @@ const extractData = (object, schema) => {
 };
 
 /**
+ * Formats the supplied object and filters out any non-scalar values
+ * @param {Object} base - base licence data from permit repo
+ * @param {Object} reform - AR version of data
+ * @return {Object} in form { base, reform } with non-scalars removed
+ */
+const formatObject = (base, reform) => {
+  return {
+    base: filterScalars(base),
+    reform: filterScalars(reform)
+  };
+};
+
+/**
+ * Prepare an item for the view data, with both base licence and reform data
+ * @param {Object} licence - data loaded from permit repo
+ * @param {Object} finalState - the data after passing through the AR reducer
+ * @param {Function} [getter] - a function which gets the relevant portion of the state from the whole object
+ * @return {Object} in the form { base, reform }
+ */
+const prepareItem = (licence, finalState, getter = x => x) => {
+  const base = getter(licence.licence_data_value);
+  const reform = getter(finalState.licence);
+  return formatObject(base, reform);
+};
+
+/**
  * Prepares data for use in single licence view
  * @param {Object} licence - the base licence
  * @param {Object} finalState - the final state from the reducer
  * @return {Object} view data
  */
 const prepareData = (licence, finalState) => {
-  // Prepare licence
-  const base = {
-    base: filterScalars(licence.licence_data_value),
-    reform: filterScalars(finalState.licence)
-  };
-
-  // Current version
-  const currentVersion = {
-    base: filterScalars(getCurrentVersion(licence.licence_data_value)),
-    reform: filterScalars(getCurrentVersion(finalState.licence))
-  };
+  const base = prepareItem(licence, finalState);
+  const currentVersion = prepareItem(licence, finalState, getCurrentVersion);
+  const party = prepareItem(licence, finalState, getCurrentVersionParty);
+  const address = prepareItem(licence, finalState, getCurrentVersionAddress);
 
   // Prepare purposes
   // @TODO - we will need to compare to check for deleted/added items
@@ -108,8 +127,44 @@ const prepareData = (licence, finalState) => {
     purposes,
     points,
     conditions,
-    notes: finalState.notes
+    notes: finalState.notes,
+    party,
+    address
   };
+};
+
+/**
+ * Like lodash set, but always creates an object
+ * even if key is numeric
+ * @param {Object} object
+ * @param {String} path
+ * @param {Mixed} value
+ * @return {Object}
+ */
+const setObject = (obj, path, value) => {
+  return setWith(obj, path, value, (obj) => obj || {});
+};
+
+/**
+ * Checks for match for items with integer ids
+ * @param {Object} item
+ * @param {Number} item.ID
+ * @param {Number} id - ID to check item ID against
+ * @return {Boolean}
+ */
+const isMatch = (item, id) => {
+  return parseInt(item.ID) === parseInt(id);
+};
+
+/**
+ * Checks if version matches the supplied issue and increment number
+ * @param {Object} version
+ * @param {Number} issueNumber
+ * @param {Number} incrementNumber
+ * @return {Boolean}
+ */
+const isVersion = (version, issueNumber, incrementNumber) => {
+  return issueNumber === parseInt(version.ISSUE_NO) && incrementNumber === parseInt(version.INCR_NO);
 };
 
 module.exports = {
@@ -117,5 +172,8 @@ module.exports = {
   generateJsonSchema,
   extractData,
   transformNulls,
-  prepareData
+  prepareData,
+  setObject,
+  isMatch,
+  isVersion
 };

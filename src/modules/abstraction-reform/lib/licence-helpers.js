@@ -31,8 +31,8 @@ const getLicence = (data) => {
   return data;
 };
 
-const purposePointMapper = purpose => purpose.purposePoints.map(row => row.point_detail);
-const purposeConditionMapper = purpose => purpose.licenceConditions;
+const purposePointsMapper = purpose => purpose.purposePoints.map(row => row.point_detail);
+const purposeConditionsMapper = purpose => purpose.licenceConditions;
 const versionPartiesMapper = version => version.parties;
 const partyAddressesMapper = party => party.contacts.map(contact => contact.party_address);
 
@@ -42,7 +42,7 @@ const partyAddressesMapper = party => party.contacts.map(contact => contact.part
  * @return {Array} array of licence points
  */
 const getPoints = (data) => {
-  return flatMap(getPurposes(data), purposePointMapper);
+  return flatMap(getPurposes(data), purposePointsMapper);
 };
 
 /**
@@ -61,7 +61,7 @@ const getPoint = (data, pointId) => {
  * @return {Array} array of licence conditions
  */
 const getConditions = (data) => {
-  return flatMap(getPurposes(data), purposeConditionMapper);
+  return flatMap(getPurposes(data), purposeConditionsMapper);
 };
 
 /**

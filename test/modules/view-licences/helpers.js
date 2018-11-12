@@ -1,12 +1,12 @@
 'use strict';
 
 const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const { selectRiverLevelMeasure, loadRiverLevelData } = require('../../../src/modules/view-licences/helpers');
+const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter } = require('../../../src/modules/view-licences/helpers');
 const waterConnector = require('../../../src/lib/connectors/water');
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
@@ -21,8 +21,8 @@ const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
   };
 };
 
-lab.experiment('selectRiverLevelMeasure', () => {
-  lab.test('returns the first measure if there is only one', async () => {
+experiment('selectRiverLevelMeasure', () => {
+  test('returns the first measure if there is only one', async () => {
     const riverLevel = {
       measures: [getTestMeasure()]
     };
@@ -31,14 +31,14 @@ lab.experiment('selectRiverLevelMeasure', () => {
     expect(measure.id).to.equal('test-flow');
   });
 
-  lab.test('returns undefined if the measure does not contain a latest reading', async () => {
+  test('returns undefined if the measure does not contain a latest reading', async () => {
     const riverLevel = { measures: [getTestMeasure('flow', false)] };
     const hofTypes = { cesFlow: true, cesLev: false };
     const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
     expect(measure).to.be.undefined();
   });
 
-  lab.test('returns level if cesLev is true and cesFlow is false', async () => {
+  test('returns level if cesLev is true and cesFlow is false', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow'),
@@ -50,7 +50,7 @@ lab.experiment('selectRiverLevelMeasure', () => {
     expect(measure.id).to.equal('test-level');
   });
 
-  lab.test('returns undefined if cesLev is true and cesFlow is false, but no latest reading', async () => {
+  test('returns undefined if cesLev is true and cesFlow is false, but no latest reading', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow', false),
@@ -62,7 +62,7 @@ lab.experiment('selectRiverLevelMeasure', () => {
     expect(measure).to.be.undefined();
   });
 
-  lab.test('returns flow if cesLev is false and cesFlow is true', async () => {
+  test('returns flow if cesLev is false and cesFlow is true', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow'),
@@ -74,7 +74,7 @@ lab.experiment('selectRiverLevelMeasure', () => {
     expect(measure.id).to.equal('test-flow');
   });
 
-  lab.test('returns undefined if cesLev is false and cesFlow is true, but no latest reading', async () => {
+  test('returns undefined if cesLev is false and cesFlow is true, but no latest reading', async () => {
     const riverLevel = {
       measures: [
         getTestMeasure('flow', false),
@@ -87,23 +87,23 @@ lab.experiment('selectRiverLevelMeasure', () => {
   });
 });
 
-lab.experiment('loadRiverLevelData', () => {
+experiment('loadRiverLevelData', () => {
   const hofTypes = { cesLevel: true, cesFlow: false };
 
-  lab.beforeEach(async () => {
+  beforeEach(async () => {
     sinon.stub(waterConnector, 'getRiverLevel');
   });
 
-  lab.afterEach(async () => {
+  afterEach(async () => {
     waterConnector.getRiverLevel.restore();
   });
 
-  lab.test('returns null riverLevel and measure when no station reference', async () => {
+  test('returns null riverLevel and measure when no station reference', async () => {
     const riverLevelData = await loadRiverLevelData(null, hofTypes);
     expect(riverLevelData).to.equal({ riverLevel: null, measure: null });
   });
 
-  lab.test('returns the river level and measure when the station is returned', async () => {
+  test('returns the river level and measure when the station is returned', async () => {
     const response = {
       measures: [{
         latestReading: { value: 21.7 },
@@ -118,7 +118,7 @@ lab.experiment('loadRiverLevelData', () => {
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 
-  lab.test('does not return flow if only level HoF type in licence', async () => {
+  test('does not return flow if only level HoF type in licence', async () => {
     const response = {
       measures: [{
         latestReading: { value: 21.7 },
@@ -133,7 +133,7 @@ lab.experiment('loadRiverLevelData', () => {
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 
-  lab.test('does not return level if only flow HoF type in licence', async () => {
+  test('does not return level if only flow HoF type in licence', async () => {
     const response = {
       measures: [{
         latestReading: { value: 21.7 },
@@ -148,9 +148,48 @@ lab.experiment('loadRiverLevelData', () => {
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 
-  lab.test('returns null riverLevel and measure when no station is found', async () => {
+  test('returns null riverLevel and measure when no station is found', async () => {
     waterConnector.getRiverLevel.rejects({ statusCode: 404 });
     const riverLevelData = await loadRiverLevelData(null, hofTypes);
     expect(riverLevelData).to.equal({ riverLevel: null, measure: null });
+  });
+});
+
+experiment('mapFilter', () => {
+  test('adds the entity id to the filter', async () => {
+    const filter = mapFilter('1234', {});
+    expect(filter.entity_id).to.equal('1234');
+  });
+
+  test('adds the licence number to the filter if supplied', async () => {
+    const filter = mapFilter('1234', { licenceNumber: 'lic-num-123' });
+    expect(filter.string).to.equal('lic-num-123');
+  });
+
+  test('trims the licence number', async () => {
+    let filter = mapFilter('1234', { licenceNumber: '  lic-num-123' });
+    expect(filter.string).to.equal('lic-num-123');
+
+    filter = mapFilter('1234', { licenceNumber: '  lic-num-123  ' });
+    expect(filter.string).to.equal('lic-num-123');
+
+    filter = mapFilter('1234', { licenceNumber: 'lic-num-123  ' });
+    expect(filter.string).to.equal('lic-num-123');
+  });
+
+  test('adds the email address to the filter if supplied', async () => {
+    const filter = mapFilter('1234', { emailAddress: 'test@example.com' });
+    expect(filter.email).to.equal('test@example.com');
+  });
+
+  test('trims the email address', async () => {
+    let filter = mapFilter('1234', { emailAddress: '  left@example.com' });
+    expect(filter.email).to.equal('left@example.com');
+
+    filter = mapFilter('1234', { emailAddress: '  both@example.com  ' });
+    expect(filter.email).to.equal('both@example.com');
+
+    filter = mapFilter('1234', { emailAddress: 'right@example.com  ' });
+    expect(filter.email).to.equal('right@example.com');
   });
 });

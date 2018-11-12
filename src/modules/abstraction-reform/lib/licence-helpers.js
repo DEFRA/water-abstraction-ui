@@ -108,19 +108,42 @@ const getCurrentVersionParty = (data) => {
 };
 
 /**
+ * Gets flat list of parties from supplied licence data
+ * There may be duplication
+ * @param {Object} data - licence data
+ * @return {Array} parties list
+ */
+const getParties = (data) => {
+  const { versions } = data.data;
+  return versions.reduce((acc, version) => {
+    return [...acc, ...version.parties];
+  }, []);
+};
+
+/**
  * Gets party by ID from licence data
  * @param {Object} data - licence data object
  * @param {Number} partyId - the party ID
  * @return {Object} party data
  */
 const getParty = (data, partyId) => {
-  for (let version of data.data.versions) {
-    for (let party of version.parties) {
-      if (party.ID === partyId) {
-        return party;
-      }
-    }
-  }
+  const parties = getParties(data);
+  return find(parties, { ID: partyId });
+};
+
+/**
+ * Get flat list of addresses from licence data
+ * There may be duplication
+ * @param {Object} data
+ * @return {Array} address list
+ */
+const getAddresses = (data) => {
+  const parties = getParties(data);
+
+  return parties.reduce((acc, party) => {
+    const addresses = party.contacts.map(contact => contact.party_address);
+    return [...acc, ...addresses];
+  }, []);
 };
 
 /**
@@ -130,15 +153,8 @@ const getParty = (data, partyId) => {
  * @return {Object} party data
  */
 const getAddress = (data, addressId) => {
-  for (let version of data.data.versions) {
-    for (let party of version.parties) {
-      for (let contact of party.contacts) {
-        if (contact.AADD_ID === addressId) {
-          return contact.party_address;
-        }
-      }
-    }
-  }
+  const addresses = getAddresses(data);
+  return find(addresses, { ID: addressId });
 };
 
 /**

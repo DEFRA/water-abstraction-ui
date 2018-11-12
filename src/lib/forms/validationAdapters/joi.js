@@ -12,6 +12,9 @@ const createSchemaFromForm = form => {
   mapFields(form, (field) => {
     let s = Joi.string();
 
+    if (field.options.mapper === 'booleanMapper') {
+      s = Joi.boolean();
+    }
     if (field.options.mapper === 'dateMapper') {
       s = Joi.date().iso();
     }

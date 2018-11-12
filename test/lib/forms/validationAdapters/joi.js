@@ -38,6 +38,14 @@ experiment('createSchemaFromForm', () => {
           value: 'B'
         }],
         required: true }
+      },
+      {
+        name: 'boolean',
+        options: { mapper: 'booleanMapper' }
+      },
+      {
+        name: 'boolean_required',
+        options: { mapper: 'booleanMapper', required: true }
       }
     ]
   };
@@ -48,7 +56,9 @@ experiment('createSchemaFromForm', () => {
     date: Joi.date().iso(),
     date_required: Joi.date().iso().required(),
     choice: Joi.string().valid(['A', 'B']),
-    choice_required: Joi.string().valid(['A', 'B']).required()
+    choice_required: Joi.string().valid(['A', 'B']).required(),
+    boolean: Joi.boolean(),
+    boolean_required: Joi.boolean().required()
   };
 
   test('applies the function to any top level fields', async () => {

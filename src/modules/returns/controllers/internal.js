@@ -1,10 +1,12 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
+const returnsService = require('../../../lib/connectors/returns');
 
 const { getViewData } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
+const { findLatestReturn } = require('../lib/api-helpers');
 
 const {
   internalRoutingForm
@@ -19,8 +21,42 @@ const {
 
 const {
   logReceiptForm,
-  logReceiptSchema
+  logReceiptSchema,
+  searchForm
 } = require('../forms/');
+
+/**
+ * Search for return ID
+ */
+const getSearch = async (request, h) => {
+  const isSubmitted = 'query' in request.query;
+  const form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
+
+  if (form.isValid) {
+    const { query } = getValues(form);
+
+    const { filter, sort, pagination, columns } = findLatestReturn(query);
+    const { data: [ret] } = await returnsService.returns.findMany(filter, sort, pagination, columns);
+
+    if (ret) {
+      const redirectUrl = `/admin/return/internal?returnId=${ret.return_id}`;
+      return h.redirect(redirectUrl);
+    } else {
+      const error = {
+        name: 'query',
+        message: 'Return ID not found',
+        summary: 'Return ID not found'
+      };
+      form.errors.push(error);
+      form.fields[0].errors.push(error);
+    }
+  }
+
+  return h.view('water/returns/internal/search', {
+    ...request.view,
+    form
+  });
+};
 
 /**
  * For internal users, routing page to decide what to do with return
@@ -164,6 +200,7 @@ const getQueryLogged = async (request, h) => {
 };
 
 module.exports = {
+  getSearch,
   getInternalRouting,
   postInternalRouting,
   getLogReceipt,

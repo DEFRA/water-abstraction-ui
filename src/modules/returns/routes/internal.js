@@ -6,6 +6,25 @@ const { VALID_GUID } = require('../../../lib/validators');
 
 module.exports = {
 
+  getSearch: {
+    method: 'GET',
+    path: '/admin/returns',
+    handler: controller.getSearch,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Search for return by format ID',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Process a return',
+          activeNavLink: 'returns',
+          showMeta: true
+        }
+      }
+    }
+  },
+
   getInternalRouting: {
     method: 'GET',
     path: '/admin/return/internal',

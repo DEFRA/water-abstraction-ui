@@ -23,7 +23,7 @@ experiment('Returns search form', () => {
             'autoComplete': true,
             'errors': {
               'any.empty': {
-                'message': 'Enter a return ID'
+                'message': 'You must enter a number'
               }
             }
           },

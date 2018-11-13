@@ -44,8 +44,8 @@ const getSearch = async (request, h) => {
     } else {
       const error = {
         name: 'query',
-        message: 'Return ID not found',
-        summary: 'Return ID not found'
+        message: 'No return could be found for this return ID',
+        summary: 'No return could be found for this return ID'
       };
       form.errors.push(error);
       form.fields[0].errors.push(error);

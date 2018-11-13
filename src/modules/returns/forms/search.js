@@ -7,7 +7,7 @@ const form = (request, data) => {
     label: 'Enter a return ID',
     errors: {
       'any.empty': {
-        message: 'Enter a return ID'
+        message: 'You must enter a number'
       }
     }
   }));

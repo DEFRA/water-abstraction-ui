@@ -45,8 +45,6 @@ class TaskData {
       };
     }
 
-    console.log(this.data.params);
-
     // Initialise available mappers
     this.mappers = {
       default: defaultMapper,
@@ -135,7 +133,6 @@ class TaskData {
     const { variables } = this.task.config;
     return variables.reduce((acc, variable) => {
       const { name, mapper = 'default' } = variable;
-      console.log(name, mapper, this.mappers[mapper].export(this.data.params[name]));
       return {
         ...acc,
         [variable.name]: this.mappers[mapper].export(this.data.params[name])

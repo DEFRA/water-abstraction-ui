@@ -12,7 +12,7 @@ const {
   isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings
+  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -178,6 +178,13 @@ lab.experiment('Return reducers', () => {
 
     expect(data2.status).to.equal('completed');
     expect(data2.receivedDate).to.equal('2017-06-06');
+  });
+
+  lab.test('applyStatus should throw error if invalid status', async () => {
+    const func = () => {
+      applyStatus(testReturn, 'the-dog-chewed-it-up');
+    };
+    expect(func).to.throw();
   });
 
   lab.test('applyUserDetails should set user details on the return object', async () => {
@@ -473,5 +480,16 @@ lab.experiment('getLinesWithReadings', () => {
       quantity: 2,
       startReading: 15,
       endReading: 17 } ]);
+  });
+});
+
+lab.experiment('applyUnderQuery', () => {
+  lab.test('set under query flag', async () => {
+    const ret = applyUnderQuery(testReturn, { isUnderQuery: true });
+    expect(ret.isUnderQuery).to.equal(true);
+  });
+  lab.test('clear under query flag', async () => {
+    const ret = applyUnderQuery(testReturn, { isUnderQuery: false });
+    expect(ret.isUnderQuery).to.equal(false);
   });
 });

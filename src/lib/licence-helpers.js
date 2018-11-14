@@ -138,8 +138,6 @@ async function licenceConditions (licenceData) {
     });
   });
 
-  // console.log(JSON.stringify(conditions, null, 2));
-
   return conditions;
 }
 

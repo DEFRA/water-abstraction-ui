@@ -4,7 +4,7 @@ const View = require('../../lib/view');
 const { getUserData, setUserData } = require('../../lib/user-data.js');
 
 const VIEW_CONTACT_INFO = 'water/contact-details/contact-information';
-const PAGE_TITLE = 'Update your contact information';
+const PAGE_TITLE = 'Contact information';
 
 const getUserId = request => request.auth.credentials.user_id;
 

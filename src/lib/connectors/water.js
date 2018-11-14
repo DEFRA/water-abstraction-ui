@@ -7,6 +7,7 @@ const { APIClient } = require('hapi-pg-rest-api');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
+const logger = require('../logger');
 
 function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
@@ -23,7 +24,7 @@ function sendNotifyMessage (messageRef, recipient, personalisation) {
         var data = response.body;
         resolve(data);
       }).catch((response) => {
-        console.log(response);
+        logger.error('error', response);
         resolve(response);
       });
   });

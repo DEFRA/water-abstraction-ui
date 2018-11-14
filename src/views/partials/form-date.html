@@ -1,23 +1,28 @@
-<div class="form-group">
+<div class="form-group {{#if errors }}form-group-error{{/if}}">
     <fieldset>
       <legend>
         <span class="form-label-bold">
           {{ options.label }}
         </span>
         <span class="form-hint">{{ options.hint }}</span>
+
+        {{#each errors}}
+        <span class="error-message">{{ message }}</span>
+        {{/each}}
+
       </legend>
       <div class="form-date">
         <div class="form-group form-group-day">
-          <label class="form-label" for="{{ name }}-day">Day</label>
-          <input class="form-control" id="{{ name }}-day" name="{{ name }}-day" type="number" pattern="[0-9]*" value="{{ formatISODate value format='DD' }}">
+          <label class="form-label" for="{{ name }}">Day</label>
+          <input class="form-control" id="{{ name }}" name="{{ name }}-day" type="number" pattern="[0-9]*" value="{{ splitString value separator='-' index=2 }}">
         </div>
         <div class="form-group form-group-month">
           <label class="form-label" for="{{ name }}-month">Month</label>
-          <input class="form-control" id="{{ name }}-month" name="{{ name }}-month" type="number" pattern="[0-9]*" value="{{ formatISODate value format='MM' }}">
+          <input class="form-control" id="{{ name }}-month" name="{{ name }}-month" type="number" pattern="[0-9]*" value="{{ splitString value separator='-' index=1 }}">
         </div>
         <div class="form-group form-group-year">
           <label class="form-label" for="{{ name }}-year">Year</label>
-          <input class="form-control" id="{{ name }}-year" name="{{ name }}-year" type="number" pattern="[0-9]*" value="{{ formatISODate value format='YYYY' }}">
+          <input class="form-control" id="{{ name }}-year" name="{{ name }}-year" type="number" pattern="[0-9]*" value="{{ splitString value separator='-' index=0 }}">
         </div>
       </div>
     </fieldset>

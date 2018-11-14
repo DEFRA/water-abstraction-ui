@@ -1,5 +1,5 @@
-const moment = require('moment');
 const { extractLicenceNumbers } = require('../licence-helpers');
+const moment = require('moment');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -39,6 +39,31 @@ const booleanMapper = {
 };
 
 /**
+ * Formats a date segment - day, month or year, by zero padding
+ * @param {String} value
+ * @param {Number} [length] - the length of the segment, default 2
+ * @return {String} zero-padded value, or emoty string
+ */
+const formatDateSegment = (value, length = 2) => {
+  if (value) {
+    return value.padStart(length, '0');
+  }
+  return '';
+};
+
+/**
+ * Formats a year segment.  If a 2 digit year is entered, this is corrected
+ * to a 4 digit date
+ * @param {String} year 2/4 digit
+ * @return {String} year 4 digit
+ */
+const formatYearSegment = (year) => {
+  const str = year.trim();
+  const currentYear = moment().format('YYYY');
+  return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+};
+
+/**
  * Date mapper - combines the day month and year form values to a single
  * string formatted as YYYY-MM-DD
  */
@@ -47,25 +72,15 @@ const dateMapper = {
     const day = payload[fieldName + '-day'];
     const month = payload[fieldName + '-month'];
     const year = payload[fieldName + '-year'];
-    const m = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD');
-    return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
+    return `${formatYearSegment(year)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
   },
   export: (value) => {
-    const m = moment(value, 'YYYY-MM-DD');
-
-    if (m.isValid()) {
-      return {
-        date: m.date(),
-        month: m.month() + 1,
-        year: m.year()
-      };
-    } else {
-      return {
-        date: null,
-        month: null,
-        year: null
-      };
-    }
+    const parts = value.split('-');
+    return {
+      day: parts[2],
+      month: parts[1],
+      year: parts[0]
+    };
   }
 };
 

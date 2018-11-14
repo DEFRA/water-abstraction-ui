@@ -1,4 +1,5 @@
 const Boom = require('boom');
+const { get } = require('lodash');
 const { getSessionData } = require('./lib/session-helpers');
 const { getViewData } = require('./lib/helpers');
 
@@ -46,10 +47,8 @@ const returnsPlugin = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, h) => {
-        if (!request.route.settings.plugins.returns) {
-          return h.continue;
-        }
-        return preHandler(request, h);
+        const isEnabled = get(request, 'route.settings.plugins.returns', false);
+        return isEnabled ? preHandler(request, h) : h.continue;
       }
     });
   },

@@ -60,7 +60,7 @@ module.exports = {
   },
 
   returns: {
-    showFutureReturns: testMode || (process.env.NODE_ENV === 'preprod')
+    showFutureReturns: testMode
   },
 
   sanitize: {

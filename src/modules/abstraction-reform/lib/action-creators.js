@@ -1,5 +1,5 @@
 const statuses = require('./statuses');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
@@ -103,10 +103,71 @@ const createSetStatus = (status, notes, user) => {
   };
 };
 
+/**
+ * Edits a licence version
+ * @param {Object} data - key/value pairs of purpose data to edit
+ * @param {Object} user - the current user of the application
+ * @param {Number} id - the condition ID
+ * @return {Object} action to edit condition
+ */
+const createEditVersion = (data, user, issueNumber, incrementNumber) => {
+  return {
+    type: EDIT_VERSION,
+    payload: {
+      issueNumber: parseInt(issueNumber),
+      incrementNumber: parseInt(incrementNumber),
+      data,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
+/**
+ * Edits a licence party
+ * @param {Object} data - key/value pairs of purpose data to edit
+ * @param {Object} user - the current user of the application
+ * @param {Number} id - the party ID
+ * @return {Object} action to edit condition
+ */
+const createEditParty = (data, user, id) => {
+  return {
+    type: EDIT_PARTY,
+    payload: {
+      partyId: parseInt(id),
+      data,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
+/**
+ * Edits a licence address
+ * @param {Object} data - key/value pairs of purpose data to edit
+ * @param {Object} user - the current user of the application
+ * @param {Number} id - the address ID
+ * @return {Object} action to edit condition
+ */
+const createEditAddress = (data, user, id) => {
+  return {
+    type: EDIT_ADDRESS,
+    payload: {
+      addressId: parseInt(id),
+      data,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
   createEditPoint,
   createEditCondition,
-  createSetStatus
+  createSetStatus,
+  createEditVersion,
+  createEditAddress,
+  createEditParty
 };

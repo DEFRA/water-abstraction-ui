@@ -179,17 +179,22 @@ const applyNilReturn = (data, isNil) => {
 /**
  * Applys received date and completed status to return
  * @param {Object} data - return data model
+ * @param {String} [status] - status to set to, defaults to 'completed'
+ * @param {String} [receivedDate] - ISO 8601 date string, YYYY-MM-DD
  * @return {Object} updated return data model
  */
-const applyStatus = (data, status = 'completed') => {
+const applyStatus = (data, status = 'completed', receivedDate) => {
   if (!['completed', 'due', 'received'].includes(status)) {
     throw Boom.badImplementation(`Invalid return status ${status}`);
   }
   const d = cloneDeep(data);
   if (!d.receivedDate) {
-    d.receivedDate = moment().format('YYYY-MM-DD');
+    d.receivedDate = moment(receivedDate).format('YYYY-MM-DD');
   }
-  d.status = status;
+  // Don't allow a completed return to go back to an earlier status
+  if (d.status !== 'completed') {
+    d.status = status;
+  }
   return d;
 };
 
@@ -305,6 +310,20 @@ const applyMeterReadings = (data, formValues) => {
 };
 
 /**
+ * Applies under query
+ * @param {Object} data - current return model data
+ * @param {Object} formValues - data collected from form
+ * @param {Boolean} formValues.isUnderQuery
+ * @return {Object} new return model state
+ */
+const applyUnderQuery = (data, formValues) => {
+  const updated = cloneDeep(data);
+  const { isUnderQuery } = formValues;
+  updated.isUnderQuery = !!isUnderQuery;
+  return updated;
+};
+
+/**
  * Gets line data, including meter readings if present
  * @param {Object} data
  * @return {Array} lines
@@ -355,5 +374,6 @@ module.exports = {
   applyMeterReadings,
   applyMethod,
   getMeter,
-  getLinesWithReadings
+  getLinesWithReadings,
+  applyUnderQuery
 };

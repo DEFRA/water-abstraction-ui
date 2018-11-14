@@ -1,7 +1,8 @@
 const update = require('immutability-helper');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS } = require('./action-types');
+const { findIndex, set } = require('lodash');
+const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
 const { STATUS_IN_PROGRESS } = require('./statuses');
-const { findIndex } = require('lodash');
+const { setObject, isMatch, isVersion } = require('./helpers');
 
 /**
  * Gets a base update query with the user who edited and timestamp
@@ -139,6 +140,107 @@ const editCondition = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Edits a licence version
+ * @param {Object} state - current state
+ * @param {Object} action - action data
+ * @param {Object} action.payload.data - modified data
+ * @param {Number} action.payload.issueNumber - licence issue number
+ * @param {Number} action.payload.incrementNumber - licence increment number
+ */
+const editVersion = (state, action) => {
+  const { data, issueNumber, incrementNumber } = action.payload;
+
+  const query = {
+    ...getBaseQuery(action)
+  };
+
+  // Check current licence version
+  if (isVersion(state.licence.data.current_version.licence, issueNumber, incrementNumber)) {
+    set(query, 'licence.data.current_version.licence.$merge', data);
+  }
+
+  // Check versions array
+  state.licence.data.versions.forEach((version, i) => {
+    if (isVersion(version, issueNumber, incrementNumber)) {
+      setObject(query, `licence.data.versions.${i}.$merge`, data);
+    }
+  });
+
+  return update(state, query);
+};
+
+/**
+ * Edits party
+ * @param {Object} state - current state
+ * @param {Object} action - action data
+ */
+const editParty = (state, action) => {
+  const { data, partyId } = action.payload;
+
+  const query = {
+    ...getBaseQuery(action)
+  };
+
+  // Check current licence version
+  if (isMatch(state.licence.data.current_version.party, partyId)) {
+    set(query, 'licence.data.current_version.party.$merge', data);
+  }
+
+  // Check other parties nested in versions
+  state.licence.data.versions.forEach((version, i) => {
+    version.parties.forEach((party, j) => {
+      if (isMatch(party, partyId)) {
+        setObject(query, `licence.data.versions.${i}.parties.${j}.$merge`, data);
+      }
+    });
+  });
+
+  // Check licence party
+  state.licence.data.current_version.licence.party.forEach((party, i) => {
+    if (isMatch(party, partyId)) {
+      setObject(query, `licence.data.current_version.licence.party.${i}.$merge`, data);
+    }
+  });
+
+  return update(state, query);
+};
+
+/**
+ * Edits address
+ * @param {Object} state - current state
+ * @param {Object} action - action data
+ */
+const editAddress = (state, action) => {
+  const { data, addressId } = action.payload;
+
+  const query = {
+    ...getBaseQuery(action)
+  };
+
+  // Check current licence version
+  if (isMatch(state.licence.data.current_version.address, addressId)) {
+    set(query, 'licence.data.current_version.address.$merge', data);
+  }
+
+  // Check other parties nested in versions
+  state.licence.data.versions.forEach((version, i) => {
+    version.parties.forEach((party, j) => {
+      party.contacts.forEach((contact, k) => {
+        const { party_address: address } = contact;
+        if (isMatch(address, addressId)) {
+          setObject(query, `licence.data.versions.${i}.parties.${j}.contacts.${k}.party_address.$merge`, data);
+        }
+      });
+    });
+  });
+
+  return update(state, query);
+};
+
+/**
+ * Updates document workflow state
+ */
 const setState = (state, action) => {
   const { status, notes, user, timestamp } = action.payload;
 
@@ -173,6 +275,15 @@ const reducer = (state, action) => {
 
     case SET_STATUS:
       return setState(state, action);
+
+    case EDIT_VERSION:
+      return editVersion(state, action);
+
+    case EDIT_PARTY:
+      return editParty(state, action);
+
+    case EDIT_ADDRESS:
+      return editAddress(state, action);
 
     default:
       return state;

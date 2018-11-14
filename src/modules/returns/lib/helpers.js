@@ -204,13 +204,13 @@ const canEdit = (permissions, ret, today) => {
 };
 
 /**
- * Checks whether return has been received
+ * Checks whether return has been received and has 'completed' status
  * @param {Object} ret
  * @return {Boolean}
  */
 const returnIsReceived = (ret) => {
-  const { received_date: date } = ret;
-  return date !== null;
+  const { received_date: date, status } = ret;
+  return (date !== null && status === 'completed');
 };
 
 const isReturnPastDueDate = returnRow => {

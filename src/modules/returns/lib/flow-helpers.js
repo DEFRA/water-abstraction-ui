@@ -1,5 +1,9 @@
 const { get } = require('lodash');
 
+const STEP_INTERNAL_ROUTING = '/return/internal';
+const STEP_LOG_RECEIPT = '/return/log-receipt';
+const STEP_RECEIPT_LOGGED = '/return/receipt-logged';
+const STEP_QUERY_LOGGED = '/return/query-logged';
 const STEP_START = '/return';
 const STEP_NIL_RETURN = '/return/nil-return';
 const STEP_METHOD = '/return/method';
@@ -28,6 +32,19 @@ const getPath = (path, request, data) => {
 };
 
 const next = {
+  [STEP_INTERNAL_ROUTING]: (request, data) => {
+    const action = get(data, 'action');
+    const actions = {
+      log_receipt: STEP_LOG_RECEIPT,
+      submit: STEP_START,
+      set_under_query: STEP_QUERY_LOGGED,
+      clear_under_query: STEP_QUERY_LOGGED
+    };
+    return getPath(actions[action], request);
+  },
+  [STEP_LOG_RECEIPT]: (request) => {
+    return getPath(STEP_RECEIPT_LOGGED, request);
+  },
   [STEP_START]: (request, data) => {
     const isNil = get(data, 'isNil', false);
     return getPath(isNil ? STEP_NIL_RETURN : STEP_METHOD, request, data);
@@ -84,9 +101,12 @@ const next = {
 };
 
 const previous = {
+  [STEP_INTERNAL_ROUTING]: (request) => {
+    return '/admin/licences';
+  },
   [STEP_START]: (request) => {
     const isInternal = request.permissions.hasPermission('admin.defra');
-    return isInternal ? '/admin/licences' : '/returns';
+    return isInternal ? getPath(STEP_INTERNAL_ROUTING, request) : '/returns';
   },
   [STEP_NIL_RETURN]: (request, data) => {
     return getPath(STEP_START, request, data);
@@ -145,6 +165,9 @@ const getPreviousPath = (current, request, data) => {
 };
 
 module.exports = {
+  STEP_INTERNAL_ROUTING,
+  STEP_LOG_RECEIPT,
+  STEP_RECEIPT_LOGGED,
   STEP_START,
   STEP_NIL_RETURN,
   STEP_METHOD,
@@ -157,6 +180,7 @@ module.exports = {
   STEP_METER_READINGS,
   STEP_CONFIRM,
   STEP_SUBMITTED,
+  STEP_QUERY_LOGGED,
   getPath,
   getNextPath,
   getPreviousPath

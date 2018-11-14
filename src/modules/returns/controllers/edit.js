@@ -22,7 +22,7 @@ const {
   applySingleTotal, applyBasis, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
-  getLinesWithReadings
+  getLinesWithReadings, applyStatus, applyUnderQuery
 } = require('../lib/return-helpers');
 
 const {
@@ -120,33 +120,35 @@ const getNilReturn = async (request, h) => {
   return h.view('water/returns/internal/nil-return', {
     ...view,
     return: data,
-    form: confirmForm(request),
+    form: confirmForm(request, data),
     back: getPreviousPath(STEP_NIL_RETURN, request, data)
   });
 };
 
 /**
- * Confirmation screen for nil return
+ * Post handler for amounts or nil return flow
+ * For internal users, also sets/clears under query status
  */
-const postNilReturn = async (request, h) => {
-  const { data, view } = request.returns;
-  const form = handleRequest(confirmForm(request), request);
+const postConfirm = async (request, h) => {
+  const { data } = request.returns;
+  const form = handleRequest(confirmForm(request, data), request);
 
   if (form.isValid) {
     try {
-      await submitReturnData(data, request);
+      // Apply status / under query
+      let updated = applyStatus(data);
+      const isInternal = request.permissions.hasPermission('returns.edit');
+      if (isInternal) {
+        updated = applyUnderQuery(updated, getValues(form));
+      }
+
+      await submitReturnData(updated, request);
       return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {
-      console.error(error);
-      view.error = error;
+      request.log('error', error);
+      throw Boom.badImplementation(`Return submission error`, { data, form });
     }
   }
-
-  return h.view('water/returns/internal/nil-return', {
-    ...view,
-    return: data,
-    form
-  });
 };
 
 /**
@@ -362,24 +364,16 @@ const getConfirm = async (request, h) => {
   const { data, view } = request.returns;
 
   const lines = getLinesWithReadings(data);
+  const form = confirmForm(request, data, `/return/confirm`);
 
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
     lines,
-    form: confirmForm(request, `/return/confirm`),
+    form,
     total: getReturnTotal(data),
     back: getPreviousPath(STEP_CONFIRM, request, data)
   });
-};
-
-/**
- * Confirm return
- */
-const postConfirm = async (request, h) => {
-  // Post return
-  await submitReturnData(request.returns.data, request);
-  return h.redirect(getNextPath(STEP_CONFIRM, request, request.returns.data));
 };
 
 const getMeterDetails = async (request, h) => {
@@ -481,7 +475,6 @@ module.exports = {
   getAmounts,
   postAmounts,
   getNilReturn,
-  postNilReturn,
   getSubmitted,
   getMethod,
   postMethod,

@@ -115,7 +115,7 @@ module.exports = {
   postNilReturn: {
     method: 'POST',
     path: '/return/nil-return',
-    handler: controller.postNilReturn,
+    handler: controller.postConfirm,
     options: {
       auth: {
         scope: external

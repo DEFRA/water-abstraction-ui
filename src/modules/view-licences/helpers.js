@@ -33,11 +33,11 @@ function mapFilter (entityId, query) {
   };
   // Search on licence name/number
   if (query.licenceNumber) {
-    filter.string = query.licenceNumber;
+    filter.string = query.licenceNumber.trim();
   }
   // Search on user email address
   if (query.emailAddress) {
-    filter.email = query.emailAddress;
+    filter.email = query.emailAddress.trim();
   }
   return filter;
 }

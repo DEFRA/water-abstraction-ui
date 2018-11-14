@@ -29,6 +29,7 @@ const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
 const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
 
 module.exports = {
+
   getAmounts: {
     method: 'GET',
     path: '/admin/return',
@@ -106,7 +107,7 @@ module.exports = {
   postNilReturn: {
     method: 'POST',
     path: '/admin/return/nil-return',
-    handler: controller.postNilReturn,
+    handler: controller.postConfirm,
     options: {
       auth: {
         scope: returns

@@ -1,5 +1,45 @@
+const { get, negate, isEmpty } = require('lodash');
 const Water = require('./water');
 const logger = require('../logger');
+
+const getAddressLinesFromLicence = licence => {
+  return [
+    get(licence, 'metadata.Name', ''),
+    get(licence, 'metadata.AddressLine1', ''),
+    get(licence, 'metadata.AddressLine2', ''),
+    get(licence, 'metadata.AddressLine3', ''),
+    get(licence, 'metadata.AddressLine4', ''),
+    get(licence, 'metadata.Town', ''),
+    get(licence, 'metadata.County', '')
+  ]
+    .map(str => str.trim())
+    .filter(negate(isEmpty));
+};
+
+/**
+ * There are 6 available address slots in the notify templates, plus an extra for postcode.
+ *
+ * Therefore if there are more than 6, remove the AddressLine4 item which
+ * hopefully leaves the most important address components in place.
+ */
+const ensureMaximumAddressLength = lines => {
+  if (lines.length > 6) {
+    lines.splice(4, 1);
+  }
+  return lines;
+};
+
+const createAddress = licence => {
+  const lines = getAddressLinesFromLicence(licence);
+  ensureMaximumAddressLength(lines);
+
+  return lines.reduce((memo, line, i) => {
+    memo[`address_line_${i + 1}`] = line;
+    return memo;
+  }, {
+    postcode: get(licence, 'metadata.Postcode', '')
+  });
+};
 
 function sendNewUserPasswordReset (emailAddress, resetGuid) {
   const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
@@ -23,29 +63,14 @@ function sendExistingUserPasswordReset (emailAddress, resetGuid) {
  */
 function sendSecurityCode (licence, accesscode) {
   // Get address components from licence
-  const {
-    AddressLine1,
-    AddressLine2,
-    AddressLine3,
-    AddressLine4,
-    Town,
-    County,
-    Postcode: postcode,
-    Name: licenceholder
-  } = licence.metadata;
-
-  // Filter out non-null lines
-  const lines = [AddressLine1, AddressLine2, AddressLine3, AddressLine4, Town, County].filter(str => str.trim());
+  const address = createAddress(licence);
 
   // Format personalisation with address lines and postcode
-  const personalisation = lines.reduce((memo, line, i) => {
-    memo[`address_line_${i + 1}`] = line;
-    return memo;
-  }, {
+  const personalisation = Object.assign({}, address, {
     accesscode,
     siteaddress: process.env.base_url,
-    licenceholder,
-    postcode
+    licenceholder: licence.metadata.Name,
+    postcode: licence.metadata.Postcode
   });
 
   return Water.sendNotifyMessage('security_code_letter', 'n/a', personalisation);
@@ -85,5 +110,6 @@ module.exports = {
   sendAccessNotification: sendAccessNotification,
   sendNewUserPasswordReset,
   sendExistingUserPasswordReset,
-  sendSecurityCode
+  sendSecurityCode,
+  createAddress
 };

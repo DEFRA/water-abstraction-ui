@@ -1,11 +1,16 @@
 'use strict';
+const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
-const { experiment, test } = exports.lab = Lab.script();
+const { experiment, test, before, after } = exports.lab = Lab.script();
 
 const {
-  findLatestReturn
+  findLatestReturn,
+  getRecentReturnByFormatId
 } = require('../../../../src/modules/returns/lib/api-helpers');
+
+const returnsService = require('../../../../src/lib/connectors/returns');
+const helpers = require('../../../../src/modules/returns/lib/helpers');
 
 experiment('findLatestReturn', () => {
   const result = findLatestReturn('12345678');
@@ -33,5 +38,37 @@ experiment('findLatestReturn', () => {
 
   test('It should only select the return ID column', async () => {
     expect(result.columns).to.equal(['return_id', 'status', 'licence_ref']);
+  });
+});
+
+experiment('getRecentReturnByFormatId', () => {
+  let returnsStub;
+
+  const returnData = {
+    return_id: '123:456:789',
+    licence_ref: '123/456/789',
+    status: 'completed'
+  };
+
+  before(async () => {
+    returnsStub = sinon.stub(returnsService.returns, 'findMany').resolves({ data: [returnData]});
+  });
+
+  after(async () => {
+    returnsStub.restore();
+  });
+
+  test('It should not return anything if CRM document header not found', async () => {
+    const crmHeaderStub = sinon.stub(helpers, 'getLicenceNumbers').resolves([]);
+    const result = await getRecentReturnByFormatId('123:456:789');
+    expect(result).to.equal(undefined);
+    crmHeaderStub.restore();
+  });
+
+  test('It should return return data if CRM document header is found', async () => {
+    const crmHeaderStub = sinon.stub(helpers, 'getLicenceNumbers').resolves([{}]);
+    const result = await getRecentReturnByFormatId('123:456:789');
+    expect(result).to.equal(returnData);
+    crmHeaderStub.restore();
   });
 });

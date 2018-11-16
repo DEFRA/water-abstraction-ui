@@ -1,5 +1,5 @@
 const returnsService = require('../../../lib/connectors/returns');
-const { getLicenceNumbers } = require('../lib/helpers');
+const helpers = require('../lib/helpers');
 
 /**
  * Creates the required params to send to the return service to get the
@@ -41,7 +41,7 @@ const getRecentReturnByFormatId = async (formatId, entityId) => {
 
   if (ret) {
     // Load CRM doc header - this checks the licence version is current
-    const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: ret.licence_ref}, true);
+    const [ documentHeader ] = await helpers.getLicenceNumbers(entityId, {system_external_id: ret.licence_ref}, true);
 
     if (documentHeader) {
       return ret;

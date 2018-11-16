@@ -92,6 +92,14 @@ function viewContextDefaults (request) {
         url: '/admin/notifications'
       });
     }
+
+    if (request.permissions.hasPermission('returns.edit')) {
+      viewContext.mainNavLinks.push({
+        id: 'returns',
+        text: 'Manage returns',
+        url: '/admin/returns'
+      });
+    }
   } else {
     if (request.permissions && request.permissions.licences.read) {
       viewContext.mainNavLinks.push({

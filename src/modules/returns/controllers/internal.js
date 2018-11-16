@@ -5,6 +5,7 @@ const { documents } = require('../../../lib/connectors/crm');
 const { getViewData } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
+const { getRecentReturnByFormatId } = require('../lib/api-helpers');
 
 const {
   internalRoutingForm
@@ -19,8 +20,49 @@ const {
 
 const {
   logReceiptForm,
-  logReceiptSchema
+  logReceiptSchema,
+  searchForm,
+  searchApplyNoReturnError
 } = require('../forms/');
+
+/**
+ * When searching for return by ID, gets redirect path which is either to
+ * the completed return page, or the edit return flow if not yet completed
+ * @param {Object} ret - return object from returns service
+ * @return {String} redirect path
+ */
+const getRedirectPath = (ret) => {
+  const { return_id: returnId, status } = ret;
+  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+};
+
+/**
+ * Search for return ID
+ */
+const getSearch = async (request, h) => {
+  const isSubmitted = 'query' in request.query;
+  const { entity_id: entityId } = request.auth.credentials;
+  let form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
+
+  if (form.isValid) {
+    const { query } = getValues(form);
+
+    const ret = await getRecentReturnByFormatId(query, entityId);
+
+    if (ret) {
+      const path = getRedirectPath(ret);
+      return h.redirect(path);
+    }
+
+    // Apply error state
+    form = searchApplyNoReturnError(form);
+  }
+
+  return h.view('water/returns/internal/search', {
+    ...request.view,
+    form
+  });
+};
 
 /**
  * For internal users, routing page to decide what to do with return
@@ -164,6 +206,7 @@ const getQueryLogged = async (request, h) => {
 };
 
 module.exports = {
+  getSearch,
   getInternalRouting,
   postInternalRouting,
   getLogReceipt,

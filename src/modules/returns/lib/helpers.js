@@ -316,12 +316,10 @@ const getScopedPath = (request, path) => {
  */
 const getViewData = async (request, data) => {
   const documentHeader = await getWaterLicence(data.licenceNumber);
-  const isInternal = request.permissions.hasPermission('admin.defra');
   return {
     ...request.view,
     documentHeader,
-    data,
-    activeNavLink: isInternal ? 'view' : 'returns'
+    data
   };
 };
 

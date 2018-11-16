@@ -20,7 +20,7 @@ const findLatestReturn = (formatId) => {
     end_date: -1
   };
 
-  const columns = ['return_id'];
+  const columns = ['return_id', 'status'];
 
   return {filter, sort, pagination, columns};
 };

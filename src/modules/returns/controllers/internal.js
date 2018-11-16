@@ -39,8 +39,9 @@ const getSearch = async (request, h) => {
     const { data: [ret] } = await returnsService.returns.findMany(filter, sort, pagination, columns);
 
     if (ret) {
-      const redirectUrl = `/admin/return/internal?returnId=${ret.return_id}`;
-      return h.redirect(redirectUrl);
+      const { return_id: returnId, status } = ret;
+      const path = status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+      return h.redirect(path);
     } else {
       const error = {
         name: 'query',

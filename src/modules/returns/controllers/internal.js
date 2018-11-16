@@ -1,12 +1,11 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
-const returnsService = require('../../../lib/connectors/returns');
 
-const { getViewData, getLicenceNumbers } = require('../lib/helpers');
+const { getViewData } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
-const { findLatestReturn } = require('../lib/api-helpers');
+const { getRecentReturnByFormatId } = require('../lib/api-helpers');
 
 const {
   internalRoutingForm
@@ -48,17 +47,11 @@ const getSearch = async (request, h) => {
   if (form.isValid) {
     const { query } = getValues(form);
 
-    const { filter, sort, pagination, columns } = findLatestReturn(query);
-    const { data: [ret] } = await returnsService.returns.findMany(filter, sort, pagination, columns);
+    const ret = await getRecentReturnByFormatId(query, entityId);
 
     if (ret) {
-      // Load CRM doc header - this checks the licence version is current
-      const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: ret.licence_ref}, true);
-
-      if (documentHeader) {
-        const path = getRedirectPath(ret);
-        return h.redirect(path);
-      }
+      const path = getRedirectPath(ret);
+      return h.redirect(path);
     }
 
     // Apply error state

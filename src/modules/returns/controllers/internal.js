@@ -3,7 +3,7 @@ const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
 const returnsService = require('../../../lib/connectors/returns');
 
-const { getViewData } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
 const { findLatestReturn } = require('../lib/api-helpers');
@@ -22,15 +22,28 @@ const {
 const {
   logReceiptForm,
   logReceiptSchema,
-  searchForm
+  searchForm,
+  searchApplyNoReturnError
 } = require('../forms/');
+
+/**
+ * When searching for return by ID, gets redirect path which is either to
+ * the completed return page, or the edit return flow if not yet completed
+ * @param {Object} ret - return object from returns service
+ * @return {String} redirect path
+ */
+const getRedirectPath = (ret) => {
+  const { return_id: returnId, status } = ret;
+  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+};
 
 /**
  * Search for return ID
  */
 const getSearch = async (request, h) => {
   const isSubmitted = 'query' in request.query;
-  const form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
+  const { entity_id: entityId } = request.auth.credentials;
+  let form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
 
   if (form.isValid) {
     const { query } = getValues(form);
@@ -39,18 +52,17 @@ const getSearch = async (request, h) => {
     const { data: [ret] } = await returnsService.returns.findMany(filter, sort, pagination, columns);
 
     if (ret) {
-      const { return_id: returnId, status } = ret;
-      const path = status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
-      return h.redirect(path);
-    } else {
-      const error = {
-        name: 'query',
-        message: 'No return could be found for this return ID',
-        summary: 'No return could be found for this return ID'
-      };
-      form.errors.push(error);
-      form.fields[0].errors.push(error);
+      // Load CRM doc header - this checks the licence version is current
+      const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: ret.licence_ref}, true);
+
+      if (documentHeader) {
+        const path = getRedirectPath(ret);
+        return h.redirect(path);
+      }
     }
+
+    // Apply error state
+    form = searchApplyNoReturnError(form);
   }
 
   return h.view('water/returns/internal/search', {

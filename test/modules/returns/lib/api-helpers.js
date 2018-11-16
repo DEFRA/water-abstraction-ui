@@ -32,6 +32,6 @@ experiment('findLatestReturn', () => {
   });
 
   test('It should only select the return ID column', async () => {
-    expect(result.columns).to.equal(['return_id', 'status']);
+    expect(result.columns).to.equal(['return_id', 'status', 'licence_ref']);
   });
 });

@@ -1,3 +1,4 @@
+const { cloneDeep } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 
 const form = (request, data) => {
@@ -5,6 +6,7 @@ const form = (request, data) => {
 
   f.fields.push(fields.text('query', {
     label: 'Enter a return ID',
+    type: 'number',
     errors: {
       'any.empty': {
         message: 'You must enter a number'
@@ -16,4 +18,25 @@ const form = (request, data) => {
   return f;
 };
 
-module.exports = form;
+/**
+ * If a return is not found by return ID, this method applies an
+ * error state to the form
+ * @param {Object} form
+ * @return {Object} form in error state
+ */
+const searchApplyNoReturnError = (form) => {
+  const f = cloneDeep(form);
+  const error = {
+    name: 'query',
+    message: 'No return could be found for this return ID',
+    summary: 'No return could be found for this return ID'
+  };
+  f.errors.push(error);
+  f.fields[0].errors.push(error);
+  return f;
+};
+
+module.exports = {
+  searchForm: form,
+  searchApplyNoReturnError
+};

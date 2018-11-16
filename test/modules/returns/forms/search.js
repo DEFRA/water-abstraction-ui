@@ -1,8 +1,8 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { searchForm } = require('../../../../src/modules/returns/forms/index');
+const { searchForm, searchApplyNoReturnError } = require('../../../../src/modules/returns/forms/index');
 
-experiment('Returns search form', () => {
+experiment('Returns: searchForm', () => {
   const form = searchForm();
 
   test('it should be checked if isUnderQuery flag is true', async () => {
@@ -18,7 +18,7 @@ experiment('Returns search form', () => {
             'label': 'Enter a return ID',
             'widget': 'text',
             'required': true,
-            'type': 'text',
+            'type': 'number',
             'controlClass': 'form-control',
             'autoComplete': true,
             'errors': {
@@ -42,5 +42,15 @@ experiment('Returns search form', () => {
       'errors': [],
       'validationType': 'joi'
     });
+  });
+});
+
+experiment('Returns: searchApplyNoReturnError', () => {
+  let form = searchForm();
+  test('it should apply an error if return not found', async () => {
+    form = searchApplyNoReturnError(form);
+
+    expect(form.errors[0].name).to.equal('query');
+    expect(form.fields[0].errors[0].name).to.equal('query');
   });
 });

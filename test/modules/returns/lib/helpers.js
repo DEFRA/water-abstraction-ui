@@ -118,3 +118,37 @@ experiment('isReturnPastDueDate', () => {
     expect(helpers.isReturnPastDueDate({ due_date: tomorrow })).to.be.false();
   });
 });
+
+experiment('getRedirectPath', () => {
+  const returnId = 'v1:123';
+  const formatId = '12345678';
+
+  const ret = {
+    return_id: returnId,
+    return_requirement: formatId
+  };
+
+  test('redirects to view completed return when status is completed', async () => {
+    const completed = {
+      ...ret,
+      status: 'completed'
+    };
+    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/returns/return?id=${returnId}`);
+  });
+
+  test('redirects to edit return when status is not completed', async () => {
+    const completed = {
+      ...ret,
+      status: 'due'
+    };
+    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/return/internal?returnId=${returnId}`);
+  });
+
+  test('redirects to select licence when there is more than 1 matched return', async () => {
+    const completed = {
+      ...ret,
+      status: 'received'
+    };
+    expect(helpers.getRedirectPath(completed, true)).to.equal(`/admin/returns/select-licence?formatId=${formatId}`);
+  });
+});

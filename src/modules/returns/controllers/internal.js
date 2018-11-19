@@ -3,7 +3,7 @@ const { find } = require('lodash');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
 
-const { getViewData } = require('../lib/helpers');
+const { getViewData, getRedirectPath } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
 const { findLatestReturnsByFormatId } = require('../lib/api-helpers');
@@ -25,21 +25,6 @@ const {
   searchForm,
   searchApplyNoReturnError
 } = require('../forms/');
-
-/**
- * When searching for return by ID, gets redirect path which is either to
- * the completed return page, or the edit return flow if not yet completed
- * @param {Object} ret - return object from returns service
- * @param {Boolean} isMultiple - if true, redirect to licence disambiguation page
- * @return {String} redirect path
- */
-const getRedirectPath = (ret, isMultiple = false) => {
-  const { return_id: returnId, status, return_requirement: formatId } = ret;
-  if (isMultiple) {
-    return `/admin/returns/select-licence?formatId=${formatId}`;
-  }
-  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
-};
 
 /**
  * Search for return ID

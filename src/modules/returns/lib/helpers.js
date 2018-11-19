@@ -323,6 +323,21 @@ const getViewData = async (request, data) => {
   };
 };
 
+/**
+ * When searching for return by ID, gets redirect path which is either to
+ * the completed return page, or the edit return flow if not yet completed
+ * @param {Object} ret - return object from returns service
+ * @param {Boolean} isMultiple - if true, redirect to licence disambiguation page
+ * @return {String} redirect path
+ */
+const getRedirectPath = (ret, isMultiple = false) => {
+  const { return_id: returnId, status, return_requirement: formatId } = ret;
+  if (isMultiple) {
+    return `/admin/returns/select-licence?formatId=${formatId}`;
+  }
+  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -336,5 +351,6 @@ module.exports = {
   getScopedPath,
   canEdit,
   getViewData,
-  isReturnPastDueDate
+  isReturnPastDueDate,
+  getRedirectPath
 };

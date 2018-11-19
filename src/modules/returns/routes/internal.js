@@ -25,6 +25,25 @@ module.exports = {
     }
   },
 
+  getSelectLicence: {
+    method: 'GET',
+    path: '/admin/returns/select-licence',
+    handler: controller.getSelectLicence,
+    options: {
+      auth: {
+        scope: returns
+      },
+      description: 'Disambiguate format ID by licence number',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Select licence',
+          activeNavLink: 'returns',
+          showMeta: true
+        }
+      }
+    }
+  },
+
   getInternalRouting: {
     method: 'GET',
     path: '/admin/return/internal',

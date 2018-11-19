@@ -13,13 +13,14 @@ const returnsService = require('../../../../src/lib/connectors/returns');
 const helpers = require('../../../../src/modules/returns/lib/helpers');
 
 experiment('findLatestReturn', () => {
-  const result = findLatestReturn('12345678');
+  const result = findLatestReturn('12345678', 5);
 
   test('It should get a correct filter object', async () => {
     expect(result.filter).to.equal({
       licence_type: 'abstraction',
       regime: 'water',
-      return_requirement: '12345678'
+      return_requirement: '12345678',
+      'metadata->nald->regionCode': 5
     });
   });
 
@@ -36,8 +37,8 @@ experiment('findLatestReturn', () => {
     });
   });
 
-  test('It should only select the return ID column', async () => {
-    expect(result.columns).to.equal(['return_id', 'status', 'licence_ref']);
+  test('It should only select the required columns', async () => {
+    expect(result.columns).to.equal(['return_id', 'status', 'licence_ref', 'return_requirement']);
   });
 });
 

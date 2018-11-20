@@ -7,5 +7,5 @@
 /views/
 /out/
 server-status
-lcov.info
+coverage/lcov.info
 *.swp

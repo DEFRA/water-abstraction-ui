@@ -5,7 +5,7 @@ const form = (request, data) => {
   const f = formFactory('/admin/returns', 'GET');
 
   f.fields.push(fields.text('query', {
-    label: 'Enter a return ID',
+    label: 'Enter a return reference',
     errors: {
       'any.empty': {
         message: 'You must enter a number'
@@ -27,8 +27,8 @@ const searchApplyNoReturnError = (form) => {
   const f = cloneDeep(form);
   const error = {
     name: 'query',
-    message: 'No return could be found for this return ID',
-    summary: 'No return could be found for this return ID'
+    message: 'No return could be found for this reference',
+    summary: 'No return could be found for this reference'
   };
   f.errors.push(error);
   f.fields[0].errors.push(error);

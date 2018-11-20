@@ -15,7 +15,7 @@ experiment('Returns: searchForm', () => {
         {
           'name': 'query',
           'options': {
-            'label': 'Enter a return ID',
+            'label': 'Enter a return reference',
             'widget': 'text',
             'required': true,
             'type': 'text',

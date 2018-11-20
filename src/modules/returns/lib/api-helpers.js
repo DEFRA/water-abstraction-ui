@@ -1,6 +1,10 @@
 const returnsService = require('../../../lib/connectors/returns');
-const helpers = require('../lib/helpers');
-const { documents } = require('../../../lib/connectors/crm');
+const ExtendableError = require('es6-error');
+const crm = require('../../../lib/connectors/crm');
+const { isReturnId } = require('./helpers');
+
+class CRMDocumentsAPIError extends ExtendableError {};
+class ReturnAPIError extends ExtendableError {};
 
 /**
  * Creates the required params to send to the return service to get the
@@ -31,13 +35,6 @@ const findLatestReturn = (formatId, regionCode) => {
   return {filter, sort, pagination, columns};
 };
 
-class ReturnAPIError extends Error {
-  constructor (...args) {
-    super(...args);
-    Error.captureStackTrace(this, ReturnAPIError);
-  }
-}
-
 /**
  * Filters row from return service.
  * If an error is present, an error is thrown.
@@ -47,21 +44,31 @@ class ReturnAPIError extends Error {
 */
 const filterReturn = (row) => {
   if (row.error) {
-    throw ReturnAPIError(row.error);
+    throw new ReturnAPIError(row.error);
   }
   return row.data[0];
 };
 
 /**
  * Gets recent returns for a given format ID for every region code
- * @param {String} formatId
+ * @param {String} str - formatId or return ID
  * @return {Promise} resolves when all regions have been searched
  */
-const getRecentReturnsByFormatId = async (formatId) => {
+const getRecentReturnsByFormatId = async (str) => {
+  // For QR code support, we check whether the supplied value is a full
+  // return ID
+  if (isReturnId(str)) {
+    const { data, error } = await returnsService.returns.findOne(str);
+    if (error) {
+      throw new ReturnAPIError(`Error getting return ${str} from returns API`, error);
+    }
+    return [data];
+  }
+
   const regions = [1, 2, 3, 4, 5, 6, 7, 8];
 
   const tasks = regions.map(regionCode => {
-    const { filter, sort, pagination, columns } = findLatestReturn(formatId, regionCode);
+    const { filter, sort, pagination, columns } = findLatestReturn(str, regionCode);
     return returnsService.returns.findMany(filter, sort, pagination, columns);
   });
 
@@ -70,13 +77,6 @@ const getRecentReturnsByFormatId = async (formatId) => {
   // Map and filter returned data
   return returns.map(filterReturn).filter(x => x);
 };
-
-class CRMDocumentsAPIError extends Error {
-  constructor (...args) {
-    super(...args);
-    Error.captureStackTrace(this, ReturnAPIError);
-  }
-}
 
 /**
  * Given an array of returns, checks each licence number
@@ -92,10 +92,10 @@ const filterReturnsByCRMDocument = async (returns) => {
       $in: licenceNumbers
     }
   };
-  const { data, error } = await documents.findMany(filter);
+  const { data, error } = await crm.documents.findMany(filter, null, null, ['system_external_id']);
 
   if (error) {
-    throw CRMDocumentsAPIError(error);
+    throw new CRMDocumentsAPIError(`Error loading CRM document headers`, error);
   }
 
   const validLicenceNumbers = data.map(row => row.system_external_id);
@@ -114,31 +114,10 @@ const findLatestReturnsByFormatId = async (formatId) => {
   return filterReturnsByCRMDocument(returns);
 };
 
-/**
- * Given a return ID (NALD format ID), gets the return from the returns
- * service, and also checkes the document header in the CRM
- * @param {String} formatId
- * @param {String} entityId - the current user individual entity ID
- * @return {Promise} resolves with return data
- */
-const getRecentReturnByFormatId = async (formatId, entityId) => {
-  const { filter, sort, pagination, columns } = findLatestReturn(formatId);
-  const { data: [ret] } = await returnsService.returns.findMany(filter, sort, pagination, columns);
-
-  if (ret) {
-    // Load CRM doc header - this checks the licence version is current
-    const [ documentHeader ] = await helpers.getLicenceNumbers(entityId, {system_external_id: ret.licence_ref}, true);
-
-    if (documentHeader) {
-      return ret;
-    }
-  }
-};
-
 module.exports = {
   findLatestReturn,
-  getRecentReturnByFormatId,
   getRecentReturnsByFormatId,
   filterReturnsByCRMDocument,
-  findLatestReturnsByFormatId
+  findLatestReturnsByFormatId,
+  filterReturn
 };

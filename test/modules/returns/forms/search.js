@@ -18,7 +18,7 @@ experiment('Returns: searchForm', () => {
             'label': 'Enter a return ID',
             'widget': 'text',
             'required': true,
-            'type': 'number',
+            'type': 'text',
             'controlClass': 'form-control',
             'autoComplete': true,
             'errors': {

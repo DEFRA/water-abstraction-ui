@@ -152,3 +152,15 @@ experiment('getRedirectPath', () => {
     expect(helpers.getRedirectPath(completed, true)).to.equal(`/admin/returns/select-licence?formatId=${formatId}`);
   });
 });
+
+experiment('isReturnId', () => {
+  const returnId = 'v1:2:MD/123/0045/067:12345678:2013-04-11:2014-03-31';
+
+  test('returns true for a valid return ID', async () => {
+    expect(helpers.isReturnId(returnId)).to.equal(true);
+  });
+
+  test('returns false for other strings', async () => {
+    expect(helpers.isReturnId('01/1234/56/78')).to.equal(false);
+  });
+});

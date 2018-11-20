@@ -6,7 +6,6 @@ const form = (request, data) => {
 
   f.fields.push(fields.text('query', {
     label: 'Enter a return ID',
-    type: 'number',
     errors: {
       'any.empty': {
         message: 'You must enter a number'

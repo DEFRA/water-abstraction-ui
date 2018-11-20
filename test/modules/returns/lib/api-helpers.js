@@ -6,7 +6,7 @@ const { experiment, test, before, after } = exports.lab = Lab.script();
 
 const {
   findLatestReturn,
-  getRecentReturnsByFormatId,
+  getRecentReturns,
   filterReturn,
   filterReturnsByCRMDocument
 } = require('../../../../src/modules/returns/lib/api-helpers');
@@ -81,8 +81,9 @@ experiment('filterReturn', async () => {
   });
 });
 
-experiment('getRecentReturnsByFormatId', async () => {
-  let returnsStub;
+experiment('getRecentReturns', async () => {
+  let findManyStub;
+  let findOneStub;
 
   const returnData = {
     return_id: '123:456:789',
@@ -91,16 +92,23 @@ experiment('getRecentReturnsByFormatId', async () => {
   };
 
   before(async () => {
-    returnsStub = sinon.stub(returnsService.returns, 'findMany').resolves({ data: [returnData] });
+    findManyStub = sinon.stub(returnsService.returns, 'findMany').resolves({ data: [returnData] });
+    findOneStub = sinon.stub(returnsService.returns, 'findOne').resolves({ data: returnData });
   });
 
   after(async () => {
-    returnsStub.restore();
+    findManyStub.restore();
+    findOneStub.restore();
   });
 
-  test('It should return an array of returns, 1 for each NALD region', async () => {
-    const result = await getRecentReturnsByFormatId('123:456:789');
-    expect(result.length).to.equal(8);
+  test('for a format ID, it should return an array of returns, 1 for each NALD region', async () => {
+    const result = await getRecentReturns('123:456:789');
+    expect(result[0]).to.equal(returnData);
+  });
+
+  test('For a return ID, it should return a single result', async () => {
+    const result = await getRecentReturns('v1:2:MD/123/0045/067:12345678:2013-04-11:2014-03-31');
+    expect(result.length).to.equal(1);
     expect(result[0]).to.equal(returnData);
   });
 });

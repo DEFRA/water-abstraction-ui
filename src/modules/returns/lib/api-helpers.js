@@ -54,7 +54,7 @@ const filterReturn = (row) => {
  * @param {String} str - formatId or return ID
  * @return {Promise} resolves when all regions have been searched
  */
-const getRecentReturnsByFormatId = async (str) => {
+const getRecentReturns = async (str) => {
   // For QR code support, we check whether the supplied value is a full
   // return ID
   if (isReturnId(str)) {
@@ -110,13 +110,13 @@ const filterReturnsByCRMDocument = async (returns) => {
  * @return {Promise} resoves with an array of basic returns API row data
  */
 const findLatestReturnsByFormatId = async (formatId) => {
-  const returns = await getRecentReturnsByFormatId(formatId);
+  const returns = await getRecentReturns(formatId);
   return filterReturnsByCRMDocument(returns);
 };
 
 module.exports = {
   findLatestReturn,
-  getRecentReturnsByFormatId,
+  getRecentReturns,
   filterReturnsByCRMDocument,
   findLatestReturnsByFormatId,
   filterReturn

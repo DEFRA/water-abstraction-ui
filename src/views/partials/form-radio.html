@@ -4,9 +4,12 @@
   <fieldset id="{{ name }}">
 
     <legend>
+
+      {{#if options.label }}
       <h2 class="heading-medium">
         {{ options.label }}
       </h2>
+      {{/if}}
 
       {{#each errors}}
       <span class="error-message">{{ message }}</span>

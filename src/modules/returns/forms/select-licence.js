@@ -17,7 +17,6 @@ const form = (returns) => {
   f.fields.push(fields.hidden('isSubmitted', {}, 1));
 
   f.fields.push(fields.radio('returnId', {
-    label: 'Select licence number',
     errors: {
       'any.required': {
         // summary: 'Select if you are reporting a single amount or not',

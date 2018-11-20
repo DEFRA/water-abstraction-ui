@@ -36,7 +36,7 @@ module.exports = {
       description: 'Disambiguate format ID by licence number',
       plugins: {
         viewContext: {
-          pageTitle: 'Select licence',
+          pageTitle: 'Select a licence',
           activeNavLink: 'returns',
           showMeta: true
         }

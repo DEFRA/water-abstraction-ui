@@ -118,3 +118,49 @@ experiment('isReturnPastDueDate', () => {
     expect(helpers.isReturnPastDueDate({ due_date: tomorrow })).to.be.false();
   });
 });
+
+experiment('getRedirectPath', () => {
+  const returnId = 'v1:123';
+  const formatId = '12345678';
+
+  const ret = {
+    return_id: returnId,
+    return_requirement: formatId
+  };
+
+  test('redirects to view completed return when status is completed', async () => {
+    const completed = {
+      ...ret,
+      status: 'completed'
+    };
+    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/returns/return?id=${returnId}`);
+  });
+
+  test('redirects to edit return when status is not completed', async () => {
+    const completed = {
+      ...ret,
+      status: 'due'
+    };
+    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/return/internal?returnId=${returnId}`);
+  });
+
+  test('redirects to select licence when there is more than 1 matched return', async () => {
+    const completed = {
+      ...ret,
+      status: 'received'
+    };
+    expect(helpers.getRedirectPath(completed, true)).to.equal(`/admin/returns/select-licence?formatId=${formatId}`);
+  });
+});
+
+experiment('isReturnId', () => {
+  const returnId = 'v1:2:MD/123/0045/067:12345678:2013-04-11:2014-03-31';
+
+  test('returns true for a valid return ID', async () => {
+    expect(helpers.isReturnId(returnId)).to.equal(true);
+  });
+
+  test('returns false for other strings', async () => {
+    expect(helpers.isReturnId('01/1234/56/78')).to.equal(false);
+  });
+});

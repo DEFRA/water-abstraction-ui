@@ -1,14 +1,15 @@
 const Boom = require('boom');
+const { find } = require('lodash');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
 
-const { getViewData } = require('../lib/helpers');
+const { getViewData, getRedirectPath } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
-const { getRecentReturnByFormatId } = require('../lib/api-helpers');
+const { findLatestReturnsByFormatId } = require('../lib/api-helpers');
 
 const {
-  internalRoutingForm
+  internalRoutingForm, selectLicenceForm
 } = require('../forms/');
 
 const {
@@ -26,31 +27,19 @@ const {
 } = require('../forms/');
 
 /**
- * When searching for return by ID, gets redirect path which is either to
- * the completed return page, or the edit return flow if not yet completed
- * @param {Object} ret - return object from returns service
- * @return {String} redirect path
- */
-const getRedirectPath = (ret) => {
-  const { return_id: returnId, status } = ret;
-  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
-};
-
-/**
  * Search for return ID
  */
 const getSearch = async (request, h) => {
   const isSubmitted = 'query' in request.query;
-  const { entity_id: entityId } = request.auth.credentials;
   let form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
 
   if (form.isValid) {
     const { query } = getValues(form);
 
-    const ret = await getRecentReturnByFormatId(query, entityId);
+    const returns = await findLatestReturnsByFormatId(query);
 
-    if (ret) {
-      const path = getRedirectPath(ret);
+    if (returns.length) {
+      const path = getRedirectPath(returns[0], returns.length > 1);
       return h.redirect(path);
     }
 
@@ -59,6 +48,31 @@ const getSearch = async (request, h) => {
   }
 
   return h.view('water/returns/internal/search', {
+    ...request.view,
+    form
+  });
+};
+
+/**
+ * Where a format ID matches multiple returns, this page allows the
+ * user to select the licence they wish to view
+ */
+const getSelectLicence = async (request, h) => {
+  const { formatId } = request.query;
+  const isSubmitted = 'isSubmitted' in request.query;
+  const returns = await findLatestReturnsByFormatId(formatId);
+
+  let form = selectLicenceForm(returns);
+  form = isSubmitted ? handleRequest(form, request) : form;
+
+  if (form.isValid) {
+    const { returnId } = getValues(form);
+    const selected = find(returns, {return_id: returnId});
+    const path = getRedirectPath(selected);
+    return h.redirect(path);
+  }
+
+  return h.view('water/returns/internal/select-licence', {
     ...request.view,
     form
   });
@@ -207,6 +221,7 @@ const getQueryLogged = async (request, h) => {
 
 module.exports = {
   getSearch,
+  getSelectLicence,
   getInternalRouting,
   postInternalRouting,
   getLogReceipt,

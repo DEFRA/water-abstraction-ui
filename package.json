@@ -1,11 +1,11 @@
 {
   "name": "water-abstraction",
-  "version": "1.0.0",
+  "version": "1.13.0",
   "description": "Web app for Water Abstraction Permit service",
   "main": "index.js",
   "scripts": {
     "install-assets": "gulp build",
-    "test:travis": "lab -t 55 -m 0 -r lcov -o lcov.info -r console -o stdout",
+    "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
     "test": "lab",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
@@ -14,11 +14,13 @@
     "sass": "gulp sass",
     "sass:watch": "gulp sass:watch",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "version": "auto-changelog -p --commit-limit false && git add CHANGELOG.md"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "auto-changelog": "^1.10.2",
     "codecov": "^3.1.0",
     "del": "^3.0.0",
     "eslint": "^4.17.0",

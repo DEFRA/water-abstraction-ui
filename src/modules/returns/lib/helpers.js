@@ -323,6 +323,33 @@ const getViewData = async (request, data) => {
   };
 };
 
+/**
+ * When searching for return by ID, gets redirect path which is either to
+ * the completed return page, or the edit return flow if not yet completed
+ * @param {Object} ret - return object from returns service
+ * @param {Boolean} isMultiple - if true, redirect to licence disambiguation page
+ * @return {String} redirect path
+ */
+const getRedirectPath = (ret, isMultiple = false) => {
+  const { return_id: returnId, status, return_requirement: formatId } = ret;
+  if (isMultiple) {
+    return `/admin/returns/select-licence?formatId=${formatId}`;
+  }
+  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+};
+
+/**
+ * Checks whether supplied string is a return ID as currently supported in
+ * the digital service.  This consists of a version prefix, region code,
+ * licence number, format ID and return cycle date range
+ * @param {String} returnId - the string to test
+ * @return {Boolean} true if match
+ */
+const isReturnId = (returnId) => {
+  const r = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+  return r.test(returnId);
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -336,5 +363,7 @@ module.exports = {
   getScopedPath,
   canEdit,
   getViewData,
-  isReturnPastDueDate
+  isReturnPastDueDate,
+  getRedirectPath,
+  isReturnId
 };

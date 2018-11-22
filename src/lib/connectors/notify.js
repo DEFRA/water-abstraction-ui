@@ -42,13 +42,13 @@ const createAddress = licence => {
 };
 
 function sendNewUserPasswordReset (emailAddress, resetGuid) {
-  const link = process.env.base_url + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
+  const link = process.env.BASE_URL + '/create-password?resetGuid=' + resetGuid + '&utm_source=system&utm_medium=email&utm_campaign=create_password';
   return Water.sendNotifyMessage('new_user_verification_email', emailAddress, { link });
 }
 
 function sendExistingUserPasswordReset (emailAddress, resetGuid) {
-  const link = process.env.base_url + '/signin';
-  const resetLink = process.env.base_url + '/reset_password_change_password?resetGuid=' + resetGuid;
+  const link = process.env.BASE_URL + '/signin';
+  const resetLink = process.env.BASE_URL + '/reset_password_change_password?resetGuid=' + resetGuid;
   return Water.sendNotifyMessage('existing_user_verification_email', emailAddress, { link, resetLink });
 }
 
@@ -68,7 +68,7 @@ function sendSecurityCode (licence, accesscode) {
   // Format personalisation with address lines and postcode
   const personalisation = Object.assign({}, address, {
     accesscode,
-    siteaddress: process.env.base_url,
+    siteaddress: process.env.BASE_URL,
     licenceholder: licence.metadata.Name,
     postcode: licence.metadata.Postcode
   });
@@ -79,7 +79,7 @@ function sendSecurityCode (licence, accesscode) {
 function sendAccessNotification (params) {
   return new Promise((resolve, reject) => {
     let messageRef;
-    let link = `${process.env.base_url}`;
+    let link = `${process.env.BASE_URL}`;
 
     if (params.newUser) {
       messageRef = 'share_new_user';

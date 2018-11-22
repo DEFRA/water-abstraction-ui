@@ -1,4 +1,4 @@
-const testMode = parseInt(process.env.test_mode) === 1;
+const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 module.exports = {
 
@@ -31,12 +31,6 @@ module.exports = {
     }
   },
 
-  holdingPage: {
-    enabled: !!parseInt(process.env.holding_page, 10),
-    redirect: '/private-beta-closed',
-    ignore: /^\/public\//
-  },
-
   jwt: {
     key: process.env.JWT_SECRET,
     verifyOptions: { algorithms: [ 'HS256' ] }
@@ -44,14 +38,14 @@ module.exports = {
 
   logger: {
     level: 'info',
-    airbrakeKey: process.env.errbit_key,
-    airbrakeHost: process.env.errbit_server,
+    airbrakeKey: process.env.ERRBIT_KEY,
+    airbrakeHost: process.env.ERRBIT_SERVER,
     airbrakeLevel: 'error'
   },
 
   hapiAuthCookie: {
     cookie: 'sid',
-    password: process.env.cookie_secret, // cookie secret
+    password: process.env.COOKIE_SECRET,
     isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,

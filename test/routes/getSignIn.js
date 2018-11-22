@@ -1,18 +1,13 @@
-'use strict'
+'use strict';
 
-const Lab = require('lab')
-const lab = exports.lab = Lab.script()
+const Lab = require('lab');
+const lab = exports.lab = Lab.script();
 
-const Code = require('code')
-const DOMParser = require('xmldom').DOMParser
+const Code = require('code');
+const DOMParser = require('xmldom').DOMParser;
 
-const server = require('../../index')
-//const CookieService = require('../../src/services/cookie.service')
-
-//let validateCookieStub
-
-const routePath = '/signin'
-
+const server = require('../../index');
+const routePath = '/signin';
 
 lab.experiment('Check signin', () => {
   lab.test('The page should have a links', async () => {
@@ -21,22 +16,17 @@ lab.experiment('Check signin', () => {
       url: routePath,
       headers: {},
       payload: {}
-    }
+    };
 
-    const res = await server.inject(request)
+    const res = await server.inject(request);
+    Code.expect(res.statusCode).to.equal(200);
 
-    console.log(res);
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(res.payload, 'text/html');
 
-    Code.expect(res.statusCode).to.equal(200)
-
-
-
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(res.payload, 'text/html')
-
-    const elements = doc.getElementsByTagName('a')
-    Code.expect(elements).to.exist()
-  })
+    const elements = doc.getElementsByTagName('a');
+    Code.expect(elements).to.exist();
+  });
 
   lab.test('The page should set post login redirect', async () => {
     const request = {
@@ -44,19 +34,17 @@ lab.experiment('Check signin', () => {
       url: routePath,
       headers: {},
       payload: {}
-    }
+    };
 
+    const res = await server.inject(request);
+    Code.expect(res.statusCode).to.equal(200);
 
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(res.payload, 'text/html');
 
-    const res = await server.inject(request)
-    Code.expect(res.statusCode).to.equal(200)
-
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(res.payload, 'text/html')
-
-    const elements = doc.getElementsByTagName('a')
-    Code.expect(elements).to.exist()
-  })
+    const elements = doc.getElementsByTagName('a');
+    Code.expect(elements).to.exist();
+  });
 
   lab.test('The page should set post login redirect', async () => {
     const request = {
@@ -64,19 +52,15 @@ lab.experiment('Check signin', () => {
       url: routePath,
       headers: {},
       payload: {}
-    }
+    };
 
+    const res = await server.inject(request);
+    Code.expect(res.statusCode).to.equal(200);
 
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(res.payload, 'text/html');
 
-    const res = await server.inject(request)
-    Code.expect(res.statusCode).to.equal(200)
-
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(res.payload, 'text/html')
-
-    const elements = doc.getElementsByTagName('a')
-    Code.expect(elements).to.exist()
-  })
-
-
-})
+    const elements = doc.getElementsByTagName('a');
+    Code.expect(elements).to.exist();
+  });
+});

@@ -38,24 +38,6 @@ module.exports = {
     handler: controller.staticPage
   },
 
-  holding: {
-    method: 'GET',
-    path: '/private-beta-closed',
-    config: {
-      description: 'Private beta holding page',
-      auth: false,
-      plugins: {
-        viewContext: {
-          pageTitle: 'The test version of this service is now closed'
-        },
-        config: {
-          view: 'water/content/holding_page'
-        }
-      }
-    },
-    handler: controller.staticPage
-  },
-
   feedback: {
     method: 'GET',
     path: '/feedback',

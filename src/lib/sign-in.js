@@ -6,7 +6,7 @@ const { createGUID } = require('./helpers');
 const { usersClient } = require('./connectors/idm');
 const config = require('../../config');
 const idm = require('./connectors/idm');
-const { get } = require('lodash');
+const { pick, get } = require('lodash');
 
 /**
  * Loads user data from IDM
@@ -77,7 +77,7 @@ const createSessionData = (sessionId, user, entityId, entityRoles) => {
     entity_id: entityId,
     user_data: user.user_data || {},
     lastlogin: user.last_login,
-    roles: entityRoles,
+    roles: mapRoles(entityRoles),
     scope: get(user, 'role.scopes', [])
   };
 
@@ -85,6 +85,18 @@ const createSessionData = (sessionId, user, entityId, entityRoles) => {
   session.user_data.newuser = session.user_data.lastlogin === null;
 
   return session;
+};
+
+/**
+ * Returns a minimal set of the entity roles data.
+ *
+ * This is in place as a quick fix to handle the cookie being too large and
+ * therefore rejected by the browser.
+ *
+ * The real fix here is to load the roles data dynamically.
+ */
+const mapRoles = (entityRoles = []) => {
+  return entityRoles.map(role => pick(role, 'role', 'company_entity_id'));
 };
 
 module.exports = {

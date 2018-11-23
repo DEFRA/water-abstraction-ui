@@ -53,7 +53,12 @@ module.exports = {
       description: 'Register user account - success page',
       plugins: {
         viewContext: {
-          pageTitle: 'We have sent you an email with a new link to use'
+          pageTitle: 'Confirm your email address'
+        }
+      },
+      validate: {
+        query: {
+          email: Joi.string().required().max(254)
         }
       }
     }

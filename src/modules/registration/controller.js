@@ -13,7 +13,7 @@ const IDM = require('../../lib/connectors/idm');
  */
 function getRegisterStart (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Create an account to manage your water abstraction or impoundment licence online';
+  viewContext.pageTitle = 'Create an account to manage your water abstraction licence online';
   return reply.view('water/registration/register_start', viewContext);
 }
 
@@ -24,7 +24,7 @@ function getRegisterStart (request, reply) {
  */
 function getEmailAddress (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Tell us your email address';
+  viewContext.pageTitle = 'Create an account';
   return reply.view('water/registration/register_email', viewContext);
 }
 
@@ -108,7 +108,7 @@ function getRegisterSuccess (request, reply) {
  */
 function getSendAgain (request, reply) {
   var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Ask for another email';
+  viewContext.pageTitle = 'Request another email';
   return reply.view('water/registration/register_send_again', viewContext);
 }
 
@@ -123,7 +123,7 @@ function postSendAgain (request, reply) {
     template: 'water/registration/register_send_again',
     redirect: '/resent-success'
   };
-  postEmailAddress(request, reply, options);
+  return postEmailAddress(request, reply, options);
 }
 
 /**
@@ -133,7 +133,7 @@ function postSendAgain (request, reply) {
  */
 function getResentSuccess (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Check your email';
+  viewContext.pageTitle = 'Confirm your email address';
   return reply.view('water/registration/register_resent_success', viewContext);
 }
 

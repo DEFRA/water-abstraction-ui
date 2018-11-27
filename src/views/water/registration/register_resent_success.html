@@ -4,18 +4,12 @@
 
   <div class="grid-row">
     <div class="column-two-thirds">
-      {{>element-heading-large content='Check your email'}}
-
-      <p class="lede">We have sent you an email with instructions about what to do next.</p>
-
-
+      {{>element-heading-large content=pageTitle}}
+      <p>We have sent you a link.</p>
 
       <details class="closeOnOpen">
-        <summary><span class="summary">Still have not received an email?</span></summary>
+        <summary><span class="summary">Still not received the email?</span></summary>
         <div>
-          <p>
-          Please contact us for help.
-          </p>
           {{> contact-details }}
         </div>
       </details>

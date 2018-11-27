@@ -15,7 +15,7 @@ const { destroySession, authValidationErrorResponse } = require('./helpers');
  */
 function getWelcome (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Choose an option to view your licences';
+  viewContext.pageTitle = 'Sign in or create an account';
   return reply.view('water/welcome', viewContext);
 }
 

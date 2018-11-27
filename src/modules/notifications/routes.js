@@ -207,7 +207,7 @@ const routes = {
 
 };
 
-if (parseInt(process.env.test_mode) === 1) {
+if (parseInt(process.env.TEST_MODE) === 1) {
   routes.findEmailByAddress = {
     method: 'GET',
     path: '/notifications/last',

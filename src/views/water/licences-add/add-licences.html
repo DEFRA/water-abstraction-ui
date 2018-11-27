@@ -13,10 +13,10 @@
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        We need more information
+        There is a problem
       </h2>
       <ul class="error-summary-list">
-        <li><a href="#licence_no">Enter your licence number(s)</a></li>
+        <li><a href="#licence_no">Enter your licence numbers</a></li>
       </ul>
     </div>
       {{/equal}}
@@ -27,14 +27,14 @@
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        This information does not match our records
+        There is a problem
       </h2>
       {{#if missingNumbers}}
-      <p>We cannot find these licence numbers in our water abstraction licence database:</p>
+      <p>We cannot find these licence numbers:</p>
       <p>{{missingNumbers.data}}</p>
       {{/if}}
       <ul class="error-summary-list">
-        <li><a href="#licence_no">Check your licence number(s)</a></li>
+        <li><a href="#licence_no">Check your licence numbers</a></li>
       </ul>
      </div>
       {{/equal}}
@@ -45,14 +45,14 @@
       </script>
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        This information does not match our records
+          There is a problem
       </h2>
       {{#if missingNumbers}}
-      <p>We cannot find these licence numbers in our water abstraction licence database:</p>
+      <p>We cannot find these licence numbers:</p>
       <p>{{missingNumbers.data}}</p>
       {{/if}}
       <ul class="error-summary-list">
-        <li><a href="#licence_no">Check your licence number(s)</a></li>
+        <li><a href="#licence_no">Check your licence number</a></li>
       </ul>
      </div>
       {{/equal}}
@@ -64,14 +64,14 @@
 
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        Some information does not match our records
+        There is a problem
       </h2>
       {{#if missingNumbers}}
-      <p>We cannot find these licence numbers in our water abstraction licence database:</p>
+      <p>We cannot find these licence numbers:</p>
       <p>{{missingNumbers.data}}</p>
       {{/if}}
       <ul class="error-summary-list">
-        <li><a href="#licence_no">Check your licence number(s)</a></li>
+        <li><a href="#licence_no">Check your licence numbers</a></li>
       </ul>
      </div>
       {{/equal}}
@@ -85,16 +85,8 @@
         <!-- licence number field -->
         <div class="form-group {{#if error }}form-group-error{{/if}}">
           <label for="licence_no">
-            <p class="form-label-bold">Enter your licence number(s)</p>
-            <p class="form-hint">
-              You can only view water abstraction licences online at the moment.
-              We will let you know when you can also view any impoundment licences you
-              hold.
-            </p>
-            <span class="form-hint">
-              You can separate your licence numbers using spaces, commas,
-              or by entering them on different lines.
-            </span>
+            <span>You can enter one or many of your licence numbers</span>
+            <span class="form-hint">Separate the numbers with spaces, commas, or by entering them on different lines.</span>
           </label>
           <textarea maxlength="8000" class="form-control form-control-3-4" name="licence_no" id="licence_no" rows="5" required >{{ payload.licence_no }}</textarea>
         </div>
@@ -103,7 +95,7 @@
     </form>
     <br />
     <details class="closeOnOpen">
-      <summary><span class="summary">Do not have this information?</span></summary>
+      <summary><span class="summary">Do you need help?</span></summary>
       <div>
         <p>Please contact us for help.</p>
         {{> contact-details }}

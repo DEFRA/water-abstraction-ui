@@ -16,23 +16,25 @@
 
           <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-              That email address is not valid
+              There is a problem
             </h2>
             <ul class="error-summary-list">
-              <li><a href="#email">Re-enter your email address</a></li>
+              <li><a href="#email">Enter an email address in the right format</a></li>
             </ul>
           </div>
           {{/if}}
 
           <h1 class="heading-large">{{ pageTitle }}</h1>
 
-          <p class="lede">For security, we need to confirm your email address before you can create your account.</p>
+          <p>Enter your email address and we will send you a link. Click on the link to finish setting up your account.</p>
+          <p>If it is not in your inbox check your spam folder.</p>
+          <p>We will only use your email address to send you notifications about your licence or the service.</p>
 
           <div class="form-group {{#if error}}form-group-error{{/if}}">
              <label for="email">
                 <span class="form-label-bold">Email address</span>
                 {{#if error}}
-                  <span class="error-message">Please enter a valid email address</span>
+                  <span class="error-message">Enter an email address in the right format, for example, name@example.com</span>
                 {{/if}}
             </label>
 
@@ -42,20 +44,7 @@
           <input type="submit" value="Continue" class="button" role="button"/>
       </form>
 
-      <br />
 
-      <details>
-        <summary>
-          <span class="summary">What will you use my email address for?</span>
-        </summary>
-        <div class="panel panel-border-narrow">
-          <p>
-          We will use it to create your account and to send you information about this service.
-          We will not send you any marketing emails. Find out more by reading our
-          <a target="_blank" rel="noopener noreferrer" href="/privacy-policy">privacy policy</a>.
-          </p>
-        </div>
-      </details>
     </div>
   </div>
 </main>

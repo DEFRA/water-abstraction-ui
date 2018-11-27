@@ -1,18 +1,12 @@
-'use strict'
+'use strict';
 
-const Lab = require('lab')
-const lab = exports.lab = Lab.script()
+const Lab = require('lab');
+const lab = exports.lab = Lab.script();
 
-const Code = require('code')
-const DOMParser = require('xmldom').DOMParser
+const Code = require('code');
 
-const server = require('../../index')
-//const CookieService = require('../../src/services/cookie.service')
-
-//let validateCookieStub
-
-const routePath = '/signout'
-
+const server = require('../../index');
+const routePath = '/signout';
 
 lab.experiment('Check signout', () => {
   lab.test('The page should have links', async () => {
@@ -21,14 +15,9 @@ lab.experiment('Check signout', () => {
       url: routePath,
       headers: {},
       payload: {}
-    }
+    };
 
-
-
-    const res = await server.inject(request)
-    Code.expect(res.statusCode).to.equal(302)
-
-  })
-
-
-})
+    const res = await server.inject(request);
+    Code.expect(res.statusCode).to.equal(302);
+  });
+});

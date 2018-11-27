@@ -12,7 +12,7 @@
      options: {
        features: {
          someFeat: {
-           environment: /^(prod|preprod)$/i
+           environment: /^(production|preprod)$/i
          }
        }
      }

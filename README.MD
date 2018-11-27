@@ -24,53 +24,9 @@ npm install --only=dev
 gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass
 ```
 
-## Environment variables
+## Environment Variables
 
-A `.env` file should be created in the root directory with the following optional configuration variables
-
-### PORT
-Specify the port for the service to run on
-
-`PORT=[port]`
-
-### cacheKey
-32+ characters used to secure session variables
-
-`cacheKey=a-string-of-at-least-32-characters`
-
-### JWT_TOKEN
-The JWT used in requests to the permit repository API
-
-### apiURI
-The URI for the permit repostiory. This should probably end '/API/1.0/'
-
-### idmURI
-The URI for the tactical IDM. This should probably end '/IDM/1.0/'
-
-### licenceOrgId
-The organisation ID for the Water Licensing organisation in the permit repository. This can be found in the org table.
-
-### licenceTypeId
-The type ID for abstraction licences in the permit repository. This can be found in the type table.
-
-### cookie_secret
-A random string used for cookie encryption
-
-### test_username
-The username for a test account for unit testing
-
-### test_password
-The password for a test account for unit testing
-
-### test_entity_id
-The entity ID in the CRM of the user corresponding to the test_username and test_password above
-
-### test_licence_id
-A licence guid accessible to the test user above
-
-### query_access
-The access code for entry in private beta
-
+The required environment variables for local development can be found in the [.env.example file](./.env.example).
 
 ## Launching
 

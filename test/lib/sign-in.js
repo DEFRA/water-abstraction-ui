@@ -3,8 +3,20 @@
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 const { expect } = require('code');
+const uuid = require('uuid/v4');
+const moment = require('moment');
 
 const { createSessionData } = require('../../src/lib/sign-in');
+
+const getTestEntityRole = (role, companyId = uuid()) => ({
+  role,
+  company_entity_id: companyId,
+  entity_role_id: uuid(),
+  entity_id: uuid(),
+  regime_entity_id: uuid(),
+  created_at: moment().toISOString(),
+  created_by: uuid()
+});
 
 lab.experiment('sign-in.createSessionData', () => {
   let sessionData;
@@ -20,7 +32,12 @@ lab.experiment('sign-in.createSessionData', () => {
     userId = 'user-id';
     entityId = 'entity-id';
     emailAddress = 'unit-test@example.com';
-    roles = [{ role: 'admin' }];
+    roles = [
+      getTestEntityRole('user', 'comp-1'),
+      getTestEntityRole('user_returns', 'comp-1'),
+      getTestEntityRole('user', 'comp-2'),
+      getTestEntityRole('user_returns', 'comp-2')
+    ];
 
     user = {
       user_id: userId,
@@ -72,7 +89,12 @@ lab.experiment('sign-in.createSessionData', () => {
   });
 
   lab.test('adds the roles', async () => {
-    expect(sessionData.roles).to.equal(roles);
+    expect(sessionData.roles).to.equal([
+      { role: 'user', company_entity_id: 'comp-1' },
+      { role: 'user_returns', company_entity_id: 'comp-1' },
+      { role: 'user', company_entity_id: 'comp-2' },
+      { role: 'user_returns', company_entity_id: 'comp-2' }
+    ]);
   });
 
   lab.test('adds the scopes from the user', async () => {

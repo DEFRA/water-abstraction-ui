@@ -62,7 +62,7 @@ function viewContextDefaults (request) {
 
   // Are we in admin view?  Add a flag for templates
   viewContext.isAdmin = /^\/admin\//.test(request.url.path);
-  viewContext.isTestMode = process.env.test_mode;
+  viewContext.isTestMode = process.env.TEST_MODE;
 
   // Main nav links
   viewContext.mainNavLinks = [];
@@ -90,6 +90,14 @@ function viewContextDefaults (request) {
         id: 'notifications',
         text: 'Reports and notifications',
         url: '/admin/notifications'
+      });
+    }
+
+    if (request.permissions.hasPermission('returns.edit')) {
+      viewContext.mainNavLinks.push({
+        id: 'returns',
+        text: 'Manage returns',
+        url: '/admin/returns'
       });
     }
   } else {
@@ -150,7 +158,7 @@ function viewContextDefaults (request) {
   }
   */
 
-  viewContext.env = process.env.NODEENV;
+  viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
   viewContext.surveyType = getSurveyType(
     viewContext.isAuthenticated,

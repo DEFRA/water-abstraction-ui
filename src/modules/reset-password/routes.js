@@ -194,7 +194,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Create a password for your online account',
+          pageTitle: 'Create a password',
           create: true
         }
       }
@@ -214,7 +214,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Create a password for your online account',
+          pageTitle: 'Create a password',
           create: true
         },
         formValidator: {

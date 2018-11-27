@@ -20,7 +20,10 @@ const getBaseRequest = () => ({
     admin: {},
     licences: {},
     returns: {},
-    ar: {}
+    ar: {},
+    hasPermission: () => {
+      return false;
+    }
   },
   auth: {
     credentials: {}

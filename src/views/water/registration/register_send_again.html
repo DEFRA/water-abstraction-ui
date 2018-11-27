@@ -17,18 +17,18 @@
 
           <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
                 <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-                  That email address is not valid
+                  There is a problem
                 </h2>
 
                 <ul class="error-summary-list">
-                  <li><a href="#email">Re-enter your email address</a></li>
+                  <li><a href="#email">Enter an email address in the right format</a></li>
                 </ul>
           </div>
           {{/if}}
 
             <h1 class="heading-large">{{ pageTitle }}</h1>
 
-            <p class="lede">The email might take a few minutes to reach you. If it did not arrive in your inbox please check your spam folder. If it is not there you can ask us to send another email below.</p>
+            <p>Enter your email address again.</p>
 
 
 
@@ -37,7 +37,7 @@
               <span class="form-label-bold">Email address</span>
                 <fieldset>
                   {{#if error}}
-                  <span class="error-message">Please enter a valid email address</span>
+                  <span class="error-message">Enter an email address in the right format, like name@example.com</span>
                   {{/if}}
                 </fieldset>
 

@@ -12,10 +12,10 @@
 
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
       <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
-        You need to enter the security code we posted to you
+        There is a problem
       </h2>
       <ul class="error-summary-list">
-        <li><a href="#verification_code">Re-enter your security code</a></li>
+        <li><a href="#verification_code">Check the number you have entered is correct</a></li>
       </ul>
     </div>
       {{/if}}
@@ -34,11 +34,11 @@
             <span class="sr-only">Security code</span>
 
             <span class="form-hint">
-              We sent this by post to the registered address you chose.
+              We sent this by post to the registered address
             </span>
 
             {{#if error}}
-                <span id="enterPassword" class="error-message">Please check your code is correct.</span>
+                <span id="enterPassword" class="error-message">Check the number you have entered is correct.</span>
             {{/if}}
 
           </label>
@@ -53,13 +53,13 @@
     <br />
 
     <details>
-      <summary><span class="summary">Has your code not arrived?</span></summary>
+      <summary><span class="summary">Not received your code?</span></summary>
       <div>
         <p>
-          Please allow up to 5 working days to receive your code by post.
+          Allow up to 2-3 working days to receive your code by post.
         </p>
         <p>
-          If it has not arrived after that time, please contact us to request a new code.
+          If it has not arrived after that time, contact us to request a new code.
         </p>
         {{> contact-details }}
       </div>

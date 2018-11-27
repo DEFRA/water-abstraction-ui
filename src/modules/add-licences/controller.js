@@ -31,7 +31,7 @@ const {
 async function getLicenceAdd (request, reply) {
   const viewContext = View.contextDefaults(request);
   viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Which licences do you want to view?';
+  viewContext.pageTitle = 'Add your licences to the service';
   return reply.view('water/licences-add/add-licences', viewContext);
 }
 
@@ -52,12 +52,12 @@ async function postLicenceAdd (request, reply) {
   // @TODO relevant validation messages
 
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Which licences do you want to be able to view?';
+  viewContext.pageTitle = 'Add your licences to the service';
   viewContext.activeNavLink = 'manage';
 
   // Validate posted data
   const schema = {
-    licence_no: Joi.string().required().allow('').trim().max(9000),
+    licence_no: Joi.string().required().trim().max(9000),
     csrf_token: Joi.string().guid()
   };
   try {
@@ -132,7 +132,7 @@ async function postLicenceAdd (request, reply) {
  */
 async function getLicenceSelect (request, reply) {
   const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Are these the licences you want to be able to view?';
+  viewContext.pageTitle = 'Confirm your licences';
   viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'noLicenceSelected') {

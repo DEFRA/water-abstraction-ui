@@ -23,10 +23,10 @@ const form = (request, data) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('basis', {
-    label: 'Did you use one or more meters to calculate the volumes?',
+    label: 'Did you use a meter (or meters) to calculate the volumes?',
     errors: {
       'any.required': {
-        message: 'Select if you are using one or more meters or not'
+        message: 'Tell us if you used meters or not'
       }
     },
     choices: [

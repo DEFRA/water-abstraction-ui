@@ -4,26 +4,31 @@ const constants = require('../../../lib/constants');
 const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
-const createMeterRoute = (method, path, handler, description) => ({
-  method,
-  path,
-  handler,
-  options: {
-    auth: {
-      scope: external
-    },
-    description,
-    plugins: {
-      viewContext: {
-        activeNavLink: 'returns'
+const createMeterRoute = (method, path, handler, description, title) => {
+  console.log(method, path, description, title);
+
+  return {
+    method,
+    path,
+    handler,
+    options: {
+      auth: {
+        scope: external
       },
-      hapiRouteAcl: {
-        permissions: ['returns:submit']
-      },
-      returns: true
+      description,
+      plugins: {
+        viewContext: {
+          activeNavLink: 'returns',
+          pageTitle: title
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
+        },
+        returns: true
+      }
     }
-  }
-});
+  };
+};
 
 const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
 const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
@@ -45,7 +50,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - has any water been abstracted?',
           activeNavLink: 'returns',
           showMeta: true
         },
@@ -71,7 +76,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+          pageTitle: 'Abstraction return - has any water been abstracted?',
           activeNavLink: 'returns',
           showMeta: true
         },
@@ -379,36 +384,42 @@ module.exports = {
   getMeterDetails: createGetMeterRoute(
     '/return/meter/details',
     controller.getMeterDetails,
-    'Shows the view allowing a user to enter meter details'
+    'Shows the view allowing a user to enter meter details',
+    'Abstraction return - tell us about your meter'
   ),
 
   postMeterDetails: createPostMeterRoute(
     '/return/meter/details',
     controller.postMeterDetails,
-    'POST handler for meter details'
+    'POST handler for meter details',
+    'Abstraction return - tell us about your meter'
   ),
 
   getMeterUnits: createGetMeterRoute(
     '/return/meter/units',
     controller.getMeterUnits,
-    'Shows the view allowing to select the meter units'
+    'Shows the view allowing to select the meter units',
+    'Abstraction return - what is the unit of measurement?'
   ),
 
   postMeterUnits: createPostMeterRoute(
     '/return/meter/units',
     controller.postMeterUnits,
-    'POST handler for meter units'
+    'POST handler for meter units',
+    'Abstraction return - what is the unit of measurement?'
   ),
 
   getMeterReadings: createGetMeterRoute(
     '/return/meter/readings',
     controller.getMeterReadings,
-    'Shows the view to capture the users meter readings'
+    'Shows the view to capture the users meter readings',
+    'Abstraction return - enter meter readings'
   ),
 
   postMeterReadings: createPostMeterRoute(
     '/return/meter/readings',
     controller.postMeterReadings,
-    'POST handler for meter readings'
+    'POST handler for meter readings',
+    'Abstraction return - enter meter readings'
   )
 };

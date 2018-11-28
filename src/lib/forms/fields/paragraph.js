@@ -1,7 +1,8 @@
 const paragraphFactory = (name, options = {}, value) => {
   const defaults = {
     widget: 'paragraph',
-    text: ''
+    text: '',
+    element: 'p'
   };
   return {
     name,

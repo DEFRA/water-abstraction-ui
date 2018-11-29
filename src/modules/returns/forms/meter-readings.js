@@ -30,8 +30,6 @@ const getLineTextInput = (line, suffix) => {
 };
 
 const form = (request, data) => {
-  console.log(data);
-
   const { csrfToken } = request.view;
 
   const action = getPath(STEP_METER_READINGS, request);

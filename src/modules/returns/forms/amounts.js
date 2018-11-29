@@ -9,11 +9,11 @@ const amountsForm = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isNil', {
-    label: 'Are there any abstraction amounts to report?',
+    label: 'Has any water been abstracted in this return period?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {
-        message: 'Are there any amounts to report?'
+        message: 'Has any water been abstracted?'
       }
     },
     choices: [

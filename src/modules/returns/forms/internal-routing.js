@@ -11,13 +11,13 @@ const getChoices = (data) => {
 
   // Only add option to log receipt of form if not yet received
   if (data.receivedDate === null) {
-    choices.push({ value: 'log_receipt', label: 'Log receipt (and come back to it later)' });
+    choices.push({ value: 'log_receipt', label: 'Record receipt (and come back to it later)' });
   }
   choices.push({ value: 'submit', label: 'Enter and submit it' });
   if (data.isUnderQuery === true) {
-    choices.push({ value: 'clear_under_query', label: 'Resolve a problem with the paper form' });
+    choices.push({ value: 'clear_under_query', label: 'Resolve query' });
   } else {
-    choices.push({ value: 'set_under_query', label: 'Record a problem with the paper form' });
+    choices.push({ value: 'set_under_query', label: 'Record as under query' });
   }
 
   return choices;

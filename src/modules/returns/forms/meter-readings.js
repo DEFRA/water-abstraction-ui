@@ -3,8 +3,9 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
 const { get } = require('lodash');
 const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
+const { getSuffix } = require('../lib/helpers');
 
-const getLineTextInput = line => {
+const getLineTextInput = (line, suffix) => {
   const name = getLineName(line);
   const label = getLineLabel(line);
   return fields.text(name, {
@@ -12,6 +13,7 @@ const getLineTextInput = line => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
+    suffix,
     controlClass: 'form-control form-control--reading',
     errors: {
       'number.min': {
@@ -34,10 +36,12 @@ const form = (request, data) => {
 
   const f = formFactory(action);
 
+  const suffix = getSuffix(data.reading.units);
+
   const lines = getFormLines(data);
 
   // add a text field for each required meter reading
-  lines.forEach(line => f.fields.push(getLineTextInput(line)));
+  lines.forEach(line => f.fields.push(getLineTextInput(line, suffix)));
 
   f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

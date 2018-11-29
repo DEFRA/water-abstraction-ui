@@ -350,6 +350,22 @@ const isReturnId = (returnId) => {
   return r.test(returnId);
 };
 
+/**
+ * Get field suffix - this is the units used for this return
+ * @param {String} unit - internal SI unit or gal
+ * @return {String} suffix - human readable unit
+ */
+const getSuffix = (unit) => {
+  const u = unit.replace('³', '3');
+  const units = {
+    m3: 'cubic metres',
+    l: 'litres',
+    gal: 'gallons',
+    Ml: 'megalitres'
+  };
+  return units[u];
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -365,5 +381,6 @@ module.exports = {
   getViewData,
   isReturnPastDueDate,
   getRedirectPath,
-  isReturnId
+  isReturnId,
+  getSuffix
 };

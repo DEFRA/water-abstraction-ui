@@ -2,16 +2,19 @@ const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { STEP_SINGLE_TOTAL, getPath } = require('../lib/flow-helpers');
+const { getSuffix } = require('../lib/helpers');
 
 const form = (request, data) => {
   const { csrfToken } = request.view;
 
   const action = getPath(STEP_SINGLE_TOTAL, request);
 
+  const suffix = getSuffix(data.reading.units);
+
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isSingleTotal', {
-    label: 'Is it a single amount?',
+    label: 'Is it a single amount of abstracted water?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {
@@ -24,9 +27,10 @@ const form = (request, data) => {
         label: 'Yes',
         fields: [
           fields.text('total', {
-            label: 'Enter total amount',
+            label: 'Enter the total amount',
             type: 'number',
             controlClass: 'form-control form-control--small',
+            suffix,
             errors: {
               'number.base': {
                 message: 'Enter a total figure'

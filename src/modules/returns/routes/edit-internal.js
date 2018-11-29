@@ -9,7 +9,7 @@ const getHandlerName = (method, path, pathExclude) => {
   return method.toLowerCase() + path.replace(pathExclude, '').split('/').map(upperFirst).join('');
 };
 
-const createMeterRoute = (method, path, description) => {
+const createMeterRoute = (method, path, description, title) => {
   return {
     method,
     path,
@@ -18,7 +18,10 @@ const createMeterRoute = (method, path, description) => {
       auth: { scope: returns },
       description,
       plugins: {
-        viewContext: { activeNavLink: 'returns' },
+        viewContext: {
+          activeNavLink: 'returns',
+          pageTitle: title
+        },
         returns: true
       }
     }
@@ -228,7 +231,7 @@ module.exports = {
       description: 'Get whether a single total was submitted for this return',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - is it a single amount?',
+          pageTitle: 'Abstraction return - is it a single abstracted amount?',
           activeNavLink: 'returns'
         },
         returns: true
@@ -372,32 +375,38 @@ module.exports = {
 
   getMeterDetails: createGetMeterRoute(
     '/admin/return/meter/details',
-    'Shows the view allowing an admin user to enter meter details'
+    'Shows the view allowing an admin user to enter meter details',
+    'Abstraction return - tell us about your meter'
   ),
 
   postMeterDetails: createPostMeterRoute(
     '/admin/return/meter/details',
-    'POST handler for meter details'
+    'POST handler for meter details',
+    'Abstraction return - tell us about your meter'
   ),
 
   getMeterUnits: createGetMeterRoute(
     '/admin/return/meter/units',
-    'Shows the view allowing an admin user to enter meter units'
+    'Shows the view allowing an admin user to enter meter units',
+    'Abstraction return - what is the unit of measurement?'
   ),
 
   postMeterUnits: createPostMeterRoute(
     '/admin/return/meter/units',
-    'POST handler for meter units'
+    'POST handler for meter units',
+    'Abstraction return - what is the unit of measurement?'
   ),
 
   getMeterReadings: createGetMeterRoute(
     '/admin/return/meter/readings',
-    'Shows the view allowing an admin user to enter meter readings'
+    'Shows the view allowing an admin user to enter meter readings',
+    'Abstraction return - enter meter readings'
   ),
 
   postMeterReadings: createPostMeterRoute(
     '/admin/return/meter/readings',
-    'POST handler for meter readings'
+    'POST handler for meter readings',
+    'Abstraction return - enter meter readings'
   )
 
 };

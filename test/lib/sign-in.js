@@ -85,7 +85,7 @@ lab.experiment('sign-in.createSessionData', () => {
   });
 
   lab.test('adds the last login value from the user', async () => {
-    expect(sessionData.lastlogin).to.equal(user.last_login);
+    expect(sessionData.lastLogin).to.equal(user.last_login);
   });
 
   lab.test('adds the roles', async () => {
@@ -101,7 +101,7 @@ lab.experiment('sign-in.createSessionData', () => {
     expect(sessionData.scope).to.equal(user.role.scopes);
   });
 
-  lab.test('sets user data newuser to true if no lastlogin', async () => {
+  lab.test('sets user data newUser to true if no lastLogin', async () => {
     const neverLoggedInUser = {
       user_id: userId,
       user_name: emailAddress,
@@ -110,10 +110,10 @@ lab.experiment('sign-in.createSessionData', () => {
     };
 
     const data = createSessionData('id', neverLoggedInUser, 'eid', []);
-    expect(data.user_data.newuser).to.be.true();
+    expect(data.user_data.newUser).to.be.true();
   });
 
-  lab.test('sets user data last login to null if no lastlogin', async () => {
+  lab.test('sets user data last login to null if no lastLogin', async () => {
     const neverLoggedInUser = {
       user_id: userId,
       user_name: emailAddress,
@@ -122,14 +122,14 @@ lab.experiment('sign-in.createSessionData', () => {
     };
 
     const data = createSessionData('id', neverLoggedInUser, 'eid', []);
-    expect(data.user_data.lastlogin).to.be.null();
+    expect(data.user_data.lastLogin).to.be.null();
   });
 
-  lab.test('sets user data newuser to false if lastlogin exists', async () => {
-    expect(sessionData.user_data.newuser).to.be.false();
+  lab.test('sets user data newUser to false if lastLogin exists', async () => {
+    expect(sessionData.user_data.newUser).to.be.false();
   });
 
-  lab.test('sets user data last login if lastlogin exists', async () => {
-    expect(sessionData.user_data.lastlogin).to.equal(user.last_login);
+  lab.test('sets user data last login if lastLogin exists', async () => {
+    expect(sessionData.user_data.lastLogin).to.equal(user.last_login);
   });
 });

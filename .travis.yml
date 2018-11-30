@@ -24,3 +24,4 @@ after_script:
 env:
   global:
     - COOKIE_SECRET=somethingverysecrethere
+    - GOOGLE_ANALYTICS_PROPERTY_ID=ga-test

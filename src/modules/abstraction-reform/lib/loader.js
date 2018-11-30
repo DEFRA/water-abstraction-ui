@@ -1,6 +1,8 @@
 const Boom = require('boom');
 const { documents } = require('../../../lib/connectors/crm');
 const { licences } = require('../../../lib/connectors/permit');
+const { arRefreshLicenceWebhook } = require('../../../lib/connectors/water');
+
 const { stateManager, getInitialState } = require('./state-manager');
 const { transformNulls } = require('./helpers');
 
@@ -105,15 +107,18 @@ const load = async (documentId) => {
 
 /**
  * Updates AR licence with new actions list
- * @param {String} licenceRef
- * @param {Array} actions - a list of actions describing edits
+ * @param {String} licenceId - primary key of licence in permit repo
+ * @param {Object} data - AR licence data
+ * @param {String} licenceNumber
  * @return {Promise}
  */
-const update = async (licenceId, data) => {
+const update = async (licenceId, data, licenceNumber) => {
   const payload = {
     licence_data_value: JSON.stringify(data)
   };
-  return licences.updateOne(licenceId, payload);
+  const result = await licences.updateOne(licenceId, payload);
+  await arRefreshLicenceWebhook(licenceNumber);
+  return result;
 };
 
 module.exports = {

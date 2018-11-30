@@ -10,8 +10,9 @@
     <div class="column-one-third">
       <h2 class="heading-medium">View a report</h2>
       <ul class="list list-bullet">
-        <li><a href="/admin/notifications/report">Notifications report</a></li>
-        <li><a target="_blank" href="https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N">View service performance (opens in a new tab)</a></li>
+        {{#each reports}}
+        <li><a href="{{ path }}" {{#if options.newWindow }}target="_blank"{{/if}}>{{ name }}</a></li>
+        {{/each}}
       </ul>
     </div>
 

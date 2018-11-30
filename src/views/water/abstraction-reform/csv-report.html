@@ -1,0 +1,22 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
+
+  <a class="link-back" href="/admin/notifications">Back</a>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+
+      <p class="govuk-body">
+                Download the latest abstraction reform data as a comma separated value file (CSV).
+              </p>
+
+      <a href="http://localhost:8000/admin/abstraction-reform/report?download=1" class="button">Download file</a>
+
+    </div>
+  </div>
+</main>

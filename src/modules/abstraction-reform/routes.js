@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const controller = require('./controller');
+const controller = require('./controllers/edit');
+const reportsController = require('./controllers/reports');
 const statuses = require('./lib/statuses');
 const { scope } = require('../../lib/constants');
 const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover];
@@ -84,6 +85,22 @@ module.exports = {
             notes: Joi.string().allow(''),
             status: Joi.string().required().valid(Object.values(statuses))
           }
+        }
+      }
+    }
+  },
+
+  getCSVReport: {
+    method: 'GET',
+    path: '/admin/abstraction-reform/report',
+    handler: reportsController.getCSVReport,
+    options: {
+      auth: { scope: scope.abstractionReformApprover },
+      description: 'Page to allow download of abstraction reform CSV report',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction reform report',
+          activeNavLink: 'notifications'
         }
       }
     }

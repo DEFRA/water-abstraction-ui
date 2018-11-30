@@ -55,6 +55,7 @@
     "code": "^5.2.3",
     "comma-number": "^2.0.0",
     "csv-parse": "^2.5.0",
+    "csv-stringify": "^5.0.0",
     "debug": "^2.6.9",
     "deep-extend": "^0.6.0",
     "deep-map": "^1.5.0",

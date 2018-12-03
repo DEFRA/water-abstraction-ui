@@ -2,7 +2,7 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const { APIClient } = require('hapi-pg-rest-api');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 
 /**
  * This endpoint in the water service contains summary data around the status

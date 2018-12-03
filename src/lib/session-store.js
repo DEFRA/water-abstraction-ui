@@ -3,7 +3,7 @@
  * API (actual storage is in water project)
  * @module lib/sessions/session-store
  */
-const { APIClient } = require('hapi-pg-rest-api');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false

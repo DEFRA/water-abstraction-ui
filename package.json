@@ -44,6 +44,7 @@
     "xmldom": "^0.1.27"
   },
   "dependencies": {
+    "@envage/hapi-pg-rest-api": "^4.1.0",
     "airbrake-js": "^1.5.0",
     "async-waterfall": "^0.1.5",
     "atob": "^2.1.1",
@@ -55,6 +56,7 @@
     "code": "^5.2.3",
     "comma-number": "^2.0.0",
     "csv-parse": "^2.5.0",
+    "csv-stringify": "^5.0.0",
     "debug": "^2.6.9",
     "deep-extend": "^0.6.0",
     "deep-map": "^1.5.0",
@@ -70,7 +72,6 @@
     "hapi": "^17.7.0",
     "hapi-auth-cookie": "^9.0.0",
     "hapi-auth-jwt2": "^8.1.0",
-    "hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api.git",
     "hapi-sanitize-payload": "^2.0.0",
     "hoek": "^4.2.1",
     "http-errors": "^1.6.2",

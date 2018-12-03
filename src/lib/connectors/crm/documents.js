@@ -4,7 +4,7 @@
  */
 const {
   APIClient
-} = require('hapi-pg-rest-api');
+} = require('@envage/hapi-pg-rest-api');
 const Boom = require('boom');
 const { crm } = require('../../../../config');
 const { entityId: waterRegimeEntityId } = crm.regimes.water;

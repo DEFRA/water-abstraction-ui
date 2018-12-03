@@ -2,7 +2,7 @@
  * Creates a client connector for the CRM entity roles API endpoint
  * @module lib/connectors/crm/entity-roles
  */
-const { APIClient } = require('hapi-pg-rest-api');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false

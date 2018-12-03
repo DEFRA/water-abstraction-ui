@@ -3,7 +3,7 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const { APIClient } = require('hapi-pg-rest-api');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 
 const client = new APIClient(rp, {
   endpoint: process.env.IDM_URI + '/user',

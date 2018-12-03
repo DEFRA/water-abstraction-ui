@@ -4,7 +4,7 @@
  */
 const {
   APIClient
-} = require('hapi-pg-rest-api');
+} = require('@envage/hapi-pg-rest-api');
 const moment = require('moment');
 const rp = require('request-promise-native').defaults({
   proxy: null,

@@ -323,7 +323,7 @@ async function postAddressSelect (request, reply) {
     await Notify.sendSecurityCode(data, verification.verification_code);
 
     // Get all licences - this is needed to determine whether to display link back to dashboard
-    const { error: err2, data: licences } = await CRM.documents.getLicences({ verified: 1, entity_id: entityId });
+    const { error: err2, data: licences } = await CRM.documents.findMany({ verified: 1, entity_id: entityId });
     if (err2) {
       throw err2;
     }

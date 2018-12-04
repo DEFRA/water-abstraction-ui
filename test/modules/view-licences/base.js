@@ -11,7 +11,7 @@ experiment('view-licences/base', () => {
 
   beforeEach(async () => {
     sinon.stub(IDM, 'getUserByEmail');
-    sinon.stub(CRM.documents, 'getLicences');
+    sinon.stub(CRM.documents, 'findMany');
     h = {
       view: sinon.spy()
     };
@@ -19,7 +19,7 @@ experiment('view-licences/base', () => {
 
   afterEach(async () => {
     IDM.getUserByEmail.restore();
-    CRM.documents.getLicences.restore();
+    CRM.documents.findMany.restore();
   });
 
   experiment('when the form is invalid', () => {
@@ -42,7 +42,7 @@ experiment('view-licences/base', () => {
     });
 
     it('the controller does not get the licences', async () => {
-      expect(CRM.documents.getLicences.notCalled).to.be.true();
+      expect(CRM.documents.findMany.notCalled).to.be.true();
     });
   });
 
@@ -63,7 +63,7 @@ experiment('view-licences/base', () => {
       };
 
       IDM.getUserByEmail.resolves({ data: [] });
-      CRM.documents.getLicences.resolves({
+      CRM.documents.findMany.resolves({
         data: [],
         error: null,
         pagination: {}
@@ -95,7 +95,7 @@ experiment('view-licences/base', () => {
         query: { page: 1 }
       };
 
-      CRM.documents.getLicences.resolves({
+      CRM.documents.findMany.resolves({
         data: [{ id: 1 }],
         error: null,
         pagination: { page: 1 }

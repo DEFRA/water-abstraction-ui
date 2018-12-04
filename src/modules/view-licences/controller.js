@@ -112,7 +112,7 @@ async function postLicenceRename (request, reply) {
     document_id: request.params.licence_id
   };
 
-  const { data, error } = await CRM.documents.getLicences(filter);
+  const { data, error } = await CRM.documents.findMany(filter);
 
   if (error || data.length === 0) {
     return reply(Boom.notFound('Document not found', error));

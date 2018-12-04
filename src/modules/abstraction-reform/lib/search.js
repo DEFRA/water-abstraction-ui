@@ -92,7 +92,7 @@ const search = async (q) => {
   };
 
     // Get licences from CRM
-  const { data, error, pagination } = await documents.getLicences(filter, sort, {
+  const { data, error, pagination } = await documents.findMany(filter, sort, {
     page,
     perPage
   });

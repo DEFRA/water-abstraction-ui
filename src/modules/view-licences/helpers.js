@@ -99,7 +99,7 @@ async function loadLicenceData (entityId, documentId) {
   };
 
   // Get CRM data
-  const { error, data: [documentHeader] } = await CRM.documents.getLicences(filter);
+  const { error, data: [documentHeader] } = await CRM.documents.findMany(filter);
   if (error) {
     throw error;
   }

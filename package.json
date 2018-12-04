@@ -37,7 +37,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-standard": "^10.1.2",
     "gulp-uglify": "^3.0.0",
-    "lab": "^14.3.2",
+    "lab": "^14.3.4",
     "sinon": "^4.2.2",
     "snyk": "^1.89.0",
     "standard": "^10.0.3",

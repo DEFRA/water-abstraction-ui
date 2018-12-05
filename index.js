@@ -19,6 +19,7 @@ const { acl, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
 const returnsPlugin = require('./src/modules/returns/plugin.js');
+const viewEngine = require('./src/lib/view/');
 
 // Initialise logger
 const logger = require('./src/lib/logger');
@@ -90,8 +91,8 @@ async function start () {
 
     server.auth.default('standard');
 
-    // Set up view location
-    server.views(require('./src/views'));
+    // Set up Nunjucks view engine
+    server.views(viewEngine);
 
     // Import routes
     server.route(routes);

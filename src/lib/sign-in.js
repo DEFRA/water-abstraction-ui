@@ -76,13 +76,13 @@ const createSessionData = (sessionId, user, entityId, entityRoles) => {
     user_id: user.user_id,
     entity_id: entityId,
     user_data: user.user_data || {},
-    lastlogin: user.last_login,
+    lastLogin: user.last_login,
     roles: mapRoles(entityRoles),
     scope: get(user, 'role.scopes', [])
   };
 
-  session.user_data.lastlogin = user.last_login || null;
-  session.user_data.newuser = session.user_data.lastlogin === null;
+  session.user_data.lastLogin = user.last_login || null;
+  session.user_data.newUser = session.user_data.lastLogin === null;
 
   return session;
 };

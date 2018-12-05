@@ -9,5 +9,6 @@ module.exports = {
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),
   viewContext: require('./view-context'),
-  formValidator: require('./form-validator')
+  formValidator: require('./form-validator'),
+  anonGoogleAnalytics: require('./anon-google-analytics')
 };

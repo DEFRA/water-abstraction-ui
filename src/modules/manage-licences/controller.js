@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const Notify = require('../../lib/connectors/notify');
-const View = require('../../lib/view');
 const CRM = require('../../lib/connectors/crm');
 const IDM = require('../../lib/connectors/idm');
 const Boom = require('boom');
@@ -61,7 +60,7 @@ const getLicenceAccessListViewModel = async userEntityID => {
 
 async function getAccessList (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Give access to your licences';
   viewContext.entity_id = entityId;
@@ -76,7 +75,7 @@ async function getAccessList (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 function getAddAccess (request, reply, context = {}) {
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Give access to view your licences';
 
@@ -93,7 +92,7 @@ function getAddAccess (request, reply, context = {}) {
  */
 async function postAddAccess (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Manage access to your licences';
   viewContext.email = request.payload.email;
@@ -190,7 +189,7 @@ async function getRemoveAccess (request, reply, context = {}) {
       throw Boom.badImplementation(`CRM error finding entity ${colleagueEntityID}`, error);
     }
 
-    const viewContext = Object.assign({}, View.contextDefaults(request), context);
+    const viewContext = Object.assign(request.view, context);
     viewContext.activeNavLink = 'manage';
     viewContext.entityID = entityID;
     viewContext.colleagueName = colleagueEntity.entity_nm;
@@ -264,7 +263,7 @@ async function postRemoveAccess (request, h) {
  */
 async function getAddLicences (request, reply, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
-  const viewContext = Object.assign({}, View.contextDefaults(request), context);
+  const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Manage your licences';
 
@@ -284,7 +283,7 @@ async function getAddLicences (request, reply, context = {}) {
 
 async function getChangeAccess (request, h) {
   const { entity_id: entityID } = request.auth.credentials;
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Change access to your licences';
 

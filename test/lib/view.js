@@ -73,36 +73,39 @@ experiment('lib/view.contextDefaults', () => {
 experiment('lib/view.getTracking', () => {
   const internal = {
     scope: ['internal'],
-    lastlogin: '2018-10-24'
+    lastLogin: '2018-10-24'
   };
 
   const external = {
     scope: [],
-    lastlogin: null
+    lastLogin: null
   };
 
   test('Should handle case where user is not logged in', async () => {
     const tracking = view.getTracking(null);
-    expect(tracking).to.equal({
-      usertype: 'not_logged_in'
-    });
+    expect(tracking.userType).to.equal('not_logged_in');
+    expect(tracking.propertyId).to.exist();
+    expect(tracking.debug).to.exist();
+    expect(tracking.isLoggedIn).to.be.false();
   });
 
   test('Existing internal user', async () => {
     const tracking = view.getTracking(internal);
-    expect(tracking).to.equal({
-      usertype: 'internal',
-      lastlogin: '2018-10-24',
-      newuser: false
-    });
+    expect(tracking.userType).to.equal('internal');
+    expect(tracking.lastLogin).to.equal('2018-10-24');
+    expect(tracking.newUser).to.equal(false);
+    expect(tracking.debug).to.exist();
+    expect(tracking.propertyId).to.exist();
+    expect(tracking.isLoggedIn).to.be.true();
   });
 
   test('New external user', async () => {
     const tracking = view.getTracking(external);
-    expect(tracking).to.equal({
-      usertype: 'external',
-      lastlogin: null,
-      newuser: true
-    });
+    expect(tracking.userType).to.equal('external');
+    expect(tracking.lastLogin).to.equal(null);
+    expect(tracking.newUser).to.equal(true);
+    expect(tracking.debug).to.exist();
+    expect(tracking.propertyId).to.exist();
+    expect(tracking.isLoggedIn).to.be.true();
   });
 });

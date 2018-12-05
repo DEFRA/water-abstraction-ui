@@ -4,6 +4,7 @@
  */
 const Joi = require('joi');
 const IDM = require('../../lib/connectors/idm');
+const querystring = require('querystring');
 
 /**
  * Render initial page with information for users
@@ -23,6 +24,14 @@ function getEmailAddress (request, h) {
   return h.view('water/registration/register_email', request.view);
 }
 
+const getUrlWithEmailParam = (email, options) => {
+  if (options.includeEmail) {
+    const query = querystring.stringify({ email });
+    return `${options.redirect}?${query}`;
+  }
+  return options.redirect;
+};
+
 /**
  * Process email form
  * - validates email address
@@ -38,10 +47,12 @@ function getEmailAddress (request, h) {
 async function postEmailAddress (request, h, options = {}) {
   const defaults = {
     template: 'water/registration/register_email',
-    redirect: '/success'
+    redirect: '/success',
+    includeEmail: true
   };
   const config = Object.assign(defaults, options);
   const pageTitle = config.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
+  let email;
 
   try {
     // Validate email
@@ -53,15 +64,17 @@ async function postEmailAddress (request, h, options = {}) {
       throw error;
     }
 
+    email = value.email;
+
     // Try to create user
-    const { error: createError } = await IDM.createUserWithoutPassword(value.email);
+    const { error: createError } = await IDM.createUserWithoutPassword(email);
 
     if (createError) {
       throw createError;
     }
 
     await IDM.resetPassword(value.email, 'new');
-    return h.redirect(config.redirect);
+    return h.redirect(getUrlWithEmailParam(email, config));
   } catch (error) {
     // User exists
     if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
@@ -69,7 +82,7 @@ async function postEmailAddress (request, h, options = {}) {
       if (resetError) {
         throw resetError;
       } else {
-        return h.redirect(config.redirect);
+        return h.redirect(getUrlWithEmailParam(email, config));
       }
     }
 
@@ -90,6 +103,7 @@ async function postEmailAddress (request, h, options = {}) {
  * @param {Object} h - Hapi Response Toolkit
  */
 function getRegisterSuccess (request, h) {
+  request.view.email = request.query.email;
   return h.view('water/registration/register_success', request.view);
 }
 
@@ -111,7 +125,8 @@ function getSendAgain (request, h) {
 function postSendAgain (request, h) {
   const options = {
     template: 'water/registration/register_send_again',
-    redirect: '/resent-success'
+    redirect: '/resent-success',
+    includeEmail: false
   };
   return postEmailAddress(request, h, options);
 }
@@ -122,7 +137,6 @@ function postSendAgain (request, h) {
  * @param {Object} h - Hapi Response Toolkit
  */
 function getResentSuccess (request, h) {
-  request.view.pageTitle = 'Confirm your email address';
   return h.view('water/registration/register_resent_success', request.view);
 }
 
@@ -133,5 +147,6 @@ module.exports = {
   getRegisterSuccess,
   getSendAgain,
   postSendAgain,
-  getResentSuccess
+  getResentSuccess,
+  getUrlWithEmailParam
 };

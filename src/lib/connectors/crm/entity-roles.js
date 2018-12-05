@@ -48,7 +48,7 @@ client.addColleagueRole = async function (entityID, colleagueEntityID, role = 'u
     const response = await rp(options);
     return response;
   } catch (error) {
-    logger.error('error', error);
+    logger.error('Error adding colleague role', error);
     throw error;
   }
 };

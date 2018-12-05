@@ -100,7 +100,7 @@ async function start () {
 
     server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`);
   } catch (err) {
-    logger.error(['error'], err);
+    logger.error('Failed to start server', err);
   }
 
   return server;

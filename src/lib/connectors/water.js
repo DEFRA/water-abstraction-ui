@@ -21,11 +21,11 @@ function sendNotifyMessage (messageRef, recipient, personalisation) {
       uri,
       'post',
       requestBody)
-      .then((response) => {
-        var data = response.body;
+      .then(response => {
+        const data = response.body;
         resolve(data);
-      }).catch((response) => {
-        logger.error('error', response);
+      }).catch(response => {
+        logger.error('Error sending notify message', response);
         resolve(response);
       });
   });

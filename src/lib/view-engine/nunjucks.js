@@ -3,11 +3,10 @@ const Nunjucks = require('nunjucks');
 
 module.exports = {
   compile: (src, options) => {
-    console.log(options);
-
     const template = Nunjucks.compile(src, options.environment);
 
     return (context) => {
+      console.log('final', context);
       return template.render(context);
     };
   },

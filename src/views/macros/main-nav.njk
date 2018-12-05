@@ -1,0 +1,23 @@
+{% macro mainNav(links) %}
+
+<!-- new GDS navigation pattern -->
+<div class="content-width">
+
+  {% if links.length %}
+  <nav id="nav" class="menu">
+    <div class="navbar">
+      <ul class="navbar__list-items menu-left">
+        {% for link in links %}
+        <li class="navlink{% if link.active %} active{% endif %}">
+          <a href="{{ link.href }}" id="{{ link.attributes.id }}">{{ link.text }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+
+  {% endif %}
+</div>
+
+
+{% endmacro %}

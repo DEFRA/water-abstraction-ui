@@ -1,6 +1,7 @@
 const { get } = require('lodash');
 
 const { getPropositionLinks } = require('./view/proposition-links');
+const { getMainNav } = require('./view/main-nav');
 
 const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   if (isAuthenticated) {
@@ -31,7 +32,10 @@ const getTracking = (credentials) => {
 };
 
 function viewContextDefaults (request) {
-  var viewContext = {};
+  const viewContext = request.view || {};
+  // console.log(request.plugins.viewContext);
+  // const viewContext = request.
+  // var viewContext = request.view || {};
 
   viewContext.isAuthenticated = !!get(request, 'state.sid');
   viewContext.query = request.query;
@@ -40,7 +44,7 @@ function viewContextDefaults (request) {
   viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
 
   // H1 page title
-  viewContext.pageTitle = 'Water Abstraction';
+  // viewContext.pageTitle = 'Water Abstraction';
   // Title tag - if different from page title
   viewContext.customTitle = null;
   viewContext.insideHeader = '';
@@ -66,67 +70,8 @@ function viewContextDefaults (request) {
   viewContext.isAdmin = /^\/admin\//.test(request.url.path);
   viewContext.isTestMode = process.env.TEST_MODE;
 
-  // Main nav links
-  viewContext.mainNavLinks = [];
-  if (request.permissions && request.permissions.admin.defra) {
-    if (request.permissions && request.permissions.licences.read) {
-      viewContext.mainNavLinks.push({
-        id: 'view',
-        text: 'View licences',
-        url: '/admin/licences'
-      });
-    }
-    if (request.permissions && request.permissions.admin.defra) {
-      viewContext.labels.licences = 'Licences';
-
-      // Abstraction reform
-      if (request.permissions.ar.read) {
-        viewContext.mainNavLinks.push({
-          id: 'ar',
-          text: 'Abstraction reform',
-          url: '/admin/abstraction-reform'
-        });
-      }
-
-      viewContext.mainNavLinks.push({
-        id: 'notifications',
-        text: 'Reports and notifications',
-        url: '/admin/notifications'
-      });
-    }
-
-    if (request.permissions.hasPermission('returns.edit')) {
-      viewContext.mainNavLinks.push({
-        id: 'returns',
-        text: 'Manage returns',
-        url: '/admin/returns'
-      });
-    }
-  } else {
-    if (request.permissions && request.permissions.licences.read) {
-      viewContext.mainNavLinks.push({
-        id: 'view',
-        text: 'View licences',
-        url: '/licences'
-      });
-    }
-    if (request.permissions && request.permissions.returns.read) {
-      viewContext.mainNavLinks.push({
-        id: 'returns',
-        text: 'Manage returns',
-        url: '/returns'
-      });
-    }
-    if (request.permissions && request.permissions.licences.edit) {
-      viewContext.mainNavLinks.push({
-        id: 'manage',
-        text: 'Add licences or give access',
-        url: '/manage_licences'
-      });
-    }
-  }
-
-  // Utility links - change password and sign out
+  // Set navigation links
+  viewContext.mainNavLinks = getMainNav(request);
   viewContext.propositionLinks = getPropositionLinks(request);
 
   viewContext.user = request.auth.credentials;

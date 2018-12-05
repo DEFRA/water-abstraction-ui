@@ -1,0 +1,22 @@
+.space {
+  &--big {
+    margin-bottom: 50px;
+  }
+  &--medium {
+    margin-bottom: 30px;
+  }
+  &--small {
+    margin-bottom: 15px;
+  }
+  &--none {
+    margin-bottom: 0;
+  }
+}
+
+.no-margin-bottom {
+  margin-bottom: 0;
+}
+
+.float-right {
+  float: right;
+}

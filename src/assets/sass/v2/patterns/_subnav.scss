@@ -1,0 +1,55 @@
+// ========== ========== ========== ========== ==========
+// styles for new GDS navigation style
+// ========== ========== ========== ========== ==========
+
+// subnav container
+.navbar {
+  border-bottom: 1px solid #bfc1c3;
+}
+
+// subnav list
+.navbar__list-items li {
+  font-weight: 700;
+  // display: inline-block;
+}
+
+.navlink {
+  display: inline-block;
+}
+
+// active link for subnav
+.navbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navbar ul li {
+  display: inline-block;
+}
+
+.navbar__list-items li a {
+  margin-right: 15px;
+  font-size: 16px;
+  color: #0b0c0c;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: inset 0px -5px 0px 0px rgba(0,0,0,0);
+  padding: 15px 5px 10px 5px;
+
+  // larger screens
+  @media (min-width: 768px) {
+    font-size: 19px;
+  }
+}
+
+// the active links
+.navbar__list-items li.active a {
+  box-shadow: inset 0px -5px 0px 0px $govuk-link-colour;
+  padding: 15px 5px 10px 5px;
+}

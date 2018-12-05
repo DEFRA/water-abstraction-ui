@@ -1,0 +1,38 @@
+.metabox {
+  display:flex;
+  flex-wrap:wrap;
+  flex-direction:row;
+  justify-content:flex-start;
+  align-items:stretch;
+}
+
+.meta--label, .meta--description {
+  margin: 0;
+}
+
+.meta--label {
+  order:1;
+/*   background:red; */
+  flex-basis:100%;
+}
+
+.meta--description {
+  order:2;
+/*   background:yellow; */
+  flex-basis:100%;
+}
+
+@media screen and (min-width:600px) {
+  .container {
+    flex-wrap:nowrap;
+  }
+
+  .meta--label {
+    flex-basis:20%;
+    order:1;
+  }
+  .meta--description {
+    flex-basis:50%;
+    order:2;
+  }
+}

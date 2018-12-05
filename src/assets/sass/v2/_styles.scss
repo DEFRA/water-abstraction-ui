@@ -1,0 +1,54 @@
+body {
+  font-family: "nta", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 19px;
+  line-height: 1.31579;
+  color: $govuk-text-colour;
+}
+
+h1 a:link {
+  color: $govuk-secondary-text-colour;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+h1 a:link, h1 a:visited {
+  color: $govuk-secondary-text-colour;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.sub-head {
+  font-size: 30px;
+  color: $govuk-secondary-text-colour;
+  margin: 0;
+  padding: 0;
+}
+
+// ========== ========== ========== ========== ==========
+// licence search styles
+// ========== ========== ========== ========== ==========
+
+#search {
+  // max-width: 41ex;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+// ========== ========== ========== ========== ==========
+// returns specific styles
+// ========== ========== ========== ========== ==========
+
+dl {
+ & dt {
+   -moz-osx-font-smoothing: grayscale;
+   float: left;
+   clear: left;
+   padding-right: 10px;
+   width: 30%;
+   max-width: 11em;
+ }
+ & dd {
+   -moz-osx-font-smoothing: grayscale;
+ }
+}

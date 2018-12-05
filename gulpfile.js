@@ -103,7 +103,8 @@ gulp.task('sass', () => {
         'govuk_modules/govuk_template_mustache/assets/stylesheets',
         'govuk_modules/govuk-elements-sass',
         'govuk_modules/govuk-elements-sass/public/sass',
-        'govuk_modules'
+        'govuk_modules',
+        'node_modules'
       ]
     }).on('error', sass.logError))
     .pipe(sourcemaps.write())

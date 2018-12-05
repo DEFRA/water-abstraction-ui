@@ -6,8 +6,6 @@
  */
 const Joi = require('joi');
 const { difference } = require('lodash');
-// const errorHandler = require('../lib/error-handler');
-const View = require('../../lib/view');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
@@ -29,7 +27,7 @@ const {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getLicenceAdd (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Add your licences to the service';
   return reply.view('water/licences-add/add-licences', viewContext);
@@ -49,9 +47,7 @@ async function getLicenceAdd (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postLicenceAdd (request, reply) {
-  // @TODO relevant validation messages
-
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Add your licences to the service';
   viewContext.activeNavLink = 'manage';
 
@@ -131,7 +127,7 @@ async function postLicenceAdd (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getLicenceSelect (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Confirm your licences';
   viewContext.activeNavLink = 'manage';
 
@@ -240,7 +236,7 @@ async function postLicenceSelect (request, reply) {
  * @param {Object} reply - HAPI HTTP reply instance
  */
 function getLicenceSelectError (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Sorry, we need to confirm your licence information with you';
   viewContext.customTitle = 'We need to confirm your licence information';
   viewContext.activeNavLink = 'manage';
@@ -255,7 +251,7 @@ function getLicenceSelectError (request, reply) {
  * @param {String} request.query.token - signed Iron token containing all and selected licence IDs
  */
 async function getAddressSelect (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Where should we send your security code?';
   viewContext.activeNavLink = 'manage';
 
@@ -331,7 +327,7 @@ async function postAddressSelect (request, reply) {
     // Delete data in session
     request.sessionStore.delete('addLicenceFlow');
 
-    const viewContext = View.contextDefaults(request);
+    const viewContext = request.view;
     viewContext.pageTitle = `We are sending you a letter`;
     viewContext.activeNavLink = 'manage';
     viewContext.verification = verification;
@@ -382,7 +378,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getSecurityCode (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
@@ -399,7 +395,7 @@ async function getSecurityCode (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postSecurityCode (request, reply) {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
@@ -433,7 +429,6 @@ async function postSecurityCode (request, reply) {
     }
 
     throw error;
-    // errorHandler(request, reply)(error);
   }
 }
 

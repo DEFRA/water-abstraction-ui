@@ -1,6 +1,5 @@
 'use strict';
 
-const View = require('../../lib/view');
 const { getUserData, setUserData } = require('../../lib/user-data.js');
 
 const VIEW_CONTACT_INFO = 'water/contact-details/contact-information';
@@ -23,7 +22,7 @@ const mapFormErrors = errors => ({
 });
 
 const getContactInformation = async (request, h) => {
-  const viewContext = View.contextDefaults(request);
+  const viewContext = request.view;
   const userData = await getUserData(getUserId(request));
   viewContext.contactDetails = userData.contactDetails;
   viewContext.pageTitle = PAGE_TITLE;

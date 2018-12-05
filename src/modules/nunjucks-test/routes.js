@@ -4,7 +4,7 @@ module.exports = {
     method: 'GET',
     path: '/nunjucks-test',
     handler: async (request, h) => {
-      return h.view('test.njk', {}, {
+      return h.view('test.njk', request.view, {
         layout: false
       });
     }

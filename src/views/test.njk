@@ -17,6 +17,37 @@
   <![endif]-->
 {% endblock %}
 
+{% block header %}
+  {{ govukHeader({
+    homepageUrl: "https://www.gov.uk",
+    containerClasses: "govuk-width-container",
+    serviceName: "Manage your water abstraction or impoundment licence",
+    serviceUrl: "/",
+    navigation: propositionLinks
+  }) }}
+{% endblock %}
+
+{% block footer %}
+  {{ govukFooter({
+    meta: {
+      items: [
+        {
+          href: "/cookies",
+          text: "Cookies"
+        },
+        {
+          href: "/privacy-policy",
+          text: "Privacy"
+        },
+        {
+          href: "/accessibility",
+          text: "Accessibility"
+        }
+      ]
+    }
+  }) }}
+{% endblock %}
+
 {% block content %}
   <h1 class="govuk-heading-xl">Default page template</h1>
 {% endblock %}

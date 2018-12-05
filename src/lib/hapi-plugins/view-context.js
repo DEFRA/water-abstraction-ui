@@ -11,12 +11,19 @@ const viewContextPlugin = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
+<<<<<<< HEAD
         const viewContext = contextDefaults(request);
 
         const currentView = request.view || {};
         const viewData = request.route.settings.plugins.viewContext || {};
 
         request.view = { ...currentView, ...viewContext, ...viewData };
+=======
+        const currentView = request.view || {};
+        const routeContext = request.route.settings.plugins.viewContext || {};
+        request.view = Object.assign(currentView, routeContext);
+        request.view = contextDefaults(request);
+>>>>>>> Add main nav links with tests.  Use SASS from prototype.  Ensure view context is merged with route settings.
 
         // Continue processing request
         return reply.continue;

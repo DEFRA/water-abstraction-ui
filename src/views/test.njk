@@ -1,8 +1,9 @@
 {% extends "template.njk" %}
+{% from "./macros/main-nav.njk" import mainNav %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
-    <link href="/public/stylesheets/application-govuk-frontend.css" rel="stylesheet" />
+    <link href="/public/stylesheets/v2/application.css" rel="stylesheet" />
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
@@ -49,7 +50,16 @@
 {% endblock %}
 
 {% block content %}
-  <h1 class="govuk-heading-xl">Default page template</h1>
+
+  {{ mainNav(mainNavLinks) }}
+
+
+
+  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+
+
+
+
 {% endblock %}
 
 {% block bodyEnd %}

@@ -4,9 +4,18 @@ module.exports = {
     method: 'GET',
     path: '/nunjucks-test',
     handler: async (request, h) => {
-      return h.view('test.njk', request.view, {
+      const { view } = request;
+      return h.view('test.njk', view, {
         layout: false
       });
+    },
+    config: {
+      plugins: {
+        viewContext: {
+          pageTitle: 'A test page',
+          activeNavLink: 'view'
+        }
+      }
     }
   }
 };

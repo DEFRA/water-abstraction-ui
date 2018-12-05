@@ -1,26 +1,9 @@
 const { get } = require('lodash');
-const { hasPermission } = require('../permissions');
+const { isAuthenticated, isAdmin, createLink, setActiveLink } = require('./helpers');
 
-const isAuthenticated = request => !!get(request, 'state.sid');
-const isAdmin = request => hasPermission('admin.defra', request.permissions);
-
-const contactLink = {
-  id: 'contact-information',
-  text: 'Contact information',
-  href: '/admin/contact-information'
-};
-
-const changePasswordLink = {
-  id: 'change-password',
-  text: 'Change password',
-  href: '/update_password'
-};
-
-const signoutLink = {
-  id: 'signout',
-  text: 'Sign out',
-  href: '/signout'
-};
+const contactLink = createLink('Contact information', '/admin/contact-information', 'contact-information');
+const changePasswordLink = createLink('Change password', '/update_password', 'change-password');
+const signoutLink = createLink('Sign out', '/signout', 'signout');
 
 /**
  * Given a HAPI request instance, provides a list of links for the
@@ -40,14 +23,7 @@ const getPropositionLinks = (request) => {
 
   // Add active boolean to correct link
   const activeNavLink = get(request, 'view.activeNavLink');
-
-  return links.map(link => ({
-    ...link,
-    active: link.id === activeNavLink,
-    attributes: {
-      id: link.id
-    }
-  }));
+  return setActiveLink(links, activeNavLink);
 };
 
 module.exports = {

@@ -1,0 +1,73 @@
+// ========== ========== ========== ========== ==========
+// licence condition header
+// used in licence summary and conditions view
+// ========== ========== ========== ========== ==========
+
+.licence-condition__header {
+  margin-top: 0.3em;
+  margin-bottom: 0.5em;
+}
+
+// ========== ========== ========== ========== ==========
+// licence data
+// used in licence summary and conditions view
+// ========== ========== ========== ========== ==========
+
+.data-row {
+  padding-top: 0.5rem;
+  border-top: 1px solid govuk-colour("grey-2");
+  @media screen and (min-width: 641px) {
+    display: flex;
+  }
+}
+
+/* Sub-list in data-table */
+.data-row__sub-list {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  padding-left: 0;
+}
+
+.data-row__sub-list li {
+  display: block;
+  padding: 0.5em 0 0.4em 0;
+  margin: 0;
+  border-bottom: 1px solid govuk-colour("grey-2");
+}
+
+.data-row__sub-list li:first-child {
+  padding-top: 0;
+}
+
+.data-row__sub-list li:last-child {
+  border-bottom: none;
+}
+
+.data-row__param {
+  margin: 0;
+  font-size: 19px;
+  color: $govuk-secondary-text-colour;
+  font-weight: 400;
+  @media screen and (min-width: 641px) {
+    font-size: 19px;
+    color: $govuk-text-colour;
+    flex: 1;
+    padding-right: 25px;
+    font-weight: normal;
+  }
+}
+
+.data-row__value {
+  @media screen and (min-width: 641px) {
+    flex: 3;
+  }
+}
+
+.data-row__end {
+  border-bottom: 1px solid #bfc1c3;
+}
+
+.no-top-border {
+  border-top: none;
+}

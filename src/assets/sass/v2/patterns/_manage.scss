@@ -1,0 +1,33 @@
+// ========== ========== ========== ========== ==========
+// styles for management links
+// ========== ========== ========== ========== ==========
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 100%;
+  padding-left: 0;
+  @media screen and (min-width: 641px) {
+    grid-template-columns: 33% 33% 33%;
+  }
+}
+
+.grid-container__link {
+  margin-left: 0;
+  margin-bottom: 15px;
+  @media (min-width: 641px) {
+    margin-left: 15px;
+  }
+  padding: 30px;
+  list-style: none;
+  background: #f4f4f4;
+  text-decoration: none;
+}
+
+.grid-container__link:first-child {
+  margin-left: 0;
+}
+
+.grid-container__link:hover {
+  background-color: $govuk-link-colour;
+  color:  govuk-colour("white")
+}

@@ -19,7 +19,7 @@ const { acl, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
 const returnsPlugin = require('./src/modules/returns/plugin.js');
-const viewEngine = require('./src/lib/view/');
+const viewEngine = require('./src/lib/view-engine/');
 
 // Initialise logger
 const logger = require('./src/lib/logger');

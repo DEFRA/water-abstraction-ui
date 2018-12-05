@@ -1,6 +1,8 @@
 const { get } = require('lodash');
 const config = require('../../config');
 
+const { getPropositionLinks } = require('./view/proposition-links');
+
 const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   if (isAuthenticated) {
     return isDefraAdmin ? 'internal' : 'external';
@@ -132,38 +134,13 @@ function viewContextDefaults (request) {
   }
 
   // Utility links - change password and sign out
-  viewContext.propositionLinks = [{
-    id: 'change-password',
-    text: 'Change password',
-    url: '/update_password'
-  }, {
-    id: 'signout',
-    text: 'Sign out',
-    url: '/signout'
-  }];
-
-  if (viewContext.isAdmin) {
-    const contactInformationLink = {
-      id: 'contact-information',
-      text: 'Contact information',
-      url: '/admin/contact-information'
-    };
-    viewContext.propositionLinks = [contactInformationLink, ...viewContext.propositionLinks];
-  }
+  viewContext.propositionLinks = getPropositionLinks(request);
 
   viewContext.user = request.auth.credentials;
 
   viewContext.permissions = request.permissions;
 
   viewContext.tracking = getTracking(request.auth.credentials);
-
-  /*
-  if (request.auth.credentials) {
-    viewContext.tracking = request.auth.credentials.user_data;
-  } else {
-    viewContext.tracking = { usertype: 'not_logged_in' };
-  }
-  */
 
   viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';

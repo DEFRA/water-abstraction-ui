@@ -1,4 +1,3 @@
-const path = require('path');
 const Nunjucks = require('nunjucks');
 
 module.exports = {
@@ -6,7 +5,6 @@ module.exports = {
     const template = Nunjucks.compile(src, options.environment);
 
     return (context) => {
-      console.log('final', context);
       return template.render(context);
     };
   },

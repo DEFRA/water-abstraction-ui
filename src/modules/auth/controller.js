@@ -6,6 +6,7 @@ const { get } = require('lodash');
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
 const { getPermissions } = require('../../lib/permissions');
+const logger = require('../../lib/logger');
 
 const { destroySession, authValidationErrorResponse } = require('./helpers');
 
@@ -36,7 +37,7 @@ async function getSignout (request, h) {
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
   } catch (error) {
-    request.log('error', error);
+    logger.error('Sign out error', error);
   }
   return h.redirect(`/signed-out${params}`);
 }

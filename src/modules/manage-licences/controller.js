@@ -4,6 +4,7 @@ const CRM = require('../../lib/connectors/crm');
 const IDM = require('../../lib/connectors/idm');
 const Boom = require('boom');
 const { find } = require('lodash');
+const logger = require('../../lib/logger');
 
 /**
  * Index page for manage licences
@@ -164,7 +165,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
-    request.log('error', err);
+    logger.error('Post add access error', err);
     throw err;
   }
 }
@@ -197,7 +198,7 @@ async function getRemoveAccess (request, reply, context = {}) {
     viewContext.pageTitle = 'You are about to remove access';
     return reply.view('water/manage-licences/remove-access', viewContext);
   } catch (error) {
-    request.log('error', error);
+    logger.error('Remove access error', error);
     throw error;
   }
 }

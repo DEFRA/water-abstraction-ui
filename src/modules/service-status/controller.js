@@ -2,6 +2,7 @@ const IDM = require('../../lib/connectors/idm');
 const CRM = require('../../lib/connectors/crm');
 const permits = require('../../lib/connectors/permit');
 const water = require('../../lib/connectors/water');
+const logger = require('../../lib/logger');
 
 async function serviceStatus (request, reply) {
   var errors = 0;
@@ -42,7 +43,7 @@ async function serviceStatus (request, reply) {
       data.crm[d.datapoint] = d.value;
     });
   } catch (e) {
-    request.log('error', e);
+    logger.error('Status page error', e);
     html += `<tr><td>CRM Documents</td><td>ERROR</td></tr>`;
     errors++;
   }

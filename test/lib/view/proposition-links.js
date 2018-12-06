@@ -52,6 +52,13 @@ lab.experiment('getPropositionLinks', () => {
     expect(link.active).to.equal(true);
   });
 
+  lab.test('Non-active links should have the active flag set to false', async () => {
+    const request = getAuthenticatedRequest();
+    const links = getPropositionLinks(request);
+    const flags = links.filter(link => (link.id !== 'change-password')).map(link => link.active);
+    expect(flags).to.equal([false]);
+  });
+
   lab.test('It should set ID attributes', async () => {
     const request = getAuthenticatedRequest(true);
     const links = getPropositionLinks(request);

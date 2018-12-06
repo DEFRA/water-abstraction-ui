@@ -73,10 +73,17 @@ lab.experiment('getMainNav', () => {
   });
 
   lab.test('It should set the active nav link flag', async () => {
-    const request = getAuthenticatedRequest();
+    const request = getPrimaryUserRequest();
     const links = getMainNav(request);
     const link = find(links, {id: 'view'});
     expect(link.active).to.equal(true);
+  });
+
+  lab.test('Non-active links should have the active flag set to false', async () => {
+    const request = getPrimaryUserRequest();
+    const links = getMainNav(request);
+    const flags = links.filter(link => (link.id !== 'view')).map(link => link.active);
+    expect(flags).to.equal([false, false]);
   });
 
   lab.test('It should display correct links for external user', async () => {

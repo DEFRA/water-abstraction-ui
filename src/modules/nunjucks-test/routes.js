@@ -1,6 +1,7 @@
+const routes = {};
 
-module.exports = {
-  getNunjucksTest: {
+if (process.env.NODE_ENV === 'local') {
+  routes.getNunjucksTest = {
     method: 'GET',
     path: '/nunjucks-test',
     handler: async (request, h) => {
@@ -17,5 +18,7 @@ module.exports = {
         }
       }
     }
-  }
-};
+  };
+}
+
+module.exports = routes;

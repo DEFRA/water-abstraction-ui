@@ -33,9 +33,6 @@ const getTracking = (credentials) => {
 
 function viewContextDefaults (request) {
   const viewContext = request.view || {};
-  // console.log(request.plugins.viewContext);
-  // const viewContext = request.
-  // var viewContext = request.view || {};
 
   viewContext.isAuthenticated = !!get(request, 'state.sid');
   viewContext.query = request.query;
@@ -43,9 +40,6 @@ function viewContextDefaults (request) {
   viewContext.session = request.session;
   viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
 
-  // H1 page title
-  // viewContext.pageTitle = 'Water Abstraction';
-  // Title tag - if different from page title
   viewContext.customTitle = null;
   viewContext.insideHeader = '';
   viewContext.headerClass = 'with-proposition';
@@ -54,10 +48,6 @@ function viewContextDefaults (request) {
   viewContext.bodyStart = null;
   viewContext.afterHeader = null;
   viewContext.path = request.path;
-  // viewContext.debug = {};
-  // viewContext.debug.connection = request.connection.info;
-  // viewContext.debug.request = request.info;
-  // viewContext.debug.request.path = request.path;
 
   if (request.sessionStore) {
     viewContext.csrfToken = request.sessionStore.get('csrf_token');

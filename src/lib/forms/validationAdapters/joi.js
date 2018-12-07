@@ -17,7 +17,7 @@ const createSchemaFromForm = form => {
       s = Joi.boolean();
     }
     if (field.options.mapper === 'dateMapper') {
-      s = Joi.date().iso();
+      s = Joi.string().isoDate().options({ convert: false });
     }
     if (field.options.choices) {
       s = s.valid(field.options.choices.map(choice => choice.value));

@@ -1,0 +1,9 @@
+{% from "date-input/macro.njk" import govukDateInput %}
+
+{% macro formDateWidget(field) %}
+
+  {% set options = field | mapFormDateField %}
+
+  {{ govukDateInput(options) }}
+
+{% endmacro %}

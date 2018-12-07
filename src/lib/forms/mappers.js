@@ -58,9 +58,12 @@ const formatDateSegment = (value, length = 2) => {
  * @return {String} year 4 digit
  */
 const formatYearSegment = (year) => {
-  const str = year.trim();
-  const currentYear = moment().format('YYYY');
-  return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  if (year) {
+    const str = year.trim();
+    const currentYear = moment().format('YYYY');
+    return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  }
+  return '';
 };
 
 /**

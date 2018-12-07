@@ -40,6 +40,25 @@ experiment('createSchemaFromForm', () => {
         required: true }
       },
       {
+        name: 'choice_array',
+        options: { mapper: 'arrayMapper',
+          choices: [{
+            value: 'A'
+          }, {
+            value: 'B'
+          }]}
+      },
+      {
+        name: 'choice_array_required',
+        options: { mapper: 'arrayMapper',
+          choices: [{
+            value: 'A'
+          }, {
+            value: 'B'
+          }],
+          required: true }
+      },
+      {
         name: 'boolean',
         options: { mapper: 'booleanMapper' }
       },
@@ -57,6 +76,8 @@ experiment('createSchemaFromForm', () => {
     date_required: Joi.string().isoDate().required().options({convert: false}),
     choice: Joi.string().valid(['A', 'B']),
     choice_required: Joi.string().valid(['A', 'B']).required(),
+    choice_array: Joi.array().items(Joi.string().valid(['A', 'B'])),
+    choice_array_required: Joi.array().items(Joi.string().valid(['A', 'B'])).required(),
     boolean: Joi.boolean(),
     boolean_required: Joi.boolean().required()
   };

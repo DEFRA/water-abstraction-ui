@@ -21,8 +21,13 @@ const radioField = fields.radio('radio_field', {
 const checkboxField = fields.checkbox('checkbox_field', {
   label: 'A checkbox field',
   hint: 'A hint',
-  controlClass: 'css-class'
-}, 'value');
+  controlClass: 'css-class',
+  choices: [{
+    value: 'option-a',
+    hint: 'A hint about option A',
+    label: 'A'
+  }]
+}, ['a']);
 
 const dateField = fields.checkbox('date_field', {
   label: 'Date field',

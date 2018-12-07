@@ -173,18 +173,24 @@ lab.experiment('mapFormCheckbox', () => {
     expect(result.idPrefix).to.equal(checkboxField.name);
   });
 
-  lab.test('It should set the item hint text property', async () => {
-    expect(result.items[0].hint.text).to.equal(checkboxField.options.hint);
+  lab.test('It should set hint text property', async () => {
+    expect(result.hint.text).to.equal(checkboxField.options.hint);
   });
 
-  lab.test('It should set the item label property', async () => {
-    expect(result.items[0].text).to.equal(checkboxField.options.label);
+  lab.test('It should set the fieldset legend property', async () => {
+    expect(result.fieldset.legend.text).to.equal(checkboxField.options.label);
   });
   lab.test('It should set the item hint property', async () => {
-    expect(result.items[0].hint.text).to.equal(checkboxField.options.hint);
+    console.log('>>>>', JSON.stringify(result, null, 2));
+    expect(result.items[0].hint.text).to.equal(checkboxField.options.choices[0].hint);
   });
+
+  lab.test('It should set the item text property', async () => {
+    expect(result.items[0].text).to.equal(checkboxField.options.choices[0].label);
+  });
+
   lab.test('It should set the item value property', async () => {
-    expect(result.items[0].value).to.equal(checkboxField.value);
+    expect(result.items[0].value).to.equal(checkboxField.options.choices[0].value);
   });
 });
 

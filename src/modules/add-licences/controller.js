@@ -183,8 +183,7 @@ async function postLicenceSelect (request, reply) {
     if (companyEntityId) {
       // Licences already in account
       const { data: existingLicences, error } = await CRM.documents.findMany({
-        company_entity_id: companyEntityId,
-        verified: 1
+        company_entity_id: companyEntityId
       });
       if (error) {
         throw error;
@@ -192,7 +191,6 @@ async function postLicenceSelect (request, reply) {
       // Licences being added now
       const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
         document_id: { $or: documentIds },
-        verified: null,
         verification_id: null
       });
       if (error2) {
@@ -204,7 +202,6 @@ async function postLicenceSelect (request, reply) {
         const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
           const { error: error3 } = await CRM.documents.updateMany({ document_id: { $or: documentIds } }, {
-            verified: 1,
             company_entity_id: companyEntityId
           });
 
@@ -320,7 +317,11 @@ async function postAddressSelect (request, reply) {
     await Notify.sendSecurityCode(data, verification.verification_code);
 
     // Get all licences - this is needed to determine whether to display link back to dashboard
-    const { error: err2, data: licences } = await CRM.documents.findMany({ verified: 1, entity_id: entityId });
+    const { error: err2, data: licences } = await CRM.documents.findMany({
+      verification_id: { $ne: null },
+      entity_id: entityId
+    });
+
     if (err2) {
       throw err2;
     }

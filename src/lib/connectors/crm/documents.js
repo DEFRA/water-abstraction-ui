@@ -53,7 +53,6 @@ client.getUnregisteredLicences = function (licenceNumbers) {
     system_external_id: {
       $or: licenceNumbers
     },
-    verified: null,
     verification_id: null,
     'metadata->IsCurrent': {
       $ne: 'false'
@@ -77,7 +76,6 @@ client.getUnregisteredLicencesByIds = function (documentIds) {
     document_id: {
       $or: documentIds
     },
-    verified: null,
     verification_id: null,
     'metadata->IsCurrent': {
       $ne: 'false'

@@ -2,6 +2,8 @@ const Joi = require('joi');
 const { mapFields } = require('../mapFields');
 const { get } = require('lodash');
 
+const getChoiceValues = field => field.options.choices.map(choice => choice.value);
+
 /**
  * Generates a Joi validation schema given a form schema
  * @param {Object} form
@@ -19,8 +21,12 @@ const createSchemaFromForm = form => {
     if (field.options.mapper === 'dateMapper') {
       s = Joi.string().isoDate().options({ convert: false });
     }
-    if (field.options.choices) {
-      s = s.valid(field.options.choices.map(choice => choice.value));
+    if (field.options.mapper === 'arrayMapper' && field.options.choices) {
+      const values = getChoiceValues(field);
+      s = Joi.array().items(Joi.string().valid(values));
+    } else if (field.options.choices) {
+      const values = getChoiceValues(field);
+      s = s.valid(values);
     }
     if (field.options.required) {
       s = s.required();

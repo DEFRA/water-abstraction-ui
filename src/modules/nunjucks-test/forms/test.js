@@ -49,11 +49,21 @@ const paragraphField = fields.paragraph(null, {
   text: 'You only need to tell us about one meter.'
 });
 
-const checkboxField = fields.checkbox('isMultiplier', {
-  label: 'This meter has a ×10 display',
-  checked: true,
-  hint: 'Select if your meter has a 10x display'
-}, 'multiply');
+const checkboxField = fields.checkbox('uses', {
+  label: 'What did you use water for this year?',
+  hint: 'Hint text',
+  choices: [
+    {
+      value: 'spray',
+      label: 'Spray irrigation',
+      hint: 'Irrigating crops with a spray'
+    },
+    {
+      value: 'trickle',
+      label: 'Trickle irrigation'
+    }
+  ]
+});
 
 const dropdownField = fields.dropdown('dropdown', {
   label: 'Abstraction point type',
@@ -72,8 +82,10 @@ const dropdownField = fields.dropdown('dropdown', {
 const button = fields.button(null, { label: 'Continue' });
 
 const testForm = (request) => {
+  const { csrfToken } = request.view;
   const f = formFactory('/nunjucks-test');
 
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(textField);
   f.fields.push(textFieldWithHint);
   f.fields.push(textFieldWithError);

@@ -2,13 +2,13 @@ const routes = {};
 const testForm = require('./forms/test.js');
 const { handleRequest } = require('../../lib/forms');
 
-const testPayload = {
-  text: 'Text here',
-  text_hint: 'Some more text here',
-  text_error: '',
-  'date-day': '1',
-  'date-month': '11',
-  'date-year': '2018'
+const config = {
+  plugins: {
+    viewContext: {
+      pageTitle: 'A test page',
+      activeNavLink: 'view'
+    }
+  }
 };
 
 if (process.env.NODE_ENV === 'local') {
@@ -16,11 +16,7 @@ if (process.env.NODE_ENV === 'local') {
     method: 'GET',
     path: '/nunjucks-test',
     handler: async (request, h) => {
-      request.payload = testPayload;
-
-      const form = handleRequest(testForm(request), request);
-
-      console.log(JSON.stringify(form, null, 2));
+      const form = testForm(request);
 
       const view = {
         ...request.view,
@@ -30,14 +26,25 @@ if (process.env.NODE_ENV === 'local') {
         layout: false
       });
     },
-    config: {
-      plugins: {
-        viewContext: {
-          pageTitle: 'A test page',
-          activeNavLink: 'view'
-        }
-      }
-    }
+    config
+  };
+
+  routes.postNunjucksTest = {
+    method: 'POST',
+    path: '/nunjucks-test',
+    handler: async (request, h) => {
+      const form = handleRequest(testForm(request), request);
+
+      console.log(JSON.stringify(form, null, 2));
+      const view = {
+        ...request.view,
+        form
+      };
+      return h.view('test.njk', view, {
+        layout: false
+      });
+    },
+    config
   };
 }
 

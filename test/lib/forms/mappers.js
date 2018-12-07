@@ -4,7 +4,8 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const { licenceNumbersMapper, numberMapper, booleanMapper, defaultMapper, dateMapper } = require('../../../src/lib/forms/mappers.js');
+const { licenceNumbersMapper, numberMapper, booleanMapper, defaultMapper,
+  dateMapper, arrayMapper } = require('../../../src/lib/forms/mappers.js');
 
 lab.experiment('Test defaultMapper', () => {
   const payload = {
@@ -133,5 +134,26 @@ lab.experiment('Test dateMapper', () => {
       month: '05',
       year: '2018'
     });
+  });
+});
+
+lab.experiment('Test arrayMapper', () => {
+  lab.test('It should interpret no value as an empty array', async () => {
+    const payload = {};
+    expect(arrayMapper.import('field', payload)).to.equal([]);
+  });
+
+  lab.test('It should convert a scalar to an array', async () => {
+    const payload = {
+      field: 'x'
+    };
+    expect(arrayMapper.import('field', payload)).to.equal(['x']);
+  });
+
+  lab.test('It should pass an array through unchanged', async () => {
+    const payload = {
+      field: ['x', 'y']
+    };
+    expect(arrayMapper.import('field', payload)).to.equal(['x', 'y']);
   });
 });

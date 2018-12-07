@@ -67,7 +67,7 @@ const mapFormDateField = (field) => {
     classes: field.options.controlClass
   };
 
-  const { value } = field;
+  const value = field.value || '';
   const year = value.slice(0, 4);
   const month = value.slice(5, 7);
   const day = value.slice(8, 10);
@@ -129,7 +129,6 @@ const mapFormErrorSummary = (form) => {
     errorList
   };
 
-  console.log(options);
   return options;
 };
 
@@ -189,21 +188,33 @@ const setConditionalRadioField = (options, i, html) => {
  * @return {Object}       Options object for GOV.UK checkbox nunjucks macro
  */
 const mapFormCheckbox = (field) => {
-  return {
+  const value = field.value || [];
+  const choices = field.options.choices || [];
+
+  const items = choices.map(choice => ({
+    value: choice.value,
+    text: choice.label,
+    hint: {
+      text: choice.hint
+    },
+    checked: value.includes(choice.value)
+  }));
+
+  const options = {
     idPrefix: field.name,
     name: field.name,
-    items: [
-      {
-        value: field.value,
-        text: field.options.label,
-        hint: {
-          text: field.options.hint
-        },
-        attributes: {
-          checked: field.options.checked
-        }
+    hint: {
+      text: field.options.hint
+    },
+    fieldset: {
+      legend: {
+        text: field.options.label
       }
-    ]};
+    },
+    items
+  };
+
+  return applyErrors(options, field.errors);
 };
 
 /**

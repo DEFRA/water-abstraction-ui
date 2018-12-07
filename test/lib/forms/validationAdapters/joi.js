@@ -44,7 +44,6 @@ experiment('formatErrors', () => {
       }
     };
 
-<<<<<<< HEAD
     formattedErrors = adapter.formatErrors(error, customErrors);
   });
 
@@ -74,18 +73,6 @@ experiment('formatErrors', () => {
       summary: 'startReading must be a number'
     });
   });
-=======
-  const testSchema = {
-    string: Joi.string(),
-    string_required: Joi.string().required(),
-    date: Joi.string().isoDate().options({convert: false}),
-    date_required: Joi.string().isoDate().required().options({convert: false}),
-    choice: Joi.string().valid(['A', 'B']),
-    choice_required: Joi.string().valid(['A', 'B']).required(),
-    boolean: Joi.boolean(),
-    boolean_required: Joi.boolean().required()
-  };
->>>>>>> Unit tests for form library to GDS nunjucks mapper
 
   test('returns an empty array for a null error object (no errors)', async () => {
     const formatted = adapter.formatErrors(null, customErrors);

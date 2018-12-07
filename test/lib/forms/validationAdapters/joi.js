@@ -53,8 +53,8 @@ experiment('createSchemaFromForm', () => {
   const testSchema = {
     string: Joi.string(),
     string_required: Joi.string().required(),
-    date: Joi.date().iso(),
-    date_required: Joi.date().iso().required(),
+    date: Joi.string().isoDate().options({convert: false}),
+    date_required: Joi.string().isoDate().required().options({convert: false}),
     choice: Joi.string().valid(['A', 'B']),
     choice_required: Joi.string().valid(['A', 'B']).required(),
     boolean: Joi.boolean(),

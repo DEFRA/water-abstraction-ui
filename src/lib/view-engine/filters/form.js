@@ -1,3 +1,4 @@
+const { cloneDeep, get, set } = require('lodash');
 const { mapFields } = require('../../forms/mapFields.js');
 
 /**
@@ -175,13 +176,10 @@ const mapFormRadioField = (field) => {
  * @return {Object} updated GOV.UK radio nunjucks macro
  */
 const setConditionalRadioField = (options, i, html) => {
-  if (!options.items[i].conditional) {
-    options.items[i].conditional = {
-      html: ''
-    };
-  };
-  options.items[i].conditional.html += html;
-  return options;
+  const path = `items.[${i}].conditional.html`;
+  const value = get(options, path, '');
+  const updated = cloneDeep(options);
+  return set(updated, path, value + html);
 };
 
 /**

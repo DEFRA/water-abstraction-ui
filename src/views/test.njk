@@ -1,5 +1,9 @@
 {% extends "template.njk" %}
+{% from "phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "back-link/macro.njk" import govukBackLink %}
+
 {% from "./macros/main-nav.njk" import mainNav %}
+{% from "./macros/forms/index.njk" import formRender, formErrorSummary %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -49,21 +53,36 @@
   }) }}
 {% endblock %}
 
+{% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: "beta"
+    },
+    html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
+  }) }}
+
+  {% if back %}
+  {{ govukBackLink({
+    href: back,
+    text: "Back"
+  }) }}
+  {% endif %}
+{% endblock %}
+
+
 {% block content %}
 
   {{ mainNav(mainNavLinks) }}
 
-
+  {{ formErrorSummary(form) }}
 
   <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
 
-
-
-
+  {{ formRender(form) }}
 {% endblock %}
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="/govuk-frontend/all.js"></script>
-  <script>window.GOVUKFrontend.initAll()</script>
+  <script src="/assets/js/all.js"></script>
+  <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 {% endblock %}

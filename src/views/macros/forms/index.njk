@@ -1,0 +1,17 @@
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "./header.njk" import formHeader %}
+{% from "./widgets.njk" import formWidgets %}
+{% from "./footer.njk" import formFooter %}
+
+{% macro formRender(form) %}
+  {{ formHeader(form.method, form.action) }}
+  {{ formWidgets(form) }}
+  {{ formFooter() }}
+{% endmacro %}
+
+{% macro formErrorSummary(form) %}
+  {% if form.errors.length %}
+    {% set options = form | mapFormErrorSummary %}
+    {{ govukErrorSummary(options) }}
+  {% endif %}
+{% endmacro %}

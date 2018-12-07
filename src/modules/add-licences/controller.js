@@ -9,6 +9,7 @@ const { difference } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
+const logger = require('../../lib/logger');
 
 const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
 
@@ -109,7 +110,7 @@ async function postLicenceAdd (request, reply) {
 
     return reply.redirect('/select-licences');
   } catch (err) {
-    request.log('error', err);
+    logger.error('Add licence error', err);
 
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
@@ -419,7 +420,7 @@ async function postSecurityCode (request, reply) {
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
   } catch (error) {
-    request.log('error', error);
+    logger.error('Post security code error', error);
 
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {

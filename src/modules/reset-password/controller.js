@@ -2,6 +2,7 @@ const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
 const signIn = require('../../lib/sign-in');
 const mapJoiPasswordError = require('./map-joi-password-error');
+const logger = require('../../lib/logger');
 
 /**
  * Renders form for start of reset password flow
@@ -25,7 +26,7 @@ async function postResetPassword (request, reply) {
   try {
     await IDM.resetPassword(request.payload.email_address);
   } catch (error) {
-    request.log('error', error);
+    logger.error('Reset password error', error);
     // Note: we don't do anything differently as we don't wish to reveal if
     // account exists
   }

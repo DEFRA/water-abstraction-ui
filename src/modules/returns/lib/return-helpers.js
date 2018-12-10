@@ -1,5 +1,5 @@
 const Boom = require('boom');
-const { get, omit, cloneDeep, set } = require('lodash');
+const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
 const { maxPrecision } = require('../../../lib/number-formatter');
 const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
@@ -200,11 +200,15 @@ const applyStatus = (data, status = 'completed', receivedDate) => {
 
 const applyMeterDetails = (data, formValues) => {
   const clone = cloneDeep(data);
+
+  const arr = formValues.isMultiplier || [];
+  const multiplier = arr.includes('multiply') ? 10 : 1;
+
   const details = {
     manufacturer: formValues.manufacturer,
     serialNumber: formValues.serialNumber,
     startReading: formValues.startReading,
-    multiplier: formValues.isMultiplier ? 10 : 1
+    multiplier
   };
 
   const meter = Object.assign(getMeter(data), details);
@@ -309,6 +313,16 @@ const applyMeterReadings = (data, formValues) => {
   return set(updated, 'meters[0].readings', omit(formValues, 'csrf_token'));
 };
 
+const getIsUnderQuery = value => {
+  if (isArray(value)) {
+    return value.includes('under_query');
+  }
+  if (isBoolean(value)) {
+    return value;
+  }
+  throw new Error('Expected array or boolean value');
+};
+
 /**
  * Applies under query
  * @param {Object} data - current return model data
@@ -319,7 +333,7 @@ const applyMeterReadings = (data, formValues) => {
 const applyUnderQuery = (data, formValues) => {
   const updated = cloneDeep(data);
   const { isUnderQuery } = formValues;
-  updated.isUnderQuery = !!isUnderQuery;
+  updated.isUnderQuery = getIsUnderQuery(isUnderQuery);
   return updated;
 };
 

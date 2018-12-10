@@ -141,7 +141,6 @@ const postConfirm = async (request, h) => {
       if (isInternal) {
         updated = applyUnderQuery(updated, getValues(form));
       }
-
       await submitReturnData(updated, request);
       return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {

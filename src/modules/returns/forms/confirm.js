@@ -13,11 +13,13 @@ const confirmForm = (request, data, action = `/return/nil-return`) => {
   const isInternal = request.permissions.hasPermission('returns.edit');
   if (isInternal) {
     const { isUnderQuery } = data;
+    const checked = isUnderQuery ? ['under_query'] : [];
     f.fields.push(fields.checkbox('isUnderQuery', {
-      label: 'Record as under query',
-      checked: isUnderQuery,
-      mapper: 'booleanMapper'
-    }, 'true'));
+      choices: [{
+        label: 'Record as under query',
+        value: 'under_query'
+      }]
+    }, checked));
   }
 
   f.fields.push(fields.button(null, {label: 'Submit return'}));

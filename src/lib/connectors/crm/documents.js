@@ -47,7 +47,7 @@ const unregisteredLicenceQuery = (key, value) => {
     [key]: {
       $or: value
     },
-    verification_id: null,
+    company_entity_id: null,
     'metadata->IsCurrent': {
       $ne: 'false'
     }

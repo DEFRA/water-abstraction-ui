@@ -191,7 +191,7 @@ async function postLicenceSelect (request, reply) {
       // Licences being added now
       const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
         document_id: { $or: documentIds },
-        verification_id: null
+        company_entity_id: null
       });
       if (error2) {
         throw error2;
@@ -318,7 +318,7 @@ async function postAddressSelect (request, reply) {
 
     // Get all licences - this is needed to determine whether to display link back to dashboard
     const { error: err2, data: licences } = await CRM.documents.findMany({
-      verification_id: { $ne: null },
+      company_entity_id: { $ne: null },
       entity_id: entityId
     });
 

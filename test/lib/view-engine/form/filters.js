@@ -181,7 +181,6 @@ lab.experiment('mapFormCheckbox', () => {
     expect(result.fieldset.legend.text).to.equal(checkboxField.options.label);
   });
   lab.test('It should set the item hint property', async () => {
-    console.log('>>>>', JSON.stringify(result, null, 2));
     expect(result.items[0].hint.text).to.equal(checkboxField.options.choices[0].hint);
   });
 
@@ -218,5 +217,9 @@ lab.experiment('mapFormDropdownField', () => {
   });
   lab.test('It should set the item value property', async () => {
     expect(result.items[0].value).to.equal(dropdownField.options.choices[0].value);
+  });
+  lab.test('It should set the selected flag on the correct choice', async () => {
+    expect(result.items[0].selected).to.equal(false);
+    expect(result.items[1].selected).to.equal(true);
   });
 });

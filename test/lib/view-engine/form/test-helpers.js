@@ -41,8 +41,11 @@ const dropdownField = fields.dropdown('dropdown_field', {
   choices: [{
     value: 'option-a',
     label: 'A'
+  }, {
+    value: 'option-b',
+    label: 'B'
   }]
-}, 'value');
+}, 'option-b');
 
 let f = formFactory('/action');
 f.fields.push(textField);

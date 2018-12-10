@@ -590,6 +590,17 @@ handlebars.registerHelper('splitString', (value, options) => {
 });
 
 /**
+ * Splits a string to array, and gets the numbered segment
+ */
+handlebars.registerHelper('includes', (arr = [], options) => {
+  const { value } = options.hash;
+  if (arr.includes(value)) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+/**
  * Each iterates in reverse order
  * @see {@link https://github.com/diy/handlebars-helpers/blob/master/lib/each-reverse.js}
  */

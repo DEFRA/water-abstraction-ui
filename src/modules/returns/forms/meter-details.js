@@ -54,10 +54,15 @@ const form = (request, data) => {
     f.fields.push(textFieldStartReading);
   }
 
+  // Checkbox internal type is array
+  const checked = meter.multiplier === 10 ? ['multiply'] : [];
+
   f.fields.push(fields.checkbox('isMultiplier', {
-    label: 'This meter has a ×10 display',
-    checked: meter.multiplier === 10
-  }, 'multiply'));
+    choices: [{
+      label: 'This meter has a ×10 display',
+      value: 'multiply'
+    }]
+  }, checked));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -76,7 +81,7 @@ const meterDetailsSchema = (data) => {
   const schema = {
     manufacturer: Joi.string().required(),
     serialNumber: Joi.string().required(),
-    isMultiplier: Joi.boolean().truthy('multiply').falsy('').optional(),
+    isMultiplier: Joi.array().items(Joi.string().valid('multiply')),
     csrf_token: Joi.string().guid().required()
   };
 

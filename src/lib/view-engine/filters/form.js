@@ -226,7 +226,8 @@ const mapFormCheckbox = (field) => {
 const mapFormDropdownField = (field) => {
   const items = field.options.choices.map(choice => ({
     value: choice.value,
-    text: choice.label
+    text: choice.label,
+    selected: choice.value === field.value
   }));
   const options = {
     id: field.name,

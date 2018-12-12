@@ -264,6 +264,34 @@ const setState = (state, action) => {
 };
 
 /**
+ * Gets the query for the immutability helper to add a new data item
+ * to the arData element of the licence data
+ * @param  {Object} state - current state
+ * @param  {Object} item  - data item to add
+ * @return {Object}       query object for immutability helper
+ */
+const getAddDataQuery = (state, item) => {
+  const hasARData = 'arData' in state.licence;
+  if (hasARData) {
+    return {
+      licence: {
+        arData: {
+          $push: [item]
+        }
+      }
+    };
+  } else {
+    return {
+      licence: {
+        arData: {
+          $set: [item]
+        }
+      }
+    };
+  }
+};
+
+/**
  * Adds new AR data to the licence
  * @param {Object} state  - current state of licence
  * @param {Object} action - action data
@@ -280,32 +308,14 @@ const addData = (state, action) => {
     content: {}
   };
 
-  let query;
-
   const ids = (state.licence.arData || []).map(item => item.id);
   if (ids.includes(id)) {
     throw new Error(`Cannot add data with ID ${id}, already exists`);
   }
 
-  // Existing AR data
-  if (state.licence.arData) {
-    query = {
-      licence: {
-        arData: {
-          $push: [item]
-        }
-      }
-    };
-  } else {
-    // No AR data in licence
-    query = {
-      licence: {
-        arData: {
-          $set: [item]
-        }
-      }
-    };
-  }
+  // Get query object for immutability-helper update to state
+  const query = getAddDataQuery(state, item);
+
   return update(state, query);
 };
 

@@ -140,7 +140,7 @@ class SessionStore {
   async destroy () {
     const sessionId = this.getSessionCookieId();
     logger.log('info', `Destroy session ${sessionId}`);
-    const {error} = await this.apiClient.delete(sessionId);
+    const { error } = await this.apiClient.delete(sessionId);
     if (error) {
       throw error;
     }

@@ -1,8 +1,12 @@
 {
-  "name": "water-abstraction",
+  "name": "water-abstraction-ui",
   "version": "1.15.0",
-  "description": "Web app for Water Abstraction Permit service",
+  "description": "Web app for Water Abstraction service",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DEFRA/water-abstraction-ui"
+  },
   "scripts": {
     "install-assets": "gulp build",
     "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",

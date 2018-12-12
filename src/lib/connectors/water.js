@@ -3,11 +3,12 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const { APIClient } = require('hapi-pg-rest-api');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
 const logger = require('../logger');
+const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
 
 function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
@@ -20,11 +21,11 @@ function sendNotifyMessage (messageRef, recipient, personalisation) {
       uri,
       'post',
       requestBody)
-      .then((response) => {
-        var data = response.body;
+      .then(response => {
+        const data = response.body;
         resolve(data);
-      }).catch((response) => {
-        logger.error('error', response);
+      }).catch(response => {
+        logger.error('Error sending notify message', response);
         resolve(response);
       });
   });
@@ -174,5 +175,7 @@ module.exports = {
   getReturnsLogs,
   getReturnsLines,
   picklists,
-  picklistItems
+  picklistItems,
+  arLicenceAnalyis,
+  arRefreshLicenceWebhook
 };

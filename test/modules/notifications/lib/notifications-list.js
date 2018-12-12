@@ -5,7 +5,7 @@ const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const { getNotificationsList } = require('../../../../src/modules/notifications/lib/notifications-list');
+const { getNotificationsList, getReportsList } = require('../../../../src/modules/notifications/lib/notifications-list');
 
 lab.experiment('getNotificationsList', () => {
   const tasks = [{
@@ -26,15 +26,49 @@ lab.experiment('getNotificationsList', () => {
     }
   };
 
+  const options = {
+    newWindow: false
+  };
+
   lab.test('It should only return task notifications when user doesnt have returns.edit permission', async () => {
     const result = getNotificationsList(tasks, internalPermissions);
-    expect(result).to.equal([ { name: 'Test', path: '/admin/notifications/123?start=1' } ]);
+    expect(result).to.equal([ { name: 'Test', path: '/admin/notifications/123?start=1', options } ]);
   });
 
   lab.test('It should include returns task notifications when user has returns.edit permission', async () => {
     const result = getNotificationsList(tasks, internalEditReturnsPermissions);
-    expect(result).to.equal([ { name: 'Test', path: '/admin/notifications/123?start=1' },
+    expect(result).to.equal([
+      { name: 'Test', path: '/admin/notifications/123?start=1', options },
       { name: 'Returns: send paper forms',
-        path: '/admin/returns-notifications/forms' } ]);
+        path: '/admin/returns-notifications/forms',
+        options } ]);
+  });
+});
+
+lab.experiment('getReportsList', () => {
+  const arUser = {
+    ar: {
+      edit: true,
+      approve: false
+    }
+  };
+
+  const arApprover = {
+    ar: {
+      edit: true,
+      approve: true
+    }
+  };
+
+  lab.test('It should not include AR report link for AR user scope', async () => {
+    const reports = getReportsList(arUser);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(false);
+  });
+
+  lab.test('It should include AR report link in list for AR approver scope', async () => {
+    const reports = getReportsList(arApprover);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(true);
   });
 });

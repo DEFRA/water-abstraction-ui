@@ -25,7 +25,7 @@ const errorPlugin = {
         // Boom errors
         if (!ignore && res.isBoom) {
           // ALWAYS Log the error
-          logger.error(pick(res, ['error', 'message', 'statusCode', 'stack']));
+          logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
 
           const { statusCode } = res.output;
 

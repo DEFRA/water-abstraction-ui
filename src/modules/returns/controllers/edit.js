@@ -6,6 +6,7 @@
 const { set } = require('lodash');
 const Boom = require('boom');
 const { importData, handleRequest, setValues, getValues } = require('../../../lib/forms');
+const logger = require('../../../lib/logger');
 
 const {
   amountsForm, methodForm, confirmForm, unitsForm,
@@ -145,7 +146,7 @@ const postConfirm = async (request, h) => {
       await submitReturnData(updated, request);
       return h.redirect(getNextPath(STEP_NIL_RETURN, request, data));
     } catch (error) {
-      request.log('error', error);
+      logger.error('Post confirm return error', error);
       throw Boom.badImplementation(`Return submission error`, { data, form });
     }
   }

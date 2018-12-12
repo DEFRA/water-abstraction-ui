@@ -14,7 +14,7 @@ const methodForm = (request, data) => {
     label: 'How are you reporting your return?',
     errors: {
       'any.required': {
-        message: 'Select readings from one meter, from more than one meter or volumes'
+        message: 'Select readings from one meter, or other (abstraction volumes)'
       }
     },
     choices: [

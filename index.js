@@ -100,11 +100,20 @@ async function start () {
 
     server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`);
   } catch (err) {
-    logger.error(['error'], err);
+    logger.error('Failed to start server', err);
   }
 
   return server;
 }
+
+const processError = message => err => {
+  logger.error(message, err);
+  process.exit(1);
+};
+
+process
+  .on('unhandledRejection', processError('unhandledRejection'))
+  .on('uncaughtException', processError('uncaughtException'));
 
 module.exports = server;
 start();

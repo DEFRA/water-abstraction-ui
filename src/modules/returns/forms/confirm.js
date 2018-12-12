@@ -14,13 +14,13 @@ const confirmForm = (request, data, action = `/return/nil-return`) => {
   if (isInternal) {
     const { isUnderQuery } = data;
     f.fields.push(fields.checkbox('isUnderQuery', {
-      label: 'Record a problem with the paper form',
+      label: 'Record as under query',
       checked: isUnderQuery,
       mapper: 'booleanMapper'
     }, 'true'));
   }
 
-  f.fields.push(fields.button(null, {label: 'Confirm this return information'}));
+  f.fields.push(fields.button(null, {label: 'Submit return'}));
 
   return f;
 };

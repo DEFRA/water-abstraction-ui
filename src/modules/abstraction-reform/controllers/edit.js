@@ -1,49 +1,49 @@
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
-const { load, update } = require('./lib/loader');
-const { extractData, transformNulls, prepareData } = require('./lib/helpers');
-const { getPermissions } = require('./lib/permissions');
-const { getPurpose, getLicence, getPoint, getCondition, getVersion, getParty, getAddress } = require('./lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('./lib/action-creators');
-const { stateManager, getInitialState } = require('./lib/state-manager');
-const { search, recent } = require('./lib/search');
-const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./lib/statuses');
+const { load, update } = require('../lib/loader');
+const { extractData, transformNulls, prepareData } = require('../lib/helpers');
+const { getPermissions } = require('../lib/permissions');
+const { getPurpose, getLicence, getPoint, getCondition, getVersion, getParty, getAddress } = require('../lib/licence-helpers');
+const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('../lib/action-creators');
+const { stateManager, getInitialState } = require('../lib/state-manager');
+const { search, recent } = require('../lib/search');
+const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('../lib/statuses');
 
 // Config for editing different data models
 const objectConfig = {
   licence: {
-    schema: require('./schema/licence.json'),
+    schema: require('../schema/licence.json'),
     getter: getLicence,
     actionCreator: createEditLicence
   },
   purpose: {
-    schema: require('./schema/purpose.json'),
+    schema: require('../schema/purpose.json'),
     getter: getPurpose,
     actionCreator: createEditPurpose
   },
   point: {
-    schema: require('./schema/point.json'),
+    schema: require('../schema/point.json'),
     getter: getPoint,
     actionCreator: createEditPoint
   },
   condition: {
-    schema: require('./schema/condition.json'),
+    schema: require('../schema/condition.json'),
     getter: getCondition,
     actionCreator: createEditCondition
   },
   version: {
-    schema: require('./schema/version.json'),
+    schema: require('../schema/version.json'),
     getter: getVersion,
     actionCreator: createEditVersion
   },
   party: {
-    schema: require('./schema/party.json'),
+    schema: require('../schema/party.json'),
     getter: getParty,
     actionCreator: createEditParty
   },
   address: {
-    schema: require('./schema/address.json'),
+    schema: require('../schema/address.json'),
     getter: getAddress,
     actionCreator: createEditAddress
   }
@@ -164,6 +164,7 @@ const postEditObject = async (request, h) => {
 
   // Load licence / AR licence from CRM
   const { licence, arLicence, finalState } = await load(documentId);
+  const { licence_ref: licenceNumber } = licence;
 
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
@@ -178,8 +179,6 @@ const postEditObject = async (request, h) => {
   // Compare object data with form payload
   const diff = shallowDiff(data, payload);
 
-  console.log('DIFF>>', data, payload, diff);
-
   if (diff.updated.length) {
     // Add the new action to the list of actions
     const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, ...args);
@@ -192,7 +191,7 @@ const postEditObject = async (request, h) => {
     const { status, lastEdit } = stateManager(getInitialState(licence), actions);
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, {actions, status, lastEdit});
+    await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
   }
 
   let path = `/admin/abstraction-reform/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
@@ -215,6 +214,7 @@ const postSetStatus = async (request, h) => {
 
   // Load licence / AR licence from CRM
   const { licence, arLicence } = await load(documentId);
+  const { licence_ref: licenceNumber } = licence;
 
   // Add new action to list
   const action = createSetStatus(status, notes, request.auth.credentials);
@@ -227,7 +227,7 @@ const postSetStatus = async (request, h) => {
   const { lastEdit } = stateManager(getInitialState(licence), actions);
 
   // Save action list to permit repo
-  await update(arLicence.licence_id, {actions, status, lastEdit});
+  await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
 
   return h.redirect(`/admin/abstraction-reform`);
 };

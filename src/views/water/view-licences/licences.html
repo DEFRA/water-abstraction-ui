@@ -37,7 +37,7 @@
 
   {{#if isAdmin }}
   <p>
-    Search for licences using user email, partial licence number or licence name
+    Search by the licence holder's email address, partial licence number or licence name
   </p>
   {{/if}}
 
@@ -49,8 +49,7 @@
     {{#if showEmailFilter }}
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal {{#if errors.emailAddress_email }}form-group-error{{/if}}">
-        <label class="form-label form-label--bold" for="emailAddress">Search by licence holder</label>
-        <span class="form-hint">Enter their registered email address</span>
+        <label class="form-label form-label--bold" for="emailAddress">Enter email address</label>
         <input maxlength="254" type="email" class="form-control form-control--block {{#if error}}form-control-error{{/if}}" name="emailAddress" id="emailAddress" value="{{ query.emailAddress }}" />
       </div>
     </div>
@@ -58,8 +57,7 @@
 
     <div class="column-two-fifths">
       <div class="form-group form-group--horizontal">
-        <label class="form-label form-label--bold" for="licenceNumber">{{#if isAdmin }}Search licences{{else}}Search your licences{{/if}}</label>
-        <span class="form-hint">Enter a licence number or name</span>
+        <label class="form-label form-label--bold" for="licenceNumber">Enter licence number or name</label>
         <input maxlength="32" type="search" class="form-control form-control--block" name="licenceNumber" id="licenceNumber" value="{{ query.licenceNumber }}" />
       </div>
     </div>

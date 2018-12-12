@@ -33,8 +33,7 @@ async function getOutstandingLicenceRequests (entityId) {
 
   // Find licences with this ID
   const {error, data} = await crmDocuments.findMany({
-    verification_id: verificationId,
-    verified: null
+    verification_id: verificationId
   });
   if (error) {
     throw error;
@@ -187,8 +186,8 @@ async function verify (entityId, verificationCode) {
 
   // Update document headers
   const res3 = await crmDocuments.updateMany(
-    {document_id: {$in: documentIds}, company_entity_id: null, verified: null},
-    {verification_id: verificationId, company_entity_id: companyEntityId, verified: 1}
+    {document_id: {$in: documentIds}, company_entity_id: null},
+    {verification_id: verificationId, company_entity_id: companyEntityId}
   );
   if (res3.error) {
     throw res3.error;
@@ -234,7 +233,7 @@ async function getDocumentVerifications (documentId) {
 }
 
 function removeDuplicates (arr, key) {
-  if (!(arr instanceof Array) || key && typeof key !== 'string') {
+  if (!(arr instanceof Array) || (key && typeof key !== 'string')) {
     return false;
   }
 

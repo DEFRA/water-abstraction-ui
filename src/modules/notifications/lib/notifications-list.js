@@ -10,8 +10,15 @@ const { hasPermission } = require('../../../lib/permissions');
  * @param {String} path
  * @return {Object}
  */
-const createNotificationType = (name, path) => {
-  return { name, path };
+const createNotificationType = (name, path, options = {}) => {
+  const defaultOptions = {
+    newWindow: false
+  };
+  return {
+    name,
+    path,
+    options: Object.assign({}, defaultOptions, options)
+  };
 };
 
 /**
@@ -42,6 +49,24 @@ const getNotificationsList = (tasks, permissions) => {
   return notifications;
 };
 
+/**
+ * Gets a list of reports for the current user
+ * @param {Object} permissions - permissions object for the current user
+ * @return {Array}               array of reports the current user can view
+ */
+const getReportsList = (permissions) => {
+  const reports = [
+    createNotificationType('Notifications report', '/admin/notifications/report'),
+    createNotificationType('View service performance (opens in a new tab)', 'https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N', { newWindow: true })
+  ];
+
+  if (hasPermission('ar.approve', permissions)) {
+    reports.push(createNotificationType('Abstraction reform report', '/admin/abstraction-reform/report'));
+  }
+  return reports;
+};
+
 module.exports = {
-  getNotificationsList
+  getNotificationsList,
+  getReportsList
 };

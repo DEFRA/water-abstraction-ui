@@ -1,5 +1,7 @@
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
+const isLocal = process.env.NODE_ENV === 'local';
+
 module.exports = {
 
   testMode,
@@ -46,7 +48,7 @@ module.exports = {
   hapiAuthCookie: {
     cookie: 'sid',
     password: process.env.COOKIE_SECRET,
-    isSecure: !!(process.env.NODE_ENV || '').match(/^dev|test|production|preprod$/i),
+    isSecure: !isLocal,
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/welcome',
@@ -71,11 +73,16 @@ module.exports = {
 
   blankie: {
     frameSrc: ['self', 'www.smartsurvey.co.uk'],
-    scriptSrc: ['self', '*.google-analytics.com', '*.googletagmanager.com'],
+    scriptSrc: ['self', '*.google-analytics.com'],
     fontSrc: ['self', 'assets.publishing.service.gov.uk', 'data:'],
-    imgSrc: ['self', '*.google-analytics.com', '*.googletagmanager.com'],
+    imgSrc: ['self', '*.google-analytics.com'],
     connectSrc: '*.google-analytics.com',
     reportOnly: true,
     reportUri: '/csp/report'
+  },
+
+  googleAnalytics: {
+    propertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID,
+    debug: isLocal
   }
 };

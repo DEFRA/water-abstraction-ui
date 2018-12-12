@@ -1,4 +1,5 @@
 const { get } = require('lodash');
+const config = require('../../config');
 
 const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   if (isAuthenticated) {
@@ -13,19 +14,25 @@ const getSurveyType = (isAuthenticated, isDefraAdmin) => {
  * @return {Object} tracking
  */
 const getTracking = (credentials) => {
+  const base = {
+    userType: 'not_logged_in',
+    propertyId: config.googleAnalytics.propertyId,
+    debug: config.googleAnalytics.debug,
+    isLoggedIn: false
+  };
+
   if (credentials) {
-    const { lastlogin: lastLogin, scope = [] } = credentials;
+    const { lastLogin, scope = [] } = credentials;
 
-    return {
-      usertype: scope.includes('internal') ? 'internal' : 'external',
-      newuser: lastLogin === null,
-      lastlogin: lastLogin
-    };
+    return Object.assign(base, {
+      userType: scope.includes('internal') ? 'internal' : 'external',
+      isLoggedIn: true,
+      newUser: lastLogin === null,
+      lastLogin
+    });
   };
 
-  return {
-    usertype: 'not_logged_in'
-  };
+  return base;
 };
 
 function viewContextDefaults (request) {

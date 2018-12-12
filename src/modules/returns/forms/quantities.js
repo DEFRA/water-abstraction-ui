@@ -2,22 +2,7 @@ const Joi = require('joi');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
 const { STEP_QUANTITIES, getPath } = require('../lib/flow-helpers');
-
-/**
- * Get field suffix - this is the units used for this return
- * @param {String} unit - internal SI unit or gal
- * @return {String} suffix - human readable unit
- */
-const getSuffix = (unit) => {
-  const u = unit.replace('³', '3');
-  const units = {
-    m3: 'cubic metres',
-    l: 'litres',
-    gal: 'gallons',
-    Ml: 'megalitres'
-  };
-  return units[u];
-};
+const { getSuffix } = require('../lib/helpers');
 
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
@@ -25,6 +10,9 @@ const quantitiesForm = (request, data) => {
   const action = getPath(STEP_QUANTITIES, request);
 
   const f = formFactory(action);
+
+  f.fields.push(fields.paragraph(null, { element: 'h2', controlClass: 'heading-medium', text: `Abstraction volumes` }));
+  f.fields.push(fields.paragraph(null, { element: 'p', text: `Enter volumes for the end of each ${data.frequency}.` }));
 
   const suffix = getSuffix(data.reading.units);
 

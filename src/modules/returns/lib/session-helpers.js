@@ -1,6 +1,7 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { applyUserDetails } = require('../lib/return-helpers');
+const logger = require('../../../lib/logger');
 
 /**
  * Gets the key to use for storing return data in user session
@@ -68,7 +69,7 @@ const submitReturnData = (data, request) => {
     request.log('info', JSON.stringify(d, null, 2));
     return returns.postReturn(d);
   } catch (err) {
-    request.log('error', err);
+    logger.error('Submit return data error', err);
     throw err;
   }
 };

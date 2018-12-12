@@ -3,8 +3,7 @@
   {{>element-phase-tag}}{{>element-main-nav}}
 
 {{#if isAdmin }}
-  {{#equal crmData.verified 1}}
-  {{else}}
+  {{#unless crmData.company_entity_id}}
     {{#if crmData.verifications}}
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -25,10 +24,8 @@
       </div>
     </div>
     {{/if}}
-  {{/equal}}
+  {{/unless}}
 {{/if}}
-
-
 
   {{#if crmData.document_name }}
   <h1 class="heading-large">

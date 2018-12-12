@@ -8,7 +8,12 @@ module.exports = {
     handler: controller.getRegisterStart,
     config: {
       auth: false,
-      description: 'Register start page - information for users before registering'
+      description: 'Register start page - information for users before registering',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Create an account to manage your water abstraction licence online'
+        }
+      }
     }
   },
   getRegister: {
@@ -17,7 +22,12 @@ module.exports = {
     handler: controller.getEmailAddress,
     config: {
       auth: false,
-      description: 'Register user account - get email address'
+      description: 'Register user account - get email address',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Create an account'
+        }
+      }
     }
   },
   postRegister: {
@@ -40,7 +50,17 @@ module.exports = {
     handler: controller.getRegisterSuccess,
     config: {
       auth: false,
-      description: 'Register user account - success page'
+      description: 'Register user account - success page',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Confirm your email address'
+        }
+      },
+      validate: {
+        query: {
+          email: Joi.string().required().max(254)
+        }
+      }
     }
   },
   getSendAgain: {
@@ -49,7 +69,12 @@ module.exports = {
     handler: controller.getSendAgain,
     config: {
       auth: false,
-      description: 'Register user account - resend email form'
+      description: 'Register user account - resend email form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Request another email'
+        }
+      }
     }
   },
   postSendAgain: {
@@ -72,7 +97,12 @@ module.exports = {
     handler: controller.getResentSuccess,
     config: {
       auth: false,
-      description: 'Register user account - email resent success page'
+      description: 'Register user account - email resent success page',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Confirm your email address'
+        }
+      }
     }
   }
 };

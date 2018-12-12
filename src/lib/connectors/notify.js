@@ -96,11 +96,11 @@ function sendAccessNotification (params) {
     };
 
     Water.sendNotifyMessage(messageRef, email, personalisation)
-      .then((response) => {
+      .then(() => {
         return resolve(true);
       })
-      .catch((err) => {
-        logger.error(['error'], err);
+      .catch(err => {
+        logger.error('Error sending access notification', err);
         return resolve(true);
       });
   });

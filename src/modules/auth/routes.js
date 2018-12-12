@@ -8,7 +8,12 @@ module.exports = {
     path: '/welcome',
     handler: controller.getWelcome,
     config: {
-      auth: false
+      auth: false,
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sign in or create an account'
+        }
+      }
     }
   },
 
@@ -24,6 +29,12 @@ module.exports = {
           utm_source: Joi.string().max(254),
           utm_medium: Joi.string().max(254),
           utm_campaign: Joi.string().max(254)
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sign in',
+          customTitle: 'Sign in - Manage your water abstraction or impoundment licence'
         }
       }
     }

@@ -2,18 +2,13 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back" href="/">Back</a>
-
   <div class="grid-row">
     <div class="column-two-thirds">
-      {{>element-heading-large content=pageTitle}}
-
-      <p>Please check your email for a new message from us. The subject line will read: 'Complete your online account set up using this link'.</p>
-
-      <p>Click on the link in the new email and follow the instructions you will see on the screen.</p>
-
-      <p><a href="/send-again">Has your email not arrived?</a></p>
-
+      <h1 class="heading-large">{{pageTitle}}</h1>
+      <p>
+        We have sent a link to <span class="bold-small">{{email}}</span>
+      </p>
+      <p><a href="/send-again">I have not received the email</a></p>
     </div>
   </div>
 </main>

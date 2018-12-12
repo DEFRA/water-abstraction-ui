@@ -42,23 +42,18 @@ client.getLicenceCount = async function (entityId) {
   return totalRows;
 };
 
-/**
- * Get a list of unclaimed licences for use in reg process
- * @param {Array} licenceNumbers - list of licence numbers to claim
- * @return {Promise} resolves with list of licences from CRM
- */
-client.getUnregisteredLicences = function (licenceNumbers) {
-  // Get unverified licences from DB
-  return this.findMany({
-    system_external_id: {
-      $or: licenceNumbers
+const unregisteredLicenceQuery = (key, value) => {
+  const query = {
+    [key]: {
+      $or: value
     },
-    verified: null,
-    verification_id: null,
+    company_entity_id: null,
     'metadata->IsCurrent': {
       $ne: 'false'
     }
-  }, {
+  };
+
+  return client.findMany(query, {
     system_external_id: +1
   }, {
     page: 1,
@@ -68,26 +63,22 @@ client.getUnregisteredLicences = function (licenceNumbers) {
 
 /**
  * Get a list of unclaimed licences for use in reg process
+ * @param {Array} licenceNumbers - list of licence numbers to claim
+ * @return {Promise} resolves with list of licences from CRM
+ */
+client.getUnregisteredLicences = function (licenceNumbers) {
+  // Get unverified licences from DB
+  return unregisteredLicenceQuery('system_external_id', licenceNumbers);
+};
+
+/**
+ * Get a list of unclaimed licences for use in reg process
  * @param {Array} documentIds - list of document header IDs to claim
  * @return {Promise} resolves with list of licences from CRM
  */
 client.getUnregisteredLicencesByIds = function (documentIds) {
   // Get unverified licences from DB
-  return this.findMany({
-    document_id: {
-      $or: documentIds
-    },
-    verified: null,
-    verification_id: null,
-    'metadata->IsCurrent': {
-      $ne: 'false'
-    }
-  }, {
-    system_external_id: +1
-  }, {
-    page: 1,
-    perPage: 300
-  });
+  return unregisteredLicenceQuery('document_id', documentIds);
 };
 
 /**

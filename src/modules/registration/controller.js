@@ -3,30 +3,34 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const View = require('../../lib/view');
 const IDM = require('../../lib/connectors/idm');
+const querystring = require('querystring');
 
 /**
  * Render initial page with information for users
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function getRegisterStart (request, reply) {
-  var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Create an account to manage your water abstraction licence online';
-  return reply.view('water/registration/register_start', viewContext);
+function getRegisterStart (request, h) {
+  return h.view('water/registration/register_start', request.view);
 }
 
 /**
  * Render form to get user email address
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function getEmailAddress (request, reply) {
-  var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Create an account';
-  return reply.view('water/registration/register_email', viewContext);
+function getEmailAddress (request, h) {
+  return h.view('water/registration/register_email', request.view);
 }
+
+const getUrlWithEmailParam = (email, options) => {
+  if (options.includeEmail) {
+    const query = querystring.stringify({ email });
+    return `${options.redirect}?${query}`;
+  }
+  return options.redirect;
+};
 
 /**
  * Process email form
@@ -38,15 +42,17 @@ function getEmailAddress (request, reply) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} request.payload - form post data
  * @param {String} request.payload.email - email address for user account
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-async function postEmailAddress (request, reply, options = {}) {
+async function postEmailAddress (request, h, options = {}) {
   const defaults = {
     template: 'water/registration/register_email',
-    redirect: '/success'
+    redirect: '/success',
+    includeEmail: true
   };
   const config = Object.assign(defaults, options);
   const pageTitle = config.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
+  let email;
 
   try {
     // Validate email
@@ -58,15 +64,17 @@ async function postEmailAddress (request, reply, options = {}) {
       throw error;
     }
 
+    email = value.email;
+
     // Try to create user
-    const { error: createError } = await IDM.createUserWithoutPassword(value.email);
+    const { error: createError } = await IDM.createUserWithoutPassword(email);
 
     if (createError) {
       throw createError;
     }
 
     await IDM.resetPassword(value.email, 'new');
-    return reply.redirect(config.redirect);
+    return h.redirect(getUrlWithEmailParam(email, config));
   } catch (error) {
     // User exists
     if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
@@ -74,16 +82,15 @@ async function postEmailAddress (request, reply, options = {}) {
       if (resetError) {
         throw resetError;
       } else {
-        return reply.redirect(config.redirect);
+        return h.redirect(getUrlWithEmailParam(email, config));
       }
     }
 
     // Email was invalid - handle error
     if (error.name === 'ValidationError') {
-      var viewContext = View.contextDefaults(request);
-      viewContext.pageTitle = pageTitle;
-      viewContext.error = error;
-      return reply.view(config.template, viewContext);
+      request.view.pageTitle = pageTitle;
+      request.view.error = error;
+      return h.view(config.template, request.view);
     }
 
     throw error;
@@ -93,48 +100,44 @@ async function postEmailAddress (request, reply, options = {}) {
 /**
  * Success page shown when account created
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function getRegisterSuccess (request, reply) {
-  const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'We have sent you an email with a new link to use';
-  return reply.view('water/registration/register_success', viewContext);
+function getRegisterSuccess (request, h) {
+  request.view.email = request.query.email;
+  return h.view('water/registration/register_success', request.view);
 }
 
 /**
  * Try sending email again
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function getSendAgain (request, reply) {
-  var viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Request another email';
-  return reply.view('water/registration/register_send_again', viewContext);
+function getSendAgain (request, h) {
+  return h.view('water/registration/register_send_again', request.view);
 }
 
 /**
  * Send email again
  * @param {Object} request - HAPI HTTP request
  * @param {String} request.payload.email - email address for user account
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function postSendAgain (request, reply) {
+function postSendAgain (request, h) {
   const options = {
     template: 'water/registration/register_send_again',
-    redirect: '/resent-success'
+    redirect: '/resent-success',
+    includeEmail: false
   };
-  return postEmailAddress(request, reply, options);
+  return postEmailAddress(request, h, options);
 }
 
 /**
  * Success page shown when account created
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - Hapi Response Toolkit
  */
-function getResentSuccess (request, reply) {
-  const viewContext = View.contextDefaults(request);
-  viewContext.pageTitle = 'Confirm your email address';
-  return reply.view('water/registration/register_resent_success', viewContext);
+function getResentSuccess (request, h) {
+  return h.view('water/registration/register_resent_success', request.view);
 }
 
 module.exports = {
@@ -144,5 +147,6 @@ module.exports = {
   getRegisterSuccess,
   getSendAgain,
   postSendAgain,
-  getResentSuccess
+  getResentSuccess,
+  getUrlWithEmailParam
 };

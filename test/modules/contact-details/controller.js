@@ -6,7 +6,6 @@ const lab = exports.lab = Lab.script();
 const sinon = require('sinon');
 
 const idm = require('../../../src/lib/connectors/idm');
-const View = require('../../../src/lib/view');
 const controller = require('../../../src/modules/contact-details/controller');
 
 const stubFindOne = idm => {
@@ -30,14 +29,12 @@ lab.experiment('getContactInformation', () => {
   let responseToolkit;
 
   lab.beforeEach(async () => {
-    sinon.stub(View, 'contextDefaults').returns({});
     stubFindOne(idm);
     responseToolkit = { view: sinon.spy() };
   });
 
   lab.afterEach(async () => {
     idm.usersClient.findOne.restore();
-    View.contextDefaults.restore();
   });
 
   lab.test('adds the user to the payload', async () => {
@@ -46,7 +43,8 @@ lab.experiment('getContactInformation', () => {
         credentials: {
           user_id: 'test'
         }
-      }
+      },
+      view: {}
     };
 
     await controller.getContactInformation(request, responseToolkit);
@@ -67,7 +65,6 @@ lab.experiment('postContactInformation', () => {
   lab.beforeEach(async () => {
     sinon.stub(idm.usersClient, 'updateOne').resolves({});
     stubFindOne(idm);
-    sinon.stub(View, 'contextDefaults').returns({});
     responseToolkit = {
       view: sinon.spy(),
       redirect: sinon.spy()
@@ -77,7 +74,6 @@ lab.experiment('postContactInformation', () => {
   lab.afterEach(async () => {
     idm.usersClient.updateOne.restore();
     idm.usersClient.findOne.restore();
-    View.contextDefaults.restore();
   });
 
   lab.test('adds the error to the payload when there is an error', async () => {

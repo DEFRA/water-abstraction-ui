@@ -5,7 +5,6 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 const sinon = require('sinon');
 const controller = require('../../../src/modules/auth/controller.js');
-const View = require('../../../src/lib/view');
 
 lab.experiment('getSignout', () => {
   let request;
@@ -46,17 +45,13 @@ lab.experiment('getSignedOut', () => {
   let h;
 
   lab.beforeEach(async () => {
-    sinon.stub(View, 'contextDefaults').returns({});
     const request = {
       log: sinon.spy(),
-      query: { u: 'e' }
+      query: { u: 'e' },
+      view: {}
     };
     h = { view: sinon.spy() };
     await controller.getSignedOut(request, h);
-  });
-
-  lab.afterEach(async () => {
-    View.contextDefaults.restore();
   });
 
   lab.test('sets the page title', async () => {

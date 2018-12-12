@@ -1,6 +1,10 @@
 const update = require('immutability-helper');
 const { findIndex, set } = require('lodash');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
+const {
+  EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
+  EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
+  ADD_DATA, EDIT_DATA, DELETE_DATA
+} = require('./action-types');
 const { STATUS_IN_PROGRESS } = require('./statuses');
 const { setObject, isMatch, isVersion } = require('./helpers');
 
@@ -259,6 +263,52 @@ const setState = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Adds new AR data to the licence
+ * @param {Object} state  - current state of licence
+ * @param {Object} action - action data
+ * @return {Object} state - next state of licence
+ */
+const addData = (state, action) => {
+  const { id, schema, issueNumber, incrementNumber } = action.payload;
+
+  const item = {
+    id,
+    schema,
+    issueNumber,
+    incrementNumber,
+    content: {}
+  };
+
+  let query;
+
+  const ids = (state.licence.arData || []).map(item => item.id);
+  if (ids.includes(id)) {
+    throw new Error(`Cannot add data with ID ${id}, already exists`);
+  }
+
+  // Existing AR data
+  if (state.licence.arData) {
+    query = {
+      licence: {
+        arData: {
+          $push: [item]
+        }
+      }
+    };
+  } else {
+    // No AR data in licence
+    query = {
+      licence: {
+        arData: {
+          $set: [item]
+        }
+      }
+    };
+  }
+  return update(state, query);
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case EDIT_PURPOSE:
@@ -284,6 +334,9 @@ const reducer = (state, action) => {
 
     case EDIT_ADDRESS:
       return editAddress(state, action);
+
+    case ADD_DATA:
+      return addData(state, action);
 
     default:
       return state;

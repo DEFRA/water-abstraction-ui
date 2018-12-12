@@ -1,5 +1,10 @@
+const uuidv4 = require('uuid/v4');
 const statuses = require('./statuses');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
+const {
+  EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
+  EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
+  ADD_DATA, EDIT_DATA, DELETE_DATA
+} = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
@@ -161,6 +166,26 @@ const createEditAddress = (data, user, id) => {
   };
 };
 
+/**
+ * Creates a new data object - e.g. for WR22 data
+ * @param {String} id - GUID of new data point
+ * @param {String} schema - to use for the new data point, e.g. wr22/2.1
+ * @param
+ */
+const createAddData = (schema, user, issueNumber, incrementNumber) => {
+  return {
+    type: ADD_DATA,
+    payload: {
+      id: uuidv4(),
+      schema,
+      user: formatUser(user),
+      timestamp: Date.now(),
+      issueNumber: parseInt(issueNumber),
+      incrementNumber: parseInt(incrementNumber)
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
@@ -169,5 +194,6 @@ module.exports = {
   createSetStatus,
   createEditVersion,
   createEditAddress,
-  createEditParty
+  createEditParty,
+  createAddData
 };

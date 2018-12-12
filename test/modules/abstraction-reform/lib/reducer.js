@@ -4,7 +4,8 @@ const { expect } = require('code');
 const reducer = require('../../../../src/modules/abstraction-reform/lib/reducer');
 const {
   createEditLicence, createEditPurpose, createEditPoint, createEditCondition,
-  createSetStatus, createEditVersion, createEditParty, createEditAddress
+  createSetStatus, createEditVersion, createEditParty, createEditAddress,
+  createAddData
 } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
@@ -177,6 +178,50 @@ lab.experiment('Test reducer with createEditAddress', () => {
   lab.test('It should not edit address if ID does not match', async () => {
     const { licence: nextStateLicence } = getNextState('XYZ');
     expect(nextStateLicence).to.equal(licence);
+  });
+});
+
+lab.experiment('Test abstraction reform reducer - add WR22 data', () => {
+  const schema = 'wr22/2.1';
+  const issueNumber = '100';
+  const incrementNumber = '1';
+  const state = { licence };
+  const action = createAddData(schema, user, issueNumber, incrementNumber);
+
+  const expected = {
+    schema: 'wr22/2.1',
+    issueNumber: 100,
+    incrementNumber: 1,
+    content: {}
+  };
+
+  lab.test('It should add not affect base licence data when adding AR schema data', async () => {
+    const nextState = reducer(state, action);
+    expect(nextState.licence.data).to.equal(state.licence.data);
+  });
+
+  lab.test('It should add AR data when there is no existing AR data', async () => {
+    const nextState = reducer(state, action);
+    expect(nextState.licence.arData).to.equal([{
+      id: action.payload.id,
+      ...expected
+    }]);
+  });
+
+  lab.test('It should not add AR data when ID already exists', async () => {
+    const func = () => {
+      let nextState = reducer(state, action);
+      nextState = reducer(nextState, action);
+    };
+    expect(func).to.throw();
+  });
+
+  lab.test('It should add AR data when there is existing AR data', async () => {
+    const action2 = createAddData(schema, user, issueNumber, incrementNumber);
+    let nextState = reducer(state, action);
+    nextState = reducer(nextState, action2);
+    const ids = nextState.licence.arData.map(item => item.id);
+    expect(ids).to.equal([action.payload.id, action2.payload.id]);
   });
 });
 

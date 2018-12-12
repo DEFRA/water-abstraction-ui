@@ -116,10 +116,36 @@ const handleRequest = (form, request, validationSchema) => {
 
   request.log('info', JSON.stringify(error, null, 2));
 
-  f = adapter.applyErrors(f, error, getCustomErrors(form));
+  const customErrors = getCustomErrors(form);
+  const formattedErrors = adapter.formatErrors(error, customErrors);
+  f = applyErrors(f, formattedErrors);
   f.isValid = !error;
 
   return setValues(f, value);
+};
+
+/**
+ * Applies errors to fields and returns a new form object
+ * @param {Object} form
+ * @param {Object} formattedErrors: Any errors to assign to the form
+ * @return {Object} form with errors populated on fields
+ */
+const applyErrors = (form, formattedErrors = []) => {
+  if (formattedErrors.length === 0) {
+    return form;
+  }
+
+  const f = mapFields(form, (field) => {
+    const errors = formattedErrors.filter(err => {
+      return err.name === field.name;
+    });
+    return {
+      ...field,
+      errors
+    };
+  });
+  f.errors = formattedErrors;
+  return f;
 };
 
 module.exports = {

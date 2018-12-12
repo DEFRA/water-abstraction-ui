@@ -50,57 +50,12 @@ experiment('createSchemaFromForm', () => {
   });
 });
 
-experiment('applyErrors', () => {
-  let resultForm;
+experiment('formatErrors', () => {
+  let customErrors;
+  let formattedErrors;
 
   beforeEach(async () => {
-    const form = {
-      action: '/admin/return/meter/details',
-      method: 'POST',
-      isSubmitted: true,
-      fields: [
-        {
-          name: 'manufacturer',
-          options: {
-            label: 'Manufacturer',
-            type: 'text',
-            errors: { 'required': { message: 'Select a manufacturer' } }
-          },
-          errors: []
-        },
-        {
-          name: 'serialNumber',
-          options: {
-            label: 'Serial number',
-            type: 'text',
-            errors: { 'required': { message: 'Select a serial number' } }
-          },
-          errors: []
-        },
-        {
-          name: 'startReading',
-          options: {
-            label: 'Meter start reading',
-            type: 'text',
-            errors: {
-              'required': { message: 'Enter a meter start reading' },
-              'minimum': { message: 'This number should be positive' }
-            }
-          },
-          errors: []
-        },
-        {
-          name: 'isMultiplier',
-          options: { label: 'This meter has a ×10 display', widget: 'checkbox', checked: false },
-          errors: [],
-          value: 'multiply'
-        }
-      ],
-      errors: [],
-      validationType: 'json'
-    };
-
-    const validationResult = {
+    const validatorResult = {
       error: {
         instance: {},
         propertyPath: 'instance',
@@ -137,51 +92,61 @@ experiment('applyErrors', () => {
 
     const customErrors = {
       manufacturer: {
-        'required': { message: 'Select a manufacturer' }
+        'required': {
+          message: 'Select a manufacturer',
+          summary: 'Custom summary'
+        }
       },
       serialNumber: {
         'required': { message: 'Select a serial number' }
-      },
-      startReading: {
-        'required': { message: 'Enter a meter start reading' },
-        'minimum': { message: 'This number should be positive' }
       }
     };
 
-    resultForm = adapter.applyErrors(form, validationResult.error, customErrors);
+    formattedErrors = adapter.formatErrors(validatorResult.error, customErrors);
   });
 
-  test('the form is populated with the expected errors', async () => {
-    expect(resultForm.errors).to.equal([
-      { name: 'manufacturer', message: 'Select a manufacturer', summary: 'Select a manufacturer' },
-      { name: 'serialNumber', message: 'Select a serial number', summary: 'Select a serial number' },
-      { name: 'startReading', message: 'Enter a meter start reading', summary: 'Enter a meter start reading' }
-    ]);
+  test('formats the manufacturer errors as expected', async () => {
+    const manufacturerError = formattedErrors.find(error => error.name === 'manufacturer');
+    expect(manufacturerError).to.equal({
+      message: 'Select a manufacturer',
+      name: 'manufacturer',
+      summary: 'Custom summary'
+    });
   });
 
-  test('the manufacturer field is set with the local errors', async () => {
-    const manufacturer = resultForm.fields.find(field => field.name === 'manufacturer');
-    expect(manufacturer.errors).to.equal([
-      { name: 'manufacturer', message: 'Select a manufacturer', summary: 'Select a manufacturer' }
-    ]);
+  test('formats the serialNumber errors as expected', async () => {
+    const manufacturerError = formattedErrors.find(error => error.name === 'serialNumber');
+    expect(manufacturerError).to.equal({
+      message: 'Select a serial number',
+      name: 'serialNumber',
+      summary: 'Select a serial number'
+    });
   });
 
-  test('the serialNumber field is set with the local errors', async () => {
-    const serialNumber = resultForm.fields.find(field => field.name === 'serialNumber');
-    expect(serialNumber.errors).to.equal([
-      { name: 'serialNumber', message: 'Select a serial number', summary: 'Select a serial number' }
-    ]);
-  });
-
-  test('the startReading field is set with the local errors', async () => {
-    const startReading = resultForm.fields.find(field => field.name === 'startReading');
-    expect(startReading.errors).to.equal([
-      { name: 'startReading', message: 'Enter a meter start reading', summary: 'Enter a meter start reading' }
-    ]);
+  test('uses the default JSON schema errors for the startReading because no custom values specified', async () => {
+    const manufacturerError = formattedErrors.find(error => error.name === 'startReading');
+    expect(manufacturerError).to.equal({
+      message: 'requires property "startReading"',
+      name: 'startReading',
+      summary: 'requires property "startReading"'
+    });
   });
 
   test('the isMultiplier field has no errors', async () => {
-    const isMultiplier = resultForm.fields.find(field => field.name === 'isMultiplier');
-    expect(isMultiplier.errors).to.have.length(0);
+    const isMultiplier = formattedErrors.find(field => field.name === 'isMultiplier');
+    expect(isMultiplier).to.not.exist();
+  });
+
+  test('returns an empty array when no errors', async () => {
+    const validatorResult = {
+      instance: {},
+      schema: { type: 'object', properties: { one: [Object] } },
+      propertyPath: 'instance',
+      errors: [],
+      throwError: undefined,
+      disableFormat: false
+    };
+    const formatted = adapter.formatErrors(validatorResult, customErrors);
+    expect(formatted).to.equal([]);
   });
 });

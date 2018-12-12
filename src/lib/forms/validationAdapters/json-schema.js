@@ -50,38 +50,19 @@ const formatError = (error, customErrors) => {
 };
 
 /**
- * Copies the errors to the local form field level if
- * there is an error from that field
- */
-const applyLocalErrors = (form, errors) => {
-  form.fields.forEach(field => {
-    field.errors = errors.filter(error => error.name === field.name);
-  });
-  return form;
-};
-
-/**
- * Apply the JSON schema validation object result to the
- * form errors if there are any.
+ * Given the JSON schema validator result, format the errors into a common
+ * shape overlaying any custom error messages where applicable.
  *
- * form: The form object
  * error: The JSON schema validation result. { errors: [] }
  * customErrors: Any custom error text for the form
  */
-const applyErrors = (form, error, customErrors) => {
-  const errors = get(error, 'errors');
-
-  if (!errors) {
-    return form;
-  }
-
-  const validationErrors = errors.map(err => formatError(err, customErrors));
-  form.errors = validationErrors;
-  return applyLocalErrors(form, validationErrors);
+const formatErrors = (error, customErrors) => {
+  const errors = get(error, 'errors', []);
+  return errors.map(err => formatError(err, customErrors));
 };
 
 module.exports = {
   validate,
   createSchemaFromForm,
-  applyErrors
+  formatErrors
 };

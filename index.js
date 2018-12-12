@@ -106,5 +106,14 @@ async function start () {
   return server;
 }
 
+const processError = message => err => {
+  logger.error(message, err);
+  process.exit(1);
+};
+
+process
+  .on('unhandledRejection', processError('unhandledRejection'))
+  .on('uncaughtException', processError('uncaughtException'));
+
 module.exports = server;
 start();

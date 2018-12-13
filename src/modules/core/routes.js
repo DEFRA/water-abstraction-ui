@@ -33,6 +33,39 @@ module.exports = {
     }
   },
 
+  govUkFrontendAssets: {
+    method: 'GET',
+    path: '/assets/{param*}',
+    config: {
+      description: 'Serve static assets for GOV.UK frontend',
+      auth: false,
+      cache: {
+        expiresIn: 30 * 1000
+      }
+    },
+    handler: {
+      directory: {
+        path: 'node_modules/govuk-frontend/assets/',
+        listing: false
+      }
+    }
+  },
+
+  govUkFrontendJS: {
+    method: 'GET',
+    path: '/assets/js/all.js',
+    config: {
+      description: 'Serve static assets for GOV.UK frontend',
+      auth: false,
+      cache: {
+        expiresIn: 30 * 1000
+      }
+    },
+    handler: {
+      file: 'node_modules/govuk-frontend/all.js'
+    }
+  },
+
   robots: {
     method: 'GET',
     path: '/robots.txt',

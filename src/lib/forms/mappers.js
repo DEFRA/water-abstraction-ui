@@ -1,5 +1,7 @@
-const { extractLicenceNumbers } = require('../licence-helpers');
+const { isArray, isUndefined, negate } = require('lodash');
 const moment = require('moment');
+const isDefined = negate(isUndefined);
+const { extractLicenceNumbers } = require('../licence-helpers');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -58,9 +60,12 @@ const formatDateSegment = (value, length = 2) => {
  * @return {String} year 4 digit
  */
 const formatYearSegment = (year) => {
-  const str = year.trim();
-  const currentYear = moment().format('YYYY');
-  return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  if (year) {
+    const str = year.trim();
+    const currentYear = moment().format('YYYY');
+    return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  }
+  return '';
 };
 
 /**
@@ -113,10 +118,26 @@ const licenceNumbersMapper = {
   }
 };
 
+/**
+ * For checkbox fields, need to force HAPI payload to an array.  If only one
+ * checkbox is ticked, the value is sent as a string
+ */
+const arrayMapper = {
+  import: (fieldName, payload) => {
+    const value = payload[fieldName];
+    const arr = isArray(value) ? value : [value];
+    return arr.filter(isDefined);
+  },
+  export: (value) => {
+    return value;
+  }
+};
+
 module.exports = {
   defaultMapper,
   booleanMapper,
   dateMapper,
   numberMapper,
-  licenceNumbersMapper
+  licenceNumbersMapper,
+  arrayMapper
 };

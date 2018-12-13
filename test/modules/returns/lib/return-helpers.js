@@ -231,7 +231,7 @@ lab.experiment('applyMeterDetails', () => {
   });
 
   lab.test('sets multiplier to 10 if true', async () => {
-    formValues.isMultiplier = true;
+    formValues.isMultiplier = ['multiply'];
     data = applyMeterDetails({}, formValues);
     expect(data.meters[0].multiplier).to.equal(10);
   });

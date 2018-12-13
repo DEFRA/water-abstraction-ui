@@ -8,17 +8,17 @@ const sentenceCase = require('sentence-case');
 const titleCase = require('title-case');
 const marked = require('marked');
 
-const Helpers = require('../lib/helpers');
-const DynamicView = require('../lib/dynamicview');
+const Helpers = require('../helpers');
+const DynamicView = require('../dynamicview');
 
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
 const Joi = require('joi');
 
 const commaNumber = require('comma-number');
-const { convertToCubicMetres } = require('../lib/unit-conversion');
-const { maxPrecision } = require('../lib/number-formatter.js');
-const { splitString } = require('../lib/string-formatter.js');
+const { convertToCubicMetres } = require('../unit-conversion');
+const { maxPrecision } = require('../number-formatter.js');
+const { splitString } = require('../string-formatter.js');
 
 /**
  * Formats numbers with commas to separate thousands, eg. 1,000
@@ -590,6 +590,17 @@ handlebars.registerHelper('splitString', (value, options) => {
 });
 
 /**
+ * Splits a string to array, and gets the numbered segment
+ */
+handlebars.registerHelper('includes', (arr = [], options) => {
+  const { value } = options.hash;
+  if (arr.includes(value)) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+/**
  * Each iterates in reverse order
  * @see {@link https://github.com/diy/handlebars-helpers/blob/master/lib/each-reverse.js}
  */
@@ -609,50 +620,4 @@ function eachReverse (context) {
 };
 handlebars.registerHelper('eachReverse', eachReverse);
 
-const Path = require('path');
-
-const footerSupportLinks = `
-  <h2 class="sr-only">Support Links</h2>
-  <ul>
-    <li><a href="/cookies">Cookies</a></li>
-    <li><a href="/privacy-policy">Privacy</a></li>
-    <li><a href="/accessibility">Accessibility</a></li>
-  </ul>
-`;
-
-const defaultContext = {
-  assetPath: '/public/',
-  topOfPage: null,
-  head: '<link href="public/stylesheets/overrides.css" media="screen" rel="stylesheet" />',
-  pageTitle: ' Generic Page',
-  htmlLang: 'en',
-  bodyClasses: 'some classes here',
-  bodyStart: null,
-  skipLinkMessage: 'Skip to main content',
-  cookieMessage: 'GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>',
-  headerClass: 'some classes here',
-  homepageUrl: 'https://www.gov.uk/',
-  logoLinkTitle: 'Logo Link Title',
-  globalHeaderText: 'GOV.UK',
-  insideHeader: '',
-
-  propositionLinks: [],
-
-  afterHeader: '',
-  footerTop: '',
-  footerSupportLinks,
-  licenceMessage: '<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>',
-  bodyEnd: ''
-};
-module.exports = {
-  engines: {
-    html: handlebars
-  },
-  relativeTo: __dirname,
-  path: Path.join(__dirname, ''),
-  layoutPath: Path.join(__dirname, 'govuk_template_mustache/layouts'),
-  layout: 'govuk_template',
-  partialsPath: Path.join(__dirname, 'partials/'),
-  context: defaultContext,
-  isCached: process.env.NODE_ENV === 'production'
-};
+module.exports = handlebars;

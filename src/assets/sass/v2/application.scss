@@ -1,0 +1,8 @@
+// global styles for <a> and <p> tags
+$govuk-global-styles: true;
+
+// Import GOV.UK Frontend
+@import "govuk-frontend/all";
+
+// Patterns that aren't in Frontend
+@import "patterns/subnav";

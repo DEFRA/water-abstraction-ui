@@ -11,12 +11,10 @@ const viewContextPlugin = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
-        const viewContext = contextDefaults(request);
-
         const currentView = request.view || {};
-        const viewData = request.route.settings.plugins.viewContext || {};
-
-        request.view = { ...currentView, ...viewContext, ...viewData };
+        const routeContext = request.route.settings.plugins.viewContext || {};
+        request.view = Object.assign(currentView, routeContext);
+        request.view = contextDefaults(request);
 
         // Continue processing request
         return reply.continue;

@@ -67,12 +67,15 @@
     text: "Back"
   }) }}
   {% endif %}
+
+  {{ mainNav(mainNavLinks) }}
+
 {% endblock %}
 
 
 {% block content %}
 
-  {{ mainNav(mainNavLinks) }}
+
 
   {{ formErrorSummary(form) }}
 

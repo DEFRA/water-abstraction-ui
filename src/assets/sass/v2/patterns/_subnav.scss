@@ -1,13 +1,15 @@
 // ========== ========== ========== ========== ==========
 // styles for new GDS navigation style
 // ========== ========== ========== ========== ==========
-
+// this probably needs more love for smaller screens
 
 // subnav container
 .navbar {
   border-bottom: 1px solid #bfc1c3;
   margin-bottom: 30px;
-  font-size: 19px;
+  @media (min-width: 768px) {
+    font-size: 19px;
+  }
 }
 
 .navbar__list {

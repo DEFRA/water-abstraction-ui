@@ -46,7 +46,7 @@ async function auto (request, emailAddress) {
   }
 
   // Get roles for user
-  const { error, data: roles } = await CRM.entityRoles.setParams({entityId}).findMany();
+  const { error, data: roles } = await CRM.entityRoles.setParams({ entityId }).findMany();
 
   if (error) {
     throw error;

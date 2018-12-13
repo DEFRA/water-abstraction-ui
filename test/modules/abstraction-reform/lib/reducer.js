@@ -6,7 +6,7 @@ const reducer = require('../../../../src/modules/abstraction-reform/lib/reducer'
 const {
   createEditLicence, createEditPurpose, createEditPoint, createEditCondition,
   createSetStatus, createEditVersion, createEditParty, createEditAddress,
-  createAddData, createEditData
+  createAddData, createEditData, createDeleteData
 } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
@@ -182,10 +182,14 @@ lab.experiment('Test reducer with createEditAddress', () => {
   });
 });
 
+/**
+ * Abstraction reform reducer functions
+ */
+const schema = 'wr22/2.1';
+const issueNumber = '100';
+const incrementNumber = '1';
+
 lab.experiment('Test abstraction reform reducer - add WR22 data', () => {
-  const schema = 'wr22/2.1';
-  const issueNumber = '100';
-  const incrementNumber = '1';
   const state = { licence };
   const action = createAddData(schema, user, issueNumber, incrementNumber);
 
@@ -227,9 +231,6 @@ lab.experiment('Test abstraction reform reducer - add WR22 data', () => {
 });
 
 lab.experiment('Test abstraction reform reducer - edit WR22 data', () => {
-  const schema = 'wr22/2.1';
-  const issueNumber = '100';
-  const incrementNumber = '1';
   let state = { licence };
   let id;
 
@@ -262,6 +263,32 @@ lab.experiment('Test abstraction reform reducer - edit WR22 data', () => {
     const finalState = reducer(nextState, action2);
     const item = find(finalState.licence.arData, item => item.id === id);
     expect(item.content).to.equal({ foo: 'bar', bar: 'foo' });
+  });
+});
+
+lab.experiment('Test abstraction reform reducer - delete WR22 data', () => {
+  let state = { licence };
+  let id;
+
+  lab.before(async () => {
+    // Add a data item so there is something to edit
+    const action = createAddData(schema, user, issueNumber, incrementNumber);
+    state = reducer(state, action);
+    id = action.payload.id;
+  });
+
+  lab.test('It should delete a data item', async () => {
+    const action = createDeleteData(user, id);
+    const nextState = reducer(state, action);
+    expect(nextState.licence.arData).to.have.length(0);
+  });
+
+  lab.test('It should throw an error if the data item does not exist', async () => {
+    const action = createDeleteData(user, 'invalid-id');
+    const func = () => {
+      reducer(state, action);
+    };
+    expect(func).to.throw();
   });
 });
 

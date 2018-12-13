@@ -30,7 +30,7 @@ const getAddDataQuery = (state, item) => {
 };
 
 /**
- * Adds new AR data to the licence
+ * Adds a new AR data item to the licence
  * @param {Object} state  - current state of licence
  * @param {Object} action - action data
  * @return {Object} state - next state of licence
@@ -58,7 +58,7 @@ const addData = (state, action) => {
 };
 
 /**
- * Edits AR data
+ * Edits an AR data item
  * @param {Object} state  - current state of licence
  * @param {Object} action - action data
  * @return {Object} state - next state of licence
@@ -83,7 +83,29 @@ const editData = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Deletes an AR data item
+ * @type {Object}
+ */
+const deleteData = (state, action) => {
+  const { id } = action.payload;
+  const index = findIndex(state.licence.arData, item => item.id === id);
+  if (index === -1) {
+    throw new Error(`Cannot delete data with ID ${id}, not found`);
+  }
+
+  const query = {
+    licence: {
+      arData: {
+        $splice: [[index, 1]]
+      }
+    }
+  };
+  return update(state, query);
+};
+
 module.exports = {
   addData,
-  editData
+  editData,
+  deleteData
 };

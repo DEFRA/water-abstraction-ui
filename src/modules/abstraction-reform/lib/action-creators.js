@@ -205,6 +205,23 @@ const createEditData = (data, user, id) => {
   };
 };
 
+/**
+ * Deletes a data object in the AR data items list
+ * @param {Object} user - the current application user
+ * @param {String} id - GUID of data point to delete
+ * @param
+ */
+const createDeleteData = (user, id) => {
+  return {
+    type: DELETE_DATA,
+    payload: {
+      id,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
@@ -215,5 +232,6 @@ module.exports = {
   createEditAddress,
   createEditParty,
   createAddData,
-  createEditData
+  createEditData,
+  createDeleteData
 };

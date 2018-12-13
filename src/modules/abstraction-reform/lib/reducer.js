@@ -8,7 +8,7 @@ const {
 const { STATUS_IN_PROGRESS } = require('./statuses');
 const { setObject, isMatch, isVersion } = require('./helpers');
 
-const { addData, editData } = require('./ar-reducer');
+const { addData, editData, deleteData } = require('./ar-reducer');
 
 /**
  * Gets a base update query with the user who edited and timestamp
@@ -296,6 +296,9 @@ const reducer = (state, action) => {
 
     case EDIT_DATA:
       return editData(state, action);
+
+    case DELETE_DATA:
+      return deleteData(state, action);
 
     default:
       return state;

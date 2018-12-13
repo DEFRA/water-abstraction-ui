@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'local') {
         ...request.view,
         form
       };
-      return h.view('test.njk', view, {
+      return h.view('nunjucks/test.njk', view, {
         layout: false
       });
     },
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'local') {
         ...request.view,
         form
       };
-      return h.view('test.njk', view, {
+      return h.view('nunjucks/test.njk', view, {
         layout: false
       });
     },

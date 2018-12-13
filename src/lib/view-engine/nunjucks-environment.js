@@ -1,7 +1,4 @@
-const {
-  mapFormField, mapFormDateField, mapFormErrorSummary, mapFormRadioField,
-  mapFormDropdownField, mapFormCheckbox, setConditionalRadioField
-} = require('./filters/form');
+const filters = require('./filters');
 
 /**
  * Adds filters to supplied nunjucks environment
@@ -9,13 +6,10 @@ const {
  * @return {Object} env - nunjucks environment
  */
 const addFilters = (env) => {
-  env.addFilter('mapFormField', mapFormField);
-  env.addFilter('mapFormDateField', mapFormDateField);
-  env.addFilter('mapFormErrorSummary', mapFormErrorSummary);
-  env.addFilter('mapFormRadioField', mapFormRadioField);
-  env.addFilter('mapFormDropdownField', mapFormDropdownField);
-  env.addFilter('mapFormCheckbox', mapFormCheckbox);
-  env.addFilter('setConditionalRadioField', setConditionalRadioField);
+  for (let key in filters) {
+    env.addFilter(key, filters[key]);
+  }
+
   return env;
 };
 

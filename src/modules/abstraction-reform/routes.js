@@ -38,8 +38,9 @@ module.exports = {
       description: 'Page to view comparison of permit repo licence with AR version',
       plugins: {
         viewContext: {
-          pageTitle: 'View licence',
-          activeNavLink: 'ar'
+          pageTitle: 'Review licence data',
+          activeNavLink: 'ar',
+          back: '/admin/abstraction-reform'
         }
       }
     }

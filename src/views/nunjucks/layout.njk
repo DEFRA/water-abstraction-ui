@@ -4,6 +4,9 @@
 
 {% from "./macros/main-nav.njk" import mainNav %}
 {% from "./macros/forms/index.njk" import formRender, formErrorSummary %}
+{% from "./macros/title.njk" import title %}
+
+{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -61,28 +64,18 @@
     html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
   }) }}
 
+  {{ mainNav(mainNavLinks) }}
+
   {% if back %}
   {{ govukBackLink({
     href: back,
     text: "Back"
   }) }}
   {% endif %}
-
-  {{ mainNav(mainNavLinks) }}
-
 {% endblock %}
 
 
-{% block content %}
 
-
-
-  {{ formErrorSummary(form) }}
-
-  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-
-  {{ formRender(form) }}
-{% endblock %}
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}

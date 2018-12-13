@@ -18,11 +18,13 @@ module.exports = {
   },
 
   prepare: (options, next) => {
+    console.log('prepare!');
     const paths = [
       options.path,
       'node_modules/govuk-frontend/',
       'node_modules/govuk-frontend/components/'
     ];
+
     const config = {
       noCache: true
     };
@@ -31,6 +33,7 @@ module.exports = {
     addFilters(env);
 
     options.compileOptions.environment = env;
+
     return next();
   }
 

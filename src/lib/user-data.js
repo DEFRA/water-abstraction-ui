@@ -10,7 +10,7 @@ const { usersClient } = require('./connectors/idm.js');
  * @return {Object} user data
  */
 const getUserData = async (userId) => {
-  const {data: user, error} = await usersClient.findOne(userId);
+  const { data: user, error } = await usersClient.findOne(userId);
   if (error) {
     throw new Error(error);
   }
@@ -23,7 +23,7 @@ const getUserData = async (userId) => {
  * @param {Object} data - new value for user_data object
  */
 const setUserData = async (userId, data) => {
-  return usersClient.updateOne(userId, {user_data: data});
+  return usersClient.updateOne(userId, { user_data: data });
 };
 
 module.exports = {

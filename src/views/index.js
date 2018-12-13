@@ -77,7 +77,7 @@ handlebars.registerHelper('pagination', function (pagination, options) {
   // Previous page link
   html += `<li class="pagination__item" ${page === 1 ? 'aria-hidden="true"' : ''}>`;
   if (page > 1) {
-    html += paginationLink(url, params, page - 1, {ariaLabel: 'Previous page'}) + `&larr; Previous page</a>`;
+    html += paginationLink(url, params, page - 1, { ariaLabel: 'Previous page' }) + `&larr; Previous page</a>`;
   } else {
     html += '&larr; Previous page';
   }
@@ -556,7 +556,7 @@ handlebars.registerHelper('returnPeriod', function (metadata) {
   const { periodEndDay,
     periodEndMonth,
     periodStartDay,
-    periodStartMonth} = metadata;
+    periodStartMonth } = metadata;
 
   const start = moment().month(periodStartMonth - 1).date(periodStartDay);
   const end = moment().month(periodEndMonth - 1).date(periodEndDay);

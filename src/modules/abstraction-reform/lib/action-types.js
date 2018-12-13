@@ -7,6 +7,8 @@ module.exports = {
   SET_STATUS: 'set.status',
   EDIT_VERSION: 'edit.version',
   EDIT_PARTY: 'edit.party',
-  EDIT_ADDRESS: 'edit.address'
-
+  EDIT_ADDRESS: 'edit.address',
+  ADD_DATA: 'add.data',
+  EDIT_DATA: 'edit.data',
+  DELETE_DATA: 'delete.data'
 };

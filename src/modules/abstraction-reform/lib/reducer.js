@@ -1,8 +1,14 @@
 const update = require('immutability-helper');
 const { findIndex, set } = require('lodash');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
+const {
+  EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
+  EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
+  ADD_DATA, EDIT_DATA, DELETE_DATA
+} = require('./action-types');
 const { STATUS_IN_PROGRESS } = require('./statuses');
 const { setObject, isMatch, isVersion } = require('./helpers');
+
+const { addData, editData, deleteData } = require('./ar-reducer');
 
 /**
  * Gets a base update query with the user who edited and timestamp
@@ -260,34 +266,25 @@ const setState = (state, action) => {
 };
 
 const reducer = (state, action) => {
-  switch (action.type) {
-    case EDIT_PURPOSE:
-      return editPurpose(state, action);
+  const commands = {
+    [EDIT_PURPOSE]: editPurpose,
+    [EDIT_LICENCE]: editLicence,
+    [EDIT_POINT]: editPoint,
+    [EDIT_CONDITION]: editCondition,
+    [SET_STATUS]: setState,
+    [EDIT_VERSION]: editVersion,
+    [EDIT_PARTY]: editParty,
+    [EDIT_ADDRESS]: editAddress,
+    [ADD_DATA]: addData,
+    [EDIT_DATA]: editData,
+    [DELETE_DATA]: deleteData
+  };
 
-    case EDIT_LICENCE:
-      return editLicence(state, action);
+  if (commands[action.type]) {
+    return commands[action.type](state, action);
+  };
 
-    case EDIT_POINT:
-      return editPoint(state, action);
-
-    case EDIT_CONDITION:
-      return editCondition(state, action);
-
-    case SET_STATUS:
-      return setState(state, action);
-
-    case EDIT_VERSION:
-      return editVersion(state, action);
-
-    case EDIT_PARTY:
-      return editParty(state, action);
-
-    case EDIT_ADDRESS:
-      return editAddress(state, action);
-
-    default:
-      return state;
-  }
+  return state;
 };
 
 module.exports = reducer;

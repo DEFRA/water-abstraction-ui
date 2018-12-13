@@ -168,8 +168,10 @@ const createEditAddress = (data, user, id) => {
 
 /**
  * Creates a new data object - e.g. for WR22 data
- * @param {String} id - GUID of new data point
- * @param {String} schema - to use for the new data point, e.g. wr22/2.1
+ * @param {String} schema - the name of the schema that describes this data point
+ * @param {Object} user - the current user of the application
+ * @param {String|Number} issueNumber - the NALD licence issue number
+ * @param {String|Number} incrementNumber schema - the NALD licence increment number
  * @param
  */
 const createAddData = (schema, user, issueNumber, incrementNumber) => {

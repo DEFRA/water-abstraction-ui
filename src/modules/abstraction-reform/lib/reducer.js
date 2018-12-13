@@ -266,43 +266,25 @@ const setState = (state, action) => {
 };
 
 const reducer = (state, action) => {
-  switch (action.type) {
-    case EDIT_PURPOSE:
-      return editPurpose(state, action);
+  const commands = {
+    [EDIT_PURPOSE]: editPurpose,
+    [EDIT_LICENCE]: editLicence,
+    [EDIT_POINT]: editPoint,
+    [EDIT_CONDITION]: editCondition,
+    [SET_STATUS]: setState,
+    [EDIT_VERSION]: editVersion,
+    [EDIT_PARTY]: editParty,
+    [EDIT_ADDRESS]: editAddress,
+    [ADD_DATA]: addData,
+    [EDIT_DATA]: editData,
+    [DELETE_DATA]: deleteData
+  };
 
-    case EDIT_LICENCE:
-      return editLicence(state, action);
+  if (commands[action.type]) {
+    return commands[action.type](state, action);
+  };
 
-    case EDIT_POINT:
-      return editPoint(state, action);
-
-    case EDIT_CONDITION:
-      return editCondition(state, action);
-
-    case SET_STATUS:
-      return setState(state, action);
-
-    case EDIT_VERSION:
-      return editVersion(state, action);
-
-    case EDIT_PARTY:
-      return editParty(state, action);
-
-    case EDIT_ADDRESS:
-      return editAddress(state, action);
-
-    case ADD_DATA:
-      return addData(state, action);
-
-    case EDIT_DATA:
-      return editData(state, action);
-
-    case DELETE_DATA:
-      return deleteData(state, action);
-
-    default:
-      return state;
-  }
+  return state;
 };
 
 module.exports = reducer;

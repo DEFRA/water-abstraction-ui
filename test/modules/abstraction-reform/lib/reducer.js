@@ -1,11 +1,12 @@
 const Lab = require('lab');
 const { expect } = require('code');
+const { find } = require('lodash');
 
 const reducer = require('../../../../src/modules/abstraction-reform/lib/reducer');
 const {
   createEditLicence, createEditPurpose, createEditPoint, createEditCondition,
   createSetStatus, createEditVersion, createEditParty, createEditAddress,
-  createAddData
+  createAddData, createEditData
 } = require('../../../../src/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
@@ -211,7 +212,7 @@ lab.experiment('Test abstraction reform reducer - add WR22 data', () => {
   lab.test('It should not add AR data when ID already exists', async () => {
     const func = () => {
       let nextState = reducer(state, action);
-      nextState = reducer(nextState, action);
+      reducer(nextState, action);
     };
     expect(func).to.throw();
   });
@@ -222,6 +223,45 @@ lab.experiment('Test abstraction reform reducer - add WR22 data', () => {
     nextState = reducer(nextState, action2);
     const ids = nextState.licence.arData.map(item => item.id);
     expect(ids).to.equal([action.payload.id, action2.payload.id]);
+  });
+});
+
+lab.experiment('Test abstraction reform reducer - edit WR22 data', () => {
+  const schema = 'wr22/2.1';
+  const issueNumber = '100';
+  const incrementNumber = '1';
+  let state = { licence };
+  let id;
+
+  lab.before(async () => {
+    // Add a data item so there is something to edit
+    const action = createAddData(schema, user, issueNumber, incrementNumber);
+    state = reducer(state, action);
+    id = action.payload.id;
+  });
+
+  lab.test('It should edit a data item', async () => {
+    const action = createEditData({ foo: 'bar' }, user, id);
+    const nextState = reducer(state, action);
+    const item = find(nextState.licence.arData, item => item.id === id);
+    expect(item.content.foo).to.equal('bar');
+  });
+
+  lab.test('It should throw an error if the data item does not exist', async () => {
+    const action = createEditData({ foo: 'bar' }, user, 'invalid-id');
+    const func = () => {
+      reducer(state, action);
+    };
+    expect(func).to.throw();
+  });
+
+  lab.test('It should merge data with existing items', async () => {
+    const action = createEditData({ foo: 'bar' }, user, id);
+    const nextState = reducer(state, action);
+    const action2 = createEditData({ bar: 'foo' }, user, id);
+    const finalState = reducer(nextState, action2);
+    const item = find(finalState.licence.arData, item => item.id === id);
+    expect(item.content).to.equal({ foo: 'bar', bar: 'foo' });
   });
 });
 

@@ -186,6 +186,25 @@ const createAddData = (schema, user, issueNumber, incrementNumber) => {
   };
 };
 
+/**
+ * Edits a data object in the AR data items list
+ * @param {Object} data - object of data to store
+ * @param {Object} user - the current application user
+ * @param {String} id - GUID of data point
+ * @param
+ */
+const createEditData = (data, user, id) => {
+  return {
+    type: EDIT_DATA,
+    payload: {
+      id,
+      user: formatUser(user),
+      data,
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
@@ -195,5 +214,6 @@ module.exports = {
   createEditVersion,
   createEditAddress,
   createEditParty,
-  createAddData
+  createAddData,
+  createEditData
 };

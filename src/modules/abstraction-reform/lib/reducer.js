@@ -319,6 +319,32 @@ const addData = (state, action) => {
   return update(state, query);
 };
 
+/**
+ * Edits AR data
+ * @param {Object} state  - current state of licence
+ * @param {Object} action - action data
+ * @return {Object} state - next state of licence
+ */
+const editData = (state, action) => {
+  const { id, data } = action.payload;
+  const index = findIndex(state.licence.arData, item => item.id === id);
+  if (index === -1) {
+    throw new Error(`Cannot edit data with ID ${id}, not found`);
+  }
+  const query = {
+    licence: {
+      arData: {
+        [index]: {
+          content: {
+            $merge: data
+          }
+        }
+      }
+    }
+  };
+  return update(state, query);
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case EDIT_PURPOSE:
@@ -347,6 +373,9 @@ const reducer = (state, action) => {
 
     case ADD_DATA:
       return addData(state, action);
+
+    case EDIT_DATA:
+      return editData(state, action);
 
     default:
       return state;

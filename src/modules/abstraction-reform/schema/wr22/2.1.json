@@ -20,5 +20,6 @@
     "hol_rate_level" : {
       "type" : "number"
     }
-  }
+  },
+  "required": ["water_body_name", "measurement_point", "gauging_station", "measurement_point_ngr", "hol_rate_level"]
 }

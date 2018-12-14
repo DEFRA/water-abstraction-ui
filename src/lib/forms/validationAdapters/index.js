@@ -1,5 +1,6 @@
 const joi = require('./joi');
-const validationMap = { joi };
+const jsonSchema = require('./json-schema');
+const validationMap = { joi, jsonSchema };
 
 module.exports = {
   load: validatorName => {

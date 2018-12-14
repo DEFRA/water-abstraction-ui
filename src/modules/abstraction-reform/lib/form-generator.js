@@ -99,13 +99,44 @@ const enumChoiceMapper = (items) => {
 };
 
 /**
+ * Create a field for an enum in the JSON schema
+ * The data in the enum can either be an array of scalers or objects
+ * If objects, it expects the format { id : 'x', value : 'y'}
+ * It selects a radio field for <= 5 items, or a dropdown otherwise
+ * @param  {String} fieldName - The JSON schema field name
+ * @param  {Object} item      - the field definition from the JSON schema
+ * @return {Object}           dropdown/radio field object
+ */
+const createEnumField = (fieldName, item) => {
+  const choices = enumChoiceMapper(item.enum);
+  const fieldFactory = choices.length > 5 ? fields.dropdown : fields.radio;
+
+  const label = guessLabel(fieldName);
+
+  // Object enum items
+  if (isObject(item.enum[0])) {
+    return fieldFactory(fieldName, { label, choices, key: 'id' });
+  } else {
+    // Scalar enum values (string/number)
+    const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+    return fieldFactory(fieldName, { label, choices, mapper });
+  }
+};
+
+/**
  * Given a JSON schema for WR22 condition, generates a form object
  * for rendering in the UI
  * @param {String} action - form action
  * @param {Object} schema - JSON schema object
  */
-const schemaToForm = (action, schema) => {
-  const f = formFactory(action, 'POST', 'json-schema');
+const schemaToForm = (request, schema) => {
+  const { documentId, schema: schemaName } = request.params;
+  const action = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schemaName}`;
+
+  const f = formFactory(action, 'POST', 'jsonSchema');
+
+  const { csrfToken } = request.view;
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   each(schema.properties, (item, key) => {
     const label = guessLabel(key);
@@ -119,17 +150,7 @@ const schemaToForm = (action, schema) => {
         mapper: 'booleanMapper'
       }));
     } else if ('enum' in item) {
-      const choices = enumChoiceMapper(item.enum);
-      const fieldType = choices.length > 5 ? fields.dropdown : fields.radio;
-
-      // Object enum items
-      if (isObject(item.enum[0])) {
-        f.fields.push(fieldType(key, { label, choices, key: 'id', mapper: 'objectMapper' }));
-      } else {
-        // Scalar enum values (string/number)
-        const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-        f.fields.push(fieldType(key, { label, choices, mapper }));
-      }
+      f.fields.push(createEnumField(key, item));
     } else {
       // Scalar enum values (string/number)
       const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';

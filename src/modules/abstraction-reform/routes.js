@@ -153,6 +153,22 @@ module.exports = {
         }
       }
     }
+  },
+
+  postEditData: {
+    method: 'POST',
+    path: '/admin/abstraction-reform/licence/{documentId}/add-schema/{schema*}',
+    handler: controller.postEditData,
+    options: {
+      auth: { scope: allowedScopes },
+      description: 'Add a WR22 data point to existing licence - data form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Link data to this condition',
+          activeNavLink: 'ar'
+        }
+      }
+    }
   }
 
 };

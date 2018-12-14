@@ -300,21 +300,51 @@ const postAddData = (request, h) => {
   return h.redirect(path);
 };
 
+const getSchema = (schemaName) => {
+  const schema = find(customSchema, { id: schemaName });
+  return dereference(schema);
+};
+
+const getFormAndSchema = async (request) => {
+  const { schema: schemaName } = request.params;
+
+  const schema = await getSchema(schemaName);
+
+  // const path = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schemaName}`;
+  const form = schemaToForm(request, schema);
+
+  return {
+    schema,
+    form
+  };
+};
+
 const getEditData = async (request, h) => {
-  const { documentId, schema } = request.params;
+  const { documentId } = request.params;
 
-  const selectedSchema = await dereference(find(customSchema, { id: schema }));
-
-  const path = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schema}`;
-  const form = schemaToForm(path, selectedSchema);
-  console.log(JSON.stringify(form, null, 2));
+  const { schema, form } = await getFormAndSchema(request);
 
   const view = {
     ...request.view,
-    form,
+    form: request.form || form,
+    schema,
     back: `/admin/abstraction-reform/licence/${documentId}/add-data`
   };
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
+};
+
+const postEditData = async (request, h) => {
+  const { schema, form } = await getFormAndSchema(request);
+
+  const f = handleRequest(form, request, schema);
+
+  if (f.isValid) {
+
+  } else {
+    console.log('>>>>>>>>>>>>>>>>>>', f);
+    request.form = f;
+    return getEditData(request, h);
+  }
 };
 
 module.exports = {
@@ -325,5 +355,6 @@ module.exports = {
   postSetStatus,
   getAddData,
   postAddData,
-  getEditData
+  getEditData,
+  postEditData
 };

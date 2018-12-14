@@ -9,6 +9,7 @@
 
 {% block content %}
 
+  {{ formErrorSummary(form) }}
 
   {{ title(pageTitle) }}
 
@@ -19,9 +20,17 @@
   }) }}
   {% endif %}
 
-
   <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
+
+        <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
+
+        {% set html = schema.description | boldARVariables %}
+
+        {{ govukInsetText({
+          html: html
+        }) }}
+
       {{ formRender(form) }}
     </div>
   </div>

@@ -122,13 +122,32 @@ lab.experiment('Test schema to form creation', () => {
   };
 
   lab.test('It should create a form object from a JSON schema', async () => {
-    const form = schemaToForm('/some/action', schema);
+    const request = {
+      params: {
+        documentId: '0fa2d972-3a7e-49db-bb13-cba109dc0299',
+        schema: 'some/schema'
+      },
+      view: {
+        csrfToken: 'c06dd128-4486-4775-801f-13ed022ae811'
+      }
+    };
+    const form = schemaToForm(request, schema);
 
     expect(form).to.equal({
-      action: '/some/action',
+      action: '/admin/abstraction-reform/licence/0fa2d972-3a7e-49db-bb13-cba109dc0299/add-schema/some/schema',
       method: 'POST',
       isSubmitted: false,
       fields: [
+        {
+          name: 'csrf_token',
+          value: 'c06dd128-4486-4775-801f-13ed022ae811',
+          options: {
+            widget: 'text',
+            type: 'hidden',
+            label: null,
+            required: true
+          }
+        },
         {
           name: 'choice',
           options: {
@@ -174,8 +193,7 @@ lab.experiment('Test schema to form creation', () => {
             label: 'Object choice',
             widget: 'radio',
             required: true,
-            key: 'id',
-            mapper: 'objectMapper'
+            key: 'id'
           },
           errors: [],
           value: undefined
@@ -240,7 +258,7 @@ lab.experiment('Test schema to form creation', () => {
       ],
       isValid: undefined,
       errors: [],
-      validationType: 'json-schema'
+      validationType: 'jsonSchema'
     });
   });
 });

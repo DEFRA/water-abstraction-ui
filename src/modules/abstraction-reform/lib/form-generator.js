@@ -1,13 +1,19 @@
 const { URL } = require('url');
 const refParser = require('json-schema-ref-parser');
-const { isObject, each } = require('lodash');
+const { pick, isObject, each } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
 const { formFactory, fields } = require('../../../lib/forms');
+const licencesConnector = require('../../../lib/connectors/water-service/licences');
 
 const types = {
   ngr: require('../schema/types/ngr.json')
 };
+
+const createEnumsObject = (items, iteratee) => ({
+  type: 'object',
+  enum: items.map(iteratee)
+});
 
 /**
  * Given a picklist record and an array of picklist items loaded from the
@@ -18,16 +24,57 @@ const types = {
  */
 const picklistSchemaFactory = (picklist, items) => {
   if (picklist.id_required) {
-    return {
-      type: 'object',
-      enum: items.map(item => ({ id: item.id, value: item.value }))
-    };
-  } else {
-    return {
-      type: 'string',
-      enum: items.map(item => item.value)
-    };
+    return createEnumsObject(items, item => pick(item, 'id', 'value'));
   }
+
+  return {
+    type: 'string',
+    enum: items.map(item => item.value)
+  };
+};
+
+const mapCondition = condition => ({ id: condition.id, value: condition.text });
+
+const mapPoint = point => ({ id: point.id, value: point.name });
+
+const resolveLicenceData = async (context, connectorFn, mapFn) => {
+  const { data } = await connectorFn(context.documentId);
+  return createEnumsObject(data, mapFn);
+};
+
+const resolveLicenceConditions = async context => {
+  const connector = licencesConnector.getLicenceConditionsByDocumentId;
+  return resolveLicenceData(context, connector, mapCondition);
+};
+
+const resolveLicencePoints = async context => {
+  const connector = licencesConnector.getLicencePointsByDocumentId;
+  return resolveLicenceData(context, connector, mapPoint);
+};
+
+const licenceResolvers = {
+  conditions: resolveLicenceConditions,
+  points: resolveLicencePoints
+};
+
+const resolveLicences = async (ref, context) => {
+  return licenceResolvers[ref](context, ref);
+};
+
+const resolvePicklists = async ref => {
+  const picklist = await apiHelpers.getPicklist(ref);
+  const items = await apiHelpers.getPicklistItems(ref);
+  return picklistSchemaFactory(picklist, items);
+};
+
+const resolveTypes = async ref => {
+  return types[ref];
+};
+
+const hostLevelResolvers = {
+  picklists: resolvePicklists,
+  licences: resolveLicences,
+  types: resolveTypes
 };
 
 /**
@@ -35,7 +82,7 @@ const picklistSchemaFactory = (picklist, items) => {
  * This allows refs to be parsed and the relevant schema data to be
  * retrieved
  */
-const waterResolver = {
+const waterResolverFactory = context => ({
   order: 1,
 
   canRead: /^water:\/\//i,
@@ -46,29 +93,23 @@ const waterResolver = {
 
     const ref = pathname.replace('/', '').replace('.json', '');
 
-    // Load picklist schema from API
-    if (host === 'picklists') {
-      const picklist = await apiHelpers.getPicklist(ref);
-      const items = await apiHelpers.getPicklistItems(ref);
-
-      return picklistSchemaFactory(picklist, items);
-    }
-
-    // Load types from local files
-    if (host === 'types') {
-      return types[ref];
-    }
+    const resolver = hostLevelResolvers[host];
+    const resolved = await resolver(ref, context);
+    return resolved;
   }
-
-};
+});
 
 /**
  * Converts references in the schema to their literals
  * @param {Object} schema - JSON schema with refs
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
-const dereference = async (schema) => {
-  const populated = await refParser.dereference(schema, { resolve: { waterResolver } });
+const dereference = async (schema, context) => {
+  const populated = await refParser.dereference(schema, {
+    resolve: {
+      waterResolver: waterResolverFactory(context)
+    }
+  });
   return populated;
 };
 

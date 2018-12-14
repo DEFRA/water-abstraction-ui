@@ -51,7 +51,7 @@ const setStatusForm = (request) => {
       }
     }));
   } else {
-    f.fields.push(fields.text('status', { hidden: true }, STATUS_IN_REVIEW));
+    f.fields.push(fields.hidden('status', { }, STATUS_IN_REVIEW));
   }
 
   const buttonText = isApprover ? 'Save decision' : 'Submit for approval';

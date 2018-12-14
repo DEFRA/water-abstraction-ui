@@ -133,9 +133,18 @@ lab.experiment('Test schema to form creation', () => {
           name: 'choice',
           options: {
             choices: [
-              'Red',
-              'Yellow',
-              'Blue'
+              {
+                value: 'Red',
+                label: 'Red'
+              },
+              {
+                value: 'Yellow',
+                label: 'Yellow'
+              },
+              {
+                value: 'Blue',
+                label: 'Blue'
+              }
             ],
             label: 'Choice',
             widget: 'radio',
@@ -150,16 +159,16 @@ lab.experiment('Test schema to form creation', () => {
           options: {
             choices: [
               {
-                id: 'r',
-                value: 'Red'
+                value: 'r',
+                label: 'Red'
               },
               {
-                id: 'y',
-                value: 'Yellow'
+                value: 'y',
+                label: 'Yellow'
               },
               {
-                id: 'b',
-                value: 'Blue'
+                value: 'b',
+                label: 'Blue'
               }
             ],
             label: 'Object choice',

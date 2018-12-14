@@ -53,7 +53,7 @@ lab.experiment('Test setStatusForm for AR user', () => {
 
   lab.test('The only available status should be review', async () => {
     const status = findStatus(form);
-    expect(status.options.type).to.be.equal('text');
+    expect(status.options.type).to.be.equal('hidden');
     expect(status.value).to.equal(STATUS_IN_REVIEW);
   });
 

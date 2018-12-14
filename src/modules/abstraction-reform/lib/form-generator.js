@@ -82,6 +82,22 @@ const guessLabel = (str) => {
   return sentenceCase(str.replace(/_+/g, ' '));
 };
 
+const enumChoiceMapper = (items) => {
+  return items.map(item => {
+    if (isObject(item)) {
+      return {
+        label: item.value,
+        value: item.id
+      };
+    } else {
+      return {
+        label: item,
+        value: item
+      };
+    }
+  });
+};
+
 /**
  * Given a JSON schema for WR22 condition, generates a form object
  * for rendering in the UI
@@ -103,13 +119,16 @@ const schemaToForm = (action, schema) => {
         mapper: 'booleanMapper'
       }));
     } else if ('enum' in item) {
+      const choices = enumChoiceMapper(item.enum);
+      const fieldType = choices.length > 5 ? fields.dropdown : fields.radio;
+
       // Object enum items
       if (isObject(item.enum[0])) {
-        f.fields.push(fields.radio(key, { label, choices: item.enum, key: 'id', mapper: 'objectMapper' }));
+        f.fields.push(fieldType(key, { label, choices, key: 'id', mapper: 'objectMapper' }));
       } else {
         // Scalar enum values (string/number)
         const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-        f.fields.push(fields.radio(key, { label, choices: item.enum, mapper }));
+        f.fields.push(fieldType(key, { label, choices, mapper }));
       }
     } else {
       // Scalar enum values (string/number)

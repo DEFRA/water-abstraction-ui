@@ -105,5 +105,54 @@ module.exports = {
         }
       }
     }
+  },
+
+  getAddData: {
+    method: 'GET',
+    path: '/admin/abstraction-reform/licence/{documentId}/add-data',
+    handler: controller.getAddData,
+    options: {
+      auth: { scope: allowedScopes },
+      description: 'Add a WR22 data point to existing licence',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Choose a further condition to add',
+          activeNavLink: 'ar'
+        }
+      }
+    }
+  },
+
+  postAddData: {
+    method: 'POST',
+    path: '/admin/abstraction-reform/licence/{documentId}/add-data',
+    handler: controller.postAddData,
+    options: {
+      auth: { scope: allowedScopes },
+      description: 'Add a WR22 data point to existing licence - post handler',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Choose a further condition to add',
+          activeNavLink: 'ar'
+        }
+      }
+    }
+  },
+
+  getEditData: {
+    method: 'GET',
+    path: '/admin/abstraction-reform/licence/{documentId}/add-schema/{schema*}',
+    handler: controller.getEditData,
+    options: {
+      auth: { scope: allowedScopes },
+      description: 'Add a WR22 data point to existing licence - data form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Link data to this condition',
+          activeNavLink: 'ar'
+        }
+      }
+    }
   }
+
 };

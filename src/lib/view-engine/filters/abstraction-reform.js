@@ -29,6 +29,19 @@ const mapARComparisonTable = (data) => {
   };
 };
 
+/**
+ * Given a string e.g. Here is a [variable], the variable in square brackets
+ * is wrapped in a <strong> tag
+ * @param  {String} str - AR WR22 condition label
+ * @return {String}     label with terms bolded
+ */
+const boldARVariables = (str) => {
+  let s = str.replace(/\[/g, '<strong>[');
+  s = s.replace(/\]/g, ']</strong>');
+  return s;
+};
+
 module.exports = {
-  mapARComparisonTable
+  mapARComparisonTable,
+  boldARVariables
 };

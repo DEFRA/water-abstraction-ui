@@ -20,6 +20,7 @@ module.exports = {
   prepare: (options, next) => {
     const paths = [
       options.path,
+      `${options.path}/nunjucks/macros/`,
       'node_modules/govuk-frontend/',
       'node_modules/govuk-frontend/components/'
     ];

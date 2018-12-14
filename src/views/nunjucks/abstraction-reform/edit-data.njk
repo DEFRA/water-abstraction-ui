@@ -1,0 +1,31 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "forms/header.njk" import formHeader %}
+{% from "forms/footer.njk" import formFooter %}
+{% from "forms/widget.njk" import formWidget %}
+
+
+
+
+{% block content %}
+
+
+  {{ title(pageTitle) }}
+
+  <!-- Warning for ar_user if no permission to edit this document -->
+  {% if flash == 'locked' %}
+  {{ govukInsetText({
+    text: "You do not have permission to edit this licence."
+  }) }}
+  {% endif %}
+
+
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+
+
+{% endblock %}

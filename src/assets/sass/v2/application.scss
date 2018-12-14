@@ -5,4 +5,5 @@ $govuk-global-styles: true;
 @import "govuk-frontend/all";
 
 // Patterns that aren't in Frontend
-@import "patterns/subnav";
+@import "blocks/subnav";
+@import "blocks/data-row";

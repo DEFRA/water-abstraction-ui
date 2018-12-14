@@ -70,7 +70,6 @@ const setStatusForm = (request) => {
 const setStatusSchema = (request) => {
   const isApprover = request.permissions.hasPermission('ar.approve');
   const validStatus = isApprover ? [STATUS_IN_PROGRESS,
-    STATUS_IN_REVIEW,
     STATUS_APPROVED,
     STATUS_LICENCE_REVIEW] : STATUS_IN_REVIEW;
   return {

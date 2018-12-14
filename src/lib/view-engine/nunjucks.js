@@ -18,7 +18,6 @@ module.exports = {
   },
 
   prepare: (options, next) => {
-    console.log('prepare!');
     const paths = [
       options.path,
       'node_modules/govuk-frontend/',

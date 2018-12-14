@@ -2,6 +2,7 @@ require('dotenv').config();
 const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
+const Joi = require('joi');
 
 const { setStatusForm, setStatusSchema } = require('../../../../src/modules/abstraction-reform/forms/set-status');
 
@@ -89,6 +90,34 @@ lab.experiment('Test setStatusForm for AR approver', () => {
   lab.test('The button text should be Save decision', async () => {
     const status = findButton(form);
     expect(status.options.label).to.be.equal('Save decision');
+  });
+});
+
+lab.experiment('Test setStatusSchema for AR user', () => {
+  let schema;
+  let request;
+
+  lab.before(async () => {
+    request = getRequest();
+    schema = Joi.describe(setStatusSchema(request));
+  });
+
+  lab.test('It should only allow status to be In review', async () => {
+    expect(schema.children.status.valids).to.equal([STATUS_IN_REVIEW]);
+  });
+});
+
+lab.experiment('Test setStatusSchema for AR approver', () => {
+  let schema;
+  let request;
+
+  lab.before(async () => {
+    request = getRequest(true);
+    schema = Joi.describe(setStatusSchema(request));
+  });
+
+  lab.test('It should only allow the correct statuses', async () => {
+    expect(schema.children.status.valids).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_LICENCE_REVIEW]);
   });
 });
 

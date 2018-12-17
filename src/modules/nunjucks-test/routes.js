@@ -2,6 +2,8 @@ const routes = {};
 const testForm = require('./forms/test.js');
 const { handleRequest } = require('../../lib/forms');
 
+const { isLocal, testMode } = require('../../../config');
+
 const config = {
   plugins: {
     viewContext: {
@@ -11,7 +13,7 @@ const config = {
   }
 };
 
-if (process.env.NODE_ENV === 'local') {
+if (isLocal || testMode) {
   routes.getNunjucksTest = {
     method: 'GET',
     path: '/nunjucks-test',

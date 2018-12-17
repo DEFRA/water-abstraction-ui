@@ -6,19 +6,43 @@
   "category" : "Hands off level conditions",
   "properties" : {
     "water_body_name" : {
-      "$ref" : "water://picklists/water_bodies.json"
+      "$ref" : "water://picklists/water_bodies.json",
+      "errors" : {
+        "message" : "Select the water body"
+      }
     },
     "measurement_point" : {
-      "$ref" : "water://picklists/measurement_point.json"
+      "$ref" : "water://picklists/measurement_point.json",
+      "errors" : {
+        "required" : {
+          "message" : "Select the measurement point"
+        }
+      }
     },
     "gauging_station" : {
-      "$ref" : "water://picklists/gauging_stations.json"
+      "$ref" : "water://picklists/gauging_stations.json",
+      "errors" : {
+        "required" : {
+          "message" : "Select the gauging station"
+        }
+      }
     },
     "measurement_point_ngr" : {
-      "$ref" : "water://types/ngr.json"
+      "$ref" : "water://types/ngr.json",
+      "label": "Measurement point NGR",
+      "errors" : {
+        "pattern" : {
+          "message" : "Measurement point NGR should be a valid grid reference"
+        }
+      }
     },
     "hol_rate_level" : {
-      "type" : "number"
+      "type" : "number",
+      "errors" : {
+        "type" : {
+          "message" : "The HOL rate / level should be a number"
+        }
+      }
     }
   },
   "required": ["water_body_name", "measurement_point", "gauging_station", "measurement_point_ngr", "hol_rate_level"]

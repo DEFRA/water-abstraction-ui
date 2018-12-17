@@ -135,7 +135,7 @@ const getAdditionalArgs = (id) => {
  * @param {String} request.params.id - the ID of the entity
  */
 const getEditObject = async (request, h) => {
-  const {documentId, type, id} = request.params;
+  const { documentId, type, id } = request.params;
   const args = getAdditionalArgs(id);
 
   // Load licence / AR licence from CRM
@@ -205,7 +205,7 @@ const postEditObject = async (request, h) => {
     const { status, lastEdit } = stateManager(getInitialState(licence), actions);
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
   }
 
   let path = `/admin/abstraction-reform/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
@@ -242,7 +242,7 @@ const postSetStatus = async (request, h) => {
     const { lastEdit } = stateManager(getInitialState(licence), actions);
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
 
     return h.redirect(`/admin/abstraction-reform`);
   } else {
@@ -338,10 +338,11 @@ const postEditData = async (request, h) => {
 
   const f = handleRequest(form, request, schema);
 
+  console.log(getValues(f));
+
   if (f.isValid) {
 
   } else {
-    console.log('>>>>>>>>>>>>>>>>>>', f);
     request.form = f;
     return getEditData(request, h);
   }

@@ -87,7 +87,7 @@ const importData = (form, payload) => {
   mapFields(form, (field) => {
     if (field.name) {
       const mapper = field.options.mapper || 'defaultMapper';
-      data[field.name] = mappers[mapper].import(field.name, payload);
+      data[field.name] = mappers[mapper].import(field.name, payload, field);
     }
     return field;
   });

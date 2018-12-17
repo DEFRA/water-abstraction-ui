@@ -1,4 +1,4 @@
-const { cloneDeep, get, set } = require('lodash');
+const { cloneDeep, get, set, isObject, isEqual } = require('lodash');
 const { mapFields } = require('../../forms/mapFields.js');
 
 /**
@@ -141,18 +141,36 @@ const mapFormErrorSummary = (form) => {
 };
 
 /**
+ * If the field value is an object, then it is compared directly with the choice.
+ * Otherwise, the it is compared with the 'value' property of the choice
+ * @param  {Object} field  - field description
+ * @param  {Object} choice - one of the field choices
+ * @return {Boolean}        whether the option should be checked
+ */
+const radioIsChecked = (field, choice) => {
+  if (isObject(field.value)) {
+    return isEqual(field.value, choice);
+  }
+  return field.value === choice.value;
+};
+
+/**
  * Maps a radio field from internal form library to the GOV.UK radio
  * macro options object
  * @param  {Object} field - a radio field from internal form library
  * @return {Object}       Options object for GOV.UK radio nunjucks macro
  */
 const mapFormRadioField = (field) => {
+  const keyProperty = field.options.keyProperty || 'value';
+  const labelProperty = field.options.labelProperty || 'label';
+
   const items = field.options.choices.map(choice => ({
-    value: choice.value,
-    text: choice.label,
+    value: choice[keyProperty],
+    text: choice[labelProperty],
     hint: {
       text: choice.hint
-    }
+    },
+    checked: radioIsChecked(field, choice)
   }));
 
   const options = {

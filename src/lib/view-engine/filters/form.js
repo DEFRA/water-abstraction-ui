@@ -154,16 +154,16 @@ const radioIsChecked = (field, choice) => {
 };
 
 /**
- * Maps a radio field from internal form library to the GOV.UK radio
- * macro options object
- * @param  {Object} field - a radio field from internal form library
- * @return {Object}       Options object for GOV.UK radio nunjucks macro
+ * Maps the choices from a service form object to a format expected
+ * by the GOV.UK radio form component
+ * @param  {Object} field - radio form field
+ * @return {Array}          array of radio button items
  */
-const mapFormRadioField = (field) => {
+const mapRadioChoices = (field) => {
   const keyProperty = field.options.keyProperty || 'value';
   const labelProperty = field.options.labelProperty || 'label';
 
-  const items = field.options.choices.map(choice => ({
+  return field.options.choices.map(choice => ({
     value: choice[keyProperty],
     text: choice[labelProperty],
     hint: {
@@ -171,6 +171,16 @@ const mapFormRadioField = (field) => {
     },
     checked: radioIsChecked(field, choice)
   }));
+};
+
+/**
+ * Maps a radio field from internal form library to the GOV.UK radio
+ * macro options object
+ * @param  {Object} field - a radio field from internal form library
+ * @return {Object}       Options object for GOV.UK radio nunjucks macro
+ */
+const mapFormRadioField = (field) => {
+  const items = mapRadioChoices(field);
 
   const options = {
     idPrefix: field.name,

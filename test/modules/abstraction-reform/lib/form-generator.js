@@ -86,26 +86,8 @@ lab.experiment('Test dereference', () => {
   lab.test('It should de-reference referenced picklists and types', async () => {
     const result = await dereference(schema);
 
-    expect(result).to.equal({
-      'type': 'object',
-      'properties': {
-        'name': {
-          'type': 'string'
-        },
-        'items': {
-          'type': 'string',
-          'enum': [
-            'Red',
-            'Yellow',
-            'Blue'
-          ]
-        },
-        'ngr': {
-          'type': 'string',
-          'pattern': '/^[S][STWXY](\\d{4}|\\d{6}|\\d{8}|\\d{10})$/'
-        }
-      }
-    });
+    expect(result.properties.ngr.type).to.equal('string');
+    expect(result.properties.ngr.pattern).to.be.a.string();
   });
 });
 
@@ -131,142 +113,25 @@ lab.experiment('Test schema to form creation', () => {
         csrfToken: 'c06dd128-4486-4775-801f-13ed022ae811'
       }
     };
-    const form = schemaToForm(request, schema);
+    const form = schemaToForm('/action', request, schema);
 
-    expect(form).to.equal({
-      action: '/admin/abstraction-reform/licence/0fa2d972-3a7e-49db-bb13-cba109dc0299/add-schema/some/schema',
-      method: 'POST',
-      isSubmitted: false,
-      fields: [
-        {
-          name: 'csrf_token',
-          value: 'c06dd128-4486-4775-801f-13ed022ae811',
-          options: {
-            widget: 'text',
-            type: 'hidden',
-            label: null,
-            required: true
-          }
-        },
-        {
-          name: 'choice',
-          options: {
-            choices: [
-              {
-                value: 'Red',
-                label: 'Red'
-              },
-              {
-                value: 'Yellow',
-                label: 'Yellow'
-              },
-              {
-                value: 'Blue',
-                label: 'Blue'
-              }
-            ],
-            label: 'Choice',
-            widget: 'radio',
-            required: true,
-            mapper: 'defaultMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'object_choice',
-          options: {
-            choices: [
-              {
-                value: 'r',
-                label: 'Red'
-              },
-              {
-                value: 'y',
-                label: 'Yellow'
-              },
-              {
-                value: 'b',
-                label: 'Blue'
-              }
-            ],
-            label: 'Object choice',
-            widget: 'radio',
-            required: true,
-            key: 'id'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'string',
-          options: {
-            label: 'String',
-            widget: 'text',
-            required: true,
-            type: 'text',
-            controlClass: 'form-control',
-            autoComplete: true,
-            mapper: 'defaultMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'number',
-          options: {
-            label: 'Number',
-            widget: 'text',
-            required: true,
-            type: 'text',
-            controlClass: 'form-control',
-            autoComplete: true,
-            mapper: 'numberMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'boolean',
-          options: {
-            choices: [
-              {
-                value: false,
-                label: 'Yes'
-              },
-              {
-                value: true,
-                label: 'No'
-              }
-            ],
-            label: 'Boolean',
-            widget: 'radio',
-            required: true,
-            mapper: 'booleanMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: null,
-          options: {
-            widget: 'button',
-            label: 'Submit'
-          },
-          value: undefined
-        }
-      ],
-      isValid: undefined,
-      errors: [],
-      validationType: 'jsonSchema'
-    });
+    const fields = ['csrf_token', 'choice', 'object_choice', 'string', 'number', 'boolean', null];
+
+    expect(form.action).to.equal('/action');
+    expect(form.fields.map(item => item.name)).to.equal(fields);
+    expect(form.validationType).to.equal('jsonSchema');
   });
 });
 
 lab.experiment('Test guessLabel', () => {
   lab.test('It should generate a human-readable label given a snake case fieldname', async () => {
-    const str = guessLabel('some_test__name');
+    const str = guessLabel('some_test__name', {});
     expect(str).to.equal('Some test name');
+  });
+
+  lab.test('It should use a label if one is specified', async () => {
+    const str = guessLabel('some_test__name', { label: 'A label' });
+    expect(str).to.equal('A label');
   });
 });
 

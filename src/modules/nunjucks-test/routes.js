@@ -35,7 +35,6 @@ if (process.env.NODE_ENV === 'local') {
     handler: async (request, h) => {
       const form = handleRequest(testForm(request), request);
 
-      console.log(JSON.stringify(form, null, 2));
       const view = {
         ...request.view,
         form

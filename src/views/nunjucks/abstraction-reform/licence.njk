@@ -115,12 +115,32 @@
 
   <h2 class="govuk-heading-m">Further conditions</h2>
 
-  {% if not data.reform.arData %}
+
+  {% if data.arData %}
+    {% for item in data.arData %}
+    <div class="govuk-grid-row" id="{{ item.id }}">
+      <div class="govuk-grid-column-one-third">
+      <p>{{ item.title }}</p>
+
+      <ul class="govuk-list">
+        <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">Change this condition</a></li>
+        <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">Remove this condition</a></li>
+      </ul>
+
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <p>{{ item.description | ARConditionDescription(item.data) | safe }}</p>
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+    {% endfor %}
+  {% else %}
   <p>No further conditions.</p>
   {% endif %}
 
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/add-data">Add a condition</a>
+    <a href="/admin/abstraction-reform/licence/{{ documentId }}/select-schema">Add a condition</a>
   </p>
 
   <div class="govuk-grid-row">

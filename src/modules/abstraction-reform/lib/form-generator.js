@@ -121,13 +121,11 @@ const createEnumField = (fieldName, item) => {
  * @param {String} action - form action
  * @param {Object} schema - JSON schema object
  */
-const schemaToForm = (request, schema) => {
-  const { documentId, schema: schemaName } = request.params;
-  const action = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schemaName}`;
-
+const schemaToForm = (action, request, schema) => {
   const f = formFactory(action, 'POST', 'jsonSchema');
 
   const { csrfToken } = request.view;
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   each(schema.properties, (item, key) => {

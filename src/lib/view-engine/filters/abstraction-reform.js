@@ -1,3 +1,8 @@
+const deepMap = require('deep-map');
+const Nunjucks = require('nunjucks');
+const Entities = require('html-entities').AllHtmlEntities;
+const htmlEntityEncoder = new Entities();
+
 /**
  * For the abstraction reform comparison table, maps the data from the view
  * to the data format expected by the GOV UK frontend table component
@@ -30,18 +35,33 @@ const mapARComparisonTable = (data) => {
 };
 
 /**
- * Given a string e.g. Here is a [variable], the variable in square brackets
- * is wrapped in a <strong> tag
- * @param  {String} str - AR WR22 condition label
- * @return {String}     label with terms bolded
+ * Replaces condition text template with bolded data values
+ * @param  {String} str  - condition text template
+ * @param  {Object} data - condition data
+ * @return {String} rendered condition text string with bolded values
  */
-const boldARVariables = (str) => {
-  let s = str.replace(/\[/g, '<strong>[');
-  s = s.replace(/\]/g, ']</strong>');
-  return s;
+const ARConditionDescription = (str, data) => {
+  let tpl = htmlEntityEncoder.encode(str);
+  tpl = tpl.replace(/\[/g, '<strong>{{');
+  tpl = tpl.replace(/\]/g, '}}</strong>');
+  const safeData = deepMap(data, htmlEntityEncoder.encode);
+  return Nunjucks.renderString(tpl, safeData);
+};
+
+/**
+ * Replaces condition text template with bolded placeholders
+ * @param  {String} str  - condition text template
+ * @param  {Object} data - condition data
+ * @return {String} rendered condition text string with bolded values
+ */
+const ARConditionPlaceholder = (str, data) => {
+  let tpl = htmlEntityEncoder.encode(str);
+  tpl = tpl.replace(/\[/g, '<strong>[');
+  return tpl.replace(/\]/g, ']</strong>');
 };
 
 module.exports = {
   mapARComparisonTable,
-  boldARVariables
+  ARConditionDescription,
+  ARConditionPlaceholder
 };

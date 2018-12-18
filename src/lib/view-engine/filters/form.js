@@ -87,8 +87,7 @@ const mapFormDateField = (field) => {
     namePrefix: field.name,
     fieldset: {
       legend: {
-        text: field.options.label,
-        isPageHeading: true
+        text: field.options.label
       }
     },
     hint: {

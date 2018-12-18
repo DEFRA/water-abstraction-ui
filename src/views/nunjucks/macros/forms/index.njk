@@ -4,14 +4,22 @@
 {% from "./footer.njk" import formFooter %}
 
 {% macro formRender(form) %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
   {{ formHeader(form.method, form.action) }}
   {{ formWidgets(form) }}
   {{ formFooter() }}
+  </div>
+</div>
 {% endmacro %}
 
 {% macro formErrorSummary(form) %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
   {% if form.errors.length %}
     {% set options = form | mapFormErrorSummary %}
     {{ govukErrorSummary(options) }}
   {% endif %}
+  </div>
+</div>
 {% endmacro %}

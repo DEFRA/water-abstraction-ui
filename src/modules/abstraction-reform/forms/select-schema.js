@@ -14,7 +14,7 @@ const selectSchemaForm = (request, schema) => {
   const { csrfToken } = request.view;
 
   const { documentId } = request.params;
-  const action = `/admin/abstraction-reform/licence/${documentId}/add-data`;
+  const action = `/admin/abstraction-reform/licence/${documentId}/select-schema`;
 
   const f = formFactory(action);
 

@@ -3,7 +3,6 @@
 // Using lodash functions over some native functions because
 // they are forgiving to undefined.
 const { size, find, includes, intersection, get, uniq, isBoolean } = require('lodash');
-const Boom = require('boom');
 const { scope: scopes, externalRoles } = require('./constants');
 
 /**
@@ -169,7 +168,7 @@ const getCompanyPermissions = (credentials = {}) => {
 const hasPermission = (permission, permissions) => {
   const isGranted = get(permissions, permission);
   if (!isBoolean(isGranted)) {
-    throw Boom.badImplementation(`Attempt to check invalid permission ${permission}`);
+    throw new Error(`Attempt to check invalid permission ${permission}`);
   }
   return isGranted;
 };

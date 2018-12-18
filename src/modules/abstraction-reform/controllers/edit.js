@@ -1,4 +1,4 @@
-const { pick, find } = require('lodash');
+const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
 const { handleRequest, getValues } = require('../../../lib/forms');
@@ -12,14 +12,6 @@ const { search, recent } = require('../lib/search');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('../lib/statuses');
 
 const { setStatusForm, setStatusSchema } = require('../forms/set-status');
-const { selectSchemaForm } = require('../forms/select-schema');
-
-const { getSchemaCategories } = require('../lib/schema-helpers.js');
-const { dereference, schemaToForm } = require('../lib/form-generator.js');
-
-const customSchema = [
-  require('../schema/wr22/2.1.json')
-];
 
 // Config for editing different data models
 const objectConfig = {
@@ -252,110 +244,10 @@ const postSetStatus = async (request, h) => {
   }
 };
 
-/**
- * A screen to select a custom data point (WR22) to add to existing licence
- * @param  {Object} request - HAPI request interface
- * @param {String} request.params.documentId - CRM document ID
- * @param  {Object} h       HAPI reply interface
- * @return {Promise}
- */
-const getAddData = (request, h) => {
-  const { documentId } = request.params;
-  const form = request.form || selectSchemaForm(request, customSchema);
-
-  const categories = getSchemaCategories(customSchema);
-
-  const view = {
-    categories,
-    ...request.view,
-    form,
-    back: `/admin/abstraction-reform/licence/${documentId}`
-  };
-
-  return h.view('nunjucks/abstraction-reform/add-data.njk', view, { layout: false });
-};
-
-/**
- * Post handler for adding new AR schema to licence data
- * @param  {Object} request - HAPI request interface
- * @param {String} request.params.documentId - CRM document ID
- * @param  {Object} h       HAPI reply interface
- * @return {Promise}
- */
-const postAddData = (request, h) => {
-  const form = handleRequest(selectSchemaForm(request, customSchema), request);
-
-  // If validation errors in form, redisplay with error message
-  if (!form.isValid) {
-    request.form = form;
-    return getAddData(request, h);
-  }
-
-  // Otherwise redirect to data capture form
-  const { documentId } = request.params;
-  const { schema } = getValues(form);
-
-  const path = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schema}`;
-
-  return h.redirect(path);
-};
-
-const getSchema = (schemaName) => {
-  const schema = find(customSchema, { id: schemaName });
-  return dereference(schema);
-};
-
-const getFormAndSchema = async (request) => {
-  const { schema: schemaName } = request.params;
-
-  const schema = await getSchema(schemaName);
-
-  // const path = `/admin/abstraction-reform/licence/${documentId}/add-schema/${schemaName}`;
-  const form = schemaToForm(request, schema);
-
-  return {
-    schema,
-    form
-  };
-};
-
-const getEditData = async (request, h) => {
-  const { documentId } = request.params;
-
-  const { schema, form } = await getFormAndSchema(request);
-
-  const view = {
-    ...request.view,
-    form: request.form || form,
-    schema,
-    back: `/admin/abstraction-reform/licence/${documentId}/add-data`
-  };
-  return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
-};
-
-const postEditData = async (request, h) => {
-  const { schema, form } = await getFormAndSchema(request);
-
-  const f = handleRequest(form, request, schema);
-
-  console.log(getValues(f));
-
-  if (f.isValid) {
-
-  } else {
-    request.form = f;
-    return getEditData(request, h);
-  }
-};
-
 module.exports = {
   getViewLicences,
   getViewLicence,
   getEditObject,
   postEditObject,
-  postSetStatus,
-  getAddData,
-  postAddData,
-  getEditData,
-  postEditData
+  postSetStatus
 };

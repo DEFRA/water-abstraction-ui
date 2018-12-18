@@ -1,4 +1,4 @@
 {
   "type" : "string",
-  "pattern" : "/^[S][STWXY](\\d{4}|\\d{6}|\\d{8}|\\d{10})$/"
+  "pattern" : "^(HO|HP|HT|HU|HW|HX|HY|HZ|NA|NB|NC|ND|NE|NF|NG|NH|NJ|NK|NL|NM|NN|NO|NP|NR|NS|NT|NU|NW|NX|NY|NZ|OV|SC|SD|SE|TA|SH|SJ|SK|TF|TG|SM|SN|SO|SP|TL|TM|SR|SS|ST|SU|TQ|TR|SV|SW|SX|SY|SZ|TV)([0-9]{6}|[0-9]{8}|[0-9]{10})$"
 }

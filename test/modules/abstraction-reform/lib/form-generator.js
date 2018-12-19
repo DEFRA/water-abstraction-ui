@@ -104,7 +104,7 @@ experiment('Test schema to form creation', () => {
     }
   };
 
-  lab.test('It should create a form object from a JSON schema', async () => {
+  test('It should create a form object from a JSON schema', async () => {
     const request = {
       params: {
         documentId: '0fa2d972-3a7e-49db-bb13-cba109dc0299',
@@ -124,13 +124,13 @@ experiment('Test schema to form creation', () => {
   });
 });
 
-lab.experiment('Test guessLabel', () => {
-  lab.test('It should generate a human-readable label given a snake case fieldname', async () => {
+experiment('Test guessLabel', () => {
+  test('It should generate a human-readable label given a snake case fieldname', async () => {
     const str = guessLabel('some_test__name', {});
     expect(str).to.equal('Some test name');
   });
 
-  lab.test('It should use a label if one is specified', async () => {
+  test('It should use a label if one is specified', async () => {
     const str = guessLabel('some_test__name', { label: 'A label' });
     expect(str).to.equal('A label');
   });

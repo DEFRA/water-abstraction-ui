@@ -113,6 +113,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/select-schema',
     handler: wr22Controller.getSelectSchema,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence',
       plugins: {
@@ -129,6 +130,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/select-schema',
     handler: wr22Controller.postSelectSchema,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence - post handler',
       plugins: {
@@ -145,6 +147,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
     handler: wr22Controller.getAddData,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence - data form',
       plugins: {
@@ -161,6 +164,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
     handler: wr22Controller.postAddData,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence - data form',
       plugins: {
@@ -177,6 +181,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
     handler: wr22Controller.getEditData,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence - data form',
       validate: {
@@ -199,6 +204,7 @@ module.exports = {
     path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
     handler: wr22Controller.postEditData,
     options: {
+      pre: [{ method: wr22Controller.pre }],
       auth: { scope: allowedScopes },
       description: 'POST handler for editing a WR22 data point to existing licence',
       validate: {

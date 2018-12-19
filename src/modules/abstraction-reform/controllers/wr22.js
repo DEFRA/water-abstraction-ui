@@ -5,7 +5,7 @@ const { handleRequest, getValues } = require('../../../lib/forms');
 const { getSchemaCategories } = require('../lib/schema-helpers.js');
 const { selectSchemaForm } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
-
+const { getPermissions } = require('../lib/permissions');
 const { diff } = require('../lib/diff');
 
 const {
@@ -16,14 +16,41 @@ const {
 const { wr22 } = require('../lib/schema');
 
 /**
+ * Pre handler for all routes
+ * @param  {Object}  request - HAPI request
+ * @param {String} request.params.documentId - the document header ID
+ * @param  {Object}  h       - HAPI reply toolkit
+ * @return {Promise}         resolves with continue/redirect response
+ */
+const pre = async (request, h) => {
+  const { documentId } = request.params;
+
+  // Load licence / AR licence from CRM
+  const { licence, arLicence, finalState } = await load(documentId);
+
+  request.licence = licence;
+  request.arLicence = arLicence;
+  request.finalState = finalState;
+
+  // Check permissions
+  const { canEdit } = getPermissions(request, finalState);
+  if (!canEdit) {
+    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`).takeover();
+  }
+
+  return h.continue;
+};
+
+/**
  * A screen to select a custom data point schema (WR22) to add to existing licence
  * @param  {Object} request - HAPI request interface
  * @param {String} request.params.documentId - CRM document ID
  * @param  {Object} h       HAPI reply interface
  * @return {Promise}
  */
-const getSelectSchema = (request, h) => {
+const getSelectSchema = async (request, h) => {
   const { documentId } = request.params;
+
   const form = request.form || selectSchemaForm(request, wr22);
 
   const categories = getSchemaCategories(wr22);
@@ -45,7 +72,9 @@ const getSelectSchema = (request, h) => {
  * @param  {Object} h       HAPI reply interface
  * @return {Promise}
  */
-const postSelectSchema = (request, h) => {
+const postSelectSchema = async (request, h) => {
+  const { documentId } = request.params;
+
   const form = handleRequest(selectSchemaForm(request, wr22), request);
 
   // If validation errors in form, redisplay with error message
@@ -55,7 +84,6 @@ const postSelectSchema = (request, h) => {
   }
 
   // Otherwise redirect to data capture form
-  const { documentId } = request.params;
   const { schema } = getValues(form);
 
   const path = `/admin/abstraction-reform/licence/${documentId}/add-data/${schema}`;
@@ -90,22 +118,19 @@ const getAddData = async (request, h) => {
  * @return {Promise}         resolves with page content
  */
 const postAddData = async (request, h) => {
+  const { documentId } = request.params;
+
   const { form, schema } = await getAddFormAndSchema(request);
 
   const f = handleRequest(form, request, schema);
 
   if (f.isValid) {
-    const { documentId } = request.params;
-
-    // Create data point in licence
-    const { licence, arLicence } = await load(documentId);
-
-    const add = addActionFactory(request, licence);
+    const add = addActionFactory(request, request.licence);
     const { id } = add.payload;
     const edit = editActionFactory(request, getValues(f), id);
     const actions = [add, edit];
 
-    await persistActions(licence, arLicence, actions);
+    await persistActions(request.licence, request.arLicence, actions);
 
     return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${id}`);
   } else {
@@ -143,13 +168,13 @@ const getEditData = async (request, h) => {
 const postEditData = async (request, h) => {
   const { id, documentId } = request.params;
 
-  const { schema, form, licence, arLicence, finalState } = await getEditFormAndSchema(request);
+  const { schema, form } = await getEditFormAndSchema(request);
 
   const updated = handleRequest(form, request, schema);
 
   if (updated.isValid) {
     // Get existing data item
-    const item = findDataItem(finalState, id);
+    const item = findDataItem(request.finalState, id);
 
     // Get submitted form data and diff with current data
     const formValues = omit(getValues(updated), ['csrf_token']);
@@ -158,7 +183,7 @@ const postEditData = async (request, h) => {
     // Persist if there are changes
     if (data) {
       const edit = editActionFactory(request, data, id);
-      await persistActions(licence, arLicence, [edit]);
+      await persistActions(request.licence, request.arLicence, [edit]);
     }
 
     return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${id}`);
@@ -169,6 +194,7 @@ const postEditData = async (request, h) => {
 };
 
 module.exports = {
+  pre,
   getSelectSchema,
   postSelectSchema,
   getAddData,

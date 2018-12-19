@@ -122,6 +122,7 @@
       <div class="govuk-grid-column-one-third">
       <p>{{ item.title }}</p>
 
+      {%if canEdit %}
       <ul class="govuk-list">
         <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">Change this condition</a></li>
 
@@ -129,6 +130,7 @@
         <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">Remove this condition</a></li>
       -->
       </ul>
+      {% endif %}
 
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -142,15 +144,21 @@
   <p>No further conditions.</p>
   {% endif %}
 
+
+  {%if canEdit %}
   <p>
     <a href="/admin/abstraction-reform/licence/{{ documentId }}/select-schema">Add a condition</a>
   </p>
+  {% endif %}
 
+
+  {%if canSubmit or canApprove %}
   <div class="govuk-grid-row">
      <div class="govuk-grid-column-two-thirds">
         <h3 class="govuk-heading-m">Workflow</h3>
         {{ formRender(form) }}
       </div>
   </div>
+  {% endif %}
 
 {% endblock %}

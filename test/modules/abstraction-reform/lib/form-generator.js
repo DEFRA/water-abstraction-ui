@@ -1,23 +1,55 @@
 require('dotenv').config();
-const Lab = require('lab');
-const { expect } = require('code');
-const sinon = require('sinon');
+const sandbox = require('sinon').createSandbox();
 
 const apiHelpers = require('../../../../src/modules/abstraction-reform/lib/api-helpers');
 const { dereference, picklistSchemaFactory, schemaToForm, guessLabel } = require('../../../../src/modules/abstraction-reform/lib/form-generator');
+const { expect } = require('code');
+const licencesConnector = require('../../../../src/lib/connectors/water-service/licences');
 
-const lab = exports.lab = Lab.script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
+
+const conditionsResponse = {
+  error: null,
+  data: [
+    {
+      purposeText: 'Purpose Text 1',
+      id: 'id-1',
+      code: 'AGG',
+      subCode: 'PP',
+      text: 'Text-1',
+      parameter1: 'Parameter1-1',
+      parameter2: 'Parameter2-1'
+    },
+    {
+      purposeText: 'Purpose Text 2',
+      id: 'id-2',
+      code: 'COMP',
+      subCode: 'GEN',
+      text: 'Text-2',
+      parameter1: 'Parameter1-2',
+      parameter2: 'Parameter2-2'
+    }
+  ]
+};
+
+const pointsResponse = {
+  error: null,
+  data: [
+    { id: 1, name: 'Point 1' },
+    { id: 2, name: 'Point 2' }
+  ]
+};
 
 const data = require('./picklist-data.json');
 
-lab.experiment('Test picklistSchemaFactory', () => {
-  lab.test('It should generate a schema for picklists without IDs', async () => {
+experiment('Test picklistSchemaFactory', () => {
+  test('It should generate a schema for picklists without IDs', async () => {
     const { picklist, items } = data.noId;
     const schema = picklistSchemaFactory(picklist, items);
     expect(schema).to.equal({ type: 'string', enum: [ 'Red', 'Yellow', 'Blue' ] });
   });
 
-  lab.test('It should generate a schema for picklists with IDs', async () => {
+  test('It should generate a schema for picklists with IDs', async () => {
     const { picklist, items } = data.withId;
     const schema = picklistSchemaFactory(picklist, items);
 
@@ -33,17 +65,14 @@ lab.experiment('Test picklistSchemaFactory', () => {
   });
 });
 
-lab.experiment('Test dereference', () => {
-  let picklistStub, itemsStub;
-
-  lab.before(async () => {
-    picklistStub = sinon.stub(apiHelpers, 'getPicklist').resolves(data.noId.picklist);
-    itemsStub = sinon.stub(apiHelpers, 'getPicklistItems').resolves(data.noId.items);
+experiment('Test dereference', () => {
+  beforeEach(async () => {
+    sandbox.stub(apiHelpers, 'getPicklist').resolves(data.noId.picklist);
+    sandbox.stub(apiHelpers, 'getPicklistItems').resolves(data.noId.items);
   });
 
-  lab.after(async () => {
-    picklistStub.restore();
-    itemsStub.restore();
+  afterEach(async () => {
+    sandbox.restore();
   });
 
   const schema = {
@@ -55,7 +84,7 @@ lab.experiment('Test dereference', () => {
     }
   };
 
-  lab.test('It should de-reference referenced picklists and types', async () => {
+  test('It should de-reference referenced picklists and types', async () => {
     const result = await dereference(schema);
 
     expect(result.properties.ngr.type).to.equal('string');
@@ -63,7 +92,7 @@ lab.experiment('Test dereference', () => {
   });
 });
 
-lab.experiment('Test schema to form creation', () => {
+experiment('Test schema to form creation', () => {
   const schema = {
     type: 'object',
     properties: {
@@ -107,4 +136,90 @@ lab.experiment('Test guessLabel', () => {
   });
 });
 
-exports.lab = lab;
+experiment('dereference can resolve licence conditions', () => {
+  let schema;
+  let context;
+  let populated;
+
+  beforeEach(async () => {
+    sandbox.stub(licencesConnector, 'getLicenceConditionsByDocumentId').resolves(conditionsResponse);
+
+    schema = {
+      type: 'object',
+      properties: {
+        conditions: { $ref: 'water://licences/conditions.json' }
+      }
+    };
+
+    context = { documentId: 'test-id' };
+    populated = await dereference(schema, context);
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('the document id is used to make the call to get the conditions', async () => {
+    const arg = licencesConnector.getLicenceConditionsByDocumentId.getCall(0).args[0];
+    expect(arg).to.equal('test-id');
+  });
+
+  test('ref is replaced with the conditions data', async () => {
+    expect(populated).to.equal({
+      type: 'object',
+      properties: {
+        conditions: {
+          type: 'object',
+          enum: [
+            { id: 'id-1', value: 'Text-1' },
+            { id: 'id-2', value: 'Text-2' }
+          ]
+        }
+      }
+    });
+  });
+});
+
+experiment('dereference can resolve licence points', () => {
+  let schema;
+  let context;
+  let populated;
+
+  beforeEach(async () => {
+    sandbox.stub(licencesConnector, 'getLicencePointsByDocumentId').resolves(pointsResponse);
+
+    schema = {
+      type: 'object',
+      properties: {
+        points: { $ref: 'water://licences/points.json' }
+      }
+    };
+
+    context = { documentId: 'test-id' };
+    populated = await dereference(schema, context);
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('the document id is used to make the call to get the points', async () => {
+    const arg = licencesConnector.getLicencePointsByDocumentId.getCall(0).args[0];
+    expect(arg).to.equal('test-id');
+  });
+
+  test('ref is replaced with the points data', async () => {
+    expect(populated).to.equal({
+      type: 'object',
+      properties: {
+        points: {
+          type: 'object',
+          enum: [
+            { id: 1, value: 'Point 1' },
+            { id: 2, value: 'Point 2' }
+          ]
+        }
+      }
+    });
+  });
+});

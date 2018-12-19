@@ -70,7 +70,8 @@ gulp.task('combine-minify-js', () => {
     './public/javascripts/govuk/shim-links-with-button-role.js',
     './public/javascripts/govuk/show-hide-content.js',
     './src/public/javascripts/govuk/details.polyfill.js',
-    './src/public/javascripts/application.js'
+    './src/public/javascripts/application.js',
+    './node_modules/iframe-resizer/js/iframeResizer.min.js'
   ];
 
   return gulp.src(files)

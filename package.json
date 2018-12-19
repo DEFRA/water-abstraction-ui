@@ -79,6 +79,7 @@
     "hoek": "^4.2.1",
     "html-entities": "^1.2.1",
     "http-errors": "^1.6.2",
+    "iframe-resizer": "^3.6.3",
     "immutability-helper": "^2.7.1",
     "inert": "^5.1.2",
     "joi": "^13.1.2",

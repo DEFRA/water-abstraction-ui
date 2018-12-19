@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controllers/edit');
 const reportsController = require('./controllers/reports');
-const wr22Controller = require('./controllers/wr22');
 const statuses = require('./lib/statuses');
 const { scope } = require('../../lib/constants');
 const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover];
@@ -103,120 +102,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction reform report',
           activeNavLink: 'notifications'
-        }
-      }
-    }
-  },
-
-  getSelectSchema: {
-    method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema',
-    handler: wr22Controller.getSelectSchema,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'Add a WR22 data point to existing licence',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Choose a further condition to add',
-          activeNavLink: 'ar'
-        }
-      }
-    }
-  },
-
-  postSelectSchema: {
-    method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema',
-    handler: wr22Controller.postSelectSchema,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'Add a WR22 data point to existing licence - post handler',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Choose a further condition to add',
-          activeNavLink: 'ar'
-        }
-      }
-    }
-  },
-
-  getAddData: {
-    method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
-    handler: wr22Controller.getAddData,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'Add a WR22 data point to existing licence - data form',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Link data to this condition',
-          activeNavLink: 'ar'
-        }
-      }
-    }
-  },
-
-  postAddData: {
-    method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
-    handler: wr22Controller.postAddData,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'Add a WR22 data point to existing licence - data form',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Link data to this condition',
-          activeNavLink: 'ar'
-        }
-      }
-    }
-  },
-
-  getEditData: {
-    method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
-    handler: wr22Controller.getEditData,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'Add a WR22 data point to existing licence - data form',
-      validate: {
-        params: {
-          documentId: Joi.string().guid(),
-          id: Joi.string().guid()
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Link data to this condition',
-          activeNavLink: 'ar'
-        }
-      }
-    }
-  },
-
-  postEditData: {
-    method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
-    handler: wr22Controller.postEditData,
-    options: {
-      pre: [{ method: wr22Controller.pre }],
-      auth: { scope: allowedScopes },
-      description: 'POST handler for editing a WR22 data point to existing licence',
-      validate: {
-        params: {
-          documentId: Joi.string().guid(),
-          id: Joi.string().guid()
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Link data to this condition',
-          activeNavLink: 'ar'
         }
       }
     }

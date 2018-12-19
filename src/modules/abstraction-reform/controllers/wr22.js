@@ -8,12 +8,18 @@ const { load } = require('../lib/loader');
 const { getPermissions } = require('../lib/permissions');
 const { diff } = require('../lib/diff');
 
+const wr22Helpers = require('../lib/wr22-helpers');
+
 const {
   findDataItem, getEditFormAndSchema, getAddFormAndSchema,
-  addActionFactory, editActionFactory, persistActions
-} = require('../lib/wr22-helpers');
+  addActionFactory, editActionFactory, persistActions, getSchema
+} = wr22Helpers;
 
 const { wr22 } = require('../lib/schema');
+
+const { deleteForm } = require('../forms/delete');
+
+const { createDeleteData } = require('../lib/action-creators');
 
 /**
  * Pre handler for all routes
@@ -193,6 +199,46 @@ const postEditData = async (request, h) => {
   }
 };
 
+/**
+ * Shows a form so the user can confirm deletion of a WR22 condition
+ * @param  {Object}  request - HAPI request
+ * @param  {Object}  h       - HAPI response
+ * @return {Promise}         resolves with condition detail and delete form
+ */
+const getDeleteData = async (request, h) => {
+  const { id } = request.params;
+
+  // Get data point
+  const data = findDataItem(request.finalState, id);
+  const schema = getSchema(data.schema);
+
+  // Create form object
+  const form = deleteForm(request);
+
+  const view = {
+    ...request.view,
+    data,
+    schema,
+    form
+  };
+
+  return h.view('nunjucks/abstraction-reform/delete.njk', view, { layout: false });
+};
+
+/**
+ * Post handler to delete WR22 condition
+ * @param  {Object}  request - HAPI request
+ * @param  {Object}  h       - HAPI response
+ * @return {Promise}         resolves with redirect to licence page
+ */
+const postDeleteData = async (request, h) => {
+  const { id, documentId } = request.params;
+
+  const action = createDeleteData(request.auth.credentials, id);
+  await wr22Helpers.persistActions(request.licence, request.arLicence, [action]);
+  return h.redirect(`/admin/abstraction-reform/licence/${documentId}#further-conditions`);
+};
+
 module.exports = {
   pre,
   getSelectSchema,
@@ -200,5 +246,7 @@ module.exports = {
   getAddData,
   postAddData,
   getEditData,
-  postEditData
+  postEditData,
+  getDeleteData,
+  postDeleteData
 };

@@ -113,10 +113,10 @@
   {% endfor %}
 
 
-  <h2 class="govuk-heading-m">Further conditions</h2>
+  <h2 class="govuk-heading-m" id="further-conditions">Further conditions</h2>
 
 
-  {% if data.arData %}
+  {% if data.arData.length %}
     {% for item in data.arData %}
     <div class="govuk-grid-row" id="{{ item.id }}">
       <div class="govuk-grid-column-one-third">
@@ -125,10 +125,7 @@
       {%if canEdit %}
       <ul class="govuk-list">
         <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">Change this condition</a></li>
-
-        <!--
         <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">Remove this condition</a></li>
-      -->
       </ul>
       {% endif %}
 

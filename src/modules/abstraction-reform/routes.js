@@ -220,6 +220,52 @@ module.exports = {
         }
       }
     }
+  },
+
+  getDeleteData: {
+    method: 'GET',
+    path: '/admin/abstraction-reform/licence/{documentId}/delete/{id}',
+    handler: wr22Controller.getDeleteData,
+    options: {
+      pre: [{ method: wr22Controller.pre }],
+      auth: { scope: allowedScopes },
+      description: 'Delete a WR22 data point from licence',
+      validate: {
+        params: {
+          documentId: Joi.string().guid(),
+          id: Joi.string().guid()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Remove condition',
+          activeNavLink: 'ar'
+        }
+      }
+    }
+  },
+
+  postDeleteData: {
+    method: 'POST',
+    path: '/admin/abstraction-reform/licence/{documentId}/delete/{id}',
+    handler: wr22Controller.postDeleteData,
+    options: {
+      pre: [{ method: wr22Controller.pre }],
+      auth: { scope: allowedScopes },
+      description: 'POST handler - delete a WR22 data point from licence',
+      validate: {
+        params: {
+          documentId: Joi.string().guid(),
+          id: Joi.string().guid()
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Remove condition',
+          activeNavLink: 'ar'
+        }
+      }
+    }
   }
 
 };

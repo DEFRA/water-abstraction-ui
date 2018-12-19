@@ -5,7 +5,9 @@ const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const {
-  mapARComparisonTable
+  mapARComparisonTable,
+  ARConditionDescription,
+  ARConditionPlaceholder
 } = require('../../../../src/lib/view-engine/filters/abstraction-reform.js');
 
 lab.experiment('mapARComparisonTable', () => {
@@ -61,5 +63,31 @@ lab.experiment('mapARComparisonTable', () => {
         ]
       ]
     });
+  });
+});
+
+lab.experiment('ARConditionDescription', () => {
+  lab.test('It should replace placeholders with values', async () => {
+    const str = 'Text [foo] placeholders [bar]';
+    const html = ARConditionDescription(str, { foo: 'bar', bar: 'foo' });
+    expect(html).to.equal('Text <strong>bar</strong> placeholders <strong>foo</strong>');
+  });
+  lab.test('It should encode HTML entities to avoid injection', async () => {
+    const str = '&<>';
+    const html = ARConditionDescription(str, {});
+    expect(html).to.equal('&amp;&lt;&gt;');
+  });
+});
+
+lab.experiment('ARConditionPlaceholder', () => {
+  lab.test('It should bold placeholders', async () => {
+    const str = 'Text [foo] placeholders [bar]';
+    const html = ARConditionPlaceholder(str);
+    expect(html).to.equal('Text <strong>[foo]</strong> placeholders <strong>[bar]</strong>');
+  });
+  lab.test('It should encode HTML entities to avoid injection', async () => {
+    const str = '&<>';
+    const html = ARConditionPlaceholder(str, {});
+    expect(html).to.equal('&amp;&lt;&gt;');
   });
 });

@@ -11,7 +11,7 @@ const getSchemaCategories = (schema) => {
   for (let key in schema) {
     const { category, subcategory = '-' } = schema[key];
     const length = get(acc, `${category}.${subcategory}.length`, 0);
-    set(acc, `${category}.${subcategory}.${length}`, key);
+    set(acc, `${category}.${subcategory}.${length}`, parseInt(key));
   }
   return acc;
 };

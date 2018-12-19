@@ -10,6 +10,12 @@ const getChoices = (schema) => {
   });
 };
 
+/**
+ * Creates a form object to select a schema for the WR22 condition to add
+ * @param  {Object} request - HAPI request instance
+ * @param  {Array} schema  - array of JSON schema objects
+ * @return {Object}         form object
+ */
 const selectSchemaForm = (request, schema) => {
   const { csrfToken } = request.view;
 

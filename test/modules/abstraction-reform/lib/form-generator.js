@@ -8,35 +8,7 @@ const { dereference, picklistSchemaFactory, schemaToForm, guessLabel } = require
 
 const lab = exports.lab = Lab.script();
 
-const data = {
-  noId: {
-    picklist: {
-      id_required: false
-    },
-    items: [{
-      value: 'Red'
-    }, {
-      value: 'Yellow'
-    }, {
-      value: 'Blue'
-    }]
-  },
-  withId: {
-    picklist: {
-      id_required: true
-    },
-    items: [{
-      id: 'r',
-      value: 'Red'
-    }, {
-      id: 'y',
-      value: 'Yellow'
-    }, {
-      id: 'b',
-      value: 'Blue'
-    }]
-  }
-};
+const data = require('./picklist-data.json');
 
 lab.experiment('Test picklistSchemaFactory', () => {
   lab.test('It should generate a schema for picklists without IDs', async () => {

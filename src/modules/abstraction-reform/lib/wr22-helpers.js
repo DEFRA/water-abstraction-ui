@@ -1,12 +1,12 @@
 const { find, omit, get } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
-const { load } = require('./loader');
+const loader = require('./loader');
 const { wr22 } = require('./schema');
-const { dereference, schemaToForm } = require('./form-generator.js');
+const formGenerator = require('./form-generator.js');
 const { createAddData, createEditData } = require('./action-creators');
 const { stateManager, getInitialState } = require('./state-manager');
-const { update } = require('../lib/loader');
+// const { update } = require('../lib/loader');
 
 /**
  * Gets a WR22 schema by name (ID in JSON schema)
@@ -14,8 +14,11 @@ const { update } = require('../lib/loader');
  * @return {Object}            the JSON schema
  */
 const getSchema = (schemaName) => {
-  const schema = find(wr22, { id: schemaName });
-  return dereference(schema);
+  const item = find(wr22, { id: schemaName });
+  if (item) {
+    return item;
+  }
+  throw new Error(`Schema with name "${schemaName}" not found`);
 };
 
 /**
@@ -25,7 +28,21 @@ const getSchema = (schemaName) => {
  * @return {Object}           data item
  */
 const findDataItem = (arLicence, id) => {
-  return find(arLicence.licence.arData, { id });
+  const item = find(arLicence.licence.arData, { id });
+  if (item) {
+    return item;
+  }
+  throw new Error(`Data item with id "${id}" not found`);
+};
+
+/**
+ * Gets the action attribute for the add schema form
+ * @param  {String} documentId - the CRM document ID for the licence
+ * @param  {String} schemaName - WR22 schema to add
+ * @return {String}            form action attribute
+ */
+const getAddFormAction = (documentId, schemaName) => {
+  return `/admin/abstraction-reform/licence/${documentId}/add-data/${schemaName}`;
 };
 
 /**
@@ -36,10 +53,9 @@ const findDataItem = (arLicence, id) => {
 const getAddFormAndSchema = async (request) => {
   const { documentId, schema: schemaName } = request.params;
 
-  const action = `/admin/abstraction-reform/licence/${documentId}/add-data/${schemaName}`;
-
-  const schema = await getSchema(schemaName);
-  const form = schemaToForm(action, request, schema);
+  const action = getAddFormAction(documentId, schemaName);
+  const schema = await formGenerator.dereference(getSchema(schemaName));
+  const form = formGenerator.schemaToForm(action, request, schema);
 
   return { schema, form };
 };
@@ -56,12 +72,12 @@ const getEditFormAndSchema = async (request) => {
   const action = `/admin/abstraction-reform/licence/${documentId}/edit-data/${id}`;
 
   // Load AR licence
-  const result = await load(documentId);
+  const result = await loader.load(documentId);
 
   const item = findDataItem(result.finalState, id);
-  const schema = await getSchema(item.schema);
+  const schema = await formGenerator.dereference(getSchema(item.schema));
 
-  const form = setValues(schemaToForm(action, request, schema), item.content);
+  const form = setValues(formGenerator.schemaToForm(action, request, schema), item.content);
 
   return {
     ...result,
@@ -79,8 +95,8 @@ const getLicenceVersion = (licence) => {
   const issueNumber = get(licence, 'licence_data_value.data.current_version.licence.ISSUE_NO');
   const incrementNumber = get(licence, 'licence_data_value.data.current_version.licence.INCR_NO');
   return {
-    issueNumber,
-    incrementNumber
+    issueNumber: parseInt(issueNumber),
+    incrementNumber: parseInt(incrementNumber)
   };
 };
 
@@ -127,15 +143,17 @@ const persistActions = async (licence, arLicence, actions = []) => {
   const { status, lastEdit } = stateManager(getInitialState(licence), updatedActions);
 
   // Save action list to permit repo
-  return update(arLicence.licence_id, { actions: updatedActions, status, lastEdit }, licenceNumber);
+  return loader.update(arLicence.licence_id, { actions: updatedActions, status, lastEdit }, licenceNumber);
 };
 
 module.exports = {
   getSchema,
   findDataItem,
+  getAddFormAction,
   getAddFormAndSchema,
   getEditFormAndSchema,
   addActionFactory,
   editActionFactory,
-  persistActions
+  persistActions,
+  getLicenceVersion
 };

@@ -24,7 +24,7 @@ if (isLocal || testMode) {
         ...request.view,
         form
       };
-      return h.view('test.njk', view, {
+      return h.view('nunjucks/test.njk', view, {
         layout: false
       });
     },
@@ -37,12 +37,11 @@ if (isLocal || testMode) {
     handler: async (request, h) => {
       const form = handleRequest(testForm(request), request);
 
-      console.log(JSON.stringify(form, null, 2));
       const view = {
         ...request.view,
         form
       };
-      return h.view('test.njk', view, {
+      return h.view('nunjucks/test.njk', view, {
         layout: false
       });
     },

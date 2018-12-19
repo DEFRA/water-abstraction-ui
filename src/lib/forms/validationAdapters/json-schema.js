@@ -20,7 +20,7 @@ const createSchemaFromForm = () => {
  */
 const getErrorKey = error => {
   const { property, argument } = error;
-  return property === 'instance' ? argument : property.replace('.instance', '');
+  return property === 'instance' ? argument : property.replace('instance.', '');
 };
 
 /**

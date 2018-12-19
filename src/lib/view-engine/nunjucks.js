@@ -20,9 +20,11 @@ module.exports = {
   prepare: (options, next) => {
     const paths = [
       options.path,
+      `${options.path}/nunjucks/macros/`,
       'node_modules/govuk-frontend/',
       'node_modules/govuk-frontend/components/'
     ];
+
     const config = {
       noCache: true
     };
@@ -31,6 +33,7 @@ module.exports = {
     addFilters(env);
 
     options.compileOptions.environment = env;
+
     return next();
   }
 

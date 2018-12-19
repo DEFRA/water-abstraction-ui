@@ -1,4 +1,5 @@
 {% from "input/macro.njk" import govukInput %}
+{% from "textarea/macro.njk" import govukTextarea %}
 
 {% macro formTextWidget(field) %}
 
@@ -6,9 +7,13 @@
     <input type="hidden" name="{{ field.name }}" value="{{ field.value }}" />
   {% else %}
 
-  {% set options = field | mapFormField %}
+    {% set options = field | mapFormField %}
 
-  {{ govukInput(options) }}
+    {% if field.options.multiline %}
+      {{ govukTextarea(options) }}
+    {% else %}
+      {{ govukInput(options) }}
+    {% endif %}
 
   {% endif %}
 {% endmacro %}

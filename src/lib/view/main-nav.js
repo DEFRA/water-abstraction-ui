@@ -61,6 +61,7 @@ const getMainNav = (request) => {
   if (!isAuthenticated(request)) {
     return [];
   }
+
   const getNav = isAdmin(request) ? getInternalNav : getExternalNav;
   const links = getNav(request);
 

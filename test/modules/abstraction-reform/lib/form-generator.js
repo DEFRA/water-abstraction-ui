@@ -40,24 +40,7 @@ const pointsResponse = {
   ]
 };
 
-const data = {
-  noId: {
-    picklist: { id_required: false },
-    items: [
-      { value: 'Red' },
-      { value: 'Yellow' },
-      { value: 'Blue' }
-    ]
-  },
-  withId: {
-    picklist: { id_required: true },
-    items: [
-      { id: 'r', value: 'Red' },
-      { id: 'y', value: 'Yellow' },
-      { id: 'b', value: 'Blue' }
-    ]
-  }
-};
+const data = require('./picklist-data.json');
 
 experiment('Test picklistSchemaFactory', () => {
   test('It should generate a schema for picklists without IDs', async () => {
@@ -104,26 +87,8 @@ experiment('Test dereference', () => {
   test('It should de-reference referenced picklists and types', async () => {
     const result = await dereference(schema);
 
-    expect(result).to.equal({
-      'type': 'object',
-      'properties': {
-        'name': {
-          'type': 'string'
-        },
-        'items': {
-          'type': 'string',
-          'enum': [
-            'Red',
-            'Yellow',
-            'Blue'
-          ]
-        },
-        'ngr': {
-          'type': 'string',
-          'pattern': '/^[S][STWXY](\\d{4}|\\d{6}|\\d{8}|\\d{10})$/'
-        }
-      }
-    });
+    expect(result.properties.ngr.type).to.equal('string');
+    expect(result.properties.ngr.pattern).to.be.a.string();
   });
 });
 
@@ -140,102 +105,34 @@ experiment('Test schema to form creation', () => {
   };
 
   test('It should create a form object from a JSON schema', async () => {
-    const form = schemaToForm('/some/action', schema);
+    const request = {
+      params: {
+        documentId: '0fa2d972-3a7e-49db-bb13-cba109dc0299',
+        schema: 'some/schema'
+      },
+      view: {
+        csrfToken: 'c06dd128-4486-4775-801f-13ed022ae811'
+      }
+    };
+    const form = schemaToForm('/action', request, schema);
 
-    expect(form).to.equal({
-      action: '/some/action',
-      method: 'POST',
-      isSubmitted: false,
-      fields: [
-        {
-          name: 'choice',
-          options: {
-            choices: [ 'Red', 'Yellow', 'Blue' ],
-            label: 'Choice',
-            widget: 'radio',
-            required: true,
-            mapper: 'defaultMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'object_choice',
-          options: {
-            choices: [
-              { id: 'r', value: 'Red' },
-              { id: 'y', value: 'Yellow' },
-              { id: 'b', value: 'Blue' }
-            ],
-            label: 'Object choice',
-            widget: 'radio',
-            required: true,
-            key: 'id',
-            mapper: 'objectMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'string',
-          options: {
-            label: 'String',
-            widget: 'text',
-            required: true,
-            type: 'text',
-            controlClass: 'form-control',
-            autoComplete: true,
-            mapper: 'defaultMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'number',
-          options: {
-            label: 'Number',
-            widget: 'text',
-            required: true,
-            type: 'text',
-            controlClass: 'form-control',
-            autoComplete: true,
-            mapper: 'numberMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: 'boolean',
-          options: {
-            choices: [
-              { value: false, label: 'Yes' },
-              { value: true, label: 'No' }
-            ],
-            label: 'Boolean',
-            widget: 'radio',
-            required: true,
-            mapper: 'booleanMapper'
-          },
-          errors: [],
-          value: undefined
-        },
-        {
-          name: null,
-          options: { widget: 'button', label: 'Submit' },
-          value: undefined
-        }
-      ],
-      isValid: undefined,
-      errors: [],
-      validationType: 'json-schema'
-    });
+    const fields = ['csrf_token', 'choice', 'object_choice', 'string', 'number', 'boolean', null];
+
+    expect(form.action).to.equal('/action');
+    expect(form.fields.map(item => item.name)).to.equal(fields);
+    expect(form.validationType).to.equal('jsonSchema');
   });
 });
 
 experiment('Test guessLabel', () => {
   test('It should generate a human-readable label given a snake case fieldname', async () => {
-    const str = guessLabel('some_test__name');
+    const str = guessLabel('some_test__name', {});
     expect(str).to.equal('Some test name');
+  });
+
+  test('It should use a label if one is specified', async () => {
+    const str = guessLabel('some_test__name', { label: 'A label' });
+    expect(str).to.equal('A label');
   });
 });
 

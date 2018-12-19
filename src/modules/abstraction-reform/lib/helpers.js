@@ -1,6 +1,7 @@
 const deepMap = require('deep-map');
-const { pickBy, isArray, isObject, mapValues, pick, setWith } = require('lodash');
+const { pickBy, isArray, isObject, mapValues, pick, setWith, find } = require('lodash');
 const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
+const { wr22 } = require('./schema');
 
 /**
  * Returns obj with non-scalar values removed
@@ -85,6 +86,22 @@ const prepareItem = (licence, finalState, getter = x => x) => {
 };
 
 /**
+ * Maps an AR item in the AR licence to a format expected by the view
+ * @param  {Object} item - item from arData in licence
+ * @return {Object}      - item for display in the view
+ */
+const mapARItem = (item) => {
+  const { schema: schemaName } = item;
+  const schema = find(wr22, { id: schemaName });
+  return {
+    id: item.id,
+    title: `${schema.title} ${schema.category}`,
+    description: schema.description,
+    data: item.content
+  };
+};
+
+/**
  * Prepares data for use in single licence view
  * @param {Object} licence - the base licence
  * @param {Object} finalState - the final state from the reducer
@@ -121,6 +138,8 @@ const prepareData = (licence, finalState) => {
     };
   });
 
+  const arData = (finalState.licence.arData || []).map(mapARItem);
+
   return {
     licence: base,
     currentVersion,
@@ -129,7 +148,8 @@ const prepareData = (licence, finalState) => {
     conditions,
     notes: finalState.notes,
     party,
-    address
+    address,
+    arData
   };
 };
 

@@ -119,8 +119,41 @@ const dereference = async (schema, context) => {
  * @param {String} str - field name, snake case
  * @return {String} label
  */
-const guessLabel = (str) => {
-  return sentenceCase(str.replace(/_+/g, ' '));
+const guessLabel = (str, item) => {
+  return item.label || sentenceCase(str.replace(/_+/g, ' '));
+};
+
+/**
+ * Converts a scalar enum choice to a form object choice.
+ * @param  {Object} item - enum choice
+ * @return {Object}      form object choice
+ */
+const mapScalarEnumChoice = item => ({ label: item, value: item });
+
+/**
+ * Create a field for an enum in the JSON schema
+ * The data in the enum can either be an array of scalers or objects
+ * If objects, it expects the format { id : 'x', value : 'y'}
+ * It selects a radio field for <= 5 items, or a dropdown otherwise
+ * @param  {String} fieldName - The JSON schema field name
+ * @param  {Object} item      - the field definition from the JSON schema
+ * @return {Object}           dropdown/radio field object
+ */
+const createEnumField = (fieldName, item) => {
+  const { errors } = item;
+
+  const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
+
+  const label = guessLabel(fieldName, item);
+
+  // Object enum items
+  if (isObject(item.enum[0])) {
+    return fieldFactory(fieldName, { label, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
+  } else {
+    // Scalar enum values (string/number)
+    const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+    return fieldFactory(fieldName, { label, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
+  }
 };
 
 /**
@@ -129,11 +162,16 @@ const guessLabel = (str) => {
  * @param {String} action - form action
  * @param {Object} schema - JSON schema object
  */
-const schemaToForm = (action, schema) => {
-  const f = formFactory(action, 'POST', 'json-schema');
+const schemaToForm = (action, request, schema) => {
+  const f = formFactory(action, 'POST', 'jsonSchema');
+
+  const { csrfToken } = request.view;
+
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   each(schema.properties, (item, key) => {
-    const label = guessLabel(key);
+    const { errors } = item;
+    const label = guessLabel(key, item);
 
     if (item.type === 'boolean') {
       f.fields.push(fields.radio(key, { label,
@@ -141,21 +179,15 @@ const schemaToForm = (action, schema) => {
           { value: false, label: 'Yes' },
           { value: true, label: 'No' }
         ],
-        mapper: 'booleanMapper'
+        mapper: 'booleanMapper',
+        errors
       }));
     } else if ('enum' in item) {
-      // Object enum items
-      if (isObject(item.enum[0])) {
-        f.fields.push(fields.radio(key, { label, choices: item.enum, key: 'id', mapper: 'objectMapper' }));
-      } else {
-        // Scalar enum values (string/number)
-        const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-        f.fields.push(fields.radio(key, { label, choices: item.enum, mapper }));
-      }
+      f.fields.push(createEnumField(key, item));
     } else {
-      // Scalar enum values (string/number)
+      // Scalar values (string/number)
       const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-      f.fields.push(fields.text(key, { label, mapper }));
+      f.fields.push(fields.text(key, { label, mapper, errors }));
     }
   });
 

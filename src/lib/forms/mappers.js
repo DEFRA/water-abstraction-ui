@@ -1,4 +1,4 @@
-const { isArray, isUndefined, negate } = require('lodash');
+const { isArray, isUndefined, negate, find } = require('lodash');
 const moment = require('moment');
 const isDefined = negate(isUndefined);
 const { extractLicenceNumbers } = require('../licence-helpers');
@@ -133,11 +133,33 @@ const arrayMapper = {
   }
 };
 
+const objectMapper = {
+
+  /**
+   * A property of the choices is set as the key with the keyProperty option
+   * This is then compared with the payload to find the correct field value
+   * @param  {String} fieldName - the name of the form field
+   * @param  {Object} payload   - POST/GET payload object
+   * @param  {Object} field     - Full field description
+   * @return {Object}           Choice object if found
+   */
+  import: (fieldName, payload, field) => {
+    const findOptions = {
+      [field.options.keyProperty]: payload[fieldName]
+    };
+    return find(field.options.choices, findOptions);
+  },
+  export: (value) => {
+    return value;
+  }
+};
+
 module.exports = {
   defaultMapper,
   booleanMapper,
   dateMapper,
   numberMapper,
   licenceNumbersMapper,
-  arrayMapper
+  arrayMapper,
+  objectMapper
 };

@@ -8,10 +8,12 @@ const { load } = require('../lib/loader');
 const { getPermissions } = require('../lib/permissions');
 const { diff } = require('../lib/diff');
 
+const wr22Helpers = require('../lib/wr22-helpers');
+
 const {
   findDataItem, getEditFormAndSchema, getAddFormAndSchema,
   addActionFactory, editActionFactory, persistActions, getSchema
-} = require('../lib/wr22-helpers');
+} = wr22Helpers;
 
 const { wr22 } = require('../lib/schema');
 
@@ -233,7 +235,7 @@ const postDeleteData = async (request, h) => {
   const { id, documentId } = request.params;
 
   const action = createDeleteData(request.auth.credentials, id);
-  await persistActions(request.licence, request.arLicence, [action]);
+  await wr22Helpers.persistActions(request.licence, request.arLicence, [action]);
   return h.redirect(`/admin/abstraction-reform/licence/${documentId}#further-conditions`);
 };
 

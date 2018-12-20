@@ -6,6 +6,7 @@
   "title" : "2.1",
   "description" : "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point] is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
   "category" : "Hands off level conditions",
+  "subcategory" : "Hands off levels",
   "properties" : {
     "water_body_name" : {
       "$ref" : "water://picklists/water_bodies.json",
@@ -41,7 +42,7 @@
     },
     "unit": {
       "type" : "string",
-      "enum" : ["m³/s", "mORD", "mASD"]
+      "enum" : ["mORD", "mASD"]
     },
     "point" : {
       "type" : "string",

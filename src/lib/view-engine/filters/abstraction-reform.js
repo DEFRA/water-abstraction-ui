@@ -35,6 +35,15 @@ const mapARComparisonTable = (data) => {
 };
 
 /**
+ * Encodes HTML entities after converting supplied value to string
+ * @param  {String|Number} value - the value to have HTML entities encoded
+ * @return {String}
+ */
+const encode = (value) => {
+  return htmlEntityEncoder.encode(value.toString());
+};
+
+/**
  * Replaces condition text template with bolded data values
  * @param  {String} str  - condition text template
  * @param  {Object} data - condition data
@@ -44,7 +53,7 @@ const ARConditionDescription = (str, data) => {
   let tpl = htmlEntityEncoder.encode(str);
   tpl = tpl.replace(/\[/g, '<strong>{{');
   tpl = tpl.replace(/\]/g, '}}</strong>');
-  const safeData = deepMap(data, htmlEntityEncoder.encode);
+  const safeData = deepMap(data, encode);
   return Nunjucks.renderString(tpl, safeData);
 };
 

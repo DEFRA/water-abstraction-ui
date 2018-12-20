@@ -77,6 +77,11 @@ lab.experiment('ARConditionDescription', () => {
     const html = ARConditionDescription(str, {});
     expect(html).to.equal('&amp;&lt;&gt;');
   });
+  lab.test('It should support numbers in data', async () => {
+    const str = 'A number [foo]';
+    const html = ARConditionDescription(str, { foo: 123.5 });
+    expect(html).to.equal('A number <strong>123.5</strong>');
+  });
 });
 
 lab.experiment('ARConditionPlaceholder', () => {

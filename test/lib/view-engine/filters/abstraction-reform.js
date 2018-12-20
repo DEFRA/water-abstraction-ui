@@ -66,24 +66,6 @@ lab.experiment('mapARComparisonTable', () => {
   });
 });
 
-lab.experiment('ARConditionDescription', () => {
-  lab.test('It should replace placeholders with values', async () => {
-    const str = 'Text [foo] placeholders [bar]';
-    const html = ARConditionDescription(str, { foo: 'bar', bar: 'foo' });
-    expect(html).to.equal('Text <strong>bar</strong> placeholders <strong>foo</strong>');
-  });
-  lab.test('It should encode HTML entities to avoid injection', async () => {
-    const str = '&<>';
-    const html = ARConditionDescription(str, {});
-    expect(html).to.equal('&amp;&lt;&gt;');
-  });
-  lab.test('It should support numbers in data', async () => {
-    const str = 'A number [foo]';
-    const html = ARConditionDescription(str, { foo: 123.5 });
-    expect(html).to.equal('A number <strong>123.5</strong>');
-  });
-});
-
 lab.experiment('ARConditionPlaceholder', () => {
   lab.test('It should bold placeholders', async () => {
     const str = 'Text [foo] placeholders [bar]';

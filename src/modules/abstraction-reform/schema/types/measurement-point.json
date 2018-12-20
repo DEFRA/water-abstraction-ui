@@ -1,0 +1,6 @@
+{
+  "type" : "string",
+  "enum" : [
+    "Borehole", "Downstream", "NGR", "Ref point on map", "Upstream"
+  ]
+}

@@ -1,0 +1,10 @@
+{% from "./2.1.njk" import wr22_2_1 %}
+
+{% macro wr22Condition(item) %}
+
+  {% if item.schema == '/wr22/2.1' %}
+    {{ wr22_2_1(item.data) }}
+  {% endif %}
+
+
+{% endmacro %}

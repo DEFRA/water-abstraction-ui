@@ -1,8 +1,10 @@
+
+
 {
   "id" : "/wr22/2.1",
   "type" : "object",
   "title" : "2.1",
-  "description" : "No abstraction shall take place unless the level of water in the [water_body_name] as measured [measurement_point] [measurement_point_ngr], is equal to or greater than [threshold] and the abstraction shall not cause the level at the said [location] to fall below that level.",
+  "description" : "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point] is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
   "category" : "Hands off level conditions",
   "properties" : {
     "water_body_name" : {
@@ -12,18 +14,10 @@
       }
     },
     "measurement_point" : {
-      "$ref" : "water://picklists/measurement_point.json",
+      "$ref" : "water://types/measurementPoint.json",
       "errors" : {
         "required" : {
           "message" : "Select the measurement point"
-        }
-      }
-    },
-    "gauging_station" : {
-      "$ref" : "water://picklists/gauging_stations.json",
-      "errors" : {
-        "required" : {
-          "message" : "Select the gauging station"
         }
       }
     },
@@ -38,12 +32,21 @@
     },
     "hol_rate_level" : {
       "type" : "number",
+      "label": "HOL rate/prescribed level",
       "errors" : {
         "type" : {
           "message" : "The HOL rate / level should be a number"
         }
       }
+    },
+    "unit": {
+      "type" : "string",
+      "enum" : ["m³/s", "mORD", "mASD"]
+    },
+    "point" : {
+      "type" : "string",
+      "enum" : ["Abstraction point", "Reference point"]
     }
   },
-  "required": ["water_body_name", "measurement_point", "gauging_station", "measurement_point_ngr", "hol_rate_level"]
+  "required": ["water_body_name", "measurement_point", "hol_rate_level", "point"]
 }

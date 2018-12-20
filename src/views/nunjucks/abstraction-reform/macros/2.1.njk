@@ -1,0 +1,13 @@
+{% macro wr22_2_1(data) %}
+
+No abstraction shall take place unless the level of water in the {{ data.water_body_name }}
+as measured
+
+  {% if data.measurement_point == 'Upstream' %}immediately upstream of the authorised point of abstraction{% endif %}
+  {% if data.measurement_point == 'Downstream' %}immediately downstream of the authorised point of abstraction{% endif %}
+  {% if data.measurement_point == 'NGR' %}at place at National Grid Reference {{ data.measurement_point_ngr }}{% endif %}
+  {% if data.measurement_point == 'Ref point on map' %}Ref point on map{% endif %}
+  {% if data.measurement_point == 'Borehole' %}in the borehole{% endif %}
+
+  is equal to or greater than {{ data.hol_rate_level }}{{ data.unit }} and the abstraction shall not cause the level at the said {{ data.point | lower }} to fall below that level.
+{% endmacro %}

@@ -2,6 +2,7 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "table/macro.njk" import govukTable %}
 {% from "inset-text/macro.njk" import govukInsetText %}
+{% from "./nunjucks/abstraction-reform/macros/index.njk" import wr22Condition %}
 
 {% macro arComparisonTable(data) %}
 
@@ -131,7 +132,9 @@
 
       </div>
       <div class="govuk-grid-column-two-thirds">
-        <p>{{ item.description | ARConditionDescription(item.data) | safe }}</p>
+        <p>{{ wr22Condition(item) }}</p>
+
+
       </div>
     </div>
 

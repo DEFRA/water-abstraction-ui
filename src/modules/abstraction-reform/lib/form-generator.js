@@ -7,7 +7,8 @@ const { formFactory, fields } = require('../../../lib/forms');
 const licencesConnector = require('../../../lib/connectors/water-service/licences');
 
 const types = {
-  ngr: require('../schema/types/ngr.json')
+  ngr: require('../schema/types/ngr.json'),
+  measurementPoint: require('../schema/types/measurement-point.json')
 };
 
 const createEnumsObject = (items, iteratee) => ({

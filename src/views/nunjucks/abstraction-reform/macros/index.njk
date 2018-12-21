@@ -1,4 +1,5 @@
 {% from "./2.1.njk" import wr22_2_1 %}
+{% from "./2.2.njk" import wr22_2_2 %}
 {% from "./2.7.njk" import wr22_2_7 %}
 {% from "./2.8.njk" import wr22_2_8 %}
 
@@ -6,6 +7,10 @@
 
   {% if item.schema == '/wr22/2.1' %}
     {{ wr22_2_1(item.data) }}
+  {% endif %}
+
+  {% if item.schema == '/wr22/2.2' %}
+    {{ wr22_2_2(item.data) }}
   {% endif %}
 
   {% if item.schema == '/wr22/2.7' %}

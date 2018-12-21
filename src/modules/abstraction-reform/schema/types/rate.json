@@ -1,0 +1,8 @@
+{
+  "type" : "string",
+  "enum" : [
+    "Instantaneous",
+    "Hourly",
+    "Daily"
+  ]
+}

@@ -1,0 +1,12 @@
+{% macro wr22_2_2(data) %}
+
+Abstraction shall not exceed {{ data.max_rate }}{{ data.max_rate_unit }} {{ data.rate_type | lower }} when the level in the {{ data.water_body_name }} as measured 
+
+  {% if data.measurement_point == 'Upstream' %}immediately upstream of the authorised point of abstraction{% endif %}
+  {% if data.measurement_point == 'Downstream' %}immediately downstream of the authorised point of abstraction{% endif %}
+  {% if data.measurement_point == 'NGR' %}at place at National Grid Reference {{ data.measurement_point_ngr }}{% endif %}
+  {% if data.measurement_point == 'Ref point on map' %}Ref point on map{% endif %}
+  {% if data.measurement_point == 'Borehole' %}in the borehole{% endif %}
+
+is equal to or greater than {{ data.hol_rate_level }}{{ data.hol_rate_level_unit }}.
+{% endmacro %}

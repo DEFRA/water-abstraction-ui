@@ -1,0 +1,91 @@
+{
+  "id" : "/wr22/2.3",
+  "type" : "object",
+  "title" : "2.3",
+  "description" : "No [purpose type] shall take place unless the rate of flow in the [water body name] as measured [measurement point], is equal to or greater than [HoF/HOL/prescribed flow] and the [purpose type]  shall not cause the <flow immediately downstream/water level at>> of the said <<abstraction point/reference point>> to fall below that <<rate/level>>.  This shall be known as the <‘hands off flow’><’hands off level’>.
+",
+  "category" : "Hands off level conditions",
+  "subcategory" : "Hands off flows",
+  "properties" : {
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate",
+      "errors": {
+        "type": {
+          "message": "Maximum rate should be a number"
+        }
+      }
+    },
+    "purpose_type": {
+      "$ref": "water://types/purpose.json",
+      "label": "Purpose",
+      "errors": {
+        "required": {
+          "message": "Select a purpose"
+        }
+      }
+    },
+    "max_rate_unit": {
+      "type" : "string",
+      "enum" : ["m³/s"],
+      "errors": {
+        "required": {
+          "message": "Select a rate unit"
+        }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://picklists/water_bodies.json",
+      "errors" : {
+        "required": {
+          "message" : "Select the water body"
+        }
+      }
+    },
+    "measurement_point" : {
+      "$ref" : "water://types/measurementPoint.json",
+      "errors" : {
+        "required" : {
+          "message" : "Select the measurement point"
+        }
+      }
+    },
+    "measurement_point_ngr" : {
+      "$ref" : "water://types/ngr.json",
+      "label": "Measurement point NGR",
+      "errors" : {
+        "pattern" : {
+          "message" : "Measurement point NGR should be a valid grid reference"
+        }
+      }
+    },
+    "hol_rate_level" : {
+      "type" : "number",
+      "label": "HOL rate/prescribed level",
+      "errors" : {
+        "type" : {
+          "message" : "The HOL rate / level should be a number"
+        }
+      }
+    },
+    "hol_rate_level_unit": {
+      "type" : "string",
+      "enum" : ["mORD", "mASD"],
+      "errors": {
+        "required": {
+          "message": "Select a HOL rate / level unit"
+        }
+      }
+    }
+  },
+  "required": [
+    "max_rate",
+    "rate_type",
+    "max_rate_unit",
+    "water_body_name",
+    "measurement_point",
+    "measurement_point_ngr",
+    "hol_rate_level",
+    "hol_rate_level_unit"
+  ]
+}

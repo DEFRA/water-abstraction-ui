@@ -9,7 +9,8 @@ const licencesConnector = require('../../../lib/connectors/water-service/licence
 const types = {
   ngr: require('../schema/types/ngr.json'),
   measurementPoint: require('../schema/types/measurement-point.json'),
-  rate: require('../schema/types/rate.json')
+  rate: require('../schema/types/rate.json'),
+  purpose: require('../schema/types/purpose.json')
 };
 
 const createEnumsObject = (items, iteratee) => ({

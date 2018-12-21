@@ -1,0 +1,55 @@
+{
+  "id": "/wr22/2.5",
+  "type": "object",
+  "title": "2.5",
+  "description": "No abstraction shall take place when the flow in the [water body name] as gauged by the Agency at its flow gauging station at [Gauging station name] [at National Grid Reference] is equal to or less than [Maximum HoF rate] as may be notified by the Agency. The Agency’s said gauging of the flow shall be conclusive.",
+  "category": "Hands off level conditions",
+  "subcategory": "CAMS",
+  "properties": {
+    "water_body_name": {
+      "$ref": "water://picklists/water_bodies.json",
+      "errors": {
+        "required": {
+          "message": "Select the water body"
+        }
+      }
+    },
+    "gauging_station_name": {
+      "type": "string",
+      "errors": {
+        "required": {
+          "message": "Select the water body"
+        }
+      }
+    },
+    "gauging_station_ngr": {
+      "$ref": "water://types/ngr.json",
+      "label": "Gauging station NGR",
+      "errors": {
+        "pattern": {
+          "message": "Measurement point NGR should be a valid grid reference"
+        }
+      }
+    },
+    "max_rate": {
+      "type": "number",
+      "label": "Maximum rate",
+      "errors": {
+        "required": {
+          "type": "Maximum rate should be a number",
+          "message": "Select a maximum rate"
+        }
+      }
+    },
+    "max_rate_unit": {
+      "type" : "string",
+      "enum" : ["m³/s"],
+      "errors": {
+        "required": {
+          "message": "Select a rate unit"
+        }
+      }
+    }
+  },
+  "required": ["water_body_name", "gauging_station_name", "max_rate"]
+}

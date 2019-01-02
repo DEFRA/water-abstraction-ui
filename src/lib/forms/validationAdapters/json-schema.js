@@ -1,11 +1,14 @@
-const jsonSchema = require('jsonschema');
+const Ajv = require('ajv');
+const ajv = new Ajv({ allErrors: true });
+
 const { get } = require('lodash');
 
 const validate = (requestData, schema) => {
-  const result = jsonSchema.validate(requestData, schema);
+  const validator = ajv.compile(schema);
+  const isValid = validator(requestData);
 
   return {
-    error: result.errors.length === 0 ? false : result,
+    error: isValid ? false : { errors: validator.errors },
     value: requestData
   };
 };
@@ -19,8 +22,10 @@ const createSchemaFromForm = () => {
  * the JSON schema validation error.
  */
 const getErrorKey = error => {
-  const { property, argument } = error;
-  return property === 'instance' ? argument : property.replace('instance.', '');
+  if (error.keyword === 'required') {
+    return get(error, 'params.missingProperty');
+  }
+  return get(error, 'dataPath').replace(/^\./, '');
 };
 
 /**
@@ -29,12 +34,12 @@ const getErrorKey = error => {
  * text, if available, else the default JSON schema validation
  * error text
  */
-const getErrorMessages = (error, customErrors) => {
+const getErrorMessages = (error, customErrors = {}) => {
   const key = getErrorKey(error);
   const customError = customErrors[key];
 
-  if (customError && customError[error.name]) {
-    const { summary, message } = customError[error.name];
+  if (customError && customError[error.keyword]) {
+    const { summary, message } = customError[error.keyword];
     return { message, summary: summary || message };
   }
 

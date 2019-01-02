@@ -51,6 +51,7 @@
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^4.1.1",
     "airbrake-js": "^1.5.0",
+    "ajv": "^6.6.2",
     "async-waterfall": "^0.1.5",
     "blankie": "^4.0.0",
     "blipp": "^3.1.1",
@@ -84,7 +85,6 @@
     "inert": "^5.1.2",
     "joi": "^13.1.2",
     "json-schema-ref-parser": "^6.0.1",
-    "jsonschema": "^1.2.4",
     "lodash": "^4.17.5",
     "marked": "^0.3.19",
     "minimatch": "^3.0.4",

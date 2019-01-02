@@ -1,5 +1,5 @@
 const { expect } = require('code');
-const { beforeEach, experiment, test } = exports.lab = require('lab').script();
+const { experiment, test } = exports.lab = require('lab').script();
 
 const adapter = require('../../../../src/lib/forms/validationAdapters/json-schema');
 
@@ -50,103 +50,53 @@ experiment('createSchemaFromForm', () => {
   });
 });
 
-experiment('formatErrors', () => {
-  let customErrors;
-  let formattedErrors;
+experiment('formatErrors', async () => {
+  const error = {
+    errors: [ { keyword: 'required',
+      dataPath: '',
+      schemaPath: '#/required',
+      params: { missingProperty: 'manufacturer' },
+      message: 'should have required property \'manufacturer\'' },
+    { keyword: 'type',
+      dataPath: '.gears',
+      schemaPath: '#/properties/gears/type',
+      params: { type: 'number' },
+      message: 'should be number' } ]
+  };
 
-  beforeEach(async () => {
-    const validatorResult = {
-      error: {
-        instance: {},
-        propertyPath: 'instance',
-        errors: [
-          {
-            property: 'instance',
-            message: 'requires property "manufacturer"',
-            instance: {},
-            name: 'required',
-            argument: 'manufacturer',
-            stack: 'instance requires property "manufacturer"'
-          },
-          {
-            property: 'instance',
-            message: 'requires property "serialNumber"',
-            instance: {},
-            name: 'required',
-            argument: 'serialNumber',
-            stack: 'instance requires property "serialNumber"'
-          },
-          {
-            property: 'instance',
-            message: 'requires property "startReading"',
-            instance: {},
-            name: 'required',
-            argument: 'startReading',
-            stack: 'instance requires property "startReading"'
-          }
-        ],
-        disableFormat: false
-      },
-      value: {}
-    };
+  const customErrors = {
+    manufacturer: {
+      'required': { message: 'Manufacturer is required', summary: 'There is a problem' }
+    }
+  };
 
-    const customErrors = {
-      manufacturer: {
-        'required': {
-          message: 'Select a manufacturer',
-          summary: 'Custom summary'
-        }
-      },
-      serialNumber: {
-        'required': { message: 'Select a serial number' }
-      }
-    };
-
-    formattedErrors = adapter.formatErrors(validatorResult.error, customErrors);
-  });
-
-  test('formats the manufacturer errors as expected', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'manufacturer');
-    expect(manufacturerError).to.equal({
-      message: 'Select a manufacturer',
+  test('It should format a required field error', async () => {
+    const errors = adapter.formatErrors(error);
+    const { message } = error.errors[0];
+    expect(errors[0]).to.equal({
       name: 'manufacturer',
-      summary: 'Custom summary'
+      message,
+      summary: message
     });
   });
 
-  test('formats the serialNumber errors as expected', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'serialNumber');
-    expect(manufacturerError).to.equal({
-      message: 'Select a serial number',
-      name: 'serialNumber',
-      summary: 'Select a serial number'
+  test('It should format an incorrect type error', async () => {
+    const errors = adapter.formatErrors(error);
+    const { message } = error.errors[1];
+    expect(errors[1]).to.equal({
+      name: 'gears',
+      message,
+      summary: message
     });
   });
 
-  test('uses the default JSON schema errors for the startReading because no custom values specified', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'startReading');
-    expect(manufacturerError).to.equal({
-      message: 'requires property "startReading"',
-      name: 'startReading',
-      summary: 'requires property "startReading"'
+  test('It should format an error with custom errors if available', async () => {
+    const errors = adapter.formatErrors(error, customErrors);
+    const { message, summary } = customErrors.manufacturer.required;
+    expect(errors[0]).to.equal({
+      name: 'manufacturer',
+      message,
+      summary
     });
-  });
-
-  test('the isMultiplier field has no errors', async () => {
-    const isMultiplier = formattedErrors.find(field => field.name === 'isMultiplier');
-    expect(isMultiplier).to.not.exist();
-  });
-
-  test('returns an empty array when no errors', async () => {
-    const validatorResult = {
-      instance: {},
-      schema: { type: 'object', properties: { one: [Object] } },
-      propertyPath: 'instance',
-      errors: [],
-      throwError: undefined,
-      disableFormat: false
-    };
-    const formatted = adapter.formatErrors(validatorResult, customErrors);
-    expect(formatted).to.equal([]);
   });
 });

@@ -161,19 +161,6 @@ const createEnumField = (fieldName, item) => {
 };
 
 /**
- * Given a field name and the JSON schema, detects whether this field
- * is dependent on another enum field having a certain value
- * It returns attributes to add to the field in the JSON encode format:
- * {'data-toggle' : '{ fieldName : 'value'}'}
- * @param  {String} fieldName - the field name in the JSON schema
- * @param {Object} schema - the entire JSON schema
- * @return {Object} attributes to add to the field
- */
-const getFieldConditional = (fieldName, schema) => {
-  return get(schema, `properties.${fieldName}.ui.toggle`, null);
-};
-
-/**
  * Adds a named attribute key/value pair to the field
  * The value is JSON stringified if object, otherwise toString is called
  * @param {Object} field - form field object
@@ -192,6 +179,27 @@ const addAttribute = (field, name, value) => {
   return f;
 };
 
+const getField = (item, key) => {
+  const errors = get(item, 'ui.errors');
+  const label = guessLabel(key, item);
+  if (item.type === 'boolean') {
+    return fields.radio(key, { label,
+      choices: [
+        { value: false, label: 'Yes' },
+        { value: true, label: 'No' }
+      ],
+      mapper: 'booleanMapper',
+      errors
+    });
+  } else if ('enum' in item) {
+    return createEnumField(key, item);
+  } else {
+    // Scalar values (string/number)
+    const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+    return fields.text(key, { label, mapper, errors });
+  }
+};
+
 /**
  * Creates a list of fields for the HTML form by recursing over all object
  * properties in a JSON schema
@@ -205,30 +213,11 @@ const getFields = (schema) => {
     if (item.type === 'object' && item.properties) {
       fieldList.push(...getFields(item));
     } else {
-      const errors = get(item, 'ui.errors');
-      const label = guessLabel(key, item);
-      let field;
+      let field = getField(item, key);
 
-      if (item.type === 'boolean') {
-        field = fields.radio(key, { label,
-          choices: [
-            { value: false, label: 'Yes' },
-            { value: true, label: 'No' }
-          ],
-          mapper: 'booleanMapper',
-          errors
-        });
-      } else if ('enum' in item) {
-        field = createEnumField(key, item);
-      } else {
-        // Scalar values (string/number)
-        const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-        field = fields.text(key, { label, mapper, errors });
-      }
-
-      const conditionals = getFieldConditional(key, schema);
-      if (conditionals) {
-        field = addAttribute(field, 'data-toggle', conditionals);
+      const toggle = get(item, 'ui.toggle');
+      if (toggle) {
+        field = addAttribute(field, 'data-toggle', toggle);
       }
 
       fieldList.push(field);
@@ -264,6 +253,5 @@ module.exports = {
   picklistSchemaFactory,
   schemaToForm,
   guessLabel,
-  getFieldConditional,
   addAttribute
 };

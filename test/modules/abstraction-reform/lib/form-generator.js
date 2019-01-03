@@ -1,13 +1,10 @@
 require('dotenv').config();
 const sandbox = require('sinon').createSandbox();
 
-const { set, cloneDeep } = require('lodash');
-
 const apiHelpers = require('../../../../src/modules/abstraction-reform/lib/api-helpers');
 const {
-  dereference, picklistSchemaFactory, schemaToForm, guessLabel,
-  getFieldConditional, addAttribute } =
-require('../../../../src/modules/abstraction-reform/lib/form-generator');
+  dereference, picklistSchemaFactory, schemaToForm, guessLabel, addAttribute
+} = require('../../../../src/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('code');
 const licencesConnector = require('../../../../src/lib/connectors/water-service/licences');
 
@@ -226,37 +223,6 @@ experiment('dereference can resolve licence points', () => {
         }
       }
     });
-  });
-});
-
-experiment('getFieldConditional', () => {
-  const schema = {
-    type: 'object',
-    properties: {
-      fieldA: {
-        type: 'string',
-        enum: ['a', 'b']
-      },
-      fieldB: {
-        type: 'string'
-      },
-      fieldC: {
-        type: 'string'
-      }
-    }
-  };
-
-  test('without relevant UI toggle property, null is returned', async () => {
-    const attr = getFieldConditional('fieldB', schema);
-    expect(attr).to.equal(null);
-  });
-
-  test('with relevant UI toggle property, fieldB becomes dependent on fieldA having a certain value', async () => {
-    const s = cloneDeep(schema);
-    set(s, 'properties.fieldB.ui.toggle', 'fieldA');
-    console.log(JSON.stringify(s, null, 2));
-    const attr = getFieldConditional('fieldB', s);
-    expect(attr).to.equal('fieldA');
   });
 });
 

@@ -1,6 +1,37 @@
 {
-  "type" : "string",
-  "enum" : [
-    "Borehole", "Downstream", "NGR", "Ref point on map", "Upstream"
-  ]
+  "type" : "object",
+  "properties" : {
+    "measurement_point_type" : {
+      "type" : "string",
+      "enum" : [
+        "Borehole", "Downstream", "NGR", "Ref point on map", "Upstream"
+      ],
+      "ui" : {
+        "label" : "Measurement point",
+        "errors" : {
+          "required" : {
+            "message" : "Select the measurement point"
+          }
+        }
+      }
+    },
+    "measurement_point_ngr" : {
+      "$ref" : "water://types/ngr.json",
+      "ui" : {
+        "label" : "Measurement point NGR",
+        "toggle" : {
+          "measurement_point_type" : "NGR"
+        }
+      }
+    }
+  },
+  "required" : ["measurement_point_type"],
+  "if": {
+    "properties": {
+      "measurement_point_type": { "enum": ["NGR"] }
+    }
+  },
+  "then": {
+    "required" : ["measurement_point_ngr"]
+  }
 }

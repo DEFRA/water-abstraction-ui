@@ -38,7 +38,8 @@ const mapFormField = (field) => {
     hint: {
       text: field.options.hint
     },
-    classes: field.options.controlClass
+    classes: field.options.controlClass,
+    attributes: field.options.attr || {}
   };
 
   return applyErrors(options, field.errors);

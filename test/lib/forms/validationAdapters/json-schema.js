@@ -100,3 +100,63 @@ experiment('formatErrors', async () => {
     });
   });
 });
+
+const nestedSchema = {
+  properties: {
+    name: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string'
+        },
+        lastName: {
+          type: 'string'
+        }
+      }
+    },
+    age: {
+      type: 'number'
+    }
+  }
+};
+
+experiment('getPathMap', async () => {
+  test('It should create a map of property names to their positions in the object heirarchy', async () => {
+    const map = adapter.getPathMap(nestedSchema);
+    expect(map).to.equal({
+      age: 'age',
+      firstName: 'name.firstName',
+      lastName: 'name.lastName'
+    });
+  });
+});
+
+experiment('mapValue', async () => {
+  test('It should convert an empty string to undefined', async () => {
+    expect(adapter.mapValue('')).to.equal(undefined);
+  });
+
+  test('It should pass through non-empty strings or other types unchanged', async () => {
+    expect(adapter.mapValue('Hello')).to.equal('Hello');
+    expect(adapter.mapValue(123)).to.equal(123);
+    expect(adapter.mapValue(null)).to.equal(null);
+    expect(adapter.mapValue(undefined)).to.equal(undefined);
+  });
+});
+
+experiment('mapRequestData', async () => {
+  test('It should map an HTTP request to an object for validation with JSON schema', async () => {
+    const result = adapter.mapRequestData({
+      age: 25,
+      firstName: 'John',
+      lastName: ''
+    }, nestedSchema);
+    expect(result).to.equal({
+      age: 25,
+      name: {
+        firstName: 'John',
+        lastName: undefined
+      }
+    });
+  });
+});

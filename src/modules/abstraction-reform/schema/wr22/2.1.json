@@ -1,5 +1,3 @@
-
-
 {
   "id" : "/wr22/2.1",
   "type" : "object",
@@ -15,21 +13,7 @@
       }
     },
     "measurement_point" : {
-      "$ref" : "water://types/measurementPoint.json",
-      "errors" : {
-        "required" : {
-          "message" : "Select the measurement point"
-        }
-      }
-    },
-    "measurement_point_ngr" : {
-      "$ref" : "water://types/ngr.json",
-      "label": "Measurement point NGR",
-      "errors" : {
-        "pattern" : {
-          "message" : "Measurement point NGR should be a valid grid reference"
-        }
-      }
+      "$ref" : "water://types/measurementPoint.json"
     },
     "hol_rate_level" : {
       "type" : "number",
@@ -49,5 +33,7 @@
       "enum" : ["Abstraction point", "Reference point"]
     }
   },
-  "required": ["water_body_name", "measurement_point", "hol_rate_level", "point"]
+
+  "required" : ["water_body_name", "measurement_point", "hol_rate_level", "point", "unit"]
+
 }

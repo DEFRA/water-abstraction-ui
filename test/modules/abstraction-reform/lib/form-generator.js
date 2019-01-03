@@ -1,8 +1,13 @@
 require('dotenv').config();
 const sandbox = require('sinon').createSandbox();
 
+const { set, cloneDeep } = require('lodash');
+
 const apiHelpers = require('../../../../src/modules/abstraction-reform/lib/api-helpers');
-const { dereference, picklistSchemaFactory, schemaToForm, guessLabel } = require('../../../../src/modules/abstraction-reform/lib/form-generator');
+const {
+  dereference, picklistSchemaFactory, schemaToForm, guessLabel,
+  getFieldConditional, addAttribute } =
+require('../../../../src/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('code');
 const licencesConnector = require('../../../../src/lib/connectors/water-service/licences');
 
@@ -131,7 +136,7 @@ experiment('Test guessLabel', () => {
   });
 
   test('It should use a label if one is specified', async () => {
-    const str = guessLabel('some_test__name', { label: 'A label' });
+    const str = guessLabel('some_test__name', { ui: { label: 'A label' } });
     expect(str).to.equal('A label');
   });
 });
@@ -221,5 +226,67 @@ experiment('dereference can resolve licence points', () => {
         }
       }
     });
+  });
+});
+
+experiment('getFieldConditional', () => {
+  const schema = {
+    type: 'object',
+    properties: {
+      fieldA: {
+        type: 'string',
+        enum: ['a', 'b']
+      },
+      fieldB: {
+        type: 'string'
+      },
+      fieldC: {
+        type: 'string'
+      }
+    }
+  };
+
+  test('without relevant UI toggle property, null is returned', async () => {
+    const attr = getFieldConditional('fieldB', schema);
+    expect(attr).to.equal(null);
+  });
+
+  test('with relevant UI toggle property, fieldB becomes dependent on fieldA having a certain value', async () => {
+    const s = cloneDeep(schema);
+    set(s, 'properties.fieldB.ui.toggle', 'fieldA');
+    console.log(JSON.stringify(s, null, 2));
+    const attr = getFieldConditional('fieldB', s);
+    expect(attr).to.equal('fieldA');
+  });
+});
+
+experiment('addAttribute should add one or more attribute properties to field object', () => {
+  const field = {
+    options: {
+
+    }
+  };
+
+  test('It adds a string attribute', async () => {
+    const f = addAttribute(field, 'foo', 'bar');
+    expect(f.options.attr.foo).to.equal('bar');
+  });
+
+  test('It adds a number attribute', async () => {
+    const f = addAttribute(field, 'foo', 1);
+    expect(f.options.attr.foo).to.equal('1');
+  });
+
+  test('It JSON stringifies object attributes', async () => {
+    const f = addAttribute(field, 'foo', { bar: 'baz' });
+    expect(f.options.attr.foo).to.equal('{"bar":"baz"}');
+  });
+
+  test('It merges multiple attributes', async () => {
+    let f = field;
+    f = addAttribute(f, 'foo', 1);
+    f = addAttribute(f, 'bar', 'baz');
+    expect(f.options.attr.foo).to.equal('1');
+    expect(f.options.attr.bar).to.equal('baz');
   });
 });

@@ -1,6 +1,6 @@
 const { URL } = require('url');
 const refParser = require('json-schema-ref-parser');
-const { pick, isObject, each } = require('lodash');
+const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
 const { formFactory, fields } = require('../../../lib/forms');
@@ -123,7 +123,8 @@ const dereference = async (schema, context) => {
  * @return {String} label
  */
 const guessLabel = (str, item) => {
-  return item.label || sentenceCase(str.replace(/_+/g, ' '));
+  const defaultLabel = sentenceCase(str.replace(/_+/g, ' '));
+  return get(item, 'ui.label', defaultLabel);
 };
 
 /**
@@ -143,7 +144,7 @@ const mapScalarEnumChoice = item => ({ label: item, value: item });
  * @return {Object}           dropdown/radio field object
  */
 const createEnumField = (fieldName, item) => {
-  const { errors } = item;
+  const errors = get(item, 'ui.errors');
 
   const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
 
@@ -160,39 +161,97 @@ const createEnumField = (fieldName, item) => {
 };
 
 /**
+ * Given a field name and the JSON schema, detects whether this field
+ * is dependent on another enum field having a certain value
+ * It returns attributes to add to the field in the JSON encode format:
+ * {'data-toggle' : '{ fieldName : 'value'}'}
+ * @param  {String} fieldName - the field name in the JSON schema
+ * @param {Object} schema - the entire JSON schema
+ * @return {Object} attributes to add to the field
+ */
+const getFieldConditional = (fieldName, schema) => {
+  return get(schema, `properties.${fieldName}.ui.toggle`, null);
+};
+
+/**
+ * Adds a named attribute key/value pair to the field
+ * The value is JSON stringified if object, otherwise toString is called
+ * @param {Object} field - form field object
+ * @param {String} name - the attribute name
+ * @param {Mixed} value - the attribute value
+ * @return {Object} updated field object
+ */
+const addAttribute = (field, name, value) => {
+  const f = cloneDeep(field);
+  const val = isObject(value) ? JSON.stringify(value) : value.toString();
+  const attr = get(f, 'options.attr', {});
+  f.options.attr = {
+    ...attr,
+    [name]: val
+  };
+  return f;
+};
+
+/**
+ * Creates a list of fields for the HTML form by recursing over all object
+ * properties in a JSON schema
+ * Nested property names must be unique.
+ * @param  {Object} schema         - JSON schema
+ * @return {Array}                 - array of field objects
+ */
+const getFields = (schema) => {
+  const fieldList = [];
+  each(schema.properties, (item, key) => {
+    if (item.type === 'object' && item.properties) {
+      fieldList.push(...getFields(item));
+    } else {
+      const errors = get(item, 'ui.errors');
+      const label = guessLabel(key, item);
+      let field;
+
+      if (item.type === 'boolean') {
+        field = fields.radio(key, { label,
+          choices: [
+            { value: false, label: 'Yes' },
+            { value: true, label: 'No' }
+          ],
+          mapper: 'booleanMapper',
+          errors
+        });
+      } else if ('enum' in item) {
+        field = createEnumField(key, item);
+      } else {
+        // Scalar values (string/number)
+        const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+        field = fields.text(key, { label, mapper, errors });
+      }
+
+      const conditionals = getFieldConditional(key, schema);
+      if (conditionals) {
+        field = addAttribute(field, 'data-toggle', conditionals);
+      }
+
+      fieldList.push(field);
+    }
+  });
+  return fieldList;
+};
+
+/**
  * Given a JSON schema for WR22 condition, generates a form object
  * for rendering in the UI
  * @param {String} action - form action
  * @param {Object} schema - JSON schema object
  */
 const schemaToForm = (action, request, schema) => {
+  const { csrfToken } = request.view;
   const f = formFactory(action, 'POST', 'jsonSchema');
 
-  const { csrfToken } = request.view;
-
+  // Add CSRF token hidden field
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  each(schema.properties, (item, key) => {
-    const { errors } = item;
-    const label = guessLabel(key, item);
-
-    if (item.type === 'boolean') {
-      f.fields.push(fields.radio(key, { label,
-        choices: [
-          { value: false, label: 'Yes' },
-          { value: true, label: 'No' }
-        ],
-        mapper: 'booleanMapper',
-        errors
-      }));
-    } else if ('enum' in item) {
-      f.fields.push(createEnumField(key, item));
-    } else {
-      // Scalar values (string/number)
-      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-      f.fields.push(fields.text(key, { label, mapper, errors }));
-    }
-  });
+  // Add fields from JSON schema
+  f.fields.push(...getFields(schema));
 
   // Add submit button
   f.fields.push(fields.button(null, { label: 'Submit' }));
@@ -204,5 +263,7 @@ module.exports = {
   dereference,
   picklistSchemaFactory,
   schemaToForm,
-  guessLabel
+  guessLabel,
+  getFieldConditional,
+  addAttribute
 };

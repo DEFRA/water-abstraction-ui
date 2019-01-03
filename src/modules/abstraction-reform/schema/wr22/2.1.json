@@ -17,20 +17,36 @@
     },
     "hol_rate_level" : {
       "type" : "number",
-      "label": "HOL rate/prescribed level",
-      "errors" : {
-        "type" : {
-          "message" : "The HOL rate / level should be a number"
+      "ui": {
+        "label": "HOL rate/prescribed level",
+        "errors" : {
+          "type" : {
+            "message" : "The HOL rate / level should be a number"
+          }
         }
       }
     },
     "unit": {
       "type" : "string",
-      "enum" : ["mORD", "mASD"]
+      "enum" : ["mORD", "mASD"],
+      "ui" : {
+        "errors" : {
+          "required" : {
+            "message" : "Select a unit"
+          }
+        }
+      }
     },
     "point" : {
       "type" : "string",
-      "enum" : ["Abstraction point", "Reference point"]
+      "enum" : ["Abstraction point", "Reference point"],
+      "ui" : {
+        "errors" : {
+          "required" : {
+            "message" : "Select a point"
+          }
+        }
+      }
     }
   },
 

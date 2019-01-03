@@ -1,4 +1,4 @@
-const { find, omit, get } = require('lodash');
+const { find, omit, get, mapValues, isObject } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
 const loader = require('./loader');
@@ -61,6 +61,21 @@ const getAddFormAndSchema = async (request) => {
 };
 
 /**
+ * Maps data stored in the AR final state to a flat object ready for setting
+ * values in a form object
+ * @param  {Object} obj - the data stored in the AR licence final state
+ * @return {Object}     - shallow object with all properties at root level
+ */
+const flattenData = (obj) => {
+  let result = {};
+  mapValues(obj, (item, key) => {
+    const data = isObject(item) ? flattenData(item) : { [key]: item };
+    Object.assign(result, data);
+  });
+  return result;
+};
+
+/**
  * When editing a data point, gets the form and schema
  * @param  {Object}  request - HAPI request
  * @return {Promise}         resolves with form, schema and various other info
@@ -77,7 +92,8 @@ const getEditFormAndSchema = async (request) => {
   const item = findDataItem(result.finalState, id);
   const schema = await formGenerator.dereference(getSchema(item.schema));
 
-  const form = setValues(formGenerator.schemaToForm(action, request, schema), item.content);
+  const values = flattenData(item.content);
+  const form = setValues(formGenerator.schemaToForm(action, request, schema), values);
 
   return {
     ...result,
@@ -155,5 +171,6 @@ module.exports = {
   addActionFactory,
   editActionFactory,
   persistActions,
-  getLicenceVersion
+  getLicenceVersion,
+  flattenData
 };

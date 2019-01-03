@@ -8,7 +8,8 @@ const formGenerator = require('../../../../src/modules/abstraction-reform/lib/fo
 
 const {
   getSchema, findDataItem, getAddFormAndSchema, getEditFormAndSchema,
-  getLicenceVersion, addActionFactory, editActionFactory, persistActions
+  getLicenceVersion, addActionFactory, editActionFactory, persistActions,
+  flattenData
 } = require('../../../../src/modules/abstraction-reform/lib/wr22-helpers');
 
 const lab = exports.lab = Lab.script();
@@ -277,6 +278,25 @@ lab.experiment('persistActions', () => {
     const [id, data] = stub.firstCall.args;
     expect(id).to.equal(arLicence.licence_id);
     expect(data.actions).to.equal([...arLicence.licence_data_value.actions, ...newActions]);
+  });
+});
+
+lab.experiment('flattenData', () => {
+  const data = {
+    foo: 'bar',
+    bar: {
+      baz: 'x',
+      bar: 'y'
+    }
+  };
+
+  lab.test('It should flatten a nested object so all properties are at root level', async () => {
+    const result = flattenData(data);
+    expect(result).to.equal({
+      foo: 'bar',
+      baz: 'x',
+      bar: 'y'
+    });
   });
 });
 

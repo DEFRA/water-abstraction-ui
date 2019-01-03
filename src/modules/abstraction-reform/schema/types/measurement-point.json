@@ -18,7 +18,15 @@
     "measurement_point_ngr" : {
       "$ref" : "water://types/ngr.json",
       "ui" : {
-        "label" : "Measurement point NGR",
+        "label" : "National grid reference",
+        "errors" : {
+          "pattern" : {
+            "message" : "Enter a valid national grid reference"
+          },
+          "required" : {
+            "message" : "Enter a national grid reference"
+          }
+        },
         "toggle" : {
           "measurement_point_type" : "NGR"
         }

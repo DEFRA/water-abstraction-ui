@@ -133,7 +133,7 @@ experiment('Test guessLabel', () => {
   });
 
   test('It should use a label if one is specified', async () => {
-    const str = guessLabel('some_test__name', { ui: { label: 'A label' } });
+    const str = guessLabel('some_test__name', { label: 'A label' });
     expect(str).to.equal('A label');
   });
 });

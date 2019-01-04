@@ -3,7 +3,7 @@
   "type" : "object",
   "title" : "2.2",
   "description" : "Abstraction shall not exceed [max rate] when the level in the [water body name] as measured at [measurement point], is equal to or greater than [HOL rate/prescribed level].",
-  "category" : "Hands off level conditions",
+  "category" : "Hands off flows/levels",
   "subcategory" : "Hands off levels",
   "properties" : {
     "max_rate": {
@@ -49,15 +49,6 @@
         }
       }
     },
-    "measurement_point_ngr" : {
-      "$ref" : "water://types/ngr.json",
-      "label": "Measurement point NGR",
-      "errors" : {
-        "pattern" : {
-          "message" : "Measurement point NGR should be a valid grid reference"
-        }
-      }
-    },
     "hol_rate_level" : {
       "type" : "number",
       "label": "HOL rate/prescribed level",
@@ -83,7 +74,6 @@
     "max_rate_unit",
     "water_body_name",
     "measurement_point",
-    "measurement_point_ngr",
     "hol_rate_level",
     "hol_rate_level_unit"
   ]

@@ -287,6 +287,10 @@ lab.experiment('flattenData', () => {
     bar: {
       baz: 'x',
       bar: 'y'
+    },
+    picklistItem: {
+      id: 'foo',
+      value: 'bar'
     }
   };
 
@@ -295,7 +299,11 @@ lab.experiment('flattenData', () => {
     expect(result).to.equal({
       foo: 'bar',
       baz: 'x',
-      bar: 'y'
+      bar: 'y',
+      picklistItem: {
+        id: 'foo',
+        value: 'bar'
+      }
     });
   });
 });

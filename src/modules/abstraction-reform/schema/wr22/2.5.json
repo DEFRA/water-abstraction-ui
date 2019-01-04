@@ -3,7 +3,7 @@
   "type": "object",
   "title": "2.5",
   "description": "No abstraction shall take place when the flow in the [water body name] as gauged by the Agency at its flow gauging station at [Gauging station name] [at National Grid Reference] is equal to or less than [Maximum HoF rate] as may be notified by the Agency. The Agency’s said gauging of the flow shall be conclusive.",
-  "category": "Hands off level conditions",
+  "category": "Hands off flows/levels",
   "subcategory": "CAMS",
   "properties": {
     "water_body_name": {
@@ -14,13 +14,8 @@
         }
       }
     },
-    "gauging_station_name": {
-      "type": "string",
-      "errors": {
-        "required": {
-          "message": "Select the water body"
-        }
-      }
+    "gauging_station" : {
+      "$ref": "water://picklists/gauging_stations.json"
     },
     "gauging_station_ngr": {
       "$ref": "water://types/ngr.json",
@@ -51,5 +46,5 @@
       }
     }
   },
-  "required": ["water_body_name", "gauging_station_name", "max_rate"]
+  "required": ["water_body_name", "gauging_station", "gauging_station_ngr", "max_rate"]
 }

@@ -2,8 +2,8 @@
   "id" : "/wr22/2.1",
   "type" : "object",
   "title" : "2.1",
-  "description" : "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point] is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
-  "category" : "Hands off level conditions",
+  "description" : "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point], marked as [reference point] on the map is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
+  "category" : "Hands off flows/levels",
   "subcategory" : "Hands off levels",
   "properties" : {
     "water_body_name" : {
@@ -17,34 +17,28 @@
     },
     "hol_rate_level" : {
       "type" : "number",
-      "ui": {
-        "label": "HOL rate/prescribed level",
-        "errors" : {
-          "type" : {
-            "message" : "The HOL rate / level should be a number"
-          }
+      "label": "HOL rate/prescribed level",
+      "errors" : {
+        "type" : {
+          "message" : "The HOL rate / level should be a number"
         }
       }
     },
     "unit": {
       "type" : "string",
       "enum" : ["mORD", "mASD"],
-      "ui" : {
-        "errors" : {
-          "required" : {
-            "message" : "Select a unit"
-          }
+      "errors" : {
+        "required" : {
+          "message" : "Select a unit"
         }
       }
     },
     "point" : {
       "type" : "string",
       "enum" : ["Abstraction point", "Reference point"],
-      "ui" : {
-        "errors" : {
-          "required" : {
-            "message" : "Select a point"
-          }
+      "errors" : {
+        "required" : {
+          "message" : "Select a point"
         }
       }
     }

@@ -41,7 +41,7 @@ function test (ele) {
 /**
  * Refreshes state of form to show/hide conditional elements
  */
-const refreshForm = function () {
+function refreshForm () {
   $('[data-toggle]').each(function (i, ele) {
     var isVisible = test(ele);
     $(ele).parent('.govuk-form-group').toggle(isVisible);

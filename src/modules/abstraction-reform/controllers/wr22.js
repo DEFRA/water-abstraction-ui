@@ -1,6 +1,6 @@
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { mapRequestData } = require('../../../lib/forms/validationAdapters/json-schema');
-
+const { mapARItem } = require('../lib/helpers.js');
 const { getSchemaCategories } = require('../lib/schema-helpers.js');
 const { selectSchemaForm } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
@@ -226,7 +226,7 @@ const getDeleteData = async (request, h) => {
 
   const view = {
     ...request.view,
-    data,
+    data: mapARItem(data),
     schema,
     form
   };

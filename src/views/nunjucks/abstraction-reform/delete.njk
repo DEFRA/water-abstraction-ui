@@ -3,9 +3,7 @@
 {% from "forms/header.njk" import formHeader %}
 {% from "forms/footer.njk" import formFooter %}
 {% from "forms/widget.njk" import formWidget %}
-
-
-
+{% from "./nunjucks/abstraction-reform/macros/index.njk" import wr22Condition %}
 
 {% block content %}
 
@@ -18,7 +16,7 @@
 
         <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
 
-        {% set html = schema.description | ARConditionDescription(data.content) | safe %}
+        {% set html = wr22Condition(data) | safe %}
 
         {{ govukInsetText({
           html: html

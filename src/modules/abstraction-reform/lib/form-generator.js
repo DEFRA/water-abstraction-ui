@@ -9,6 +9,8 @@ const licencesConnector = require('../../../lib/connectors/water-service/licence
 const types = {
   ngr: require('../schema/types/ngr.json'),
   measurementPoint: require('../schema/types/measurement-point.json'),
+  measurementPointType: require('../schema/types/measurement-point-type.json'),
+  measurementPointRefPoint: require('../schema/types/measurement-point-ref-point.json'),
   rate: require('../schema/types/rate.json'),
   purpose: require('../schema/types/purpose.json')
 };
@@ -124,7 +126,7 @@ const dereference = async (schema, context) => {
  */
 const guessLabel = (str, item) => {
   const defaultLabel = sentenceCase(str.replace(/_+/g, ' '));
-  return get(item, 'ui.label', defaultLabel);
+  return get(item, 'label', defaultLabel);
 };
 
 /**
@@ -144,19 +146,19 @@ const mapScalarEnumChoice = item => ({ label: item, value: item });
  * @return {Object}           dropdown/radio field object
  */
 const createEnumField = (fieldName, item) => {
-  const errors = get(item, 'ui.errors');
+  const errors = get(item, 'errors');
+  const label = guessLabel(fieldName, item);
+  const hint = get(item, 'hint');
 
   const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
 
-  const label = guessLabel(fieldName, item);
-
   // Object enum items
   if (isObject(item.enum[0])) {
-    return fieldFactory(fieldName, { label, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
+    return fieldFactory(fieldName, { label, hint, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
   } else {
     // Scalar enum values (string/number)
     const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fieldFactory(fieldName, { label, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
+    return fieldFactory(fieldName, { label, hint, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
   }
 };
 
@@ -180,10 +182,15 @@ const addAttribute = (field, name, value) => {
 };
 
 const getField = (item, key) => {
-  const errors = get(item, 'ui.errors');
+  const errors = get(item, 'errors');
   const label = guessLabel(key, item);
-  if (item.type === 'boolean') {
-    return fields.radio(key, { label,
+  const hint = get(item, 'hint');
+  if (item.fieldType === 'date') {
+    return fields.date(key, { label, hint, errors });
+  } else if (item.type === 'boolean') {
+    return fields.radio(key, {
+      label,
+      hint,
       choices: [
         { value: false, label: 'Yes' },
         { value: true, label: 'No' }
@@ -196,7 +203,7 @@ const getField = (item, key) => {
   } else {
     // Scalar values (string/number)
     const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fields.text(key, { label, mapper, errors });
+    return fields.text(key, { label, hint, mapper, errors });
   }
 };
 
@@ -215,7 +222,7 @@ const getFields = (schema) => {
     } else {
       let field = getField(item, key);
 
-      const toggle = get(item, 'ui.toggle');
+      const toggle = get(item, 'toggle');
       if (toggle) {
         field = addAttribute(field, 'data-toggle', toggle);
       }

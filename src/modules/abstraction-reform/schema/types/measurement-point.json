@@ -2,35 +2,16 @@
   "type" : "object",
   "properties" : {
     "measurement_point_type" : {
-      "type" : "string",
-      "enum" : [
-        "Borehole", "Downstream", "NGR", "Ref point on map", "Upstream"
-      ],
-      "ui" : {
-        "label" : "Measurement point",
-        "errors" : {
-          "required" : {
-            "message" : "Select the measurement point"
-          }
-        }
-      }
+      "$ref" : "water://types/measurementPointType.json"
     },
     "measurement_point_ngr" : {
       "$ref" : "water://types/ngr.json",
-      "ui" : {
-        "label" : "National grid reference",
-        "errors" : {
-          "pattern" : {
-            "message" : "Enter a valid national grid reference"
-          },
-          "required" : {
-            "message" : "Enter a national grid reference"
-          }
-        },
-        "toggle" : {
-          "measurement_point_type" : "NGR"
-        }
+      "toggle" : {
+        "measurement_point_type" : "NGR"
       }
+    },
+    "measurement_point_reference" : {
+      "$ref" : "water://types/measurementPointRefPoint.json"
     }
   },
   "required" : ["measurement_point_type"],

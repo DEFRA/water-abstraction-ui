@@ -3,8 +3,8 @@
   "type" : "object",
   "title" : "2.4",
   "description" : "The quantity of water [purpose type] shall not exceed [max percentage] of the available flow in the [water body name] in excess of the hands off flow.",
-  "category" : "Hands off level conditions",
-  "subcategory" : "Hands of flows",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Hands off flows",
   "properties" : {
     "purpose_type": {
       "$ref": "water://types/purpose.json",

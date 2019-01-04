@@ -1,5 +1,6 @@
 {% macro wr22_2_5(data) %}
-No abstraction shall take place when the flow in the {{ data.water_body_name }} as gauged by the Agency at its flow gauging station at {{ data.gauging_station_name }} 
+
+No abstraction shall take place when the flow in the {{ data.water_body_name }} as gauged by the Agency at its flow gauging station at {{ data.gauging_station.value }}
 
 {% if data.gauging_station_ngr %}
   at {{ data.gauging_station_ngr }}

@@ -1,12 +1,14 @@
 {% macro wr22_2_2(data) %}
 
-Abstraction shall not exceed {{ data.max_rate }}{{ data.max_rate_unit }} {{ data.rate_type | lower }} when the level in the {{ data.water_body_name }} as measured 
+Abstraction shall not exceed {{ data.max_rate }}{{ data.max_rate_unit }} {{ data.rate_type | lower }} when the level in the {{ data.water_body_name }} as measured
 
-  {% if data.measurement_point == 'Upstream' %}immediately upstream of the authorised point of abstraction{% endif %}
-  {% if data.measurement_point == 'Downstream' %}immediately downstream of the authorised point of abstraction{% endif %}
-  {% if data.measurement_point == 'NGR' %}at place at National Grid Reference {{ data.measurement_point_ngr }}{% endif %}
-  {% if data.measurement_point == 'Ref point on map' %}Ref point on map{% endif %}
-  {% if data.measurement_point == 'Borehole' %}in the borehole{% endif %}
+  {% if data.measurement_point.measurement_point_type == 'Upstream' %}immediately upstream of the authorised point of abstraction,{% endif %}
+  {% if data.measurement_point.measurement_point_type == 'Downstream' %}immediately downstream of the authorised point of abstraction,{% endif %}
+  {% if data.measurement_point.measurement_point_type == 'NGR' %}at place at National Grid Reference {{ data.measurement_point.measurement_point_ngr }},{% endif %}
+  {% if data.measurement_point.measurement_point_type == 'Borehole' %}in the borehole,{% endif %}
+
+  {% if data.measurement_point.measurement_point_reference %}marked as {{ data.measurement_point.measurement_point_reference }} on the map{% endif %}
+
 
 is equal to or greater than {{ data.hol_rate_level }}{{ data.hol_rate_level_unit }}.
 {% endmacro %}

@@ -95,7 +95,8 @@ const mapFormDateField = (field) => {
       text: field.options.hint
     },
     classes: field.options.controlClass,
-    items: getFormDateItems(field.value)
+    items: getFormDateItems(field.value),
+    attributes: field.options.attr || {}
   };
 
   return applyErrors(options, field.errors);

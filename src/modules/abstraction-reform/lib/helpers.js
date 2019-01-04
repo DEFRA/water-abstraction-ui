@@ -196,5 +196,6 @@ module.exports = {
   prepareData,
   setObject,
   isMatch,
-  isVersion
+  isVersion,
+  mapARItem
 };

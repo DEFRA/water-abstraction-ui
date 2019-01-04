@@ -3,7 +3,7 @@
   "type" : "object",
   "title" : "2.7",
   "description" : "The quantity of water abstracted shall not exceed [maximum percentage]% of the available flow in the [water body name] in excess of [max rate]",
-  "category" : "Hands off level conditions",
+  "category" : "Hands off flows/levels",
   "subcategory" : "CAMS",
   "properties" : {
     "max_percentage": {

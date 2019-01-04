@@ -1,4 +1,4 @@
-const { find, omit, get, mapValues, isObject } = require('lodash');
+const { find, omit, get, mapValues, isObject, difference } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
 const loader = require('./loader');
@@ -61,6 +61,22 @@ const getAddFormAndSchema = async (request) => {
 };
 
 /**
+ * Picklist item objects have a 'value' and 'id' property.  This function
+ * checks whether the supplied object has these, and only these properties
+ * @param  {Object}  item - object to check
+ * @return {Boolean}      true if item only has keys 'id' and 'value'
+ */
+const isPicklistItemWithId = (item) => {
+  return difference(Object.keys(item), ['id', 'value']).length === 0;
+};
+
+const flattenObject = (item) => {
+  if (isPicklistItemWithId(item)) {
+    return item;
+  }
+  return flattenData(item);
+};
+/**
  * Maps data stored in the AR final state to a flat object ready for setting
  * values in a form object
  * @param  {Object} obj - the data stored in the AR licence final state
@@ -69,7 +85,12 @@ const getAddFormAndSchema = async (request) => {
 const flattenData = (obj) => {
   let result = {};
   mapValues(obj, (item, key) => {
-    const data = isObject(item) ? flattenData(item) : { [key]: item };
+    let data;
+    if (!isObject(item) || isPicklistItemWithId(item)) {
+      data = { [key]: item };
+    } else {
+      data = flattenObject(item);
+    }
     Object.assign(result, data);
   });
   return result;
@@ -93,6 +114,7 @@ const getEditFormAndSchema = async (request) => {
   const schema = await formGenerator.dereference(getSchema(item.schema));
 
   const values = flattenData(item.content);
+  console.log(values);
   const form = setValues(formGenerator.schemaToForm(action, request, schema), values);
 
   return {

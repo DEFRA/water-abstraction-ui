@@ -196,26 +196,44 @@ const getFieldOptions = (item, key) => {
   };
 };
 
+const getFieldType = (item) => {
+  if (item.fieldType) {
+    return item.fieldType;
+  }
+  if (item.type === 'boolean') {
+    return 'boolean';
+  }
+  if ('enum' in item) {
+    return 'enum';
+  }
+  return 'default';
+};
+
 const getField = (item, key) => {
   const options = getFieldOptions(item, key);
-  if (item.fieldType === 'date') {
-    return fields.date(key, options);
-  } else if (item.type === 'boolean') {
-    return fields.radio(key, {
-      ...options,
-      choices: [
-        { value: false, label: 'Yes' },
-        { value: true, label: 'No' }
-      ],
-      mapper: 'booleanMapper'
-    });
-  } else if ('enum' in item) {
-    return createEnumField(key, item);
-  } else {
+  const type = getFieldType(item);
+
+  const actions = {
+    date: () => { return fields.date(key, options); },
+    boolean: () => {
+      return fields.radio(key, {
+        ...options,
+        choices: [
+          { value: false, label: 'Yes' },
+          { value: true, label: 'No' }
+        ],
+        mapper: 'booleanMapper'
+      });
+    },
+    enum: () => { return createEnumField(key, item); },
+    default: () => {
     // Scalar values (string/number)
-    const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fields.text(key, { ...options, mapper });
-  }
+      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+      return fields.text(key, { ...options, mapper });
+    }
+  };
+
+  return actions[type]();
 };
 
 /**

@@ -181,29 +181,40 @@ const addAttribute = (field, name, value) => {
   return f;
 };
 
-const getField = (item, key) => {
-  const errors = get(item, 'errors');
+/**
+ * Gets common field options (label, hint errors) from JSON schema item
+ * @param  {Object} item - the JSON schema field
+ * @param  {String} key  - the key of the JSON schema field
+ * @return {[type]}      options object { errors, label, hint }
+ */
+const getFieldOptions = (item, key) => {
+  const errors = get(item, 'errors', {});
   const label = guessLabel(key, item);
   const hint = get(item, 'hint');
+  return {
+    errors, label, hint
+  };
+};
+
+const getField = (item, key) => {
+  const options = getFieldOptions(item, key);
   if (item.fieldType === 'date') {
-    return fields.date(key, { label, hint, errors });
+    return fields.date(key, options);
   } else if (item.type === 'boolean') {
     return fields.radio(key, {
-      label,
-      hint,
+      ...options,
       choices: [
         { value: false, label: 'Yes' },
         { value: true, label: 'No' }
       ],
-      mapper: 'booleanMapper',
-      errors
+      mapper: 'booleanMapper'
     });
   } else if ('enum' in item) {
     return createEnumField(key, item);
   } else {
     // Scalar values (string/number)
     const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fields.text(key, { label, hint, mapper, errors });
+    return fields.text(key, { ...options, mapper });
   }
 };
 

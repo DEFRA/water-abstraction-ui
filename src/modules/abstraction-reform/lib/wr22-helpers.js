@@ -1,4 +1,4 @@
-const { find, omit, get, mapValues, isObject, difference, cloneDeep } = require('lodash');
+const { find, omit, get, mapValues, isObject, difference } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
 const loader = require('./loader');
@@ -112,13 +112,7 @@ const getEditFormAndSchema = async (request) => {
 
   const item = findDataItem(result.finalState, id);
 
-  // Try to prevent ref parser caching
-  const schemaObject = {
-    _ts: Date.now(),
-    ...cloneDeep(getSchema(item.schema))
-  };
-
-  const schema = await formGenerator.dereference(schemaObject, { documentId });
+  const schema = await formGenerator.dereference(getSchema(item.schema), { documentId });
 
   const values = flattenData(item.content);
   const form = setValues(formGenerator.schemaToForm(action, request, schema), values);

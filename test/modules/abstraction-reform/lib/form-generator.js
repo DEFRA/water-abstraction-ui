@@ -173,8 +173,8 @@ experiment('dereference can resolve licence conditions', () => {
         conditions: {
           type: 'object',
           enum: [
-            { id: 'id-1', value: 'Text-1' },
-            { id: 'id-2', value: 'Text-2' }
+            { id: 'id-1', value: 'id-1: Aggregate condition purpose to purpose within a licence' },
+            { id: 'id-2', value: 'id-2: Complex condition' }
           ]
         }
       }

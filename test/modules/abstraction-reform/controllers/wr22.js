@@ -70,7 +70,13 @@ experiment('getDeleteData', () => {
   });
 
   test('The handler should output the AR data item to the view', async () => {
-    expect(view.data).to.equal(request.finalState.licence.arData[0]);
+    const { arData: [arData] } = request.finalState.licence;
+
+    expect(view.data).to.be.an.object();
+    expect(view.data.id).to.equal(id);
+    expect(view.data.schema).to.equal(arData.schema);
+    expect(view.data.title).to.equal(`2.1 Hands off flows/levels`);
+    expect(view.data.data).to.equal(arData.content);
   });
 });
 

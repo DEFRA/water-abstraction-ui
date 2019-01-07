@@ -1,0 +1,47 @@
+{
+  "id" : "/wr22/2.4",
+  "type" : "object",
+  "title" : "2.4",
+  "description" : "The quantity of water [purpose type] shall not exceed [max percentage] of the available flow in the [water body name] in excess of the hands off flow.",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Hands off flows",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "purpose_type": {
+      "$ref": "water://types/purpose.json",
+      "label": "Purpose",
+      "errors": {
+        "required": {
+          "message": "Select a purpose"
+        }
+      }
+    },
+    "max_percentage": {
+      "type": "number",
+      "label": "Maximum percentage",
+      "minumum": 0,
+      "maximum": 100,
+      "errors": {
+        "required": { "message": "Select a maximum percentage" },
+        "type": { "message": "Select a valid maximum percentage" }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://picklists/water_bodies.json",
+      "errors" : {
+        "required": {
+          "message": "Select the water body"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "purpose_type", "max_percentage", "water_body_name"]
+}

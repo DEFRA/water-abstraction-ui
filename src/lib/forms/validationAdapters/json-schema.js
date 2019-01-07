@@ -1,11 +1,66 @@
-const jsonSchema = require('jsonschema');
-const { get } = require('lodash');
+const Ajv = require('ajv');
+const ajv = new Ajv({ allErrors: true, errorDataPath: 'property' });
 
+const { get, set } = require('lodash');
+
+/**
+ * Gets a map of where the flattened form field values should be placed
+ * within the nested object being validated by JSON schema
+ * @param  {Object} schema    - the JSON schema object
+ * @param  {Object} [map={}]  - the map being created
+ * @param  {String} [path=''] - the path prefix
+ * @return {Object}           returns the map
+ */
+const getPathMap = (schema, map = {}, path = '') => {
+  for (let key in schema.properties) {
+    if (schema.properties[key].properties) {
+      getPathMap(schema.properties[key], map, key + '.');
+    } else {
+      map[key] = path + key;
+    }
+  }
+  return map;
+};
+
+/**
+ * Converts empty strings to undefined
+ * @param  {Mixed} value
+ * @return {Mixed} returns undefined for empty string
+ */
+const mapValue = value => value === '' ? undefined : value;
+
+/**
+ * Maps the data received from the HTTP request to an object which will be
+ * validated against the JSON schema.
+ * Empty strings are mapped to undefined, and nested properties are placed
+ * in the correct position within the object structure
+ * @param  {Object} data   - Data received from HTML form post
+ * @param  {Object} schema - JSON schema
+ * @return {Object}        data ready for testing against JSON schema
+ */
+const mapRequestData = (data, schema) => {
+  const map = getPathMap(schema);
+  const obj = {};
+  for (let key in data) {
+    if (key in map) {
+      set(obj, map[key], mapValue(data[key]));
+    }
+  }
+  return obj;
+};
+
+/**
+ * Validates HTTP request data from HTML form against supplied JSON schema
+ * @param  {Object} requestData - data posted from HTTP request
+ * @param  {Object} schema      - JSON schema
+ * @return {Object}             validation result for form library
+ */
 const validate = (requestData, schema) => {
-  const result = jsonSchema.validate(requestData, schema);
+  const validator = ajv.compile(schema);
+  const isValid = validator(mapRequestData(requestData, schema));
 
   return {
-    error: result.errors.length === 0 ? false : result,
+    error: isValid ? false : { errors: validator.errors },
     value: requestData
   };
 };
@@ -19,8 +74,10 @@ const createSchemaFromForm = () => {
  * the JSON schema validation error.
  */
 const getErrorKey = error => {
-  const { property, argument } = error;
-  return property === 'instance' ? argument : property.replace('instance.', '');
+  if (error.keyword === 'required') {
+    return get(error, 'params.missingProperty');
+  }
+  return get(error, 'dataPath').split('.').pop();
 };
 
 /**
@@ -29,12 +86,12 @@ const getErrorKey = error => {
  * text, if available, else the default JSON schema validation
  * error text
  */
-const getErrorMessages = (error, customErrors) => {
+const getErrorMessages = (error, customErrors = {}) => {
   const key = getErrorKey(error);
   const customError = customErrors[key];
 
-  if (customError && customError[error.name]) {
-    const { summary, message } = customError[error.name];
+  if (customError && customError[error.keyword]) {
+    const { summary, message } = customError[error.keyword];
     return { message, summary: summary || message };
   }
 
@@ -64,5 +121,8 @@ const formatErrors = (error, customErrors) => {
 module.exports = {
   validate,
   createSchemaFromForm,
-  formatErrors
+  formatErrors,
+  getPathMap,
+  mapValue,
+  mapRequestData
 };

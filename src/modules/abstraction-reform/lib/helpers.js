@@ -95,6 +95,7 @@ const mapARItem = (item) => {
   const schema = find(wr22, { id: schemaName });
   return {
     id: item.id,
+    schema: schemaName,
     title: `${schema.title} ${schema.category}`,
     description: schema.description,
     data: item.content
@@ -195,5 +196,6 @@ module.exports = {
   prepareData,
   setObject,
   isMatch,
-  isVersion
+  isVersion,
+  mapARItem
 };

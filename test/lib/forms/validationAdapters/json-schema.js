@@ -1,5 +1,5 @@
 const { expect } = require('code');
-const { beforeEach, experiment, test } = exports.lab = require('lab').script();
+const { experiment, test } = exports.lab = require('lab').script();
 
 const adapter = require('../../../../src/lib/forms/validationAdapters/json-schema');
 
@@ -50,103 +50,113 @@ experiment('createSchemaFromForm', () => {
   });
 });
 
-experiment('formatErrors', () => {
-  let customErrors;
-  let formattedErrors;
+experiment('formatErrors', async () => {
+  const error = {
+    errors: [ { keyword: 'required',
+      dataPath: '',
+      schemaPath: '#/required',
+      params: { missingProperty: 'manufacturer' },
+      message: 'should have required property \'manufacturer\'' },
+    { keyword: 'type',
+      dataPath: '.gears',
+      schemaPath: '#/properties/gears/type',
+      params: { type: 'number' },
+      message: 'should be number' } ]
+  };
 
-  beforeEach(async () => {
-    const validatorResult = {
-      error: {
-        instance: {},
-        propertyPath: 'instance',
-        errors: [
-          {
-            property: 'instance',
-            message: 'requires property "manufacturer"',
-            instance: {},
-            name: 'required',
-            argument: 'manufacturer',
-            stack: 'instance requires property "manufacturer"'
-          },
-          {
-            property: 'instance',
-            message: 'requires property "serialNumber"',
-            instance: {},
-            name: 'required',
-            argument: 'serialNumber',
-            stack: 'instance requires property "serialNumber"'
-          },
-          {
-            property: 'instance',
-            message: 'requires property "startReading"',
-            instance: {},
-            name: 'required',
-            argument: 'startReading',
-            stack: 'instance requires property "startReading"'
-          }
-        ],
-        disableFormat: false
-      },
-      value: {}
-    };
+  const customErrors = {
+    manufacturer: {
+      'required': { message: 'Manufacturer is required', summary: 'There is a problem' }
+    }
+  };
 
-    const customErrors = {
-      manufacturer: {
-        'required': {
-          message: 'Select a manufacturer',
-          summary: 'Custom summary'
-        }
-      },
-      serialNumber: {
-        'required': { message: 'Select a serial number' }
-      }
-    };
-
-    formattedErrors = adapter.formatErrors(validatorResult.error, customErrors);
-  });
-
-  test('formats the manufacturer errors as expected', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'manufacturer');
-    expect(manufacturerError).to.equal({
-      message: 'Select a manufacturer',
+  test('It should format a required field error', async () => {
+    const errors = adapter.formatErrors(error);
+    const { message } = error.errors[0];
+    expect(errors[0]).to.equal({
       name: 'manufacturer',
-      summary: 'Custom summary'
+      message,
+      summary: message
     });
   });
 
-  test('formats the serialNumber errors as expected', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'serialNumber');
-    expect(manufacturerError).to.equal({
-      message: 'Select a serial number',
-      name: 'serialNumber',
-      summary: 'Select a serial number'
+  test('It should format an incorrect type error', async () => {
+    const errors = adapter.formatErrors(error);
+    const { message } = error.errors[1];
+    expect(errors[1]).to.equal({
+      name: 'gears',
+      message,
+      summary: message
     });
   });
 
-  test('uses the default JSON schema errors for the startReading because no custom values specified', async () => {
-    const manufacturerError = formattedErrors.find(error => error.name === 'startReading');
-    expect(manufacturerError).to.equal({
-      message: 'requires property "startReading"',
-      name: 'startReading',
-      summary: 'requires property "startReading"'
+  test('It should format an error with custom errors if available', async () => {
+    const errors = adapter.formatErrors(error, customErrors);
+    const { message, summary } = customErrors.manufacturer.required;
+    expect(errors[0]).to.equal({
+      name: 'manufacturer',
+      message,
+      summary
     });
   });
+});
 
-  test('the isMultiplier field has no errors', async () => {
-    const isMultiplier = formattedErrors.find(field => field.name === 'isMultiplier');
-    expect(isMultiplier).to.not.exist();
+const nestedSchema = {
+  properties: {
+    name: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string'
+        },
+        lastName: {
+          type: 'string'
+        }
+      }
+    },
+    age: {
+      type: 'number'
+    }
+  }
+};
+
+experiment('getPathMap', async () => {
+  test('It should create a map of property names to their positions in the object heirarchy', async () => {
+    const map = adapter.getPathMap(nestedSchema);
+    expect(map).to.equal({
+      age: 'age',
+      firstName: 'name.firstName',
+      lastName: 'name.lastName'
+    });
+  });
+});
+
+experiment('mapValue', async () => {
+  test('It should convert an empty string to undefined', async () => {
+    expect(adapter.mapValue('')).to.equal(undefined);
   });
 
-  test('returns an empty array when no errors', async () => {
-    const validatorResult = {
-      instance: {},
-      schema: { type: 'object', properties: { one: [Object] } },
-      propertyPath: 'instance',
-      errors: [],
-      throwError: undefined,
-      disableFormat: false
-    };
-    const formatted = adapter.formatErrors(validatorResult, customErrors);
-    expect(formatted).to.equal([]);
+  test('It should pass through non-empty strings or other types unchanged', async () => {
+    expect(adapter.mapValue('Hello')).to.equal('Hello');
+    expect(adapter.mapValue(123)).to.equal(123);
+    expect(adapter.mapValue(null)).to.equal(null);
+    expect(adapter.mapValue(undefined)).to.equal(undefined);
+  });
+});
+
+experiment('mapRequestData', async () => {
+  test('It should map an HTTP request to an object for validation with JSON schema', async () => {
+    const result = adapter.mapRequestData({
+      age: 25,
+      firstName: 'John',
+      lastName: ''
+    }, nestedSchema);
+    expect(result).to.equal({
+      age: 25,
+      name: {
+        firstName: 'John',
+        lastName: undefined
+      }
+    });
   });
 });

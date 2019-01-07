@@ -1,13 +1,18 @@
 const { URL } = require('url');
 const refParser = require('json-schema-ref-parser');
-const { pick, isObject, each } = require('lodash');
+const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
 const { formFactory, fields } = require('../../../lib/forms');
 const licencesConnector = require('../../../lib/connectors/water-service/licences');
 
 const types = {
-  ngr: require('../schema/types/ngr.json')
+  ngr: require('../schema/types/ngr.json'),
+  measurementPoint: require('../schema/types/measurement-point.json'),
+  measurementPointType: require('../schema/types/measurement-point-type.json'),
+  measurementPointRefPoint: require('../schema/types/measurement-point-ref-point.json'),
+  rate: require('../schema/types/rate.json'),
+  purpose: require('../schema/types/purpose.json')
 };
 
 const createEnumsObject = (items, iteratee) => ({
@@ -88,6 +93,7 @@ const waterResolverFactory = context => ({
   canRead: /^water:\/\//i,
 
   read: async function (file) {
+    console.log(context);
     // Parse URL
     const { host, pathname } = new URL(file.url);
 
@@ -105,6 +111,7 @@ const waterResolverFactory = context => ({
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
 const dereference = async (schema, context) => {
+  console.log('>', context);
   const populated = await refParser.dereference(schema, {
     resolve: {
       waterResolver: waterResolverFactory(context)
@@ -120,7 +127,8 @@ const dereference = async (schema, context) => {
  * @return {String} label
  */
 const guessLabel = (str, item) => {
-  return item.label || sentenceCase(str.replace(/_+/g, ' '));
+  const defaultLabel = sentenceCase(str.replace(/_+/g, ' '));
+  return get(item, 'label', defaultLabel);
 };
 
 /**
@@ -140,20 +148,120 @@ const mapScalarEnumChoice = item => ({ label: item, value: item });
  * @return {Object}           dropdown/radio field object
  */
 const createEnumField = (fieldName, item) => {
-  const { errors } = item;
+  const errors = get(item, 'errors');
+  const label = guessLabel(fieldName, item);
+  const hint = get(item, 'hint');
 
   const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
 
-  const label = guessLabel(fieldName, item);
-
   // Object enum items
   if (isObject(item.enum[0])) {
-    return fieldFactory(fieldName, { label, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
+    return fieldFactory(fieldName, { label, hint, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
   } else {
     // Scalar enum values (string/number)
     const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fieldFactory(fieldName, { label, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
+    return fieldFactory(fieldName, { label, hint, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
   }
+};
+
+/**
+ * Adds a named attribute key/value pair to the field
+ * The value is JSON stringified if object, otherwise toString is called
+ * @param {Object} field - form field object
+ * @param {String} name - the attribute name
+ * @param {Mixed} value - the attribute value
+ * @return {Object} updated field object
+ */
+const addAttribute = (field, name, value) => {
+  const f = cloneDeep(field);
+  const val = isObject(value) ? JSON.stringify(value) : value.toString();
+  const attr = get(f, 'options.attr', {});
+  f.options.attr = {
+    ...attr,
+    [name]: val
+  };
+  return f;
+};
+
+/**
+ * Gets common field options (label, hint errors) from JSON schema item
+ * @param  {Object} item - the JSON schema field
+ * @param  {String} key  - the key of the JSON schema field
+ * @return {[type]}      options object { errors, label, hint }
+ */
+const getFieldOptions = (item, key) => {
+  const errors = get(item, 'errors', {});
+  const label = guessLabel(key, item);
+  const hint = get(item, 'hint');
+  return {
+    errors, label, hint
+  };
+};
+
+const getFieldType = (item) => {
+  if (item.fieldType) {
+    return item.fieldType;
+  }
+  if (item.type === 'boolean') {
+    return 'boolean';
+  }
+  if ('enum' in item) {
+    return 'enum';
+  }
+  return 'default';
+};
+
+const getField = (item, key) => {
+  const options = getFieldOptions(item, key);
+  const type = getFieldType(item);
+
+  const actions = {
+    date: () => { return fields.date(key, options); },
+    boolean: () => {
+      return fields.radio(key, {
+        ...options,
+        choices: [
+          { value: false, label: 'Yes' },
+          { value: true, label: 'No' }
+        ],
+        mapper: 'booleanMapper'
+      });
+    },
+    enum: () => { return createEnumField(key, item); },
+    default: () => {
+    // Scalar values (string/number)
+      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+      return fields.text(key, { ...options, mapper });
+    }
+  };
+
+  return actions[type]();
+};
+
+/**
+ * Creates a list of fields for the HTML form by recursing over all object
+ * properties in a JSON schema
+ * Nested property names must be unique.
+ * @param  {Object} schema         - JSON schema
+ * @return {Array}                 - array of field objects
+ */
+const getFields = (schema) => {
+  const fieldList = [];
+  each(schema.properties, (item, key) => {
+    if (item.type === 'object' && item.properties) {
+      fieldList.push(...getFields(item));
+    } else {
+      let field = getField(item, key);
+
+      const toggle = get(item, 'toggle');
+      if (toggle) {
+        field = addAttribute(field, 'data-toggle', toggle);
+      }
+
+      fieldList.push(field);
+    }
+  });
+  return fieldList;
 };
 
 /**
@@ -163,33 +271,14 @@ const createEnumField = (fieldName, item) => {
  * @param {Object} schema - JSON schema object
  */
 const schemaToForm = (action, request, schema) => {
+  const { csrfToken } = request.view;
   const f = formFactory(action, 'POST', 'jsonSchema');
 
-  const { csrfToken } = request.view;
-
+  // Add CSRF token hidden field
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  each(schema.properties, (item, key) => {
-    const { errors } = item;
-    const label = guessLabel(key, item);
-
-    if (item.type === 'boolean') {
-      f.fields.push(fields.radio(key, { label,
-        choices: [
-          { value: false, label: 'Yes' },
-          { value: true, label: 'No' }
-        ],
-        mapper: 'booleanMapper',
-        errors
-      }));
-    } else if ('enum' in item) {
-      f.fields.push(createEnumField(key, item));
-    } else {
-      // Scalar values (string/number)
-      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-      f.fields.push(fields.text(key, { label, mapper, errors }));
-    }
-  });
+  // Add fields from JSON schema
+  f.fields.push(...getFields(schema));
 
   // Add submit button
   f.fields.push(fields.button(null, { label: 'Submit' }));
@@ -201,5 +290,6 @@ module.exports = {
   dereference,
   picklistSchemaFactory,
   schemaToForm,
-  guessLabel
+  guessLabel,
+  addAttribute
 };

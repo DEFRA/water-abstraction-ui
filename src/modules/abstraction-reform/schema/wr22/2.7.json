@@ -1,0 +1,40 @@
+{
+  "id" : "/wr22/2.7",
+  "type" : "object",
+  "title" : "2.7",
+  "description" : "The quantity of water abstracted shall not exceed [maximum percentage]% of the available flow in the [water body name] in excess of [max rate]",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "CAMS",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "max_percentage": {
+      "type" : "number",
+      "label" : "Maximum percentage",
+      "minumum" : 0,
+      "maximum" : 100
+    },
+    "water_body_name" : {
+      "$ref" : "water://picklists/water_bodies.json",
+      "errors" : {
+        "message" : "Select the water body"
+      }
+    },
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate"
+    },
+    "unit": {
+      "type" : "string",
+      "enum" : ["m³/s"]
+    }
+  },
+  "required": ["nald_condition", "max_percentage", "water_body_name", "max_rate", "unit"]
+}

@@ -1,0 +1,26 @@
+{
+  "type" : "object",
+  "properties" : {
+    "measurement_point_type" : {
+      "$ref" : "water://types/measurementPointType.json"
+    },
+    "measurement_point_ngr" : {
+      "$ref" : "water://types/ngr.json",
+      "toggle" : {
+        "measurement_point_type" : "NGR"
+      }
+    },
+    "measurement_point_reference" : {
+      "$ref" : "water://types/measurementPointRefPoint.json"
+    }
+  },
+  "required" : ["measurement_point_type"],
+  "if": {
+    "properties": {
+      "measurement_point_type": { "enum": ["NGR"] }
+    }
+  },
+  "then": {
+    "required" : ["measurement_point_ngr"]
+  }
+}

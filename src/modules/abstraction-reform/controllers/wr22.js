@@ -1,7 +1,6 @@
-const { omit } = require('lodash');
-
 const { handleRequest, getValues } = require('../../../lib/forms');
-
+const { mapRequestData } = require('../../../lib/forms/validationAdapters/json-schema');
+const { mapARItem } = require('../lib/helpers.js');
 const { getSchemaCategories } = require('../lib/schema-helpers.js');
 const { selectSchemaForm } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
@@ -118,6 +117,17 @@ const getAddData = async (request, h) => {
 };
 
 /**
+ * Maps data from form to data ready for storing in AR permit
+ * @param  {Object} form   - form object
+ * @param  {Object} schema - JSON schema object
+ * @return {Object}        nested data
+ */
+const getData = (form, schema) => {
+  const values = getValues(form);
+  return mapRequestData(values, schema);
+};
+
+/**
  * POST handler for form to enter data for WR22 condition
  * @param  {Object}  request - HAPI request
  * @param  {Object}  h       - HAPI response
@@ -133,7 +143,7 @@ const postAddData = async (request, h) => {
   if (f.isValid) {
     const add = addActionFactory(request, request.licence);
     const { id } = add.payload;
-    const edit = editActionFactory(request, getValues(f), id);
+    const edit = editActionFactory(request, getData(f, schema), id);
     const actions = [add, edit];
 
     await persistActions(request.licence, request.arLicence, actions);
@@ -182,9 +192,8 @@ const postEditData = async (request, h) => {
     // Get existing data item
     const item = findDataItem(request.finalState, id);
 
-    // Get submitted form data and diff with current data
-    const formValues = omit(getValues(updated), ['csrf_token']);
-    const data = diff(item.content, formValues);
+    // Nest submitted form data and diff with current data
+    const data = diff(item.content, getData(updated, schema));
 
     // Persist if there are changes
     if (data) {
@@ -217,7 +226,7 @@ const getDeleteData = async (request, h) => {
 
   const view = {
     ...request.view,
-    data,
+    data: mapARItem(data),
     schema,
     form
   };

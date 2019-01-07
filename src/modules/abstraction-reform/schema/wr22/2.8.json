@@ -1,0 +1,41 @@
+{
+  "id" : "/wr22/2.8",
+  "type" : "object",
+  "title" : "2.8",
+  "description" : "The rate of flow of [max rate] shall be delivered via a [delivery method] located at [ngr]",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "CAMS",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate"
+    },
+    "unit": {
+      "type" : "string",
+      "enum" : ["m³/s"]
+    },
+    "delivery_method": {
+      "type" : "string",
+      "enum" : ["pipe", "compensation notch in the weir", "intake structure"]
+    },
+    "ngr" : {
+      "$ref" : "water://types/ngr.json",
+      "label": "NGR",
+      "errors" : {
+        "pattern" : {
+          "message" : "Measurement point NGR should be a valid grid reference"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "max_rate", "unit", "delivery_method", "ngr"]
+}

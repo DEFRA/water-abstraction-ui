@@ -6,6 +6,15 @@
   "category": "Hands off flows/levels",
   "subcategory": "CAMS",
   "properties": {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
     "water_body_name": {
       "$ref": "water://picklists/water_bodies.json",
       "errors": {
@@ -46,5 +55,5 @@
       }
     }
   },
-  "required": ["water_body_name", "gauging_station", "gauging_station_ngr", "max_rate"]
+  "required": ["nald_condition", "water_body_name", "gauging_station", "gauging_station_ngr", "max_rate"]
 }

@@ -2,7 +2,15 @@ const rp = require('request-promise-native').defaults({ proxy: null, strictSSL: 
 
 const get = (documentId, tail) => {
   const url = `${process.env.WATER_URI}/documents/${documentId}/licence`;
-  return tail ? rp(`${url}/${tail}`) : rp(url);
+  const options = {
+    method: 'GET',
+    uri: tail ? `${url}/${tail}` : url,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    json: true
+  };
+  return rp(options);
 };
 
 const getLicenceByDocumentId = documentId => get(documentId);

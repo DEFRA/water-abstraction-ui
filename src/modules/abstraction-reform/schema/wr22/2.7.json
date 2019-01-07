@@ -6,6 +6,15 @@
   "category" : "Hands off flows/levels",
   "subcategory" : "CAMS",
   "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
     "max_percentage": {
       "type" : "number",
       "label" : "Maximum percentage",
@@ -27,5 +36,5 @@
       "enum" : ["m³/s"]
     }
   },
-  "required": ["max_percentage", "water_body_name", "max_rate", "unit"]
+  "required": ["nald_condition", "max_percentage", "water_body_name", "max_rate", "unit"]
 }

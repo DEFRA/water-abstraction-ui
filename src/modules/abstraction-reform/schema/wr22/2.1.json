@@ -6,6 +6,15 @@
   "category" : "Hands off flows/levels",
   "subcategory" : "Hands off levels",
   "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
     "water_body_name" : {
       "$ref" : "water://picklists/water_bodies.json",
       "errors" : {
@@ -44,6 +53,6 @@
     }
   },
 
-  "required" : ["water_body_name", "measurement_point", "hol_rate_level", "point", "unit"]
+  "required" : ["nald_condition", "water_body_name", "measurement_point", "hol_rate_level", "point", "unit"]
 
 }

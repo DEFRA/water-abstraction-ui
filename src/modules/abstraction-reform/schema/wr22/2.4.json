@@ -6,6 +6,15 @@
   "category" : "Hands off flows/levels",
   "subcategory" : "Hands off flows",
   "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
     "purpose_type": {
       "$ref": "water://types/purpose.json",
       "label": "Purpose",
@@ -34,5 +43,5 @@
       }
     }
   },
-  "required": ["purpose_type", "max_percentage", "water_body_name"]
+  "required": ["nald_condition", "purpose_type", "max_percentage", "water_body_name"]
 }

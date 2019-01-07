@@ -54,7 +54,7 @@ const getAddFormAndSchema = async (request) => {
   const { documentId, schema: schemaName } = request.params;
 
   const action = getAddFormAction(documentId, schemaName);
-  const schema = await formGenerator.dereference(getSchema(schemaName));
+  const schema = await formGenerator.dereference(getSchema(schemaName), { documentId });
   const form = formGenerator.schemaToForm(action, request, schema);
 
   return { schema, form };
@@ -111,10 +111,10 @@ const getEditFormAndSchema = async (request) => {
   const result = await loader.load(documentId);
 
   const item = findDataItem(result.finalState, id);
-  const schema = await formGenerator.dereference(getSchema(item.schema));
+
+  const schema = await formGenerator.dereference(getSchema(item.schema), { documentId });
 
   const values = flattenData(item.content);
-  console.log(values);
   const form = setValues(formGenerator.schemaToForm(action, request, schema), values);
 
   return {

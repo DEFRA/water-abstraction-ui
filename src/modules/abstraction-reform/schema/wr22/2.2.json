@@ -6,6 +6,15 @@
   "category" : "Hands off flows/levels",
   "subcategory" : "Hands off levels",
   "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
     "max_rate": {
       "type" : "number",
       "label" : "Maximum rate",
@@ -69,6 +78,7 @@
     }
   },
   "required": [
+    "nald_condition",
     "max_rate",
     "rate_type",
     "max_rate_unit",

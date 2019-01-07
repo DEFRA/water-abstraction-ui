@@ -93,6 +93,7 @@ const waterResolverFactory = context => ({
   canRead: /^water:\/\//i,
 
   read: async function (file) {
+    console.log(context);
     // Parse URL
     const { host, pathname } = new URL(file.url);
 
@@ -110,6 +111,7 @@ const waterResolverFactory = context => ({
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
 const dereference = async (schema, context) => {
+  console.log('>', context);
   const populated = await refParser.dereference(schema, {
     resolve: {
       waterResolver: waterResolverFactory(context)

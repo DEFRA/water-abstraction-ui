@@ -48,7 +48,7 @@ lab.experiment('getPropositionLinks', () => {
   lab.test('It should set the active nav link flag', async () => {
     const request = getAuthenticatedRequest(true);
     const links = getPropositionLinks(request);
-    const link = find(links, {id: 'change-password'});
+    const link = find(links, { id: 'change-password' });
     expect(link.active).to.equal(true);
   });
 

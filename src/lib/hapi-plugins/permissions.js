@@ -6,11 +6,13 @@ const { getPermissions, getCompanyPermissions, hasPermission } = require('../per
 const permissionsPlugin = {
 
   register: (server, options) => {
+    server.dependency('entityRolesPlugin');
+
     server.ext({
-      type: 'onPreHandler',
+      type: 'onPostAuth',
       method: (request, reply) => {
-        request.permissions = getPermissions(request.state.sid);
-        request.permissions.companies = getCompanyPermissions(request.state.sid);
+        request.permissions = getPermissions(request.state.sid, request.entityRoles);
+        request.permissions.companies = getCompanyPermissions(request.state.sid, request.entityRoles);
 
         /**
          * Checks whether the user has the requested permission

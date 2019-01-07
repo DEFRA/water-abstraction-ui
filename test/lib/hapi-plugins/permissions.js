@@ -2,9 +2,7 @@
 
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
-
 const Code = require('code');
-const Boom = require('boom');
 
 const { hasPermission } = require('../../../src/lib/hapi-plugins/permissions');
 

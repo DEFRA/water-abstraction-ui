@@ -1,4 +1,5 @@
 const Helpers = require('../helpers');
+const uuid = require('uuid/v4');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
@@ -67,8 +68,8 @@ async function getUserByResetGuid (resetGuid) {
 function createUserWithoutPassword (emailAddress) {
   return client.create({
     user_name: emailAddress.toLowerCase(),
-    password: Helpers.createGUID(),
-    reset_guid: Helpers.createGUID(),
+    password: uuid(),
+    reset_guid: uuid(),
     user_data: {},
     reset_required: 1,
     application: config.idm.application,
@@ -103,7 +104,7 @@ function getUserByEmail (email) {
 function login (userName, password) {
   return verifyCredentials(userName, password)
     .then((response) => {
-      response.body.sessionGUID = Helpers.createGUID();
+      response.body.sessionGUID = uuid();
       return response;
     });
 }

@@ -101,6 +101,7 @@
     "shallow-diff": "0.0.5",
     "title-case": "^2.1.1",
     "url-join": "^4.0.0",
+    "uuid": "^3.3.2",
     "vision": "^5.4.3",
     "winston": "^2.4.3",
     "yar": "^8.1.2"

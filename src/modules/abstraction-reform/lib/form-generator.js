@@ -1,10 +1,12 @@
 const { URL } = require('url');
-const refParser = require('json-schema-ref-parser');
+const RefParser = require('json-schema-ref-parser');
 const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
 const { formFactory, fields } = require('../../../lib/forms');
 const licencesConnector = require('../../../lib/connectors/water-service/licences');
+
+const { mapConditionText } = require('./map-condition');
 
 const types = {
   ngr: require('../schema/types/ngr.json'),
@@ -38,7 +40,7 @@ const picklistSchemaFactory = (picklist, items) => {
   };
 };
 
-const mapCondition = condition => ({ id: condition.id, value: condition.text });
+const mapCondition = condition => ({ id: condition.id, value: mapConditionText(condition) });
 
 const mapPoint = point => ({ id: point.id, value: point.name });
 
@@ -93,7 +95,6 @@ const waterResolverFactory = context => ({
   canRead: /^water:\/\//i,
 
   read: async function (file) {
-    console.log(context);
     // Parse URL
     const { host, pathname } = new URL(file.url);
 
@@ -111,7 +112,7 @@ const waterResolverFactory = context => ({
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
 const dereference = async (schema, context) => {
-  console.log('>', context);
+  const refParser = new RefParser();
   const populated = await refParser.dereference(schema, {
     resolve: {
       waterResolver: waterResolverFactory(context)

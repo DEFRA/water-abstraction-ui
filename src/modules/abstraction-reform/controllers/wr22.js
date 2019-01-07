@@ -85,7 +85,7 @@ const postSelectSchema = async (request, h) => {
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {
     request.form = form;
-    return getAddData(request, h);
+    return getSelectSchema(request, h);
   }
 
   // Otherwise redirect to data capture form
@@ -111,7 +111,7 @@ const getAddData = async (request, h) => {
     ...request.view,
     form: request.form || form,
     schema,
-    back: `/admin/abstraction-reform/licence/${documentId}/add-data`
+    back: `/admin/abstraction-reform/licence/${documentId}/select-schema`
   };
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
 };
@@ -162,12 +162,14 @@ const postAddData = async (request, h) => {
  * @return {Promise}         resolves with rendered form
  */
 const getEditData = async (request, h) => {
+  const { documentId, id } = request.params;
   const { schema, form } = await getEditFormAndSchema(request);
 
   const view = {
     ...request.view,
     form: request.form || form,
-    schema
+    schema,
+    back: `/admin/abstraction-reform/licence/${documentId}#${id}`
   };
 
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });

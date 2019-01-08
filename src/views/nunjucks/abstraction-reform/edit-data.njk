@@ -4,9 +4,6 @@
 {% from "forms/footer.njk" import formFooter %}
 {% from "forms/widget.njk" import formWidget %}
 
-
-
-
 {% block content %}
 
   {{ formErrorSummary(form) }}
@@ -28,9 +25,6 @@
     </div>
   </div>
 
-
-
-
 {% endblock %}
 
 {% block bodyEnd %}
@@ -39,5 +33,22 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 <script src="/public/javascripts/json-forms-toggle.js"></script>
+<script src="/public/javascripts/accessible-autocomplete.min.js"></script>
+<link href="/public/stylesheets/accessible-autocomplete.min.css" rel="stylesheet" />
+<script nonce={{nonces.script}}>
+  var selects = document.querySelectorAll('select');
+  var selectsLength = selects.length;
+  var index = 0;
+  var currentSelect;
 
+  for (index; index < selectsLength; index += 1) {
+    currentSelect = selects[index];
+    
+    if (currentSelect.getElementsByTagName('option').length > 200) {
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: currentSelect
+      });
+    }
+  } 
+</script>
 {% endblock %}

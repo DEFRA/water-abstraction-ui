@@ -87,9 +87,41 @@ gulp.task('copy-static-assets-orig', () => {
     .pipe(gulp.dest(paths.public));
 });
 
+/**
+ * Copies assets from the sources to the public/javascripts folder.
+ *
+ * These assets are not combined with other scripts to allow some scripts
+ * to be used in one page without the application.js having to increase for
+ * all pages.
+ */
+gulp.task('copy-static-javascript', () => {
+  return gulp
+    .src([
+      'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.js'
+    ])
+    .pipe(gulp.dest(paths.public + '/javascripts'));
+});
+
+/**
+ * Copies assets from the sources to the public/stylesheets folder.
+ *
+ * These assets are not combined with other stylesheers to allow some stylesheers
+ * to be used in one page without the application.css having to increase for
+ * all pages.
+ */
+gulp.task('copy-static-styles', () => {
+  return gulp
+    .src([
+      'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.css'
+    ])
+    .pipe(gulp.dest(paths.public + '/stylesheets'));
+});
+
 gulp.task('copy-static-assets', gulp.series(
   'copy-static-assets-orig',
   'combine-minify-js',
+  'copy-static-javascript',
+  'copy-static-styles',
   done => done()
 ));
 

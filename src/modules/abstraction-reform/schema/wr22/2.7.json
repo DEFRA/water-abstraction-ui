@@ -22,7 +22,7 @@
       "maximum" : 100
     },
     "water_body_name" : {
-      "$ref" : "water://picklists/water_bodies.json",
+      "$ref" : "water://types/waterBodies.json",
       "errors" : {
         "message" : "Select the water body"
       }

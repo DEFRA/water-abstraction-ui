@@ -161,7 +161,7 @@ const radioIsChecked = (field, choice) => {
  * @param  {Object} field - radio form field
  * @return {Array}          array of radio button items
  */
-const mapRadioChoices = (field) => {
+const mapChoices = (field, prop = 'checked') => {
   const keyProperty = field.options.keyProperty || 'value';
   const labelProperty = field.options.labelProperty || 'label';
 
@@ -171,7 +171,7 @@ const mapRadioChoices = (field) => {
     hint: {
       text: choice.hint
     },
-    checked: radioIsChecked(field, choice)
+    [prop]: radioIsChecked(field, choice)
   }));
 };
 
@@ -182,7 +182,7 @@ const mapRadioChoices = (field) => {
  * @return {Object}       Options object for GOV.UK radio nunjucks macro
  */
 const mapFormRadioField = (field) => {
-  const items = mapRadioChoices(field);
+  const items = mapChoices(field);
 
   const options = {
     idPrefix: field.name,
@@ -261,11 +261,8 @@ const mapFormCheckbox = (field) => {
  * @return {Object}       Options object for GOV.UK dropdown nunjucks macro
  */
 const mapFormDropdownField = (field) => {
-  const items = field.options.choices.map(choice => ({
-    value: choice.value,
-    text: choice.label,
-    selected: choice.value === field.value
-  }));
+  const items = mapChoices(field, 'selected');
+
   const options = {
     id: field.name,
     name: field.name,
@@ -277,6 +274,8 @@ const mapFormDropdownField = (field) => {
     },
     items
   };
+
+  // console.log(find(options, { selected: true }));
   return applyErrors(options, field.errors);
 };
 

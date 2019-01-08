@@ -1,4 +1,4 @@
-const { find, omit, get, mapValues, isObject, difference } = require('lodash');
+const { find, omit, get, mapValues, isObject } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
 const loader = require('./loader');
@@ -6,7 +6,6 @@ const { wr22 } = require('./schema');
 const formGenerator = require('./form-generator.js');
 const { createAddData, createEditData } = require('./action-creators');
 const { stateManager, getInitialState } = require('./state-manager');
-// const { update } = require('../lib/loader');
 
 /**
  * Gets a WR22 schema by name (ID in JSON schema)
@@ -62,12 +61,13 @@ const getAddFormAndSchema = async (request) => {
 
 /**
  * Picklist item objects have a 'value' and 'id' property.  This function
- * checks whether the supplied object has these, and only these properties
+ * checks whether the supplied object has these properties
  * @param  {Object}  item - object to check
  * @return {Boolean}      true if item only has keys 'id' and 'value'
  */
 const isPicklistItemWithId = (item) => {
-  return difference(Object.keys(item), ['id', 'value']).length === 0;
+  const keys = Object.keys(item);
+  return keys.includes('id') && keys.includes('value');
 };
 
 const flattenObject = (item) => {

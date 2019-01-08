@@ -28,13 +28,7 @@ const getPicklistItems = async (picklistId) => {
   const sort = {
     value: +1
   };
-  const { data, error } = await picklistItems.findMany(filter, sort);
-
-  if (error) {
-    throw Boom.badImplementation(`Error get picklist items for ${picklistId}`, error);
-  }
-
-  return data;
+  return picklistItems.findAll(filter, sort);
 };
 
 module.exports = {

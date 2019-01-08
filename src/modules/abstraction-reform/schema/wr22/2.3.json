@@ -25,11 +25,9 @@
       }
     },
     "water_body_name" : {
-      "$ref" : "water://picklists/water_bodies.json",
+      "$ref" : "water://types/waterBodies.json",
       "errors" : {
-        "required": {
-          "message" : "Select the water body"
-        }
+        "message" : "Select the water body"
       }
     },
     "measurement_point" : {

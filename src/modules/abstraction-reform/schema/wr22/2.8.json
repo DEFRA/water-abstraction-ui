@@ -21,7 +21,7 @@
     },
     "unit": {
       "type" : "string",
-      "enum" : ["m³/s"]
+      "enum" : ["m³/s", "l/s"]
     },
     "delivery_method": {
       "type" : "string",

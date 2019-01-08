@@ -1,0 +1,2985 @@
+{
+  "type": "object",
+  "enum": [
+    {
+      "id": "8706ea8f-e438-33d2-8994-4aaf6d72cd23",
+      "value": "A35 Markway, Burley SU 246028",
+      "number": null
+    },
+    {
+      "id": "76fbbdba-0c05-3feb-a8c8-df94c9631d56",
+      "value": "ADDLESTONE",
+      "number": "2989TH"
+    },
+    {
+      "id": "9d4047e5-b295-3fa9-87cd-0cf9b3deb352",
+      "value": "AMESBURY",
+      "number": "432130"
+    },
+    {
+      "id": "ade1aaa6-2c13-3aff-adbb-be351310e66f",
+      "value": "ASHFORD MILL",
+      "number": "520110"
+    },
+    {
+      "id": "8b332c22-28c5-323a-bee3-0dbd420b60bd",
+      "value": "Abbey Heath",
+      "number": "033034"
+    },
+    {
+      "id": "eb57dfa6-44bf-3f74-9b77-19971861800c",
+      "value": "Abingdon G. STN",
+      "number": "1790_w1TH"
+    },
+    {
+      "id": "be10bf0e-b082-3671-a920-4676bf186610",
+      "value": "Addingham",
+      "number": "F1903"
+    },
+    {
+      "id": "85ba3fbc-274c-37c4-819e-21b2fec84d05",
+      "value": "Albury",
+      "number": "3074TH"
+    },
+    {
+      "id": "d23b14f3-0fce-3fba-9942-f8aa71ee08cc",
+      "value": "Allbrook GS",
+      "number": "152208002"
+    },
+    {
+      "id": "e42b9800-f420-368c-8f37-48a75f41aaf7",
+      "value": "Alscot Park",
+      "number": "2010"
+    },
+    {
+      "id": "3075b6d7-0969-36cc-92c8-f5d59cefdb60",
+      "value": "Appleford Bridge",
+      "number": "037010"
+    },
+    {
+      "id": "8201a55d-ddbd-32e1-b62c-00551e4664bb",
+      "value": "Ardingly Shellbrook",
+      "number": "352835017"
+    },
+    {
+      "id": "fad7c80b-57a8-3be2-b0fa-4a73e0547b49",
+      "value": "Ardingly Weir",
+      "number": "352835027"
+    },
+    {
+      "id": "34c7b3a5-6af0-323e-b706-71cfff9276f5",
+      "value": "Armley (summer)",
+      "number": "F1707"
+    },
+    {
+      "id": "b9db96ad-3966-3a5b-a182-15a45e02dc79",
+      "value": "Ashbrook",
+      "number": "680504"
+    },
+    {
+      "id": "da739bf6-a1a5-36d6-b39d-8d0a648dfed3",
+      "value": "Ashford",
+      "number": "4023"
+    },
+    {
+      "id": "d7389b05-79f7-36fb-aa6a-136af2e3721c",
+      "value": "Ashton Weir",
+      "number": "692726"
+    },
+    {
+      "id": "692f817b-4fd9-3693-887e-3b8d78080b12",
+      "value": "Ashwell",
+      "number": "033040"
+    },
+    {
+      "id": "6061b820-75e2-3ad8-89aa-9bc03e1b4505",
+      "value": "Atherfield GS",
+      "number": "050601011"
+    },
+    {
+      "id": "b076d60e-ddc1-339d-a5dd-90b50a7757a7",
+      "value": "Auckley",
+      "number": "4050"
+    },
+    {
+      "id": "b7251c4a-ccaf-3e58-b6b2-71a2e2bd907f",
+      "value": "Austins Bridge",
+      "number": "SX76F051"
+    },
+    {
+      "id": "c70c755e-8224-37cb-af23-4b176ff3ecf6",
+      "value": "BAGGS MILL",
+      "number": "444510"
+    },
+    {
+      "id": "06776194-024c-374a-95f9-40bb54687fc1",
+      "value": "BARROWDEN",
+      "number": "031007"
+    },
+    {
+      "id": "698574dd-fee4-3669-9dfd-5a7af3a24667",
+      "value": "BELMONT",
+      "number": "055002"
+    },
+    {
+      "id": "97cadced-ee34-328d-b990-fdc97385b3f9",
+      "value": "BERKELEY NEW",
+      "number": "542349"
+    },
+    {
+      "id": "e41b72c3-d909-3691-99c6-78028eb4547b",
+      "value": "BESFORD BRIDGE",
+      "number": "2015"
+    },
+    {
+      "id": "d1813858-f782-3ecf-8a52-47da82434483",
+      "value": "BEVERSHAM",
+      "number": "035004"
+    },
+    {
+      "id": "0417f30c-0ba8-325d-85e4-2d1ef0fd0f28",
+      "value": "BEWL BRIDGE GS",
+      "number": "453234001"
+    },
+    {
+      "id": "e79e3eb9-2ed6-3769-8807-f6fb7342f0b5",
+      "value": "BIBURY G.STN",
+      "number": "0660TH"
+    },
+    {
+      "id": "8f5a581c-a763-3785-bcbd-a504504a6cac",
+      "value": "BIBURY TROUT FARM G.STN",
+      "number": "0655TH"
+    },
+    {
+      "id": "0af6dc07-7343-365c-8741-0cf4e383412e",
+      "value": "BISHOPS FROME",
+      "number": "055028"
+    },
+    {
+      "id": "93fa617a-a6d1-3743-9ff9-f99ac4a57c23",
+      "value": "BLYTH (RYTON) EM",
+      "number": "4091"
+    },
+    {
+      "id": "d73ac851-a63e-3256-8999-b9fded5dd744",
+      "value": "BRAMSHILL",
+      "number": "2458TH"
+    },
+    {
+      "id": "d993b4bc-acf3-3eac-ab6f-cc875f6423c0",
+      "value": "BROADLANDS",
+      "number": "151816001"
+    },
+    {
+      "id": "c177410c-1578-3b69-9691-30e748fae8c0",
+      "value": "BROMSBERROW",
+      "number": "2607"
+    },
+    {
+      "id": "bce9640c-a751-33e9-b8e2-22b4e9162dab",
+      "value": "BURNHAM OVERY TOWN",
+      "number": "034012"
+    },
+    {
+      "id": "daab06ed-cbce-3755-8fa7-a58fdc89f185",
+      "value": "BYTON",
+      "number": "055014"
+    },
+    {
+      "id": "1b80f27a-bca7-3263-8b8c-5a3335da0408",
+      "value": "Babraham",
+      "number": "033055"
+    },
+    {
+      "id": "746c3610-8398-37c3-8f57-1f3cd9d96503",
+      "value": "Bampton Grange",
+      "number": "761260"
+    },
+    {
+      "id": "26fd3182-5e97-3bd6-b665-d0ec788b55d4",
+      "value": "Banbury",
+      "number": "1420TH"
+    },
+    {
+      "id": "a788b5ee-7716-3eeb-af03-1f960c0e532b",
+      "value": "Barcombe Fishladder",
+      "number": "352710015"
+    },
+    {
+      "id": "e90ea576-fe95-3f12-884b-589dda012330",
+      "value": "Barcombe Ultrasonic",
+      "number": "352710066"
+    },
+    {
+      "id": "9088f4a0-50d0-3fd7-83a3-a5441520eb92",
+      "value": "Bastreet",
+      "number": "SX27F066"
+    },
+    {
+      "id": "c0f2655f-02a4-36f4-a872-07260fbdedb5",
+      "value": "Bat Bridge",
+      "number": "F2311"
+    },
+    {
+      "id": "9e457dc1-8164-332e-a2d6-bf9c864f6e9c",
+      "value": "Bath Ultrasonic Gauging Station",
+      "number": "530184"
+    },
+    {
+      "id": "5ef96225-435e-3e0f-874b-fc4dc3d5c202",
+      "value": "Bathford",
+      "number": "530180"
+    },
+    {
+      "id": "b67d0b04-bff2-36b2-82da-f38cbfaf988b",
+      "value": "Bayfield",
+      "number": "034016"
+    },
+    {
+      "id": "3e5458f9-f1fd-3f95-8959-0f5086407885",
+      "value": "Beaches Mill",
+      "number": "037006"
+    },
+    {
+      "id": "e9bbcfb4-c264-3ba7-8ec9-da1b313f07f3",
+      "value": "Beal",
+      "number": "F1806"
+    },
+    {
+      "id": "07590382-534b-32ac-a3a8-5c0619dd5a33",
+      "value": "Beals Mill",
+      "number": "SX37F070"
+    },
+    {
+      "id": "8de1b395-ab09-3f85-8fc8-270e4835f52b",
+      "value": "Beck Bridge",
+      "number": "033023"
+    },
+    {
+      "id": "99ffa729-ab14-3301-af69-bc8ff12720af",
+      "value": "Beetham",
+      "number": "731013"
+    },
+    {
+      "id": "72e4c264-efb8-3aad-904c-281f621abf63",
+      "value": "Beggearn Huish",
+      "number": "510810"
+    },
+    {
+      "id": "1c0c2ecc-4bbe-3b24-adda-b6cb3f56a3b8",
+      "value": "Bellerby Beck SP NO1",
+      "number": "F2335"
+    },
+    {
+      "id": "6a811d14-9e77-3fc1-8e65-475a7795c062",
+      "value": "Belmesthorpe(Ryhall)",
+      "number": "031006"
+    },
+    {
+      "id": "97b6882b-5952-36b2-8378-8fcc486a38c0",
+      "value": "Bescot",
+      "number": "4081"
+    },
+    {
+      "id": "c09c0d27-aae8-36a5-bdb5-bb9c16b1ef7c",
+      "value": "Bewdley",
+      "number": "2001"
+    },
+    {
+      "id": "2530b0f2-f110-3fbd-b5d4-5e142ce23114",
+      "value": "Billingford",
+      "number": "034010"
+    },
+    {
+      "id": "6b4f0ba6-6ea8-3f67-a724-8ad5fa2f4df5",
+      "value": "Bishopbridge",
+      "number": "029005"
+    },
+    {
+      "id": "61246a87-990f-33e8-8f02-3138bb92cda5",
+      "value": "Bishops Hull",
+      "number": "520560"
+    },
+    {
+      "id": "3cf3189a-5a54-3e63-b68b-94cb0caa4836",
+      "value": "Black Dyke",
+      "number": null
+    },
+    {
+      "id": "dd5281b2-8dc6-329f-95c1-e2cee02970b9",
+      "value": "Blackford Bridge",
+      "number": "690205"
+    },
+    {
+      "id": "281b4b0e-42bf-3ee7-96e3-60471a466f7b",
+      "value": "Blackwater",
+      "number": "050301008"
+    },
+    {
+      "id": "9db0dff5-39f8-3a3b-ba9f-66d005a1b0a7",
+      "value": "Blakes Lock Gauging Station ",
+      "number": "2299TH"
+    },
+    {
+      "id": "cf50d67f-ff03-3e3a-88f4-d59354285d01",
+      "value": "Bleach Green Weir",
+      "number": "744111"
+    },
+    {
+      "id": "4a82ed16-de86-3232-949d-7567c46ab66b",
+      "value": "Blunham",
+      "number": "033022"
+    },
+    {
+      "id": "ef474378-d181-374a-b896-08598b3c0a52",
+      "value": "Bodicote Gauging Station",
+      "number": "1437TH"
+    },
+    {
+      "id": "dfe49c22-7af6-3a6f-a735-433afd0b77a5",
+      "value": "Bodsey Bridge/ Bodsey",
+      "number": null
+    },
+    {
+      "id": "a48c02ac-1f9c-3ab6-ad75-f2d4c8885f9b",
+      "value": "Boreham Bridge",
+      "number": "351220016"
+    },
+    {
+      "id": "cac274a9-60df-3751-9d73-cc980fa0fa61",
+      "value": "Boreton Bridge",
+      "number": "2608"
+    },
+    {
+      "id": "5255d6f2-9af6-3e63-b250-4176e60d6e1e",
+      "value": "Borough Bridge GS",
+      "number": "152203001"
+    },
+    {
+      "id": "933094ac-f351-3e62-b044-b0968bf7c3d2",
+      "value": "Bounstead Bridge",
+      "number": "037021"
+    },
+    {
+      "id": "426046c3-1a55-37fb-9e5b-90879c8f8e3c",
+      "value": "Bourne Hall Ponds",
+      "number": "3345TH"
+    },
+    {
+      "id": "245c03f3-cd74-328e-a1fb-b87c56abb6a9",
+      "value": "Bourton on the Water",
+      "number": "1020TH"
+    },
+    {
+      "id": "d264699e-9a49-3bcf-b7cd-b25ae07925b3",
+      "value": "Bovey Parke",
+      "number": "SX87U053"
+    },
+    {
+      "id": "55627691-04af-3fab-973a-375f3c0da1a0",
+      "value": "Bramley",
+      "number": "3069TH"
+    },
+    {
+      "id": "b6e9b9f0-287c-334e-ab25-0ad3f0939272",
+      "value": "Brandy Wharfe",
+      "number": null
+    },
+    {
+      "id": "92c1f080-a549-3b8c-8a9c-483a5482c61f",
+      "value": "Brant Broughton",
+      "number": "030033"
+    },
+    {
+      "id": "98abd873-74c8-3f5c-9709-36d1c4012362",
+      "value": "Brede Weir GS",
+      "number": "556330002"
+    },
+    {
+      "id": "a7890adf-ad49-338e-afce-9c97769ed269",
+      "value": "Bridge Trafford",
+      "number": "684027"
+    },
+    {
+      "id": "09529568-058c-3f5c-99e0-fbb0c0952fc3",
+      "value": "Bridgham",
+      "number": "033044"
+    },
+    {
+      "id": "db3c0fa1-ecbd-32d2-bf48-de66ecba6b0f",
+      "value": "Brightwell (Spot Flow pt.)",
+      "number": null
+    },
+    {
+      "id": "8739f57f-4d5e-3a45-b0ee-5034da1abf7b",
+      "value": "Brigsley",
+      "number": "029001"
+    },
+    {
+      "id": "9e380992-442f-3a71-8b9d-e848bff0731e",
+      "value": "Brimpton G.STN",
+      "number": "2279TH"
+    },
+    {
+      "id": "adfdf4f3-83f1-3337-8f5d-a84542fd6265",
+      "value": "Brockenhurst",
+      "number": "150509001"
+    },
+    {
+      "id": "1de0b770-4242-3be7-b039-9e4b837e35f9",
+      "value": "Brockhampton Mill Lake, Langstone Mill",
+      "number": null
+    },
+    {
+      "id": "49b0dc10-81e2-3acb-8437-d0932b16cdc0",
+      "value": "Broken Scar",
+      "number": "F3501"
+    },
+    {
+      "id": "9f806af3-3186-363e-bc0d-4c83c3a14bd7",
+      "value": "Brokenborough",
+      "number": "530650"
+    },
+    {
+      "id": "04e211e2-623f-379f-97ca-4ee561e7b828",
+      "value": "Bromham Ouse",
+      "number": null
+    },
+    {
+      "id": "47c0c145-fc86-3ec6-8f7a-5806c65f5852",
+      "value": "Broom",
+      "number": "2104"
+    },
+    {
+      "id": "601c6ef5-7627-325c-a7fd-3e1aac8df64e",
+      "value": "Brownwich Pond GS",
+      "number": "152700002"
+    },
+    {
+      "id": "696ff3e9-c829-3761-a88b-ed95cbde3731",
+      "value": "Brushford",
+      "number": "SS92F008"
+    },
+    {
+      "id": "526a0efa-0b43-33f6-ae83-0f9340aa7d1a",
+      "value": "Bull Hassocks",
+      "number": "46824"
+    },
+    {
+      "id": "fb1e367d-d418-3eda-891b-1fa9fbaa411a",
+      "value": "Burcote",
+      "number": "2024"
+    },
+    {
+      "id": "41eff9dd-4e5f-3f08-883f-0b0e13472495",
+      "value": "Burnbanks",
+      "number": "761103"
+    },
+    {
+      "id": "37294e3f-c367-320a-b533-210646afe81f",
+      "value": "Burnhope Compensation",
+      "number": "024011"
+    },
+    {
+      "id": "f41dc203-b88c-332e-ae28-a3004572f7e4",
+      "value": "Burnt House",
+      "number": "050101011"
+    },
+    {
+      "id": "a62a8fdc-f8d1-32b5-95c5-fe21ce53ba8e",
+      "value": "Burnt Mill",
+      "number": "033021"
+    },
+    {
+      "id": "46ddf91a-9644-3b05-8de8-0ec388613471",
+      "value": "Burnt Mill",
+      "number": "5080TH"
+    },
+    {
+      "id": "254eba4f-3326-3b5c-992b-dc1b9d316014",
+      "value": "Burwell",
+      "number": "033067"
+    },
+    {
+      "id": "ccc52c67-d7aa-3237-9e0a-0892f2e5e288",
+      "value": "Bury Brook",
+      "number": null
+    },
+    {
+      "id": "13484c3f-0069-3b32-93dd-ce52356beaab",
+      "value": "Buttercrambe",
+      "number": "F2807"
+    },
+    {
+      "id": "b40bb94c-7925-3e84-98af-675849e38aea",
+      "value": "Butts Bridge",
+      "number": "055021"
+    },
+    {
+      "id": "fe6297fe-9b82-3bc7-946e-f17be8420eda",
+      "value": "CALBOURNE",
+      "number": "050401005"
+    },
+    {
+      "id": "93343a54-ba15-33bc-9b27-1c355bda6b5c",
+      "value": "CANDY FARM",
+      "number": "4100"
+    },
+    {
+      "id": "5fb06581-a77d-3ba4-b145-20962f00ad8e",
+      "value": "CHIPPING ONGAR",
+      "number": "5427"
+    },
+    {
+      "id": "c38ce602-fb0a-3645-b774-34596c09ce4a",
+      "value": "CHUDLEIGH BRIDGE",
+      "number": "SX87U052"
+    },
+    {
+      "id": "5069f48d-dba7-3ead-b977-5517233ba627",
+      "value": "CHURCH WARSOP",
+      "number": "4032"
+    },
+    {
+      "id": "824eb5a2-dce6-36aa-8fa5-5a4a4b1fe35b",
+      "value": "COLESHILL",
+      "number": "4066"
+    },
+    {
+      "id": "961a94f8-edbe-37a3-b111-e39c281b0452",
+      "value": "COLNEY",
+      "number": "034001"
+    },
+    {
+      "id": "b0797fee-fbb3-3e96-9b38-0d4deb60a31e",
+      "value": "CRAGHALL ",
+      "number": "023016"
+    },
+    {
+      "id": "72020dc6-3d93-330e-a8cd-d55db2bd7653",
+      "value": "CROXLEY GREEN",
+      "number": "2849"
+    },
+    {
+      "id": "ea342681-fbf6-3b0f-8a8c-bd069a31a1ac",
+      "value": "CRUDGINGTON EM",
+      "number": "2170"
+    },
+    {
+      "id": "cbf492ed-bc46-3222-a868-53627acde3b2",
+      "value": "Calder Hall",
+      "number": "743509"
+    },
+    {
+      "id": "a5e2ac36-47ad-37f9-81ef-64f34e9ba991",
+      "value": "Cappenham",
+      "number": "033018"
+    },
+    {
+      "id": "6dd863ef-a2fd-3b7e-b347-35b510c5c961",
+      "value": "Carshalton",
+      "number": "4159TH"
+    },
+    {
+      "id": "6db9e88a-efd4-323f-ae26-3bb6117ef09f",
+      "value": "Castle Farm",
+      "number": "4094"
+    },
+    {
+      "id": "df2a7ff3-326c-3231-bdf3-14513be81e30",
+      "value": "Castle Rising",
+      "number": "033054"
+    },
+    {
+      "id": "d8a5b343-8067-3be4-8ae6-d5a7f102e97a",
+      "value": "Caton",
+      "number": "724629"
+    },
+    {
+      "id": "7470d068-3fef-36f2-ab09-20174e0579d6",
+      "value": "Catsholme GS",
+      "number": null
+    },
+    {
+      "id": "0d4db0bb-a6ea-36b6-ac95-dda568b998f9",
+      "value": "Catterick Bridge",
+      "number": "F2306"
+    },
+    {
+      "id": "8562e565-a460-369e-bd21-d8c38bda1479",
+      "value": "Cavenham",
+      "number": null
+    },
+    {
+      "id": "e5e336b0-b75e-3ec6-9b6c-61eb1394c2f4",
+      "value": "Chafford GS",
+      "number": "453500001L"
+    },
+    {
+      "id": "184d4cb1-fe27-3779-90d0-7cb957f5113b",
+      "value": "Chear Fen",
+      "number": null
+    },
+    {
+      "id": "66cd5f1d-1fc0-3ec4-9742-a9550b16ded0",
+      "value": "Chester Weir",
+      "number": "NRW 067020"
+    },
+    {
+      "id": "b8be9930-0442-372f-af14-065899a90735",
+      "value": "Chester-le-Street",
+      "number": "024009"
+    },
+    {
+      "id": "6c08f9f3-407a-3e99-bdbe-181e3364d35b",
+      "value": "Chesterford",
+      "number": "033051"
+    },
+    {
+      "id": "f3e34520-ab27-3f7c-9260-4fdd8e8305e8",
+      "value": "Chewton Glen",
+      "number": "150100001"
+    },
+    {
+      "id": "adcc1dc4-d3bf-377c-8007-270c8e8073fa",
+      "value": "Chilbolton Back Carrier",
+      "number": "151805002"
+    },
+    {
+      "id": "b5485cc1-a744-3619-88ef-2ccbc9d5aadb",
+      "value": "Chilbolton Main",
+      "number": "151805001"
+    },
+    {
+      "id": "243eb314-0670-3aa4-bd6f-07a1d5f6df36",
+      "value": "Chillerton GS",
+      "number": "50301012"
+    },
+    {
+      "id": "346eea2c-8ed0-32ba-90a7-4d0d52827c1d",
+      "value": "Chiselborough ",
+      "number": "520310"
+    },
+    {
+      "id": "9ed16757-28d1-3ffb-a125-7d34204193a3",
+      "value": "Church Bridge",
+      "number": "031028"
+    },
+    {
+      "id": "ef84c767-2b17-33fa-8f58-4f719f9284c4",
+      "value": "Church Wilne",
+      "number": "4067"
+    },
+    {
+      "id": "b1c30d18-069c-3614-927d-5cc0754e7a8e",
+      "value": "Cirencester GS",
+      "number": "0260TH"
+    },
+    {
+      "id": "dc9a2d60-9bee-3b2c-8830-24d85dffd4c9",
+      "value": "Clappers Bridge",
+      "number": "352711019"
+    },
+    {
+      "id": "3b9af6ec-18e9-33fa-a928-a662060aab0d",
+      "value": "Claypole",
+      "number": "030001"
+    },
+    {
+      "id": "e361b247-2d44-362b-8e9c-0807e9c5e81d",
+      "value": "Claythorpe",
+      "number": "029002"
+    },
+    {
+      "id": "ca5cbc74-621a-36fb-aa0c-828f468e11cd",
+      "value": "Clifton Hall",
+      "number": "4175"
+    },
+    {
+      "id": "490be759-e936-3af6-8c88-8004ccae403a",
+      "value": "Cloves Bridge",
+      "number": null
+    },
+    {
+      "id": "4a87a43b-6637-372f-8d4d-dceb8eafa834",
+      "value": "Coley Mill",
+      "number": "2199"
+    },
+    {
+      "id": "884c1e93-3ded-3275-93f1-0b4a8fb5cac8",
+      "value": "Colney Street (Hansteads)",
+      "number": "2819"
+    },
+    {
+      "id": "cb69ffbc-20d7-3e93-bb51-5f136a9c212c",
+      "value": "Colwick",
+      "number": "4009"
+    },
+    {
+      "id": "baa93123-af7d-3bfc-a8de-8ffe0dc4f710",
+      "value": "Conager Bridge",
+      "number": "151816005"
+    },
+    {
+      "id": "6929afe5-72c8-3295-8bd2-9a805759baa9",
+      "value": "Congham",
+      "number": "033072"
+    },
+    {
+      "id": "9c46883e-7dab-3afd-ad7a-cbee5b1f65ac",
+      "value": "Coombe Bridge ",
+      "number": "351224002"
+    },
+    {
+      "id": "92dbe9eb-a4cb-36c5-9ebd-0e90d092cbb6",
+      "value": "Copford Hall",
+      "number": "037016"
+    },
+    {
+      "id": "da4287fa-b24b-37c5-adb9-34e755a5519f",
+      "value": "Costessey Mill",
+      "number": "034004"
+    },
+    {
+      "id": "94c256e2-216d-3e62-b5ae-88906b6d34f4",
+      "value": "Costessey Park",
+      "number": "034005"
+    },
+    {
+      "id": "a7e1ca1e-be10-3794-ab42-b80c70764c53",
+      "value": "Counter Drain",
+      "number": null
+    },
+    {
+      "id": "51f6c73c-00dc-33cc-b58d-3c4d8307d0f0",
+      "value": "County Bridge Euston",
+      "number": "033011"
+    },
+    {
+      "id": "47224933-236c-3285-96a8-62f94b6cb861",
+      "value": "Cow Green Reservoir",
+      "number": "F3507"
+    },
+    {
+      "id": "5f554336-25a1-33b1-8597-651b8ef25738",
+      "value": "Crabb Mill",
+      "number": "530130"
+    },
+    {
+      "id": "645ee010-442e-3abe-9dcb-5201aac35fe6",
+      "value": "Crabble Mill GS FL",
+      "number": "654019001"
+    },
+    {
+      "id": "1d10b903-6186-3e3f-bb73-291a97404486",
+      "value": "Crabbs Bridge",
+      "number": "037003"
+    },
+    {
+      "id": "d679c218-11a4-3260-941d-7ff0f9224bbb",
+      "value": "Craigshill Wood",
+      "number": "SX16F062"
+    },
+    {
+      "id": "6d5e2e1a-7516-3334-a8cf-4626bdc80bba",
+      "value": "Crakehill",
+      "number": "F2302"
+    },
+    {
+      "id": "baaf5f58-8c4a-3bfd-acd6-4c4b8c761b07",
+      "value": "Crayford FL",
+      "number": "451220001"
+    },
+    {
+      "id": "27628a20-add0-37b0-9f2d-81443270ab0d",
+      "value": "Cressingham Bridge D/S",
+      "number": null
+    },
+    {
+      "id": "7ee88b50-6c5d-3ab7-babc-68f1c7d48552",
+      "value": "Cricklade",
+      "number": "0190TH"
+    },
+    {
+      "id": "f3d43276-1ee7-33f0-8e2c-ea14e7211746",
+      "value": "Cringle Brook",
+      "number": "030015"
+    },
+    {
+      "id": "f430c677-9387-3beb-b048-7ff0075b817d",
+      "value": "Crowhurst GS ",
+      "number": "556500002"
+    },
+    {
+      "id": "d7def445-fe17-3ff9-9cf6-e08b641cffc6",
+      "value": "Cuckney",
+      "number": "4044"
+    },
+    {
+      "id": "0d8d2481-803a-3f10-8909-9ef2ac815154",
+      "value": "Currypool",
+      "number": "520710"
+    },
+    {
+      "id": "01a124a4-ae76-3e48-8887-a752f0f5dea7",
+      "value": "DENHAM COLNE",
+      "number": "2870TH"
+    },
+    {
+      "id": "ad98fbbb-8bbf-36e0-b3e8-06e4aae18529",
+      "value": "DROVE LANE SIDE GS",
+      "number": "152202207"
+    },
+    {
+      "id": "4d9df751-2632-3634-b5fd-a742bca7325e",
+      "value": "DUCKALLER WEIR C",
+      "number": "SX98F053"
+    },
+    {
+      "id": "81508d92-98e9-3f75-b29b-2f497f0789c5",
+      "value": "DURLOCK",
+      "number": "654620001"
+    },
+    {
+      "id": "ed864e3d-17e3-3b22-8440-fb066d28bfbf",
+      "value": "Dalton",
+      "number": "F2313"
+    },
+    {
+      "id": "fad9e868-4d27-3e1f-8135-60e2b63f8b44",
+      "value": "Darlaston",
+      "number": "4083"
+    },
+    {
+      "id": "d75ef72e-627b-32cb-94d5-1b345a242ab7",
+      "value": "Days weir GSTN",
+      "number": "1900TH"
+    },
+    {
+      "id": "7d4ecbfa-508d-3e19-bbef-caaf3125ea68",
+      "value": "De Lank",
+      "number": "SX17F063"
+    },
+    {
+      "id": "4e2b64ce-2b8e-3a64-bdae-92afe706a2ac",
+      "value": "Deerhurst",
+      "number": "2606"
+    },
+    {
+      "id": "4ab61060-c77f-3293-83c0-dfc4d13e6975",
+      "value": "Denby",
+      "number": "SX06F058"
+    },
+    {
+      "id": "57afc5bd-b76e-3e96-8faa-9a84952315b2",
+      "value": "Denver Diversion Sluice",
+      "number": "033635"
+    },
+    {
+      "id": "95c30ff3-b66b-3b85-9a68-68705469145f",
+      "value": "Denver Head Sluice",
+      "number": "033335"
+    },
+    {
+      "id": "74228f83-54a0-3a63-b30d-435fc93e5218",
+      "value": "Denver Impounding Sluice",
+      "number": "033535"
+    },
+    {
+      "id": "630b3565-d60b-3fe3-8d78-041dddab8417",
+      "value": "Denver Residual Sluice",
+      "number": "033435"
+    },
+    {
+      "id": "7d6e9e3f-2af9-3f0a-8a0e-8f989ad4f671",
+      "value": "Denver Sluice",
+      "number": "033035"
+    },
+    {
+      "id": "32760dbd-4f75-3b11-a15b-9e0eab2b269d",
+      "value": "Derby St Marys",
+      "number": "4085"
+    },
+    {
+      "id": "bf025787-9968-3e15-acda-d200e4b74452",
+      "value": "Dernford",
+      "number": "033024"
+    },
+    {
+      "id": "f41d47c3-bc4c-3263-9ff3-cf168d97d553",
+      "value": "Dog in a Doublet",
+      "number": null
+    },
+    {
+      "id": "fb51585f-2fc5-3736-9b20-64db70781d7c",
+      "value": "Dog-in-a-doublet",
+      "number": null
+    },
+    {
+      "id": "4214b449-c5d8-37f1-9d6c-2f0ec19fc846",
+      "value": "Dolwen",
+      "number": "2118"
+    },
+    {
+      "id": "6b95412b-6419-32dc-8b70-8a0095e81e25",
+      "value": "Doncaster (rating E)",
+      "number": "F0908"
+    },
+    {
+      "id": "cec54c88-0158-33ec-b7b4-14eea1c86af4",
+      "value": "Donington Bridge",
+      "number": "L30008"
+    },
+    {
+      "id": "9d907ba1-3e5a-3bf4-91ef-ab2446b7fcab",
+      "value": "Dotton",
+      "number": "SY08F055"
+    },
+    {
+      "id": "6ac6756d-155e-37c6-a1bb-ed84b65be7b7",
+      "value": "Drakelow",
+      "number": "4019"
+    },
+    {
+      "id": "c52771dd-542a-37da-bfb7-24b4840d96b9",
+      "value": "Drove Lane 2.5",
+      "number": "152202007"
+    },
+    {
+      "id": "7d575430-69b1-33aa-8524-07f5c048da82",
+      "value": "Drungewick",
+      "number": "254240009"
+    },
+    {
+      "id": "dd5b7836-188b-3acf-ad70-b1922e4ab72f",
+      "value": "Dunston Beck",
+      "number": "030019"
+    },
+    {
+      "id": "d5d6f965-4638-338b-b87d-2d29285363da",
+      "value": "EAST MILLS COMBINED",
+      "number": "432613"
+    },
+    {
+      "id": "d8cc13c4-37cb-3a61-85ac-dfb8bc03db4c",
+      "value": "EAST MILLS FLUME",
+      "number": "432610"
+    },
+    {
+      "id": "99931142-e8e4-3a78-a0a4-d2d4aebed8b5",
+      "value": "EAST MILLS WEIR",
+      "number": "432620"
+    },
+    {
+      "id": "e8fe71b0-ba91-3f3f-85a1-c602e015bcfc",
+      "value": "EAST STOKE COMBINED",
+      "number": "445912"
+    },
+    {
+      "id": "829c97dd-1f2d-3286-8483-ebc7c9545ab4",
+      "value": "EAST STOKE FLUME",
+      "number": "445910"
+    },
+    {
+      "id": "15117dc4-f844-36db-b549-358d913dc1a5",
+      "value": "EAST STOKE WEIR",
+      "number": "445920"
+    },
+    {
+      "id": "3237f1b2-6314-3fd4-86a0-7431215ac67f",
+      "value": "EBLEY MILL",
+      "number": "2027"
+    },
+    {
+      "id": "79c7ff28-3784-3e45-898a-fc71ad33f10a",
+      "value": "ELLINGHAM ULTRASONIC",
+      "number": "034033"
+    },
+    {
+      "id": "54e88d6f-d8b2-3a4a-be3a-39d6e106bc6b",
+      "value": "EVESHAM",
+      "number": "2002"
+    },
+    {
+      "id": "39ba87d4-b536-3ae6-807f-ae36111a6a3c",
+      "value": "Earls Colne",
+      "number": "037024"
+    },
+    {
+      "id": "fc9bc4b0-d36c-3e77-85f1-62cbbe0b22dd",
+      "value": "East Ness Springs",
+      "number": "F2595"
+    },
+    {
+      "id": "6e6baa3e-f2f7-366b-917b-1b51ffa58dba",
+      "value": "Easton",
+      "number": "152204002"
+    },
+    {
+      "id": "2315b065-5dfc-329b-a0e8-0c156f19be1d",
+      "value": "Eddy's Bridge",
+      "number": "023002"
+    },
+    {
+      "id": "59ce63a6-c4df-369a-bf4a-c937fcc7ef05",
+      "value": "Elland",
+      "number": "F1203"
+    },
+    {
+      "id": "765061e3-d9a4-37d3-9bb6-f7e45d11c7f7",
+      "value": "Erwood",
+      "number": null
+    },
+    {
+      "id": "3df68fd1-7af9-3bd6-831a-a5e1b17641ba",
+      "value": "Esher",
+      "number": "3290TH"
+    },
+    {
+      "id": "4c85c680-32ff-3743-8f84-e10af54d34d6",
+      "value": "Ewelme",
+      "number": "1995TH"
+    },
+    {
+      "id": "691960b2-cc80-3786-adc6-548967b2997d",
+      "value": "Eynsham",
+      "number": "1200TH"
+    },
+    {
+      "id": "87c4572a-975d-322d-9bb7-e9c784ec2f5f",
+      "value": "FARNHAM",
+      "number": "035003"
+    },
+    {
+      "id": "e32ebafc-6683-3274-99da-a132baa6cf21",
+      "value": "FEILDES WEIR",
+      "number": "5290"
+    },
+    {
+      "id": "a1177f79-1034-3b7f-a41d-1489336f300c",
+      "value": "FEILDES WEIR FLOOD RELIEF CHANNEL",
+      "number": "5300_w2TH"
+    },
+    {
+      "id": "acf0637d-39dd-3658-a68c-6f4708ded9fc",
+      "value": "FEILDES WEIR NAVIGATION",
+      "number": "5300_w1TH"
+    },
+    {
+      "id": "9abe394b-0573-3717-8d73-19d5a33cc6d5",
+      "value": "FOSTERS BRIDGE",
+      "number": "031010"
+    },
+    {
+      "id": "3b68e7a2-ac7d-3f60-9920-b382cce2d3f7",
+      "value": "FRAMPTON COTTERELL",
+      "number": "530240"
+    },
+    {
+      "id": "b1a9114f-ea55-3ec4-bafb-9c9e6703ac75",
+      "value": "Farmoor",
+      "number": "1100TH"
+    },
+    {
+      "id": "a9a1aa4c-4e3e-3b12-9198-2361c11c0148",
+      "value": "Fenny Bridges",
+      "number": "SY19F052"
+    },
+    {
+      "id": "0de21a29-5120-37a2-a108-609b44adfc93",
+      "value": "Fenny Castle",
+      "number": "521010"
+    },
+    {
+      "id": "2147ee79-5575-3fa1-8159-8cab94a97729",
+      "value": "Ferriby Sluice",
+      "number": null
+    },
+    {
+      "id": "a56a7da5-38f4-3a8d-b6cb-b0c3d272d47a",
+      "value": "Flint Mill",
+      "number": "F2004"
+    },
+    {
+      "id": "54e4d5ad-4b7a-3a6d-a833-3d85f58eaefd",
+      "value": "Flow in Bow Lake Stream",
+      "number": null
+    },
+    {
+      "id": "fede2335-f575-32dc-862a-ebadb08334ef",
+      "value": "Footholme Flume",
+      "number": "711086"
+    },
+    {
+      "id": "20ad2d21-2e7a-372d-9db0-4a4144daebe1",
+      "value": "Fordham",
+      "number": "033050"
+    },
+    {
+      "id": "a4e36db7-9d07-3e90-9e71-8b9881eece13",
+      "value": "Fornham St Martin",
+      "number": "033070"
+    },
+    {
+      "id": "81796199-d6d7-3f78-aa44-1d1498b35916",
+      "value": "Fossdyke W.Jetty",
+      "number": "U30011"
+    },
+    {
+      "id": "0bcc91f0-1f9a-33d4-a583-8d1d50d590a7",
+      "value": "Fosseway",
+      "number": "530550"
+    },
+    {
+      "id": "ff67249b-016f-3a05-8632-0ad138f43fe6",
+      "value": "Foston Mill",
+      "number": "F3120"
+    },
+    {
+      "id": "322acce9-5d5f-3b81-becc-61c1fb1b1f78",
+      "value": "Frogmill",
+      "number": "152502001"
+    },
+    {
+      "id": "cd9e1e86-f8c6-328c-910a-43b61b5525d1",
+      "value": "Fulsby",
+      "number": "030003"
+    },
+    {
+      "id": "ea3335a9-2c14-3b52-8030-d7acbeee6b62",
+      "value": "GUITHAVON VALLEY",
+      "number": "037009"
+    },
+    {
+      "id": "bde45af4-29aa-3af3-9c7b-c9d62a1b9212",
+      "value": "Galesyke",
+      "number": "743008"
+    },
+    {
+      "id": "eeed6039-9238-3a6c-9cc1-e3d1aab2f721",
+      "value": "Garstang FMS",
+      "number": "720107"
+    },
+    {
+      "id": "e5c58af3-ae9a-32ae-a475-46d3f0dfa3fc",
+      "value": "Goulceby",
+      "number": "030011"
+    },
+    {
+      "id": "a47bbcf4-7ca2-3a9e-af05-19bcdf25e006",
+      "value": "Grafham",
+      "number": null
+    },
+    {
+      "id": "fde4e5e5-e0b1-33c4-8668-3dee37db7258",
+      "value": "Great Bridgford",
+      "number": "4052"
+    },
+    {
+      "id": "16fca645-dd40-3717-a6cb-c41a182a468c",
+      "value": "Great Somerford",
+      "number": "530150"
+    },
+    {
+      "id": "06828128-a103-36d8-a0b8-54cd2dd4751e",
+      "value": "Greenham",
+      "number": "520540"
+    },
+    {
+      "id": "83c7ae6c-ab79-36f6-be7f-edde8f838ca6",
+      "value": "Gribbleford Bridge",
+      "number": "SS50F007"
+    },
+    {
+      "id": "0801f530-68e0-3b53-9174-5c553e40a088",
+      "value": "Gunnislake",
+      "number": "SX47F051"
+    },
+    {
+      "id": "cabc9efd-6fbb-37d0-b0d7-9680fd94c52c",
+      "value": "HAMBLEDON OLD SCHOOL",
+      "number": "SU93/30 (#)"
+    },
+    {
+      "id": "42f58484-c4b4-320a-898c-aab07aa0e786",
+      "value": "HAMMERWOOD BRIDGE GS",
+      "number": "351223005"
+    },
+    {
+      "id": "96907b25-bdf9-3296-a672-1a0451b88994",
+      "value": "HAMMOON",
+      "number": "433410"
+    },
+    {
+      "id": "a15be5a7-8d6b-3e17-bcc5-01234f7e1066",
+      "value": "HENLEY - WOOKEY",
+      "number": "521210"
+    },
+    {
+      "id": "d7b5f15a-7df6-3bbf-b3d9-730153f6773a",
+      "value": "HIGH ONGAR",
+      "number": "5420"
+    },
+    {
+      "id": "40a568ee-6756-333a-9036-ad44d634a74a",
+      "value": "HONING LOCK",
+      "number": "034008"
+    },
+    {
+      "id": "620b0a02-82f7-3fd7-8f39-f5b3ff0e349d",
+      "value": "HOOKAGATE",
+      "number": "2018"
+    },
+    {
+      "id": "ff90ace9-ba65-3325-87a0-b460bdbb9708",
+      "value": "HOOKE",
+      "number": "445210"
+    },
+    {
+      "id": "e3132bc0-6772-32f3-b241-596f018629b0",
+      "value": "HORSTEAD",
+      "number": "034019"
+    },
+    {
+      "id": "4cf1669b-dac7-3bf8-aadb-3f73c0c74493",
+      "value": "HOWE GREEN_WATER HALL",
+      "number": "4690"
+    },
+    {
+      "id": "5ae849e4-e07b-36d2-be23-17b71bcd4971",
+      "value": "Hadleigh",
+      "number": "036005"
+    },
+    {
+      "id": "7fbc62ed-7932-3f7f-b241-c4b1cb454ae2",
+      "value": "Hadlow GS",
+      "number": "453310001"
+    },
+    {
+      "id": "2fc2fe0f-6b84-3f0b-8a88-94096911e434",
+      "value": "Hagnaby Beck End Weir",
+      "number": "030023"
+    },
+    {
+      "id": "749cf852-ce3f-3780-ab19-aa8e4702177b",
+      "value": "Halfway Bridge",
+      "number": "254323017"
+    },
+    {
+      "id": "479d0d40-f024-3711-bc14-7046300add7a",
+      "value": "Halsewater",
+      "number": "520580"
+    },
+    {
+      "id": "ceac3393-8fdc-33d8-b84f-70cd8d2df6f3",
+      "value": "Hamstall Ridware",
+      "number": "4002"
+    },
+    {
+      "id": "8c9d436b-5498-3a36-8090-e1aa639672a0",
+      "value": "Hardham",
+      "number": "254310002L"
+    },
+    {
+      "id": "bfed5c2d-b69a-3a24-a30a-b9e4582646ec",
+      "value": "Harford Hill",
+      "number": "2011"
+    },
+    {
+      "id": "7ec13d7f-f9e9-3a12-81c5-3d5082710d2d",
+      "value": "Harrowden",
+      "number": "032004"
+    },
+    {
+      "id": "a95c477f-78de-3603-b606-f1c3953540bd",
+      "value": "Hatterell Bridge",
+      "number": "253320002"
+    },
+    {
+      "id": "50425bbf-24f8-3e09-8e36-f19f21fa10d8",
+      "value": "Havenhouse Sluice",
+      "number": null
+    },
+    {
+      "id": "e48750b3-3828-32af-9d69-e2f66362ae16",
+      "value": "Hawley GS",
+      "number": "451321001"
+    },
+    {
+      "id": "112c7318-8055-3258-a025-f76971232745",
+      "value": "Heacham Mill",
+      "number": "033032"
+    },
+    {
+      "id": "c1fadd76-dcea-3258-99e6-1078b416bd84",
+      "value": "Heaton Mill ",
+      "number": "021038"
+    },
+    {
+      "id": "7a3ca8f8-11a3-3ec6-b8f5-1ab8bd169468",
+      "value": "Heighington",
+      "number": "030013"
+    },
+    {
+      "id": "3357946d-632d-3fad-81d4-e494cabed650",
+      "value": "Helebridge",
+      "number": "S27575_FW"
+    },
+    {
+      "id": "d762548e-bdfe-3318-8de9-346e7876956e",
+      "value": "Hempholme",
+      "number": "F3102"
+    },
+    {
+      "id": "e87a886a-487e-333e-9540-ffe481f504b2",
+      "value": "Hendal Bridge  FL",
+      "number": "453520001"
+    },
+    {
+      "id": "631077e2-4369-3ed5-93e1-b0833bb8b978",
+      "value": "Henley Bridge",
+      "number": "351222002"
+    },
+    {
+      "id": "aab524a9-4ebe-3f3f-9bfd-c30feba4c9f7",
+      "value": "Hensting Spring",
+      "number": null
+    },
+    {
+      "id": "6bf4133b-d522-3b90-ac25-1d80eb949ab3",
+      "value": "Hermitage Lock",
+      "number": "033097"
+    },
+    {
+      "id": "4f770bc5-0851-3eed-bded-9d300a3b741e",
+      "value": "Highbridge GS",
+      "number": "152208202"
+    },
+    {
+      "id": "306a8b7b-4c7b-3ec7-93e7-b7869ec576bd",
+      "value": "Hinton on the Green",
+      "number": "2036"
+    },
+    {
+      "id": "789b54cf-116b-3e47-be0e-8bee5678aae0",
+      "value": "Hints Hall",
+      "number": "4153"
+    },
+    {
+      "id": "e66a362a-3d07-3a4c-b26e-906f1e910c29",
+      "value": "Hodder Place",
+      "number": "711610"
+    },
+    {
+      "id": "bb92bb6b-c254-3bbb-be7b-8b8489d27d4f",
+      "value": "Holme House Farm",
+      "number": "F3412"
+    },
+    {
+      "id": "6582ca3f-35b9-3638-bfc0-a7d3d072c73b",
+      "value": "Honington Beck",
+      "number": "030018"
+    },
+    {
+      "id": "1636aa65-5ef0-33b7-8188-361b1a539a16",
+      "value": "Horrabridge",
+      "number": "SX56F057"
+    },
+    {
+      "id": "8a61096d-5361-3aee-b79f-a8bf5b835bdf",
+      "value": "Horton FL",
+      "number": "654400001"
+    },
+    {
+      "id": "9bf943a8-c752-3bb7-88d1-9902e099b27e",
+      "value": "Huddersfield Queens Mill",
+      "number": "F1003"
+    },
+    {
+      "id": "d2631752-952c-3e42-a949-6f4c17093dc7",
+      "value": "Hug Bridge",
+      "number": "681003"
+    },
+    {
+      "id": "463f52ff-d4fb-36b0-bf66-a1b0e835f745",
+      "value": "Hulver Bridge",
+      "number": "035021"
+    },
+    {
+      "id": "744d1d59-ebad-371a-9e01-0b5b62f4564d",
+      "value": "Hundred Foot GS",
+      "number": null
+    },
+    {
+      "id": "c9725dcd-40eb-3b95-9e1b-11ef94b04160",
+      "value": "Hungerford Dun",
+      "number": "2239TH"
+    },
+    {
+      "id": "0ca6e434-65e7-3617-8b45-4d226c9ca411",
+      "value": "Hunsingore",
+      "number": null
+    },
+    {
+      "id": "787556bc-f820-3e6e-922a-8539e5d47c6e",
+      "value": "Huntington",
+      "number": "F2470"
+    },
+    {
+      "id": "46c8a7fa-f16a-3734-bda8-e1a944a7118f",
+      "value": "Hunworth",
+      "number": "034052"
+    },
+    {
+      "id": "d96af926-899b-370f-91ee-fabe479c23c1",
+      "value": "Huxley",
+      "number": "684014"
+    },
+    {
+      "id": "6a1c8634-8801-3e9d-8160-ab8cd041fd45",
+      "value": "Hynam Bridge",
+      "number": "763201"
+    },
+    {
+      "id": "d2f5e7f1-2458-3728-b867-2985669009f6",
+      "value": "Hythe End",
+      "number": "2894"
+    },
+    {
+      "id": "02007a04-5370-3b9b-8c67-f0ddd8fa8151",
+      "value": "ILAM",
+      "number": "4031"
+    },
+    {
+      "id": "335a928a-4f0a-3a2d-8e2d-69fe5d5a4f3f",
+      "value": "INGLESHAM",
+      "number": "0790_w1TH"
+    },
+    {
+      "id": "3c8d8f67-2acd-375c-b860-4eefb47f8df6",
+      "value": "IRNHAM",
+      "number": "031013"
+    },
+    {
+      "id": "f8342b39-fa7f-3f6c-8ba7-8de9ecdb3f5a",
+      "value": "IZAAK WALTON",
+      "number": "4046"
+    },
+    {
+      "id": "a7c8a24f-e766-3210-819e-2d24cc52c62a",
+      "value": "Ingworth",
+      "number": "034003"
+    },
+    {
+      "id": "c1faa88a-b8e3-3e28-b97b-1d9932dea95c",
+      "value": "Iping Mill",
+      "number": "254340011"
+    },
+    {
+      "id": "1fb8ed5d-a67a-3397-a66a-cce3a7ff94ce",
+      "value": "Irwell Vale",
+      "number": "690140"
+    },
+    {
+      "id": "97a034a7-cfe4-3264-a75c-473c2a0193cf",
+      "value": "Islip",
+      "number": "1489TH"
+    },
+    {
+      "id": "e07475e7-f0af-3e3e-9222-fd86f673e1fa",
+      "value": "Iwood",
+      "number": "521410"
+    },
+    {
+      "id": "4296aa48-ea2d-3a8c-b2e6-157073c21eb4",
+      "value": "KATES BRIDGE",
+      "number": "031002"
+    },
+    {
+      "id": "2ed52317-557e-3eb6-bcc2-314d8244c6b0",
+      "value": "KEADBY",
+      "number": "4098"
+    },
+    {
+      "id": "cded9972-ef81-3e51-97e3-c73cd924a742",
+      "value": "KINGSLEY RF1",
+      "number": "TW73_1(#)"
+    },
+    {
+      "id": "f2643550-a2d0-3b80-9180-45858d0ee51d",
+      "value": "KINGSTON_ACCUSONIC",
+      "number": "3399TH"
+    },
+    {
+      "id": "e2e109b3-c22b-33e4-b9db-be126321f760",
+      "value": "KNIGHTON MAIN",
+      "number": "2230_w1TH"
+    },
+    {
+      "id": "9c9ef56e-a754-3ac7-ac31-ae5e64b51d46",
+      "value": "KNIGHTSFORD BRIDGE",
+      "number": "2029"
+    },
+    {
+      "id": "bf321cc1-21c1-3a5e-bac2-a179737ab018",
+      "value": "Kegworth",
+      "number": "4074"
+    },
+    {
+      "id": "54e8093b-19e2-322e-975f-7573200a196f",
+      "value": "Kidderminster",
+      "number": "2167"
+    },
+    {
+      "id": "99722db9-9bda-335f-870e-ee4a86b3c256",
+      "value": "Kilgram",
+      "number": "F2104"
+    },
+    {
+      "id": "fe22e6b8-472f-3b06-98d0-09333e55136f",
+      "value": "Kingston",
+      "number": "3400TH"
+    },
+    {
+      "id": "e03f3d8b-7483-36eb-bf34-aad7bd28a863",
+      "value": "Kingston Hogsmill",
+      "number": "3390TH"
+    },
+    {
+      "id": "a0196192-15ba-3abe-89f5-596a7d047841",
+      "value": "Kirby Wiske",
+      "number": "F2320"
+    },
+    {
+      "id": "3d8cbd37-2dbd-3734-96e0-a7b6ac1d10ef",
+      "value": "Knighton Side Gauging station",
+      "number": "2230_w2TH"
+    },
+    {
+      "id": "2a47df96-47ca-330a-9454-3ba4f508af7f",
+      "value": "LANGHAM",
+      "number": "036006"
+    },
+    {
+      "id": "3dae81ab-d0e2-3ba9-b4a9-984f3e19a9ed",
+      "value": "LEEHAMFORD BRIDGE",
+      "number": "SS63F015"
+    },
+    {
+      "id": "6d426ebb-483c-32b3-8cb0-1ef18ec24f00",
+      "value": "LITTLE WALSINGHAM",
+      "number": "034020"
+    },
+    {
+      "id": "49d1dd31-1dc4-3739-aa35-df52531fd2fb",
+      "value": "LITTON CHENEY",
+      "number": "447010"
+    },
+    {
+      "id": "21fe1c74-66b9-3fd1-911e-d6faa8e93aca",
+      "value": "LOUDSMILL COMBINED",
+      "number": "445508"
+    },
+    {
+      "id": "0ab8c6eb-b00c-3f1d-979b-9ccedf224657",
+      "value": "LOUGHTON",
+      "number": "5470"
+    },
+    {
+      "id": "2d0d95ef-a2e0-3f10-8249-9b280c72143d",
+      "value": "LUDLOW - CORVE",
+      "number": "2169"
+    },
+    {
+      "id": "f6dfed7e-06f5-36f7-9c3f-73603c51c2ed",
+      "value": "LUGWARDINE",
+      "number": "055003"
+    },
+    {
+      "id": "bb69fe04-dc03-323b-a3eb-66ea1346b937",
+      "value": "Laceby Beck",
+      "number": "029021"
+    },
+    {
+      "id": "2a9d00d1-5bdc-364b-82fa-e5c720f75bbb",
+      "value": "Lakenheath",
+      "number": null
+    },
+    {
+      "id": "91c794ff-691e-3a4b-ae2c-298ee08e09c2",
+      "value": "Lamarsh",
+      "number": "036015"
+    },
+    {
+      "id": "905d91f9-3fd4-32cb-8e7e-da07f04f264e",
+      "value": "Langworth",
+      "number": "030902"
+    },
+    {
+      "id": "a404a0c7-72b4-36dc-b5ee-8e9a81fa8e9c",
+      "value": "Lea Hall GS",
+      "number": null
+    },
+    {
+      "id": "d74f1df9-9cb2-3a5e-9cd6-6aa27e092c45",
+      "value": "Leabridge Weir (Lealands)",
+      "number": "351540001"
+    },
+    {
+      "id": "ba301087-9ff3-3657-a981-41671e67c9b4",
+      "value": "Leamington PDW",
+      "number": "2049"
+    },
+    {
+      "id": "c3fe22f1-1a9b-337b-b181-84e804b84730",
+      "value": "Leasingham Mill",
+      "number": "030006"
+    },
+    {
+      "id": "49645ada-1dae-3770-84fa-f9d9941da3a8",
+      "value": "Leatherhead",
+      "number": "3280TH"
+    },
+    {
+      "id": "6c0c1100-bb14-3602-8654-553ff4a6e9b1",
+      "value": "Leeming",
+      "number": "F2330"
+    },
+    {
+      "id": "8b0e91c8-1139-320d-9a1d-888e84904a1a",
+      "value": "Letcombe Bassett ",
+      "number": "1761TH"
+    },
+    {
+      "id": "2697bb50-4515-326a-b3b9-f7cedf8bda75",
+      "value": "Lexden",
+      "number": "037005"
+    },
+    {
+      "id": "b897d385-a18d-3b33-94d8-4ef25d1683f1",
+      "value": "Little Bridge Whittlesey",
+      "number": "L32056"
+    },
+    {
+      "id": "fb672ed9-9c0c-3a53-aea5-f59213097d09",
+      "value": "Little Horsted Stream",
+      "number": null
+    },
+    {
+      "id": "444481b9-04f7-3ac7-b316-946af4704537",
+      "value": "Littlebourne GS FL",
+      "number": "654602005"
+    },
+    {
+      "id": "e90e5858-1195-3b36-a2a3-0ef060f44a16",
+      "value": "Littlethorpe",
+      "number": "4082"
+    },
+    {
+      "id": "96e9c4af-3bd2-3ed6-ad63-7d82381ca6b4",
+      "value": "Llanyblodwel",
+      "number": "2038"
+    },
+    {
+      "id": "6eaed792-c2c9-3366-a246-4791a6edda42",
+      "value": "Loddiswell",
+      "number": "SX74F051"
+    },
+    {
+      "id": "97d7bbe1-7ae1-36ee-9539-b93722bc20fb",
+      "value": "Loudsmill (Not including fish pass)",
+      "number": "445510"
+    },
+    {
+      "id": "6aff84c2-44d0-3a77-b276-94ca9adb44a9",
+      "value": "Loudsmill Fish Pass",
+      "number": "445509"
+    },
+    {
+      "id": "e955a43a-7f54-36a7-ad91-5ffe71cad9d0",
+      "value": "Louth",
+      "number": "029003"
+    },
+    {
+      "id": "eb8108eb-8cb3-32e3-8c04-fac7188c960b",
+      "value": "Low Marishes",
+      "number": "F2702"
+    },
+    {
+      "id": "bcab46a5-b693-3e76-9253-78420fe38047",
+      "value": "Lowdham",
+      "number": "4060"
+    },
+    {
+      "id": "df57263f-22f4-321c-87c4-daf6989f7ddf",
+      "value": "Ludbrook",
+      "number": "SX46F003"
+    },
+    {
+      "id": "ce0164a0-b3dd-3355-a3cb-cd277007f801",
+      "value": "Lullingstone FL",
+      "number": "451320001"
+    },
+    {
+      "id": "a2fc9511-da8e-32ec-a956-5e3d25c3d1aa",
+      "value": "MARSTOW MILL",
+      "number": "055036"
+    },
+    {
+      "id": "55da77be-5be9-3ffa-b7d3-7d4aa440b8a9",
+      "value": "MOYLES COURT",
+      "number": "432800"
+    },
+    {
+      "id": "d6c0f528-02b2-3f42-a2eb-0fc22a559b4f",
+      "value": "MUNDESLEY HOSPITAL",
+      "number": "034021"
+    },
+    {
+      "id": "7a0c3674-da73-37e7-95e1-e165a9fa3380",
+      "value": "Mareham Le Fen",
+      "number": "L30061"
+    },
+    {
+      "id": "965829a3-5cf6-3252-9d37-fa326a4864f9",
+      "value": "Marham",
+      "number": "033007"
+    },
+    {
+      "id": "5078cdc2-125d-3f4b-a584-e3e329b32250",
+      "value": "Market Harborough",
+      "number": "031029"
+    },
+    {
+      "id": "ab6a3f25-f65b-3a7b-ba11-33ee690e908b",
+      "value": "Marsh Road Sluice",
+      "number": null
+    },
+    {
+      "id": "0b77f64b-3415-3394-a208-cf6ec0ea5c9d",
+      "value": "Marston-on-Dove",
+      "number": "4018"
+    },
+    {
+      "id": "0a22ade6-8744-369b-baf1-27f6f66eebbe",
+      "value": "Mattersey",
+      "number": "4015"
+    },
+    {
+      "id": "c8ba8276-dc14-3387-8b50-7626db06c589",
+      "value": "Meagre Farm",
+      "number": "033012"
+    },
+    {
+      "id": "3044f8bf-2fc9-363e-aea5-02a795cc927d",
+      "value": "Meldon",
+      "number": "SX59F051"
+    },
+    {
+      "id": "96e02f33-df62-33f1-a1eb-1058211ad1f6",
+      "value": "Melford",
+      "number": "033019"
+    },
+    {
+      "id": "cbb21282-a252-3319-b824-3336238128ed",
+      "value": "Middlehill",
+      "number": "530450"
+    },
+    {
+      "id": "4e7ac099-d6f3-3231-80f0-5697edfe1cee",
+      "value": "Middleton",
+      "number": "035022"
+    },
+    {
+      "id": "a5289cc4-1944-32ff-a887-374585b56bb2",
+      "value": "Mislingford",
+      "number": "152803001"
+    },
+    {
+      "id": "84b79e32-3ade-3bdc-84c5-b27ddb82c5c9",
+      "value": "Mytholmroyd",
+      "number": "F1204"
+    },
+    {
+      "id": "99af182f-542e-37de-9730-d621e90ad63c",
+      "value": "NEWBRIDGE MAIN",
+      "number": "1090_w1TH"
+    },
+    {
+      "id": "74093a36-d02b-3ac7-85ef-76c2d5311d11",
+      "value": "NEWBRIDGE SIDE",
+      "number": "1090_w2TH"
+    },
+    {
+      "id": "64860175-66bb-3eff-8164-c2dd770a1386",
+      "value": "NORTH NEWNTON",
+      "number": "432105"
+    },
+    {
+      "id": "ce046387-fdb3-369d-a029-93a6dbfea9c2",
+      "value": "NORTON BAVANT",
+      "number": "432320"
+    },
+    {
+      "id": "4c0454c1-fb1c-36fc-a255-a1ffc8a69318",
+      "value": "NUNTON BRIDGE",
+      "number": "432520"
+    },
+    {
+      "id": "32a293e2-6b12-3ea3-93ad-3b55deea9ff0",
+      "value": "Naunton Hall",
+      "number": "035002"
+    },
+    {
+      "id": "9ce3a546-abe8-3b08-b6ba-d52502a997de",
+      "value": "Ness",
+      "number": "F2505"
+    },
+    {
+      "id": "e385f219-0549-33a9-a0f2-ffab453af2c1",
+      "value": "Nettleham Beck",
+      "number": "030030"
+    },
+    {
+      "id": "99aa12b9-bb24-37c2-95fe-3e3445b444f4",
+      "value": "Nettleton Beck",
+      "number": "029023"
+    },
+    {
+      "id": "fb62bb75-8b5f-330a-b2e1-217f2ac8ce1f",
+      "value": "New Ten Mile",
+      "number": null
+    },
+    {
+      "id": "65739958-7f6c-36a3-98ae-f8926ef643c5",
+      "value": "Newby Bridge FMS",
+      "number": "735430"
+    },
+    {
+      "id": "c1aabc81-61de-3e9b-819e-0a1ce09a4b21",
+      "value": "Newnham Park",
+      "number": "S11512_FW"
+    },
+    {
+      "id": "3b89a3b2-d6d8-3b2f-8b1c-60f3873e2687",
+      "value": "Newton on Ouse",
+      "number": "F2480"
+    },
+    {
+      "id": "91c4c35f-68c8-3f4c-9ab1-a504d6eb581e",
+      "value": "Normanby",
+      "number": "F2540"
+    },
+    {
+      "id": "dec278ea-1b64-32bb-837c-7c5ed2a0629c",
+      "value": "North Brook",
+      "number": "031016"
+    },
+    {
+      "id": "1916d193-0903-32da-b478-7288e944aab4",
+      "value": "North Cave",
+      "number": "F3480"
+    },
+    {
+      "id": "45f2f033-9c6f-3abd-a6e1-15a0b60b8c48",
+      "value": "North Fareham GS",
+      "number": "153309001"
+    },
+    {
+      "id": "35b60c9d-3be2-3e2d-851c-57345dd214ae",
+      "value": "North Hykeham",
+      "number": "U30001"
+    },
+    {
+      "id": "85f075b6-9485-3782-adb0-34475409d6bb",
+      "value": "North Muskham",
+      "number": "4022"
+    },
+    {
+      "id": "7c6e9923-f53c-3a5d-83fa-2de24730a2a7",
+      "value": "Northwold Sidestream",
+      "number": "033206"
+    },
+    {
+      "id": "8500d334-c483-3f82-aec7-a885af2c81f4",
+      "value": "Northwold main weir",
+      "number": "033106"
+    },
+    {
+      "id": "d57d4548-81aa-3f7c-9ecf-7251f93f40aa",
+      "value": "OAK COTTAGE",
+      "number": "2034"
+    },
+    {
+      "id": "318b1f5f-1a7a-3676-bc38-bff6a3375554",
+      "value": "OFFENHAM",
+      "number": "2023"
+    },
+    {
+      "id": "ffad8d39-5ce0-3705-a8db-4b9a67ae68a4",
+      "value": "Oakley Park",
+      "number": "034007"
+    },
+    {
+      "id": "d2d29a4b-9461-368c-8d27-471c0133335e",
+      "value": "Offord Ultrasonic",
+      "number": "U33026"
+    },
+    {
+      "id": "6fa747d1-9a46-373b-8882-b46cb3ca0c03",
+      "value": "Old Ten Mile",
+      "number": null
+    },
+    {
+      "id": "6b53bdbe-efbb-3fdf-b00b-43bf9c219529",
+      "value": "Orton",
+      "number": "032001"
+    },
+    {
+      "id": "413b5ba3-2b53-36e1-b88b-84abc8312965",
+      "value": "Oulton Farrer Lane",
+      "number": "F1715"
+    },
+    {
+      "id": "da69755c-2071-3370-8763-dd2b67ce77e0",
+      "value": "Ouse Bridge",
+      "number": "751110"
+    },
+    {
+      "id": "cd48f68e-ddff-3bfb-a569-574cf1bdc5a1",
+      "value": "Ower",
+      "number": "151817001"
+    },
+    {
+      "id": "1dcddeee-658a-33aa-90df-fb7664e5f6e8",
+      "value": "PANSHANGER",
+      "number": "4790"
+    },
+    {
+      "id": "a485e252-fc62-3aac-a551-faec93f28b2a",
+      "value": "PARKEND",
+      "number": "2124"
+    },
+    {
+      "id": "83639a57-32dc-3f0e-9734-e29cc0588d4d",
+      "value": "PERLETHORPE",
+      "number": "4118"
+    },
+    {
+      "id": "6cd3eec4-8342-37bc-8fbd-6e1fb1b875a6",
+      "value": "PILLATON MILL",
+      "number": "SX36F069"
+    },
+    {
+      "id": "18c8a8ec-2436-3eeb-bc69-eb6b04ab74ca",
+      "value": "PLUCKS GUTTER GS",
+      "number": "654802012"
+    },
+    {
+      "id": "587ae5bc-d86f-3eec-a9c7-6b07b21c5655",
+      "value": "Pagham Summer Lane",
+      "number": "255310001"
+    },
+    {
+      "id": "43fea16c-ceed-368b-8415-3f3dc2b0efaa",
+      "value": "Pallingham",
+      "number": "254210010"
+    },
+    {
+      "id": "94d503b2-244b-3b33-bf46-29dd55f1e80f",
+      "value": "Pangbourne GStn",
+      "number": "2190TH"
+    },
+    {
+      "id": "8c27bcd9-001e-3f1b-8247-94134e69f6c7",
+      "value": "Partington",
+      "number": "693132"
+    },
+    {
+      "id": "dca4267e-84b1-3753-9dd3-eb5aeb7ef592",
+      "value": "Partney",
+      "number": "030004"
+    },
+    {
+      "id": "6834b417-2275-3214-84d4-52e71b3ea7e7",
+      "value": "Pen Mill",
+      "number": "520240"
+    },
+    {
+      "id": "ba648df2-d6cc-32f4-8305-9474f9aa621f",
+      "value": "Penkridge",
+      "number": "4053"
+    },
+    {
+      "id": "6f8dad32-fd4d-32b7-8375-f793db76e41a",
+      "value": "Penshurst GS",
+      "number": "453600001L"
+    },
+    {
+      "id": "67ad81e0-2f84-3291-9cf9-b75926429f69",
+      "value": "Playford",
+      "number": "035025"
+    },
+    {
+      "id": "470bd986-a862-3365-9a16-3256424b2509",
+      "value": "Polesworth",
+      "number": "4026"
+    },
+    {
+      "id": "a284a4a1-7b03-3f24-9c03-1e3ffb52f175",
+      "value": "Polstead",
+      "number": "036003"
+    },
+    {
+      "id": "77b343d4-c8e8-3b99-bbf4-acfaecd50084",
+      "value": "Polver",
+      "number": null
+    },
+    {
+      "id": "23ec8172-7179-3375-aa22-b2be5673faf3",
+      "value": "Pooley Bridge U/S",
+      "number": "761605"
+    },
+    {
+      "id": "63265325-f33e-361b-825d-402250c6d996",
+      "value": "Poolstreet",
+      "number": "037012"
+    },
+    {
+      "id": "967e2271-4429-37fb-8ca0-552a7882e9c6",
+      "value": "Pophams",
+      "number": "SY08F051"
+    },
+    {
+      "id": "e5b90571-421c-3e3a-afb8-7f14dc8ae43e",
+      "value": "Princes Marsh",
+      "number": "254360008"
+    },
+    {
+      "id": "aa20ae8a-6e86-37b2-b2fd-3cd6c176f3e5",
+      "value": "Quidenham",
+      "number": "033045"
+    },
+    {
+      "id": "ec162341-6d57-3f0b-bef8-8b0d183efc34",
+      "value": "Quixhill",
+      "number": "4142"
+    },
+    {
+      "id": "dced4960-9fcd-32c6-9d20-46044a7cde20",
+      "value": "RIVERSIDE PARK GS",
+      "number": "152210001"
+    },
+    {
+      "id": "cfee9ae7-48eb-3b90-8f6e-49ae7d829d6d",
+      "value": "ROTHLEY",
+      "number": "4056"
+    },
+    {
+      "id": "80b32f5d-8f14-3612-995d-4efbc61b8687",
+      "value": "Ratcliffe Culey",
+      "number": "4025"
+    },
+    {
+      "id": "d2be525d-70e6-3ec5-9ef3-8afe42f3aeeb",
+      "value": "Reading",
+      "number": "2200TH"
+    },
+    {
+      "id": "1f8b52d9-206e-37ef-8abc-8b5a31100f52",
+      "value": "Reaverhill",
+      "number": "023003"
+    },
+    {
+      "id": "0492d441-b4af-3279-add0-b4fec78d5354",
+      "value": "Rectory Bridge",
+      "number": "033013"
+    },
+    {
+      "id": "90c871a9-8769-32c5-93f9-8467c0a6f36c",
+      "value": "Redbridge",
+      "number": "033046"
+    },
+    {
+      "id": "9c13e85d-421a-3648-bcdb-1aaf8dbdef5a",
+      "value": "Restormel",
+      "number": "SX06F059"
+    },
+    {
+      "id": "bfc07f62-fc60-3e57-9198-f5015e918d8d",
+      "value": "Roadford Compensation",
+      "number": "SX48F013"
+    },
+    {
+      "id": "1d23779f-ab82-32df-b7c0-2f8c7dbec92e",
+      "value": "Rodbourne",
+      "number": "530140"
+    },
+    {
+      "id": "3c4bec6e-6591-32cd-80cc-8830ea8240a1",
+      "value": "Rodington",
+      "number": "2016"
+    },
+    {
+      "id": "3e70c991-d29f-3e9b-a48c-fda3e662c590",
+      "value": "Roe Bridge",
+      "number": "720248"
+    },
+    {
+      "id": "cc9f8cf3-06bc-3319-b705-af54e58db04e",
+      "value": "Rothbury",
+      "number": "022009"
+    },
+    {
+      "id": "26e79297-2825-3b72-997d-72b8f3e9366d",
+      "value": "Roxton",
+      "number": "033039"
+    },
+    {
+      "id": "176d6c77-e0da-3a98-aff2-9a417e88f0e6",
+      "value": "Roydon (Glen Faba)",
+      "number": "5190"
+    },
+    {
+      "id": "6b5e3126-ab39-3a14-9b6a-370d20a53e26",
+      "value": "SHAW GS",
+      "number": "2269TH"
+    },
+    {
+      "id": "4b5abbd3-4baf-3ff9-af07-d5acd3a54437",
+      "value": "SHEEPPEN BRIDGE G.STN",
+      "number": "0490TH"
+    },
+    {
+      "id": "2bb79ce6-3088-3e23-aa0e-74bde31d38ad",
+      "value": "SOUTH NEWTON",
+      "number": "432330"
+    },
+    {
+      "id": "33018715-30b8-3295-bb12-4b98422db245",
+      "value": "ST JOHNS WEIR",
+      "number": "530591"
+    },
+    {
+      "id": "d7bce609-c187-3291-8124-a267a1ff4adc",
+      "value": "STAINES ASH",
+      "number": "3110TH"
+    },
+    {
+      "id": "1ef19a3a-957e-3ed3-9830-2666e5d337b5",
+      "value": "STAPLAKE",
+      "number": "SX98F055"
+    },
+    {
+      "id": "81cf5598-ee2a-3e65-b968-9379fb3a9963",
+      "value": "STINSFORD",
+      "number": "445520"
+    },
+    {
+      "id": "998c387b-a4cb-3a53-bc69-f1eb43beaf78",
+      "value": "SULHAM G.STN",
+      "number": "2195TH"
+    },
+    {
+      "id": "0aec936a-8c5b-3bca-a900-2f291f7f4cf8",
+      "value": "SUSWORTH - R.EAU TVG",
+      "number": "46853"
+    },
+    {
+      "id": "9146acfb-c953-3ad6-b21b-6c42257eaeb7",
+      "value": "SUTTON COURTENAY G.STN",
+      "number": "1800TH"
+    },
+    {
+      "id": "58120317-16a4-3efb-9f5c-e7c28ef61ccb",
+      "value": "SWANTON MORLEY TOTAL FLOW",
+      "number": "034014"
+    },
+    {
+      "id": "0752848b-1103-3e8b-8fc8-7765b7a00483",
+      "value": "SYDENHAM GS",
+      "number": "4369TH"
+    },
+    {
+      "id": "b6f41753-af07-37c8-899c-b991a45c558e",
+      "value": "Sakeham",
+      "number": "253220001"
+    },
+    {
+      "id": "7d8b54cb-b87f-3b03-b1e0-3fb0092fc7c1",
+      "value": "Saltersford",
+      "number": "030029"
+    },
+    {
+      "id": "4f07481c-5b50-37ff-9ecb-d7af6110f623",
+      "value": "Sandford Bridge",
+      "number": "055027"
+    },
+    {
+      "id": "c1815e2b-006c-3385-beb2-c014d6984525",
+      "value": "Sandhills Bridge",
+      "number": "F2835"
+    },
+    {
+      "id": "7839c7fc-ec17-3fa3-a62f-04e5b79e833c",
+      "value": "Sandiacre",
+      "number": "4427"
+    },
+    {
+      "id": "75fe5d00-75ec-3a9f-9f68-7dded4dd3f8f",
+      "value": "Scale Hill",
+      "number": "751612"
+    },
+    {
+      "id": "83e74377-7753-3a97-adb7-8ac1313515e3",
+      "value": "Scopwick Beck",
+      "number": "030020"
+    },
+    {
+      "id": "fb1973d0-2aef-3fec-a622-5872ab8c2ecf",
+      "value": "Seaton Mill",
+      "number": "753050"
+    },
+    {
+      "id": "92dbfcbb-6645-3b80-873a-5deb2da66ac3",
+      "value": "Semington GS",
+      "number": "530950"
+    },
+    {
+      "id": "fcb6ed99-9181-3efa-bac6-fad9f57c21cc",
+      "value": "Shalford",
+      "number": "3079TH"
+    },
+    {
+      "id": "bf2107fe-8988-32ad-8fcb-7ddaf0c91037",
+      "value": "Shallowford",
+      "number": "4079"
+    },
+    {
+      "id": "5e54560b-9039-3a13-86c9-d2a34ee5258f",
+      "value": "Sheepbridge Main",
+      "number": "2420_w1TH"
+    },
+    {
+      "id": "a7959f67-bde5-3730-8fa9-e9b99d523394",
+      "value": "Sheepbridge Side",
+      "number": "2420_w2TH"
+    },
+    {
+      "id": "87c06d88-c47f-3e32-a5bb-5a49592d44c2",
+      "value": "Sheering (Sheering Hall)",
+      "number": "5169"
+    },
+    {
+      "id": "f6a3e521-7669-3a54-9414-db5c7b385c40",
+      "value": "Shefford",
+      "number": "033028"
+    },
+    {
+      "id": "8ac82c42-2e16-3bdf-8608-8f14e51d5255",
+      "value": "Shermans Bridge",
+      "number": "351520004"
+    },
+    {
+      "id": "0e0d29d7-d8e8-3708-936a-461b8105d73c",
+      "value": "Shide",
+      "number": "050301011"
+    },
+    {
+      "id": "f8ad3d69-9b51-3f81-862b-5532392432bb",
+      "value": "Shottisham (Spot Flow)",
+      "number": null
+    },
+    {
+      "id": "253f0b53-e495-3759-9bed-557a3358015c",
+      "value": "Siblyback",
+      "number": "SX27F009"
+    },
+    {
+      "id": "7148179e-2a1d-32dd-bd3c-d8c223d281a4",
+      "value": "Skelton",
+      "number": "F2405"
+    },
+    {
+      "id": "29c268bc-28e0-32e4-a6e5-f3da3ac86d35",
+      "value": "Skerton Weir",
+      "number": "724647"
+    },
+    {
+      "id": "68603187-5ff6-3e99-abf0-a24a0837b457",
+      "value": "Skip Bridge",
+      "number": "F2102"
+    },
+    {
+      "id": "f9160319-4fbc-3afd-b6f8-d173e6cc0aa5",
+      "value": "Snakeholm Lock",
+      "number": "F3105"
+    },
+    {
+      "id": "3faa5103-db2f-3f68-8f14-694173991634",
+      "value": "Snowhead sewer",
+      "number": "46783"
+    },
+    {
+      "id": "2ee40ba4-96a8-3efe-942f-fe274e2b23f2",
+      "value": "Southery",
+      "number": null
+    },
+    {
+      "id": "fd20db6c-790a-3716-b564-7a7ffac036a3",
+      "value": "Southwell",
+      "number": "4072"
+    },
+    {
+      "id": "86bd2da5-b828-3310-82e8-d9a19828837a",
+      "value": "Spixworth",
+      "number": "034051"
+    },
+    {
+      "id": "2d46d39f-ea0a-36f0-b007-e6bd3e493add",
+      "value": "Springfield",
+      "number": "037008"
+    },
+    {
+      "id": "1d2d1d9a-9368-3e4a-a8a4-39e091f81a31",
+      "value": "St Erth",
+      "number": "SW53F051"
+    },
+    {
+      "id": "23e269f7-9def-3b89-8c85-0dd3e8d2ea23",
+      "value": "St Michaels FMS",
+      "number": "720517"
+    },
+    {
+      "id": "19603b18-c9f2-3efa-92a1-d41067bf5c0a",
+      "value": "St.Andrews Mill",
+      "number": "032007"
+    },
+    {
+      "id": "1cb1fc4d-4fea-36dd-88e7-2eba0fe1b5d6",
+      "value": "Staines",
+      "number": "2900TH"
+    },
+    {
+      "id": "65a13219-ee23-377d-bb87-e466e9962b80",
+      "value": "Stainfield Beck",
+      "number": "030012"
+    },
+    {
+      "id": "8d341e73-496e-3fd4-b3d9-57c862d8f8e8",
+      "value": "Stanstead Mountfitchet",
+      "number": "5129"
+    },
+    {
+      "id": "c69841b4-9b91-365c-b9fb-8ed45147f18e",
+      "value": "Stareton",
+      "number": "2019"
+    },
+    {
+      "id": "475103e1-d0de-3bd9-ac23-48d3b9091201",
+      "value": "Stifford",
+      "number": "037034"
+    },
+    {
+      "id": "dadc9ea4-9ca7-36ef-91c3-355fad3b5b1e",
+      "value": "StileBridge GS",
+      "number": "453210001"
+    },
+    {
+      "id": "e79125ca-ff47-320b-94f2-b97136af021f",
+      "value": "Stonebridge GS",
+      "number": "453230001"
+    },
+    {
+      "id": "ce26bcde-18f7-3e20-acff-51a6bf429795",
+      "value": "Stoodleigh",
+      "number": "SS91F008"
+    },
+    {
+      "id": "faf99af8-d44a-3bcd-9283-11e32286a8e0",
+      "value": "Stowmarket",
+      "number": "035008"
+    },
+    {
+      "id": "d394d403-796d-3aa4-8826-a483c9c78815",
+      "value": "Sugar Fen",
+      "number": "033077"
+    },
+    {
+      "id": "efc784d5-d31c-324f-b43c-4c487e8e9f15",
+      "value": "Sutton & Mepal",
+      "number": null
+    },
+    {
+      "id": "0eb32421-9b24-3245-a2a8-6271816b14bb",
+      "value": "Swaffham Bulbeck",
+      "number": "033052"
+    },
+    {
+      "id": "e9631438-a773-3e65-9c9c-d336c9588f03",
+      "value": "Swallowfield",
+      "number": "2469_w1TH"
+    },
+    {
+      "id": "1ce389ec-1031-3f52-b87d-770b33d9f6a1",
+      "value": "Swallowfield Side",
+      "number": "2469_w2TH"
+    },
+    {
+      "id": "baa2961e-573a-3761-b4f9-f66eef469281",
+      "value": "Swill Bridge",
+      "number": "510910"
+    },
+    {
+      "id": "4d9a7aec-a193-3fa8-9778-c81711af2dff",
+      "value": "Syston",
+      "number": "4024"
+    },
+    {
+      "id": "18c739eb-f6f0-32b1-a85e-f203cfa142c7",
+      "value": "TATTENHALL",
+      "number": "067023"
+    },
+    {
+      "id": "ed95d7ec-1e66-37fc-a1af-ebbc342d2e0e",
+      "value": "TESTON GS",
+      "number": "453202001L"
+    },
+    {
+      "id": "e830f79c-b829-37d3-ad11-0214e49f276c",
+      "value": "THROOP",
+      "number": "433710"
+    },
+    {
+      "id": "af933352-d26f-3f79-a39f-0bfc697d4f54",
+      "value": "TIMSBURY GS",
+      "number": "151812001"
+    },
+    {
+      "id": "c91584c0-73a1-32ff-b7dd-6b82cace3213",
+      "value": "TITLEY MILL",
+      "number": "055013"
+    },
+    {
+      "id": "7b8cb7b8-61b6-33a5-a6cd-99d117050321",
+      "value": "TREKEIVESTEPS",
+      "number": "SX26F065"
+    },
+    {
+      "id": "b4b6c191-3bb4-3f9d-8fdd-10286a63f5a0",
+      "value": "TRENEAR INTAKE",
+      "number": "SW63F042"
+    },
+    {
+      "id": "1b87a086-a8a0-33d3-942c-fc5304824e41",
+      "value": "TREWS WEIR",
+      "number": "SX99U053"
+    },
+    {
+      "id": "8a498fce-99c6-328e-a0d8-d589998095c4",
+      "value": "TUNNEL PITS PS",
+      "number": "4830042"
+    },
+    {
+      "id": "50ec1463-4589-337e-94af-6d7971da5064",
+      "value": "TWYFORD_SIDE",
+      "number": "2490_w2TH"
+    },
+    {
+      "id": "5592f291-e6b6-3380-bab3-d1a68477e02b",
+      "value": "Tadcaster",
+      "number": "F2002"
+    },
+    {
+      "id": "32087510-e840-3f54-a295-dd12a2149ff1",
+      "value": "Tanyards GS",
+      "number": "25422010"
+    },
+    {
+      "id": "cd1e415f-8611-361f-b8de-63fdac6bbaab",
+      "value": "Tavistock",
+      "number": "SX47F022"
+    },
+    {
+      "id": "3a4bb591-3708-3341-85e4-e12f8d41333c",
+      "value": "Taw Bridge",
+      "number": "SS60F015"
+    },
+    {
+      "id": "fea8fe17-3b90-33a0-9968-f56509599efb",
+      "value": "Tellisford",
+      "number": "531160"
+    },
+    {
+      "id": "8d65af8c-8f92-36b1-bb54-0bb15a9dca27",
+      "value": "Temple",
+      "number": "033014"
+    },
+    {
+      "id": "1011dd02-4eee-3e0d-a6b4-64ff119978aa",
+      "value": "Tenbury",
+      "number": "2008"
+    },
+    {
+      "id": "39d0a421-8ecc-3a7c-85e9-77ecfeebd19f",
+      "value": "Ternhill",
+      "number": "2052"
+    },
+    {
+      "id": "75377005-9540-3b69-bb9a-f41b7b3e106a",
+      "value": "Ternhill on Tern",
+      "number": "2044"
+    },
+    {
+      "id": "f02411ab-ab7d-3f1b-88b6-cbb99bd12ae0",
+      "value": "Testwood",
+      "number": "151816003"
+    },
+    {
+      "id": "f0e67352-0fc2-3380-8932-e9dcf2fbfef7",
+      "value": "Tetney Blow Well 2",
+      "number": "029018"
+    },
+    {
+      "id": "f358d374-db51-3ebf-982f-5cd8ef7ff375",
+      "value": "Tetney Blow Well 3",
+      "number": "029019"
+    },
+    {
+      "id": "2d935adf-ce86-3a21-a062-cb0e91d4f9aa",
+      "value": "Tetney Blow Well 4",
+      "number": "029020"
+    },
+    {
+      "id": "d720c532-424b-32e5-b92d-1e741640b66a",
+      "value": "Tetney Blow Well1",
+      "number": "029017"
+    },
+    {
+      "id": "d89652ab-8a12-37db-b1eb-47dd7b513702",
+      "value": "Theale Gauging station",
+      "number": "2290TH"
+    },
+    {
+      "id": "64a0b97c-6119-36fa-b42c-74ec7bd658bb",
+      "value": "Thornton Lock",
+      "number": "F2830"
+    },
+    {
+      "id": "e23f1071-be31-3f81-bd2f-776bb98486cb",
+      "value": "Thorpe Le Soken",
+      "number": "037022"
+    },
+    {
+      "id": "47046dd5-cab2-3fad-a939-f7eef7897e14",
+      "value": "Thorverton",
+      "number": "SS90F011"
+    },
+    {
+      "id": "2762f9fe-23ab-37c9-ad14-9fa7597d63d7",
+      "value": "Tibberton",
+      "number": "2040"
+    },
+    {
+      "id": "aa1a3c67-6aca-3acb-87bf-aa427addec75",
+      "value": "Tilford",
+      "number": "3040TH"
+    },
+    {
+      "id": "44ec96e9-f4fb-3371-a4a0-356a13cad844",
+      "value": "Till Washlands",
+      "number": "U30002"
+    },
+    {
+      "id": "cedf6adb-1103-3380-a7a7-35f181c04f8b",
+      "value": "Tilleys Bridge",
+      "number": "351221005"
+    },
+    {
+      "id": "2a6f7fad-c88b-32f0-a0f1-ce2f0ff09598",
+      "value": "Tinwell",
+      "number": "031031"
+    },
+    {
+      "id": "0e2df897-aa4f-3794-9bf0-19a86fda5e3e",
+      "value": "Toft Newton- Ancholme",
+      "number": "029009"
+    },
+    {
+      "id": "7b5d13fa-e0dc-37da-bfce-692b0abf8843",
+      "value": "Tollgate",
+      "number": "033059"
+    },
+    {
+      "id": "31237592-21d2-3bf7-8576-002cbf68686d",
+      "value": "Torrington",
+      "number": "SS51F004"
+    },
+    {
+      "id": "2eb40630-0e4a-3313-b1de-4aaff18aafa0",
+      "value": "Trebrownbridge",
+      "number": "SX25F064"
+    },
+    {
+      "id": "d896a1c8-dc06-36ef-86e8-bea4ead7d1e4",
+      "value": "Trengoffe",
+      "number": "SX16F060"
+    },
+    {
+      "id": "03feb028-bb30-3b9d-af67-b44336c39cc9",
+      "value": "Triumph Road",
+      "number": "4435"
+    },
+    {
+      "id": "c437e487-6a79-3e8d-8123-ddccc837b81f",
+      "value": "Truro",
+      "number": "SW84F054"
+    },
+    {
+      "id": "18687188-72bb-32b8-8fa3-73eccb577478",
+      "value": "Tuddenham",
+      "number": null
+    },
+    {
+      "id": "ef5e4279-9059-3e68-a2be-5ee2c5f2c4bc",
+      "value": "Tumby Woodside",
+      "number": "L30065"
+    },
+    {
+      "id": "ad64b7a3-77bd-3e53-85c5-d2561f026a70",
+      "value": "Twyford Main",
+      "number": "2490_w1TH"
+    },
+    {
+      "id": "5c7db215-34ed-36d4-9b83-bdb8624493df",
+      "value": "UPAVON COMBINED",
+      "number": "432112"
+    },
+    {
+      "id": "88012b61-33f1-3fec-b729-855c8be0fedf",
+      "value": "UPAVON EAST",
+      "number": "432110"
+    },
+    {
+      "id": "cbfd06f0-a8f2-32d7-8023-0a44d59c48bf",
+      "value": "UPAVON WEST",
+      "number": "432120"
+    },
+    {
+      "id": "30b6e6d3-8d75-37f1-b613-7e99e9e1c6de",
+      "value": "UPMINSTER (GAYNES PARK)",
+      "number": "5550"
+    },
+    {
+      "id": "5ea39cf9-6d67-3a0d-bac2-be5be0a119eb",
+      "value": "US Cawdale",
+      "number": "761123"
+    },
+    {
+      "id": "bcc4ea36-d92d-3770-a44b-48032cdce00f",
+      "value": "US Heltondale",
+      "number": "761133"
+    },
+    {
+      "id": "57d9a8ee-b23e-3b80-8e9b-caf8bf12e175",
+      "value": "US Swindale",
+      "number": "761113"
+    },
+    {
+      "id": "0e214c6b-eb11-3ebb-94a9-01803ae94c43",
+      "value": "US Thirlmere",
+      "number": "750605"
+    },
+    {
+      "id": "d828f176-4852-3784-b7ca-7cde518a5acd",
+      "value": "Udiam",
+      "number": "556505001"
+    },
+    {
+      "id": "3241b813-499a-3fcd-ac10-d52b3bc0afd2",
+      "value": "Ulpha",
+      "number": "740101"
+    },
+    {
+      "id": "c638d18d-fc26-3a4c-9cca-cc7d9ad20e8c",
+      "value": "Ulting",
+      "number": "037048U"
+    },
+    {
+      "id": "2f257c14-d2f2-374b-b9b6-1852d818b378",
+      "value": "Upton Mill",
+      "number": "032006"
+    },
+    {
+      "id": "9465f883-7884-3bf6-a3f5-06b98d7e1a90",
+      "value": "Upton Mill Bypass",
+      "number": "032206"
+    },
+    {
+      "id": "8aa2ae9b-5ea7-3654-b7c2-0359b71c8c05",
+      "value": "Upware",
+      "number": null
+    },
+    {
+      "id": "1790efb1-3f6f-3bfb-8a0b-c8f18c94309a",
+      "value": "Vellake",
+      "number": "SX59F005"
+    },
+    {
+      "id": "018cde7a-b4f2-322a-b00d-553128ed9e4e",
+      "value": "Victoria Mill",
+      "number": "030027"
+    },
+    {
+      "id": "b310f79f-edbc-326a-9bd5-ef98d8047664",
+      "value": "Vidal Van Farm SZ 309 926",
+      "number": null
+    },
+    {
+      "id": "c75cdda8-6ef3-3766-b166-5dd052960e79",
+      "value": "WADESMILL",
+      "number": "4980"
+    },
+    {
+      "id": "3e325897-80b7-3bb4-9c62-42bc0290f276",
+      "value": "WALLERS 4 COMBI",
+      "number": "351220099"
+    },
+    {
+      "id": "35e661af-010c-3316-9876-9c9382457777",
+      "value": "WANGFORD BRIDGE",
+      "number": "035023"
+    },
+    {
+      "id": "5da618c9-897c-3aa0-a022-07de383e5f44",
+      "value": "WEDDERBURN BRIDGE",
+      "number": "2017"
+    },
+    {
+      "id": "d06876ad-053b-361e-b050-bcbd25d377f2",
+      "value": "WHITEWATER BRIDGE",
+      "number": "4116"
+    },
+    {
+      "id": "a5827d3e-f819-3229-b289-57f08e34ebab",
+      "value": "WHITWELL",
+      "number": "4730"
+    },
+    {
+      "id": "fc6d1fba-07e4-3ec2-81f9-eef05e3ab1b2",
+      "value": "WOODMILL",
+      "number": "ST00F008"
+    },
+    {
+      "id": "d1d1c966-5493-3f07-a10c-620ca71ddf9c",
+      "value": "WOOLER",
+      "number": "021033"
+    },
+    {
+      "id": "8afe3794-2e60-376e-864d-996e9509b551",
+      "value": "WORKSOP",
+      "number": "4049"
+    },
+    {
+      "id": "ddc5e8f8-67f3-3276-9f69-0373f1bff7ec",
+      "value": "Waddingham",
+      "number": "029011"
+    },
+    {
+      "id": "8c4a2da2-65c0-3aac-bd50-932c58c4167e",
+      "value": "Walcot",
+      "number": "2012"
+    },
+    {
+      "id": "831fb3eb-893d-330b-9690-6c709d3e62d2",
+      "value": "Walden Stubbs",
+      "number": "F0920"
+    },
+    {
+      "id": "0cdd5da8-9cf0-3ea0-b5a4-a131ab4015fd",
+      "value": "Wanes Blades",
+      "number": "700306"
+    },
+    {
+      "id": "fb92abea-6ed1-3683-8864-49b289bdc1a5",
+      "value": "Wansford Ultra High",
+      "number": "U32210"
+    },
+    {
+      "id": "53fd0204-2e3d-366e-b866-9e5f013dee8b",
+      "value": "Wareside (Mardock)",
+      "number": "5080TH"
+    },
+    {
+      "id": "aef05cfd-3433-336c-8c92-85a2e0e1f9b0",
+      "value": "Warham",
+      "number": "034018"
+    },
+    {
+      "id": "1271ea57-cc0b-3282-91b0-ac927b56001b",
+      "value": "Watford (Berrygrove)",
+      "number": "2830TH"
+    },
+    {
+      "id": "174abd53-a8d9-3fec-b20e-fda77b1033ca",
+      "value": "Welches",
+      "number": null
+    },
+    {
+      "id": "edb29777-5f4b-32d3-b057-690ee53d971e",
+      "value": "Wellesbourne",
+      "number": "2048"
+    },
+    {
+      "id": "f57299ac-f666-3f50-b0b7-8f60083072a9",
+      "value": "Welwyn (Fulling Mill)",
+      "number": "4770"
+    },
+    {
+      "id": "6621974c-a91f-32d5-8ed3-823d59eb69d2",
+      "value": "Wensor Bridge",
+      "number": "4191"
+    },
+    {
+      "id": "80a569a8-58df-3e5d-8ffe-7e9574cef752",
+      "value": "West Meon GS",
+      "number": "152803002"
+    },
+    {
+      "id": "107f3915-f4da-3ba5-8a7b-22f7794aa81c",
+      "value": "West Stockwith",
+      "number": null
+    },
+    {
+      "id": "ddaecb33-6532-3b8b-a614-24412d8b7914",
+      "value": "Westbourne",
+      "number": "255110010"
+    },
+    {
+      "id": "366d97c7-6ddc-33aa-8c04-85060324fe84",
+      "value": "Westwick",
+      "number": "F2202"
+    },
+    {
+      "id": "4522bd48-a9ca-3638-86ba-242745820f06",
+      "value": "Weybridge",
+      "number": "3090TH"
+    },
+    {
+      "id": "bbde2883-a575-3273-be2f-9f04fc54df8e",
+      "value": "Whaddon",
+      "number": "033064"
+    },
+    {
+      "id": "1dc4dc24-fd14-337a-b8f9-0f52f5b1cc5c",
+      "value": "Wheatley USGS",
+      "number": "1980TH"
+    },
+    {
+      "id": "d69e4104-e0b5-3736-8599-442fead8286c",
+      "value": "Whitacre",
+      "number": null
+    },
+    {
+      "id": "a6918091-7d0e-3355-90e3-9423606ddc10",
+      "value": "Whitebridge",
+      "number": "033029"
+    },
+    {
+      "id": "d621f696-cdf7-3e6f-8393-58fdcdc41437",
+      "value": "Whiteley Stream",
+      "number": null
+    },
+    {
+      "id": "24136c74-6fba-3bbb-bdf0-51d05e1b5c5c",
+      "value": "Whitleyford Bridge",
+      "number": "2602"
+    },
+    {
+      "id": "58481312-fe98-3aff-8a59-e7799e8e2e61",
+      "value": "Whittington",
+      "number": "F0203"
+    },
+    {
+      "id": "8e576c21-9507-3ae5-b91e-d6b6b77d3951",
+      "value": "Wholsea Grange",
+      "number": "F3402"
+    },
+    {
+      "id": "1952d3f4-5346-3649-a7ea-3c4dd9b1148f",
+      "value": "Wickford",
+      "number": "037031"
+    },
+    {
+      "id": "024b5205-1db4-3e81-b18d-bfb7a89dcc9a",
+      "value": "Willow Brook",
+      "number": "032002"
+    },
+    {
+      "id": "9fd90ac1-d5e7-3201-ad83-b8ed317f3d8c",
+      "value": "Wilmslow",
+      "number": "693435"
+    },
+    {
+      "id": "c83f03bc-1e64-3ab6-b6f2-5af68f12da37",
+      "value": "Wilsford",
+      "number": "030032"
+    },
+    {
+      "id": "90e41e6f-6dd9-3bcf-84bc-2eb2f125c7cc",
+      "value": "Wimpole",
+      "number": "033027"
+    },
+    {
+      "id": "ced24eb7-9763-36f3-8d11-b22434ec5553",
+      "value": "Windsor",
+      "number": "2700TH"
+    },
+    {
+      "id": "ea6367d0-36d7-37c8-b395-b42d5d1a2292",
+      "value": "Woodleigh",
+      "number": "SS62F002"
+    },
+    {
+      "id": "15848326-64a8-3f35-b999-bc5404ff691f",
+      "value": "Wootton Brook",
+      "number": "032031"
+    },
+    {
+      "id": "98d66628-d60e-3ba0-a1a9-5ff1c5e2f997",
+      "value": "Wraxall",
+      "number": "521510"
+    },
+    {
+      "id": "864ea687-901d-3f49-b5b0-cbd19a20e9d4",
+      "value": "Wychnor",
+      "number": null
+    },
+    {
+      "id": "8a21e041-677b-3b13-be78-7c18a1048e29",
+      "value": "Wye GS",
+      "number": "654306001"
+    },
+    {
+      "id": "06ea2f17-1ab8-36ab-b3b7-c46701979425",
+      "value": "Wyre Piddle",
+      "number": "2133"
+    },
+    {
+      "id": "2255f1f5-32e3-3ecb-86e8-35a13c4658e1",
+      "value": "Yarkhill",
+      "number": "055018"
+    },
+    {
+      "id": "5b29148e-bcd5-3f93-8145-5fbb4b96a1d1",
+      "value": "Yeaton",
+      "number": "2020"
+    },
+    {
+      "id": "7a9cb9b1-80a1-3fbf-abdd-b8d700c9cdb5",
+      "value": "Yoxall",
+      "number": "4012"
+    }
+  ]
+}

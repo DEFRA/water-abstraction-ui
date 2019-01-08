@@ -22,7 +22,7 @@
       }
     },
     "gauging_station" : {
-      "$ref": "water://picklists/gauging_stations.json"
+      "$ref": "water://types/gaugingStations.json"
     },
     "gauging_station_ngr": {
       "$ref": "water://types/ngr.json",
@@ -45,7 +45,7 @@
     },
     "max_rate_unit": {
       "type" : "string",
-      "enum" : ["m³/s"],
+      "enum" : ["m³/s", "l/s"],
       "errors": {
         "required": {
           "message": "Select a rate unit"

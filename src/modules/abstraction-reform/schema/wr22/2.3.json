@@ -129,7 +129,7 @@
     },
     "hof_hol_flow_unit" : {
       "type" : "string",
-      "enum" : ["m³/s", "mORD", "mASD"],
+      "enum" : ["m³/s", "l/s", "mAOD", "mASD"],
       "label" : "Unit",
       "errors": {
         "required": {

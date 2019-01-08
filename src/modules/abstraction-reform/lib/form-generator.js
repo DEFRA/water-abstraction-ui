@@ -15,7 +15,8 @@ const types = {
   measurementPointRefPoint: require('../schema/types/measurement-point-ref-point.json'),
   rate: require('../schema/types/rate.json'),
   purpose: require('../schema/types/purpose.json'),
-  waterBodies: require('../schema/types/water-bodies.json')
+  waterBodies: require('../schema/types/water-bodies.json'),
+  gaugingStations: require('../schema/types/gauging-stations.json')
 };
 
 const createEnumsObject = (items, iteratee) => ({

@@ -147,11 +147,8 @@ const getCompanyPermissions = (credentials = {}, entityRoles = []) => {
   const companyEntityIds = uniq(entityRoles.map(role => role.company_entity_id).filter(entityId => !!entityId));
 
   return companyEntityIds.reduce((acc, companyEntityId) => {
-    const companyCredentials = {
-      ...credentials,
-      roles: entityRoles.filter(row => row.company_entity_id === companyEntityId)
-    };
-    acc[companyEntityId] = getPermissions(companyCredentials);
+    const roles = entityRoles.filter(row => row.company_entity_id === companyEntityId);
+    acc[companyEntityId] = getPermissions(credentials, roles);
     return acc;
   }, {});
 };

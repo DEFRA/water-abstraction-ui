@@ -35,7 +35,7 @@
     },
     "max_rate_unit": {
       "type" : "string",
-      "enum" : ["m³/s"],
+      "enum" : ["m³/s", "l/s"],
       "errors": {
         "required": {
           "message": "Select a rate unit"
@@ -67,7 +67,7 @@
     },
     "hol_rate_level_unit": {
       "type" : "string",
-      "enum" : ["mORD", "mASD"],
+      "enum" : ["mAOD", "mASD"],
       "errors": {
         "required": {
           "message": "Select a HOL rate / level unit"

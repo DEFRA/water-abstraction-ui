@@ -35,7 +35,7 @@
     },
     "unit": {
       "type" : "string",
-      "enum" : ["mORD", "mASD"],
+      "enum" : ["mAOD", "mASD"],
       "errors" : {
         "required" : {
           "message" : "Select a unit"

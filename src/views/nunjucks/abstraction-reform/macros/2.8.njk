@@ -1,4 +1,4 @@
 {% macro wr22_2_8(data) %}
 The rate of flow of {{ data.max_rate }}{{ data.unit }}
-shall be delivered via a {{ data.delivery_method }} located at {{ data.ngr }}.
+shall be delivered via a {{ data.delivery_method | lower }} located at {{ data.ngr }}.
 {% endmacro %}

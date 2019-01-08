@@ -1,5 +1,5 @@
 {% macro wr22_2_7(data) %}
 The quantity of water abstracted shall not exceed {{ data.max_percentage}}% of
-the available flow in the {{ data.water_body_name }} in excess of
+the available flow in the {{ data.water_body_name.name }} in excess of
 {{ data.max_rate }}{{ data.unit }}.
 {% endmacro %}

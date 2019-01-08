@@ -25,7 +25,7 @@
     },
     "delivery_method": {
       "type" : "string",
-      "enum" : ["pipe", "compensation notch in the weir", "intake structure"]
+      "enum" : ["Pipe", "Compensation notch in the weir", "Intake structure"]
     },
     "ngr" : {
       "$ref" : "water://types/ngr.json",

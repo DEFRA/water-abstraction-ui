@@ -34,13 +34,10 @@
         }
       }
     },
-
-    "water_body_name": {
-      "$ref": "water://picklists/water_bodies.json",
-      "errors": {
-        "required": {
-          "message": "Select the water body"
-        }
+    "water_body_name" : {
+      "$ref" : "water://types/waterBodies.json",
+      "errors" : {
+        "message" : "Select the water body"
       }
     },
     "gauging_station" : {

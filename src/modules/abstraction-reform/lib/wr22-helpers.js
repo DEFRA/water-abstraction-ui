@@ -2,7 +2,7 @@ const { find, omit, get, mapValues, isObject } = require('lodash');
 
 const { setValues } = require('../../../lib/forms');
 const loader = require('./loader');
-const { wr22 } = require('./schema');
+const { getWR22 } = require('./schema');
 const formGenerator = require('./form-generator.js');
 const { createAddData, createEditData } = require('./action-creators');
 const { stateManager, getInitialState } = require('./state-manager');
@@ -13,7 +13,7 @@ const { stateManager, getInitialState } = require('./state-manager');
  * @return {Object}            the JSON schema
  */
 const getSchema = (schemaName) => {
-  const item = find(wr22, { id: schemaName });
+  const item = find(getWR22(), { id: schemaName });
   if (item) {
     return item;
   }
@@ -112,6 +112,7 @@ const getEditFormAndSchema = async (request) => {
 
   const item = findDataItem(result.finalState, id);
 
+  console.log('wr22-helpers - getEditFormAndSchema');
   const schema = await formGenerator.dereference(getSchema(item.schema), { documentId });
 
   const values = flattenData(item.content);

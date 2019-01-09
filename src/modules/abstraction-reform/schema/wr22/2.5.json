@@ -24,15 +24,6 @@
     "gauging_station" : {
       "$ref": "water://types/gaugingStations.json"
     },
-    "gauging_station_ngr": {
-      "$ref": "water://types/ngr.json",
-      "label": "Gauging station NGR",
-      "errors": {
-        "pattern": {
-          "message": "Measurement point NGR should be a valid grid reference"
-        }
-      }
-    },
     "max_rate": {
       "type": "number",
       "label": "Maximum rate",
@@ -53,5 +44,5 @@
       }
     }
   },
-  "required": ["nald_condition", "water_body_name", "gauging_station", "gauging_station_ngr", "max_rate"]
+  "required": ["nald_condition", "water_body_name", "gauging_station", "max_rate"]
 }

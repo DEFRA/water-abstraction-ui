@@ -1,6 +1,9 @@
 {% macro wr22_2_3(data) %}
 
-No {{ data.purpose_type | lower }} shall take place unless the rate of flow in the {{ data.water_body_name.name }} as measured
+No
+  {% if data.purpose_type == 'Abstraction' %}abstraction{% else %}power production{% endif %}
+
+ shall take place unless the rate of flow in the {{ data.water_body_name.name }} as measured
 
 {% if data.measurement_point.measurement_point_type == 'Upstream' %}immediately upstream of the authorised point of abstraction,{% endif %}
 {% if data.measurement_point.measurement_point_type == 'Downstream' %}immediately downstream of the authorised point of abstraction,{% endif %}
@@ -13,7 +16,11 @@ No {{ data.purpose_type | lower }} shall take place unless the rate of flow in t
 {% endif %}
 
 is equal to or greater than {{ data.hof_hol_flow }}{{ data.hof_hol_flow_unit }}
-and the {{ data.purpose_type | lower }}
+and the
+
+{% if data.purpose_type == 'Abstraction' %}abstraction{% endif %}
+{% if data.purpose_type == 'Power production' %}power production{% endif %}
+{% if data.purpose_type == 'Power production with turbine' %}turbine{% endif %}
 
 shall not cause the
 

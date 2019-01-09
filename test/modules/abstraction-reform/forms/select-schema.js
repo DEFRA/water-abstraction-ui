@@ -3,7 +3,7 @@ const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
 const { selectSchemaForm } = require('../../../../src/modules/abstraction-reform/forms/select-schema');
-const { wr22 } = require('../../../../src/modules/abstraction-reform/lib/schema');
+const { getWR22 } = require('../../../../src/modules/abstraction-reform/lib/schema');
 
 const lab = exports.lab = Lab.script();
 
@@ -20,6 +20,7 @@ lab.experiment('selectSchemaForm', () => {
   let form;
 
   lab.beforeEach(async () => {
+    const wr22 = getWR22();
     form = selectSchemaForm(request, wr22);
   });
 

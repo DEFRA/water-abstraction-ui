@@ -46,7 +46,12 @@
         "measurement_point_diagram_type" : {
           "label": "Diagram type",
           "type" : "string",
-          "enum" : ["None", "Map", "Drawing"]
+          "enum" : ["None", "Map", "Drawing"],
+          "errors" : {
+            "required" : {
+              "message" : "Select a diagram type"
+            }
+          }
         },
         "measurement_point_reference" : {
           "$ref" : "water://types/measurementPointRefPoint.json",
@@ -129,7 +134,7 @@
     },
     "hof_hol_flow_unit" : {
       "type" : "string",
-      "enum" : ["m³/s", "l/s", "mAOD", "mASD"],
+      "enum" : ["m³/s", "l/s", "mAOD", "mASD", "m"],
       "label" : "Unit",
       "errors": {
         "required": {
@@ -141,7 +146,12 @@
     "hof_type" : {
       "type" : "string",
       "enum" : ["Hands off flow", "Hands off level"],
-      "label": "HoF type"
+      "label": "HoF type",
+      "errors": {
+        "required" : {
+          "message" : "Enter a HoF type"
+        }
+      }
     }
   },
   "required": [

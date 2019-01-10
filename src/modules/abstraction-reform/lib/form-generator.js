@@ -142,6 +142,22 @@ const guessLabel = (str, item) => {
 const mapScalarEnumChoice = item => ({ label: item, value: item });
 
 /**
+ * If the enum values are to be rendered as a dropdown, and the default
+ * value is to be empty (so not to select the first item) then
+ * add the appropriate empty value for a object or scalar enum.
+ */
+const getEnumFieldChoices = item => {
+  if (item.defaultEmpty && item.enum.length > 5) {
+    const empty = isObject(item.enum[0])
+      ? { label: '', value: '' }
+      : '';
+
+    return [empty, ...item.enum];
+  }
+  return item.enum;
+};
+
+/**
  * Create a field for an enum in the JSON schema
  * The data in the enum can either be an array of scalers or objects
  * If objects, it expects the format { id : 'x', value : 'y'}
@@ -156,15 +172,24 @@ const createEnumField = (fieldName, item) => {
   const hint = get(item, 'hint');
 
   const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
+  const choices = getEnumFieldChoices(item);
 
   // Object enum items
   if (isObject(item.enum[0])) {
-    return fieldFactory(fieldName, { label, hint, choices: item.enum, keyProperty: 'id', labelProperty: 'value', errors, mapper: 'objectMapper' });
-  } else {
-    // Scalar enum values (string/number)
-    const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-    return fieldFactory(fieldName, { label, hint, choices: item.enum.map(mapScalarEnumChoice), mapper, errors });
+    return fieldFactory(fieldName, {
+      label,
+      hint,
+      choices,
+      keyProperty: 'id',
+      labelProperty: 'value',
+      errors,
+      mapper: 'objectMapper'
+    });
   }
+
+  // Scalar enum values (string/number)
+  const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
+  return fieldFactory(fieldName, { label, hint, choices: choices.map(mapScalarEnumChoice), mapper, errors });
 };
 
 /**
@@ -294,5 +319,6 @@ module.exports = {
   picklistSchemaFactory,
   schemaToForm,
   guessLabel,
-  addAttribute
+  addAttribute,
+  createEnumField
 };

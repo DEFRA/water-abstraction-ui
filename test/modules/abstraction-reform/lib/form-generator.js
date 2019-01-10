@@ -3,7 +3,11 @@ const sandbox = require('sinon').createSandbox();
 
 const apiHelpers = require('../../../../src/modules/abstraction-reform/lib/api-helpers');
 const {
-  dereference, picklistSchemaFactory, schemaToForm, guessLabel, addAttribute
+  dereference,
+  picklistSchemaFactory,
+  schemaToForm, guessLabel,
+  addAttribute,
+  createEnumField
 } = require('../../../../src/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('code');
 const licencesConnector = require('../../../../src/lib/connectors/water-service/licences');
@@ -254,5 +258,57 @@ experiment('addAttribute should add one or more attribute properties to field ob
     f = addAttribute(f, 'bar', 'baz');
     expect(f.options.attr.foo).to.equal('1');
     expect(f.options.attr.bar).to.equal('baz');
+  });
+});
+
+experiment('createEnumField', () => {
+  test('for 5 enum values, a radio group is created', async () => {
+    const item = {
+      enum: [1, 2, 3, 4, 5]
+    };
+
+    const field = createEnumField('name-of-field', item);
+    expect(field.options.widget).to.equal('radio');
+  });
+
+  test('for > 5 enum values, a dropdown is created', async () => {
+    const item = {
+      enum: [1, 2, 3, 4, 5, 6]
+    };
+
+    const field = createEnumField('name-of-field', item);
+    expect(field.options.widget).to.equal('dropdown');
+  });
+
+  test('for 5 enum values, and defaultEmpty set to true, there are still only 5 entries', async () => {
+    const item = {
+      enum: [1, 2, 3, 4, 5],
+      defaultEmpty: true
+    };
+
+    const field = createEnumField('name-of-field', item);
+    expect(field.options.choices.length).to.equal(5);
+  });
+
+  test('for > 5 scalar enum values, and defaultEmpty set to true, an empty values is added to choices', async () => {
+    const item = {
+      enum: [1, 2, 3, 4, 5, 6],
+      defaultEmpty: true
+    };
+
+    const field = createEnumField('name-of-field', item);
+    expect(field.options.choices.length).to.equal(7);
+    expect(field.options.choices[0]).to.equal({ value: '', label: '' });
+  });
+
+  test('for > 5 object enum values, and defaultEmpty set to true, an empty values is added to choices', async () => {
+    const item = {
+      enum: [1, 2, 3, 4, 5, 6].map(i => ({ label: i, value: i })),
+      defaultEmpty: true
+    };
+
+    const field = createEnumField('name-of-field', item);
+    expect(field.options.choices.length).to.equal(7);
+    expect(field.options.choices[0]).to.equal({ value: '', label: '' });
   });
 });

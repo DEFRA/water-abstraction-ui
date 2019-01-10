@@ -15,15 +15,6 @@
         }
       }
     },
-    "max_rate": {
-      "type" : "number",
-      "label" : "Maximum rate",
-      "errors": {
-        "type": {
-          "message": "Maximum rate should be a number"
-        }
-      }
-    },
     "rate_type": {
       "$ref": "water://types/rate.json",
       "label": "Rate type",
@@ -33,9 +24,18 @@
         }
       }
     },
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate",
+      "errors": {
+        "type": {
+          "message": "Maximum rate should be a number"
+        }
+      }
+    },
     "max_rate_unit": {
       "type" : "string",
-      "enum" : ["m³/s", "l/s"],
+      "enum" : ["m³/s", "l/s", "m³/d"],
       "errors": {
         "required": {
           "message": "Select a rate unit"

@@ -272,7 +272,10 @@ const mapFormDropdownField = (field) => {
     hint: {
       text: field.options.hint
     },
-    items
+    items,
+    formGroup: {
+      classes: 'govuk-body'
+    }
   };
 
   // console.log(find(options, { selected: true }));

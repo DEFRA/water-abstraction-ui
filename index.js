@@ -15,10 +15,11 @@ const Scooter = require('scooter');
 
 // -------------- Require project code -----------------
 const config = require('./config');
-const { acl, ...plugins } = require('./src/lib/hapi-plugins');
+const { acl, permissions, ...plugins } = require('./src/lib/hapi-plugins');
 const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
 const returnsPlugin = require('./src/modules/returns/plugin.js');
+const entityRolesPlugin = require('./src/lib/hapi-plugins/entity-roles');
 const viewEngine = require('./src/lib/view-engine/');
 
 // Initialise logger
@@ -63,16 +64,17 @@ async function start () {
 
     await server.register([Inert, Vision]);
 
-    // App plugins
+    // The following plugins all are part of the auth phase in
+    // the request lifecycle and hook into onPostAuth.
+    // The order is important so they are registered explicitly.
+    await server.register({ plugin: entityRolesPlugin });
+    await server.register({ plugin: permissions });
     await server.register({
       plugin: acl,
-      options: {
-        permissionsFunc
-      }
+      options: { permissionsFunc }
     });
 
     await server.register(Object.values(plugins));
-
     await server.register({ plugin: returnsPlugin });
 
     // Set up auth strategies
@@ -85,7 +87,7 @@ async function start () {
       });
       server.auth.strategy('jwt', 'jwt', {
         ...config.jwt,
-        validate: async (decoded) => ({isValid: !!decoded.id})
+        validate: async (decoded) => ({ isValid: !!decoded.id })
       });
     }
 

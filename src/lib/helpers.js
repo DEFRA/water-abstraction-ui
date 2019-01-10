@@ -94,18 +94,7 @@ function makeURIRequestWithBody (uri, method, data) {
   });
 }
 
-// create a UUID
-function createGUID () {
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
-
 module.exports = {
-  createGUID: createGUID,
   makeURIRequest: makeURIRequest,
   makeURIRequestWithBody: makeURIRequestWithBody,
   forceArray,

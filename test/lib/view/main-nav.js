@@ -75,7 +75,7 @@ lab.experiment('getMainNav', () => {
   lab.test('It should set the active nav link flag', async () => {
     const request = getPrimaryUserRequest();
     const links = getMainNav(request);
-    const link = find(links, {id: 'view'});
+    const link = find(links, { id: 'view' });
     expect(link.active).to.equal(true);
   });
 

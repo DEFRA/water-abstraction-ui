@@ -92,7 +92,7 @@ lab.experiment('Return reducers', () => {
   });
 
   lab.test('applyBasis should set the estimated/measured property', async () => {
-    const data = applyBasis(testReturn, {basis: 'estimated'});
+    const data = applyBasis(testReturn, { basis: 'estimated' });
     expect(data.reading.type).to.equal('estimated');
   });
 

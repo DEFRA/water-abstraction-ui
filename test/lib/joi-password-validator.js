@@ -4,7 +4,6 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const Code = require('code');
-const helpers = require('../../src/lib/helpers.js');
 
 const Joi = require('joi');
 
@@ -22,7 +21,7 @@ lab.experiment('Test Joi password validation', () => {
   lab.test('Should reject empty password', async () => {
     const password = '';
 
-    const {error} = Joi.validate({password}, schema, options);
+    const { error } = Joi.validate({ password }, schema, options);
     const viewError = formatViewError(error);
 
     Code.expect(viewError).to.equal({
@@ -36,7 +35,7 @@ lab.experiment('Test Joi password validation', () => {
   lab.test('Should reject a password which is too short', async () => {
     const password = 'Hello!';
 
-    const {error} = Joi.validate({password}, schema, options);
+    const { error } = Joi.validate({ password }, schema, options);
     const viewError = formatViewError(error);
 
     Code.expect(viewError).to.equal({
@@ -47,7 +46,7 @@ lab.experiment('Test Joi password validation', () => {
   lab.test('Should reject a password which has no uppercase character', async () => {
     const password = 'hello1234$%^!';
 
-    const {error} = Joi.validate({password}, schema, options);
+    const { error } = Joi.validate({ password }, schema, options);
     const viewError = formatViewError(error);
 
     Code.expect(viewError).to.equal({
@@ -58,7 +57,7 @@ lab.experiment('Test Joi password validation', () => {
   lab.test('Should reject a password which has no special character', async () => {
     const password = 'Hello12345THERE';
 
-    const {error} = Joi.validate({password}, schema, options);
+    const { error } = Joi.validate({ password }, schema, options);
     const viewError = formatViewError(error);
 
     Code.expect(viewError).to.equal({
@@ -69,7 +68,7 @@ lab.experiment('Test Joi password validation', () => {
   lab.test('Should flag multiple errors', async () => {
     const password = 'hello12345678';
 
-    const {error} = Joi.validate({password}, schema, options);
+    const { error } = Joi.validate({ password }, schema, options);
     const viewError = formatViewError(error);
 
     Code.expect(viewError).to.equal({

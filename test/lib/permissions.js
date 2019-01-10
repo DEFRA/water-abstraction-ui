@@ -3,15 +3,11 @@
 const Lab = require('lab');
 const { experiment, beforeEach, test } = exports.lab = Lab.script();
 const { expect } = require('code');
-const { isString } = require('lodash');
 
 const { getPermissions } = require('../../src/lib/permissions');
 
-const getCredentials = (scope = [], roles = [], entityId = null) => ({
+const getCredentials = (scope = [], entityId = null) => ({
   scope,
-  roles: roles.map(role => {
-    return isString(role) ? { role } : role;
-  }),
   entity_id: entityId
 });
 
@@ -19,8 +15,9 @@ experiment('getPermissions::internal user', () => {
   let internalPermissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['internal'], [], 'entity-id');
-    internalPermissions = await getPermissions(credentials);
+    const credentials = getCredentials(['internal'], 'entity-id');
+    const entityRoles = [];
+    internalPermissions = await getPermissions(credentials, entityRoles);
   });
 
   test('can read licences', async () => {
@@ -52,8 +49,9 @@ experiment('getPermissions::primary user', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['external'], ['primary_user'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['external'], 'entity-id');
+    const entityRoles = [{ role: 'primary_user' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('can read licences', async () => {
@@ -89,8 +87,9 @@ experiment('getPermissions::agent', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['external'], ['user'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['external'], 'entity-id');
+    const entityRoles = [{ role: 'user' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('user can read licences', async () => {
@@ -120,8 +119,9 @@ experiment('getPermissions::agent', () => {
 
 experiment('getPermissions::multi licence user', () => {
   test('user can be multi licence (agent)', async () => {
-    const credentials = getCredentials(['external'], ['primary_user', 'user'], 'entity-id');
-    const permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['external'], 'entity-id');
+    const entityRoles = [{ role: 'primary_user' }, { role: 'user' }];
+    const permissions = await getPermissions(credentials, entityRoles);
     expect(permissions.licences.multi).to.be.true();
   });
 });
@@ -130,8 +130,9 @@ experiment('getPermissions::agent with data returns', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['external'], ['user', 'user_returns'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['external'], 'entity-id');
+    const entityRoles = [{ role: 'user' }, { role: 'user_returns' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('user can read licences', async () => {
@@ -166,13 +167,15 @@ experiment('getPermissions::agent with data returns', () => {
 experiment('getPermissions::no entity id', () => {
   test('sets licence.read to false for external', async () => {
     const credentials = getCredentials(['external']);
-    const permissions = await getPermissions(credentials);
+    const entityRoles = [];
+    const permissions = await getPermissions(credentials, entityRoles);
     expect(permissions.licences.read).to.be.false();
   });
 
   test('sets licence.read to false for internal', async () => {
     const credentials = getCredentials(['internal']);
-    const permissions = await getPermissions(credentials);
+    const entityRoles = [];
+    const permissions = await getPermissions(credentials, entityRoles);
     expect(permissions.licences.read).to.be.false();
   });
 });
@@ -213,8 +216,9 @@ experiment('getPermissions::ar_user', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['ar_user'], ['admin'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['ar_user'], 'entity-id');
+    const entityRoles = [{ role: 'admin' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('can read licences', async () => {
@@ -254,8 +258,9 @@ experiment('getPermissions::ar_approver', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['ar_approver'], ['admin'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['ar_approver'], 'entity-id');
+    const entityRoles = [{ role: 'admin' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('can read licences', async () => {
@@ -299,8 +304,9 @@ experiment('getPermissions::internal returns user', () => {
   let permissions;
 
   beforeEach(async () => {
-    const credentials = getCredentials(['returns'], ['admin'], 'entity-id');
-    permissions = await getPermissions(credentials);
+    const credentials = getCredentials(['returns'], 'entity-id');
+    const entityRoles = [{ role: 'admin' }];
+    permissions = await getPermissions(credentials, entityRoles);
   });
 
   test('can read licences', async () => {

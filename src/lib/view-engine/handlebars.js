@@ -7,8 +7,8 @@ const qs = require('querystring');
 const sentenceCase = require('sentence-case');
 const titleCase = require('title-case');
 const marked = require('marked');
+const uuid = require('uuid/v4');
 
-const Helpers = require('../helpers');
 const DynamicView = require('../dynamicview');
 
 const timezone = 'Europe/London';
@@ -378,7 +378,7 @@ handlebars.registerHelper('showhide', function () {
 });
 
 handlebars.registerHelper('guid', function () {
-  return Helpers.createGUID();
+  return uuid();
 });
 
 handlebars.registerHelper('formatISODate', function (dateInput, options) {

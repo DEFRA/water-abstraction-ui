@@ -14,7 +14,7 @@ const {
   addActionFactory, editActionFactory, persistActions, getSchema
 } = wr22Helpers;
 
-const { wr22 } = require('../lib/schema');
+const { getWR22 } = require('../lib/schema');
 
 const { deleteForm } = require('../forms/delete');
 
@@ -56,9 +56,10 @@ const pre = async (request, h) => {
 const getSelectSchema = async (request, h) => {
   const { documentId } = request.params;
 
-  const form = request.form || selectSchemaForm(request, wr22);
+  const wr22Schema = getWR22();
+  const form = request.form || selectSchemaForm(request, wr22Schema);
 
-  const categories = getSchemaCategories(wr22);
+  const categories = getSchemaCategories(wr22Schema);
 
   const view = {
     categories,
@@ -80,7 +81,8 @@ const getSelectSchema = async (request, h) => {
 const postSelectSchema = async (request, h) => {
   const { documentId } = request.params;
 
-  const form = handleRequest(selectSchemaForm(request, wr22), request);
+  const wr22Schema = getWR22();
+  const form = handleRequest(selectSchemaForm(request, wr22Schema), request);
 
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {

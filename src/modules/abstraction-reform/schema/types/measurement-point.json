@@ -31,7 +31,8 @@
           "NGR"
         ]
       }
-    }
+    },
+    "required": ["measurement_point_type"]
   },
   "then": {
     "required": [

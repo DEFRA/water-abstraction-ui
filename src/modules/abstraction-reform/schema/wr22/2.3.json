@@ -85,13 +85,14 @@
           "fieldType" : "date"
         }
       },
-      "required" : ["measurement_point_type"],
+      "required" : ["measurement_point_type", "measurement_point_diagram_type"],
       "allOf": [
         {
           "if": {
             "properties": {
               "measurement_point_type": { "enum": ["NGR"] }
-            }
+            },
+            "required" : ["measurement_point_type"]
           },
           "then": {
             "required" : ["measurement_point_ngr"]
@@ -101,7 +102,8 @@
           "if": {
             "properties": {
               "measurement_point_diagram_type": { "enum": ["Map"] }
-            }
+            },
+            "required" : ["measurement_point_diagram_type"]
           },
           "then": {
             "required" : ["measurement_point_reference"]
@@ -111,7 +113,8 @@
           "if": {
             "properties": {
               "measurement_point_diagram_type": { "enum": ["Drawing"] }
-            }
+            },
+            "required" : ["measurement_point_diagram_type"]
           },
           "then": {
             "required" : ["measurement_point_drawing_name", "measurement_point_drawing_date"]

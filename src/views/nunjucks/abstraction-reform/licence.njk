@@ -133,8 +133,6 @@
       </div>
       <div class="govuk-grid-column-two-thirds">
         <p>{{ wr22Condition(item) }}</p>
-
-
       </div>
     </div>
 
@@ -145,7 +143,7 @@
   {% endif %}
 
 
-  {%if canEdit %}
+  {%if canEdit and data.conditions.length %}
   <p>
     <a href="/admin/abstraction-reform/licence/{{ documentId }}/select-schema">Add a condition</a>
   </p>

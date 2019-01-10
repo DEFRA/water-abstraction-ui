@@ -27,7 +27,7 @@
     },
     "max_rate_unit": {
       "type" : "string",
-      "enum" : ["m³/s", "l/s"],
+      "enum" : ["m³/s", "l/s", "m³/d"],
       "errors": {
         "required": {
           "message": "Select a rate unit"
@@ -43,16 +43,6 @@
     "gauging_station" : {
       "$ref": "water://types/gaugingStations.json"
     },
-    "gauging_station_ngr": {
-      "$ref": "water://types/ngr.json",
-      "label": "Gauging station NGR",
-      "errors": {
-        "pattern": {
-          "message": "Measurement point NGR should be a valid grid reference"
-        }
-      }
-    },
-
     "hof_rate": {
       "type": "number",
       "label": "HoF rate",
@@ -77,5 +67,5 @@
     }
 
   },
-  "required": ["nald_condition", "max_rate", "max_rate_unit", "water_body_name", "gauging_station", "gauging_station_ngr", "hof_rate", "hof_rate_unit", "hof_duration"]
+  "required": ["nald_condition", "max_rate", "max_rate_unit", "water_body_name", "gauging_station", "hof_rate", "hof_rate_unit", "hof_duration"]
 }

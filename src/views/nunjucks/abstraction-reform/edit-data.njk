@@ -35,20 +35,8 @@
 <script src="/public/javascripts/json-forms-toggle.js"></script>
 <script src="/public/javascripts/accessible-autocomplete.min.js"></script>
 <link href="/public/stylesheets/accessible-autocomplete.min.css" rel="stylesheet" />
+<script src="/public/javascripts/abstraction-reform.js"></script>
 <script nonce={{nonces.script}}>
-  var selects = document.querySelectorAll('select');
-  var selectsLength = selects.length;
-  var index = 0;
-  var currentSelect;
-
-  for (index; index < selectsLength; index += 1) {
-    currentSelect = selects[index];
-    
-    if (currentSelect.getElementsByTagName('option').length > 200) {
-      accessibleAutocomplete.enhanceSelectElement({
-        selectElement: currentSelect
-      });
-    }
-  } 
+  WRLS.initAutoComplete();
 </script>
 {% endblock %}

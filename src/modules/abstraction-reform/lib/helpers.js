@@ -1,7 +1,7 @@
 const deepMap = require('deep-map');
 const { pickBy, isArray, isObject, mapValues, pick, setWith, find } = require('lodash');
 const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
-const { wr22 } = require('./schema');
+const { getWR22 } = require('./schema');
 
 /**
  * Returns obj with non-scalar values removed
@@ -92,7 +92,7 @@ const prepareItem = (licence, finalState, getter = x => x) => {
  */
 const mapARItem = (item) => {
   const { schema: schemaName } = item;
-  const schema = find(wr22, { id: schemaName });
+  const schema = find(getWR22(), { id: schemaName });
   return {
     id: item.id,
     schema: schemaName,

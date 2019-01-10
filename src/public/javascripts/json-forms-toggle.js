@@ -44,7 +44,7 @@ function test (ele) {
 function refreshForm () {
   $('[data-toggle]').each(function (i, ele) {
     var isVisible = test(ele);
-    $(ele).parent('.govuk-form-group').toggle(isVisible);
+    $(ele).parents('.govuk-form-group').toggle(isVisible);
   });
 };
 

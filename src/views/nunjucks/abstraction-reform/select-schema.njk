@@ -6,23 +6,23 @@
 
 
 
-{% macro arSchemaRadio(schema) %}
-{% set id = 'wr22_' + schema.title %}
+{% macro arSchemaRadio(choice) %}
+{% set id = 'wr22_' + choice.value %}
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
 <div class="data-row">
   <div class="data-row__item">
     <div class="govuk-radios">
       <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="{{ id }}" name="schema" type="radio" value="{{ schema.id }}">
+        <input class="govuk-radios__input" id="{{ id }}" name="schema" type="radio" value="{{ choice.value }}">
         <label class="govuk-label govuk-radios__label" for="{{ id }}">
-          {{ schema.title }}
+          {{ choice.label }}
         </label>
       </div>
     </div>
   </div>
   <div class="data-row__item">
-    <p>{{ schema.description | ARConditionPlaceholder | safe }}</p>
+    <p>{{ choice.hint | ARConditionPlaceholder | safe }}</p>
   </div>
 </div>
 {% endmacro %}
@@ -46,6 +46,8 @@
   <h2 class="govuk-heading-m">{{ category.title }}</h2>
 
 
+  {% set index = 0 %}
+
   {% for subcategory in category.subcategories %}
 
     {% if subcategory.title %}
@@ -53,7 +55,8 @@
     {% endif %}
 
     {% for schema in subcategory.schemas %}
-      {{ arSchemaRadio(schema) }}
+      {{ arSchemaRadio(form.fields[0].options.choices[index])}}
+      {% set index = index+1 %}
     {% endfor %}
 
     <br />

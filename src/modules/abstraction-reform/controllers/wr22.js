@@ -68,7 +68,7 @@ const getSelectSchemaCategory = async (request, h) => {
     categories,
     ...request.view,
     form,
-    back: `/admin/abstraction-reform/licence/${documentId}`
+    back: `/admin/abstraction-reform/licence/${documentId}#further-conditions`
   };
 
   return h.view('nunjucks/abstraction-reform/select-schema-category.njk', view, { layout: false });
@@ -107,7 +107,7 @@ const getSelectSchema = async (request, h) => {
   const categories = getSchemaCategories(wr22Schema);
   const category = find(categories, { slug });
 
-  const form = request.form || selectSchemaForm(request, category);
+  const form = request.form || selectSchemaForm(request, wr22Schema, category);
 
   const view = {
     category,
@@ -133,7 +133,7 @@ const postSelectSchema = async (request, h) => {
   const categories = getSchemaCategories(wr22Schema);
   const category = find(categories, { slug });
 
-  const form = handleRequest(selectSchemaForm(request, category), request);
+  const form = handleRequest(selectSchemaForm(request, wr22Schema, category), request);
 
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {
@@ -162,7 +162,7 @@ const getAddData = async (request, h) => {
 
   const wr22Schema = getWR22();
   const categories = getSchemaCategories(wr22Schema);
-  const { slug } = getSchemaCategory(categories, schema);
+  const { slug } = getSchemaCategory(categories, schema.id);
 
   const view = {
     ...request.view,

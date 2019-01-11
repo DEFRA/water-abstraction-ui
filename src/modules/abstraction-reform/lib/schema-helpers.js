@@ -8,7 +8,7 @@ const slugify = require('slugify');
 //     title: 'Category name',
 //     subcategories: [{
 //       title: 'Subcategory name',
-//       schemas: [{ // schema }, { // schema }]
+//       schemas: ['id-1', 'id-2']
 //     }]
 //   }
 // ];
@@ -28,7 +28,7 @@ const createCategory = (schema) => {
 const createSubcategory = (schema) => {
   const { subcategory } = schema;
   return {
-    title: subcategory,
+    title: subcategory || '',
     schemas: []
   };
 };
@@ -76,7 +76,7 @@ const getSchemaCategories = (schema) => {
   return schema.reduce((acc, schema) => {
     const category = findCategory(acc, schema);
     const subcategory = findSubcategory(category.subcategories, schema);
-    subcategory.schemas.push(schema);
+    subcategory.schemas.push(schema.id);
     return acc;
   }, []);
 };
@@ -86,12 +86,10 @@ const getSchemaCategories = (schema) => {
  * @param  {Object} schema - WR22 JSON schema
  * @return {[type]}        [description]
  */
-const getSchemaCategory = (categories, schema) => {
+const getSchemaCategory = (categories, id) => {
   return find(categories, category => {
-    const ids = flatMap(category.subcategories, subcat => (
-      subcat.schemas.map(schema => schema.id)
-    ));
-    return ids.includes(schema.id);
+    const ids = flatMap(category.subcategories, subcat => subcat.schemas);
+    return ids.includes(id);
   });
 };
 

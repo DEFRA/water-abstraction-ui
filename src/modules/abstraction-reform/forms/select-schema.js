@@ -1,3 +1,4 @@
+const { flatMap, find } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 
 const mapSchemaToChoice = schema => {
@@ -8,11 +9,10 @@ const mapSchemaToChoice = schema => {
   };
 };
 
-const getChoices = category => {
-  return category.subcategories.reduce((acc, subcategory) => {
-    const choices = subcategory.schemas.map(mapSchemaToChoice);
-    return [...acc, ...choices];
-  }, []);
+const getChoices = (schemas, category) => {
+  return flatMap(category.subcategories, subcategory => {
+    return subcategory.schemas.map(id => mapSchemaToChoice(find(schemas, { id })));
+  });
 };
 
 /**
@@ -21,7 +21,7 @@ const getChoices = category => {
  * @param  {Array} category  - selected category of WR22 schema
  * @return {Object}         form object
  */
-const selectSchemaForm = (request, category) => {
+const selectSchemaForm = (request, schemas, category) => {
   const { csrfToken } = request.view;
 
   const { documentId, slug } = request.params;
@@ -30,7 +30,7 @@ const selectSchemaForm = (request, category) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('schema', {
-    choices: getChoices(category),
+    choices: getChoices(schemas, category),
     errors: {
       'any.required': {
         message: 'Choose a further condition to add'

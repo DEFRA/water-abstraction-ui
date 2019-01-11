@@ -38,6 +38,8 @@ const pre = async (request, h) => {
   request.licence = licence;
   request.arLicence = arLicence;
   request.finalState = finalState;
+  request.wr22Schema = getWR22();
+  request.categories = getSchemaCategories(request.wr22Schema);
 
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
@@ -58,10 +60,9 @@ const pre = async (request, h) => {
  * @return {Promise}
  */
 const getSelectSchemaCategory = async (request, h) => {
+  const { categories } = request;
   const { documentId } = request.params;
 
-  const wr22Schema = getWR22();
-  const categories = getSchemaCategories(wr22Schema);
   const form = request.form || selectSchemaCategoryForm(request, categories);
 
   const view = {
@@ -77,9 +78,7 @@ const getSelectSchemaCategory = async (request, h) => {
 const postSelectSchemaCategory = async (request, h) => {
   const { documentId } = request.params;
 
-  const wr22Schema = getWR22();
-  const categories = getSchemaCategories(wr22Schema);
-  const form = handleRequest(selectSchemaCategoryForm(request, categories), request);
+  const form = handleRequest(selectSchemaCategoryForm(request, request.categories), request);
 
   if (form.isValid) {
     const { category } = getValues(form);
@@ -103,11 +102,8 @@ const postSelectSchemaCategory = async (request, h) => {
 const getSelectSchema = async (request, h) => {
   const { documentId, slug } = request.params;
 
-  const wr22Schema = getWR22();
-  const categories = getSchemaCategories(wr22Schema);
-  const category = find(categories, { slug });
-
-  const form = request.form || selectSchemaForm(request, wr22Schema, category);
+  const category = find(request.categories, { slug });
+  const form = request.form || selectSchemaForm(request, request.wr22Schema, category);
 
   const view = {
     category,
@@ -129,11 +125,9 @@ const getSelectSchema = async (request, h) => {
 const postSelectSchema = async (request, h) => {
   const { documentId, slug } = request.params;
 
-  const wr22Schema = getWR22();
-  const categories = getSchemaCategories(wr22Schema);
-  const category = find(categories, { slug });
+  const category = find(request.categories, { slug });
 
-  const form = handleRequest(selectSchemaForm(request, wr22Schema, category), request);
+  const form = handleRequest(selectSchemaForm(request, request.wr22Schema, category), request);
 
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {
@@ -160,9 +154,7 @@ const getAddData = async (request, h) => {
 
   const { form, schema } = await getAddFormAndSchema(request);
 
-  const wr22Schema = getWR22();
-  const categories = getSchemaCategories(wr22Schema);
-  const { slug } = getSchemaCategory(categories, schema.id);
+  const { slug } = getSchemaCategory(request.categories, schema.id);
 
   const view = {
     ...request.view,

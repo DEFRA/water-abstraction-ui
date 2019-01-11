@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/5.13",
+  "type": "object",
+  "title": "5.13",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The impounding works <<at point ‘ref’>> <<between point ‘ref’ and point ‘ref’>> shall be constructed in accordance with <<drawing><plan>> <<drawing name>> dated <date>, <a copy> <copies> of which are appended to this licence document, or such minor amendments to <<that>><those> document<s> that are accepted in writing by the Agency prior to the date of commencement of construction.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

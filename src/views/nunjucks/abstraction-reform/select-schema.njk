@@ -1,0 +1,69 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "forms/header.njk" import formHeader %}
+{% from "forms/footer.njk" import formFooter %}
+{% from "forms/widget.njk" import formWidget %}
+
+
+
+{% macro arSchemaRadio(schema) %}
+{% set id = 'wr22_' + schema.title %}
+
+<hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+<div class="data-row">
+  <div class="data-row__item">
+    <div class="govuk-radios">
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="{{ id }}" name="schema" type="radio" value="{{ schema.id }}">
+        <label class="govuk-label govuk-radios__label" for="{{ id }}">
+          {{ schema.title }}
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="data-row__item">
+    <p>{{ schema.description | ARConditionPlaceholder | safe }}</p>
+  </div>
+</div>
+{% endmacro %}
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+
+  {{ title(pageTitle) }}
+
+  <!-- Warning for ar_user if no permission to edit this document -->
+  {% if flash == 'locked' %}
+  {{ govukInsetText({
+    text: "You do not have permission to edit this licence."
+  }) }}
+  {% endif %}
+
+
+  {{ formHeader(form.method, form.action) }}
+
+  <h2 class="govuk-heading-m">{{ category.title }}</h2>
+
+
+  {% for subcategory in category.subcategories %}
+
+    {% if subcategory.title %}
+    <h3 class="govuk-heading-s">{{ subcategory.title }}</h3>
+    {% endif %}
+
+    {% for schema in subcategory.schemas %}
+      {{ arSchemaRadio(schema) }}
+    {% endfor %}
+
+    <br />
+
+  {% endfor %}
+
+  {{ formWidget(form.fields[1], form) }}
+  {{ formWidget(form.fields[2], form) }}
+
+  {{ formFooter(form) }}
+
+
+{% endblock %}

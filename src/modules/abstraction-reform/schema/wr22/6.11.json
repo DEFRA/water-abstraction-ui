@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/6.11",
+  "type": "object",
+  "title": "6.11",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall maintain such <<weir and by-pass channel/culvert/hydropower scheme>> to prevent leakage and to be free from obstruction at all times and remain effective at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

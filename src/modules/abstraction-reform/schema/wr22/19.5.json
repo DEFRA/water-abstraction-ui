@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/19.5",
+  "type": "object",
+  "title": "19.5",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall maintain a flow of at least <<rate>> downstream of the impounding works at all times during initial filling of the <<reservoir/lake/pond>> and during any later re-filling following its drawdown to <<percentage>> or less of its design capacity. This flow shall be known as the filling by-pass flow.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

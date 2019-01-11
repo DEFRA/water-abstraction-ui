@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/6.4",
+  "type": "object",
+  "title": "6.4",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall use a <<flow measuring device>> to measure the rate of flow in the <<water body name>>at National Grid Reference <<FMD NGR>> shown on the map marked <<FMD ref>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

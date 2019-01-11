@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/9.2",
+  "type": "object",
+  "title": "9.2",
+  "category": "Time Limiting - abstractions start",
+  "subcategory": "",
+  "description": "Condition <<condition number>> in this licence shall cease to have effect immediately upon licence <<licence number>> ceasing to exist.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

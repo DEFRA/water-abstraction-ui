@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/15.2",
+  "type": "object",
+  "title": "15.2",
+  "category": "Ground source heating and cooling pumps",
+  "subcategory": "",
+  "description": "The Licence Holder shall measure at the same time each day the water level in the abstraction and re-injection borehole(s).",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

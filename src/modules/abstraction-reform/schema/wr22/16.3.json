@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/16.3",
+  "type": "object",
+  "title": "16.3",
+  "category": "Screening",
+  "subcategory": "",
+  "description": "The associated bywash(es) shall be no more than <<distance in metres>> from the intake screen and take at least <<volume as a percentage (normally between 2 and 10%)>> of the <<intake/design>> flow.\n“ Approach velocity” or “through slot velocity” is the water velocity perpendicular to and 10 centimetres upstream of the screen at National grid reference <<xx >> marked <<xx>> on the map.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

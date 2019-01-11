@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/10.5",
+  "type": "object",
+  "title": "10.5",
+  "category": "Chemical conditions",
+  "subcategory": "",
+  "description": "The abstraction of water shall only take place when the dissolved oxygen level in the <<river/watercourse name>> immediately upstream of the authorised point of abstraction, point ‘A’ as specified in condition <<xx>> above, is equal to or greater than <<xx Milligrams per litre>> and the abstraction shall not cause the flow immediately downstream of the said point to fall below that rate.\nThe licence holder shall inform the Agency in writing within 5 days if the dissolved oxygen level falls below <<xx Milligrams per litre>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

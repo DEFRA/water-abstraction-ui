@@ -11,34 +11,22 @@
 
   {% if item.schema == '/wr22/2.1' %}
     {{ wr22_2_1(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.2' %}
+  {% elif item.schema == '/wr22/2.2' %}
     {{ wr22_2_2(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.3' %}
+  {% elif item.schema == '/wr22/2.3' %}
     {{ wr22_2_3(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.4' %}
+  {% elif item.schema == '/wr22/2.4' %}
     {{ wr22_2_4(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.5' %}
+  {% elif item.schema == '/wr22/2.5' %}
     {{ wr22_2_5(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.6' %}
+  {% elif item.schema == '/wr22/2.6' %}
     {{ wr22_2_6(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.7' %}
+  {% elif item.schema == '/wr22/2.7' %}
     {{ wr22_2_7(item.data) }}
-  {% endif %}
-
-  {% if item.schema == '/wr22/2.8' %}
+  {% elif item.schema == '/wr22/2.8' %}
     {{ wr22_2_8(item.data) }}
+  {% else %}
+    {{ item.description }}
   {% endif %}
 
 {% endmacro %}

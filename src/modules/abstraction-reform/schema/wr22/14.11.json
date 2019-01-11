@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/14.11",
+  "type": "object",
+  "title": "14.11",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "The Licence Holder shall fit the dip tube with a non-ferrous screwed plug.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

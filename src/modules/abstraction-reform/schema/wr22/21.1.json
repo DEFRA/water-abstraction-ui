@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/21.1",
+  "type": "object",
+  "title": "21.1",
+  "category": "Removal of impounding works",
+  "subcategory": "",
+  "description": "The Licence Holder shall carry out work to remove the existing impounding works <<authorised by this licence / licence number>> << and / or / to>> restore the site of the impounding works to the configuration and levels <<shown on the attached dated drawing number >> so that there is no obstruction of, or impediment to, the flow of the inland water at any time after completion of the authorised works.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

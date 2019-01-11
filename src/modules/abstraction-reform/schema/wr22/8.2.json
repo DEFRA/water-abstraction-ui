@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/8.2",
+  "type": "object",
+  "title": "8.2",
+  "category": "Storage conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall not use the storage facility to store water unless a written survey of the storage availability and confirmation of water tightness is sent to the Agency at least 14 calendar days before such use begins and the Agency has approved the use.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

@@ -1,31 +1,36 @@
 const { formFactory, fields } = require('../../../lib/forms');
 
-const getChoices = (schema) => {
-  return schema.map(item => {
-    return {
-      value: item.id,
-      label: item.title,
-      hint: item.description
-    };
-  });
+const mapSchemaToChoice = schema => {
+  return {
+    value: schema.id,
+    label: schema.title,
+    hint: schema.description
+  };
+};
+
+const getChoices = category => {
+  return category.subcategories.reduce((acc, subcategory) => {
+    const choices = subcategory.schemas.map(mapSchemaToChoice);
+    return [...acc, ...choices];
+  }, []);
 };
 
 /**
  * Creates a form object to select a schema for the WR22 condition to add
  * @param  {Object} request - HAPI request instance
- * @param  {Array} schema  - array of JSON schema objects
+ * @param  {Array} category  - selected category of WR22 schema
  * @return {Object}         form object
  */
-const selectSchemaForm = (request, schema) => {
+const selectSchemaForm = (request, category) => {
   const { csrfToken } = request.view;
 
-  const { documentId } = request.params;
-  const action = `/admin/abstraction-reform/licence/${documentId}/select-schema`;
+  const { documentId, slug } = request.params;
+  const action = `/admin/abstraction-reform/licence/${documentId}/select-schema/${slug}`;
 
   const f = formFactory(action);
 
   f.fields.push(fields.radio('schema', {
-    choices: getChoices(schema),
+    choices: getChoices(category),
     errors: {
       'any.required': {
         message: 'Choose a further condition to add'

@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/20.3",
+  "type": "object",
+  "title": "20.3",
+  "category": "Obstructing or impeding the flow of an inland water",
+  "subcategory": "By-pass flow during construction 1",
+  "description": "At all times during the construction of the <<dam, weir, lake, pond, reservoir etc>>, the total flow of the <<water body name>> immediately upstream of the <<lake/pond/reservoir>> site shall be allowed to by-pass the <<lake/pond/reservoir>> and shall be returned to the <<water body name>><< immediately downstream/NGR>> of the impounding works. This flow shall be known as the By-pass Flow.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

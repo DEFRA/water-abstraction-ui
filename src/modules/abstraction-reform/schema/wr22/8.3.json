@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/8.3",
+  "type": "object",
+  "title": "8.3",
+  "category": "Storage conditions",
+  "subcategory": "",
+  "description": "The storage facility shall be constructed, operated and maintained in accordance with the plans and specifications <<doc ref>> as submitted to, and approved by, the Agency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

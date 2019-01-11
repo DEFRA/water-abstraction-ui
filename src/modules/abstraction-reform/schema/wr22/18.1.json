@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/18.1",
+  "type": "object",
+  "title": "18.1",
+  "category": "Hydropower",
+  "subcategory": "",
+  "description": "No water shall be abstracted through the <<hydropower scheme/turbine(s)>> if the Licence Holder is unable to generate  electricity.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

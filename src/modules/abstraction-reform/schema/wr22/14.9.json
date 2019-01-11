@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/14.9",
+  "type": "object",
+  "title": "14.9",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "The Licence Holder shall provide a rigid and straight dip/guide tube not less than <<dip tube diameter>> millimetres internal diameter. The dip/guide tube shall be fixed in the borehole extending from the top of the borehole to below the lowest pumping water level and with the lower end open in order to accommodate a dipper gauge for measuring water levels.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

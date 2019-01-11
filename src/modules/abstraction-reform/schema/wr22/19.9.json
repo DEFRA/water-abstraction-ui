@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/19.9",
+  "type": "object",
+  "title": "19.9",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "This licence shall cease to be of any effect if the impounding works authorised by it have not commenced by <<date>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

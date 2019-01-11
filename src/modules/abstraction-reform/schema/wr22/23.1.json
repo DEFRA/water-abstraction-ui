@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/23.1",
+  "type": "object",
+  "title": "23.1",
+  "category": "Environmental monitoring",
+  "subcategory": "",
+  "description": "The Licence Holder shall undertake environmental monitoring as set out in  Schedule <<schedule reference>> attached to this licence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

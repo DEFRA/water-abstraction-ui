@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/6.15",
+  "type": "object",
+  "title": "6.15",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "No <<abstraction>><<power production>> shall take place unless the Licence Holder has submitted in writing to the Agency for approval, and the Agency has approved, the method used to measure the flow of water over the <<main river weir etc>> as required by condition <<the HOF condition number>> above.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

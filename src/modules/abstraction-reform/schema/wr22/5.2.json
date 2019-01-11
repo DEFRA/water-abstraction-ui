@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/5.2",
+  "type": "object",
+  "title": "5.2",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The Licence Holder shall ensure that during construction and any subsequent maintenance of the works authorised by this licence that the flow in the <<water body name>> is allowed to pass downstream unchanged in quantity and quality at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

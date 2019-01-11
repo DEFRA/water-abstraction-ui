@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/3.1",
+  "type": "object",
+  "title": "3.1",
+  "category": "Augmentation and Compensation conditions",
+  "subcategory": "",
+  "description": "No abstraction shall take place <<whilst/unless>> the flow of the <<water body name>> is being augmented by <<at least>> an equivalent simultaneous discharge of water from the <<compensation source>> located at <<compensation location>>, as authorised under Licence <<Licence no.>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

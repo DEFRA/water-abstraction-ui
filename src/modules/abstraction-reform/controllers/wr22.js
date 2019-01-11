@@ -1,7 +1,9 @@
+const { find } = require('lodash');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { mapRequestData } = require('../../../lib/forms/validationAdapters/json-schema');
 const { mapARItem } = require('../lib/helpers.js');
-const { getSchemaCategories } = require('../lib/schema-helpers.js');
+const { getSchemaCategories, getSchemaCategory } = require('../lib/schema-helpers.js');
+const { selectSchemaCategoryForm } = require('../forms/select-schema-category');
 const { selectSchemaForm } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
 const { getPermissions } = require('../lib/permissions');
@@ -47,19 +49,20 @@ const pre = async (request, h) => {
 };
 
 /**
- * A screen to select a custom data point schema (WR22) to add to existing licence
+ * There are a large number of WR22 conditions to choose from - this screen
+ * lets the user select the category first before being presented with a
+ * filtered list
  * @param  {Object} request - HAPI request interface
  * @param {String} request.params.documentId - CRM document ID
  * @param  {Object} h       HAPI reply interface
  * @return {Promise}
  */
-const getSelectSchema = async (request, h) => {
+const getSelectSchemaCategory = async (request, h) => {
   const { documentId } = request.params;
 
   const wr22Schema = getWR22();
-  const form = request.form || selectSchemaForm(request, wr22Schema);
-
   const categories = getSchemaCategories(wr22Schema);
+  const form = request.form || selectSchemaCategoryForm(request, categories);
 
   const view = {
     categories,
@@ -68,7 +71,52 @@ const getSelectSchema = async (request, h) => {
     back: `/admin/abstraction-reform/licence/${documentId}`
   };
 
-  return h.view('nunjucks/abstraction-reform/add-data.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/select-schema-category.njk', view, { layout: false });
+};
+
+const postSelectSchemaCategory = async (request, h) => {
+  const { documentId } = request.params;
+
+  const wr22Schema = getWR22();
+  const categories = getSchemaCategories(wr22Schema);
+  const form = handleRequest(selectSchemaCategoryForm(request, categories), request);
+
+  if (form.isValid) {
+    const { category } = getValues(form);
+
+    const path = `/admin/abstraction-reform/licence/${documentId}/select-schema/${category}`;
+    return h.redirect(path);
+  } else {
+    // Re-display form with validation errors
+    request.form = form;
+    return getSelectSchemaCategory(request, h);
+  }
+};
+
+/**
+ * A screen to select a custom data point schema (WR22) to add to existing licence
+ * @param  {Object} request - HAPI request interface
+ * @param {String} request.params.documentId - CRM document ID
+ * @param  {Object} h       HAPI reply interface
+ * @return {Promise}
+ */
+const getSelectSchema = async (request, h) => {
+  const { documentId, slug } = request.params;
+
+  const wr22Schema = getWR22();
+  const categories = getSchemaCategories(wr22Schema);
+  const category = find(categories, { slug });
+
+  const form = request.form || selectSchemaForm(request, category);
+
+  const view = {
+    category,
+    ...request.view,
+    form,
+    back: `/admin/abstraction-reform/licence/${documentId}/select-schema-category`
+  };
+
+  return h.view('nunjucks/abstraction-reform/select-schema.njk', view, { layout: false });
 };
 
 /**
@@ -79,10 +127,13 @@ const getSelectSchema = async (request, h) => {
  * @return {Promise}
  */
 const postSelectSchema = async (request, h) => {
-  const { documentId } = request.params;
+  const { documentId, slug } = request.params;
 
   const wr22Schema = getWR22();
-  const form = handleRequest(selectSchemaForm(request, wr22Schema), request);
+  const categories = getSchemaCategories(wr22Schema);
+  const category = find(categories, { slug });
+
+  const form = handleRequest(selectSchemaForm(request, category), request);
 
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {
@@ -109,11 +160,15 @@ const getAddData = async (request, h) => {
 
   const { form, schema } = await getAddFormAndSchema(request);
 
+  const wr22Schema = getWR22();
+  const categories = getSchemaCategories(wr22Schema);
+  const { slug } = getSchemaCategory(categories, schema);
+
   const view = {
     ...request.view,
     form: request.form || form,
     schema,
-    back: `/admin/abstraction-reform/licence/${documentId}/select-schema`
+    back: `/admin/abstraction-reform/licence/${documentId}/select-schema/${slug}`
   };
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
 };
@@ -254,6 +309,8 @@ const postDeleteData = async (request, h) => {
 
 module.exports = {
   pre,
+  getSelectSchemaCategory,
+  postSelectSchemaCategory,
   getSelectSchema,
   postSelectSchema,
   getAddData,

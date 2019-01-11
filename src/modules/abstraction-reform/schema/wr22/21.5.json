@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/21.5",
+  "type": "object",
+  "title": "21.5",
+  "category": "Removal of impounding works",
+  "subcategory": "",
+  "description": "No works authorised by this <<licence/letter>> shall take place during the period from <<date>> to <<date>> inclusive.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

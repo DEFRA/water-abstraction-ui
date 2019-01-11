@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/13.2",
+  "type": "object",
+  "title": "13.2",
+  "category": "Temporary licence provision",
+  "subcategory": "",
+  "description": "The Licence Holder shall notify the Agency in writing no later than seven calendar days inclusive prior to the intended date of commencement of abstraction and the notification must specify the date on which abstraction is intended to commence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

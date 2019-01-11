@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/14.1",
+  "type": "object",
+  "title": "14.1",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "The Licence Holder shall ensure that the dip tube shall at all times, extend to a depth not less than <<dip tube depth>> metres below the minimum water level as recorded when the borehole is operating at the maximum hourly rate of abstraction permitted under this licence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

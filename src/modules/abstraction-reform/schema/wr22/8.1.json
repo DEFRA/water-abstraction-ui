@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/8.1",
+  "type": "object",
+  "title": "8.1",
+  "category": "Storage conditions",
+  "subcategory": "",
+  "description": "No abstraction shall take place until the Licence Holder provides a storage facility, capable of storing at least <<storage volume>> of water which is constructed or lined so that it remains impermeable.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

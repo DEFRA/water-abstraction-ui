@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/6.16",
+  "type": "object",
+  "title": "6.16",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall audit the method specified in <<number>> above every <<xx>> years thereafter and submit the results in writing to the Agency for approval.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

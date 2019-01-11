@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/10.1",
+  "type": "object",
+  "title": "10.1",
+  "category": "Chemical conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall install, maintain and if necessary replace a <<WQ monitoring device>> approved in writing by the Agency which <<constantly/intermittently>> monitors the <<chemical>> ion concentration in the water.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

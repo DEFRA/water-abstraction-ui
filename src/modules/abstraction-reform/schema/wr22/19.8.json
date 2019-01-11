@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/19.8",
+  "type": "object",
+  "title": "19.8",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall conduct the initial filling and any subsequent refilling of the <<reservoir/lake/pond>> so as to minimise impacts on the ecology of the watercourse and on <<protected interests>> downstream.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

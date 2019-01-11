@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/18.4",
+  "type": "object",
+  "title": "18.4",
+  "category": "Hydropower",
+  "subcategory": "",
+  "description": "The hydropower scheme shall be constructed and operated so that a <<maximum/minimum>> operational flow of <<x cubic metres/litres per second>> is allowed to pass through the <<turbine type>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

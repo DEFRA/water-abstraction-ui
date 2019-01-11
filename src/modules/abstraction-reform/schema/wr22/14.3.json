@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/14.3",
+  "type": "object",
+  "title": "14.3",
+  "category": "Groundwater conditions",
+  "subcategory": "Borehole construction and controls",
+  "description": "The Licence Holder shall secure the borehole with a lockable cover and shall take all appropriate measures to prevent unauthorised access, damage, interference and ingress of potentially contaminating materials or substances.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

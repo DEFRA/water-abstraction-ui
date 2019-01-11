@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/15.1",
+  "type": "object",
+  "title": "15.1",
+  "category": "Ground source heating and cooling pumps",
+  "subcategory": "",
+  "description": "The Licence Holder shall measure, on each day of abstraction and discharge, the pressure head required in order to re-inject the water into the borehole.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

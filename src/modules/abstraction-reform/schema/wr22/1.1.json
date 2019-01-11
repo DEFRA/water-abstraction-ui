@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/1.1",
+  "type": "object",
+  "title": "1.1",
+  "category": "Minimum value condition",
+  "subcategory": "",
+  "description": "The minimum value for the quantity of water authorised to be abstracted under this licence, as referred to in section 46(2A) Water Resources Act 1991, is [annual quantity] cubic metres per year.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

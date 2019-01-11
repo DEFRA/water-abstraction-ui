@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/7.6",
+  "type": "object",
+  "title": "7.6",
+  "category": "Recording",
+  "subcategory": "",
+  "description": "The Licence Holder shall record readings of the <<water level>><<hands off flow>><<hands off level>> as specified in condition<s> <<number>> at the same time each <<day>><<week>> during the whole of the period during which <the abstraction><power production> is authorised, or at such other intervals as may be approved by the Agency in writing.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

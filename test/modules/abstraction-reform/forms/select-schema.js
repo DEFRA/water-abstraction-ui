@@ -12,8 +12,15 @@ const request = {
     csrfToken: '4a0b2424-6c02-45a5-9935-70a4c41538d2'
   },
   params: {
-    documentId: '76288bd8-5d26-4b49-b7cc-b4ba8d3fb3c4'
+    documentId: '76288bd8-5d26-4b49-b7cc-b4ba8d3fb3c4',
+    slug: 'some-wr22-category'
   }
+};
+
+const category = {
+  subcategories: [{
+    schemas: ['/wr22/1.1']
+  }]
 };
 
 lab.experiment('selectSchemaForm', () => {
@@ -21,11 +28,11 @@ lab.experiment('selectSchemaForm', () => {
 
   lab.beforeEach(async () => {
     const wr22 = getWR22();
-    form = selectSchemaForm(request, wr22);
+    form = selectSchemaForm(request, wr22, category);
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/abstraction-reform/licence/${request.params.documentId}/select-schema`);
+    expect(form.action).to.equal(`/admin/abstraction-reform/licence/${request.params.documentId}/select-schema/${request.params.slug}`);
   });
 
   lab.test('The form should have a CSRF token field', async () => {

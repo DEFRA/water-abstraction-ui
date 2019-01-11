@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/12.7",
+  "type": "object",
+  "title": "12.7",
+  "category": "Point at which water must be returned",
+  "subcategory": "",
+  "description": "The Licence Holder shall ensure that, subject to condition <<12.6>> below, all water abstracted under this licence in each twelve-month period 1 April to 31 March inclusive is returned to the source of supply specified in Condition <<number>> via the borehole<<s>> at National Grid Reference <<discharge NGR>> marked << map ref>> on the map.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/19.4",
+  "type": "object",
+  "title": "19.4",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "The <<reservoir/lake/pond>> resulting from the impounding works shall be used only <<state purpose e.g. as a settlement pond and caveat as necessary if there are specific exclusions e.g. shall not be used for the production of fish>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

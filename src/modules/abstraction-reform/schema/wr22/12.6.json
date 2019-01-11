@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/12.6",
+  "type": "object",
+  "title": "12.6",
+  "category": "Point at which water must be returned",
+  "subcategory": "",
+  "description": "During the period <<month >> to <<month>> each year no more than <<volume>> shall be discharged to the << foul sewer/ receiving watercourse>> at National Grid Reference <<xx>> marked <<reference point>> on the map.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

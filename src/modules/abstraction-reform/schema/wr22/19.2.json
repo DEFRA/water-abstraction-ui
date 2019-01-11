@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/19.2",
+  "type": "object",
+  "title": "19.2",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "(i) The <<dam/weir/etc>> shall not impound more than <<quantity>> cubic metres of water above ground level.\n(ii)  The total capacity of the <<impounding works>> formed by the works authorised by this licence, shall not exceed <<quantity>> cubic metres of water.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

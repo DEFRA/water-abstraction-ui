@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/14.2",
+  "type": "object",
+  "title": "14.2",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "The Licence Holder shall send a copy of the record containing the <<data type e.g. water level>> data to the Agency along with the annual return of abstraction quantities within 28 calendar days after <<return submission date>> each year or within 28 calendar days of being so required in writing by the Agency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

@@ -1,58 +1,72 @@
 {
-  "id" : "/wr22/2.1",
-  "type" : "object",
-  "title" : "2.1",
-  "description" : "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point], marked as [reference point] on the map is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
-  "category" : "Hands off flows/levels",
-  "subcategory" : "Hands off levels",
-  "properties" : {
-    "nald_condition" : {
-      "$ref" : "water://licences/conditions.json",
-      "label" : "NALD condition",
-      "errors" : {
-        "required" : {
-          "message" : "Select a NALD condition"
+  "id": "/wr22/2.1",
+  "type": "object",
+  "title": "2.1",
+  "description": "No abstraction shall take place unless the level of water in the [water body name] as measured at [measurement point], marked as [reference point] on the map is equal to or greater than [HOL rate/prescribed level] and the abstraction shall not cause the level at the said [point] to fall below that level.",
+  "category": "Hands off flows/levels",
+  "subcategory": "Hands off levels",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
         }
       }
     },
-    "water_body_name" : {
-      "$ref" : "water://types/waterBodies.json",
-      "errors" : {
-        "message" : "Select the water body"
+    "water_body_name": {
+      "$ref": "water://types/waterBodies.json",
+      "errors": {
+        "required": {
+          "message": "Select the water body"
+        }
       }
     },
-    "measurement_point" : {
-      "$ref" : "water://types/measurementPoint.json"
+    "measurement_point": {
+      "$ref": "water://types/measurementPoint.json"
     },
-    "hol_rate_level" : {
-      "type" : "number",
+    "hol_rate_level": {
+      "type": "number",
       "label": "HOL rate/prescribed level",
-      "errors" : {
-        "type" : {
-          "message" : "The HOL rate / level should be a number"
+      "errors": {
+        "type": {
+          "message": "The HOL rate / level should be a number"
         }
       }
     },
     "unit": {
-      "type" : "string",
-      "enum" : ["mAOD", "mASD", "m"],
-      "errors" : {
-        "required" : {
-          "message" : "Select a unit"
+      "type": "string",
+      "enum": [
+        "mAOD",
+        "mASD",
+        "m"
+      ],
+      "errors": {
+        "required": {
+          "message": "Select a unit"
         }
       }
     },
-    "point" : {
-      "type" : "string",
-      "enum" : ["Abstraction point", "Reference point"],
-      "errors" : {
-        "required" : {
-          "message" : "Select a point"
+    "point": {
+      "type": "string",
+      "enum": [
+        "Abstraction point",
+        "Reference point"
+      ],
+      "errors": {
+        "required": {
+          "message": "Select a point"
         }
       }
     }
   },
-
-  "required" : ["nald_condition", "water_body_name", "measurement_point", "hol_rate_level", "point", "unit"]
-
+  "required": [
+    "nald_condition",
+    "water_body_name",
+    "measurement_point",
+    "hol_rate_level",
+    "point",
+    "unit"
+  ]
 }

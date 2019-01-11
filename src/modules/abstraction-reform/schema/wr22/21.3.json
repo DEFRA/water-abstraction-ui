@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/21.3",
+  "type": "object",
+  "title": "21.3",
+  "category": "Removal of impounding works",
+  "subcategory": "",
+  "description": "The retained water shall be released in a steady and controlled manner at a rate <<or if critical, specify a particular rate required and if necessary, consider how this might reasonably be measured or assessed>> so as not to cause any scour to the bed and banks of the inland water or any flooding of land or disturbance to water users downstream or any adverse effects on the quality of the water in the inland water or any adverse impacts on the ecology of the inland water or dependant ecosystems.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

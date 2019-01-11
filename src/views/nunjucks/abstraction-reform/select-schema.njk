@@ -6,10 +6,10 @@
 
 
 
-{% macro arSchemaRadio(choice, index) %}
+{% macro arSchemaRadio(choice) %}
+{% set id = 'wr22_' + choice.value %}
 
-{% set id = 'schema-' + (index | int +1 ) %}
-
+<hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
 <div class="data-row">
   <div class="data-row__item">
     <div class="govuk-radios">
@@ -43,23 +43,25 @@
 
   {{ formHeader(form.method, form.action) }}
 
-  {% for category, subcategories in categories %}
-    <h2 class="govuk-heading-m">{{ category }}</h2>
-    {% for subcategory, items in subcategories %}
+  <h2 class="govuk-heading-m">{{ category.title }}</h2>
 
-      {% if subcategory != '-' %}
-      <h3 class="govuk-heading-s">{{ subcategory }}</h3>
-      {% endif %}
 
-      {% for index in items %}
-        <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
-        {{ arSchemaRadio(form.fields[0].options.choices[index], index) }}
-      {% endfor %}
+  {% set index = 0 %}
 
+  {% for subcategory in category.subcategories %}
+
+    {% if subcategory.title %}
+    <h3 class="govuk-heading-s">{{ subcategory.title }}</h3>
+    {% endif %}
+
+    {% for schema in subcategory.schemas %}
+      {{ arSchemaRadio(form.fields[0].options.choices[index])}}
+      {% set index = index+1 %}
     {% endfor %}
-    <br />
-  {% endfor %}
 
+    <br />
+
+  {% endfor %}
 
   {{ formWidget(form.fields[1], form) }}
   {{ formWidget(form.fields[2], form) }}
@@ -67,13 +69,4 @@
   {{ formFooter(form) }}
 
 
-{% endblock %}
-
-{% block bodyEnd %}
-<script src="/public/javascripts/accessible-autocomplete.min.js"></script>
-<script src="/public/javascripts/abstraction-reform.min.js"></script>
-<link href="/public/stylesheets/accessible-autocomplete.min.css" rel="stylesheet" />
-<script nonce={{nonces.script}}>
-  window.WRLS.initAutoComplete();
-</script>
 {% endblock %}

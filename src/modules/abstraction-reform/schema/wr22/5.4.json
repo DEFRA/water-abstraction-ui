@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/5.4",
+  "type": "object",
+  "title": "5.4",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "No abstraction shall take place unless the Licence Holder has submitted to the Agency in writing and the Agency has approved in writing, a formula to establish the relationship between the head of water and rate of flow over the << structure e.g. waterfall, weir>> specified in condition << condition number>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

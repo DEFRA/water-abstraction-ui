@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/6.17",
+  "type": "object",
+  "title": "6.17",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall determine the quantity of water used for power production by reference to the kilowatt-hours generated, as measured by a kilowatt-hours meter multiplied by the conversion factor determined using the Calculation Checklist specified in Schedule B of this licence",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/7.4",
+  "type": "object",
+  "title": "7.4",
+  "category": "Recording",
+  "subcategory": "",
+  "description": "The Licence Holder shall record readings of the electrical output of the turbine<s> and shall derive from that the corresponding quantity of water used for power production as determined using the Calculation Checklist, at the same time each <<day>><<week>>, or at such other intervals as may be approved by the Agency in writing",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

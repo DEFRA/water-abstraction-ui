@@ -1,0 +1,19 @@
+{
+  "id": "/wr22/21.6",
+  "type": "object",
+  "title": "21.6",
+  "category": "Removal of impounding works",
+  "subcategory": "",
+  "description": "No works authorised by this <<licence/letter>> shall take place when the flow in the <<water body name>> at <<name of gauging station or point ‘x’ on the map>> at National Grid Reference <<NGR>> is <<then quote the specific conditions: greater than/less than/between inclusive whatever is required to protect the relevant interest>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  }
+}

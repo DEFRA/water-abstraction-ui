@@ -278,7 +278,6 @@ const mapFormDropdownField = (field) => {
     }
   };
 
-  // console.log(find(options, { selected: true }));
   return applyErrors(options, field.errors);
 };
 

@@ -63,9 +63,9 @@ function paginationLink (url, params, page, options = {}) {
   return `<a class="pagination__link${options.isActive ? ' pagination__link--active' : ''}" href="${fullUrl}" ${ariaLabel}>`;
 }
 
-handlebars.registerHelper('pagination', function (pagination, options) {
+handlebars.registerHelper('pagination', function (pagination = {}, options) {
   const { url = '/', params = {} } = options.hash;
-  const { page, pageCount } = pagination;
+  const { page, pageCount = 0 } = pagination;
 
   if (pageCount <= 1) {
     return null;

@@ -69,10 +69,6 @@ experiment('createSessionData', () => {
   test('adds the last login value from the user', async () => {
     expect(sessionData.lastLogin).to.equal(user.last_login);
   });
-
-  test('adds the scopes from the user', async () => {
-    expect(sessionData.scope).to.equal(user.role.scopes);
-  });
 });
 
 experiment('auto', () => {
@@ -82,7 +78,14 @@ experiment('auto', () => {
     sandbox.stub(idmConnector, 'getUserByEmail').resolves({
       error: null,
       data: [
-        { user_id: 1, user_name: 'test@example.com', external_id: 'external-id' }
+        {
+          user_id: 1,
+          user_name: 'test@example.com',
+          external_id: 'external-id',
+          role: {
+            scopes: ['one', 'two']
+          }
+        }
       ]
     });
 
@@ -96,7 +99,8 @@ experiment('auto', () => {
       },
       cookieAuth: {
         set: sinon.spy()
-      }
+      },
+      auth: {}
     };
   });
 
@@ -172,5 +176,11 @@ experiment('auto', () => {
 
     const cookieSetArg = request.cookieAuth.set.args[0][0];
     expect(cookieSetArg).to.be.an.object();
+  });
+
+  test('updates the auth.credentials object with the user scope', async () => {
+    await auto(request, 'test@example.com');
+
+    expect(request.auth.credentials.scope).to.equal(['one', 'two']);
   });
 });

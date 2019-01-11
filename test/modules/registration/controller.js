@@ -2,14 +2,14 @@ const { expect } = require('code');
 const { beforeEach, experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 
-const getMinimalRequest = require('../../test-helpers');
+const testHelpers = require('../../test-helpers');
 const controller = require('../../../src/modules/registration/controller');
 
 experiment('getRegisterSuccess', () => {
   let viewContext;
 
   beforeEach(async () => {
-    const request = getMinimalRequest();
+    const request = testHelpers.getMinimalRequest();
     request.query = {
       email: 'test@example.com'
     };

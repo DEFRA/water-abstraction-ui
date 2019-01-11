@@ -7,8 +7,6 @@
 const Boom = require('boom');
 const { get } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
-const { getLicenceCount } = require('../../lib/connectors/crm/documents');
-const { getOutstandingVerifications } = require('../../lib/connectors/crm/verification');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 
@@ -25,19 +23,14 @@ const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStatio
  */
 async function getLicences (request, reply) {
   const { view } = request;
-  const { entity_id: entityId } = request.auth.credentials;
 
-  // Check for verifications
-  const { data: verifications } = await getOutstandingVerifications(entityId);
+  const verifications = request.licence.outstandingVerifications;
+  const licenceCount = request.licence.userLicenceCount;
 
-  // Check if user has any licences
-  const licenceCount = await getLicenceCount(entityId);
-
-  if (licenceCount === 0 && verifications.length > 0) {
-    return reply.redirect('/security-code');
-  }
   if (licenceCount === 0) {
-    return reply.redirect('/add-licences');
+    return verifications.length === 0
+      ? reply.redirect('/add-licences')
+      : reply.redirect('/security-code');
   }
 
   // Set view flags

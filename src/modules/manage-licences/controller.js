@@ -218,7 +218,7 @@ const removeColleague = async (regimeId, companyId, entityId, colleagueId) => {
     ...regimeId && { regime_entity_id: regimeId }
   };
 
-  const { data: roles, error: roleError } = await CRM.entityRoles.setParams({entityId: colleagueId}).findMany(filter);
+  const { data: roles, error: roleError } = await CRM.entityRoles.setParams({ entityId: colleagueId }).findMany(filter);
 
   if (roleError) {
     throw Boom.badImplementation(`CRM error getting roles on company ${companyId} for entity ${colleagueId}`, roleError);
@@ -239,7 +239,7 @@ async function postRemoveAccess (request, h) {
 
   // Need to find all roles that the colleage has for the company
   // for whom the current user is the primary_user
-  const { regime_entity_id: regimeId, company_entity_id: companyId } = find(request.auth.credentials.roles, role => role.role === 'primary_user');
+  const { regime_entity_id: regimeId, company_entity_id: companyId } = find(request.entityRoles, role => role.role === 'primary_user');
 
   await removeColleague(regimeId, companyId, entityId, colleagueEntityID);
 

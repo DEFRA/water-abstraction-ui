@@ -2,6 +2,7 @@ const deepMap = require('deep-map');
 const { pickBy, isArray, isObject, mapValues, pick, setWith, find } = require('lodash');
 const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
 const { getWR22 } = require('./schema');
+const { parseNaldDataURI } = require('../../../lib/nald-uri-parser');
 
 /**
  * Returns obj with non-scalar values removed
@@ -93,12 +94,16 @@ const prepareItem = (licence, finalState, getter = x => x) => {
 const mapARItem = (item) => {
   const { schema: schemaName } = item;
   const schema = find(getWR22(), { id: schemaName });
+
+  const { id: naldConditionId } = parseNaldDataURI(item.content.nald_condition.id);
+
   return {
     id: item.id,
     schema: schemaName,
     title: `${schema.title} ${schema.category}`,
     description: schema.description,
-    data: item.content
+    data: item.content,
+    naldConditionId
   };
 };
 

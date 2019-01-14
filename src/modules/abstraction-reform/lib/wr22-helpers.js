@@ -112,7 +112,6 @@ const getEditFormAndSchema = async (request) => {
 
   const item = findDataItem(result.finalState, id);
 
-  console.log('wr22-helpers - getEditFormAndSchema');
   const schema = await formGenerator.dereference(getSchema(item.schema), { documentId });
 
   const values = flattenData(item.content);

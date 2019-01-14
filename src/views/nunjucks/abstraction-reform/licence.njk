@@ -127,7 +127,13 @@
     {% for item in data.arData %}
     <div class="govuk-grid-row" id="{{ item.id }}">
       <div class="govuk-grid-column-one-third">
-      <p>{{ item.title }}</p>
+      <p>{{ item.title }}
+        <br />
+        Linked to
+        <a href="/admin/abstraction-reform/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
+          <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
+        </a>
+      </p>
 
       {%if canEdit %}
       <ul class="govuk-list">

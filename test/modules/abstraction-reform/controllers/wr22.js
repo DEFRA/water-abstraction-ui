@@ -33,6 +33,9 @@ const request = {
         id,
         schema: '/wr22/2.1',
         content: {
+          nald_condition: {
+            id: 'nald://condition/1/12345'
+          },
           foo: 'bar'
         }
       }]

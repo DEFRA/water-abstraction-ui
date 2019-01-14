@@ -86,7 +86,9 @@
   <h2 id="purpose-{{ purpose.base.ID }}" class="govuk-heading-m">Purpose {{ purpose.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
+    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
+      <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
+  </a>
   </p>
   {% endif %}
   {{ arComparisonTable(purpose) }}
@@ -97,7 +99,9 @@
   <h2 id="point-{{ point.base.ID }}" class="govuk-heading-m">Point {{ point.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
+    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
+      <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
+    </a>
   </p>
   {% endif %}
   {{ arComparisonTable(point) }}
@@ -107,7 +111,9 @@
   <h2 id="condition-{{ condition.base.ID }}" class="govuk-heading-m">Condition {{ condition.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
+    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
+      <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
+    </a>
   </p>
   {% endif %}
   {{ arComparisonTable(condition) }}
@@ -131,8 +137,16 @@
 
       {%if canEdit %}
       <ul class="govuk-list">
-        <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">Change this condition</a></li>
-        <li><a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">Remove this condition</a></li>
+        <li>
+          <a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">
+            Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+          </a>
+        </li>
+        <li>
+          <a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">
+            Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+          </a>
+        </li>
       </ul>
       {% endif %}
 

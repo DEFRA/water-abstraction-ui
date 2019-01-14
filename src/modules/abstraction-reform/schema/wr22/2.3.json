@@ -25,10 +25,7 @@
       }
     },
     "water_body_name" : {
-      "$ref" : "water://types/waterBodies.json",
-      "errors" : {
-        "message" : "Select the water body"
-      }
+      "$ref" : "water://types/waterBodies.json"
     },
     "measurement_point" : {
       "type" : "object",
@@ -130,6 +127,9 @@
       "type" : "number",
       "label" : "HoF, HOL or prescribed flow",
       "errors" : {
+        "required": {
+          "message" : "Enter a HoF, HOL or prescribed flow"
+        },
         "type": {
           "message" : "Enter a number for the HoF, HOL or prescribed flow"
         }

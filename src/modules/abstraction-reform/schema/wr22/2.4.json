@@ -30,15 +30,12 @@
       "minumum": 0,
       "maximum": 100,
       "errors": {
-        "required": { "message": "Select a maximum percentage" },
-        "type": { "message": "Select a valid maximum percentage" }
+        "required": { "message": "Enter a maximum percentage" },
+        "type": { "message": "Maximum percentage must be a number, like 80 or 90.5" }
       }
     },
     "water_body_name" : {
-      "$ref" : "water://types/waterBodies.json",
-      "errors" : {
-        "message" : "Select the water body"
-      }
+      "$ref" : "water://types/waterBodies.json"
     }
   },
   "required": ["nald_condition", "purpose_type", "max_percentage", "water_body_name"]

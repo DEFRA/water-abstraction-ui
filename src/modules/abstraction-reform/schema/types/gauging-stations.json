@@ -1,6 +1,11 @@
 {
   "type": "object",
   "defaultEmpty": true,
+  "errors" : {
+    "required" : {
+      "message" : "Enter a gauging station"
+    }
+  },
   "enum": [
     {
       "id": "921cad5b-4af6-4f4d-b8dc-0198e1ab15f8",

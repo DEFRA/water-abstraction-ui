@@ -43,10 +43,7 @@
       }
     },
     "water_body_name" : {
-      "$ref" : "water://types/waterBodies.json",
-      "errors" : {
-        "message" : "Select the water body"
-      }
+      "$ref" : "water://types/waterBodies.json"
     },
     "measurement_point" : {
       "$ref" : "water://types/measurementPoint.json",

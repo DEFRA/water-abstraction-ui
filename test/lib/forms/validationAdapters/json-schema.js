@@ -136,10 +136,13 @@ experiment('mapValue', async () => {
     expect(adapter.mapValue('')).to.equal(undefined);
   });
 
+  test('It should convert null to undefined', async () => {
+    expect(adapter.mapValue(null)).to.equal(undefined);
+  });
+
   test('It should pass through non-empty strings or other types unchanged', async () => {
     expect(adapter.mapValue('Hello')).to.equal('Hello');
     expect(adapter.mapValue(123)).to.equal(123);
-    expect(adapter.mapValue(null)).to.equal(null);
     expect(adapter.mapValue(undefined)).to.equal(undefined);
   });
 });

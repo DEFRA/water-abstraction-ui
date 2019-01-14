@@ -1,3 +1,13 @@
 {% macro wr22_2_4(data) %}
-The quantity of water {{data.purpose_type}} shall not exceed {{ data.max_percentage }} percent of the available flow in the {{ data.water_body_name.name }} in excess of the hands off flow.
+The quantity of water
+<b>
+{% if data.purpose_type === 'Abstraction' %}
+abstracted
+{% else %}
+used for power production
+{% endif %}
+</b>
+
+shall not exceed <b>{{ data.max_percentage }}</b>
+percent of the available flow in the <b>{{ data.water_body_name.name }}</b> in excess of the hands off flow.
 {% endmacro %}

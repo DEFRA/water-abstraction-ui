@@ -2,9 +2,10 @@
 
 {% macro wr22_2_2(data) %}
 
-Abstraction shall not exceed {{ data.max_rate }}{{ data.max_rate_unit }} {{ data.rate_type | lower }} when the level in the {{ data.water_body_name.name }} as measured
+Abstraction shall not exceed <b>{{ data.max_rate }}{{ data.max_rate_unit }} {{ data.rate_type | lower }}</b>
+when the level in the <b>{{ data.water_body_name.name }}</b> as measured
 
   {{ measurementPoint(data.measurement_point) }}
 
-is equal to or greater than {{ data.hol_rate_level }}{{ data.hol_rate_level_unit }}.
+is equal to or greater than <b>{{ data.hol_rate_level }}{{ data.hol_rate_level_unit }}</b>.
 {% endmacro %}

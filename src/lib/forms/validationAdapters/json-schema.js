@@ -23,11 +23,16 @@ const getPathMap = (schema, map = {}, path = '') => {
 };
 
 /**
- * Converts empty strings to undefined
+ * Converts empty strings or nulls to undefined
  * @param  {Mixed} value
  * @return {Mixed} returns undefined for empty string
  */
-const mapValue = value => value === '' ? undefined : value;
+const mapValue = (value) => {
+  if (value === '' || value === null) {
+    return undefined;
+  }
+  return value;
+};
 
 /**
  * Maps the data received from the HTTP request to an object which will be

@@ -6,12 +6,12 @@
   "category": "Hands off flows/levels",
   "subcategory": "CAMS",
   "properties": {
-    "nald_condition" : {
-      "$ref" : "water://licences/conditions.json",
-      "label" : "NALD condition",
-      "errors" : {
-        "required" : {
-          "message" : "Select a NALD condition"
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
         }
       }
     },
@@ -20,27 +20,30 @@
       "label": "Maximum rate",
       "errors": {
         "required": {
-          "type": "Maximum rate should be a number",
           "message": "Select a maximum rate"
+        },
+        "type": {
+          "message": "Maximum rate must be a number"
         }
       }
     },
     "max_rate_unit": {
-      "type" : "string",
-      "enum" : ["m³/s", "l/s", "m³/d"],
+      "type": "string",
+      "enum": [
+        "m³/s",
+        "l/s",
+        "m³/d"
+      ],
       "errors": {
         "required": {
           "message": "Select a rate unit"
         }
       }
     },
-    "water_body_name" : {
-      "$ref" : "water://types/waterBodies.json",
-      "errors" : {
-        "message" : "Select the water body"
-      }
+    "water_body_name": {
+      "$ref": "water://types/waterBodies.json"
     },
-    "gauging_station" : {
+    "gauging_station": {
       "$ref": "water://types/gaugingStations.json"
     },
     "hof_rate": {
@@ -48,24 +51,43 @@
       "label": "HoF rate",
       "errors": {
         "required": {
-          "type": "HoF rate should be a number",
-          "message": "Select a maximum rate"
+          "message": "Enter a HoF rate"
+        },
+        "type": {
+          "message": "HoF rate should be a number"
         }
       }
     },
     "hof_rate_unit": {
-      "type" : "string",
-      "enum" : ["m³/s", "l/s"],
+      "type": "string",
+      "enum": [
+        "m³/s",
+        "l/s"
+      ],
       "errors": {
         "required": {
           "message": "Select a HoF rate unit"
         }
       }
     },
-    "hof_duration" : {
-      "type" : "string"
+    "hof_duration": {
+      "type": "string",
+      "label": "HoF duration",
+      "errors": {
+        "required": {
+          "message": "Enter a HoF duration"
+        }
+      }
     }
-
   },
-  "required": ["nald_condition", "max_rate", "max_rate_unit", "water_body_name", "gauging_station", "hof_rate", "hof_rate_unit", "hof_duration"]
+  "required": [
+    "nald_condition",
+    "max_rate",
+    "max_rate_unit",
+    "water_body_name",
+    "gauging_station",
+    "hof_rate",
+    "hof_rate_unit",
+    "hof_duration"
+  ]
 }

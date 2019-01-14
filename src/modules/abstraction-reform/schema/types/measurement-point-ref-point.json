@@ -1,5 +1,10 @@
 {
   "label" : "Reference point",
   "hint" : "If a point is marked on a map, for example Point A",
-  "type" : "string"
+  "type" : "string",
+  "errors" : {
+    "required" : {
+      "message" : "Enter a reference point"
+    }
+  }
 }

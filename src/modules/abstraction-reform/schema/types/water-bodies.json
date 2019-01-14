@@ -1,6 +1,11 @@
 {
   "type": "object",
   "defaultEmpty": true,
+  "errors": {
+    "required": {
+      "message": "Select a water body"
+    }
+  },
   "enum": [
     {
       "id": "138c4d3d-3307-3e03-a9c3-0a04d55cfa21",

@@ -3,21 +3,24 @@
 {% macro wr22_2_3(data) %}
 
 No
-  {% if data.purpose_type == 'Abstraction' %}abstraction{% else %}power production{% endif %}
+  <b>{% if data.purpose_type == 'Abstraction' %}abstraction{% else %}power production{% endif %}</b>
 
- shall take place unless the rate of flow in the {{ data.water_body_name.name }} as measured
+ shall take place unless the rate of flow in the <b>{{ data.water_body_name.name }}</b> as measured
 
   {{ measurementPoint(data.measurement_point) }}
 
-is equal to or greater than {{ data.hof_hol_flow }}{{ data.hof_hol_flow_unit }}
+is equal to or greater than <b>{{ data.hof_hol_flow }}{{ data.hof_hol_flow_unit }}</b>
 and the
 
+<b>
 {% if data.purpose_type == 'Abstraction' %}abstraction{% endif %}
 {% if data.purpose_type == 'Power production' %}power production{% endif %}
 {% if data.purpose_type == 'Power production with turbine' %}turbine{% endif %}
+</b>
 
 shall not cause the
 
+<b>
 {% set abstractionPoint %}
   {% if data.measurement_point.measurement_point_diagram_type == 'None' %}
    abstraction point
@@ -25,14 +28,15 @@ shall not cause the
    reference point
   {% endif %}
 {% endset %}
+</b>
 
 {% if data.hof_type == 'Hands off flow' %}
-  flow immediately downstream of the said {{ abstractionPoint }} to fall below that rate.
+  <b>flow immediately downstream</b> of the said <b>{{ abstractionPoint }}</b> to fall below that rate.
 {% endif %}
 
 {% if data.hof_type == 'Hands off level' %}
- water level at of the said {{ abstractionPoint }} to fall below that level.
+ <b>water level</b> at of the said <b>{{ abstractionPoint }}</b> to fall below that level.
 {% endif %}
 
-This shall be known as the '{{ data.hof_type | lower }}'.
+This shall be known as the '<b>{{ data.hof_type | lower }}</b>'.
 {% endmacro %}

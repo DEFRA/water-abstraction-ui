@@ -50,6 +50,9 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: false
+    },
+    returns: {
+      edit: false
     }
   };
 
@@ -57,6 +60,9 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: true
+    },
+    returns: {
+      edit: false
     }
   };
 

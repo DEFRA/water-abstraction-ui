@@ -1,0 +1,97 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% macro cycleHeader() %}
+<div class="table__row--head">                                              <!-- the table head -->
+  <div class="table__cell bold-small column--40">
+    Period
+  </div>
+  <div class="table__cell bold-small column--15">
+    Returns due
+  </div>
+  <div class="table__cell bold-small column--15">
+    Licences
+  </div>
+  <div class="table__cell bold-small column--10">
+    Monthly
+  </div>
+  <div class="table__cell bold-small column--10">
+    Weekly
+  </div>
+  <div class="table__cell bold-small column--10">
+    Daily
+  </div>
+</div>
+{% endmacro %}
+
+{% macro cycleRow(cycle) %}
+<div class="table__row space--medium ">
+
+  <div class="table__cell">
+    <h4 class="table__context">
+      Period
+    </h4>
+    <a href="/admin/returns-reports/cycle/{{ cycle.startDate }}/{{ cycle.endDate }}">
+      {{ cycle.startDate | date }} to {{ cycle.endDate | date }}
+    </a>
+  </div>
+  <div class="table__cell">
+    <h4 class="table__context">
+      Returns due
+    </h4>
+    {{ cycle.stats.statuses.due }}
+  </div>
+  <div class="table__cell">
+    <h4 class="table__context">
+      Licences
+    </h4>
+    {{ cycle.stats.licenceCount }}
+  </div>
+  <div class="table__cell">
+    <h4 class="table__context">
+      Monthly
+    </h4>
+    {{ cycle.stats.frequencies.month }}
+  </div>
+  <div class="table__cell">
+    <h4 class="table__context">
+      Weekly
+    </h4>
+    {{ cycle.stats.frequencies.week }}
+  </div>
+  <div class="table__cell">
+    <h4 class="table__context">
+      Daily
+    </h4>
+    {{ cycle.stats.frequencies.day }}
+  </div>
+</div>
+{% endmacro %}
+
+
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <h2 class="govuk-heading-m">Current cycle</h2>
+
+  <div class="table space--small govuk-body">                                                <!-- a table -->
+    {{ cycleHeader() }}
+    {{ cycleRow(currentCycle) }}
+  </div>
+
+  {% if cycles.length %}
+
+  <h2 class="govuk-heading-m">Previous cycles</h2>
+
+  <div class="table space--small govuk-body">                                                <!-- a table -->
+    {{ cycleHeader() }}
+    {% for cycle in cycles %}
+    {{ cycleRow(cycle) }}
+    {% endfor %}
+  </div>
+
+
+  {% endif %}
+
+
+{% endblock %}

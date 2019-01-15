@@ -11,8 +11,9 @@ const permissionsPlugin = {
     server.ext({
       type: 'onPostAuth',
       method: (request, reply) => {
-        request.permissions = getPermissions(request.state.sid, request.entityRoles);
-        request.permissions.companies = getCompanyPermissions(request.state.sid, request.entityRoles);
+        const credentials = request.auth.credentials || {};
+        request.permissions = getPermissions(credentials, request.entityRoles);
+        request.permissions.companies = getCompanyPermissions(credentials, request.entityRoles);
 
         /**
          * Checks whether the user has the requested permission

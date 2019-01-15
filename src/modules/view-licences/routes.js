@@ -209,6 +209,10 @@ module.exports = {
           showResults: true,
           activeNavLink: 'view'
         },
+        licenceLoader: {
+          loadOutstandingVerifications: true,
+          loadUserLicenceCount: true
+        },
         formValidator: {
           query: {
             emailAddress: Joi.string().allow('').email(),

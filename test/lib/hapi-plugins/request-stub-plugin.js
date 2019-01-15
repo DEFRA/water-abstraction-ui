@@ -13,7 +13,7 @@
  * server.register({
  *   plugin: requestStub,
  *   options: {
- *     setupRequest: request => {
+ *     onPostAuth: request => {
  *       request.auth = { isAuthenticated: true }
  *     }
  *   }
@@ -24,8 +24,8 @@ const plugin = {
     server.ext({
       type: 'onPostAuth',
       method: async (request, h) => {
-        if (options.setupRequest) {
-          options.setupRequest(request);
+        if (options.onPostAuth) {
+          options.onPostAuth(request);
         }
         return h.continue;
       }

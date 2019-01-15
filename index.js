@@ -20,6 +20,7 @@ const { getPermissions: permissionsFunc } = require('./src/lib/permissions.js');
 const routes = require('./src/modules/routes');
 const returnsPlugin = require('./src/modules/returns/plugin.js');
 const entityRolesPlugin = require('./src/lib/hapi-plugins/entity-roles');
+const authCredentialsPlugin = require('./src/lib/hapi-plugins/auth-credentials');
 const viewEngine = require('./src/lib/view-engine/');
 
 // Initialise logger
@@ -63,6 +64,8 @@ async function start () {
     });
 
     await server.register([Inert, Vision]);
+
+    await server.register({ plugin: authCredentialsPlugin });
 
     // The following plugins all are part of the auth phase in
     // the request lifecycle and hook into onPostAuth.

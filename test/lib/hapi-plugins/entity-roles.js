@@ -18,7 +18,7 @@ const getServer = async (requestStubFn = () => {}) => {
   await server.register([
     {
       plugin: requestStubPlugin,
-      options: { setupRequest: requestStubFn }
+      options: { onPostAuth: requestStubFn }
     },
     {
       plugin: entityRolesPlugin

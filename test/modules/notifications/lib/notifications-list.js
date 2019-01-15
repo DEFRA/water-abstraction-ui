@@ -50,6 +50,9 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: false
+    },
+    returns: {
+      edit: false
     }
   };
 
@@ -57,6 +60,19 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: true
+    },
+    returns: {
+      edit: false
+    }
+  };
+
+  const returns = {
+    ar: {
+      edit: false,
+      approve: false
+    },
+    returns: {
+      edit: true
     }
   };
 
@@ -70,5 +86,17 @@ lab.experiment('getReportsList', () => {
     const reports = getReportsList(arApprover);
     const paths = reports.map(item => item.path);
     expect(paths.includes('/admin/abstraction-reform/report')).to.equal(true);
+  });
+
+  lab.test('It includes returns overview link when returns.edit permission is set', async () => {
+    const reports = getReportsList(returns);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/returns-reports')).to.equal(true);
+  });
+
+  lab.test('It does not include returns overview link when returns.edit permission is false', async () => {
+    const reports = getReportsList(arUser);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/returns-reports')).to.equal(false);
   });
 });

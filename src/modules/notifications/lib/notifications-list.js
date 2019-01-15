@@ -63,6 +63,11 @@ const getReportsList = (permissions) => {
   if (hasPermission('ar.approve', permissions)) {
     reports.push(createNotificationType('Abstraction reform report', '/admin/abstraction-reform/report'));
   }
+
+  if (hasPermission('returns.edit', permissions)) {
+    reports.push(createNotificationType('Returns overview', '/admin/returns-reports'));
+  }
+
   return reports;
 };
 

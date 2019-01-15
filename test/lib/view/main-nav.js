@@ -2,7 +2,7 @@
 
 const { find, set } = require('lodash');
 const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
@@ -65,60 +65,74 @@ const getReturnsRequest = () => {
 
 const getIds = links => links.map(link => link.id);
 
-lab.experiment('getMainNav', () => {
-  lab.test('It should not display any links if the user is not authenticated', async () => {
+experiment('getMainNav', () => {
+  test('It should not display any links if the user is not authenticated', async () => {
     const request = {};
     const links = getMainNav(request);
     expect(links.length).to.equal(0);
   });
 
-  lab.test('It should set the active nav link flag', async () => {
+  test('It should set the active nav link flag', async () => {
     const request = getPrimaryUserRequest();
     const links = getMainNav(request);
     const link = find(links, { id: 'view' });
     expect(link.active).to.equal(true);
   });
 
-  lab.test('Non-active links should have the active flag set to false', async () => {
+  test('Non-active links should have the active flag set to false', async () => {
     const request = getPrimaryUserRequest();
     const links = getMainNav(request);
     const flags = links.filter(link => (link.id !== 'view')).map(link => link.active);
     expect(flags).to.equal([false, false]);
   });
 
-  lab.test('It should display correct links for external user', async () => {
+  test('It should display correct links for external user', async () => {
     const request = getAuthenticatedRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view']);
   });
 
-  lab.test('It should display correct links for external primary', async () => {
+  test('It should display correct links for external primary', async () => {
     const request = getPrimaryUserRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'returns', 'manage']);
   });
 
-  lab.test('It should display correct links for internal user', async () => {
+  test('It should display correct links for internal user', async () => {
     const request = getAuthenticatedRequest(true);
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'notifications']);
   });
 
-  lab.test('It should display correct links for AR user', async () => {
+  test('It should display correct links for AR user', async () => {
     const request = getARUserRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'ar', 'notifications']);
   });
 
-  lab.test('It should display correct links for AR approver', async () => {
+  test('It should display correct links for AR approver', async () => {
     const request = getARApproverRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'ar', 'notifications']);
   });
 
-  lab.test('It should display correct links for WIRS/returns user', async () => {
+  test('It should display correct links for WIRS/returns user', async () => {
     const request = getReturnsRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'notifications', 'returns']);
+  });
+
+  test('for a request with licence.userLicenceCount of 0, only view is added', async () => {
+    const request = getPrimaryUserRequest();
+    request.licence = { userLicenceCount: 0 };
+    const ids = getIds(getMainNav(request));
+    expect(ids).to.equal(['view']);
+  });
+
+  test('for a request with licence.userLicenceCount of 1, all tabs are added', async () => {
+    const request = getPrimaryUserRequest();
+    request.licence = { userLicenceCount: 1 };
+    const ids = getIds(getMainNav(request));
+    expect(ids).to.equal(['view', 'returns', 'manage']);
   });
 });

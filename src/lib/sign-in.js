@@ -3,8 +3,8 @@
  */
 const CRM = require('./connectors/crm');
 const uuid = require('uuid/v4');
-const idm = require('./connectors/idm');
 const { get } = require('lodash');
+const idm = require('./connectors/idm');
 
 /**
  * Loads user data from IDM
@@ -52,7 +52,11 @@ async function auto (request, emailAddress) {
 
   // Set user info in signed cookie
   request.cookieAuth.set(session);
-  return session;
+
+  // update the credentials object with the scopes to allow permissions
+  // to be calculated elsewhere. On subsequent requests this will be
+  // done by the auth-credentials plugin in the onCredentials phase.
+  request.auth.credentials = { scope: get(user, 'role.scopes') };
 }
 
 /**
@@ -64,8 +68,7 @@ const createSessionData = (sessionId, user, entityId) => {
     username: user.user_name.toLowerCase().trim(),
     user_id: user.user_id,
     entity_id: entityId,
-    lastLogin: user.last_login,
-    scope: get(user, 'role.scopes', [])
+    lastLogin: user.last_login
   };
 
   return session;

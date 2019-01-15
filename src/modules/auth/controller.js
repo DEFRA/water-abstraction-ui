@@ -84,10 +84,10 @@ async function postSignin (request, h) {
       return h.redirect(`reset_password_change_password?resetGuid=${resetGuid}&forced=1`);
     }
 
-    const session = await signIn.auto(request, request.payload.user_id);
+    await signIn.auto(request, request.payload.user_id);
 
     // Redirect user
-    const permissions = getPermissions(session);
+    const permissions = getPermissions(request.auth.credentials);
     const redirectPath = permissions.admin.defra ? '/admin/licences' : '/licences';
 
     // Resolves Chrome issue where it won't set cookie and redirect in same request

@@ -37,17 +37,32 @@ const getInternalNav = (request) => {
 };
 
 /**
+ * If a route is configured to load the user licence count,
+ * there will be a number available at request.licence.userLicenceCount.
+ *
+ * If the route does not configure this setting, then assume that the
+ * user does have licences.
+ */
+const userHasLicences = request => {
+  return get(request, 'licence.userLicenceCount') !== 0;
+};
+
+/**
  * Get links for public users
  * @param  {Object} request - HAPI request instance
  * @return {Array}         array of links
  */
 const getExternalNav = (request) => {
   const links = [externalLinks.licences];
-  if (isExternalReturns(request)) {
-    links.push(externalLinks.returns);
-  }
-  if (isPrimary(request)) {
-    links.push(externalLinks.manage);
+
+  if (userHasLicences(request)) {
+    if (isExternalReturns(request)) {
+      links.push(externalLinks.returns);
+    }
+
+    if (isPrimary(request)) {
+      links.push(externalLinks.manage);
+    }
   }
   return links;
 };

@@ -65,7 +65,7 @@ const getReportsList = (permissions) => {
   }
 
   if (hasPermission('returns.edit', permissions)) {
-    reports.push(createNotificationType('Returns', '/admin/returns-reports'));
+    reports.push(createNotificationType('Returns overview', '/admin/returns-reports'));
   }
 
   return reports;

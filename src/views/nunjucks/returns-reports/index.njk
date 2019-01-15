@@ -1,3 +1,4 @@
+{% from "button/macro.njk" import govukButton %}
 {% extends "./nunjucks/layout.njk" %}
 
 {% macro cycleHeader() %}
@@ -30,9 +31,7 @@
     <h4 class="table__context">
       Period
     </h4>
-    <a href="/admin/returns-reports/cycle/{{ cycle.startDate }}/{{ cycle.endDate }}">
       {{ cycle.startDate | date }} to {{ cycle.endDate | date }}
-    </a>
   </div>
   <div class="table__cell">
     <h4 class="table__context">
@@ -78,6 +77,12 @@
     {{ cycleHeader() }}
     {{ cycleRow(currentCycle) }}
   </div>
+
+  {{ govukButton({
+    text: "Download CSV file",
+    href: csvPath
+  }) }}
+
 
   {% if cycles.length %}
 

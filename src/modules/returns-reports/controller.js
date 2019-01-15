@@ -1,4 +1,7 @@
+const csv = require('util').promisify(require('csv-stringify'));
 const helpers = require('@envage/water-abstraction-helpers');
+
+const { returns } = require('../../lib/connectors/returns');
 const { getReturnStats } = require('./lib/returns-stats');
 
 const getCycleStats = async cycle => {
@@ -18,10 +21,39 @@ const getReturns = async (request, h) => {
   return h.view('nunjucks/returns-reports/index.njk', {
     ...request.view,
     currentCycle,
-    cycles: rest
+    cycles: rest,
+    csvPath: `/admin/returns-reports/download/${currentCycle.endDate}`
   }, { layout: false });
 };
 
+/**
+ * Download CSV report to show breakdown of internal/external users
+ */
+const getDownloadReport = async (request, h) => {
+  const { cycleEndDate } = request.params;
+  const filter = {
+    end_date: cycleEndDate,
+    status: 'completed'
+  };
+
+  const { error, data } = await returns.getReport('userDetails', filter);
+
+  if (error) {
+    const err = new Error(`Returns report error`);
+    err.params = { error, data, cycleEndDate };
+    throw err;
+  }
+
+  const str = await csv(data, { header: true });
+
+  const filename = `returns-report-${cycleEndDate}.csv`;
+
+  return h.response(str)
+    .header('content-type', 'text/csv')
+    .header('content-disposition', `attachment; filename=${filename}`);
+};
+
 module.exports = {
-  getReturns
+  getReturns,
+  getDownloadReport
 };

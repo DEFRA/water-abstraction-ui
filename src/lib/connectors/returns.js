@@ -20,6 +20,12 @@ const createClient = (name) => {
 
 const returns = createClient('returns');
 
+/**
+ * Gets the report with the specified name
+ * @param  {String} reportName  - report name corresponding to API endpoint in returns service
+ * @param  {Object} [filter={}] - filtering options for returns
+ * @return {Promise}             resolves with response from HTTP call
+ */
 returns.getReport = (reportName, filter = {}) => {
   const options = getReportRequestOptions(reportName, filter);
   return rp(options);

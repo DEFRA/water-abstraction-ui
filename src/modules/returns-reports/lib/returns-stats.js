@@ -87,5 +87,9 @@ const getReturnStats = async (endDate) => {
 };
 
 module.exports = {
+  getKeyAndValue,
+  isGrouped,
+  isSingleValue,
+  mapReportResponse,
   getReturnStats
 };

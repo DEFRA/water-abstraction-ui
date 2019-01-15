@@ -8,7 +8,6 @@ module.exports = {
     path: '/',
     handler: controller.index,
     config: {
-      auth: false,
       validate: {
         query: VALID_UTM
       }

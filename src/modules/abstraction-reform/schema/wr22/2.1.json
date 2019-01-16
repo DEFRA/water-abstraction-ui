@@ -26,7 +26,10 @@
       "label": "HOL rate/prescribed level",
       "errors": {
         "type": {
-          "message": "The HOL rate / level should be a number"
+          "message": "The HOL rate / level must be a number"
+        },
+        "required": {
+          "message": "Enter a HOL rate/prescribed level"
         }
       }
     },

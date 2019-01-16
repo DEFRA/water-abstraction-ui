@@ -29,7 +29,10 @@
       "label" : "Maximum rate",
       "errors": {
         "type": {
-          "message": "Maximum rate should be a number"
+          "message": "Maximum rate must be a number"
+        },
+        "required": {
+          "message": "Enter a maximum rate"
         }
       }
     },
@@ -56,9 +59,12 @@
     "hol_rate_level" : {
       "type" : "number",
       "label": "HOL rate/prescribed level",
-      "errors" : {
-        "type" : {
-          "message" : "The HOL rate / level should be a number"
+      "errors": {
+        "type": {
+          "message": "The HOL rate / level must be a number"
+        },
+        "required": {
+          "message": "Enter a HOL rate/prescribed level"
         }
       }
     },

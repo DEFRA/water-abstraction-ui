@@ -7,9 +7,13 @@
 {{/equal}}
 
 {{#equal status 'received'}}
-    <strong class="badge badge--completed badge--caps badge--no-wrap">Received</strong>
+  <strong class="badge badge--completed badge--caps badge--no-wrap">Received</strong>
 {{/equal}}
 
 {{#equal status 'completed'}}
-    <strong class="badge badge--completed badge--caps badge--no-wrap">Completed</strong>
+  <strong class="badge badge--completed badge--caps badge--no-wrap">Completed</strong>
+{{/equal}}
+
+{{#equal status 'void'}}
+  <strong class="badge badge--void badge--caps badge--no-wrap">Void</strong>
 {{/equal}}

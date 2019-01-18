@@ -78,7 +78,8 @@ const getReturn = async (request, h) => {
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
     canEdit: canEdit(request.permissions, data),
-    showVersions
+    showVersions,
+    isVoid: data.status === 'void'
   };
   return h.view('water/returns/return', view);
 };

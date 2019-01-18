@@ -49,8 +49,10 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
   };
 
   // External users can only view returns for the current version of a licence
+  // and cannot see void returns.
   if (!isInternal) {
     filter['metadata->>isCurrent'] = 'true';
+    filter.status = { $ne: 'void' };
   }
 
   // External users on production-like environments can only view returns where
@@ -219,6 +221,12 @@ const isReturnPastDueDate = returnRow => {
   return dueDate.isBefore(today);
 };
 
+const isVoidReturn = ret => ret.status === 'void';
+
+const isInternalAdminAndReturnIsVoid = (permissions, ret) => {
+  return isInternalUser(permissions) && isVoidReturn(ret);
+};
+
 /**
  * Adds some flags to the returns to help with view rendering
  *
@@ -235,13 +243,13 @@ const isReturnPastDueDate = returnRow => {
 const addFlags = (returns, request) => {
   return returns.map(row => {
     const isEditable = canEdit(request.permissions, row);
-    const isReceived = returnIsReceived(row);
-    const isClickable = isEditable || isReceived;
+    const isReceivedOrInternalVoid = isInternalAdminAndReturnIsVoid(request.permissions, row) || returnIsReceived(row);
+    const isClickable = isEditable || isReceivedOrInternalVoid;
 
     return {
       ...row,
       isEditable,
-      isReceived,
+      isReceivedOrInternalVoid,
       isClickable,
       isPastDueDate: isReturnPastDueDate(row)
     };
@@ -266,7 +274,7 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const isInternal = request.permissions.hasPermission('admin.defra');
+  const isInternal = isInternalUser(request.permissions);
 
   const documents = await getLicenceNumbers(entityId, filter, isInternal);
   const licenceNumbers = documents.map(row => row.system_external_id);
@@ -289,12 +297,14 @@ const getReturnsViewData = async (request) => {
   return view;
 };
 
+const isInternalUser = permissions => hasPermission('admin.defra', permissions);
+
 /**
  * If the user is an external user, add the CRM roles that the requesting user
  * would need to have one of, in order to be authorised to view a return.
  */
-const getInternalRoles = (isInternalUser, roles) => {
-  return isInternalUser ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
+const getInternalRoles = (isInternal, roles) => {
+  return isInternal ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
 };
 
 /**
@@ -303,10 +313,7 @@ const getInternalRoles = (isInternalUser, roles) => {
  * @param {String} path - the path to redirect to without '/admin'
  * @return {String} path with /admin if internal user
  */
-const getScopedPath = (request, path) => {
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  return isInternal ? `/admin${path}` : path;
-};
+const getScopedPath = (request, path) => isInternalUser(request.permissions) ? `/admin${path}` : path;
 
 /**
  * Get common view data used by many controllers
@@ -382,5 +389,6 @@ module.exports = {
   isReturnPastDueDate,
   getRedirectPath,
   isReturnId,
-  getSuffix
+  getSuffix,
+  addFlags
 };

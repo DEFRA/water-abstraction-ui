@@ -27,61 +27,61 @@
 
   {{>return-header}}
 
-
-  {{# if return.isNil }}
-    <h2 class="heading-large">Nil return</h2>
+  {{# if isVoid }}
+    <h2 class="heading-large">This return has been made void</h2>
   {{else}}
-    <h2 class="heading-medium">Abstraction volumes</h2>
-  {{/if}}
 
-  {{#if canEdit }}
-  <a class="button" href="/admin/return/internal?returnId={{ return.returnId }}">Edit return</a>
-  <br />
-  <br />
-  {{/if}}
+    {{# if return.isNil }}
+      <h2 class="heading-large">Nil return</h2>
+    {{else}}
+      <h2 class="heading-medium">Abstraction volumes</h2>
+    {{/if}}
 
-  {{#ifNot isAdmin }}
+    {{#if canEdit }}
+    <a class="button" href="/admin/return/internal?returnId={{ return.returnId }}">Edit return</a>
+    <br />
+    <br />
+    {{/if}}
 
-  <details role="group">
-    <summary role="button" aria-controls="details-content-0" aria-expanded="false"><span class="summary">Do you need to make a change to a submitted return?</span></summary>
-    <div id="details-content-0" aria-hidden="true">
-        {{>contact-details}}
-    </div>
-  </details>
+    {{#ifNot isAdmin }}
 
-  {{/ifNot}}
+      <details role="group">
+        <summary role="button" aria-controls="details-content-0" aria-expanded="false"><span class="summary">Do you need to make a change to a submitted return?</span></summary>
+        <div id="details-content-0" aria-hidden="true">
+            {{>contact-details}}
+        </div>
+      </details>
 
-  {{#ifNot return.isNil }}
-    {{>return-quantities-table }}
-  {{/ifNot}}
+    {{/ifNot}}
 
+    {{#ifNot return.isNil }}
+      {{>return-quantities-table }}
+    {{/ifNot}}
 
+    {{#if showVersions }}
 
-  {{#if showVersions }}
+      <br /><br />
+      <h3 class="heading-medium">Submitted by</h3>
 
-    <br /><br />
-    <h3 class="heading-medium">Submitted by</h3>
-
-    {{#eachReverse return.versions }}
-
-      {{#equal versionNumber ../return.versionNumber }}
-          <div class="panel panel-border-wide this-version version clickable">
-            <p class="version spaceless selected clickable">
-              <span class="sr-only">This version</span>
-              {{ email }}<br>
-              {{ formatISODate createdAt }}<br>
-            </p>
-          </div>
-      {{else}}
-      <div class="version clickable">
-              <p class="spaceless">
+      {{#eachReverse return.versions }}
+        {{#equal versionNumber ../return.versionNumber }}
+            <div class="panel panel-border-wide this-version version clickable">
+              <p class="version spaceless selected clickable">
+                <span class="sr-only">This version</span>
                 {{ email }}<br>
-                <a href="{{#if ../isAdmin}}/admin{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
+                {{ formatISODate createdAt }}<br>
               </p>
             </div>
-      {{/equal}}
-
-    {{/eachReverse}}
+        {{else}}
+        <div class="version clickable">
+                <p class="spaceless">
+                  {{ email }}<br>
+                  <a href="{{#if ../isAdmin}}/admin{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
+                </p>
+              </div>
+        {{/equal}}
+      {{/eachReverse}}
+    {{/if}}
   {{/if}}
 
 </main>

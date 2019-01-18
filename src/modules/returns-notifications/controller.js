@@ -1,6 +1,5 @@
-const helpers = require('@envage/water-abstraction-helpers');
 const Boom = require('boom');
-const { difference, last, get } = require('lodash');
+const { difference } = require('lodash');
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
@@ -9,7 +8,7 @@ const { schema } = require('./forms/licence-numbers');
 const { sendRemindersForm } = require('./forms/send-reminders');
 
 const { previewPaperForms, sendPaperForms, finalReturnReminders } = require('../../lib/connectors/water-service/returns-notifications');
-const { getUniqueLicenceNumbers } = require('./lib/helpers');
+const { getUniqueLicenceNumbers, getFinalReminderConfig } = require('./lib/helpers');
 
 /**
  * Renders a page for the user to input a list of licences to whom
@@ -114,8 +113,7 @@ const getFinalReminder = async (request, h) => {
  * Downloads CSV data to show who will receive final return reminders
  */
 const getFinalReminderCSV = async (request, h) => {
-  const { endDate } = last(helpers.returns.date.createReturnCycles());
-  const email = get(request, 'auth.credentials.username');
+  const { email, endDate } = getFinalReminderConfig(request);
   const { messages } = await finalReturnReminders(endDate, email, true);
   const data = messages.map(row => row.personalisation);
   return csvDownload(h, data, `final-reminders-${endDate}.csv`);
@@ -125,10 +123,8 @@ const getFinalReminderCSV = async (request, h) => {
  * Sends final return reminders via Notify and display confirmation message
  */
 const postSendFinalReminder = async (request, h) => {
-  const { endDate } = last(helpers.returns.date.createReturnCycles());
-  const email = get(request, 'auth.credentials.username');
+  const { email, endDate } = getFinalReminderConfig(request);
   const { event } = await finalReturnReminders(endDate, email, false);
-
   const view = {
     ...request.view,
     event

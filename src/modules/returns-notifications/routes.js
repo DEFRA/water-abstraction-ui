@@ -78,5 +78,65 @@ module.exports = {
       }
     },
     handler: controller.getSendFormsSuccess
+  },
+
+  getFinalReminder: {
+    method: 'GET',
+    path: '/admin/returns-notifications/final-reminder',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send final return reminders'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
+        }
+      }
+    },
+    handler: controller.getFinalReminder
+  },
+
+  getFinalReminderCsv: {
+    method: 'GET',
+    path: '/admin/returns-notifications/final-reminder/csv',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Download CSV file of recipients of final reminder letter'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
+        }
+      }
+    },
+    handler: controller.getFinalReminderCSV
+  },
+
+  postFinalReminder: {
+    method: 'POST',
+    path: '/admin/returns-notifications/final-reminder',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Final return reminders sent'
+        },
+        hapiRouteAcl: {
+          permissions: ['returns:submit']
+        }
+      }
+    },
+    handler: controller.postSendFinalReminder
   }
 };

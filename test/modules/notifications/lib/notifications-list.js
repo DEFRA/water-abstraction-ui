@@ -37,11 +37,12 @@ lab.experiment('getNotificationsList', () => {
 
   lab.test('It should include returns task notifications when user has returns.edit permission', async () => {
     const result = getNotificationsList(tasks, internalEditReturnsPermissions);
-    expect(result).to.equal([
-      { name: 'Test', path: '/admin/notifications/123?start=1', options },
-      { name: 'Returns: send paper forms',
-        path: '/admin/returns-notifications/forms',
-        options } ]);
+    const names = result.map(row => row.name);
+    expect(names).to.equal([
+      'Test',
+      'Returns: send paper forms',
+      'Returns: send final reminder'
+    ]);
   });
 });
 

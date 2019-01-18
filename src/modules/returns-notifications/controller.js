@@ -1,11 +1,14 @@
+const helpers = require('@envage/water-abstraction-helpers');
 const Boom = require('boom');
-const { difference } = require('lodash');
+const { difference, last, get } = require('lodash');
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
+const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
 const confirmLicenceNumbersForm = require('./forms/licence-numbers-confirm');
 const { schema } = require('./forms/licence-numbers');
+const { sendRemindersForm } = require('./forms/send-reminders');
 
-const { previewPaperForms, sendPaperForms } = require('../../lib/connectors/water-service/returns-notifications');
+const { previewPaperForms, sendPaperForms, finalReturnReminders } = require('../../lib/connectors/water-service/returns-notifications');
 const { getUniqueLicenceNumbers } = require('./lib/helpers');
 
 /**
@@ -93,9 +96,53 @@ const getSendFormsSuccess = (request, h) => {
   });
 };
 
+/**
+ * Renders a form so that the user can send a final returns reminder letter
+ * We need a form to protect against CSRF
+ */
+const getFinalReminder = async (request, h) => {
+  const view = {
+    ...request.view,
+    form: sendRemindersForm(request),
+    back: `/admin/notifications`
+  };
+  const options = { layout: false };
+  return h.view('nunjucks/returns-notifications/final-reminder.njk', view, options);
+};
+
+/**
+ * Downloads CSV data to show who will receive final return reminders
+ */
+const getFinalReminderCSV = async (request, h) => {
+  const { endDate } = last(helpers.returns.date.createReturnCycles());
+  const email = get(request, 'auth.credentials.username');
+  const { messages } = await finalReturnReminders(endDate, email, true);
+  const data = messages.map(row => row.personalisation);
+  return csvDownload(h, data, `final-reminders-${endDate}.csv`);
+};
+
+/**
+ * Sends final return reminders via Notify and display confirmation message
+ */
+const postSendFinalReminder = async (request, h) => {
+  const { endDate } = last(helpers.returns.date.createReturnCycles());
+  const email = get(request, 'auth.credentials.username');
+  const { event } = await finalReturnReminders(endDate, email, false);
+
+  const view = {
+    ...request.view,
+    event
+  };
+
+  return h.view('nunjucks/returns-notifications/final-reminder-confirmation.njk', view, { layout: false });
+};
+
 module.exports = {
   getSendForms,
   postPreviewRecipients,
   postSendForms,
-  getSendFormsSuccess
+  getSendFormsSuccess,
+  getFinalReminder,
+  getFinalReminderCSV,
+  postSendFinalReminder
 };

@@ -1,10 +1,10 @@
 {
-  "id": "/wr22/15.2",
+  "id": "/wr22/24.3",
   "type": "object",
-  "title": "15.2",
-  "category": "Ground source heating and cooling pumps",
+  "title": "24.3",
+  "category": "Control on abstraction",
   "subcategory": "",
-  "description": "The Licence Holder shall measure at the same time each day the water level in the abstraction and re-injection borehole(s).",
+  "description": "Abstraction may only take place from one of the boreholes specified in condition <<xx and xx>> at any one time.",
   "properties": {
     "nald_condition": {
       "$ref": "water://licences/conditions.json",

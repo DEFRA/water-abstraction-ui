@@ -15,5 +15,8 @@
         }
       }
     }
-  }
+  },
+  "required": [
+    "nald_condition"
+  ]
 }

@@ -3,8 +3,8 @@
   "type": "object",
   "title": "14.1",
   "category": "Groundwater conditions",
-  "subcategory": "Dip tube and monitoring apparatus",
-  "description": "The Licence Holder shall ensure that the dip tube shall at all times, extend to a depth not less than <<dip tube depth>> metres below the minimum water level as recorded when the borehole is operating at the maximum hourly rate of abstraction permitted under this licence.",
+  "subcategory": "Borehole construction and controls",
+  "description": "No abstraction shall take place unless the Licence Holder has completed the borehole headworks such that:\n\n(i) The borehole is located in a suitable building or in a vented chamber with safe access for measuring the water level in the borehole and reading the meter.\n\n(ii) The borehole is sealed with a capping plate to prevent the ingress of potentially contaminating materials or substances.\n\n(iii) Where the borehole is installed in a chamber, the chamber shall be provided with a system of drainage to prevent the accumulation of standing water in the chamber.\n\n(iv) A dip tube, with removable cap, shall be installed in the borehole so that a cable dipper can be lowered to record the lowest water level without fouling any installed equipment. \n",
   "properties": {
     "nald_condition": {
       "$ref": "water://licences/conditions.json",
@@ -15,5 +15,8 @@
         }
       }
     }
-  }
+  },
+  "required": [
+    "nald_condition"
+  ]
 }

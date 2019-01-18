@@ -44,7 +44,7 @@ const pre = async (request, h) => {
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
   if (!canEdit) {
-    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`).takeover();
+    return h.redirect(`/admin/digitise/licence/${documentId}?flash=locked`).takeover();
   }
 
   return h.continue;
@@ -69,7 +69,7 @@ const getSelectSchemaCategory = async (request, h) => {
     categories,
     ...request.view,
     form,
-    back: `/admin/abstraction-reform/licence/${documentId}#further-conditions`
+    back: `/admin/digitise/licence/${documentId}#further-conditions`
   };
 
   return h.view('nunjucks/abstraction-reform/select-schema-category.njk', view, { layout: false });
@@ -83,7 +83,7 @@ const postSelectSchemaCategory = async (request, h) => {
   if (form.isValid) {
     const { category } = getValues(form);
 
-    const path = `/admin/abstraction-reform/licence/${documentId}/select-schema/${category}`;
+    const path = `/admin/digitise/licence/${documentId}/select-schema/${category}`;
     return h.redirect(path);
   } else {
     // Re-display form with validation errors
@@ -109,7 +109,7 @@ const getSelectSchema = async (request, h) => {
     category,
     ...request.view,
     form,
-    back: `/admin/abstraction-reform/licence/${documentId}/select-schema-category`
+    back: `/admin/digitise/licence/${documentId}/select-schema-category`
   };
 
   return h.view('nunjucks/abstraction-reform/select-schema.njk', view, { layout: false });
@@ -138,7 +138,7 @@ const postSelectSchema = async (request, h) => {
   // Otherwise redirect to data capture form
   const { schema } = getValues(form);
 
-  const path = `/admin/abstraction-reform/licence/${documentId}/add-data/${schema}`;
+  const path = `/admin/digitise/licence/${documentId}/add-data/${schema}`;
 
   return h.redirect(path);
 };
@@ -160,7 +160,7 @@ const getAddData = async (request, h) => {
     ...request.view,
     form: request.form || form,
     schema,
-    back: `/admin/abstraction-reform/licence/${documentId}/select-schema/${slug}`
+    back: `/admin/digitise/licence/${documentId}/select-schema/${slug}`
   };
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
 };
@@ -197,7 +197,7 @@ const postAddData = async (request, h) => {
 
     await persistActions(request.licence, request.arLicence, actions);
 
-    return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${id}`);
+    return h.redirect(`/admin/digitise/licence/${documentId}#${id}`);
   } else {
     request.form = f;
     return getAddData(request, h);
@@ -218,7 +218,7 @@ const getEditData = async (request, h) => {
     ...request.view,
     form: request.form || form,
     schema,
-    back: `/admin/abstraction-reform/licence/${documentId}#${id}`
+    back: `/admin/digitise/licence/${documentId}#${id}`
   };
 
   return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
@@ -252,7 +252,7 @@ const postEditData = async (request, h) => {
       await persistActions(request.licence, request.arLicence, [edit]);
     }
 
-    return h.redirect(`/admin/abstraction-reform/licence/${documentId}#${id}`);
+    return h.redirect(`/admin/digitise/licence/${documentId}#${id}`);
   } else {
     request.form = updated;
     return getEditData(request, h);
@@ -296,7 +296,7 @@ const postDeleteData = async (request, h) => {
 
   const action = createDeleteData(request.auth.credentials, id);
   await wr22Helpers.persistActions(request.licence, request.arLicence, [action]);
-  return h.redirect(`/admin/abstraction-reform/licence/${documentId}#further-conditions`);
+  return h.redirect(`/admin/digitise/licence/${documentId}#further-conditions`);
 };
 
 module.exports = {

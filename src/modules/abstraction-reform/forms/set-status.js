@@ -32,7 +32,7 @@ const setStatusForm = (request) => {
   const { csrfToken } = request.view;
 
   const { documentId } = request.params;
-  const action = `/admin/abstraction-reform/licence/${documentId}/status`;
+  const action = `/admin/digitise/licence/${documentId}/status`;
 
   const f = formFactory(action);
 

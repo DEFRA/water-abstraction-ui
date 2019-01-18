@@ -80,13 +80,13 @@ lab.experiment('getReportsList', () => {
   lab.test('It should not include AR report link for AR user scope', async () => {
     const reports = getReportsList(arUser);
     const paths = reports.map(item => item.path);
-    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(false);
+    expect(paths.includes('/admin/digitise/report')).to.equal(false);
   });
 
   lab.test('It should include AR report link in list for AR approver scope', async () => {
     const reports = getReportsList(arApprover);
     const paths = reports.map(item => item.path);
-    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(true);
+    expect(paths.includes('/admin/digitise/report')).to.equal(true);
   });
 
   lab.test('It includes returns overview link when returns.edit permission is set', async () => {

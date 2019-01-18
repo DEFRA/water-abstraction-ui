@@ -13,7 +13,7 @@ const deleteForm = (request) => {
   const { csrfToken } = request.view;
 
   const { documentId, id } = request.params;
-  const action = `/admin/abstraction-reform/licence/${documentId}/delete/${id}`;
+  const action = `/admin/digitise/licence/${documentId}/delete/${id}`;
 
   const f = formFactory(action);
 

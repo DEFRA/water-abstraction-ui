@@ -33,7 +33,7 @@ lab.experiment('selectSchemaCategoryForm', () => {
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/abstraction-reform/licence/${request.params.documentId}/select-schema-category`);
+    expect(form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/select-schema-category`);
   });
 
   lab.test('The form should have a CSRF token field', async () => {

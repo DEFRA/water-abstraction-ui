@@ -246,3 +246,10 @@ experiment('addFlags', () => {
     expect(modified[0].isReceivedOrInternalVoid).to.be.false();
   });
 });
+
+experiment('getSuffix', () => {
+  test('handles superscript', async () => {
+    expect(helpers.getSuffix('m³')).to.equal('cubic metres');
+    expect(helpers.getSuffix('m3')).to.equal('cubic metres');
+  });
+});

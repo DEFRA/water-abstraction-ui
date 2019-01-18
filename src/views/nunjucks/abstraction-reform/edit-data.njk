@@ -15,7 +15,7 @@
 
         <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
 
-        {% set html = schema.description | ARConditionPlaceholder | safe %}
+        {% set html = schema.description | ARConditionPlaceholder | nl2br | safe %}
 
         {{ govukInsetText({
           html: html

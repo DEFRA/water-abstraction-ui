@@ -49,7 +49,7 @@
   <h2 class="govuk-heading-m" id="licence">Licence data</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
   </p>
   {% endif %}
   {{ arComparisonTable(data.licence) }}
@@ -58,7 +58,7 @@
   <h2 class="govuk-heading-m" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Current licence version</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
   </p>
   {% endif %}
   {{ arComparisonTable(data.currentVersion) }}
@@ -67,7 +67,7 @@
   <h2 class="govuk-heading-m" id="party-{{ data.party.base.ID }}">Licence holder party</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
   </p>
   {% endif %}
   {{ arComparisonTable(data.party) }}
@@ -76,7 +76,7 @@
   <h2 class="govuk-heading-m" id="address-{{ data.address.base.ID }}">Licence holder address</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
   </p>
   {% endif %}
   {{ arComparisonTable(data.address) }}
@@ -86,7 +86,7 @@
   <h2 id="purpose-{{ purpose.base.ID }}" class="govuk-heading-m">Purpose {{ purpose.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
       <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
   </a>
   </p>
@@ -99,7 +99,7 @@
   <h2 id="point-{{ point.base.ID }}" class="govuk-heading-m">Point {{ point.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
       <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
     </a>
   </p>
@@ -111,7 +111,7 @@
   <h2 id="condition-{{ condition.base.ID }}" class="govuk-heading-m">Condition {{ condition.base.ID }}</h2>
   {% if canEdit %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
+    <a href="/admin/digitise/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
       <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
     </a>
   </p>
@@ -130,7 +130,7 @@
       <p>{{ item.title }}
         <br />
         Linked to
-        <a href="/admin/abstraction-reform/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
+        <a href="/admin/digitise/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
           <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
         </a>
       </p>
@@ -138,12 +138,12 @@
       {%if canEdit %}
       <ul class="govuk-list">
         <li>
-          <a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/edit-data/{{ item.id }}#">
+          <a  class="govuk-link" href="/admin/digitise/licence/{{ documentId }}/edit-data/{{ item.id }}#">
             Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
           </a>
         </li>
         <li>
-          <a  class="govuk-link" href="/admin/abstraction-reform/licence/{{ documentId }}/delete/{{ item.id }}#">
+          <a  class="govuk-link" href="/admin/digitise/licence/{{ documentId }}/delete/{{ item.id }}#">
             Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
           </a>
         </li>
@@ -165,7 +165,7 @@
 
   {%if canEdit and data.conditions.length %}
   <p>
-    <a href="/admin/abstraction-reform/licence/{{ documentId }}/select-schema-category">Add a condition</a>
+    <a href="/admin/digitise/licence/{{ documentId }}/select-schema-category">Add a condition</a>
   </p>
   {% endif %}
 

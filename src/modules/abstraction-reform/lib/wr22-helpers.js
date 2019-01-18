@@ -41,7 +41,7 @@ const findDataItem = (arLicence, id) => {
  * @return {String}            form action attribute
  */
 const getAddFormAction = (documentId, schemaName) => {
-  return `/admin/abstraction-reform/licence/${documentId}/add-data/${schemaName}`;
+  return `/admin/digitise/licence/${documentId}/add-data/${schemaName}`;
 };
 
 /**
@@ -105,7 +105,7 @@ const getEditFormAndSchema = async (request) => {
   const { id, documentId } = request.params;
 
   // Form action
-  const action = `/admin/abstraction-reform/licence/${documentId}/edit-data/${id}`;
+  const action = `/admin/digitise/licence/${documentId}/edit-data/${id}`;
 
   // Load AR licence
   const result = await loader.load(documentId);

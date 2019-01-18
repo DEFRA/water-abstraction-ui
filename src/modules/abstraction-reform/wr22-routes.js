@@ -8,7 +8,7 @@ module.exports = {
 
   getSelectSchemaCategory: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema-category',
+    path: '/admin/digitise/licence/{documentId}/select-schema-category',
     handler: controller.getSelectSchemaCategory,
     options: {
       pre: [{ method: controller.pre }],
@@ -25,7 +25,7 @@ module.exports = {
 
   postSelectSchemaCategory: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema-category',
+    path: '/admin/digitise/licence/{documentId}/select-schema-category',
     handler: controller.postSelectSchemaCategory,
     options: {
       pre: [{ method: controller.pre }],
@@ -42,7 +42,7 @@ module.exports = {
 
   getSelectSchema: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema/{slug}',
+    path: '/admin/digitise/licence/{documentId}/select-schema/{slug}',
     handler: controller.getSelectSchema,
     options: {
       pre: [{ method: controller.pre }],
@@ -59,7 +59,7 @@ module.exports = {
 
   postSelectSchema: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/select-schema/{slug}',
+    path: '/admin/digitise/licence/{documentId}/select-schema/{slug}',
     handler: controller.postSelectSchema,
     options: {
       pre: [{ method: controller.pre }],
@@ -76,7 +76,7 @@ module.exports = {
 
   getAddData: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
+    path: '/admin/digitise/licence/{documentId}/add-data/{schema*}',
     handler: controller.getAddData,
     options: {
       pre: [{ method: controller.pre }],
@@ -93,7 +93,7 @@ module.exports = {
 
   postAddData: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/add-data/{schema*}',
+    path: '/admin/digitise/licence/{documentId}/add-data/{schema*}',
     handler: controller.postAddData,
     options: {
       pre: [{ method: controller.pre }],
@@ -110,7 +110,7 @@ module.exports = {
 
   getEditData: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
+    path: '/admin/digitise/licence/{documentId}/edit-data/{id}',
     handler: controller.getEditData,
     options: {
       pre: [{ method: controller.pre }],
@@ -133,7 +133,7 @@ module.exports = {
 
   postEditData: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/edit-data/{id}',
+    path: '/admin/digitise/licence/{documentId}/edit-data/{id}',
     handler: controller.postEditData,
     options: {
       pre: [{ method: controller.pre }],
@@ -156,7 +156,7 @@ module.exports = {
 
   getDeleteData: {
     method: 'GET',
-    path: '/admin/abstraction-reform/licence/{documentId}/delete/{id}',
+    path: '/admin/digitise/licence/{documentId}/delete/{id}',
     handler: controller.getDeleteData,
     options: {
       pre: [{ method: controller.pre }],
@@ -179,7 +179,7 @@ module.exports = {
 
   postDeleteData: {
     method: 'POST',
-    path: '/admin/abstraction-reform/licence/{documentId}/delete/{id}',
+    path: '/admin/digitise/licence/{documentId}/delete/{id}',
     handler: controller.postDeleteData,
     options: {
       pre: [{ method: controller.pre }],

@@ -34,10 +34,7 @@ lab.experiment('getCSVData', () => {
   lab.test('It should get report data CSV format', async () => {
     stub.resolves(report);
     const result = await getCSVData();
-    expect(result).to.equal(`licence_ref,status,region_code,start_date,review_date,approved_date,contact_correct
-01/123,Approved,8,2018-07-19T08:13:44.000Z,2018-07-20T08:13:16.000Z,,1
-04/567,Approved,8,2018-07-24T13:13:30.000Z,2018-07-24T13:16:36.000Z,2018-11-29T10:21:49.000Z,1
-`);
+    expect(result).to.equal(report);
   });
 });
 

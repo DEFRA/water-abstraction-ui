@@ -74,9 +74,73 @@ const previewPaperForms = (licenceNumbers, issuer) => {
   return sendPaperForms(licenceNumbers, issuer, true);
 };
 
+/**
+ * Gets notification config for return final reminder letter
+ * @param  {String} endDate - find returns with end date matching this date
+ * @param  {String} issuer  - email address of current user
+ * @return {Object}         - config object
+ */
+const getFinalReminderConfig = (endDate, issuer) => {
+  return {
+    filter: {
+      status: 'due',
+      end_date: endDate,
+      'metadata->>isCurrent': 'true'
+    },
+    config: {
+      rolePriority: ['returns_contact', 'licence_holder'],
+      prefix: 'RFRM-',
+      issuer,
+      messageRef: {
+        default: 'returns_final_reminder'
+      },
+      name: 'Returns: final reminder',
+      deDupe: false
+    }
+  };
+};
+
+/**
+ * Gets request options for rp to send HTTP request and either send
+ * messages or download CSV of recipient data
+ * @param  {String}  endDate       - End date filter for returns
+ * @param  {String}  issuer        - email address ofcurrent user
+ * @param  {Boolean} [isCsv=false] - Whether preview CSV (true) or send (false)
+ * @return {Object}                - rp options
+ */
+const getFinalReminderRequestOptions = (endDate, issuer, isPreview = false) => {
+  let uri = `${process.env.WATER_URI}/returns-notifications/invite/send`;
+  if (isPreview) {
+    uri = `${process.env.WATER_URI}/returns-notifications/invite/preview?verbose=1`;
+  }
+  return {
+    method: 'POST',
+    uri,
+    headers: {
+      Authorization: process.env.JWT_TOKEN
+    },
+    body: getFinalReminderConfig(endDate, issuer),
+    json: true
+  };
+};
+
+/**
+ * Sends or previews final return reminders
+ * @param  {String}  endDate       - End date filter for returns
+ * @param  {String}  issuer        - email address ofcurrent user
+ * @param  {Boolean} [isCsv=false] - Whether preview CSV (true) or send (false)
+ * @return Promise                -  resolves with HTTP response
+ */
+const finalReturnReminders = (endDate, issuer, isPreview) => {
+  const options = getFinalReminderRequestOptions(endDate, issuer, isPreview);
+  return rp(options);
+};
+
 module.exports = {
   previewPaperForms,
   sendPaperForms,
   getPaperFormFilter,
-  buildRequest
+  buildRequest,
+  getFinalReminderRequestOptions,
+  finalReturnReminders
 };

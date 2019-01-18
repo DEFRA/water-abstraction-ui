@@ -1,4 +1,5 @@
 const { getCSVData, getReportFilename } = require('../lib/report-helpers.js');
+const { csvDownload } = require('../../../lib/csv-download.js');
 
 /**
  * A page to allow the downloading of the AR CSV report
@@ -9,11 +10,8 @@ const getCSVReport = async (request, h) => {
   const { download } = request.query;
 
   if (download) {
-    const csv = await getCSVData();
-    const filename = getReportFilename();
-    return h.response(csv)
-      .header('Content-type', 'text/csv')
-      .header('Content-disposition', `attachment; filename=${filename}`);
+    const data = await getCSVData();
+    return csvDownload(h, data, getReportFilename());
   }
 
   return h.view('water/abstraction-reform/csv-report', view);

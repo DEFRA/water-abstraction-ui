@@ -8,7 +8,7 @@ const {
 // Internal links
 const internalLinks = {
   licences: createLink('View licences', '/admin/licences', 'view'),
-  ar: createLink('Abstraction reform', '/admin/abstraction-reform', 'ar'),
+  ar: createLink('Digitise!', '/admin/abstraction-reform', 'ar'),
   notifications: createLink('Reports and notifications', '/admin/notifications', 'notifications'),
   returns: createLink('Manage returns', '/admin/returns', 'returns')
 };

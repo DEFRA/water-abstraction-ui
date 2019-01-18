@@ -3,8 +3,8 @@
   "type": "object",
   "title": "14.2",
   "category": "Groundwater conditions",
-  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
-  "description": "The Licence Holder shall send a copy of the record containing the <<data type e.g. water level>> data to the Agency along with the annual return of abstraction quantities within 28 calendar days after <<return submission date>> each year or within 28 calendar days of being so required in writing by the Agency.",
+  "subcategory": "Borehole construction and controls",
+  "description": "(i) The Licence Holder shall cap the borehole to prevent uncontrolled artesian overflow. \n\n(ii) The Licence Holder shall fit a capping plate with a pressure gauge of suitable sensitivity to enable the artesian head to be measured.\n\n(iii) The Licence Holder shall ensure that the borehole capping plate is drilled and tapped to form a dip hole at least <<dip tube diameter>> millimetres in diameter.\n\n(iv) The Licence Holder shall position the hole on the capping plate so that a cable dipper can be lowered to record the water level without fouling installed equipment.\n",
   "properties": {
     "nald_condition": {
       "$ref": "water://licences/conditions.json",
@@ -15,5 +15,8 @@
         }
       }
     }
-  }
+  },
+  "required": [
+    "nald_condition"
+  ]
 }

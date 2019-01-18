@@ -44,6 +44,7 @@ const getNotificationsList = (tasks, permissions) => {
 
   if (hasPermission('returns.edit', permissions)) {
     notifications.push(createNotificationType('Returns: send paper forms', '/admin/returns-notifications/forms'));
+    notifications.push(createNotificationType('Returns: send final reminder', '/admin/returns-notifications/final-reminder'));
   }
 
   return notifications;

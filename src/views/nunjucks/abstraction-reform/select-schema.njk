@@ -22,7 +22,7 @@
     </div>
   </div>
   <div class="data-row__item">
-    <p>{{ choice.hint | ARConditionPlaceholder | safe }}</p>
+    <p>{{ choice.hint | ARConditionPlaceholder | nl2br | safe }}</p>
   </div>
 </div>
 {% endmacro %}

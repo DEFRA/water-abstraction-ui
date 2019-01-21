@@ -1,0 +1,29 @@
+{
+  "id" : "/wr22/2.9.8",
+  "type" : "object",
+  "title" : "2.9.8",
+  "description" : "Lakenheath IDB\n\nNo water shall be taken at [abstraction_point] when the water level in Lakenheath Poor’s Fen is EQUAL TO or LESS THAN 99.8 metres South Level Datum, as indicated by the red triangle on the gauging board on the drain at National Grid Reference TL 7003 8386.",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Anglian",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "abstraction_point": {
+      "type": "string",
+      "label": "Abstraction point",
+      "errors" : {
+        "required" : {
+          "message" : "Abstraction point is required"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "abstraction_point"]
+}

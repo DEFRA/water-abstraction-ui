@@ -1,0 +1,20 @@
+{
+  "id" : "/wr22/2.9.7",
+  "type" : "object",
+  "title" : "2.9.7",
+  "description" : "Littleport & Downham IDB\n\nNo water shall be abstracted when the water level as measured at the New Ten Mile Pumping Station (National Grid Reference TL 606 940) is EQUAL TO or LESS THAN 96.80 metres South Level Datum as notified by the Agency to the Licence Holder in writing.",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Anglian",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition"]
+}

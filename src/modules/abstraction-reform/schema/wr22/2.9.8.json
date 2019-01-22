@@ -20,7 +20,7 @@
       "label": "Abstraction point",
       "errors" : {
         "required" : {
-          "message" : "Abstraction point is required"
+          "message" : "Enter an abstraction point"
         }
       }
     }

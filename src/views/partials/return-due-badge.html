@@ -1,19 +1,19 @@
 {{# equal status 'due' }}
   {{#if isPastDueDate}}
-    <strong class="badge badge--success badge--caps badge--no-wrap">Overdue</strong>
+    <strong class="badge badge--due badge--no-wrap">Overdue</strong>
   {{else}}
-    <strong class="badge badge--success badge--caps badge--no-wrap">Due</strong>
+    <strong class="badge badge--due badge--no-wrap">Due</strong>
   {{/if}}
 {{/equal}}
 
 {{#equal status 'received'}}
-  <strong class="badge badge--completed badge--caps badge--no-wrap">Received</strong>
+  <strong class="badge badge--completed badge--no-wrap">Received</strong>
 {{/equal}}
 
 {{#equal status 'completed'}}
-  <strong class="badge badge--completed badge--caps badge--no-wrap">Completed</strong>
+  <strong class="badge badge--completed badge--no-wrap">Completed</strong>
 {{/equal}}
 
 {{#equal status 'void'}}
-  <strong class="badge badge--void badge--caps badge--no-wrap">Void</strong>
+  <strong class="badge badge--void badge--no-wrap">Void</strong>
 {{/equal}}

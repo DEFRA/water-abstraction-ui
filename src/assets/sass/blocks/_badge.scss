@@ -1,5 +1,4 @@
 .badge {
-
   min-width: 4rem;
   line-height: 2.25rem;
   display: inline-block;
@@ -8,10 +7,10 @@
   font-weight: bold;
   font-size: 16px;
   padding: 3px 5px 0 5px;
-  background: $grey-4;
+  background: #005ea5;
   letter-spacing: 1px;
   color: $page-colour;
-
+  text-transform: uppercase;
 }
 
 .badge--error {
@@ -26,6 +25,10 @@
   background: $link-colour;
 }
 
+.badge--due {
+  background: #f47738;
+}
+
 .badge--void {
   background: #b10e1e;
 }
@@ -35,7 +38,6 @@
 }
 
 .badge--caps {
-  text-transform: uppercase;
 }
 
 .badge--no-wrap {

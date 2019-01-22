@@ -20,7 +20,7 @@
       "label": "Location",
       "errors": {
         "required": {
-          "message": "Location is required"
+          "message": "Enter a location"
         }
       }
     }

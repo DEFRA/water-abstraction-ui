@@ -50,13 +50,13 @@ experiment('confirmForm', () => {
     const request = getRequest(true);
     const form = confirmForm(request, { isUnderQuery: false });
     const checkbox = find(form.fields, { name: 'isUnderQuery' });
-    expect(checkbox.options.checked).to.equal(false);
+    expect(checkbox.value).to.equal([]);
   });
 
   test('it should be checked if isUnderQuery flag is true', async () => {
     const request = getRequest(true);
     const form = confirmForm(request, { isUnderQuery: true });
     const checkbox = find(form.fields, { name: 'isUnderQuery' });
-    expect(checkbox.options.checked).to.equal(true);
+    expect(checkbox.value).to.equal(['under_query']);
   });
 });

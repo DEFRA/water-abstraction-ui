@@ -7,5 +7,5 @@ module.exports = [ { method: 'GET',
     description: 'Service Status',
     auth: false
 
-  }}
+  } }
 ];

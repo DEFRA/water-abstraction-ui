@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/17.6",
+  "type": "object",
+  "title": "17.6",
+  "category": "Fish and Eel passage",
+  "subcategory": "",
+  "description": "No <abstraction><power production> shall take place unless the number of blades, diameter of the turbine and the maximum revolutions per minute (rpm) of the turbine comply with the parameters stated in the table below unless otherwise approved in writing by the Agency.\n\nNumber of blades        Minimum diameter of turbine (m)        Maximum RPM\n5        3.0        24\n4        2.2        30\n3        1.4        32\n\nThe turbine shall have not less than 3 and not more than 5 blades.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

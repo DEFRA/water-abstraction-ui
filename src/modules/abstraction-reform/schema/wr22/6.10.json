@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.10",
+  "type": "object",
+  "title": "6.10",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall calibrate the << logger, etc.>> regularly <<in accordance with the recommendations of the manufacturer>> or at any time when required by the Agency in writing.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

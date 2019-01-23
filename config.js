@@ -4,15 +4,14 @@ const isLocal = process.env.NODE_ENV === 'local';
 
 module.exports = {
 
-  testMode,
-
-  idm: {
-    application: 'water_vml'
-  },
-
-  defaultAuth: {
-    strategy: 'standard',
-    mode: 'try'
+  blankie: {
+    frameSrc: ['self', 'www.smartsurvey.co.uk'],
+    scriptSrc: ['self', '*.google-analytics.com'],
+    fontSrc: ['self', 'assets.publishing.service.gov.uk', 'data:'],
+    imgSrc: ['self', '*.google-analytics.com'],
+    connectSrc: '*.google-analytics.com',
+    reportOnly: true,
+    reportUri: '/csp/report'
   },
 
   blipp: {
@@ -27,11 +26,37 @@ module.exports = {
     }
   },
 
+  defaultAuth: {
+    strategy: 'standard',
+    mode: 'try'
+  },
+
   good: {
     ops: {
       interval: 60000
     }
   },
+
+  googleAnalytics: {
+    propertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID,
+    debug: isLocal
+  },
+
+  hapiAuthCookie: {
+    cookie: 'sid',
+    password: process.env.COOKIE_SECRET,
+    isSecure: !isLocal,
+    isSameSite: 'Lax',
+    ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
+    redirectTo: '/welcome',
+    isHttpOnly: true
+  },
+
+  idm: {
+    application: 'water_vml'
+  },
+
+  isLocal,
 
   jwt: {
     key: process.env.JWT_SECRET,
@@ -43,16 +68,6 @@ module.exports = {
     airbrakeKey: process.env.ERRBIT_KEY,
     airbrakeHost: process.env.ERRBIT_SERVER,
     airbrakeLevel: 'error'
-  },
-
-  hapiAuthCookie: {
-    cookie: 'sid',
-    password: process.env.COOKIE_SECRET,
-    isSecure: !isLocal,
-    isSameSite: 'Lax',
-    ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-    redirectTo: '/welcome',
-    isHttpOnly: true
   },
 
   returns: {
@@ -71,18 +86,6 @@ module.exports = {
     }
   },
 
-  blankie: {
-    frameSrc: ['self', 'www.smartsurvey.co.uk'],
-    scriptSrc: ['self', '*.google-analytics.com'],
-    fontSrc: ['self', 'assets.publishing.service.gov.uk', 'data:'],
-    imgSrc: ['self', '*.google-analytics.com'],
-    connectSrc: '*.google-analytics.com',
-    reportOnly: true,
-    reportUri: '/csp/report'
-  },
+  testMode
 
-  googleAnalytics: {
-    propertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID,
-    debug: isLocal
-  }
 };

@@ -1,6 +1,7 @@
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
+const { handleRequest, getValues } = require('../../../lib/forms');
 const { load, update } = require('../lib/loader');
 const { extractData, transformNulls, prepareData } = require('../lib/helpers');
 const { getPermissions } = require('../lib/permissions');
@@ -9,6 +10,8 @@ const { createEditPurpose, createEditLicence, createEditPoint, createEditConditi
 const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('../lib/statuses');
+
+const { setStatusForm, setStatusSchema } = require('../forms/set-status');
 
 // Config for editing different data models
 const objectConfig = {
@@ -82,6 +85,8 @@ const getViewLicence = async (request, h) => {
   const { documentId } = request.params;
   const { flash } = request.query;
 
+  const form = request.form || setStatusForm(request);
+
   const { licence, finalState } = await load(documentId);
 
   const data = prepareData(licence, finalState);
@@ -93,6 +98,7 @@ const getViewLicence = async (request, h) => {
     documentId,
     ...request.view,
     licence,
+    form,
     lastEdit: finalState.lastEdit,
     data,
     ...permissions,
@@ -100,7 +106,7 @@ const getViewLicence = async (request, h) => {
     highlightAr: finalState.status === STATUS_IN_REVIEW
   };
 
-  return h.view('water/abstraction-reform/licence', view);
+  return h.view('nunjucks/abstraction-reform/licence.njk', view, { layout: false });
 };
 
 /**
@@ -121,7 +127,7 @@ const getAdditionalArgs = (id) => {
  * @param {String} request.params.id - the ID of the entity
  */
 const getEditObject = async (request, h) => {
-  const {documentId, type, id} = request.params;
+  const { documentId, type, id } = request.params;
   const args = getAdditionalArgs(id);
 
   // Load licence / AR licence from CRM
@@ -130,14 +136,14 @@ const getEditObject = async (request, h) => {
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
   if (!canEdit) {
-    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`);
+    return h.redirect(`/admin/digitise/licence/${documentId}?flash=locked`);
   }
 
   const { schema, getter } = objectConfig[type];
 
   const data = extractData(getter(finalState.licence, ...args), schema);
 
-  const formAction = `/admin/abstraction-reform/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
+  const formAction = `/admin/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
 
   const view = {
     ...request.view,
@@ -169,7 +175,7 @@ const postEditObject = async (request, h) => {
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
   if (!canEdit) {
-    return h.redirect(`/admin/abstraction-reform/licence/${documentId}?flash=locked`);
+    return h.redirect(`/admin/digitise/licence/${documentId}?flash=locked`);
   }
 
   const { schema, getter, actionCreator } = objectConfig[type];
@@ -191,10 +197,10 @@ const postEditObject = async (request, h) => {
     const { status, lastEdit } = stateManager(getInitialState(licence), actions);
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
   }
 
-  let path = `/admin/abstraction-reform/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
+  let path = `/admin/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
   return h.redirect(path);
 };
 
@@ -206,30 +212,36 @@ const postEditObject = async (request, h) => {
  */
 const postSetStatus = async (request, h) => {
   const { documentId } = request.params;
-  const { notes, status } = request.payload;
 
-  if (request.formError) {
+  const schema = setStatusSchema(request);
+  const form = handleRequest(setStatusForm(request), request, schema);
+
+  if (form.isValid) {
+    const { notes, status } = getValues(form);
+
+    // Load licence / AR licence from CRM
+    const { licence, arLicence } = await load(documentId);
+    const { licence_ref: licenceNumber } = licence;
+
+    // Add new action to list
+    const action = createSetStatus(status, notes, request.auth.credentials);
+    const { actions } = arLicence.licence_data_value;
+    actions.push(action);
+
+    // Re-calculate final state
+    // This is so we can get the status and last editor details and store these
+    // Calculate final state from list of actions to update last editor/status
+    const { lastEdit } = stateManager(getInitialState(licence), actions);
+
+    // Save action list to permit repo
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
+
+    return h.redirect(`/admin/digitise`);
+  } else {
+    // Re-render licence page
+    request.form = form;
     return getViewLicence(request, h);
   }
-
-  // Load licence / AR licence from CRM
-  const { licence, arLicence } = await load(documentId);
-  const { licence_ref: licenceNumber } = licence;
-
-  // Add new action to list
-  const action = createSetStatus(status, notes, request.auth.credentials);
-  const { actions } = arLicence.licence_data_value;
-  actions.push(action);
-
-  // Re-calculate final state
-  // This is so we can get the status and last editor details and store these
-  // Calculate final state from list of actions to update last editor/status
-  const { lastEdit } = stateManager(getInitialState(licence), actions);
-
-  // Save action list to permit repo
-  await update(arLicence.licence_id, {actions, status, lastEdit}, licenceNumber);
-
-  return h.redirect(`/admin/abstraction-reform`);
 };
 
 module.exports = {

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.12",
+  "type": "object",
+  "title": "5.12",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "(i) The Licence Holder shall provide written confirmation (including  drawing/s that clearly detail and show the <<hydropower  scheme/impounding works>> as it has been built) to the  Agency from an independent qualified civil engineer, or other  suitably qualified person, that the <<hydropower  scheme/impounding works>> has been constructed in  accordance with the submitted specification and drawings  specified in condition <<number>> of this licence (or such  minor amendments to these documents that have been  accepted in writing by the Agency).\n(ii)        The Licence Holder shall provide the written confirmation referred to above at least <<number>> calendar days before the <<hydropower scheme/impounding works>> is commissioned or becomes operational.\n(iii)       The Licence Holder shall not operate the <<hydropower \tscheme/impounding works>> unless such confirmation has \tbeen submitted and written approval has been given by the \tAgency.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

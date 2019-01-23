@@ -1,5 +1,10 @@
+const uuidv4 = require('uuid/v4');
 const statuses = require('./statuses');
-const { EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS, EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS } = require('./action-types');
+const {
+  EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
+  EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
+  ADD_DATA, EDIT_DATA, DELETE_DATA
+} = require('./action-types');
 
 const formatUser = (user) => {
   const {user_id: id, username: email} = user;
@@ -161,6 +166,64 @@ const createEditAddress = (data, user, id) => {
   };
 };
 
+/**
+ * Creates a new data object - e.g. for WR22 data
+ * @param {String} schema - the name of the schema that describes this data point
+ * @param {Object} user - the current user of the application
+ * @param {String|Number} issueNumber - the NALD licence issue number
+ * @param {String|Number} incrementNumber schema - the NALD licence increment number
+ * @param
+ */
+const createAddData = (schema, user, issueNumber, incrementNumber) => {
+  return {
+    type: ADD_DATA,
+    payload: {
+      id: uuidv4(),
+      schema,
+      user: formatUser(user),
+      timestamp: Date.now(),
+      issueNumber: parseInt(issueNumber),
+      incrementNumber: parseInt(incrementNumber)
+    }
+  };
+};
+
+/**
+ * Edits a data object in the AR data items list
+ * @param {Object} data - object of data to store
+ * @param {Object} user - the current application user
+ * @param {String} id - GUID of data point
+ * @param
+ */
+const createEditData = (data, user, id) => {
+  return {
+    type: EDIT_DATA,
+    payload: {
+      id,
+      user: formatUser(user),
+      data,
+      timestamp: Date.now()
+    }
+  };
+};
+
+/**
+ * Deletes a data object in the AR data items list
+ * @param {Object} user - the current application user
+ * @param {String} id - GUID of data point to delete
+ * @param
+ */
+const createDeleteData = (user, id) => {
+  return {
+    type: DELETE_DATA,
+    payload: {
+      id,
+      user: formatUser(user),
+      timestamp: Date.now()
+    }
+  };
+};
+
 module.exports = {
   createEditPurpose,
   createEditLicence,
@@ -169,5 +232,8 @@ module.exports = {
   createSetStatus,
   createEditVersion,
   createEditAddress,
-  createEditParty
+  createEditParty,
+  createAddData,
+  createEditData,
+  createDeleteData
 };

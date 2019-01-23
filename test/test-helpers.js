@@ -12,4 +12,6 @@ const getMinimalRequest = () => ({
   view: {}
 });
 
-module.exports = getMinimalRequest;
+module.exports = {
+  getMinimalRequest
+};

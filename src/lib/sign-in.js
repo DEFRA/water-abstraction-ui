@@ -2,11 +2,9 @@
  * Sign-in helpers
  */
 const CRM = require('./connectors/crm');
-const { createGUID } = require('./helpers');
-const { usersClient } = require('./connectors/idm');
-const config = require('../../config');
+const uuid = require('uuid/v4');
+const { get } = require('lodash');
 const idm = require('./connectors/idm');
-const { pick, get } = require('lodash');
 
 /**
  * Loads user data from IDM
@@ -14,11 +12,9 @@ const { pick, get } = require('lodash');
  * @return {Promise} resolves with row of IDM user data
  */
 async function getIDMUser (emailAddress) {
-  // Get IDM record
-  const { data: [user], error: idmError } = await usersClient.findMany({
-    user_name: emailAddress.toLowerCase().trim(),
-    application: config.idm.application
-  });
+  const email = emailAddress.toLowerCase().trim();
+  const { data: [user], error: idmError } = await idm.getUserByEmail(email);
+
   if (idmError) {
     throw idmError;
   }
@@ -45,58 +41,37 @@ async function auto (request, emailAddress) {
     await idm.updateExternalId(user, entityId);
   }
 
-  // Get roles for user
-  const { error, data: roles } = await CRM.entityRoles.setParams({entityId}).findMany();
-
-  if (error) {
-    throw error;
-  }
-
   // Create session ID
   const sessionId = await request.sessionStore.create({
     user: { id: user.user_id, emailAddress: user.user_name },
-    csrf_token: createGUID()
+    csrf_token: uuid()
   });
 
   // Data to store in cookie
-  const session = createSessionData(sessionId, user, entityId, roles);
+  const session = createSessionData(sessionId, user, entityId);
 
   // Set user info in signed cookie
   request.cookieAuth.set(session);
-  return session;
+
+  // update the credentials object with the scopes to allow permissions
+  // to be calculated elsewhere. On subsequent requests this will be
+  // done by the auth-credentials plugin in the onCredentials phase.
+  request.auth.credentials = { scope: get(user, 'role.scopes') };
 }
 
 /**
  * Create an object that is to be persisted in the cookies
  */
-const createSessionData = (sessionId, user, entityId, entityRoles) => {
+const createSessionData = (sessionId, user, entityId) => {
   const session = {
     sid: sessionId,
     username: user.user_name.toLowerCase().trim(),
     user_id: user.user_id,
     entity_id: entityId,
-    user_data: user.user_data || {},
-    lastLogin: user.last_login,
-    roles: mapRoles(entityRoles),
-    scope: get(user, 'role.scopes', [])
+    lastLogin: user.last_login
   };
 
-  session.user_data.lastLogin = user.last_login || null;
-  session.user_data.newUser = session.user_data.lastLogin === null;
-
   return session;
-};
-
-/**
- * Returns a minimal set of the entity roles data.
- *
- * This is in place as a quick fix to handle the cookie being too large and
- * therefore rejected by the browser.
- *
- * The real fix here is to load the roles data dynamically.
- */
-const mapRoles = (entityRoles = []) => {
-  return entityRoles.map(role => pick(role, 'role', 'company_entity_id'));
 };
 
 module.exports = {

@@ -1,43 +1,29 @@
 'use strict';
 
 const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
-const uuid = require('uuid/v4');
-const moment = require('moment');
+const sinon = require('sinon');
+const Joi = require('joi');
+const sandbox = sinon.createSandbox();
 
-const { createSessionData } = require('../../src/lib/sign-in');
+const idmConnector = require('../../src/lib/connectors/idm');
+const crmConnector = require('../../src/lib/connectors/crm');
+const { createSessionData, auto } = require('../../src/lib/sign-in');
 
-const getTestEntityRole = (role, companyId = uuid()) => ({
-  role,
-  company_entity_id: companyId,
-  entity_role_id: uuid(),
-  entity_id: uuid(),
-  regime_entity_id: uuid(),
-  created_at: moment().toISOString(),
-  created_by: uuid()
-});
-
-lab.experiment('sign-in.createSessionData', () => {
+experiment('createSessionData', () => {
   let sessionData;
   let sessionId;
   let emailAddress;
   let userId;
   let entityId;
   let user;
-  let roles;
 
-  lab.beforeEach(async () => {
+  beforeEach(async () => {
     sessionId = 'test-session-id';
     userId = 'user-id';
     entityId = 'entity-id';
     emailAddress = 'unit-test@example.com';
-    roles = [
-      getTestEntityRole('user', 'comp-1'),
-      getTestEntityRole('user_returns', 'comp-1'),
-      getTestEntityRole('user', 'comp-2'),
-      getTestEntityRole('user_returns', 'comp-2')
-    ];
 
     user = {
       user_id: userId,
@@ -47,89 +33,154 @@ lab.experiment('sign-in.createSessionData', () => {
       last_login: 'last-login'
     };
 
-    sessionData = createSessionData(sessionId, user, entityId, roles);
+    sessionData = createSessionData(sessionId, user, entityId);
   });
 
-  lab.test('adds the session id', async () => {
+  test('adds the session id', async () => {
     expect(sessionData.sid).to.equal(sessionId);
   });
 
-  lab.test('add the email address as the user name', async () => {
+  test('add the email address as the user name', async () => {
     expect(sessionData.username).to.equal('unit-test@example.com');
   });
 
-  lab.test('lowercases the email address', async () => {
+  test('lowercases the email address', async () => {
     const data = createSessionData(sessionId, {
       user_name: 'UNIT-test@EXAMPLE.com'
     });
     expect(data.username).to.equal('unit-test@example.com');
   });
 
-  lab.test('trims the email address', async () => {
+  test('trims the email address', async () => {
     const data = createSessionData(sessionId, {
       user_name: '   unit-test@example.com    '
     });
     expect(data.username).to.equal('unit-test@example.com');
   });
 
-  lab.test('adds the user id', async () => {
+  test('adds the user id', async () => {
     expect(sessionData.user_id).to.equal(userId);
   });
 
-  lab.test('adds the entity id', async () => {
+  test('adds the entity id', async () => {
     expect(sessionData.entity_id).to.equal(entityId);
   });
 
-  lab.test('adds the user data from the user object', async () => {
-    expect(sessionData.user_data.test).to.equal('data');
-  });
-
-  lab.test('adds the last login value from the user', async () => {
+  test('adds the last login value from the user', async () => {
     expect(sessionData.lastLogin).to.equal(user.last_login);
   });
+});
 
-  lab.test('adds the roles', async () => {
-    expect(sessionData.roles).to.equal([
-      { role: 'user', company_entity_id: 'comp-1' },
-      { role: 'user_returns', company_entity_id: 'comp-1' },
-      { role: 'user', company_entity_id: 'comp-2' },
-      { role: 'user_returns', company_entity_id: 'comp-2' }
-    ]);
+experiment('auto', () => {
+  let request;
+
+  beforeEach(async () => {
+    sandbox.stub(idmConnector, 'getUserByEmail').resolves({
+      error: null,
+      data: [
+        {
+          user_id: 1,
+          user_name: 'test@example.com',
+          external_id: 'external-id',
+          role: {
+            scopes: ['one', 'two']
+          }
+        }
+      ]
+    });
+
+    sandbox.stub(crmConnector.entities, 'getOrCreateIndividual').resolves('test-entity-id');
+
+    sandbox.stub(idmConnector, 'updateExternalId').resolves();
+
+    request = {
+      sessionStore: {
+        create: sinon.stub().resolves('test-session-id')
+      },
+      cookieAuth: {
+        set: sinon.spy()
+      },
+      auth: {}
+    };
   });
 
-  lab.test('adds the scopes from the user', async () => {
-    expect(sessionData.scope).to.equal(user.role.scopes);
+  afterEach(async () => {
+    sandbox.restore();
   });
 
-  lab.test('sets user data newUser to true if no lastLogin', async () => {
-    const neverLoggedInUser = {
-      user_id: userId,
-      user_name: emailAddress,
-      user_data: { test: 'data' },
-      role: { scopes: ['test-scope'] }
+  test('lowercases the email address before finding the user', async () => {
+    const email = 'TEST@example.COM';
+    await auto(request, email);
+
+    const arg = idmConnector.getUserByEmail.args[0][0];
+    expect(arg).to.equal('test@example.com');
+  });
+
+  test('trims the email address before finding the user', async () => {
+    const email = '  test@example.com  ';
+    await auto(request, email);
+
+    const arg = idmConnector.getUserByEmail.args[0][0];
+    expect(arg).to.equal('test@example.com');
+  });
+
+  test('updates the user external id if not on user object', async () => {
+    const userWithoutExternalId = {
+      user_id: 1,
+      user_name: 'test@example.com'
     };
 
-    const data = createSessionData('id', neverLoggedInUser, 'eid', []);
-    expect(data.user_data.newUser).to.be.true();
+    idmConnector.getUserByEmail.resolves({
+      error: null,
+      data: [userWithoutExternalId]
+    });
+
+    await auto(request, 'test@example.com');
+
+    const userArg = idmConnector.updateExternalId.args[0][0];
+    const entityIdArg = idmConnector.updateExternalId.args[0][1];
+    expect(userArg).to.equal(userWithoutExternalId);
+    expect(entityIdArg).to.equal('test-entity-id');
   });
 
-  lab.test('sets user data last login to null if no lastLogin', async () => {
-    const neverLoggedInUser = {
-      user_id: userId,
-      user_name: emailAddress,
-      user_data: { test: 'data' },
-      role: { scopes: ['test-scope'] }
-    };
+  test('does not update the user external id if on user', async () => {
+    await auto(request, 'test@example.com');
 
-    const data = createSessionData('id', neverLoggedInUser, 'eid', []);
-    expect(data.user_data.lastLogin).to.be.null();
+    expect(crmConnector.entities.getOrCreateIndividual.called).to.be.false();
+    expect(idmConnector.updateExternalId.called).to.be.false();
   });
 
-  lab.test('sets user data newUser to false if lastLogin exists', async () => {
-    expect(sessionData.user_data.newUser).to.be.false();
+  test('add the user to session', async () => {
+    await auto(request, 'test@example.com');
+
+    const sessionArg = request.sessionStore.create.args[0][0];
+    expect(sessionArg.user.id).to.equal(1);
+    expect(sessionArg.user.emailAddress).to.equal('test@example.com');
   });
 
-  lab.test('sets user data last login if lastLogin exists', async () => {
-    expect(sessionData.user_data.lastLogin).to.equal(user.last_login);
+  test('add a CSRF token to session', async () => {
+    await auto(request, 'test@example.com');
+
+    const sessionArg = request.sessionStore.create.args[0][0];
+    expect(sessionArg.csrf_token).to.satisfy(value => {
+      return Joi.validate(value, Joi.string().required().guid()).error === null;
+    });
+  });
+
+  /**
+   * The contents of this object are tested in the
+   * createSessionData tests
+   */
+  test('adds some session data to the cookie', async () => {
+    await auto(request, 'test@example.com');
+
+    const cookieSetArg = request.cookieAuth.set.args[0][0];
+    expect(cookieSetArg).to.be.an.object();
+  });
+
+  test('updates the auth.credentials object with the user scope', async () => {
+    await auto(request, 'test@example.com');
+
+    expect(request.auth.credentials.scope).to.equal(['one', 'two']);
   });
 });

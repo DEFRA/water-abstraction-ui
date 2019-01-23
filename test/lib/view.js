@@ -17,10 +17,19 @@ const getBaseRequest = () => ({
   },
   url: {},
   permissions: {
-    admin: {},
-    licences: {},
-    returns: {},
-    ar: {},
+    admin: {
+      defra: false
+    },
+    licences: {
+      edit: false
+    },
+    returns: {
+      submit: false,
+      edit: false
+    },
+    ar: {
+      read: false
+    },
     hasPermission: () => {
       return false;
     }

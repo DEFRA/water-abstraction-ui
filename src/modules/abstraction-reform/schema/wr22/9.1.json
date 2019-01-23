@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/9.1",
+  "type": "object",
+  "title": "9.1",
+  "category": "Time Limiting - abstractions start",
+  "subcategory": "",
+  "description": "This licence shall cease to be of any effect if the <<abstraction/impounding works/power production>> it authorises <<has/have>> not commenced by <<date>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

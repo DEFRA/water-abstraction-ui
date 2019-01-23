@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/21.2",
+  "type": "object",
+  "title": "21.2",
+  "category": "Removal of impounding works",
+  "subcategory": "",
+  "description": "Prior to commencement of the works authorised by this <<licence/letter>> the Licence Holder shall ensure that water <<currently stored in the>><<pond/lake/reservoir >> <<retained behind the <<dam/weir/sluice>>> shall be released to the inland water downstream of the impounding works which are to be removed.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

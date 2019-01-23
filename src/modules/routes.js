@@ -13,10 +13,13 @@ const registrationRoutes = require('./registration/routes');
 const serviceStatusRoutes = require('./service-status/routes');
 const contactDetailsRoutes = require('./contact-details/routes');
 const abstractionReformRoutes = require('./abstraction-reform/routes');
+const wr22Routes = require('./abstraction-reform/wr22-routes');
 const returnsRoutes = require('./returns/routes');
 const naldPOCRoutes = require('./nald-poc/routes');
 const returnNotificationRoutes = require('./returns-notifications/routes');
 const cspRoutes = require('./csp/routes');
+const nunjucksTestRoutes = require('./nunjucks-test/routes');
+const returnsReports = require('./returns-reports/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -34,8 +37,11 @@ module.exports = [
   ...Object.values(serviceStatusRoutes),
   ...Object.values(contactDetailsRoutes),
   ...Object.values(abstractionReformRoutes),
+  ...Object.values(wr22Routes),
   ...Object.values(returnsRoutes),
   ...Object.values(naldPOCRoutes),
   ...Object.values(returnNotificationRoutes),
-  ...Object.values(cspRoutes)
+  ...Object.values(cspRoutes),
+  ...Object.values(nunjucksTestRoutes),
+  ...Object.values(returnsReports)
 ];

@@ -97,7 +97,12 @@ module.exports = {
     path: '/security-code',
     handler: controller.getSecurityCode,
     config: {
-      description: 'Enter auth code received by post'
+      description: 'Enter auth code received by post',
+      plugins: {
+        licenceLoader: {
+          loadUserLicenceCount: true
+        }
+      }
     }
   },
   postSecurityCode: {
@@ -106,6 +111,11 @@ module.exports = {
     handler: controller.postSecurityCode,
     config: {
       description: 'Enter auth code received by post',
+      plugins: {
+        licenceLoader: {
+          loadUserLicenceCount: true
+        }
+      },
       validate: {
         payload: {
           verification_code: Joi.string().allow('').max(5),

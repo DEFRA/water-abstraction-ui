@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/17.2",
+  "type": "object",
+  "title": "17.2",
+  "category": "Fish and Eel passage",
+  "subcategory": "",
+  "description": "No abstraction for the purpose of <<purpose>> shall take place at National Grid Reference <<NGR>> unless a fish pass is installed and the attraction flow in that fish pass is of no less than <<fish pass design flow>>. This flow shall be known as the fish pass prescribed flow.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

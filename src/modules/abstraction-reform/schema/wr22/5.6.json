@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.6",
+  "type": "object",
+  "title": "5.6",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The <<intake pipe/works>> as specified in <<condition xx>> shall be placed in the watercourse no less than <<depth e.g. 300 millimetres>> above the bed of the river at any point.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

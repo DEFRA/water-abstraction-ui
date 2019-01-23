@@ -1,0 +1,169 @@
+{
+  "id" : "/wr22/2.3",
+  "type" : "object",
+  "title" : "2.3",
+  "description": "No [purpose type] shall take place unless the rate of flow in the [water body name] as measured [measurement point], is equal to or greater than [HoF/HOL/prescribed flow] and the [purpose type] shall not cause the [flow immediately downstream/water level at] of the said [abstraction point/reference point] to fall below that [rate/level].  This shall be known as the <hands off flow><hands off level>.",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Hands off flows",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "purpose_type": {
+      "$ref": "water://types/purpose.json",
+      "label": "Purpose",
+      "errors": {
+        "required": {
+          "message": "Select a purpose"
+        }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://types/waterBodies.json"
+    },
+    "measurement_point" : {
+      "type" : "object",
+      "properties" : {
+        "measurement_point_type" : {
+          "$ref" : "water://types/measurementPointType.json",
+          "enum" : ["Upstream", "Downstream", "NGR"]
+        },
+        "measurement_point_ngr" : {
+          "$ref" : "water://types/ngr.json",
+          "toggle" : {
+            "measurement_point_type" : "NGR"
+          }
+        },
+        "measurement_point_diagram_type" : {
+          "label": "Diagram type",
+          "type" : "string",
+          "enum" : ["None", "Map", "Drawing"],
+          "errors" : {
+            "required" : {
+              "message" : "Select a diagram type"
+            }
+          }
+        },
+        "measurement_point_reference" : {
+          "$ref" : "water://types/measurementPointRefPoint.json",
+          "toggle" : {
+            "measurement_point_diagram_type" : "Map"
+          }
+        },
+        "measurement_point_drawing_name" : {
+          "type" : "string",
+          "label" : "Drawing name",
+          "toggle" : {
+            "measurement_point_diagram_type" : "Drawing"
+          },
+          "errors" : {
+            "required" : {
+              "message" : "Enter a drawing name"
+            }
+          }
+        },
+        "measurement_point_drawing_date" : {
+          "type" : "string",
+          "label" : "Drawing date",
+          "toggle" : {
+            "measurement_point_diagram_type" : "Drawing"
+          },
+          "errors" : {
+            "required" : {
+              "message" : "Enter a drawing date"
+            }
+          },
+          "fieldType" : "date"
+        }
+      },
+      "required" : ["measurement_point_type", "measurement_point_diagram_type"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "measurement_point_type": { "enum": ["NGR"] }
+            },
+            "required" : ["measurement_point_type"]
+          },
+          "then": {
+            "required" : ["measurement_point_ngr"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "measurement_point_diagram_type": { "enum": ["Map"] }
+            },
+            "required" : ["measurement_point_diagram_type"]
+          },
+          "then": {
+            "required" : ["measurement_point_reference"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "measurement_point_diagram_type": { "enum": ["Drawing"] }
+            },
+            "required" : ["measurement_point_diagram_type"]
+          },
+          "then": {
+            "required" : ["measurement_point_drawing_name", "measurement_point_drawing_date"]
+          }
+        }
+
+
+      ]
+
+    },
+
+    "hof_hol_flow" : {
+      "type" : "number",
+      "label" : "HoF, HOL or prescribed flow",
+      "errors" : {
+        "required": {
+          "message" : "Enter a HoF, HOL or prescribed flow"
+        },
+        "type": {
+          "message" : "Enter a number for the HoF, HOL or prescribed flow"
+        }
+      }
+    },
+    "hof_hol_flow_unit" : {
+      "type" : "string",
+      "enum" : ["m³/s", "l/s", "mAOD", "mASD", "m"],
+      "label" : "Unit",
+      "errors": {
+        "required": {
+          "message": "Select a unit"
+        }
+      }
+    },
+
+    "hof_type" : {
+      "type" : "string",
+      "enum" : ["Hands off flow", "Hands off level"],
+      "label": "HoF type",
+      "errors": {
+        "required" : {
+          "message" : "Enter a HoF type"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition",
+    "purpose_type",
+    "water_body_name",
+    "measurement_point",
+    "hof_hol_flow",
+    "hof_hol_flow_unit",
+    "hof_type"
+  ]
+}

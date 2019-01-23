@@ -1,0 +1,36 @@
+{% from "./2.1.njk" import wr22_2_1 %}
+{% from "./2.2.njk" import wr22_2_2 %}
+{% from "./2.3.njk" import wr22_2_3 %}
+{% from "./2.4.njk" import wr22_2_4 %}
+{% from "./2.5.njk" import wr22_2_5 %}
+{% from "./2.6.njk" import wr22_2_6 %}
+{% from "./2.7.njk" import wr22_2_7 %}
+{% from "./2.8.njk" import wr22_2_8 %}
+{% from "./2.9.4.njk" import wr22_2_9_4 %}
+{% from "./2.9.8.njk" import wr22_2_9_8 %}
+
+{% macro wr22Condition(item) %}
+  {% if item.schema == '/wr22/2.1' %}
+    {{ wr22_2_1(item.data) }}
+  {% elif item.schema == '/wr22/2.2' %}
+    {{ wr22_2_2(item.data) }}
+  {% elif item.schema == '/wr22/2.3' %}
+    {{ wr22_2_3(item.data) }}
+  {% elif item.schema == '/wr22/2.4' %}
+    {{ wr22_2_4(item.data) }}
+  {% elif item.schema == '/wr22/2.5' %}
+    {{ wr22_2_5(item.data) }}
+  {% elif item.schema == '/wr22/2.6' %}
+    {{ wr22_2_6(item.data) }}
+  {% elif item.schema == '/wr22/2.7' %}
+    {{ wr22_2_7(item.data) }}
+  {% elif item.schema == '/wr22/2.8' %}
+    {{ wr22_2_8(item.data) }}
+  {% elif item.schema == '/wr22/2.9.4' %}
+    {{ wr22_2_9_4(item.data) }}
+  {% elif item.schema == '/wr22/2.9.8' %}
+    {{ wr22_2_9_8(item.data) }}
+  {% else %}
+    {{ item.description | nl2br | safe }}
+  {% endif %}
+{% endmacro %}

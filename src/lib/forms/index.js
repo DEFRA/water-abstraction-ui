@@ -87,7 +87,7 @@ const importData = (form, payload) => {
   mapFields(form, (field) => {
     if (field.name) {
       const mapper = field.options.mapper || 'defaultMapper';
-      data[field.name] = mappers[mapper].import(field.name, payload);
+      data[field.name] = mappers[mapper].import(field.name, payload, field);
     }
     return field;
   });
@@ -112,17 +112,40 @@ const handleRequest = (form, request, validationSchema) => {
 
   const schema = validationSchema || adapter.createSchemaFromForm(form);
 
-  // Perform Joi validation on form data
-  const { error, value } = adapter.validate(requestData, schema, {
-    abortEarly: false
-  });
+  const { error, value } = adapter.validate(requestData, schema);
 
   request.log('info', JSON.stringify(error, null, 2));
 
-  f = adapter.applyErrors(f, error, getCustomErrors(form));
+  const customErrors = getCustomErrors(form);
+  const formattedErrors = adapter.formatErrors(error, customErrors);
+  f = applyErrors(f, formattedErrors);
   f.isValid = !error;
 
   return setValues(f, value);
+};
+
+/**
+ * Applies errors to fields and returns a new form object
+ * @param {Object} form
+ * @param {Object} formattedErrors: Any errors to assign to the form
+ * @return {Object} form with errors populated on fields
+ */
+const applyErrors = (form, formattedErrors = []) => {
+  if (formattedErrors.length === 0) {
+    return form;
+  }
+
+  const f = mapFields(form, (field) => {
+    const errors = formattedErrors.filter(err => {
+      return err.name === field.name;
+    });
+    return {
+      ...field,
+      errors
+    };
+  });
+  f.errors = formattedErrors;
+  return f;
 };
 
 module.exports = {

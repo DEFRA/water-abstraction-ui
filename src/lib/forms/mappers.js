@@ -1,5 +1,7 @@
-const { extractLicenceNumbers } = require('../licence-helpers');
+const { isArray, isUndefined, negate, find } = require('lodash');
 const moment = require('moment');
+const isDefined = negate(isUndefined);
+const { extractLicenceNumbers } = require('../licence-helpers');
 
 /**
  * Default mapper - simply extracts the value of the named field
@@ -58,9 +60,12 @@ const formatDateSegment = (value, length = 2) => {
  * @return {String} year 4 digit
  */
 const formatYearSegment = (year) => {
-  const str = year.trim();
-  const currentYear = moment().format('YYYY');
-  return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  if (year) {
+    const str = year.trim();
+    const currentYear = moment().format('YYYY');
+    return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+  }
+  return '';
 };
 
 /**
@@ -113,10 +118,48 @@ const licenceNumbersMapper = {
   }
 };
 
+/**
+ * For checkbox fields, need to force HAPI payload to an array.  If only one
+ * checkbox is ticked, the value is sent as a string
+ */
+const arrayMapper = {
+  import: (fieldName, payload) => {
+    const value = payload[fieldName];
+    const arr = isArray(value) ? value : [value];
+    return arr.filter(isDefined);
+  },
+  export: (value) => {
+    return value;
+  }
+};
+
+const objectMapper = {
+
+  /**
+   * A property of the choices is set as the key with the keyProperty option
+   * This is then compared with the payload to find the correct field value
+   * @param  {String} fieldName - the name of the form field
+   * @param  {Object} payload   - POST/GET payload object
+   * @param  {Object} field     - Full field description
+   * @return {Object}           Choice object if found
+   */
+  import: (fieldName, payload, field) => {
+    const findOptions = {
+      [field.options.keyProperty]: payload[fieldName]
+    };
+    return find(field.options.choices, findOptions);
+  },
+  export: (value) => {
+    return value;
+  }
+};
+
 module.exports = {
   defaultMapper,
   booleanMapper,
   dateMapper,
   numberMapper,
-  licenceNumbersMapper
+  licenceNumbersMapper,
+  arrayMapper,
+  objectMapper
 };

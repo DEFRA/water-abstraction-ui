@@ -1,0 +1,13 @@
+{% macro wr22_2_4(data) %}
+The quantity of water
+<b>
+{% if data.purpose_type === 'Abstraction' %}
+abstracted
+{% else %}
+used for power production
+{% endif %}
+</b>
+
+shall not exceed <b>{{ data.max_percentage }}</b>
+percent of the available flow in the <b>{{ data.water_body_name.name }}</b> in excess of the hands off flow.
+{% endmacro %}

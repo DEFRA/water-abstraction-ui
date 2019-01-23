@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/19.1",
+  "type": "object",
+  "title": "19.1",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall construct <<a(n)>> <<earth/clay/concrete etc>> dam not exceeding <<height>> metres above <<ordnance datum or local stated datum>> in height complete with flood spillways and fish pass in accordance with <<refer to dates and numbers of drawings and or method statements>> submitted to and approved by the Agency or such minor amendments to these documents that are accepted in writing by the Agency prior to the date of commencement of construction.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

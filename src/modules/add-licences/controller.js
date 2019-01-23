@@ -379,16 +379,12 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} reply - HAPI HTTP reply
  */
-async function getSecurityCode (request, reply) {
+async function getSecurityCode (request, h) {
   const viewContext = request.view;
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
-  try {
-    return reply.view('water/licences-add/security-code', viewContext);
-  } catch (error) {
-    throw error;
-  }
+  return h.view('water/licences-add/security-code', viewContext);
 }
 
 /**
@@ -421,8 +417,6 @@ async function postSecurityCode (request, reply) {
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
   } catch (error) {
-    logger.error('Post security code error', error);
-
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
       viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);

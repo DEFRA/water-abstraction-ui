@@ -44,6 +44,7 @@ const getNotificationsList = (tasks, permissions) => {
 
   if (hasPermission('returns.edit', permissions)) {
     notifications.push(createNotificationType('Returns: send paper forms', '/admin/returns-notifications/forms'));
+    notifications.push(createNotificationType('Returns: send final reminder', '/admin/returns-notifications/final-reminder'));
   }
 
   return notifications;
@@ -61,8 +62,13 @@ const getReportsList = (permissions) => {
   ];
 
   if (hasPermission('ar.approve', permissions)) {
-    reports.push(createNotificationType('Abstraction reform report', '/admin/abstraction-reform/report'));
+    reports.push(createNotificationType('Abstraction reform report', '/admin/digitise/report'));
   }
+
+  if (hasPermission('returns.edit', permissions)) {
+    reports.push(createNotificationType('Returns overview', '/admin/returns-reports'));
+  }
+
   return reports;
 };
 

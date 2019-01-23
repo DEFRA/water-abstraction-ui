@@ -30,7 +30,7 @@ client.getOrCreateIndividual = async function (emailAddress) {
   };
 
   // Get existing entity
-  const {error, data} = await client.findMany(entityData);
+  const { error, data } = await client.findMany(entityData);
 
   // CRM error
   if (error) {

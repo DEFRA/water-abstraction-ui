@@ -1,0 +1,58 @@
+{
+  "id" : "/wr22/2.7",
+  "type" : "object",
+  "title" : "2.7",
+  "description" : "The quantity of water abstracted shall not exceed [maximum percentage]% of the available flow in the [water body name] in excess of [max rate]",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "CAMS",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "max_percentage": {
+      "type" : "number",
+      "label" : "Maximum percentage",
+      "minumum" : 0,
+      "maximum" : 100,
+      "errors": {
+        "required": {
+          "message": "Enter a maximum percentage"
+        },
+        "type": {
+          "message": "Maxiumum percentage must be a number, like 80 or 90.5"
+        }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://types/waterBodies.json"
+    },
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate",
+      "errors": {
+        "required": {
+          "message": "Enter a maximum rate"
+        },
+        "type": {
+          "message": "Maxiumum rate must be a number, like 20 or 30.5"
+        }
+      }
+    },
+    "unit": {
+      "type" : "string",
+      "enum" : ["m³/s", "l/s"],
+      "errors": {
+        "required": {
+          "message": "Select a unit"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "max_percentage", "water_body_name", "max_rate", "unit"]
+}

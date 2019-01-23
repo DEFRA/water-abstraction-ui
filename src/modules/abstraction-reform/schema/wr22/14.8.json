@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.8",
+  "type": "object",
+  "title": "14.8",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "(i) The Licence Holder shall use a dip tube of internal diameter of not less than <<dip tube diameter>> millimetres <<and to a depth of at least <<dip tube depth>> metres above the pump>>.\n\n(ii) The Licence Holder shall maintain, repair or replace the dip tube to allow for water level measurements to be taken at all times.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

@@ -1,5 +1,5 @@
 const IDM = require('../../lib/connectors/idm');
-const { createGUID } = require('../../lib/helpers');
+const uuid = require('uuid/v4');
 const mapJoiPasswordError = require('../reset-password/map-joi-password-error');
 const { AuthTokenError } = require('./errors');
 /**
@@ -25,7 +25,7 @@ async function postConfirmPassword (request, reply) {
     await IDM.verifyCredentials(username, password);
 
     // Create auth token to verify user in subsequent page in flow
-    const authtoken = createGUID();
+    const authtoken = uuid();
     request.sessionStore.set('authToken', authtoken);
 
     return reply.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });

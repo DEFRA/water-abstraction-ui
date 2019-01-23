@@ -24,7 +24,7 @@ module.exports = [
     config: { auth: false,
       cache: {
         expiresIn: 30 * 1000
-      }},
+      } },
     handler: {
       directory: {
         path: 'public/images',
@@ -40,7 +40,7 @@ module.exports = [
     config: { auth: false,
       cache: {
         expiresIn: 30 * 1000
-      }},
+      } },
     handler: {
       directory: {
         path: 'public/stylesheets',
@@ -56,7 +56,7 @@ module.exports = [
     config: { auth: false,
       cache: {
         expiresIn: 30 * 1000
-      }},
+      } },
     handler: {
       directory: {
         path: 'public/javascripts',

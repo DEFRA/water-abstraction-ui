@@ -2,8 +2,12 @@
 const moment = require('moment');
 const { expect } = require('code');
 const Lab = require('lab');
-const { experiment, test } = exports.lab = Lab.script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = Lab.script();
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+const { get } = require('lodash');
 
+const returnsConnector = require('../../../../src/lib/connectors/returns').returns;
 const helpers = require('../../../../src/modules/returns/lib/helpers');
 const config = require('../../../../config');
 
@@ -162,5 +166,90 @@ experiment('isReturnId', () => {
 
   test('returns false for other strings', async () => {
     expect(helpers.isReturnId('01/1234/56/78')).to.equal(false);
+  });
+});
+
+experiment('getLicenceReturns', () => {
+  beforeEach(async () => {
+    sandbox.stub(returnsConnector, 'findMany').resolves({
+      data: {},
+      error: null,
+      pagination: {}
+    });
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('does not filter void returns for internal users', async () => {
+    await helpers.getLicenceReturns([], 1, true);
+    const filter = returnsConnector.findMany.args[0][0];
+    expect(get(filter, 'status.$ne')).to.be.undefined();
+  });
+
+  test('omits void returns for external users', async () => {
+    await helpers.getLicenceReturns([], 1, false);
+    const filter = returnsConnector.findMany.args[0][0];
+    expect(get(filter, 'status.$ne')).to.equal('void');
+  });
+});
+
+experiment('addFlags', () => {
+  test('isReceivedOrInternalVoid = true if return is recieved and completed', async () => {
+    const returns = [{ received_date: '2018-01-01', status: 'completed' }];
+    const request = {
+      permissions: {
+        admin: { defra: true },
+        returns: { submit: true, edit: true }
+      }
+    };
+    const modified = helpers.addFlags(returns, request);
+    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
+    expect(modified[0].isClickable).to.be.true();
+  });
+
+  test('isReceivedOrInternalVoid = false if return status is due', async () => {
+    const returns = [{ status: 'due' }];
+    const request = {
+      permissions: {
+        admin: { defra: true },
+        returns: { submit: true, edit: true }
+      }
+    };
+    const modified = helpers.addFlags(returns, request);
+    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
+  });
+
+  test('isReceivedOrInternalVoid = true if return status is void and user is internal', async () => {
+    const returns = [{ status: 'void' }];
+    const request = {
+      permissions: {
+        admin: { defra: true },
+        returns: { submit: true, edit: true }
+      }
+    };
+    const modified = helpers.addFlags(returns, request);
+    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
+    expect(modified[0].isClickable).to.be.true();
+  });
+
+  test('isReceivedOrInternalVoid = false if return status is void and user is external', async () => {
+    const returns = [{ status: 'void' }];
+    const request = {
+      permissions: {
+        admin: { defra: false },
+        returns: { submit: true, edit: true }
+      }
+    };
+    const modified = helpers.addFlags(returns, request);
+    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
+  });
+});
+
+experiment('getSuffix', () => {
+  test('handles superscript', async () => {
+    expect(helpers.getSuffix('m³')).to.equal('cubic metres');
+    expect(helpers.getSuffix('m3')).to.equal('cubic metres');
   });
 });

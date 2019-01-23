@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.2",
+  "type": "object",
+  "title": "14.2",
+  "category": "Groundwater conditions",
+  "subcategory": "Borehole construction and controls",
+  "description": "(i) The Licence Holder shall cap the borehole to prevent uncontrolled artesian overflow. \n\n(ii) The Licence Holder shall fit a capping plate with a pressure gauge of suitable sensitivity to enable the artesian head to be measured.\n\n(iii) The Licence Holder shall ensure that the borehole capping plate is drilled and tapped to form a dip hole at least <<dip tube diameter>> millimetres in diameter.\n\n(iv) The Licence Holder shall position the hole on the capping plate so that a cable dipper can be lowered to record the water level without fouling installed equipment.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

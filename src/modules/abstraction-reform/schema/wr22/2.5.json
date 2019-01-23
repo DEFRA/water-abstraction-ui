@@ -1,0 +1,45 @@
+{
+  "id": "/wr22/2.5",
+  "type": "object",
+  "title": "2.5",
+  "description": "No abstraction shall take place when the flow in the [water body name] as gauged by the Agency at its flow gauging station at [Gauging station name] [at National Grid Reference] is equal to or less than [Maximum HoF rate] as may be notified by the Agency. The Agency’s said gauging of the flow shall be conclusive.",
+  "category": "Hands off flows/levels",
+  "subcategory": "CAMS",
+  "properties": {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://types/waterBodies.json"
+    },
+    "gauging_station" : {
+      "$ref": "water://types/gaugingStations.json"
+    },
+    "max_rate": {
+      "type": "number",
+      "label": "Maximum rate",
+      "errors": {
+        "required": {
+          "type": "Maximum rate should be a number",
+          "message": "Select a maximum rate"
+        }
+      }
+    },
+    "max_rate_unit": {
+      "type" : "string",
+      "enum" : ["m³/s", "l/s"],
+      "errors": {
+        "required": {
+          "message": "Select a rate unit"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "water_body_name", "gauging_station", "max_rate"]
+}

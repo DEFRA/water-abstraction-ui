@@ -2,9 +2,7 @@
 
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
-
 const Code = require('code');
-const Boom = require('boom');
 
 const { hasPermission } = require('../../../src/lib/hapi-plugins/permissions');
 
@@ -29,6 +27,6 @@ lab.experiment('Check hasPermission in HAPI permissions plugin', () => {
       return hasPermission('admin.invalid', permissions);
     };
 
-    Code.expect(func).to.throw(Boom, 'Attempt to check invalid permission admin.invalid');
+    Code.expect(func).to.throw(Error, 'Attempt to check invalid permission admin.invalid');
   });
 });

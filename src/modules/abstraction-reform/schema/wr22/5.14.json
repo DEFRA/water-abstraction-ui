@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.14",
+  "type": "object",
+  "title": "5.14",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The <impounding works>> <<weir>> <<at point ‘ref’>> <<between point ‘ref’ and point ‘ref’>> shall be constructed to a maximum crest height of <<number>> <<metres above ordinance datum (Newlyn)>> <<or a local datum>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

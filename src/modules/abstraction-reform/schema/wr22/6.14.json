@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.14",
+  "type": "object",
+  "title": "6.14",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall ensure that the <<level monitoring device>><<flow monitoring device>> is set up and working at all times when <<abstraction>><<power production>> is taking place.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

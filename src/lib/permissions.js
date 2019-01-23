@@ -3,7 +3,6 @@
 // Using lodash functions over some native functions because
 // they are forgiving to undefined.
 const { size, find, includes, intersection, get, uniq, isBoolean } = require('lodash');
-const Boom = require('boom');
 const { scope: scopes, externalRoles } = require('./constants');
 
 /**
@@ -112,22 +111,22 @@ const canReadReturns = (scope = [], roles = []) => {
  * @param {Object} credentials - credentials from HAPI request
  * @return {Object} permissions - permissions object
  */
-const getPermissions = (credentials = {}) => {
-  const { roles, entity_id: entityId, scope } = credentials;
+const getPermissions = (credentials = {}, entityRoles = []) => {
+  const { entity_id: entityId, scope } = credentials;
 
   return {
     licences: {
       read: canReadLicence(entityId),
-      edit: canEditLicence(scope, roles),
-      multi: canViewMutlipleLicences(scope, roles)
+      edit: canEditLicence(scope, entityRoles),
+      multi: canViewMutlipleLicences(scope, entityRoles)
     },
     admin: {
       defra: isVmlAdmin(scope)
     },
     returns: {
-      read: canReadReturns(scope, roles),
-      submit: canSubmitReturns(scope, roles),
-      edit: canEditReturns(scope, roles)
+      read: canReadReturns(scope, entityRoles),
+      submit: canSubmitReturns(scope, entityRoles),
+      edit: canEditReturns(scope, entityRoles)
     },
     ar: {
       read: canEditAbstractionReform(scope),
@@ -144,17 +143,12 @@ const getPermissions = (credentials = {}) => {
  * @param {String} companyEntityId GUID
  * @return {Object} of permissions
  */
-const getCompanyPermissions = (credentials = {}) => {
-  const { roles = [], ...rest } = credentials;
-
-  const companyEntityIds = uniq(roles.map(role => role.company_entity_id).filter(entityId => !!entityId));
+const getCompanyPermissions = (credentials = {}, entityRoles = []) => {
+  const companyEntityIds = uniq(entityRoles.map(role => role.company_entity_id).filter(entityId => !!entityId));
 
   return companyEntityIds.reduce((acc, companyEntityId) => {
-    const companyCredentials = {
-      ...rest,
-      roles: roles.filter(row => row.company_entity_id === companyEntityId)
-    };
-    acc[companyEntityId] = getPermissions(companyCredentials);
+    const roles = entityRoles.filter(row => row.company_entity_id === companyEntityId);
+    acc[companyEntityId] = getPermissions(credentials, roles);
     return acc;
   }, {});
 };
@@ -169,7 +163,7 @@ const getCompanyPermissions = (credentials = {}) => {
 const hasPermission = (permission, permissions) => {
   const isGranted = get(permissions, permission);
   if (!isBoolean(isGranted)) {
-    throw Boom.badImplementation(`Attempt to check invalid permission ${permission}`);
+    throw new Error(`Attempt to check invalid permission ${permission}`);
   }
   return isGranted;
 };

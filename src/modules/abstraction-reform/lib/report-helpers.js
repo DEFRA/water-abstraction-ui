@@ -1,19 +1,17 @@
 const moment = require('moment');
 const util = require('util');
-const csvStringify = util.promisify(require('csv-stringify'));
 const water = require('../../../lib/connectors/water');
 
 /**
  * Gets CSV data from API in water service using findAll method which
  * gets all pages of paginated data
  * Returns as CSV string
- * @return {Promise} Resolves with CSV data
+ * @return {Promise} Resolves with array data for CSV
  */
 const getCSVData = async () => {
   const sort = { start_date: 1 };
   const filter = {};
-  const data = await water.arLicenceAnalyis.findAll(filter, sort);
-  return csvStringify(data, { header: true });
+  return water.arLicenceAnalyis.findAll(filter, sort);
 };
 
 /**

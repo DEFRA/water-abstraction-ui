@@ -14,6 +14,8 @@ internals.pluginName = 'hapiRouteAcl';
 
 exports.plugin = {
   register: (server, options) => {
+    server.dependency('entityRolesPlugin');
+
     if (_.isUndefined(options.permissionsFunc)) {
       throw new Error('options.permissionsFunc is required');
     } else if (!_.isFunction(options.permissionsFunc)) {
@@ -33,7 +35,7 @@ internals.implementation = async function (request, h) {
   if (!_.isEmpty(request.route.settings.plugins[internals.pluginName])) {
     let requiredPermissions = request.route.settings.plugins[internals.pluginName].permissions;
     if (!_.isEmpty(requiredPermissions)) {
-      const userPermissions = internals.permissionsFunc(request.auth.credentials);
+      const userPermissions = internals.permissionsFunc(request.auth.credentials, request.entityRoles);
       let hasPermission = internals.checkPermissions(requiredPermissions, userPermissions);
       if (hasPermission) {
         return h.continue;

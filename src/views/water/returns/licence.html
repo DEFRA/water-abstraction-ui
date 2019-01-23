@@ -45,7 +45,7 @@
                 Return period
               </h4>
 
-              {{#if isReceived }}
+              {{#if isReceivedOrInternalVoid }}
               <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
                 <span class="sr-only">View return from </span>
               {{else}}

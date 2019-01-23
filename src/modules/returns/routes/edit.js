@@ -5,8 +5,6 @@ const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
 const createMeterRoute = (method, path, handler, description, title) => {
-  console.log(method, path, description, title);
-
   return {
     method,
     path,

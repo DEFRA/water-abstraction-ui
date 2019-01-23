@@ -32,7 +32,7 @@ async function getOutstandingLicenceRequests (entityId) {
   const verificationId = res.data.map(row => row.verification_id);
 
   // Find licences with this ID
-  const {error, data} = await crmDocuments.findMany({
+  const { error, data } = await crmDocuments.findMany({
     verification_id: verificationId
   });
   if (error) {
@@ -81,7 +81,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
  * @return {Promise} resolves with company entity ID found
  */
 async function getPrimaryCompany (entityId) {
-  const res = await crmEntityRoles.setParams({entityId}).findMany({
+  const res = await crmEntityRoles.setParams({ entityId }).findMany({
     role: 'primary_user'
   });
 
@@ -108,14 +108,14 @@ async function getOrCreateCompanyEntity (entityId, companyName) {
   }
 
   // No role found, create new entity
-  const { data, error } = await crmEntities.create({entity_nm: companyName, entity_type: 'company'});
+  const { data, error } = await crmEntities.create({ entity_nm: companyName, entity_type: 'company' });
 
   if (error) {
     throw error;
   }
 
   // Create entity role
-  const { error: roleError } = await crmEntityRoles.setParams({entityId}).create({
+  const { error: roleError } = await crmEntityRoles.setParams({ entityId }).create({
     company_entity_id: data.entity_id,
     role: 'primary_user'
   });
@@ -186,20 +186,20 @@ async function verify (entityId, verificationCode) {
 
   // Update document headers
   const res3 = await crmDocuments.updateMany(
-    {document_id: {$in: documentIds}, company_entity_id: null},
-    {verification_id: verificationId, company_entity_id: companyEntityId}
+    { document_id: { $in: documentIds }, company_entity_id: null },
+    { verification_id: verificationId, company_entity_id: companyEntityId }
   );
   if (res3.error) {
     throw res3.error;
   }
 
   // Update verification record
-  const res4 = await crmVerification.updateOne(verificationId, {date_verified: moment().format()});
+  const res4 = await crmVerification.updateOne(verificationId, { date_verified: moment().format() });
   if (res4.error) {
     throw res4.error;
   }
 
-  return {error: null, data: {verification_id: verificationId}};
+  return { error: null, data: { verification_id: verificationId } };
 }
 
 /**
@@ -209,7 +209,7 @@ async function verify (entityId, verificationCode) {
  */
 async function getDocumentVerifications (documentId) {
   // Get verifications for document
-  const {error, data} = await crmDocumentVerification.getDocumentVerifications(documentId);
+  const { error, data } = await crmDocumentVerification.getDocumentVerifications(documentId);
 
   // Sort by date
   data.sort(function (a, b) {

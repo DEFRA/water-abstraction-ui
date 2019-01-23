@@ -2,7 +2,7 @@
  * Helpers for checking/processing licence data
  * @module lib/licence-helpers
  */
-const {uniq, find, sortBy, intersection} = require('lodash');
+const { uniq, find, sortBy, intersection } = require('lodash');
 const LicenceTitleLoader = require('./licence-title-loader.js');
 const licenceTitleLoader = new LicenceTitleLoader();
 
@@ -28,7 +28,7 @@ function _findTitle (data, code, subCode) {
  * @return {String} abstraction point info formatted as String
  */
 function _formatAbstractionPoint (point) {
-  const {name, ngr1, ngr2, ngr3, ngr4} = point;
+  const { name, ngr1, ngr2, ngr3, ngr4 } = point;
   const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
   return parts.join(', ');
 }
@@ -39,7 +39,7 @@ function _formatAbstractionPoint (point) {
  * @return {String}
  */
 function _conditionToStr (condition) {
-  const {code, subCode, parameter1, parameter2, description, purpose} = condition;
+  const { code, subCode, parameter1, parameter2, description, purpose } = condition;
   return [code, subCode, parameter1, parameter2, description, purpose.id].join(',');
 }
 
@@ -60,7 +60,7 @@ function _compareConditions (cond1, cond2) {
  * @return {String} unique ID
  */
 function _createId (condition, purpose) {
-  const {points} = purpose;
+  const { points } = purpose;
   return condition.code + '-' + condition.subCode + '-' + sortBy(points.map(point => point.id)).join(',');
 }
 
@@ -75,7 +75,7 @@ async function _findCondition (data, condition, purpose) {
   // Read condition titles from CSV
   const titleData = await licenceTitleLoader.load();
 
-  const {points} = purpose;
+  const { points } = purpose;
   const id = _createId(condition, purpose);
   const item = find(data, item => item.id === id);
 
@@ -126,7 +126,7 @@ async function licenceConditions (licenceData) {
         purpose: {
           id: purpose.id,
           description: purpose.description
-        }};
+        } };
 
       // Avoid duplicates
       const found = find(conditionContainer.conditions, (item) => {
@@ -175,7 +175,7 @@ function getUniqueLicenceDetails (licences) {
   const postcodes = uniq(licences.map((licence) => {
     return sanitize(licence.metadata.Postcode || '');
   }));
-  return {names, postcodes};
+  return { names, postcodes };
 }
 
 /**
@@ -191,7 +191,7 @@ function getUniqueLicenceDetails (licences) {
  * @return {Boolean} - whether licences pass similarity test
  */
 function checkLicenceSimilarity (licences) {
-  const {names, postcodes} = getUniqueLicenceDetails(licences);
+  const { names, postcodes } = getUniqueLicenceDetails(licences);
 
   // All 1 name or all 1 postcode - OK
   if (names.length === 1 || postcodes.length === 1) {
@@ -210,8 +210,8 @@ function checkLicenceSimilarity (licences) {
  * @return {Boolean} return true if postcode/name match found
  */
 function checkNewLicenceSimilarity (newLicences, existingLicences) {
-  const {names: n1, postcodes: p1} = getUniqueLicenceDetails(newLicences);
-  const {names: n2, postcodes: p2} = getUniqueLicenceDetails(existingLicences);
+  const { names: n1, postcodes: p1 } = getUniqueLicenceDetails(newLicences);
+  const { names: n2, postcodes: p2 } = getUniqueLicenceDetails(existingLicences);
 
   // Is there a match between new/existing names/postcodes
   const names = intersection(n1, n2);

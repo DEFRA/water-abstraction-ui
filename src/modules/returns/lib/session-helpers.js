@@ -9,8 +9,9 @@ const logger = require('../../../lib/logger');
  * @return {String}
  */
 const getSessionKey = (request) => {
+  const { returnId } = request.query;
   const isInternal = request.permissions.hasPermission('admin.defra');
-  return `${isInternal ? 'internal' : 'external'}ReturnFlow`;
+  return `${isInternal ? 'internal' : 'external'}ReturnFlow:${returnId}`;
 };
 
 /**

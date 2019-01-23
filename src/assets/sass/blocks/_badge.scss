@@ -12,28 +12,32 @@
   letter-spacing: 1px;
   color: $page-colour;
 
-  &--error {
-    background: $error-colour;
-  }
+}
 
-  &--success {
-    background: $button-colour;
-  }
+.badge--error {
+  background: $error-colour;
+}
 
-  &--completed {
-    background: $link-colour;
-  }
+.badge--success {
+  background: $button-colour;
+}
 
+.badge--completed {
+  background: $link-colour;
+}
 
-  &--info {
-    background: #6f777b;
-  }
+.badge--void {
+  background: #b10e1e;
+}
 
-  &--caps {
-    text-transform: uppercase;
-  }
+.badge--info {
+  background: #6f777b;
+}
 
-  &--no-wrap {
-    white-space: nowrap;
-  }
+.badge--caps {
+  text-transform: uppercase;
+}
+
+.badge--no-wrap {
+  white-space: nowrap;
 }

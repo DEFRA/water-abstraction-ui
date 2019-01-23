@@ -37,11 +37,12 @@ lab.experiment('getNotificationsList', () => {
 
   lab.test('It should include returns task notifications when user has returns.edit permission', async () => {
     const result = getNotificationsList(tasks, internalEditReturnsPermissions);
-    expect(result).to.equal([
-      { name: 'Test', path: '/admin/notifications/123?start=1', options },
-      { name: 'Returns: send paper forms',
-        path: '/admin/returns-notifications/forms',
-        options } ]);
+    const names = result.map(row => row.name);
+    expect(names).to.equal([
+      'Test',
+      'Returns: send paper forms',
+      'Returns: send final reminder'
+    ]);
   });
 });
 
@@ -50,6 +51,9 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: false
+    },
+    returns: {
+      edit: false
     }
   };
 
@@ -57,18 +61,43 @@ lab.experiment('getReportsList', () => {
     ar: {
       edit: true,
       approve: true
+    },
+    returns: {
+      edit: false
+    }
+  };
+
+  const returns = {
+    ar: {
+      edit: false,
+      approve: false
+    },
+    returns: {
+      edit: true
     }
   };
 
   lab.test('It should not include AR report link for AR user scope', async () => {
     const reports = getReportsList(arUser);
     const paths = reports.map(item => item.path);
-    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(false);
+    expect(paths.includes('/admin/digitise/report')).to.equal(false);
   });
 
   lab.test('It should include AR report link in list for AR approver scope', async () => {
     const reports = getReportsList(arApprover);
     const paths = reports.map(item => item.path);
-    expect(paths.includes('/admin/abstraction-reform/report')).to.equal(true);
+    expect(paths.includes('/admin/digitise/report')).to.equal(true);
+  });
+
+  lab.test('It includes returns overview link when returns.edit permission is set', async () => {
+    const reports = getReportsList(returns);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/returns-reports')).to.equal(true);
+  });
+
+  lab.test('It does not include returns overview link when returns.edit permission is false', async () => {
+    const reports = getReportsList(arUser);
+    const paths = reports.map(item => item.path);
+    expect(paths.includes('/admin/returns-reports')).to.equal(false);
   });
 });

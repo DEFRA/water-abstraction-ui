@@ -1,0 +1,91 @@
+{
+  "id" : "/wr22/2.2",
+  "type" : "object",
+  "title" : "2.2",
+  "description" : "Abstraction shall not exceed [max rate] when the level in the [water body name] as measured at [measurement point], is equal to or greater than [HOL rate/prescribed level].",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Hands off levels",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "rate_type": {
+      "$ref": "water://types/rate.json",
+      "label": "Rate type",
+      "errors": {
+        "required": {
+          "message": "Select a rate type"
+        }
+      }
+    },
+    "max_rate": {
+      "type" : "number",
+      "label" : "Maximum rate",
+      "errors": {
+        "type": {
+          "message": "Maximum rate must be a number"
+        },
+        "required": {
+          "message": "Enter a maximum rate"
+        }
+      }
+    },
+    "max_rate_unit": {
+      "type" : "string",
+      "enum" : ["m³/s", "l/s", "m³/d"],
+      "errors": {
+        "required": {
+          "message": "Select a rate unit"
+        }
+      }
+    },
+    "water_body_name" : {
+      "$ref" : "water://types/waterBodies.json"
+    },
+    "measurement_point" : {
+      "$ref" : "water://types/measurementPoint.json",
+      "errors" : {
+        "required" : {
+          "message" : "Select the measurement point"
+        }
+      }
+    },
+    "hol_rate_level" : {
+      "type" : "number",
+      "label": "HOL rate/prescribed level",
+      "errors": {
+        "type": {
+          "message": "The HOL rate / level must be a number"
+        },
+        "required": {
+          "message": "Enter a HOL rate/prescribed level"
+        }
+      }
+    },
+    "hol_rate_level_unit": {
+      "type" : "string",
+      "enum" : ["mAOD", "mASD"],
+      "errors": {
+        "required": {
+          "message": "Select a HOL rate / level unit"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition",
+    "max_rate",
+    "rate_type",
+    "max_rate_unit",
+    "water_body_name",
+    "measurement_point",
+    "hol_rate_level",
+    "hol_rate_level_unit"
+  ]
+}

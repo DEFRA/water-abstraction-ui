@@ -23,4 +23,9 @@ lab.experiment('date Nunjucks filter', () => {
     const result = date(1544779408000);
     expect(result).to.equal('14 December 2018');
   });
+
+  lab.test('It should return null if an invalid date is supplied', async () => {
+    const result = date('Some nonsense in here');
+    expect(result).to.equal(null);
+  });
 });

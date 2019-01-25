@@ -195,61 +195,6 @@ experiment('getLicenceReturns', () => {
   });
 });
 
-/*
-experiment('addFlags', () => {
-  test('isReceivedOrInternalVoid = true if return is recieved and completed', async () => {
-    const returns = [{ received_date: '2018-01-01', status: 'completed' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
-    expect(modified[0].isClickable).to.be.true();
-  });
-
-  test('isReceivedOrInternalVoid = false if return status is due', async () => {
-    const returns = [{ status: 'due' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
-  });
-
-  test('isReceivedOrInternalVoid = true if return status is void and user is internal', async () => {
-    const returns = [{ status: 'void' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
-    expect(modified[0].isClickable).to.be.true();
-  });
-
-  test('isReceivedOrInternalVoid = false if return status is void and user is external', async () => {
-    const returns = [{ status: 'void' }];
-    const request = {
-      permissions: {
-        admin: { defra: false },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
-  });
-});
-
-*/
-
 experiment('getSuffix', () => {
   test('handles superscript', async () => {
     expect(helpers.getSuffix('m³')).to.equal('cubic metres');

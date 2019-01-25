@@ -201,3 +201,40 @@ experiment('getSuffix', () => {
     expect(helpers.getSuffix('m3')).to.equal('cubic metres');
   });
 });
+
+experiment('getBadge', () => {
+  test('If return is overdue, return overdue badge', async () => {
+    expect(helpers.getBadge('due', true)).to.equal({
+      text: 'Overdue',
+      status: 'success'
+    });
+  });
+
+  test('If return is due, return due badge', async () => {
+    expect(helpers.getBadge('due', false)).to.equal({
+      text: 'Due',
+      status: 'success'
+    });
+  });
+
+  test('If return is void, return void badge', async () => {
+    expect(helpers.getBadge('void', false)).to.equal({
+      text: 'Void',
+      status: 'void'
+    });
+  });
+
+  test('If return is received, return received badge', async () => {
+    expect(helpers.getBadge('received', false)).to.equal({
+      text: 'Received',
+      status: 'completed'
+    });
+  });
+
+  test('If return is completed, return received badge', async () => {
+    expect(helpers.getBadge('completed', false)).to.equal({
+      text: 'Completed',
+      status: 'completed'
+    });
+  });
+});

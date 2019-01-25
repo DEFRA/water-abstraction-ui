@@ -9,6 +9,7 @@ const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
 const logger = require('../logger');
 const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
+const { getInternalSearchResults } = require('./water-service/internal-search');
 
 function sendNotifyMessage (messageRef, recipient, personalisation) {
   return new Promise((resolve, reject) => {
@@ -121,7 +122,7 @@ const getReturnsLogs = async (regionCode, formatId) => {
     uri: process.env.WATER_URI + '/nald/returns/logs',
     method: 'GET',
     qs: {
-      filter: JSON.stringify({regionCode, formatId})
+      filter: JSON.stringify({ regionCode, formatId })
     },
     json: true,
     headers: {
@@ -138,7 +139,7 @@ const getReturnsLines = async (regionCode, formatId, dateFrom) => {
     uri: process.env.WATER_URI + '/nald/returns/lines',
     method: 'GET',
     qs: {
-      filter: JSON.stringify({regionCode, formatId, dateFrom})
+      filter: JSON.stringify({ regionCode, formatId, dateFrom })
     },
     json: true,
     headers: {
@@ -177,5 +178,6 @@ module.exports = {
   picklists,
   picklistItems,
   arLicenceAnalyis,
-  arRefreshLicenceWebhook
+  arRefreshLicenceWebhook,
+  getInternalSearchResults
 };

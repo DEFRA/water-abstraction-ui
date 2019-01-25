@@ -1,0 +1,25 @@
+{% macro formSearchWidget(field) %}
+<div class="govuk-form-group {% if field.errors.length %}govuk-form-group--error{% endif %}">
+
+  {% if field.options.label %}
+  <label class="govuk-label" for="{{ field.name }}">
+    {{ field.options.label }}
+  </label>
+  {% endif %}
+  {% if field.options.hint %}
+  <span id="search-hint" class="govuk-hint">
+    {{ field.options.hint }}
+  </span>
+  {% endif %}
+
+  {% for error in field.errors %}
+  <span class="govuk-error-message">
+    {{ error.message }}
+  </span>
+  {% endfor %}
+
+  <input class="govuk-input govuk-input--width-20 govuk-!-display-inline-block" id="{{ field.name }}" name="{{ field.name }}" type="text"
+  {% if field.options.hint %}aria-describedby="search-hint"{% endif %} value="{{ field.value }}">
+  <button type="submit" class="govuk-button inline-button" style="margin-bottom: 0;">Search</button>
+</div>
+{% endmacro %}

@@ -5,7 +5,7 @@
 {% from "./dropdown.njk" import formDropdownWidget %}
 {% from "./paragraph.njk" import formParagraphWidget %}
 {% from "./checkbox.njk" import formCheckboxWidget %}
-
+{% from "./search.njk" import formSearchWidget %}
 
 {% macro formWidget(field, form) %}
 
@@ -31,5 +31,8 @@
   {% endif %}
   {% if widget=='dropdown' %}
     {{ formDropdownWidget(field) }}
+  {% endif %}
+  {% if widget=='search' %}
+    {{ formSearchWidget(field) }}
   {% endif %}
 {% endmacro %}

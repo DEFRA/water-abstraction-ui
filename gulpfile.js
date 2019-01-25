@@ -145,7 +145,7 @@ gulp.task('sass', () => {
 });
 
 gulp.task('sass:watch', () => {
-  return gulp.watch('src/assets/sass/**/*.scss', ['sass']);
+  return gulp.watch('src/assets/sass/**/*.scss', gulp.series('sass'));
 });
 
 // Run StardardJS checks

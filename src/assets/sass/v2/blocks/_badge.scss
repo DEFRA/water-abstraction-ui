@@ -1,0 +1,46 @@
+.badge {
+
+  font-family: "nta", Arial, sans-serif;
+  @include govuk-font($size: 16);
+
+  min-width: 4rem;
+  line-height: 2.25rem;
+  display: inline-block;
+  text-align: center;
+  margin: 0 auto;
+  font-weight: bold;
+  padding: 3px 5px 0 5px;
+  vertical-align: middle;
+  background: $govuk-link-colour;
+  letter-spacing: 1px;
+  color: govuk-colour("white");
+
+}
+
+.badge--error {
+  background: $govuk-error-colour;
+}
+
+.badge--success {
+  background:  govuk-colour("green");
+}
+
+.badge--completed {
+  background: $govuk-link-colour;
+}
+
+.badge--void {
+  background: #b10e1e;
+}
+
+.badge--info {
+  background: #6f777b;
+}
+
+.badge--caps {
+  text-transform: uppercase;
+}
+
+.badge--no-wrap {
+  white-space: nowrap;
+}

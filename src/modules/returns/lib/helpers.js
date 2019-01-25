@@ -2,12 +2,16 @@
 const Boom = require('boom');
 const moment = require('moment');
 const { get } = require('lodash');
+const titleCase = require('title-case');
+
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const { externalRoles } = require('../../../lib/constants');
 const { hasPermission } = require('../../../lib/permissions');
 const config = require('../../../../config');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
+
+const { getReturnPath } = require('./return-path');
 
 /**
  * Gets licences from the CRM that can be viewed by the supplied entity ID
@@ -245,13 +249,16 @@ const addFlags = (returns, request) => {
     const isEditable = canEdit(request.permissions, row);
     const isReceivedOrInternalVoid = isInternalAdminAndReturnIsVoid(request.permissions, row) || returnIsReceived(row);
     const isClickable = isEditable || isReceivedOrInternalVoid;
+    const isPastDueDate = isReturnPastDueDate(row);
 
     return {
       ...row,
       isEditable,
       isReceivedOrInternalVoid,
       isClickable,
-      isPastDueDate: isReturnPastDueDate(row)
+      isPastDueDate,
+      badge: getBadge(row.status, isPastDueDate),
+      ...getReturnPath(row, request)
     };
   });
 };
@@ -373,6 +380,29 @@ const getSuffix = (unit) => {
   return units[u];
 };
 
+/**
+ * Gets badge object to render for return row
+ * @param  {String}  status    - return status
+ * @param  {Boolean} isPastDue - whether return is past due
+ * @return {Object}            - badge text and style
+ */
+const getBadge = (status, isPastDueDate) => {
+  const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
+
+  const styles = {
+    overdue: 'success',
+    due: 'success',
+    received: 'completed',
+    completed: 'completed',
+    void: 'void'
+  };
+
+  return {
+    text: titleCase(viewStatus),
+    status: styles[viewStatus]
+  };
+};
+
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
@@ -390,5 +420,6 @@ module.exports = {
   getRedirectPath,
   isReturnId,
   getSuffix,
-  addFlags
+  addFlags,
+  getBadge
 };

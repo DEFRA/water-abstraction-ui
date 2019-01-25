@@ -209,26 +209,19 @@ const canEdit = (permissions, ret, today) => {
     );
 };
 
-/**
- * Checks whether return has been received and has 'completed' status
- * @param {Object} ret
- * @return {Boolean}
- */
-const returnIsReceived = (ret) => {
-  const { received_date: date, status } = ret;
-  return (date !== null && status === 'completed');
-};
-
 const isReturnPastDueDate = returnRow => {
   const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
   const today = moment().startOf('day');
   return dueDate.isBefore(today);
 };
 
-const isVoidReturn = ret => ret.status === 'void';
-
-const isInternalAdminAndReturnIsVoid = (permissions, ret) => {
-  return isInternalUser(permissions) && isVoidReturn(ret);
+const mapReturnRow = (row, request) => {
+  const isPastDueDate = isReturnPastDueDate(row);
+  return {
+    ...row,
+    badge: getBadge(row.status, isPastDueDate),
+    ...getReturnPath(row, request)
+  };
 };
 
 /**
@@ -244,23 +237,8 @@ const isInternalAdminAndReturnIsVoid = (permissions, ret) => {
  * @param {Object} request - HAPI request interface
  * @return {Array} returns with isEditable flag added
  */
-const addFlags = (returns, request) => {
-  return returns.map(row => {
-    const isEditable = canEdit(request.permissions, row);
-    const isReceivedOrInternalVoid = isInternalAdminAndReturnIsVoid(request.permissions, row) || returnIsReceived(row);
-    const isClickable = isEditable || isReceivedOrInternalVoid;
-    const isPastDueDate = isReturnPastDueDate(row);
-
-    return {
-      ...row,
-      isEditable,
-      isReceivedOrInternalVoid,
-      isClickable,
-      isPastDueDate,
-      badge: getBadge(row.status, isPastDueDate),
-      ...getReturnPath(row, request)
-    };
-  });
+const mapReturns = (returns, request) => {
+  return returns.map(row => mapReturnRow(row, request));
 };
 
 /**
@@ -295,7 +273,7 @@ const getReturnsViewData = async (request) => {
 
   if (licenceNumbers.length) {
     const { data, pagination } = await getLicenceReturns(licenceNumbers, page, isInternal);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(addFlags(data, request), documents));
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(mapReturns(data, request), documents));
 
     view.pagination = pagination;
     view.returns = returns;
@@ -420,6 +398,6 @@ module.exports = {
   getRedirectPath,
   isReturnId,
   getSuffix,
-  addFlags,
-  getBadge
+  getBadge,
+  mapReturns
 };

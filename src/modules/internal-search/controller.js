@@ -2,7 +2,7 @@ const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
 
 const { getInternalSearchResults } = require('../../lib/connectors/water');
-const { addFlags } = require('../returns/lib/helpers');
+const { mapReturns } = require('../returns/lib/helpers');
 
 const mapResponseToView = (response, request) => {
   const { documents, returns, users } = response;
@@ -11,7 +11,7 @@ const mapResponseToView = (response, request) => {
   return {
     ...response,
     noResults,
-    returns: returns ? addFlags(returns, request) : null
+    returns: returns ? mapReturns(returns, request) : null
   };
 };
 

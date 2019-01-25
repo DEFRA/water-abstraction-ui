@@ -195,6 +195,7 @@ experiment('getLicenceReturns', () => {
   });
 });
 
+/*
 experiment('addFlags', () => {
   test('isReceivedOrInternalVoid = true if return is recieved and completed', async () => {
     const returns = [{ received_date: '2018-01-01', status: 'completed' }];
@@ -246,6 +247,8 @@ experiment('addFlags', () => {
     expect(modified[0].isReceivedOrInternalVoid).to.be.false();
   });
 });
+
+*/
 
 experiment('getSuffix', () => {
   test('handles superscript', async () => {

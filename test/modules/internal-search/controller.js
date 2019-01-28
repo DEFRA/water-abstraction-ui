@@ -1,0 +1,51 @@
+const { cloneDeep, set } = require('lodash');
+const sinon = require('sinon');
+const { expect } = require('code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const controller = require('../../../src/modules/internal-search/controller');
+const water = require('../../../src/lib/connectors/water');
+
+experiment('Internal search controller', () => {
+  const h = {};
+  let apiStub;
+  const baseRequest = { query: {}, view: {}, log: console.log };
+
+  beforeEach(async () => {
+    h.view = sinon.stub();
+    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+      users: [{ user_id: 123 }]
+    });
+  });
+
+  afterEach(async () => {
+    apiStub.restore();
+  });
+
+  test('It should display the form if no search query is present', async () => {
+    const request = cloneDeep(baseRequest);
+    await controller.getSearchForm(request, h);
+
+    const [template, view] = h.view.firstCall.args;
+    expect(template).to.equal('nunjucks/internal-search/index.njk');
+    expect(view.form).to.be.an.object();
+    expect(view.form.errors).to.be.empty();
+    expect(view.returns).to.be.undefined();
+    expect(view.documents).to.be.undefined();
+    expect(view.users).to.be.undefined();
+    expect(view.noResults).to.be.undefined();
+  });
+
+  test('It should display an error if search query was supplied but empty', async () => {
+    const request = set(cloneDeep(baseRequest), 'query.query', '');
+    await controller.getSearchForm(request, h);
+    const view = h.view.firstCall.args[1];
+    expect(view.form.errors[0].name).to.equal('query');
+  });
+
+  test('It should display results if a valid search term is supplied', async () => {
+    const request = set(cloneDeep(baseRequest), 'query.query', '01/123/456');
+    await controller.getSearchForm(request, h);
+    const view = h.view.firstCall.args[1];
+    expect(view.users[0].user_id).to.equal(123);
+  });
+});

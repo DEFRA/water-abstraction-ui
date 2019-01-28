@@ -1,6 +1,6 @@
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
-const { getInternalSearchResults } = require('../../lib/connectors/water');
+const water = require('../../lib/connectors/water');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 
 /**
@@ -24,7 +24,7 @@ const getSearchForm = async (request, h) => {
       const { page } = request.query;
       const { query } = getValues(form);
 
-      const response = await getInternalSearchResults(query, page);
+      const response = await water.getInternalSearchResults(query, page);
 
       Object.assign(view, mapResponseToView(response, request), { query });
     }

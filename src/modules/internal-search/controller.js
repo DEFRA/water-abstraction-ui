@@ -1,19 +1,7 @@
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
-
 const { getInternalSearchResults } = require('../../lib/connectors/water');
-const { mapReturns } = require('../returns/lib/helpers');
-
-const mapResponseToView = (response, request) => {
-  const { documents, returns, users } = response;
-  const noResults = !(documents || returns || users);
-
-  return {
-    ...response,
-    noResults,
-    returns: returns ? mapReturns(returns, request) : null
-  };
-};
+const { mapResponseToView } = require('./lib/api-response-mapper');
 
 /**
  * Renders a search form and results pages for internal users to search

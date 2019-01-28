@@ -1,42 +1,6 @@
-const Joi = require('joi');
-const admin = require('./admin');
-const { VALID_LICENCE_QUERY } = require('../../lib/validators');
 const externalRoutes = require('./routes');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
-
-const getLicencesAdmin = {
-  method: 'GET',
-  path: '/admin/licences',
-  handler: admin.getLicences,
-  config: {
-    auth: {
-      scope: allAdmin
-    },
-    description: 'Admin: view list of licences with facility to sort/filter',
-    validate: {
-      query: VALID_LICENCE_QUERY
-    },
-    plugins: {
-      viewContext: {
-        pageTitle: 'Licences',
-        customTitle: 'Water abstraction or impoundment licences',
-        enableSearch: true,
-        showEmailFilter: true,
-        activeNavLink: 'view'
-      },
-      formValidator: {
-        query: {
-          emailAddress: Joi.string().email().allow(''),
-          licenceNumber: Joi.string().allow(''),
-          sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),
-          direction: Joi.number().valid(1, -1).default(1),
-          page: Joi.number().allow('').min(1).default(1)
-        }
-      }
-    }
-  }
-};
 
 const getLicenceAdmin = {
   ...externalRoutes.getLicence,
@@ -134,7 +98,6 @@ const getLicenceGaugingStationAdmin = {
 };
 
 module.exports = {
-  getLicencesAdmin,
   getLicenceAdmin,
   getLicenceRenameAdmin,
   postLicenceRenameAdmin,

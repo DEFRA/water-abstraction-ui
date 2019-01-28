@@ -35,6 +35,9 @@
           </div>
 
           {{#each returns }}
+
+
+
           <div class="table-row medium-space {{# if isClickable }}clickable{{/if }}">                                    <!-- a data row starts -->
             <div class="table-cell">
               <h3 class="context">
@@ -42,14 +45,9 @@
               </h3>
 
 
-              {{#if isReceivedOrInternalVoid }}
-              <a href="{{#if ../../isAdmin}}/admin{{/if}}/returns/return?id={{ return_id }}">
-                <span class="sr-only">View return from </span>
-              {{else}}
-                {{#if isEditable }}
-                <a href="{{#if ../../isAdmin}}/admin/return/internal{{else}}/return{{/if}}?returnId={{ return_id }}">
-                  <span class="sr-only">Edit return from </span>
-                {{/if}}
+              {{#if path }}
+              <a href="{{ path }}">
+                <span class="sr-only">{{#if isEdit }}Edit{{else}}View{{/if}} return from </span>
               {{/if}}
 
               {{#if licenceName }}
@@ -58,7 +56,7 @@
               {{ licence_ref }}
               {{/if}}
 
-
+              {{#if path }}
               <span class="sr-only">for
                 {{#each metadata.purposes }}
                 {{ tertiary.description }}
@@ -70,8 +68,6 @@
                   - return due
                 {{/equal}}
                </span>
-
-               {{#if isClickable }}
               </a>
               {{/if}}
 

@@ -163,7 +163,12 @@ const getCompanyPermissions = (credentials = {}, entityRoles = []) => {
 const hasPermission = (permission, permissions) => {
   const isGranted = get(permissions, permission);
   if (!isBoolean(isGranted)) {
-    throw new Error(`Attempt to check invalid permission ${permission}`);
+    const err = new Error(`Attempt to check invalid permission ${permission}`);
+    err.params = {
+      permission,
+      permissions
+    };
+    throw err;
   }
   return isGranted;
 };

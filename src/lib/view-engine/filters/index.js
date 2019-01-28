@@ -1,5 +1,7 @@
 module.exports = {
-  ...require('./form'),
+  ...require('./abstraction-reform'),
   ...require('./date'),
-  ...require('./abstraction-reform')
+  ...require('./form'),
+  ...require('./merge'),
+  ...require('./query-string')
 };

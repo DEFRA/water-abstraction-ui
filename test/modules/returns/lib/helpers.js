@@ -195,61 +195,46 @@ experiment('getLicenceReturns', () => {
   });
 });
 
-experiment('addFlags', () => {
-  test('isReceivedOrInternalVoid = true if return is recieved and completed', async () => {
-    const returns = [{ received_date: '2018-01-01', status: 'completed' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
-    expect(modified[0].isClickable).to.be.true();
-  });
-
-  test('isReceivedOrInternalVoid = false if return status is due', async () => {
-    const returns = [{ status: 'due' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
-  });
-
-  test('isReceivedOrInternalVoid = true if return status is void and user is internal', async () => {
-    const returns = [{ status: 'void' }];
-    const request = {
-      permissions: {
-        admin: { defra: true },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.true();
-    expect(modified[0].isClickable).to.be.true();
-  });
-
-  test('isReceivedOrInternalVoid = false if return status is void and user is external', async () => {
-    const returns = [{ status: 'void' }];
-    const request = {
-      permissions: {
-        admin: { defra: false },
-        returns: { submit: true, edit: true }
-      }
-    };
-    const modified = helpers.addFlags(returns, request);
-    expect(modified[0].isReceivedOrInternalVoid).to.be.false();
-  });
-});
-
 experiment('getSuffix', () => {
   test('handles superscript', async () => {
     expect(helpers.getSuffix('m³')).to.equal('cubic metres');
     expect(helpers.getSuffix('m3')).to.equal('cubic metres');
+  });
+});
+
+experiment('getBadge', () => {
+  test('If return is overdue, return overdue badge', async () => {
+    expect(helpers.getBadge('due', true)).to.equal({
+      text: 'Overdue',
+      status: 'success'
+    });
+  });
+
+  test('If return is due, return due badge', async () => {
+    expect(helpers.getBadge('due', false)).to.equal({
+      text: 'Due',
+      status: 'success'
+    });
+  });
+
+  test('If return is void, return void badge', async () => {
+    expect(helpers.getBadge('void', false)).to.equal({
+      text: 'Void',
+      status: 'void'
+    });
+  });
+
+  test('If return is received, return received badge', async () => {
+    expect(helpers.getBadge('received', false)).to.equal({
+      text: 'Received',
+      status: 'completed'
+    });
+  });
+
+  test('If return is completed, return received badge', async () => {
+    expect(helpers.getBadge('completed', false)).to.equal({
+      text: 'Completed',
+      status: 'completed'
+    });
   });
 });

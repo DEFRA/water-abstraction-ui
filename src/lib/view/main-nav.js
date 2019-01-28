@@ -5,18 +5,22 @@ const {
   isExternalReturns, isPrimary, setActiveLink
 } = require('./helpers');
 
+const createNavLink = (label, path, id) => {
+  return createLink(label, path, id, { id: `navbar-${id}` });
+};
+
 // Internal links
 const internalLinks = {
-  licences: createLink('View licences', '/admin/licences', 'view'),
-  ar: createLink('Digitise!', '/admin/digitise', 'ar'),
-  notifications: createLink('Reports and notifications', '/admin/notifications', 'notifications'),
-  returns: createLink('Manage returns', '/admin/returns', 'returns')
+  licences: createNavLink('View licences', '/admin/licences', 'view'),
+  ar: createNavLink('Digitise!', '/admin/digitise', 'ar'),
+  notifications: createNavLink('Reports and notifications', '/admin/notifications', 'notifications'),
+  returns: createNavLink('Manage returns', '/admin/returns', 'returns')
 };
 
 const externalLinks = {
-  licences: createLink('View licences', '/licences', 'view'),
-  returns: createLink('Manage returns', '/returns', 'returns'),
-  manage: createLink('Add licences or give access', '/manage_licences', 'manage')
+  licences: createNavLink('View licences', '/licences', 'view'),
+  returns: createNavLink('Manage returns', '/returns', 'returns'),
+  manage: createNavLink('Add licences or give access', '/manage_licences', 'manage')
 };
 
 /**

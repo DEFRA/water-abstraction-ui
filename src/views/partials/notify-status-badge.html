@@ -1,50 +1,33 @@
 {{#if this}}
 
   {{#equal this 'sending'}}
-  <span class="badge">
-  Pending
-  </span>
+  <span class="badge">Pending</span>
   {{/equal}}
 
   {{#equal this 'accepted'}}
-  <span class="badge">
-  Pending
-  </span>
+  <span class="badge">Pending</span>
   {{/equal}}
 
   {{#equal this 'received'}}
-  <span class="badge">
-  Sent
-  </span>
+  <span class="badge">Sent</span>
   {{/equal}}
 
   {{#equal this 'delivered'}}
-  <span class="badge">
-  Sent
-  </span>
+  <span class="badge">Sent</span>
   {{/equal}}
 
   {{#equal this 'permanent-failure'}}
-  <span class="badge badge--error">
-  Error
-  </span>
+  <span class="badge badge--error">Error</span>
   {{/equal}}
 
   {{#equal this 'temporary-failure'}}
-  <span class="badge badge--error">
-  Error
-  </span>
+  <span class="badge badge--error">Error</span>
   {{/equal}}
 
-
   {{#equal this 'technical-failure'}}
-  <span class="badge badge--error">
-  Error
-  </span>
+  <span class="badge badge--error">Error</span>
   {{/equal}}
 
 {{ else }}
-<span class="badge">
-Pending
-</span>
+  <span class="badge">Pending</span>
 {{/if}}

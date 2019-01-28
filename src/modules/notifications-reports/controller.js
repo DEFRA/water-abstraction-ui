@@ -37,7 +37,6 @@ async function getNotificationsList (request, reply) {
  */
 async function getNotification (request, reply) {
   const { id } = request.params;
-  const { sort, direction } = request.query;
 
   // Load event
   const { error, data: event } = await events.findOne(id);

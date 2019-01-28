@@ -12,17 +12,16 @@ const isPrimary = request => hasPermission('licences.edit', request.permissions)
  * Creates a link object
  * @param  {String} text - The link text
  * @param  {String} href - The path / URL
- * @param  {String} id   - an ID which is used internally to highlight active nav, and also externally as ID attribute
+ * @param  {String} id   - an ID which is used internally to highlight active nav
+ * @param {Object} attributes - HTML attributes for link item
  * @return {Object}      link object
  */
-const createLink = (text, href, id) => {
+const createLink = (text, href, id, attributes = {}) => {
   return {
     text,
     href,
     id,
-    attributes: {
-      id
-    }
+    attributes
   };
 };
 

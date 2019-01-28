@@ -1,9 +1,13 @@
 const { get } = require('lodash');
 const { isAuthenticated, isAdmin, createLink, setActiveLink } = require('./helpers');
 
-const contactLink = createLink('Contact information', '/admin/contact-information', 'contact-information');
-const changePasswordLink = createLink('Change password', '/update_password', 'change-password');
-const signoutLink = createLink('Sign out', '/signout', 'signout');
+const createPropositionLink = (label, path, id) => {
+  return createLink(label, path, id, { id });
+};
+
+const contactLink = createPropositionLink('Contact information', '/admin/contact-information', 'contact-information');
+const changePasswordLink = createPropositionLink('Change password', '/update_password', 'change-password');
+const signoutLink = createPropositionLink('Sign out', '/signout', 'signout');
 
 /**
  * Given a HAPI request instance, provides a list of links for the

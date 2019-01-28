@@ -1,0 +1,14 @@
+{% from "./company-verifications.njk" import companyVerifications %}
+{% from "./company-licences.njk" import companyLicences %}
+
+{% macro userCompanies(companies) %}
+  {% for company in companies %}
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+    <h2 class="govuk-heading-l space--none">{{ company.name }}</h2>
+    <p class="govuk-body govuk-!-font-size-24">
+      {{ company.userRoles | mostSignificantEntityRole }}
+    </p>
+    {{ companyVerifications(company.outstandingVerifications) }}
+    {{ companyLicences(company.registeredLicences) }}
+  {% endfor %}
+{% endmacro %}

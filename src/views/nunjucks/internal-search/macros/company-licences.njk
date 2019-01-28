@@ -1,0 +1,29 @@
+{% from "details-when.njk" import detailsWhen %}
+
+{% macro companyLicences(licences) %}
+  {% if licences.length > 0 %}
+    <h3 class="govuk-heading-m space--none">
+      {{ licences | length }} licences
+    </h3>
+    {% call detailsWhen(licences.length, 5, 'View licences') -%}
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Licence Number</th>
+            <th class="govuk-table__header" scope="col">Licence Holder</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for licence in licences %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">
+              <a class="govuk-link" href="/admin/licences/{{licence.documentId}}">{{licence.licenceRef}}</a>
+            </td>
+            <td class="govuk-table__cell">{{licence.licenceHolder}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endcall %}
+  {% endif %}
+{% endmacro %}

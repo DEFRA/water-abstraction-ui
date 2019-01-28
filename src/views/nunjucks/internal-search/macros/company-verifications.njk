@@ -1,0 +1,17 @@
+{% from "details-when.njk" import detailsWhen %}
+
+{% macro companyVerifications(verifications) %}
+  {% for verification in verifications %}
+    <p class="govuk-body space--none">Security code <span class="govuk-body govuk-!-font-weight-bold">{{verification.code}}</span> sent {{verification.dateCreated | date}}</p>
+
+    {% call detailsWhen(verification.licences.length, 5, verification.licences.length + ' requested licences') -%}
+      <ul class="govuk-list">
+        {% for licence in verification.licences %}
+          <li>
+            <a class="govuk-link" href="/admin/licences/{{licence.documentId}}">{{licence.licenceRef}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {%- endcall %}
+  {% endfor %}
+{% endmacro %}

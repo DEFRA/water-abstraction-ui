@@ -13,8 +13,7 @@ const createNavLink = (label, path, id) => {
 const internalLinks = {
   licences: createNavLink('View licences', '/admin/licences', 'view'),
   ar: createNavLink('Digitise!', '/admin/digitise', 'ar'),
-  notifications: createNavLink('Reports and notifications', '/admin/notifications', 'notifications'),
-  returns: createNavLink('Manage returns', '/admin/returns', 'returns')
+  notifications: createNavLink('Reports and notifications', '/admin/notifications', 'notifications')
 };
 
 const externalLinks = {
@@ -34,9 +33,6 @@ const getInternalNav = (request) => {
     links.push(internalLinks.ar);
   }
   links.push(internalLinks.notifications);
-  if (isInternalReturns(request)) {
-    links.push(internalLinks.returns);
-  }
   return links;
 };
 

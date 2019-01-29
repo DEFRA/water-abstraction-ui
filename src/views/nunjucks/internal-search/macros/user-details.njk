@@ -1,7 +1,7 @@
 {% macro userDetails(user) %}
 
   <div class="govuk-caption-l">{{ "Internal" if user.isInternal else "External" }}</div> 
-  <h1 class="govuk-heading-xl space--none">{{user.userName}}</h1>
+  <h1 class="govuk-heading-xl govuk-!-margin-0">{{user.userName}}</h1>
 
   <p class="heading-small">
     {% if user.lastLogin %}

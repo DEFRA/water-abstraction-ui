@@ -2,7 +2,7 @@
 
 {% macro companyLicences(licences) %}
   {% if licences.length > 0 %}
-    <h3 class="govuk-heading-m space--none">
+    <h3 class="govuk-heading-m govuk-!-margin-0">
       {{ licences | length }} licences
     </h3>
     {% call detailsWhen(licences.length, 5, 'View licences') -%}

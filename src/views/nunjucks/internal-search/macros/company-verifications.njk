@@ -2,7 +2,7 @@
 
 {% macro companyVerifications(verifications) %}
   {% for verification in verifications %}
-    <p class="govuk-body space--none">Security code <span class="govuk-body govuk-!-font-weight-bold">{{verification.code}}</span> sent {{verification.dateCreated | date}}</p>
+    <p class="govuk-body govuk-!-margin-0">Security code <span class="govuk-body govuk-!-font-weight-bold">{{verification.code}}</span> sent {{verification.dateCreated | date}}</p>
 
     {% call detailsWhen(verification.licences.length, 5, verification.licences.length + ' requested licences') -%}
       <ul class="govuk-list">

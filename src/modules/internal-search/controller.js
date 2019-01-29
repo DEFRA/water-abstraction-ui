@@ -24,19 +24,19 @@ const getSearchForm = async (request, h) => {
 
   if ('query' in request.query) {
     form = handleRequest(form, request, searchFormSchema);
+    const { query } = getValues(form);
 
     if (form.isValid) {
       const { page } = request.query;
-      const { query } = getValues(form);
 
       const response = await water.getInternalSearchResults(query, page);
 
       Object.assign(view, mapResponseToView(response, request), { query });
+    }
 
-      // Redirect to return
-      if (isReturnRedirect(query, view)) {
-        return h.redirect(view.returns[0].path);
-      }
+    // Redirect to return
+    if (form.isValid && isReturnRedirect(query, view)) {
+      return h.redirect(view.returns[0].path);
     }
   }
 

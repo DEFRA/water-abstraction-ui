@@ -1,7 +1,13 @@
+const { get } = require('lodash');
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
 const water = require('../../lib/connectors/water');
 const { mapResponseToView } = require('./lib/api-response-mapper');
+const { isReturnId } = require('../returns/lib/helpers');
+
+const isReturnRedirect = (query, view) => {
+  return isReturnId(query) && get(view, 'returns.length') === 1;
+};
 
 /**
  * Renders a search form and results pages for internal users to search
@@ -18,15 +24,19 @@ const getSearchForm = async (request, h) => {
 
   if ('query' in request.query) {
     form = handleRequest(form, request, searchFormSchema);
+    const { query } = getValues(form);
 
     if (form.isValid) {
-      console.log('valid!', form);
       const { page } = request.query;
-      const { query } = getValues(form);
 
       const response = await water.getInternalSearchResults(query, page);
 
       Object.assign(view, mapResponseToView(response, request), { query });
+    }
+
+    // Redirect to return
+    if (form.isValid && isReturnRedirect(query, view)) {
+      return h.redirect(view.returns[0].path);
     }
   }
 

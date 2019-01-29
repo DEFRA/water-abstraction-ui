@@ -119,7 +119,7 @@ experiment('getMainNav', () => {
   test('It should display correct links for WIRS/returns user', async () => {
     const request = getReturnsRequest();
     const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'notifications', 'returns']);
+    expect(ids).to.equal(['view', 'notifications']);
   });
 
   test('for a request with licence.userLicenceCount of 0, only view is added', async () => {

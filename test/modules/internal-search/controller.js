@@ -8,10 +8,23 @@ const water = require('../../../src/lib/connectors/water');
 experiment('Internal search controller', () => {
   const h = {};
   let apiStub;
-  const baseRequest = { query: {}, view: {}, log: console.log };
+  const baseRequest = {
+    permissions: {
+      returns: {
+        edit: true
+      },
+      admin: {
+        defra: true
+      }
+    },
+    query: {},
+    view: {},
+    log: console.log
+  };
 
   beforeEach(async () => {
     h.view = sinon.stub();
+    h.redirect = sinon.stub();
     apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
       users: [{ user_id: 123 }]
     });
@@ -47,5 +60,21 @@ experiment('Internal search controller', () => {
     await controller.getSearchForm(request, h);
     const view = h.view.firstCall.args[1];
     expect(view.users[0].user_id).to.equal(123);
+  });
+
+  test('It should redirect if user searches for exact return ID', async () => {
+    const returnId = 'v1:1:01/123:123456:2017-10-31:2018-10-31';
+    apiStub.restore();
+    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+      returns: [{
+        return_id: returnId
+      }]
+    });
+
+    const request = set(cloneDeep(baseRequest), 'query.query', returnId);
+    await controller.getSearchForm(request, h);
+
+    const [ path ] = h.redirect.firstCall.args;
+    expect(path).to.equal(`/admin/return/internal?returnId=${returnId}`);
   });
 });

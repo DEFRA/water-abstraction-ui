@@ -5,6 +5,10 @@ const water = require('../../lib/connectors/water');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 const { isReturnId } = require('../returns/lib/helpers');
 
+const isReturnRedirect = (query, view) => {
+  return isReturnId(query) && get(view, 'returns.length') === 1;
+};
+
 /**
  * Renders a search form and results pages for internal users to search
  * for licences, licence holders, users, and returns
@@ -30,7 +34,7 @@ const getSearchForm = async (request, h) => {
       Object.assign(view, mapResponseToView(response, request), { query });
 
       // Redirect to return
-      if (isReturnId(query) && get(view, 'returns.length') === 1) {
+      if (isReturnRedirect(query, view)) {
         return h.redirect(view.returns[0].path);
       }
     }

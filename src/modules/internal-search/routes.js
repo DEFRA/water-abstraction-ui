@@ -24,5 +24,26 @@ module.exports = {
         }
       }
     }
+  },
+
+  getUserStatus: {
+    method: 'GET',
+    path: '/admin/user/{userId}/status',
+    handler: controller.getUserStatus,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'Admin: view the licence, verification and login status of a user',
+      plugins: {
+        viewContext: {
+          pageTitle: 'User status',
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number()
+        }
+      }
+    }
   }
 };

@@ -1,11 +1,16 @@
+'use strict';
+
 const { cloneDeep, set } = require('lodash');
 const sinon = require('sinon');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const controller = require('../../../src/modules/internal-search/controller');
 const water = require('../../../src/lib/connectors/water');
+const waterServiceUserConnector = require('../../../src/lib/connectors/water-service/user');
 
-experiment('Internal search controller', () => {
+const getUserStatusResponses = require('../../responses/water-service/user/_userId_/status');
+
+experiment('getSearchForm', () => {
   const h = {};
   let apiStub;
   const baseRequest = {
@@ -76,5 +81,47 @@ experiment('Internal search controller', () => {
 
     const [ path ] = h.redirect.firstCall.args;
     expect(path).to.equal(`/admin/return/internal?returnId=${returnId}`);
+  });
+});
+
+experiment('getUserStatus', () => {
+  let request;
+  let h;
+
+  beforeEach(async () => {
+    sinon
+      .stub(waterServiceUserConnector, 'getUserStatus')
+      .resolves(getUserStatusResponses.externalUserWithLicences());
+
+    request = { params: { userId: 1234 }, view: {} };
+    h = {
+      view: sinon.spy()
+    };
+    await controller.getUserStatus(request, h);
+  });
+
+  afterEach(async () => {
+    waterServiceUserConnector.getUserStatus.restore();
+  });
+
+  test('passes the user id from the request to the water service', async () => {
+    const [userId] = waterServiceUserConnector.getUserStatus.firstCall.args;
+    expect(userId).to.equal(request.params.userId);
+  });
+
+  test('adds a total licence count to the view', async () => {
+    const [, view] = h.view.firstCall.args;
+    expect(view.userStatus.totalLicenceCount).to.equal(3);
+  });
+
+  test('total licences is zero when there are none', async () => {
+    waterServiceUserConnector.getUserStatus.resolves(
+      getUserStatusResponses.externalUserWithoutLicences()
+    );
+
+    await controller.getUserStatus(request, h);
+
+    const [, view] = h.view.lastCall.args;
+    expect(view.userStatus.totalLicenceCount).to.equal(0);
   });
 });

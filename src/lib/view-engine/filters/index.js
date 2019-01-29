@@ -3,5 +3,6 @@ module.exports = {
   ...require('./date'),
   ...require('./form'),
   ...require('./merge'),
+  ...require('./most-significant-entity-role'),
   ...require('./query-string')
 };

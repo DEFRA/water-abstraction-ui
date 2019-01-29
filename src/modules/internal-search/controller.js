@@ -1,7 +1,11 @@
+'use strict';
+
 const { get } = require('lodash');
+
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
 const water = require('../../lib/connectors/water');
+const waterServiceUserConnector = require('../../lib/connectors/water-service/user');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 const { isReturnId } = require('../returns/lib/helpers');
 
@@ -45,6 +49,22 @@ const getSearchForm = async (request, h) => {
   return h.view('nunjucks/internal-search/index.njk', view, { layout: false });
 };
 
+const getUserStatus = async (request, h) => {
+  const { view } = request;
+  const response = await waterServiceUserConnector.getUserStatus(request.params.userId);
+
+  const userStatus = response.data;
+  userStatus.totalLicenceCount = userStatus.companies.reduce((acc, company) => {
+    const licences = get(company, 'registeredLicences', []);
+    return acc + licences.length;
+  }, 0);
+
+  const viewContext = Object.assign(view, { userStatus });
+
+  return h.view('nunjucks/internal-search/user-status.njk', viewContext, { layout: false });
+};
+
 module.exports = {
-  getSearchForm
+  getSearchForm,
+  getUserStatus
 };

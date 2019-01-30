@@ -57,7 +57,7 @@
 
       <!-- User accounts -->
       {% if users %}
-      <h3 class="govuk-heading-m">Users</h3>
+      <h2 class="govuk-heading-m">Users</h2>
       <ul class="govuk-list">
         {% for user in users %}
         <li>
@@ -69,9 +69,8 @@
 
       <!-- Returns -->
       {% if returns %}
-
+      <h2 class="govuk-heading-m">Returns</h2>
       <table class="govuk-table">
-        <caption class="govuk-table__caption">Returns</caption>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Return reference</th>
@@ -98,8 +97,8 @@
 
       <!-- Licences -->
       {% if documents %}
+      <h2 class="govuk-heading-m">Licences</h2>
       <table class="govuk-table">
-        <caption class="govuk-table__caption">Licences</caption>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Licence number</th>

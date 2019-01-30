@@ -22,6 +22,25 @@
 </div>
   {{/if}}
 
+  {{#if licenceErrors }}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+        There is a problem
+      </h2>
+
+      <ul class="error-summary-list">
+        {{#each licenceErrors }}
+        <li>{{ message }}</li>
+        {{/each}}
+      </ul>
+
+    </div>
+  </div>
+</div>
+  {{/if}}
 
 
 

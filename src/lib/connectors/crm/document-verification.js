@@ -2,13 +2,9 @@
  * Creates a client connector for the CRM verification API endpoint
  * @module lib/connectors/crm-verification
  */
-const {
-  APIClient
-} = require('@envage/hapi-pg-rest-api');
-const rp = require('request-promise-native').defaults({
-  proxy: null,
-  strictSSL: false
-});
+const { APIClient } = require('@envage/hapi-pg-rest-api');
+const rp = require('request-promise-native').defaults({ proxy: null, strictSSL: false });
+const serviceRequest = require('../service-request');
 
 // Create API client
 const client = new APIClient(rp, {
@@ -19,14 +15,19 @@ const client = new APIClient(rp, {
 });
 
 /**
- * Get outstanding verifications for the supplied entityId
- * @param {String} document_id - the document id
- * @return {Promise} resolves with list of verifications
+ * Get outstanding verifications for the supplied document id
  */
-client.getDocumentVerifications = function (document_id) {
-  return client.findMany({
-    document_id: document_id
-  });
+client.getDocumentVerifications = documentId => {
+  const url = `${process.env.CRM_URI}/document_verifications`;
+
+  const qs = {
+    filter: JSON.stringify({
+      document_id: documentId,
+      'verification.date_verified': null
+    })
+  };
+
+  return serviceRequest.get(url, { qs });
 };
 
 module.exports = client;

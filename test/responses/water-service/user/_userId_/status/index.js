@@ -1,4 +1,4 @@
-const externalUserWithLicences = {
+const externalUserWithLicences = () => ({
   data: {
     user: {
       isLocked: true,
@@ -54,9 +54,9 @@ const externalUserWithLicences = {
     ]
   },
   error: null
-};
+});
 
-const externalUserWithoutLicences = {
+const externalUserWithoutLicences = () => ({
   data: {
     user: {
       isLocked: true,
@@ -67,9 +67,9 @@ const externalUserWithoutLicences = {
     companies: []
   },
   error: null
-};
+});
 
 module.exports = {
-  externalUserWithLicences: () => externalUserWithLicences,
-  externalUserWithoutLicences: () => externalUserWithoutLicences
+  externalUserWithLicences,
+  externalUserWithoutLicences
 };

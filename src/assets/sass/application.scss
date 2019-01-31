@@ -61,7 +61,6 @@ family: "nta", Arial, sans-serif;
   }
 }
 
-
 .panel {
   border-top: none;
 }
@@ -73,15 +72,6 @@ family: "nta", Arial, sans-serif;
   @media screen and (min-width: 641px) {
     width : 66%;
   }
-}
-
-
-.teststyle {
-  color: green;
-}
-
-.arbitraryStyle {
-  padding: 2px;
 }
 
 // Related items
@@ -137,21 +127,14 @@ family: "nta", Arial, sans-serif;
   }
 }
 
-.govuk-related-items {
-  margin-top: $gutter;
-  border-top: 10px solid $govuk-blue;
-  padding-top: 5px;
-}
-
 .heading-medium {
   margin-top: 0.3em;
   margin-bottom: 0.5em;
 }
 
 .medium-space {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
-
 
 li {
   margin-bottom: 10px;
@@ -166,59 +149,6 @@ li {
   font-weight: bold;
 }
 
-.sourceofsupplyqs {
-  display: inline-block;
-  vertical-align: top;
-  padding-bottom: 0;
-  padding-top: 5px;
-  padding-right: 0.25em;
-  width: 20%;
-}
-
-.sourceofsupplyqstop {
-  display: inline-block;
-  vertical-align: top;
-  padding-bottom: 0;
-  padding-top: 10px;
-  padding-right: 0.25em;
-  width: 20%;
-}
-
-.licenceLabel {
-  display: inline-block;
-  vertical-align: top;
-  padding-bottom: 7px;
-  padding-right: 0.25em;
-  width: 20%;
-}
-
-.address {
-  width: 100%;
-  padding-bottom: 10px;
-  padding-top: 20px;
-  border-bottom: 1px solid #bfc1c3;
-}
-
-.siteaddress {
-  padding-bottom: 10px;
-  padding-top: 20px;
-  border-bottom: 1px solid #bfc1c3;
-  border-top: 1px solid #bfc1c3;
-}
-
-.sourceofsupplya {
-  display: inline-block;
-  width: 50%;
-  padding-left: 1em;
-}
-
-.sourceofsupplyatop {
-  display: inline-block;
-  width: 50%;
-  padding-bottom: 7px;
-  padding-left: 1em;
-}
-
 .licenceAnswer {
   display: inline-block;
   width: 50%;
@@ -226,60 +156,11 @@ li {
   padding-left: 3em;
 }
 
-.licenceAnswers {
-  display: inline-block;
-  width: 50%;
-  padding-bottom: 0;
-  padding-top: 5px;
-  padding-left: 1em;
-}
-
-.licenceAnswerstop {
-  display: inline-block;
-  width: 50%;
-  padding-bottom: 0;
-  padding-top: 10px;
-  padding-left: 1em;
-}
-
 .name {
   display: inline-block;
   width: 50%;
   padding-bottom: 7px;
   padding-left: 0.5em;
-}
-
-.data-table {
-  border-top: 1px solid #bfc1c3;
-  padding-top: 0.5em;
-}
-
-.list-link {
-  background-color: #FFF;
-  cursor: pointer;
-  padding-left: 0;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  width: 100%;
-  text-align: left;
-  border-top: 1px solid #bfc1c3;
-  transition: 0.4s;
-  font-family: "nta", Arial, sans-serif;
-  font-weight: 700;
-  font-size: 1.25em;
-  line-height: 1.25;
-  display: block;
-  margin-bottom:3px
-}
-
-.list-link:hover {
-  background-color: #F8F8F8;
-}
-
-.licence-title {
-  display: inline-block;
-  padding-bottom: 7px;
-  font-weight: bold;
 }
 
 .header-links {
@@ -294,79 +175,9 @@ li {
     }
 }
 
-.openall {
-  float: right;
-  padding-bottom: 0;
-}
-
-.check-all-contact-details {
-  font-size: 0.85em;
-}
-
 img {
   max-width: 100%;
   height: auto;
-}
-
-.maplist {
-  padding: 0 0 30px 21px;
-  line-height: 20px;
-}
-
-.licenceno {
-  padding: 0 0 20px;
-}
-
-.licenceholder {
-  padding: 0 0 7px;
-}
-
-.abstractionperiod {
-  padding: 5px 0 7px;
-}
-
-.abstractionpoint {
-  padding: 5px 0 7px;
-}
-
-.abstractionamount {
-  padding: 5px 0 0;
-}
-
-.handsoff {
-  padding: 5px 0 10px;
-}
-
-.hour {
-  padding: 0 0 0 237px;
-}
-
-.day {
-  padding: 0 0 5px 237px;
-}
-
-.smallprint {
-  font-size: 0.95em;
-  padding: 20px;
-}
-/* Style the buttons that are used to open and close the accordion panel */
-a.accordion,
-button.accordion {
-  background-color: #FFF;
-  color: #005ea5;
-  cursor: pointer;
-  padding-left: 0;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  width: 100%;
-  text-align: left;
-  border: none;
-  outline: none;
-  transition: 0.4s;
-  font-family: "nta", Arial, sans-serif;
-  font-weight: 700;
-  font-size: 1.25em;
-  line-height: 1.25;
 }
 
 a.accordion {
@@ -378,26 +189,6 @@ a.accordion:hover,
 button.accordion.active,
 button.accordion:hover {
   background-color: #F8F8F8;
-}
-
-div.grey_line {
-  border-top: 1px solid #bfc1c3;
-}
-
-div.grey_line_bottomh3 {
-  border-bottom: 1px solid #bfc1c3;
-  padding-bottom: 0;
-}
-
-div.grey_line_bottom {
-  border-top: 1px solid #bfc1c3;
-  border-bottom: 1px solid #bfc1c3;
-}
-/* Style the accordion panel. Note: hidden by default */
-div.white_panel {
-  padding: 30px 0 20px;
-  background-color: white;
-  display: none;
 }
 
 a.accordion:after,
@@ -418,23 +209,11 @@ button.accordion.active:after {
   /* Unicode character for "minus" sign (-) */
 }
 
-.sign-out2 {
-float: right;
-font-size: 0.875em;
-line-height: 1.14286;
-margin-left: 0.75em;
-}
-
-/* inline buttons - designed to be used next to input field */
-.button-inline {
-  line-height: 1.15;
-}
-
-
 /* hidden/shown utility classes */
 .hide {
   display: none;
 }
+
 .hide-js {
   display: block;
 
@@ -442,13 +221,13 @@ margin-left: 0.75em;
     display: none;
   }
 }
+
 .show-js {
   display: none;
   body.js-enabled & {
     display: block;
   }
 }
-
 
 // Tab nav
 nav.tabs {

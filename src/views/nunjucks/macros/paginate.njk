@@ -1,6 +1,6 @@
 {% macro paginate(pagination, path, params) %}
 
-  {% set next %}{{ path }}?{{ params | merge({ page : pagination.page+1}) | queryString | safe }}{% endset %}
+  {% set next %}{{ path }}?{{ params | merge({ page : pagination.page+1}) | queryString | safe  }}{% endset %}
   {% set previous %}{{ path }}?{{ params | merge({ page : pagination.page-1}) | queryString | safe }}{% endset %}
 
   {% if pagination.pageCount > 1 %}

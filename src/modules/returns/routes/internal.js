@@ -23,7 +23,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what do you want to do with this return?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         }
       }
@@ -47,7 +47,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what do you want to do with this return?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         },
         formValidator: {
@@ -76,7 +76,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter date received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -107,7 +107,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter date received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -131,7 +131,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -155,7 +155,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return query received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }

@@ -19,7 +19,7 @@ const createMeterRoute = (method, path, description, title) => {
       description,
       plugins: {
         viewContext: {
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           pageTitle: title
         },
         returns: true
@@ -50,7 +50,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         }
       }
@@ -73,7 +73,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         },
         formValidator: {
@@ -99,7 +99,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - submit nil',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         },
         returns: true
@@ -119,7 +119,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - nil submitted',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -137,7 +137,7 @@ module.exports = {
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -156,7 +156,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -175,7 +175,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -194,7 +194,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -213,7 +213,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -232,7 +232,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single abstracted amount?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -251,7 +251,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - is it a single amount?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -270,7 +270,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -289,7 +289,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -308,7 +308,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -327,7 +327,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }
@@ -346,7 +346,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         },
         returns: true
@@ -366,7 +366,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
-          activeNavLink: 'returns'
+          activeNavLink: 'view'
         },
         returns: true
       }

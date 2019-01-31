@@ -29,6 +29,34 @@
 {% endmacro %}
 
 
+{% macro mobileLicence(doc) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    {% if doc.documentName %}
+      <span class="govuk-caption-m link--no-underline">{{ doc.documentName }}</span>
+    {% endif %}
+    <a href="/admin/licences/{{ doc.documentId }}">
+      {{ doc.licenceNumber }}
+    </a>
+  </h3>
+  <p>{{ doc.licenceHolder }}</p>
+
+</div>
+{% endmacro %}
+
+
+{% macro mobileReturn(return) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    <span class="govuk-caption-m">{{ return.region }}</span>
+    {{ returnLink(return) }}
+  </h3>
+  <p>Licence number {{ return.licence_ref }}</p>
+  {{ badge(return.badge.text, return.badge.status) }}
+</div>
+{% endmacro %}
 
 {% block content %}
 
@@ -70,35 +98,47 @@
       <!-- Returns -->
       {% if returns %}
       <h2 class="govuk-heading-m">Returns</h2>
-      <table class="govuk-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Return reference</th>
-            <th class="govuk-table__header" scope="col">Licence number</th>
-            <th class="govuk-table__header" scope="col">Region</th>
-            <th class="govuk-table__header" scope="col">Status</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for return in returns %}
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
-              {{ returnLink(return) }}
-            </td>
-            <td class="govuk-table__cell">{{ return.licence_ref }}</td>
-            <td class="govuk-table__cell">{{ return.region }}</td>
-            <td class="govuk-table__cell">{{ badge(return.badge.text, return.badge.status) }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+      {% for return in returns %}
+        {{ mobileReturn(return) }}
+      {% endfor %}
+
+      <div class="phone--hide">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Return reference</th>
+              <th class="govuk-table__header" scope="col">Licence number</th>
+              <th class="govuk-table__header" scope="col">Region</th>
+              <th class="govuk-table__header" scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for return in returns %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                {{ returnLink(return) }}
+              </td>
+              <td class="govuk-table__cell">{{ return.licence_ref }}</td>
+              <td class="govuk-table__cell">{{ return.region }}</td>
+              <td class="govuk-table__cell">{{ badge(return.badge.text, return.badge.status) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
       {% endif %}
 
       <!-- Licences -->
       {% if documents %}
       <h2 class="govuk-heading-m">Licences</h2>
-      <table class="govuk-table">
+
+      {% for doc in documents %}
+      {{ mobileLicence(doc) }}
+      {% endfor %}
+
+      <table class="govuk-table phone--hide">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Licence number</th>
@@ -116,15 +156,17 @@
             <td class="govuk-table__cell">{{ doc.documentName }}</td>
             <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
             <td class="govuk-table__cell">{{ doc.expires | date }}</td>
-
           </tr>
           {% endfor %}
         </tbody>
       </table>
       {% endif %}
 
+
+
+
       <!-- Pagination -->
-      {{ paginate(pagination, '/admin/licences', { query : query }) }}
+      {{ paginate(pagination, '/admin/licences', { query : form.fields[0].value }) }}
 
 
 

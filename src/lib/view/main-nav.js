@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 
 const {
-  isAuthenticated, isAdmin, createLink, isAr, isInternalReturns,
+  isAuthenticated, isAdmin, createLink, isAr,
   isExternalReturns, isPrimary, setActiveLink
 } = require('./helpers');
 
@@ -11,7 +11,7 @@ const createNavLink = (label, path, id) => {
 
 // Internal links
 const internalLinks = {
-  licences: createNavLink('View licences', '/admin/licences', 'view'),
+  licences: createNavLink('Licences', '/admin/licences', 'view'),
   ar: createNavLink('Digitise!', '/admin/digitise', 'ar'),
   notifications: createNavLink('Reports and notifications', '/admin/notifications', 'notifications')
 };

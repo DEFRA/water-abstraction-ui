@@ -18,8 +18,12 @@
   </span>
   {% endfor %}
 
-  <input class="govuk-input govuk-input--width-20 govuk-!-display-inline-block" id="{{ field.name }}" name="{{ field.name }}" type="text"
-  {% if field.options.hint %}aria-describedby="search-hint"{% endif %} value="{{ field.value }}">
-  <button type="submit" class="govuk-button inline-button" style="margin-bottom: 0;">Search</button>
+
+  <div class="search">
+    <input class="search__input" name="{{ field.name }}" type="search"
+    {% if field.options.hint %}aria-describedby="search-hint"{% endif %} value="{{ field.value }}" />
+    <button type="submit" class="search__button">Search</button>
+  </div>
+
 </div>
 {% endmacro %}

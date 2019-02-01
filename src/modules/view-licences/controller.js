@@ -3,12 +3,12 @@
  * @module controllers/licences
  */
 
-/* eslint "new-cap" : ["warn", { "newIsCap": true }] */
 const Boom = require('boom');
 const { get } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
+const licenceConnector = require('../../lib/connectors/water-service/licences');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -44,6 +44,13 @@ async function getLicences (request, reply) {
   return baseGetLicences(request, reply);
 }
 
+const userCanViewReturns = (permissions, companyEntityId) => {
+  const canViewReturns = get(permissions, `companies.${companyEntityId}.returns.read`) ||
+    get(permissions, 'returns.read');
+
+  return canViewReturns;
+};
+
 /**
  * View details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -56,29 +63,24 @@ async function getLicenceDetail (request, reply) {
   const { licence_id: documentHeaderId } = request.params;
 
   try {
-    const {
-      documentHeader,
-      viewData,
-      gaugingStations
-    } = await loadLicenceData(entityId, documentHeaderId);
+    const { documentHeader, viewData, gaugingStations } = await loadLicenceData(entityId, documentHeaderId);
 
-    const canViewReturns = get(request.permissions, `companies.${documentHeader.company_entity_id}.returns.read`) ||
-    get(request.permissions, 'returns.read');
-
+    const canViewReturns = userCanViewReturns(request.permissions, documentHeader.company_entity_id);
+    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentHeaderId);
     documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
-    const { view } = request;
 
     return reply.view(request.config.view, {
-      ...view,
+      ...request.view,
       canViewReturns,
       gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
-      crmData: documentHeader
+      crmData: documentHeader,
+      primaryUser
     });
   } catch (error) {
     throw errorMapper(error);

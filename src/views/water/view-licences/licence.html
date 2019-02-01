@@ -5,21 +5,15 @@
 {{#if isAdmin }}
   {{#unless crmData.company_entity_id}}
     {{#if crmData.verifications}}
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <div class="panel panel-border-wide alert-default big-space">
-              {{#equal crmData.verifications.length 1}}
-              We have sent a security code by post.
+      <div class="grid-row">
+        <div class="column-full">
+          <div class="panel panel-border-wide alert-default">
+            We have sent {{crmData.verifications.length}} security code{{#notEqual crmData.verifications.length  1}}s{{/notEqual}} by post.
+            <ul>
               {{#each crmData.verifications }}
-                <br>The code is <strong class="bold-small">{{verification_code}}</strong>
+                <li class="spaceless">{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong></li>
               {{/each}}
-
-              {{else}}
-              We have sent {{crmData.verifications.length}} security codes by post
-              {{#each crmData.verifications }}
-                <br>{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong>
-              {{/each}}
-              {{/equal}}
+            </ul>
         </div>
       </div>
     </div>
@@ -27,13 +21,29 @@
   {{/unless}}
 {{/if}}
 
-  {{#if crmData.document_name }}
   <h1 class="heading-large">
-    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
-    {{ crmData.document_name }}
+    {{#if crmData.document_name }}
+      <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+      {{ crmData.document_name }}
+    {{else}}
+      {{#if isAdmin }}
+        {{#unless primaryUser }}
+          <span class="heading-secondary">Unregistered licence</span>
+        {{/unless}}
+      {{/if}}
+      Licence number {{ licenceData.licenceNumber }}
+    {{/if}}
   </h1>
-  {{else}}
-  <h1 class="heading-large">Licence number {{ licenceData.licenceNumber }}</h1>
+
+  {{#if isAdmin }}
+    {{#if primaryUser }}
+      <p class="govuk-body">
+        Registered to&nbsp;
+        <a href="/admin/user/{{primaryUser.userId}}/status" class="govuk-link">
+          {{primaryUser.userName}}
+        </a>
+      </p>
+    {{/if}}
   {{/if}}
 
   <p>Current licence version started on {{ formatDate licenceData.currentVersionEffectiveStartDate }}
@@ -48,7 +58,6 @@
   <div class="data-row">
     <div class="data-row__param">Licence name</div>
     <div class="data-row__value">
-
 
       <!-- Current licence name -->
       {{#if crmData.document_name }}
@@ -65,11 +74,8 @@
     </div>
   </div>
 
-
   {{>licence-details }}
-
 
 </main>
 {{> footerjs}}
-
 {{> debug}}

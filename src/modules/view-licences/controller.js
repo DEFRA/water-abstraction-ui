@@ -4,14 +4,16 @@
  */
 
 const Boom = require('boom');
-const { get } = require('lodash');
+const { get, partial } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
 const { hasPermission } = require('../../lib/permissions');
 
-const isInternalUser = permissions => hasPermission('admin.defra', permissions);
+const isInternalUser = partial(hasPermission, 'admin.defra');
+
+// permissions => hasPermission('admin.defra', permissions);
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -179,7 +181,8 @@ const getLicence = async (request, h) => {
     ...request.view,
     documentId,
     licence,
-    isInternal: isInternalUser(request.permissions)
+    isInternal: isInternalUser(request.permissions),
+    pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`
   };
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
 };

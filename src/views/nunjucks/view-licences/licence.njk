@@ -1,12 +1,14 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "./tabs/macro.njk" import govukTabs %}
-
+{% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      {% if not primaryUser %}
+      {{ verificationsAlert(verifications) }}
+
+      {% if isInternal and not primaryUser %}
         {{ title(licence.licenceNumber, 'Unregistered licence') }}
       {% else %}
         {{ title(licence.licenceNumber, licence.documentName ) }}

@@ -3,10 +3,10 @@
 {% endmacro %}
 
 {% macro periods(periods, link) %}
-{% if licence.abstractionPeriods.length %}
+{% if periods.length %}
 <div class="govuk-summary-list__row">
   <dt class="govuk-summary-list__key">
-    {{ 'Period' | pluralize(licence.abstractionPeriods) }} of abstraction
+    {{ 'Period' | pluralize(periods) }} of abstraction
   </dt>
   <dd class="govuk-summary-list__value">
     {% if periods.length > 5 %}

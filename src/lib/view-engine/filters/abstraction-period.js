@@ -7,8 +7,13 @@ const moment = require('moment');
  * @return {String}     - readable day and month string
  */
 const abstractionPeriod = (str) => {
-  const [day, month] = str.split('/');
-  const m = moment().month(month - 1).date(day);
+  if (str === null) {
+    return null;
+  }
+  const m = moment(str, 'D/M');
+  if (!m.isValid()) {
+    throw new Error(`Invalid abstraction period ${str} in abstractionPeriod filter`);
+  }
   return m.format('D MMMM');
 };
 

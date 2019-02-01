@@ -9,6 +9,9 @@ const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
+const { hasPermission } = require('../../lib/permissions');
+
+const isInternalUser = permissions => hasPermission('admin.defra', permissions);
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -51,13 +54,6 @@ const userCanViewReturns = (permissions, companyEntityId) => {
   return canViewReturns;
 };
 
-/**
- * View details for a single licence
- * @param {Object} request - the HAPI HTTP request
- * @param {String} request.params.licence_id - CRM document header GUID
- * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
- * @param {Object} reply - HAPI reply interface
- */
 async function getLicenceDetail (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
   const { licence_id: documentHeaderId } = request.params;
@@ -166,9 +162,32 @@ async function getLicenceGaugingStation (request, reply) {
   }
 };
 
+/**
+ * Tabbed view details for a single licence
+ * @param {Object} request - the HAPI HTTP request
+ * @param {String} request.params.licence_id - CRM document header GUID
+ * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
+ * @param {Object} reply - HAPI reply interface
+ */
+const getLicence = async (request, h) => {
+  const { licence_id: documentId } = request.params;
+  const licence = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
+  if (!licence) {
+    throw Boom.notFound(`Document ${documentId} not be found`);
+  }
+  const view = {
+    ...request.view,
+    documentId,
+    licence,
+    isInternal: isInternalUser(request.permissions)
+  };
+  return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
+};
+
 module.exports = {
   getLicences,
   getLicenceDetail,
   postLicenceRename,
-  getLicenceGaugingStation
+  getLicenceGaugingStation,
+  getLicence
 };

@@ -1,12 +1,14 @@
 const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
+const { preAccessControl } = require('./pre-handlers');
 
 const getLicence = {
   method: 'GET',
   path: '/licences/{licence_id}',
-  handler: controller.getLicenceDetail,
+  handler: controller.getLicence,
   config: {
+    pre: [{ method: preAccessControl }],
     description: 'View a single licence',
     validate: {
       params: {

@@ -1,0 +1,61 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./tabs/macro.njk" import govukTabs %}
+
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% if not primaryUser %}
+        {{ title(licence.licenceNumber, 'Unregistered licence') }}
+      {% else %}
+        {{ title(licence.licenceNumber, licence.documentName ) }}
+      {% endif %}
+
+      {% if primaryUser %}
+      <p>Registered to {{ primaryUser.userName | urlize | safe }}</p>
+      {% endif %}
+
+      {% set summaryHtml %}
+        {% include "nunjucks/view-licences/tabs/summary.njk" %}
+      {% endset %}
+
+      {% set returnsHtml %}
+        <h2 class="govuk-heading-m">Returns</h2>
+      {% endset %}
+
+      {% set communicationsHtml %}
+        <h2 class="govuk-heading-m">Communications</h2>
+      {% endset %}
+
+      {{ govukTabs({
+        items: [
+          {
+            label: "Summary",
+            id: "summary",
+            panel: {
+              html: summaryHtml
+            }
+          },
+          {
+            label: "Returns",
+            id: "returns",
+            panel: {
+              html: returnsHtml
+            }
+          },
+          {
+            label: "Communications",
+            id: "communications",
+            panel: {
+              html: communicationsHtml
+            }
+          }
+        ]
+      }) }}
+
+
+
+    </div>
+  </div>
+{% endblock %}

@@ -30,10 +30,13 @@ const getLicencePrimaryUserByDocumentId = async documentId => {
   }
 };
 
+const getLicenceSummaryByDocumentId = partialRight(get, 'summary');
+
 module.exports = {
   getLicenceByDocumentId,
   getLicenceConditionsByDocumentId,
   getLicencePointsByDocumentId,
   getLicenceUsersByDocumentId,
-  getLicencePrimaryUserByDocumentId
+  getLicencePrimaryUserByDocumentId,
+  getLicenceSummaryByDocumentId
 };

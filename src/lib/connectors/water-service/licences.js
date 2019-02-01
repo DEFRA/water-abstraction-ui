@@ -18,11 +18,8 @@ const getLicenceUsersByDocumentId = partialRight(get, 'users');
 const getLicencePrimaryUserByDocumentId = async documentId => {
   try {
     const userResponse = await getLicenceUsersByDocumentId(documentId);
-
-    if (!userResponse.error) {
-      const users = userResponse.data || [];
-      return users.find(user => user.roles.includes('primary_user'));
-    }
+    const users = userResponse.data || [];
+    return users.find(user => user.roles.includes('primary_user'));
   } catch (error) {
     if (error.statusCode !== 404) {
       throw error;

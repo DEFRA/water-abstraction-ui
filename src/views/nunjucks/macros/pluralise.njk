@@ -1,0 +1,3 @@
+{% macro pluralise(collection, singular, plural) %}
+  {{ singular if collection.length === 1 else plural }}
+{% endmacro %}

@@ -4,7 +4,7 @@
  */
 
 const Boom = require('boom');
-const { get, partial } = require('lodash');
+const { trim, get, partial } = require('lodash');
 
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
@@ -16,6 +16,7 @@ const { getLicenceReturns } = require('./lib/licence-returns');
 const { mapReturns } = require('../returns/lib/helpers');
 
 const isInternalUser = partial(hasPermission, 'admin.defra');
+const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -191,10 +192,65 @@ const getLicence = async (request, h) => {
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
 };
 
+const validateMessageAccess = (request, companyId) => {
+  const isAdmin = request.permissions.hasPermission('admin.defra');
+  const entityCompanies = request.entityRoles.map(role => role.company_entity_id);
+
+  return isAdmin || entityCompanies.includes(companyId);
+};
+
+const getAddressParts = notification => {
+  return [
+    'addressLine1',
+    'addressLine2',
+    'addressLine3',
+    'addressLine4',
+    'addressLine5',
+    'postcode'
+  ].reduce((acc, part) => {
+    const addressPart = trim(notification.address[part]);
+    return addressPart ? [...acc, addressPart] : acc;
+  }, []);
+};
+
+const validateLicenceCommunicationResponses = (request, licence) => {
+  if (!licence) {
+    return Boom.notFound('Document not associated with communication');
+  }
+
+  if (!validateMessageAccess(request, licence.companyEntityId)) {
+    return Boom.forbidden();
+  }
+};
+
+const getLicenceCommunication = async (request, h) => {
+  const { communicationId, documentId } = request.params;
+  const response = await communicationsConnector.getCommunication(communicationId);
+
+  const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
+
+  const validationError = validateLicenceCommunicationResponses(request, licence);
+  if (validationError) return validationError;
+
+  const viewContext = {
+    ...request.view,
+    ...{ pageTitle: (licence.documentName || licence.licenceRef) + ', message review' },
+    licence,
+    messageType: response.data.evt.name,
+    sentDate: response.data.evt.createdDate,
+    messageContent: response.data.notification.plainText,
+    back: `${request.isAdmin ? '/admin' : ''}/licences/${documentId}#communications`,
+    recipientAddressParts: getAddressParts(response.data.notification)
+  };
+
+  return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });
+};
+
 module.exports = {
   getLicences,
   getLicenceDetail,
   postLicenceRename,
   getLicenceGaugingStation,
-  getLicence
+  getLicence,
+  getLicenceCommunication
 };

@@ -1,10 +1,9 @@
 {% from "details-when.njk" import detailsWhen %}
-{% from "pluralise.njk" import pluralise %}
 
 {% macro companyLicences(licences) %}
   {% if licences.length > 0 %}
     <h3 class="govuk-heading-m govuk-!-margin-0">
-      {{ licences | length }} {{ pluralise(licences, 'licence', 'licences') }}
+      {{ licences | length }} {{ 'licence' | pluralize(licences) }}
     </h3>
     {% call detailsWhen(licences.length, 5, 'View licences') -%}
       <table class="govuk-table">

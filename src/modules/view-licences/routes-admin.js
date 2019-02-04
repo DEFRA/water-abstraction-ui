@@ -99,6 +99,11 @@ const getLicenceGaugingStationAdmin = {
   path: '/admin/licences/{licence_id}/station/{gauging_station}'
 };
 
+const getLicenceCommunication = {
+  ...externalRoutes.getLicenceCommunication,
+  path: '/admin' + externalRoutes.getLicenceCommunication.path
+};
+
 module.exports = {
   getLicenceAdmin,
   getLicenceRenameAdmin,
@@ -107,5 +112,6 @@ module.exports = {
   getLicencePurposesAdmin,
   getLicencePointsAdmin,
   getLicenceConditionsAdmin,
-  getLicenceGaugingStationAdmin
+  getLicenceGaugingStationAdmin,
+  getLicenceCommunication
 };

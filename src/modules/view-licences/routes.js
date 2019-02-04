@@ -194,6 +194,26 @@ const getLicenceGaugingStation = {
   }
 };
 
+const getLicenceCommunication = {
+  method: 'GET',
+  path: '/licences/{documentId}/communications/{communicationId}',
+  handler: controller.getLicenceCommunication,
+  config: {
+    description: 'Look at the content of a message sent to the user regarding the licence',
+    validate: {
+      params: {
+        communicationId: VALID_GUID,
+        documentId: VALID_GUID
+      }
+    },
+    plugins: {
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    }
+  }
+};
+
 module.exports = {
   getLicences: {
     method: 'GET',
@@ -234,5 +254,6 @@ module.exports = {
   getLicenceConditions,
   getLicencePoints,
   getLicencePurposes,
-  getLicenceGaugingStation
+  getLicenceGaugingStation,
+  getLicenceCommunication
 };

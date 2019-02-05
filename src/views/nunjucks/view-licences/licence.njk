@@ -1,0 +1,63 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./tabs/macro.njk" import govukTabs %}
+{% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
+{% from "badge.njk" import badge %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ verificationsAlert(verifications) }}
+
+      {% if isInternal and not primaryUser %}
+        {{ title(licence.licenceNumber, 'Unregistered licence') }}
+      {% else %}
+        {{ title('Licence number ' + licence.licenceNumber, licence.documentName ) }}
+      {% endif %}
+
+      {% if primaryUser %}
+      <p>Registered to {{ primaryUser.userName | urlize | safe }}</p>
+      {% endif %}
+
+      {% set summaryHtml %}
+        {% include "nunjucks/view-licences/tabs/summary.njk" %}
+      {% endset %}
+
+      {% set returnsHtml %}
+        {% include "nunjucks/view-licences/tabs/returns.njk" %}
+      {% endset %}
+
+      {% set communicationsHtml %}
+        {% include "nunjucks/view-licences/tabs/communications.njk" %}
+      {% endset %}
+
+      {{ govukTabs({
+        items: [
+          {
+            label: "Summary",
+            id: "summary",
+            panel: {
+              html: summaryHtml
+            }
+          },
+          {
+            label: "Returns",
+            id: "returns",
+            panel: {
+              html: returnsHtml
+            }
+          },
+          {
+            label: "Communications",
+            id: "communications",
+            panel: {
+              html: communicationsHtml
+            }
+          }
+        ]
+      }) }}
+
+
+
+    </div>
+  </div>
+{% endblock %}

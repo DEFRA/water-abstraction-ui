@@ -4,5 +4,8 @@ module.exports = {
   ...require('./form'),
   ...require('./merge'),
   ...require('./most-significant-entity-role'),
-  ...require('./query-string')
+  ...require('./query-string'),
+  ...require('./pluralize'),
+  ...require('./abstraction-period'),
+  ...require('./fixed')
 };

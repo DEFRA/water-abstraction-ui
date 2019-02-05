@@ -1,11 +1,13 @@
 const externalRoutes = require('./routes');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
+const { preInternalView } = require('./pre-handlers');
 
 const getLicenceAdmin = {
   ...externalRoutes.getLicence,
   config: {
     ...externalRoutes.getLicence.config,
+    pre: [{ method: preInternalView }],
     auth: {
       scope: allAdmin
     }

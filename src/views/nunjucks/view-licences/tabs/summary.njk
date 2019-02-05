@@ -9,6 +9,7 @@
 {% from "nunjucks/view-licences/macros/points.njk" import points %}
 {% from "nunjucks/view-licences/macros/purposes.njk" import purposes %}
 {% from "nunjucks/view-licences/macros/sources-of-supply.njk" import sourcesOfSupply %}
+{% from "nunjucks/view-licences/macros/gauging-stations.njk" import gaugingStations %}
 
 <h2 class="govuk-heading-m">Summary</h2>
 
@@ -87,6 +88,8 @@
   </a>
   {% endset %}
 
+  {% set baseUrl %}{{ '/admin' if isInternal }}/licences/{{ documentId }}{% endset %}
+  {{ gaugingStations(licence.gaugingStations, baseUrl) }}
   {{ conditions(licence.conditions, link) }}
   {{ amounts(licence.aggregateQuantity) }}
 </dl>

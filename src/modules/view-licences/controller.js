@@ -5,15 +5,17 @@
 
 const Boom = require('boom');
 const { get, partial } = require('lodash');
+
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
 const { hasPermission } = require('../../lib/permissions');
+const { getLicenceReturns } = require('./lib/licence-returns');
+
+const { mapReturns } = require('../returns/lib/helpers');
 
 const isInternalUser = partial(hasPermission, 'admin.defra');
-
-// permissions => hasPermission('admin.defra', permissions);
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -133,35 +135,31 @@ async function getLicenceGaugingStation (request, reply) {
   const { measure: mode } = request.query;
   const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
-  try {
-    // Load licence data
-    const licenceData = await loadLicenceData(entityId, documentHeaderId);
+  // Load licence data
+  const licenceData = await loadLicenceData(entityId, documentHeaderId);
 
-    // Validate - check that the requested station reference is in licence metadata
-    if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
-      throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
-    }
-
-    // Load river level data
-    const { hofTypes } = licenceData.viewData;
-    const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
-
-    const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
-
-    const viewContext = {
-      ...request.view,
-      ...licenceData,
-      riverLevel,
-      measure,
-      ...riverLevelFlags(riverLevel, measure, hofTypes),
-      stationReference: gaugingStation,
-      pageTitle: `Gauging station for ${customName || licenceNumber}`
-    };
-
-    return reply.view('water/view-licences/gauging-station', viewContext);
-  } catch (error) {
-    reply(errorMapper(error));
+  // Validate - check that the requested station reference is in licence metadata
+  if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
+    throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
   }
+
+  // Load river level data
+  const { hofTypes } = licenceData.viewData;
+  const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+
+  const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
+
+  const viewContext = {
+    ...request.view,
+    ...licenceData,
+    riverLevel,
+    measure,
+    ...riverLevelFlags(riverLevel, measure, hofTypes),
+    stationReference: gaugingStation,
+    pageTitle: `Gauging station for ${customName || licenceNumber}`
+  };
+
+  return reply.view('water/view-licences/gauging-station', viewContext);
 };
 
 /**
@@ -173,14 +171,20 @@ async function getLicenceGaugingStation (request, reply) {
  */
 const getLicence = async (request, h) => {
   const { licence_id: documentId } = request.params;
-  const licence = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
+  const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
   if (!licence) {
     throw Boom.notFound(`Document ${documentId} not be found`);
   }
+
+  const returns = await getLicenceReturns(licence.licenceNumber, isInternalUser(request.permissions));
+  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
+
   const view = {
     ...request.view,
     documentId,
     licence,
+    returns: mapReturns(returns, request),
+    messages,
     isInternal: isInternalUser(request.permissions),
     pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`
   };

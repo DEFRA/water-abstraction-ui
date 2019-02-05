@@ -1,7 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "./tabs/macro.njk" import govukTabs %}
 {% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
-
+{% from "badge.njk" import badge %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -11,7 +11,7 @@
       {% if isInternal and not primaryUser %}
         {{ title(licence.licenceNumber, 'Unregistered licence') }}
       {% else %}
-        {{ title(licence.licenceNumber, licence.documentName ) }}
+        {{ title('Licence number ' + licence.licenceNumber, licence.documentName ) }}
       {% endif %}
 
       {% if primaryUser %}
@@ -23,11 +23,11 @@
       {% endset %}
 
       {% set returnsHtml %}
-        <h2 class="govuk-heading-m">Returns</h2>
+        {% include "nunjucks/view-licences/tabs/returns.njk" %}
       {% endset %}
 
       {% set communicationsHtml %}
-        <h2 class="govuk-heading-m">Communications</h2>
+        {% include "nunjucks/view-licences/tabs/communications.njk" %}
       {% endset %}
 
       {{ govukTabs({

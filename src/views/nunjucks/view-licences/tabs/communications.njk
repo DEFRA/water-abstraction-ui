@@ -1,12 +1,16 @@
 {% macro messageRow(message, isInternal) %}
 <tr class="govuk-table__row">
   <td class="govuk-table__cell" scope="row">
-    <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/communications/{{ message.notificationId }}">
+    {% if message.isPdf %}
       {{ message.notificationType }}
-    </a>
+    {% else %}
+      <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/communications/{{ message.notificationId }}">
+        {{ message.notificationType }}
+      </a>
+    {% endif %}
   </td>
   <td class="govuk-table__cell">
-    {{ message.sent | date }}
+    {{ message.date | date }}
   </td>
   {% if isInternal %}
   <td class="govuk-table__cell">

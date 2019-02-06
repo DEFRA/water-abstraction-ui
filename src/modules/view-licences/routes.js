@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
-const { preAccessControl, preLoadDocument } = require('./pre-handlers');
+const { preAccessControl } = require('./pre-handlers');
 
 const getLicence = {
   method: 'GET',
@@ -194,6 +194,26 @@ const getLicenceGaugingStation = {
   }
 };
 
+const getLicenceCommunication = {
+  method: 'GET',
+  path: '/licences/{documentId}/communications/{communicationId}',
+  handler: controller.getLicenceCommunication,
+  config: {
+    description: 'Look at the content of a message sent to the user regarding the licence',
+    validate: {
+      params: {
+        communicationId: VALID_GUID,
+        documentId: VALID_GUID
+      }
+    },
+    plugins: {
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    }
+  }
+};
+
 module.exports = {
   getLicences: {
     method: 'GET',
@@ -234,5 +254,6 @@ module.exports = {
   getLicenceConditions,
   getLicencePoints,
   getLicencePurposes,
-  getLicenceGaugingStation
+  getLicenceGaugingStation,
+  getLicenceCommunication
 };

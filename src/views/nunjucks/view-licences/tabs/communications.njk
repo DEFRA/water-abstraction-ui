@@ -25,6 +25,8 @@
 
 <h2 class="govuk-heading-m">Communications</h2>
 
+{% if messages.length %}
+
 <table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -42,3 +44,7 @@
     {% endfor %}
   </tbody>
 </table>
+
+{% else %}
+<p>No communications for this licence.</p>
+{% endif %}

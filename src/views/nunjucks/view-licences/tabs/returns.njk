@@ -44,4 +44,7 @@
   </tbody>
 </table>
 
+
+{% if hasMoreReturns %}
 <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/returns">View all returns</a>
+{% endif %}

@@ -23,9 +23,9 @@ const getLicenceReturns = async (licenceNumber, isInternal) => {
     perPage: 10,
     page: 1
   };
-  const { error, data } = await returns.returns.findMany(filter, sort, pagination);
-  throwIfError(error);
-  return data;
+  const result = await returns.returns.findMany(filter, sort, pagination);
+  throwIfError(result.error);
+  return result;
 };
 
 module.exports = {

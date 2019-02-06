@@ -230,7 +230,7 @@ const getLicenceCommunication = async (request, h) => {
   const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
 
   const validationError = validateLicenceCommunicationResponses(request, licence);
-  if (validationError) return validationError;
+  if (validationError) throw validationError;
 
   const viewContext = {
     ...request.view,

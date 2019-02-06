@@ -1,4 +1,4 @@
-const { expect } = require('code');
+const { expect, fail } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
@@ -140,9 +140,14 @@ experiment('getLicenceCommunication', () => {
 
   test('returns a 404 if the document id is not related to the notification', async () => {
     request.params.documentId = 'nope';
-    const response = await controller.getLicenceCommunication(request, h);
-    expect(response.isBoom).to.be.true();
-    expect(response.output.statusCode).to.equal(404);
+
+    try {
+      await controller.getLicenceCommunication(request, h);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(404);
+    }
   });
 
   test('returns 403 if user not associated with any of the notification companies', async () => {
@@ -153,9 +158,13 @@ experiment('getLicenceCommunication', () => {
       company_entity_id: 'nope'
     }];
 
-    const response = await controller.getLicenceCommunication(request, h);
-    expect(response.isBoom).to.be.true();
-    expect(response.output.statusCode).to.equal(403);
+    try {
+      await controller.getLicenceCommunication(request, h);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(403);
+    }
   });
 
   test('an admin user has access without company association', async () => {

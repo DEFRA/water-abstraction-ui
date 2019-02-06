@@ -2,6 +2,8 @@ const externalRoutes = require('./routes');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
 const { preInternalView } = require('./pre-handlers');
+const controller = require('./controller');
+const { VALID_GUID } = require('../../lib/validators');
 
 const getLicenceAdmin = {
   ...externalRoutes.getLicence,
@@ -99,6 +101,29 @@ const getLicenceGaugingStationAdmin = {
   path: '/admin/licences/{licence_id}/station/{gauging_station}'
 };
 
+const getLicenceCommunication = {
+  method: 'GET',
+  path: '/admin/licences/{documentId}/communications/{communicationId}',
+  handler: controller.getLicenceCommunication,
+  config: {
+    description: 'Look at the content of a message sent to the user regarding the licence',
+    validate: {
+      params: {
+        communicationId: VALID_GUID,
+        documentId: VALID_GUID
+      }
+    },
+    plugins: {
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    },
+    auth: {
+      scope: allAdmin
+    }
+  }
+};
+
 module.exports = {
   getLicenceAdmin,
   getLicenceRenameAdmin,
@@ -107,5 +132,6 @@ module.exports = {
   getLicencePurposesAdmin,
   getLicencePointsAdmin,
   getLicenceConditionsAdmin,
-  getLicenceGaugingStationAdmin
+  getLicenceGaugingStationAdmin,
+  getLicenceCommunication
 };

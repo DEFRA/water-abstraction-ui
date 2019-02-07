@@ -1,15 +1,13 @@
 const Boom = require('boom');
-const { find } = require('lodash');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
 
-const { getViewData, getRedirectPath } = require('../lib/helpers');
+const { getViewData } = require('../lib/helpers');
 const { handleRequest, getValues } = require('../../../lib/forms');
 const { applyStatus, applyUserDetails, applyUnderQuery } = require('../lib/return-helpers');
-const { findLatestReturnsByFormatId } = require('../lib/api-helpers');
 
 const {
-  internalRoutingForm, selectLicenceForm
+  internalRoutingForm
 } = require('../forms/');
 
 const {
@@ -21,62 +19,8 @@ const {
 
 const {
   logReceiptForm,
-  logReceiptSchema,
-  searchForm,
-  searchApplyNoReturnError
+  logReceiptSchema
 } = require('../forms/');
-
-/**
- * Search for return ID
- */
-const getSearch = async (request, h) => {
-  const isSubmitted = 'query' in request.query;
-  let form = isSubmitted ? handleRequest(searchForm(request), request) : searchForm(request);
-
-  if (form.isValid) {
-    const { query } = getValues(form);
-
-    const returns = await findLatestReturnsByFormatId(query);
-
-    if (returns.length) {
-      const path = getRedirectPath(returns[0], returns.length > 1);
-      return h.redirect(path);
-    }
-
-    // Apply error state
-    form = searchApplyNoReturnError(form);
-  }
-
-  return h.view('water/returns/internal/search', {
-    ...request.view,
-    form
-  });
-};
-
-/**
- * Where a format ID matches multiple returns, this page allows the
- * user to select the licence they wish to view
- */
-const getSelectLicence = async (request, h) => {
-  const { formatId } = request.query;
-  const isSubmitted = 'isSubmitted' in request.query;
-  const returns = await findLatestReturnsByFormatId(formatId);
-
-  let form = selectLicenceForm(returns);
-  form = isSubmitted ? handleRequest(form, request) : form;
-
-  if (form.isValid) {
-    const { returnId } = getValues(form);
-    const selected = find(returns, {return_id: returnId});
-    const path = getRedirectPath(selected);
-    return h.redirect(path);
-  }
-
-  return h.view('water/returns/internal/select-licence', {
-    ...request.view,
-    form
-  });
-};
 
 /**
  * For internal users, routing page to decide what to do with return
@@ -220,8 +164,6 @@ const getQueryLogged = async (request, h) => {
 };
 
 module.exports = {
-  getSearch,
-  getSelectLicence,
   getInternalRouting,
   postInternalRouting,
   getLogReceipt,

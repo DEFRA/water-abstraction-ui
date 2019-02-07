@@ -1,26 +1,42 @@
-const rp = require('request-promise-native').defaults({ proxy: null, strictSSL: false });
+const serviceRequest = require('../service-request');
+const { partialRight } = require('lodash');
 
 const get = (documentId, tail) => {
-  const url = `${process.env.WATER_URI}/documents/${documentId}/licence`;
-  const options = {
-    method: 'GET',
-    uri: tail ? `${url}/${tail}` : url,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    },
-    json: true
-  };
-  return rp(options);
+  const baseUrl = `${process.env.WATER_URI}/documents/${documentId}/licence`;
+  const url = tail ? `${baseUrl}/${tail}` : baseUrl;
+  return serviceRequest.get(url);
 };
 
 const getLicenceByDocumentId = documentId => get(documentId);
 
-const getLicenceConditionsByDocumentId = documentId => get(documentId, 'conditions');
+const getLicenceConditionsByDocumentId = partialRight(get, 'conditions');
 
-const getLicencePointsByDocumentId = documentId => get(documentId, 'points');
+const getLicencePointsByDocumentId = partialRight(get, 'points');
+
+const getLicenceUsersByDocumentId = partialRight(get, 'users');
+
+const getLicencePrimaryUserByDocumentId = async documentId => {
+  try {
+    const userResponse = await getLicenceUsersByDocumentId(documentId);
+    const users = userResponse.data || [];
+    return users.find(user => user.roles.includes('primary_user'));
+  } catch (error) {
+    if (error.statusCode !== 404) {
+      throw error;
+    }
+  }
+};
+
+const getLicenceSummaryByDocumentId = partialRight(get, 'summary');
+
+const getLicenceCommunicationsByDocumentId = partialRight(get, 'communications');
 
 module.exports = {
   getLicenceByDocumentId,
   getLicenceConditionsByDocumentId,
-  getLicencePointsByDocumentId
+  getLicencePointsByDocumentId,
+  getLicenceUsersByDocumentId,
+  getLicencePrimaryUserByDocumentId,
+  getLicenceSummaryByDocumentId,
+  getLicenceCommunicationsByDocumentId
 };

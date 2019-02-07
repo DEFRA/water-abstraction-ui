@@ -5,6 +5,13 @@ $govuk-global-styles: true;
 @import "govuk-frontend/all";
 
 // Patterns that aren't in Frontend
+@import "blocks/alert";
+@import "blocks/badge";
 @import "blocks/subnav";
 @import "blocks/data-row";
-@import "blocks/table";
+@import "blocks/pagination";
+@import "blocks/link";
+@import "blocks/phone";
+@import "blocks/search";
+@import "blocks/text";
+@import "blocks/message-preview";

@@ -1,0 +1,10 @@
+.message-preview {
+  background-color: govuk-colour("grey-4");
+  border: 5px solid  $govuk-secondary-text-colour;
+  padding: 2rem;
+}
+
+.message-preview h1 {
+  font-size: 1.1875rem;
+  margin: 0;
+}

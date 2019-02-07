@@ -1,0 +1,177 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/widget.njk" import formWidget %}
+{% from "forms/header.njk" import formHeader %}
+{% from "forms/footer.njk" import formFooter %}
+
+{% from "paginate.njk" import paginate %}
+{% from "badge.njk" import badge %}
+{% from "table/macro.njk" import govukTable %}
+
+
+{% macro returnLink(return) %}
+{% if return.path %}
+<a href="{{ return.path }}">
+  <span class="govuk-visually-hidden">
+    {% if return.isEdit %}Edit{% else %}View{% endif %} return
+  </span>
+  {{ return.return_requirement }}
+  <span class="govuk-visually-hidden">
+    for licence {{ return.licence_ref }}
+  </span>
+</a>
+{% else %}
+<span class="govuk-visually-hidden">Return</span>
+{{ return.return_requirement }}
+<span class="govuk-visually-hidden">
+  for licence {{ return.licence_ref }}
+</span>
+{% endif %}
+{% endmacro %}
+
+
+{% macro mobileLicence(doc) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    {% if doc.documentName %}
+      <span class="govuk-caption-m link--no-underline">{{ doc.documentName }}</span>
+    {% endif %}
+    <a href="/admin/licences/{{ doc.documentId }}">
+      {{ doc.licenceNumber }}
+    </a>
+  </h3>
+  <p>{{ doc.licenceHolder }}</p>
+
+</div>
+{% endmacro %}
+
+
+{% macro mobileReturn(return) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    <span class="govuk-caption-m">{{ return.region }}</span>
+    {{ returnLink(return) }}
+  </h3>
+  <p>Licence number {{ return.licence_ref }}</p>
+  {{ badge(return.badge.text, return.badge.status) }}
+</div>
+{% endmacro %}
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+  {{ formHeader(form)}}
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--xl" for="query">
+          <span class="govuk-caption-l">Search</span>
+          Licences, users and returns
+        </label>
+      </h1>
+    </legend>
+    {{ formWidget(form.fields[0], form) }}
+  </fieldset>
+  {{ formFooter(form)}}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% if noResults %}
+      <p>No results found.<p>
+      {% endif %}
+
+
+      <!-- User accounts -->
+      {% if users %}
+      <h2 class="govuk-heading-m">Users</h2>
+      <ul class="govuk-list">
+        {% for user in users %}
+        <li>
+          <a class="govuk-link" href="/admin/user/{{ user.userId }}/status">{{ user.email }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <!-- Returns -->
+      {% if returns %}
+      <h2 class="govuk-heading-m">Returns</h2>
+
+      {% for return in returns %}
+        {{ mobileReturn(return) }}
+      {% endfor %}
+
+      <div class="phone--hide">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Return reference</th>
+              <th class="govuk-table__header" scope="col">Licence number</th>
+              <th class="govuk-table__header" scope="col">Region</th>
+              <th class="govuk-table__header" scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for return in returns %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                {{ returnLink(return) }}
+              </td>
+              <td class="govuk-table__cell">{{ return.licence_ref }}</td>
+              <td class="govuk-table__cell">{{ return.region }}</td>
+              <td class="govuk-table__cell">{{ badge(return.badge.text, return.badge.status) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% endif %}
+
+      <!-- Licences -->
+      {% if documents %}
+      <h2 class="govuk-heading-m">Licences</h2>
+
+      {% for doc in documents %}
+      {{ mobileLicence(doc) }}
+      {% endfor %}
+
+      <table class="govuk-table phone--hide">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Licence number</th>
+            <th class="govuk-table__header" scope="col">Licence name</th>
+            <th class="govuk-table__header" scope="col">Licence holder</th>
+            <th class="govuk-table__header" scope="col">End date</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for doc in documents %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <a href="/admin/licences/{{ doc.documentId }}">{{ doc.licenceNumber }}</a>
+            </td>
+            <td class="govuk-table__cell">{{ doc.documentName }}</td>
+            <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
+            <td class="govuk-table__cell">{{ doc.expires | date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+
+
+
+      <!-- Pagination -->
+      {{ paginate(pagination, '/admin/licences', { query : form.fields[0].value }) }}
+
+
+
+</div>
+</div>
+
+
+{% endblock %}

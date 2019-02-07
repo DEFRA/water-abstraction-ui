@@ -10,11 +10,6 @@ const allAdmin = constants.scope.allAdmin;
 const adminRoutes = require('../../../src/modules/view-licences/routes-admin');
 
 lab.experiment('view-licences - admin routes', () => {
-  lab.test('getLicencesAdmin has admin auth scopes', async () => {
-    const route = adminRoutes.getLicencesAdmin;
-    expect(route.config.auth.scope).to.equal(allAdmin);
-  });
-
   lab.test('getLicenceAdmin has admin auth scopes', async () => {
     const route = adminRoutes.getLicenceAdmin;
     expect(route.config.auth.scope).to.equal(allAdmin);

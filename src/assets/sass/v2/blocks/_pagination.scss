@@ -1,0 +1,41 @@
+.pagination {
+  font-family: $govuk-font-family;
+  @include govuk-font($size: 19);
+  position: relative;
+}
+
+.pagination__current-page {
+  text-align: center;
+  color:  $govuk-secondary-text-colour;
+}
+
+.pagination__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  top: 0;
+}
+
+.pagination__previous, .pagination__next {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  display: block;
+}
+.pagination__previous {
+  left: 0;
+}
+.pagination__next {
+  right: 0;
+}
+.pagination__link {
+  text-decoration: none;
+}
+.pagination__link:hover {
+  text-decoration: underline;
+}

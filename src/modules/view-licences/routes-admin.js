@@ -1,47 +1,15 @@
-const Joi = require('joi');
-const admin = require('./admin');
-const { VALID_LICENCE_QUERY } = require('../../lib/validators');
 const externalRoutes = require('./routes');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
-
-const getLicencesAdmin = {
-  method: 'GET',
-  path: '/admin/licences',
-  handler: admin.getLicences,
-  config: {
-    auth: {
-      scope: allAdmin
-    },
-    description: 'Admin: view list of licences with facility to sort/filter',
-    validate: {
-      query: VALID_LICENCE_QUERY
-    },
-    plugins: {
-      viewContext: {
-        pageTitle: 'Licences',
-        customTitle: 'Water abstraction or impoundment licences',
-        enableSearch: true,
-        showEmailFilter: true,
-        activeNavLink: 'view'
-      },
-      formValidator: {
-        query: {
-          emailAddress: Joi.string().email().allow(''),
-          licenceNumber: Joi.string().allow(''),
-          sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),
-          direction: Joi.number().valid(1, -1).default(1),
-          page: Joi.number().allow('').min(1).default(1)
-        }
-      }
-    }
-  }
-};
+const { preInternalView } = require('./pre-handlers');
+const controller = require('./controller');
+const { VALID_GUID } = require('../../lib/validators');
 
 const getLicenceAdmin = {
   ...externalRoutes.getLicence,
   config: {
     ...externalRoutes.getLicence.config,
+    pre: [{ method: preInternalView }],
     auth: {
       scope: allAdmin
     }
@@ -133,8 +101,30 @@ const getLicenceGaugingStationAdmin = {
   path: '/admin/licences/{licence_id}/station/{gauging_station}'
 };
 
+const getLicenceCommunication = {
+  method: 'GET',
+  path: '/admin/licences/{documentId}/communications/{communicationId}',
+  handler: controller.getLicenceCommunication,
+  config: {
+    description: 'Look at the content of a message sent to the user regarding the licence',
+    validate: {
+      params: {
+        communicationId: VALID_GUID,
+        documentId: VALID_GUID
+      }
+    },
+    plugins: {
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    },
+    auth: {
+      scope: allAdmin
+    }
+  }
+};
+
 module.exports = {
-  getLicencesAdmin,
   getLicenceAdmin,
   getLicenceRenameAdmin,
   postLicenceRenameAdmin,
@@ -142,5 +132,6 @@ module.exports = {
   getLicencePurposesAdmin,
   getLicencePointsAdmin,
   getLicenceConditionsAdmin,
-  getLicenceGaugingStationAdmin
+  getLicenceGaugingStationAdmin,
+  getLicenceCommunication
 };

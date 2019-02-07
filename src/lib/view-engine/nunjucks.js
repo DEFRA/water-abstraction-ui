@@ -6,6 +6,7 @@ module.exports = {
     const template = Nunjucks.compile(src, options.environment);
 
     return (context) => {
+      context.assetPath = '/public';
       return new Promise((resolve, reject) => {
         template.render(context, (err, str) => {
           if (!err) {

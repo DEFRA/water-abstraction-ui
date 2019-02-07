@@ -7,7 +7,8 @@ const moment = require('moment');
  * @return {String}              formatted date
  */
 const date = (value, format = 'D MMMM YYYY') => {
-  return moment(value).format(format);
+  const m = moment(value);
+  return m.isValid() ? m.format(format) : null;
 };
 
 module.exports = {

@@ -6,44 +6,6 @@ const { VALID_GUID } = require('../../../lib/validators');
 
 module.exports = {
 
-  getSearch: {
-    method: 'GET',
-    path: '/admin/returns',
-    handler: controller.getSearch,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Search for return by format ID',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Process a return',
-          activeNavLink: 'returns',
-          showMeta: true
-        }
-      }
-    }
-  },
-
-  getSelectLicence: {
-    method: 'GET',
-    path: '/admin/returns/select-licence',
-    handler: controller.getSelectLicence,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Disambiguate format ID by licence number',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Select a licence',
-          activeNavLink: 'returns',
-          showMeta: true
-        }
-      }
-    }
-  },
-
   getInternalRouting: {
     method: 'GET',
     path: '/admin/return/internal',
@@ -61,7 +23,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what do you want to do with this return?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         }
       }
@@ -85,7 +47,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what do you want to do with this return?',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: true
         },
         formValidator: {
@@ -114,7 +76,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter date received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -145,7 +107,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - enter date received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -169,7 +131,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }
@@ -193,7 +155,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return query received',
-          activeNavLink: 'returns',
+          activeNavLink: 'view',
           showMeta: false
         }
       }

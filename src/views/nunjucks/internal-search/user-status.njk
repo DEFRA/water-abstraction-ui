@@ -1,0 +1,20 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./nunjucks/internal-search/macros/user-details.njk" import userDetails %}
+{% from "./nunjucks/internal-search/macros/user-companies.njk" import userCompanies %}
+
+{% block content %}
+  <div class="govuk-grid-row space--medium">
+    <div class="govuk-grid-column-two-thirds">
+      {{ userDetails(userStatus.user) }}
+
+      {% if userStatus.totalLicenceCount %}
+        {{ userCompanies(userStatus.companies) }}
+      {% else %}
+        <p class="govuk-body-l">
+          This user does not have any licences linked to their account
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+

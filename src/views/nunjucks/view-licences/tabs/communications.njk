@@ -1,13 +1,17 @@
+{% macro messageLink(message) %}
+  {% if message.isPdf %}
+    {{ message.notificationType }}
+  {% else %}
+    <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/communications/{{ message.notificationId }}">
+      {{ message.notificationType }}
+    </a>
+  {% endif %}
+{% endmacro %}
+
 {% macro messageRow(message, isInternal) %}
 <tr class="govuk-table__row">
   <td class="govuk-table__cell" scope="row">
-    {% if message.isPdf %}
-      {{ message.notificationType }}
-    {% else %}
-      <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/communications/{{ message.notificationId }}">
-        {{ message.notificationType }}
-      </a>
-    {% endif %}
+    {{ messageLink(message) }}
   </td>
   <td class="govuk-table__cell">
     {{ message.date | date }}
@@ -23,22 +27,49 @@
 </tr>
 {% endmacro %}
 
+
+{% macro messageRowMobile(message, isInternal) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    {{ messageLink(message) }}
+  </h3>
+  <p>{{ message.messageType | title }} sent {{ message.date | date }}
+
+    {% if isInternal %}
+    <br /><span class="govuk-caption-m link--no-underline">
+      By {{ message.sender }}
+    </span>
+    {% endif %}
+  </p>
+</div>
+{% endmacro %}
+
 <h2 class="govuk-heading-m">Communications</h2>
 
-<table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col">Sent</th>
-      {% if isInternal  %}
-      <th class="govuk-table__header" scope="col">Sender</th>
-      {% endif %}
-      <th class="govuk-table__header" scope="col">Method</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    {% for message in messages %}
-      {{ messageRow(message, isInternal) }}
-    {% endfor %}
-  </tbody>
-</table>
+{% if messages.length %}
+
+  {% for message in messages %}
+    {{ messageRowMobile(message, isInternal) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Type</th>
+        <th class="govuk-table__header" scope="col">Sent</th>
+        {% if isInternal  %}
+        <th class="govuk-table__header" scope="col">Sender</th>
+        {% endif %}
+        <th class="govuk-table__header" scope="col">Method</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for message in messages %}
+        {{ messageRow(message, isInternal) }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No communications for this licence.</p>
+{% endif %}

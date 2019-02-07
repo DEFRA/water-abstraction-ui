@@ -163,6 +163,8 @@ async function getLicenceGaugingStation (request, reply) {
   return reply.view('water/view-licences/gauging-station', viewContext);
 };
 
+const hasMultiplePages = pagination => pagination.pageCount > 1;
+
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -184,7 +186,8 @@ const getLicence = async (request, h) => {
     ...request.view,
     documentId,
     licence,
-    returns: mapReturns(returns, request),
+    returns: mapReturns(returns.data, request),
+    hasMoreReturns: hasMultiplePages(returns.pagination),
     messages,
     isInternal: isInternalUser(request.permissions),
     pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`

@@ -47,24 +47,29 @@
 
 <h2 class="govuk-heading-m">Communications</h2>
 
-{% for message in messages %}
-  {{ messageRowMobile(message, isInternal) }}
-{% endfor %}
+{% if messages.length %}
 
-<table class="govuk-table phone--hide">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col">Sent</th>
-      {% if isInternal  %}
-      <th class="govuk-table__header" scope="col">Sender</th>
-      {% endif %}
-      <th class="govuk-table__header" scope="col">Method</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    {% for message in messages %}
-      {{ messageRow(message, isInternal) }}
-    {% endfor %}
-  </tbody>
-</table>
+  {% for message in messages %}
+    {{ messageRowMobile(message, isInternal) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Type</th>
+        <th class="govuk-table__header" scope="col">Sent</th>
+        {% if isInternal  %}
+        <th class="govuk-table__header" scope="col">Sender</th>
+        {% endif %}
+        <th class="govuk-table__header" scope="col">Method</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for message in messages %}
+        {{ messageRow(message, isInternal) }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No communications for this licence.</p>
+{% endif %}

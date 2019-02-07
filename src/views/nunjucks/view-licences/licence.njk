@@ -19,7 +19,7 @@
       {% endif %}
 
       {% set summaryHtml %}
-        {% include "nunjucks/view-licences/tabs/summary.njk" %}
+
       {% endset %}
 
       {% set returnsHtml %}
@@ -30,32 +30,44 @@
         {% include "nunjucks/view-licences/tabs/communications.njk" %}
       {% endset %}
 
-      {{ govukTabs({
-        items: [
-          {
-            label: "Summary",
-            id: "summary",
-            panel: {
-              html: summaryHtml
-            }
-          },
-          {
-            label: "Returns",
-            id: "returns",
-            panel: {
-              html: returnsHtml
-            }
-          },
-          {
-            label: "Communications",
-            id: "communications",
-            panel: {
-              html: communicationsHtml
-            }
-          }
-        ]
-      }) }}
 
+      <div class="govuk-tabs" data-module="tabs">
+        <h2 class="govuk-tabs__title">
+          Contents
+        </h2>
+
+        <ul class="govuk-tabs__list">
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab govuk-tabs__tab--selected" href="#summary">
+              Summary
+            </a>
+          </li>
+          {% if returns.length %}
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#returns">
+              Returns
+            </a>
+          </li>
+          {% endif %}
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#communications">
+              Communications
+            </a>
+          </li>
+        </ul>
+
+        <section class="govuk-tabs__panel" id="summary">
+          {% include "nunjucks/view-licences/tabs/summary.njk" %}
+        </section>
+        {% if returns.length %}
+        <section class="govuk-tabs__panel" id="returns">
+          {% include "nunjucks/view-licences/tabs/returns.njk" %}
+        </section>
+        {% endif %}
+        <section class="govuk-tabs__panel" id="communications">
+          {% include "nunjucks/view-licences/tabs/communications.njk" %}
+        </section>
+      </div>
 
 
     </div>

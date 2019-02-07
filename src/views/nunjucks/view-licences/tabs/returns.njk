@@ -73,7 +73,9 @@
   </tbody>
 </table>
 
+
 <hr class="phone--show govuk-section-break govuk-section-break--m govuk-section-break--visible">
-<p>
+
+{% if hasMoreReturns %}
   <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/returns">View all returns</a>
-</p>
+{% endif %}

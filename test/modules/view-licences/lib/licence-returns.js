@@ -29,7 +29,8 @@ experiment('getLicenceReturns', () => {
 
   test('it should return data from the API', async () => {
     const result = await getLicenceReturns('01/123', false);
-    expect(result).to.be.an.array();
+    expect(result.data).to.be.an.array();
+    expect(result.error).to.equal(null);
   });
 
   test('it should display void returns to internal users', async () => {

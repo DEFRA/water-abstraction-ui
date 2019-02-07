@@ -4,17 +4,19 @@
   @include govuk-font($size: 16);
 
   min-width: 4rem;
-  line-height: 2.25rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
   font-weight: bold;
-  padding: 3px 5px 0 5px;
+  padding: 5px 7px 1px 7px;
   vertical-align: middle;
   background: $govuk-link-colour;
   letter-spacing: 1px;
   color: govuk-colour("white");
 
+  @include govuk-media-query($until: tablet) {
+    padding-bottom:  3px;
+  }
 }
 
 .badge--error {

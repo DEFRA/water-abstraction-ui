@@ -1,21 +1,30 @@
+{% macro returnPurposes(return) %}
+  {% for purpose in return.metadata.purposes %}
+    {{ ', ' if not loop.first }}
+    {{ purpose.tertiary.description }}
+  {% endfor %}
+{% endmacro %}
+
+{% macro returnLink(return) %}
+  {% if return.path %}
+  <a href="{{ return.path }}">
+    <span class="govuk-visually-hidden">{{ return.badge.text }} return</span>
+    {{ return.return_requirement }}
+    <span class="govuk-visually-hidden">due {{ return.due_date | date }}</span>
+  </a>
+  {% else %}
+    {{ return.return_requirement }}
+  {% endif %}
+{% endmacro %}
+
+
 {% macro returnRow(return) %}
 <tr class="govuk-table__row">
   <td class="govuk-table__cell" scope="row">
-    {% if return.path %}
-    <a href="{{ return.path }}">
-      <span class="govuk-visually-hidden">{{ return.badge.text }} return</span>
-      {{ return.return_requirement }}
-      <span class="govuk-visually-hidden">due {{ return.due_date | date }}</span>
-    </a>
-    {% else %}
-      {{ return.return_requirement }}
-    {% endif %}
+    {{ returnLink(return) }}
   </td>
   <td class="govuk-table__cell">
-    {% for purpose in return.metadata.purposes %}
-      {{ ', ' if not loop.first }}
-      {{ purpose.tertiary.description }}
-    {% endfor %}
+    {{ returnPurposes(return) }}
   </td>
   <td class="govuk-table__cell">
     {{ return.due_date | date }}
@@ -26,9 +35,29 @@
 </tr>
 {% endmacro %}
 
+{% macro returnRowMobile(return) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    {{ returnLink(return) }}
+  </h3>
+
+  <p>{{ returnPurposes(return) }}
+    <br /><span class="govuk-caption-m link--no-underline">Due {{ return.due_date | date }}</span>
+  </p>
+
+  {{ badge(return.badge.text, return.badge.status) }}
+</div>
+{% endmacro %}
+
 <h2 class="govuk-heading-m">Returns</h2>
 
-<table class="govuk-table">
+{% for return in returns %}
+  {{ returnRowMobile(return) }}
+{% endfor %}
+
+
+<table class="govuk-table phone--hide">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Return reference</th>
@@ -45,6 +74,8 @@
 </table>
 
 
+<hr class="phone--show govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
 {% if hasMoreReturns %}
-<a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/returns">View all returns</a>
+  <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/returns">View all returns</a>
 {% endif %}

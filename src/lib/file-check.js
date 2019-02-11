@@ -1,6 +1,6 @@
 const fs = require('fs');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const helpers = require('./helpers');
+
 const fileType = require('file-type');
 const readChunk = require('read-chunk');
 
@@ -16,6 +16,15 @@ const throwIfFileDoesNotExist = (file) => {
 };
 
 /**
+ * Runs the Clam Scan virus check on a particular file
+ * @param  {String}  file - the file to scan
+ * @return {Promise}      - resolves if file clean
+ */
+const clamScan = async (file) => {
+  return helpers.exec(`clamdscan ${file} --no-summary`);
+};
+
+/**
  * Runs clamscan virus check on specified file
  * Throws error if virus present
  * @param  {String} file - path to file
@@ -23,8 +32,7 @@ const throwIfFileDoesNotExist = (file) => {
  */
 const virusCheck = async (file) => {
   throwIfFileDoesNotExist(file);
-  const cmd = `clamdscan ${file} --no-summary`;
-  await exec(cmd);
+  await clamScan(file);
   return true;
 };
 
@@ -47,6 +55,7 @@ const isXml = (file) => {
 
 module.exports = {
   throwIfFileDoesNotExist,
+  clamScan,
   virusCheck,
   isXml
 };

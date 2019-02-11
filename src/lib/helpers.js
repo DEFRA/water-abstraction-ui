@@ -5,6 +5,8 @@ const rp = require('request-promise-native').defaults({
 });
 
 const isArray = require('lodash/isArray');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 /**
  * Formats a Joi error to a simple object which can easily be used in a
@@ -98,5 +100,6 @@ module.exports = {
   makeURIRequest: makeURIRequest,
   makeURIRequestWithBody: makeURIRequestWithBody,
   forceArray,
-  formatViewError
+  formatViewError,
+  exec
 };

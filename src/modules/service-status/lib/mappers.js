@@ -44,19 +44,23 @@ const mapToView = (data) => {
   };
 };
 
+const mapKPI = (data, key) => {
+  if (!isObject(data)) {
+    return {};
+  }
+  return data.reduce((acc, row) => {
+    acc[row.datapoint] = row[key];
+    return acc;
+  }, {});
+};
+
 /**
  * Maps CRM KPIs to obejct
  * @param  {Array} data - rows of CRM KPI data
  * @return {Object}      mapped to key/value pairs
  */
 const mapCRMKPI = (data) => {
-  if (!isObject(data)) {
-    return {};
-  }
-  return data.reduce((acc, row) => {
-    acc[row.datapoint] = row.value;
-    return acc;
-  }, {});
+  return mapKPI(data, 'value');
 };
 
 /**
@@ -65,13 +69,7 @@ const mapCRMKPI = (data) => {
  * @return {Object}      mapped to key/value pairs
  */
 const mapIDMKPI = (data) => {
-  if (!isObject(data)) {
-    return {};
-  }
-  return data.reduce((acc, row) => {
-    acc[row.datapoint] = row.measure;
-    return acc;
-  }, {});
+  return mapKPI(data, 'measure');
 };
 
 /**
@@ -81,15 +79,8 @@ const mapIDMKPI = (data) => {
  */
 const mapToJSON = (data) => {
   const [
-    userCount,
-    idmKPI,
-    crmDocumentCount,
-    crmKPI,
-    crmVerificationCount,
-    permitCount,
-    waterPendingImports,
-    waterCompletedImports,
-    virusScanner
+    userCount, idmKPI, crmDocumentCount, crmKPI, crmVerificationCount,
+    permitCount, waterPendingImports, waterCompletedImports, virusScanner
   ] = data;
 
   return {

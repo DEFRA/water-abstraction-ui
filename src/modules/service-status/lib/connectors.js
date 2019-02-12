@@ -9,13 +9,22 @@ const firstPage = {
 };
 
 /**
+ * Gets total row count by calling findMany on supplied api client
+ * @param  {Object}  apiClient - hapi-pg-rest-api API client
+ * @return {Promise}           resolves with row count
+ */
+const getCount = async (apiClient) => {
+  const { pagination, error } = await apiClient.findMany({}, {}, firstPage);
+  throwIfError(error);
+  return pagination.totalRows;
+};
+
+/**
  * Gets number of users in IDM
  * @return {Promise} Resolves with number of users
  */
 const getIDMUserCount = async () => {
-  const { pagination, error } = await IDM.usersClient.findMany({}, {}, firstPage);
-  throwIfError(error);
-  return pagination.totalRows;
+  return getCount(IDM.usersClient);
 };
 
 /**
@@ -33,9 +42,7 @@ const getIDMKPIData = async () => {
  * @return {Promise} resolves with number of CRM docs
  */
 const getCRMDocumentCount = async () => {
-  const { pagination, error } = await CRM.documents.findMany({}, {}, firstPage);
-  throwIfError(error);
-  return pagination.totalRows;
+  return getCount(CRM.documents);
 };
 
 /**
@@ -53,9 +60,7 @@ const getCRMKPIData = async () => {
  * @return {Promise} resolves with number of CRM verifications
  */
 const getCRMVerificationCount = async () => {
-  const { pagination, error } = await CRM.verification.findMany({}, {}, firstPage);
-  throwIfError(error);
-  return pagination.totalRows;
+  return getCount(CRM.verification);
 };
 
 /**

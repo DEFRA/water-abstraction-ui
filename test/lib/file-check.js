@@ -4,7 +4,7 @@ const Lab = require('lab');
 const helpers = require('../../src/lib/helpers');
 
 const fileCheck = require('../../src/lib/file-check');
-const { experiment, test, afterEach } = exports.lab = Lab.script();
+const { experiment, test, afterEach, beforeEach } = exports.lab = Lab.script();
 
 experiment('throwIfFileDoesNotExist', () => {
   test('It returns true if file exists', async () => {
@@ -21,9 +21,17 @@ experiment('throwIfFileDoesNotExist', () => {
 });
 
 experiment('clamScan', () => {
-  test('It should call exec with the correct command', async () => {
-    const stub = sinon.stub(helpers, 'exec').resolves('OK');
+  let stub;
 
+  beforeEach(async () => {
+    stub = sinon.stub(helpers, 'exec').resolves('OK');
+  });
+
+  afterEach(async () => {
+    stub.restore();
+  });
+
+  test('It should call exec with the correct command', async () => {
     await fileCheck.clamScan('test.txt');
     expect(helpers.exec.firstCall.args).to.equal(['clamdscan test.txt --no-summary']);
 
@@ -32,18 +40,24 @@ experiment('clamScan', () => {
 });
 
 experiment('virusCheck', () => {
+  let stub;
+
+  beforeEach(async () => {
+    stub = sinon.stub(fileCheck, 'clamScan');
+  });
+
   afterEach(async () => {
-    fileCheck.clamScan.restore();
+    stub.restore();
   });
 
   test('It should resolve to true if a file does not contain a virus', async () => {
-    sinon.stub(fileCheck, 'clamScan').resolves();
+    stub.resolves(true);
     const result = await fileCheck.virusCheck('test/lib/test-files/test-file.txt');
     expect(result).to.equal(true);
   });
 
   test('It should throw an error if it contains a virus', async () => {
-    sinon.stub(fileCheck, 'clamScan').rejects();
+    stub.rejects();
     const func = () => {
       return fileCheck.virusCheck('test/lib/test-files/eicar-test.txt');
     };

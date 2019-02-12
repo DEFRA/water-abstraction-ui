@@ -83,9 +83,7 @@ const getPermitCount = async () => {
  * @return {Promise} resolves with number of pending/completed imports
  */
 const getWaterImportStatus = async (status) => {
-  const filter = {
-    status
-  };
+  const filter = { status };
   return getCount(water.pendingImport, filter);
 };
 

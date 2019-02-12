@@ -13,8 +13,8 @@ const firstPage = {
  * @param  {Object}  apiClient - hapi-pg-rest-api API client
  * @return {Promise}           resolves with row count
  */
-const getCount = async (apiClient) => {
-  const { pagination, error } = await apiClient.findMany({}, {}, firstPage);
+const getCount = async (apiClient, filter = {}) => {
+  const { pagination, error } = await apiClient.findMany(filter, {}, firstPage);
   throwIfError(error);
   return pagination.totalRows;
 };
@@ -28,7 +28,7 @@ const getIDMUserCount = async () => {
 };
 
 const getKPIData = async (apiClient) => {
-  const { data, error } = await apiClient.findMany({}, {}, {});
+  const { data, error } = await apiClient.findMany();
   throwIfError(error);
   return data;
 };
@@ -74,9 +74,7 @@ const getPermitCount = async () => {
     licence_regime_id: 1,
     licence_type_id: 8
   };
-  const { pagination, error } = await permits.licences.findMany(filter, {}, firstPage);
-  throwIfError(error);
-  return pagination.totalRows;
+  return getCount(permits.licences, filter);
 };
 
 /**
@@ -88,9 +86,7 @@ const getWaterImportStatus = async (status) => {
   const filter = {
     status
   };
-  const { pagination, error } = await water.pendingImport.findMany(filter, {}, firstPage);
-  throwIfError(error);
-  return pagination.totalRows;
+  return getCount(water.pendingImport, filter);
 };
 
 /**
@@ -110,7 +106,9 @@ const getWaterCompletedImports = () => {
 };
 
 module.exports = {
+  getCount,
   getIDMUserCount,
+  getKPIData,
   getIDMKPIData,
   getCRMDocumentCount,
   getCRMKPIData,

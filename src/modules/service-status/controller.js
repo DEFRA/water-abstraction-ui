@@ -1,110 +1,25 @@
-const IDM = require('../../lib/connectors/idm');
-const CRM = require('../../lib/connectors/crm');
-const permits = require('../../lib/connectors/permit');
-const water = require('../../lib/connectors/water');
-const logger = require('../../lib/logger');
+const { get } = require('lodash');
 
-async function serviceStatus (request, reply) {
-  var errors = 0;
-  var html = '<html><head><body><table><tr><th>Service</th><th>Info</th></tr>';
-  var data = {
-    idm: {},
-    crm: {},
-    waterservice: {
-      import: {}
-    },
-    permitrepo: {}
-  };
-  try {
-    const userData = await IDM.usersClient.findMany({}, {}, {
-      'perPage': 1
-    });
-    data.idm.users = userData.pagination.totalRows;
-    html += `<tr><td>IDM Users</td><td>${data.idm.users}</td></tr>`;
-    const idmKPI = await IDM.kpi.findMany({}, {}, {});
-    idmKPI.data.forEach((d) => {
-      html += `<tr><td>&nbsp</td><td>${d.datapoint}</td><td>${d.measure}</td><td>${d.dimension}</td></tr>`;
-      data.idm[d.datapoint] = d.measure;
-    });
-  } catch (e) {
-    html += `<tr><td>IDM Users</td><td>ERROR</td></tr>`;
-    errors++;
+const { getStatus } = require('./lib/index');
+const { mapToJSON, mapToView } = require('./lib/mappers');
+
+/**
+ * Gets information on current status of the service
+ * @param {String} [query.format] - optional, set to 'json' for JSON data
+ */
+async function serviceStatus (request, h) {
+  const status = await getStatus();
+
+  // Return as JSON
+  if (get(request, 'query.format') === 'json') {
+    return mapToJSON(status);
   }
 
-  try {
-    const documentData = await CRM.documents.findMany({}, {}, {
-      'perPage': 1
-    });
-    data.crm.documents = documentData.pagination.totalRows;
-    html += `<tr><td>CRM Documents</td><td>${data.crm.documents}</td></tr>`;
-    const crmKPI = await CRM.kpi.findMany({}, {}, {});
-    crmKPI.data.forEach((d) => {
-      html += `<tr><td>&nbsp</td><td>${d.datapoint}</td><td>${d.value}</td><td>${d.description}</td></tr>`;
-      data.crm[d.datapoint] = d.value;
-    });
-  } catch (e) {
-    logger.error('Status page error', e);
-    html += `<tr><td>CRM Documents</td><td>ERROR</td></tr>`;
-    errors++;
-  }
+  const view = mapToView(status);
 
-  try {
-    const verificationData = await CRM.verification.findMany({}, {}, {
-      'perPage': 1
-    });
-    data.crm.verifications = verificationData.pagination.totalRows;
-    html += `<tr><td>CRM Verifications</td><td>${data.crm.verifications}</td></tr>`;
-  } catch (e) {
-    html += `<tr><td>CRM Verifications</td><td>ERROR</td></tr>`;
-    errors++;
-  }
-
-  try {
-    const permitData = await permits.licences.findMany({}, {}, {
-      'perPage': 1
-    });
-    data.permitrepo.permits = permitData.pagination.totalRows;
-    html += `<tr><td>Permit Repo Permits</td><td>${data.permitrepo.permits}</td></tr>`;
-  } catch (e) {
-    html += `<tr><td>Permit Repo Permits</td><td>ERROR</td></tr>`;
-    errors++;
-  }
-
-  data.waterservice.import = {};
-  try {
-    const importDataComplate = await water.pendingImport.findMany({
-      'status': 1
-    }, {}, {
-      'perPage': 1
-    });
-    data.waterservice.import.complete = importDataComplate.pagination.totalRows;
-    html += `<tr><td>Imported Permits</td><td>${data.waterservice.import.complete}</td></tr>`;
-  } catch (e) {
-    html += `<tr><td>Imported Permits</td><td>ERROR</td></tr>`;
-    errors++;
-  }
-  try {
-    const importDataPending = await water.pendingImport.findMany({
-      'status': 0
-    }, {}, {
-      'perPage': 1
-    });
-    data.waterservice.import.pending = importDataPending.pagination.totalRows;
-    html += `<tr><td>Pending Permits</td><td>${data.waterservice.import.pending}</td></tr>`;
-  } catch (e) {
-    html += `<tr><td>Pending Permits</td><td>ERROR</td></tr>`;
-    errors++;
-  }
-
-  html += `<tr><td><b>Errors<b></td><td> ${errors} ERRORS REPORTED</td></tr>`;
-  html += '</body></html>';
-
-  if (request.query.format && request.query.format === 'json') {
-    return reply.response(data);
-  } else {
-    return reply.response(html);
-  }
-}
+  // Return as HTML
+  return h.view('nunjucks/service-status/index.njk', view, { layout: false });
+};
 
 module.exports = {
   serviceStatus

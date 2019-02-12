@@ -1,0 +1,26 @@
+{
+  "crm": [
+    {
+      "datapoint": "point_1",
+      "value": "9",
+      "description": "descr_2"
+    },
+    {
+      "datapoint": "point_2",
+      "value": "4",
+      "description": "descr_3"
+    }
+  ],
+  "idm": [
+    {
+      "datapoint": "point_1",
+      "dimension": "external",
+      "measure": "10"
+    },
+    {
+      "datapoint": "point_2",
+      "dimension": "internal",
+      "measure": "1"
+    }
+  ]
+}

@@ -12,6 +12,8 @@ const countErrors = (arr) => {
   return arr.filter(isError).length;
 };
 
+const mapVirusScanResult = result => result === true ? 'OK' : 'ERROR';
+
 /**
  * Maps status data to view
  * @param  {Array} data - data retrieved from each API call, or 'ERROR'
@@ -40,7 +42,7 @@ const mapToView = (data) => {
     waterPendingImports,
     waterCompletedImports,
     errorCount: countErrors(data),
-    virusScanner
+    virusScanner: mapVirusScanResult(virusScanner)
   };
 };
 
@@ -102,7 +104,7 @@ const mapToJSON = (data) => {
     permitrepo: {
       permits: permitCount
     },
-    virusScanner
+    virusScanner: mapVirusScanResult(virusScanner)
   };
 };
 

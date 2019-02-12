@@ -33,7 +33,7 @@ experiment('clamScan', () => {
 
   test('It should call exec with the correct command', async () => {
     await fileCheck.clamScan('test.txt');
-    expect(helpers.exec.firstCall.args).to.equal(['clamdscan test.txt --no-summary']);
+    expect(helpers.exec.firstCall.args).to.equal(['clamdscan test.txt']);
 
     stub.restore();
   });
@@ -50,18 +50,26 @@ experiment('virusCheck', () => {
     stub.restore();
   });
 
+  test('It should throw an error if the file does not exist', async () => {
+    stub.rejects();
+    const func = () => {
+      return fileCheck.virusCheck('test/lib/test-files/no-file-here.txt');
+    };
+    expect(func()).to.reject();
+  });
+
   test('It should resolve to true if a file does not contain a virus', async () => {
-    stub.resolves(true);
+    stub.resolves();
     const result = await fileCheck.virusCheck('test/lib/test-files/test-file.txt');
     expect(result).to.equal(true);
   });
 
-  test('It should throw an error if it contains a virus', async () => {
-    stub.rejects();
-    const func = () => {
-      return fileCheck.virusCheck('test/lib/test-files/eicar-test.txt');
-    };
-    expect(func()).to.reject();
+  test('It should resolve to false if a file contains a virus', async () => {
+    const err = new Error();
+    err.code = 1;
+    stub.rejects(err);
+    const result = await fileCheck.virusCheck('test/lib/test-files/eicar-test.txt');
+    expect(result).to.equal(false);
   });
 });
 

@@ -1,6 +1,7 @@
 const fs = require('fs');
+const { pick } = require('lodash');
 const helpers = require('./helpers');
-
+const logger = require('./logger');
 const fileType = require('file-type');
 const readChunk = require('read-chunk');
 
@@ -15,13 +16,32 @@ const throwIfFileDoesNotExist = (file) => {
   return true;
 };
 
+const isInfectedFile = (err) => {
+  return err.code === 1;
+};
+
+const createLoggerError = (err) => {
+  const error = new Error(`Virus checker found infected file`);
+  error.params = pick(err, ['code', 'cmd', 'stdout']);
+  return error;
+};
+
 /**
  * Runs the Clam Scan virus check on a particular file
  * @param  {String}  file - the file to scan
- * @return {Promise}      - resolves if file clean
+ * @return {Promise}      - resolves with true if file clean, false if infected
  */
 const clamScan = async (file) => {
-  return helpers.exec(`clamdscan ${file} --no-summary`);
+  try {
+    await helpers.exec(`clamdscan ${file}`);
+    return true;
+  } catch (err) {
+    if (isInfectedFile(err)) {
+      logger.error(createLoggerError(err));
+      return false;
+    }
+    throw err;
+  }
 };
 
 /**
@@ -32,8 +52,7 @@ const clamScan = async (file) => {
  */
 const virusCheck = async (file) => {
   throwIfFileDoesNotExist(file);
-  await clamScan(file);
-  return true;
+  return clamScan(file);
 };
 
 /**

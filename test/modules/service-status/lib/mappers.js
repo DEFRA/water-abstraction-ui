@@ -110,7 +110,7 @@ experiment('countErrors', () => {
 
 experiment('mapToView', () => {
   test('It should take an array of values and map to an object', async () => {
-    const data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    const data = [0, 1, 2, 3, 4, 5, 6, 7, false];
     const result = mappers.mapToView(data);
     expect(result).to.equal({
       userCount: 0,
@@ -122,7 +122,7 @@ experiment('mapToView', () => {
       waterPendingImports: 6,
       waterCompletedImports: 7,
       errorCount: 0,
-      virusScanner: 8
+      virusScanner: 'ERROR'
     });
   });
 

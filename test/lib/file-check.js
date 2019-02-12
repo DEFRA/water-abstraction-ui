@@ -43,7 +43,7 @@ experiment('virusCheck', () => {
   let stub;
 
   beforeEach(async () => {
-    stub = sinon.stub(fileCheck, 'clamScan');
+    stub = sinon.stub(helpers, 'exec');
   });
 
   afterEach(async () => {

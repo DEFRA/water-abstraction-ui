@@ -27,14 +27,18 @@ const getIDMUserCount = async () => {
   return getCount(IDM.usersClient);
 };
 
+const getKPIData = async (apiClient) => {
+  const { data, error } = await apiClient.findMany({}, {}, {});
+  throwIfError(error);
+  return data;
+};
+
 /**
  * Gets KPIs from IDM service
  * @return {Promise} resolves with array of IDM KPIs
  */
 const getIDMKPIData = async () => {
-  const { data, error } = await IDM.kpi.findMany({}, {}, {});
-  throwIfError(error);
-  return data;
+  return getKPIData(IDM.kpi);
 };
 
 /**
@@ -50,9 +54,7 @@ const getCRMDocumentCount = async () => {
  * @return {Promise} resolves wtih array of CRM KPIs
  */
 const getCRMKPIData = async () => {
-  const { data, error } = await CRM.kpi.findMany({}, {}, {});
-  throwIfError(error);
-  return data;
+  return getKPIData(CRM.kpi);
 };
 
 /**

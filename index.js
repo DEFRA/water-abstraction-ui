@@ -18,7 +18,6 @@ const config = require('./config');
 const { acl, permissions, authCredentials, ...plugins } = require('./src/lib/hapi-plugins');
 const routes = require('./src/modules/routes');
 const returnsPlugin = require('./src/modules/returns/plugin.js');
-// const entityRolesPlugin = require('./src/lib/hapi-plugins/entity-roles');
 const viewEngine = require('./src/lib/view-engine/');
 
 // Initialise logger

@@ -65,6 +65,18 @@
   }) }}
 
   {% block mainNav %}
+
+  {% if hasMultipleCompanies %}
+  <div class="company-switcher">
+    You are managing <b>{{ companyName }}</b>
+    <a href="/select-company" class="company-switcher__link">
+      Change <span class="govuk-visually-hidden">the company you manage</span>
+    </a>
+  </div>
+  {% endif %}
+
+
+
   {{ mainNav(mainNavLinks) }}
   {% endblock %}
 

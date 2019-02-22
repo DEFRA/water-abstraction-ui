@@ -132,7 +132,8 @@ const loadUserData = async userId => {
 const renderForm = (request, h, form) => {
   const view = {
     ...request.view,
-    form
+    form,
+    back: '/licences'
   };
   return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
 };
@@ -141,8 +142,6 @@ const renderForm = (request, h, form) => {
  * Displays a page where the user can select the company they wish to work with
  */
 const getSelectCompany = async (request, h) => {
-  console.log(request.cookieAuth);
-
   const userId = getUserID(request);
   const data = await loadUserData(userId);
   const form = selectCompanyForm(request, data);
@@ -166,6 +165,7 @@ const postSelectCompany = async (request, h) => {
 
     // Set company ID in session cookie
     request.cookieAuth.set('companyId', company.entityId);
+    request.cookieAuth.set('companyName', company.name);
 
     // Redirect
     return h.redirect('/licences');

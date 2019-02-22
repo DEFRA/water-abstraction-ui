@@ -1,4 +1,4 @@
-const { get } = require('lodash');
+const { get, uniq } = require('lodash');
 const config = require('../../config');
 
 const { getPropositionLinks } = require('./view/proposition-links');
@@ -36,6 +36,18 @@ const getTracking = (credentials) => {
   };
 
   return base;
+};
+
+/**
+ * Checks whether the user has multiple companies - i.e. agent
+ * this determines whether to show company switcher
+ * @param  {Object}  request - current request
+ * @return {Boolean}         true if user can access > 1 company
+ */
+const hasMultipleCompanies = (request) => {
+  const roles = get(request, 'entityRoles', []);
+  const companyIds = roles.map(role => role.company_entity_id);
+  return uniq(companyIds).length > 1;
 };
 
 function viewContextDefaults (request) {
@@ -83,6 +95,9 @@ function viewContextDefaults (request) {
     viewContext.isAuthenticated,
     get(viewContext, 'permissions.admin.defra', false)
   );
+
+  viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
+  viewContext.companyName = get(request, 'auth.credentials.companyName');
 
   return viewContext;
 }

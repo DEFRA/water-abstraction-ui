@@ -28,9 +28,8 @@ const isPrimaryUser = request => hasScope(request, scope.licenceHolder);
 const isInternalReturns = request => hasScope(request, scope.returns);
 
 const isExternalReturns = request => {
-  const isPrimary = hasScope(request, scope.licenceHolder);
   const isReturnsAgent = hasScope(request, scope.colleagueWithReturns);
-  return isPrimary || isReturnsAgent;
+  return isPrimaryUser(request) || isReturnsAgent;
 };
 
 // Abstraction reform / digitise!

@@ -6,6 +6,21 @@ const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const { getNotificationsList, getReportsList } = require('../../../../src/modules/notifications/lib/notifications-list');
+const { scope } = require('../../../../src/lib/constants');
+
+const createRequest = (scopes) => {
+  return {
+    auth: {
+      credentials: {
+        scope: scopes || scope.internal
+      }
+    }
+  };
+};
+
+const createReturnsRequest = () => {
+  return createRequest([scope.internal, scope.returns]);
+};
 
 lab.experiment('getNotificationsList', () => {
   const tasks = [{
@@ -15,28 +30,19 @@ lab.experiment('getNotificationsList', () => {
     }
   }];
 
-  const internalPermissions = {
-    returns: {
-      edit: false
-    }
-  };
-  const internalEditReturnsPermissions = {
-    returns: {
-      edit: true
-    }
-  };
-
   const options = {
     newWindow: false
   };
 
-  lab.test('It should only return task notifications when user doesnt have returns.edit permission', async () => {
-    const result = getNotificationsList(tasks, internalPermissions);
+  lab.test('It should only return task notifications when user doesnt have returns scope', async () => {
+    const request = createRequest();
+    const result = getNotificationsList(tasks, request);
     expect(result).to.equal([ { name: 'Test', path: '/admin/notifications/123?start=1', options } ]);
   });
 
-  lab.test('It should include returns task notifications when user has returns.edit permission', async () => {
-    const result = getNotificationsList(tasks, internalEditReturnsPermissions);
+  lab.test('It should include returns task notifications when user has returns scope', async () => {
+    const request = createReturnsRequest();
+    const result = getNotificationsList(tasks, request);
     const names = result.map(row => row.name);
     expect(names).to.equal([
       'Test',

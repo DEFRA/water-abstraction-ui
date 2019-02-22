@@ -5,14 +5,19 @@
 const { get, set } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const idmConnector = require('../connectors/idm');
-const crmEntityRoles = require('../connectors/crm/entity-roles');
+const crmConnector = require('../connectors/crm');
+const logger = require('../logger');
+
+const loadCRMEntityRoles = entityId => {
+  return crmConnector.entityRoles.setParams({ entityId }).findAll();
+};
 
 /**
  * Loads user data from IDM
  * @param {String} emailAddress
  * @return {Promise} resolves with row of IDM user data
  */
-async function loadIDMUser (email) {
+const loadIDMUser = async (email) => {
   const { data: [user], error } = await idmConnector.getUserByEmail(email);
 
   throwIfError(error);
@@ -22,7 +27,7 @@ async function loadIDMUser (email) {
   }
 
   return user;
-}
+};
 
 /**
  * Gets scopes array from IDM user object
@@ -48,6 +53,8 @@ const isAuthenticatedRoute = request => request.auth.isAuthenticated;
 
 const mapRolesToScopes = roles => roles.map(role => role.role);
 
+const getCompanyPredicate = companyId => (role) => role.company_entity_id === companyId;
+
 /**
  * Loads all scopes for the current user based on their IDM and company roles
  * @param  {Object}  request - HAPI request
@@ -57,16 +64,19 @@ const loadScopes = async (request) => {
   // Load scopes for current user and set in auth.credentials
   const { username, companyId, entity_id: entityId } = request.auth.credentials;
 
-  console.log(username, companyId, entityId);
-
   const user = await loadIDMUser(username);
 
   // Get IDM scopes
   const scopes = getUserScopes(user);
 
   if (isExternalUser(user) && companyId) {
-    const roles = await crmEntityRoles.getCompanyRoles(entityId, companyId);
-    console.log('roles:', roles);
+    // Load all user's roles into current request
+    request.entityRoles = await loadCRMEntityRoles(entityId);
+
+    // Filter roles for selected company
+    const roles = request.entityRoles.filter(getCompanyPredicate(companyId));
+
+    // Use selected company roles to augment scopes
     scopes.push(...mapRolesToScopes(roles));
   }
 
@@ -80,8 +90,12 @@ const plugin = {
       async method (request, h) {
         // We should only load scopes on authenticated routes
         if (isAuthenticatedRoute(request)) {
-          const scopes = await loadScopes(request);
-          set(request, 'auth.credentials.scope', scopes);
+          try {
+            const scopes = await loadScopes(request);
+            set(request, 'auth.credentials.scope', scopes);
+          } catch (error) {
+            logger.error('Failed to load entity scopes', error, get(request, 'auth.credentials'));
+          }
         }
         return h.continue;
       }

@@ -5,6 +5,8 @@
  */
 /* eslint "new-cap" : ["warn", { "newIsCap": true }] */
 const Boom = require('boom');
+const { hasScope } = require('../permissions');
+const { scope } = require('../constants');
 
 const adminFirewallPlugin = {
   register: (server, options) => {
@@ -15,7 +17,7 @@ const adminFirewallPlugin = {
 
         // Detect any URL starting /admin
         if (/\/admin/i.test(path)) {
-          if (!request.permissions.admin.defra) {
+          if (!hasScope(request, scope.internal)) {
             throw Boom.unauthorized(`admin.defra permission required to view ${path}`);
           }
         }

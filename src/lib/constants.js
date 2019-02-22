@@ -8,6 +8,12 @@ const ROLE_EXTERNAL_COLLEAGUE = 'user';
 const ROLE_EXTERNAL_COLLEAGUE_RETURNS = 'user_returns';
 const ROLE_EXTERNAL_LICENCE_HOLDER = 'primary_user';
 
+const externalRoles = {
+  colleague: ROLE_EXTERNAL_COLLEAGUE,
+  colleagueWithReturns: ROLE_EXTERNAL_COLLEAGUE_RETURNS,
+  licenceHolder: ROLE_EXTERNAL_LICENCE_HOLDER
+};
+
 module.exports = {
   scope: {
     allAdmin: [
@@ -20,11 +26,8 @@ module.exports = {
     external: SCOPE_EXTERNAL,
     abstractionReformUser: SCOPE_ABSTRACTION_REFORM_USER,
     abstractionReformApprover: SCOPE_ABSTRACTION_REFORM_APPROVER,
-    returns: SCOPE_INTERNAL_RETURNS
+    returns: SCOPE_INTERNAL_RETURNS,
+    ...externalRoles
   },
-  externalRoles: {
-    colleague: ROLE_EXTERNAL_COLLEAGUE,
-    colleagueWithReturns: ROLE_EXTERNAL_COLLEAGUE_RETURNS,
-    licenceHolder: ROLE_EXTERNAL_LICENCE_HOLDER
-  }
+  externalRoles
 };

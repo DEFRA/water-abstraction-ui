@@ -2,13 +2,20 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
+const Boom = require('Boom');
 const { get } = require('lodash');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
+
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
 const { getPermissions } = require('../../lib/permissions');
 const logger = require('../../lib/logger');
 
 const { destroySession, authValidationErrorResponse } = require('./helpers');
+
+const waterUser = require('../../lib/connectors/water-service/user');
+const { selectCompanyForm } = require('./forms/select-company');
+const { handleRequest, getValues } = require('../../lib/forms');
 
 /**
  * Welcome page before routing to signin/register
@@ -108,10 +115,70 @@ const getLoginRedirectHtml = (request, redirectPath) => {
   return meta + script;
 };
 
+const getUserID = request => get(request, 'auth.credentials.user_id');
+
+/**
+ * Asynchronously loads user data from the water service, including their list
+ * of companies
+ * @param  {Object}  request - HAPI request
+ * @return {Promise}         [description]
+ */
+const loadUserData = async userId => {
+  const { data, error } = await waterUser.getUserStatus(userId);
+  throwIfError(error);
+  return data;
+};
+
+const renderForm = (request, h, form) => {
+  const view = {
+    ...request.view,
+    form
+  };
+  return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
+};
+
+/**
+ * Displays a page where the user can select the company they wish to work with
+ */
+const getSelectCompany = async (request, h) => {
+  console.log(request.cookieAuth);
+
+  const userId = getUserID(request);
+  const data = await loadUserData(userId);
+  const form = selectCompanyForm(request, data);
+  return renderForm(request, h, form);
+};
+
+const postSelectCompany = async (request, h) => {
+  const userId = getUserID(request);
+  const data = await loadUserData(userId);
+  const form = handleRequest(selectCompanyForm(request, data), request);
+
+  // Set company entity and redirect if valid
+  if (form.isValid) {
+    const { company: index } = getValues(form);
+
+    const company = get(data, `companies.${index}`);
+
+    if (!company) {
+      throw Boom.badRequest(`Company not found`, { index });
+    }
+
+    // Set company ID in session cookie
+    request.cookieAuth.set('companyId', company.entityId);
+
+    // Redirect
+    return h.redirect('/licences');
+  }
+  return renderForm(request, h, form);
+};
+
 module.exports = {
   getWelcome,
   getSignin,
   getSignout,
   getSignedOut,
-  postSignin
+  postSignin,
+  getSelectCompany,
+  postSelectCompany
 };

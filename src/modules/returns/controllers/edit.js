@@ -26,6 +26,8 @@ const {
   getLinesWithReadings, applyStatus, applyUnderQuery
 } = require('../lib/return-helpers');
 
+const { getReturnPath } = require('../lib/return-path');
+
 const {
   STEP_START,
   STEP_NIL_RETURN,
@@ -47,7 +49,7 @@ const {
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers, getReturnTotal } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -67,7 +69,8 @@ const getAmounts = async (request, h) => {
   }
 
   // Check date/roles
-  if (!canEdit(request.permissions, data)) {
+  const { isEdit } = getReturnPath(data, request);
+  if (!isEdit) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
   }
 

@@ -4,32 +4,26 @@ const moment = require('moment');
 const { get } = require('lodash');
 const titleCase = require('title-case');
 
+const { isInternal: isInternalUser } = require('../../../lib/permissions');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
-const { externalRoles } = require('../../../lib/constants');
-const { hasPermission } = require('../../../lib/permissions');
 const config = require('../../../../config');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 
 const { getReturnPath } = require('./return-path');
 
 /**
- * Gets licences from the CRM that can be viewed by the supplied entity ID
- * @param {String} entityId - individual entity GUID
- * @param {String} licenceNumber - find a particular licence number
+ * Gets all licences from the CRM that can be viewed by the supplied entity ID
+ * @param {Object} request - current HAPI request
+ * @param {Object} filter - additional filter params
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = async (entityId, filter = {}, isInternal) => {
-  filter.entity_id = entityId;
-  filter.roles = getInternalRoles(isInternal, filter.roles);
-
-  const { data, error } = await documents.findMany(filter, {}, { perPage: 300 }, ['system_external_id', 'document_name', 'document_id']);
-
-  if (error) {
-    throw Boom.badImplementation('CRM error', error);
-  }
-
-  return data;
+const getLicenceNumbers = (request, filter = {}) => {
+  const f = documents.createFilter(request, filter);
+  console.log(f);
+  const sort = {};
+  const columns = ['system_external_id', 'document_name', 'document_id'];
+  return documents.findAll(f, sort, columns);
 };
 
 /**
@@ -193,21 +187,21 @@ const getReturnTotal = (ret) => {
  * @param {String} [today] - allows today's date to be set for test purposes, defaults to current timestamp
  * @return {Boolean}
  */
-const canEdit = (permissions, ret, today) => {
-  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
-  const endDate = ret.endDate || ret.end_date;
-  const { status } = ret;
-  const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
-  const canSubmit = hasPermission('returns.submit', permissions);
-  const canEdit = hasPermission('returns.edit', permissions);
-  const isPast = moment(today).isSameOrAfter(endDate);
-
-  return isAfterSummer2018 &&
-    (
-      (canEdit) ||
-      (canSubmit && (status === 'due') && (showFutureReturns || isPast))
-    );
-};
+// const canEdit = (permissions, ret, today) => {
+//   const showFutureReturns = get(config, 'returns.showFutureReturns', false);
+//   const endDate = ret.endDate || ret.end_date;
+//   const { status } = ret;
+//   const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
+//   const canSubmit = hasPermission('returns.submit', permissions);
+//   const canEdit = hasPermission('returns.edit', permissions);
+//   const isPast = moment(today).isSameOrAfter(endDate);
+//
+//   return isAfterSummer2018 &&
+//     (
+//       (canEdit) ||
+//       (canSubmit && (status === 'due') && (showFutureReturns || isPast))
+//     );
+// };
 
 const isReturnPastDueDate = returnRow => {
   const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
@@ -253,7 +247,6 @@ const mapReturns = (returns, request) => {
  */
 const getReturnsViewData = async (request) => {
   const { page } = request.query;
-  const { entity_id: entityId } = request.auth.credentials;
   const { documentId } = request.params;
 
   // Get documents from CRM
@@ -261,7 +254,7 @@ const getReturnsViewData = async (request) => {
 
   const isInternal = isInternalUser(request.permissions);
 
-  const documents = await getLicenceNumbers(entityId, filter, isInternal);
+  const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const view = {
@@ -282,23 +275,13 @@ const getReturnsViewData = async (request) => {
   return view;
 };
 
-const isInternalUser = permissions => hasPermission('admin.defra', permissions);
-
-/**
- * If the user is an external user, add the CRM roles that the requesting user
- * would need to have one of, in order to be authorised to view a return.
- */
-const getInternalRoles = (isInternal, roles) => {
-  return isInternal ? roles : [externalRoles.colleagueWithReturns, externalRoles.licenceHolder];
-};
-
 /**
  * Redirects to admin path if internal user
  * @param {Object} request - HAPI request instance
  * @param {String} path - the path to redirect to without '/admin'
  * @return {String} path with /admin if internal user
  */
-const getScopedPath = (request, path) => isInternalUser(request.permissions) ? `/admin${path}` : path;
+const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path}` : path;
 
 /**
  * Get common view data used by many controllers
@@ -389,10 +372,8 @@ module.exports = {
   getLatestVersion,
   hasGallons,
   getReturnsViewData,
-  getInternalRoles,
   getReturnTotal,
   getScopedPath,
-  canEdit,
   getViewData,
   isReturnPastDueDate,
   getRedirectPath,

@@ -3,11 +3,16 @@ const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
 const { preAccessControl } = require('./pre-handlers');
 
+const { scope } = require('../../lib/constants');
+
 const getLicence = {
   method: 'GET',
   path: '/licences/{licence_id}',
   handler: controller.getLicence,
   config: {
+    auth: {
+      scope: scope.external
+    },
     pre: [{ method: preAccessControl }],
     description: 'View a single licence',
     validate: {
@@ -31,6 +36,9 @@ const getLicenceRename = {
   path: '/licences/{licence_id}/rename',
   handler: controller.getLicenceDetail,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'Set user-defined name for licence',
     validate: {
       params: {
@@ -54,6 +62,9 @@ const postLicenceRename = {
   handler: controller.postLicenceRename,
   config: {
     description: 'Update the user-defined licence name',
+    auth: {
+      scope: scope.external
+    },
     validate: {
       params: {
         licence_id: VALID_GUID
@@ -85,6 +96,9 @@ const getLicenceContact = {
   path: '/licences/{licence_id}/contact',
   handler: controller.getLicenceDetail,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'View contact info for licence',
     validate: {
       params: {
@@ -107,6 +121,9 @@ const getLicencePurposes = {
   path: '/licences/{licence_id}/purposes',
   handler: controller.getLicenceDetail,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'View abstraction purposes for licence',
     validate: {
       params: {
@@ -129,6 +146,9 @@ const getLicencePoints = {
   path: '/licences/{licence_id}/points',
   handler: controller.getLicenceDetail,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'View abstraction points for licence',
     validate: {
       params: {
@@ -151,6 +171,9 @@ const getLicenceConditions = {
   path: '/licences/{licence_id}/conditions',
   handler: controller.getLicenceDetail,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
@@ -173,6 +196,9 @@ const getLicenceGaugingStation = {
   path: '/licences/{licence_id}/station/{gauging_station}',
   handler: controller.getLicenceGaugingStation,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
@@ -199,6 +225,9 @@ const getLicenceCommunication = {
   path: '/licences/{documentId}/communications/{communicationId}',
   handler: controller.getLicenceCommunication,
   config: {
+    auth: {
+      scope: scope.external
+    },
     description: 'Look at the content of a message sent to the user regarding the licence',
     validate: {
       params: {
@@ -220,6 +249,9 @@ module.exports = {
     path: '/licences',
     handler: controller.getLicences,
     config: {
+      auth: {
+        scope: scope.external
+      },
       description: 'View list of licences with facility to sort/filter',
       validate: {
         query: VALID_LICENCE_QUERY

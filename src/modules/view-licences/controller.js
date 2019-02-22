@@ -4,18 +4,19 @@
  */
 
 const Boom = require('boom');
-const { trim, get, partial } = require('lodash');
+const { trim, partial } = require('lodash');
 
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
-const { hasPermission } = require('../../lib/permissions');
+const { hasScope } = require('../../lib/permissions');
+const { scope } = require('../../lib/constants');
 const { getLicenceReturns } = require('./lib/licence-returns');
 
 const { mapReturns } = require('../returns/lib/helpers');
 
-const isInternalUser = partial(hasPermission, 'admin.defra');
+const isInternalUser = partial(hasScope, scope.internal);
 const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
@@ -45,28 +46,24 @@ async function getLicences (request, reply) {
   view.showVerificationAlert = verifications.length > 0;
   view.enableSearch = licenceCount > 5;
 
-  // Count primary_user/user roles to determine if agent
-  // Agents have the ability to search by user email address
-  view.showEmailFilter = request.permissions.licences.multi;
-
   return baseGetLicences(request, reply);
 }
 
-const userCanViewReturns = (permissions, companyEntityId) => {
-  const canViewReturns = get(permissions, `companies.${companyEntityId}.returns.read`) ||
-    get(permissions, 'returns.read');
-
-  return canViewReturns;
-};
+// const userCanViewReturns = (permissions, companyEntityId) => {
+//   const canViewReturns = get(permissions, `companies.${companyEntityId}.returns.read`) ||
+//     get(permissions, 'returns.read');
+//
+//   return canViewReturns;
+// };
 
 async function getLicenceDetail (request, reply) {
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entity_id: entityId, companyId } = request.auth.credentials;
   const { licence_id: documentHeaderId } = request.params;
 
   try {
     const { documentHeader, viewData, gaugingStations } = await loadLicenceData(entityId, documentHeaderId);
 
-    const canViewReturns = userCanViewReturns(request.permissions, documentHeader.company_entity_id);
+    // const canViewReturns = userCanViewReturns(request.permissions, documentHeader.company_entity_id);
     const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentHeaderId);
     documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
 
@@ -74,7 +71,7 @@ async function getLicenceDetail (request, reply) {
 
     return reply.view(request.config.view, {
       ...request.view,
-      canViewReturns,
+      canViewReturns: true,
       gaugingStations,
       licence_id: documentHeaderId,
       name: 'name' in request.view ? request.view.name : customName,

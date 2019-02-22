@@ -1,5 +1,4 @@
 module.exports = {
-  acl: require('./acl'),
   config: require('./config'),
   sessions: require('./sessions'),
   csrf: require('./csrf'),
@@ -15,5 +14,6 @@ module.exports = {
 
   viewContext: require('./view-context'),
   formValidator: require('./form-validator'),
-  anonGoogleAnalytics: require('./anon-google-analytics')
+  anonGoogleAnalytics: require('./anon-google-analytics'),
+  authCredentials: require('./auth-credentials')
 };

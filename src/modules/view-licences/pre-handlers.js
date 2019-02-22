@@ -6,7 +6,7 @@ const licenceConnector = require('../../lib/connectors/water-service/licences');
 
 const getDocumentFilter = (request) => {
   return {
-    entity_id: get(request, 'auth.credentials.entity_id'),
+    company_entity_id: get(request, 'auth.credentials.companyId'),
     document_id: get(request, 'params.licence_id')
   };
 };

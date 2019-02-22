@@ -1,16 +1,20 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const { get } = require('lodash');
+
+const { isInternal } = require('../../../lib/permissions');
+
 const {
   getLicenceNumbers,
   getReturnsViewData,
-  getReturnTotal,
-  canEdit
+  getReturnTotal
 } = require('../lib/helpers');
 
 const {
   getLinesWithReadings
 } = require('../lib/return-helpers');
+
+const { getReturnPath } = require('../lib/return-path');
 
 const { returns } = require('../../../lib/connectors/water');
 
@@ -59,10 +63,10 @@ const getReturn = async (request, h) => {
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const [ documentHeader ] = await getLicenceNumbers(entityId, {system_external_id: licenceNumber}, isInternal);
+  const isInternalUser = isInternal(request);
+  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber });
 
-  const canView = documentHeader && (isInternal || (data.isCurrent && data.metadata.isCurrent));
+  const canView = documentHeader && (isInternalUser || (data.isCurrent && data.metadata.isCurrent));
 
   if (!canView) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
@@ -77,10 +81,11 @@ const getReturn = async (request, h) => {
     lines,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
-    canEdit: canEdit(request.permissions, data),
+    path: getReturnPath(data, request),
     showVersions,
     isVoid: data.status === 'void'
   };
+
   return h.view('water/returns/return', view);
 };
 

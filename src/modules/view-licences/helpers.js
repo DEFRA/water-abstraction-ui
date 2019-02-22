@@ -27,9 +27,9 @@ function mapSort (sort) {
  * @param {Object} query - the HTTP query params
  * @return {Object} sort ready for use in getLicences CRM request
  */
-function mapFilter (entityId, query) {
+function mapFilter (companyId, query) {
   const filter = {
-    entity_id: entityId
+    company_entity_id: companyId
   };
   // Search on licence name/number
   if (query.licenceNumber) {

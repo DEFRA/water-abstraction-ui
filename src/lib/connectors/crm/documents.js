@@ -5,7 +5,9 @@
 const {
   APIClient
 } = require('@envage/hapi-pg-rest-api');
+const { isExternal } = require('../../permissions');
 const Boom = require('boom');
+const { get } = require('lodash');
 const { crm } = require('../../../../config');
 const { entityId: waterRegimeEntityId } = crm.regimes.water;
 
@@ -115,6 +117,25 @@ client.getWaterLicence = async (licenceRef) => {
     throw Boom.notFound(`Water licence number ${licenceRef} not found in CRM`);
   }
   return document;
+};
+
+/**
+ * Creates a filter object, taking into account the regime entity ID for
+ * water abstraction licences, and filtering on the user's selected company for
+ * external users
+ * @param  {Object} request     - HAPI request
+ * @param  {Object} [filter={}] - filter
+ * @return {Object}             filter
+ */
+client.createFilter = (request, filter = {}) => {
+  const defaults = {
+    regime_entity_id: waterRegimeEntityId
+  };
+  if (isExternal(request)) {
+    const companyId = get(request, 'auth.credentials.companyId');
+    defaults.company_entity_id = companyId;
+  }
+  return Object.assign({}, defaults, filter);
 };
 
 module.exports = client;

@@ -3,28 +3,47 @@ const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const CRM = require('../../lib/connectors/crm');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
+const permissions = require('../../lib/permissions');
 
-const getDocumentFilter = (request) => {
-  return {
-    company_entity_id: get(request, 'auth.credentials.companyId'),
-    document_id: get(request, 'params.licence_id')
-  };
+const checkAccess = (request, documentHeader) => {
+  if (permissions.isInternal(request)) {
+    return;
+  }
+  const companyId = get(request, 'auth.credentials.companyId');
+  if (documentHeader.company_entity_id !== companyId) {
+    const params = { documentHeader, credentials: request.auth.credentials };
+    throw Boom.unauthorized(`Access denied to document`, params);
+  }
 };
 
 /**
- * Pre handler for external users only - checks user can access requested document
+ * Loads the CRM document, and also for external users, checks the document
+ * matches their currently selected company
  * @param  {Object}  request - HAPI request
- * @param  {Object}  h       - HAPI response toolkit
- * @return {Promise}         Resolves with continue response if OK
+ * @param {String} documentId - the CRM document ID
+ * @param  {Object}  h       - HAPI reply interface
+ * @return {Promise}         resolves with h.continue
  */
-const preAccessControl = async (request, h) => {
-  // External user must be able to view licence via CRM call with entity ID
-  const filter = getDocumentFilter(request);
-  const { error, data: [documentHeader] } = await CRM.documents.findMany(filter);
+const preLoadDocument = async (request, h) => {
+  // Create filter to load document
+  const { documentId } = request.params;
+  const filter = {
+    document_id: documentId
+  };
+
+  // Load document from CRM
+  const { error, data: [ documentHeader ] } = await CRM.documents.findMany(filter);
+
   throwIfError(error);
   if (!documentHeader) {
-    throw Boom.unauthorized(`Document ${filter.document_id} not found for entity ${filter.entity_id}`);
+    throw Boom.notFound(`Document ${documentId} not found`);
   }
+
+  // Check access for external users
+  checkAccess(request, documentHeader);
+
+  // Attach document header to request and return
+  request.documentHeader = documentHeader;
   return h.continue;
 };
 
@@ -34,7 +53,7 @@ const preAccessControl = async (request, h) => {
  * - Primary user of licence
  */
 const preInternalView = async (request, h) => {
-  const { licence_id: documentId } = request.params;
+  const { documentId } = request.params;
   const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
   const verifications = await CRM.getDocumentVerifications(documentId);
   set(request, 'view.primaryUser', primaryUser);
@@ -43,6 +62,6 @@ const preInternalView = async (request, h) => {
 };
 
 module.exports = {
-  preAccessControl,
+  preLoadDocument,
   preInternalView
 };

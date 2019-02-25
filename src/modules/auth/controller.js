@@ -2,7 +2,7 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
-const Boom = require('Boom');
+const Boom = require('boom');
 const { get } = require('lodash');
 
 const IDM = require('../../lib/connectors/idm');

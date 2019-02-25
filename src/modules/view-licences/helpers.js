@@ -1,10 +1,11 @@
-const { LicenceNotFoundError } = require('./errors');
-const CRM = require('../../lib/connectors/crm');
+// const { LicenceNotFoundError } = require('./errors');
+// const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
 const Boom = require('boom');
+// const permissions = require('../../lib/permissions');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally
@@ -88,25 +89,12 @@ function loadGaugingStations (metadata) {
 
 /**
  * Loads licence data for detail view from CRM and permit repo
- * @param {String} entityId - GUID for current individual entity
+ * @param {Object} request - the current request
  * @param {String} documentId - GUID for the CRM document ID
  * @return {Promise} - resolves with CRM, permit repo and transformed licence data
  */
-async function loadLicenceData (entityId, documentId) {
-  const filter = {
-    entity_id: entityId,
-    document_id: documentId
-  };
-
-  // Get CRM data
-  const { error, data: [documentHeader] } = await CRM.documents.findMany(filter);
-  if (error) {
-    throw error;
-  }
-
-  if (!documentHeader) {
-    throw new LicenceNotFoundError(`Licence with document ID ${documentId} missing in CRM`);
-  }
+async function loadLicenceData (request, documentId) {
+  const { documentHeader } = request;
 
   // Get permit repo data
   const {

@@ -49,7 +49,7 @@ const isExternalUser = user => getUserScopes(user).includes('external');
  * @param  {Object} request - HAPI request
  * @return {Boolean}         - true if authenticated route
  */
-const isAuthenticatedRoute = request => request.auth.isAuthenticated;
+const isAuthenticatedRoute = request => get(request, 'auth.isAuthenticated', false);
 
 const mapRolesToScopes = roles => roles.map(role => role.role);
 
@@ -69,39 +69,46 @@ const loadScopes = async (request) => {
   // Get IDM scopes
   const scopes = getUserScopes(user);
 
-  if (isExternalUser(user) && companyId) {
+  if (isExternalUser(user)) {
     // Load all user's roles into current request
     request.entityRoles = await loadCRMEntityRoles(entityId);
 
-    // Filter roles for selected company
-    const roles = request.entityRoles.filter(getCompanyPredicate(companyId));
+    if (companyId) {
+      // Filter roles for selected company
+      const roles = request.entityRoles.filter(getCompanyPredicate(companyId));
 
-    // Use selected company roles to augment scopes
-    scopes.push(...mapRolesToScopes(roles));
+      // Use selected company roles to augment scopes
+      scopes.push(...mapRolesToScopes(roles));
+    }
   }
 
   return scopes;
+};
+
+/**
+ * onCredentials plugin handler
+ */
+const handler = async (request, h) => {
+  // We should only load scopes on authenticated routes
+  if (isAuthenticatedRoute(request)) {
+    try {
+      const scopes = await loadScopes(request);
+      set(request, 'auth.credentials.scope', scopes);
+    } catch (error) {
+      logger.error('Failed to load entity scopes', error, get(request, 'auth.credentials'));
+      throw error;
+    }
+  }
+  return h.continue;
 };
 
 const plugin = {
   register: (server, options) => {
     server.ext({
       type: 'onCredentials',
-      async method (request, h) {
-        // We should only load scopes on authenticated routes
-        if (isAuthenticatedRoute(request)) {
-          try {
-            const scopes = await loadScopes(request);
-            set(request, 'auth.credentials.scope', scopes);
-          } catch (error) {
-            logger.error('Failed to load entity scopes', error, get(request, 'auth.credentials'));
-          }
-        }
-        return h.continue;
-      }
+      method: handler
     });
   },
-
   pkg: {
     name: 'authCredentials',
     version: '2.0.0'
@@ -109,3 +116,4 @@ const plugin = {
 };
 
 module.exports = plugin;
+module.exports.handler = handler;

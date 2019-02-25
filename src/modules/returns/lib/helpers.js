@@ -20,7 +20,6 @@ const { getReturnPath } = require('./return-path');
  */
 const getLicenceNumbers = (request, filter = {}) => {
   const f = documents.createFilter(request, filter);
-  console.log(f);
   const sort = {};
   const columns = ['system_external_id', 'document_name', 'document_id'];
   return documents.findAll(f, sort, columns);

@@ -8,11 +8,13 @@ const licenceConnector = require('../../../src/lib/connectors/water-service/lice
 
 const entityId = 'entity_1';
 const documentId = 'document_1';
+const companyId = 'company_1';
 
 const request = {
   auth: {
     credentials: {
-      entity_id: entityId
+      entity_id: entityId,
+      companyId
     }
   },
   params: {
@@ -53,7 +55,7 @@ experiment('preAccessControl', () => {
     const response = await preHandlers.preAccessControl(request, h);
 
     const [filter] = CRM.documents.findMany.firstCall.args;
-    expect(filter.entity_id).to.equal(entityId);
+    expect(filter.company_entity_id).to.equal(companyId);
     expect(filter.document_id).to.equal(documentId);
     expect(response).to.equal(h.continue);
   });

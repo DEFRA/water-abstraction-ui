@@ -61,11 +61,11 @@ const getReportsList = (request) => {
     createNotificationType('View service performance (opens in a new tab)', 'https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N', { newWindow: true })
   ];
 
-  if (isInternalReturns(request)) {
+  if (isARApprover(request)) {
     reports.push(createNotificationType('Abstraction reform report', '/admin/digitise/report'));
   }
 
-  if (isARApprover(request)) {
+  if (isInternalReturns(request)) {
     reports.push(createNotificationType('Returns overview', '/admin/returns-reports'));
   }
 

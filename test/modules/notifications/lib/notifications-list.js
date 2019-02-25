@@ -53,56 +53,30 @@ lab.experiment('getNotificationsList', () => {
 });
 
 lab.experiment('getReportsList', () => {
-  const arUser = {
-    ar: {
-      edit: true,
-      approve: false
-    },
-    returns: {
-      edit: false
-    }
-  };
-
-  const arApprover = {
-    ar: {
-      edit: true,
-      approve: true
-    },
-    returns: {
-      edit: false
-    }
-  };
-
-  const returns = {
-    ar: {
-      edit: false,
-      approve: false
-    },
-    returns: {
-      edit: true
-    }
-  };
-
   lab.test('It should not include AR report link for AR user scope', async () => {
-    const reports = getReportsList(arUser);
+    const request = createRequest(scope.abstractionReformUser);
+    const reports = getReportsList(request);
     const paths = reports.map(item => item.path);
     expect(paths.includes('/admin/digitise/report')).to.equal(false);
   });
 
   lab.test('It should include AR report link in list for AR approver scope', async () => {
-    const reports = getReportsList(arApprover);
+    const request = createRequest(scope.abstractionReformApprover);
+    const reports = getReportsList(request);
     const paths = reports.map(item => item.path);
     expect(paths.includes('/admin/digitise/report')).to.equal(true);
   });
 
-  lab.test('It includes returns overview link when returns.edit permission is set', async () => {
-    const reports = getReportsList(returns);
+  lab.test('It includes returns overview link for returns user', async () => {
+    const request = createReturnsRequest();
+    const reports = getReportsList(request);
     const paths = reports.map(item => item.path);
     expect(paths.includes('/admin/returns-reports')).to.equal(true);
   });
 
-  lab.test('It does not include returns overview link when returns.edit permission is false', async () => {
-    const reports = getReportsList(arUser);
+  lab.test('It does not include returns overview link for other internal users', async () => {
+    const request = createRequest();
+    const reports = getReportsList(request);
     const paths = reports.map(item => item.path);
     expect(paths.includes('/admin/returns-reports')).to.equal(false);
   });

@@ -218,7 +218,6 @@ const mapFormRadioField = (field) => {
     items
   };
 
-  console.log(options);
   return applyErrors(options, field.errors);
 };
 

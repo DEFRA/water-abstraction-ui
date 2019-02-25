@@ -4,18 +4,18 @@
  */
 const Boom = require('Boom');
 const { get } = require('lodash');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
-const { getPermissions } = require('../../lib/permissions');
+const { isInternal } = require('../../lib/permissions');
 const logger = require('../../lib/logger');
 
 const { destroySession, authValidationErrorResponse } = require('./helpers');
 
-const waterUser = require('../../lib/connectors/water-service/user');
 const { selectCompanyForm } = require('./forms/select-company');
 const { handleRequest, getValues } = require('../../lib/forms');
+
+const loginHelpers = require('./lib/login-helpers');
 
 /**
  * Welcome page before routing to signin/register
@@ -39,7 +39,7 @@ function getSignin (request, h) {
  * @param {Object} h - the HAPI response toolkit
  */
 async function getSignout (request, h) {
-  const params = `?u=${request.permissions.admin.defra ? 'i' : 'e'}`;
+  const params = `?u=${isInternal(request) ? 'i' : 'e'}`;
   try {
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
@@ -94,12 +94,11 @@ async function postSignin (request, h) {
     await signIn.auto(request, request.payload.user_id);
 
     // Redirect user
-    const permissions = getPermissions(request.auth.credentials);
-    const redirectPath = permissions.admin.defra ? '/admin/licences' : '/licences';
+    const path = await loginHelpers.getLoginRedirectPath(request);
 
     // Resolves Chrome issue where it won't set cookie and redirect in same request
     // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}
-    return h.response(getLoginRedirectHtml(request, redirectPath));
+    return h.response(getLoginRedirectHtml(request, path));
   } catch (error) {
     if (error.statusCode === 401) {
       return authValidationErrorResponse(request, h);
@@ -115,20 +114,13 @@ const getLoginRedirectHtml = (request, redirectPath) => {
   return meta + script;
 };
 
-const getUserID = request => get(request, 'auth.credentials.user_id');
-
 /**
- * Asynchronously loads user data from the water service, including their list
- * of companies
- * @param  {Object}  request - HAPI request
- * @return {Promise}         [description]
+ * Renders select company form for current user
+ * @param  {Object} request - HAPI request
+ * @param  {Object} h       - HAPI reply interface
+ * @param  {Object} form    - select company form object
+ * @return {String}         rendered page
  */
-const loadUserData = async userId => {
-  const { data, error } = await waterUser.getUserStatus(userId);
-  throwIfError(error);
-  return data;
-};
-
 const renderForm = (request, h, form) => {
   const view = {
     ...request.view,
@@ -139,18 +131,22 @@ const renderForm = (request, h, form) => {
 };
 
 /**
- * Displays a page where the user can select the company they wish to work with
+ * Displays a page where the user can select the company they wish to manage
  */
 const getSelectCompany = async (request, h) => {
-  const userId = getUserID(request);
-  const data = await loadUserData(userId);
+  const userId = loginHelpers.getUserID(request);
+  const data = await loginHelpers.loadUserData(userId);
   const form = selectCompanyForm(request, data);
   return renderForm(request, h, form);
 };
 
+/**
+ * POST handler for when user has selected the company they wish to manage
+ * @param {String} request.payload.company - the index of the company to select
+ */
 const postSelectCompany = async (request, h) => {
-  const userId = getUserID(request);
-  const data = await loadUserData(userId);
+  const userId = loginHelpers.getUserID(request);
+  const data = await loginHelpers.loadUserData(userId);
   const form = handleRequest(selectCompanyForm(request, data), request);
 
   // Set company entity and redirect if valid
@@ -164,8 +160,7 @@ const postSelectCompany = async (request, h) => {
     }
 
     // Set company ID in session cookie
-    request.cookieAuth.set('companyId', company.entityId);
-    request.cookieAuth.set('companyName', company.name);
+    loginHelpers.selectCompany(request, company);
 
     // Redirect
     return h.redirect('/licences');

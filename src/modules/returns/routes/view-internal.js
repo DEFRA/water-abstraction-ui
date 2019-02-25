@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { getReturnsForLicence, getReturn } = require('./view');
+const { scope: { internal } } = require('../../../lib/constants');
 
 module.exports = {
   getAdminReturnsForLicence: {
@@ -8,7 +9,7 @@ module.exports = {
     config: {
       ...getReturnsForLicence.config,
       auth: {
-        scope: ['internal']
+        scope: internal
       }
     }
   },
@@ -25,7 +26,7 @@ module.exports = {
         }
       },
       auth: {
-        scope: ['internal']
+        scope: internal
       },
       plugins: {
         viewContext: {

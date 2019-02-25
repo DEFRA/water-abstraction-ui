@@ -11,19 +11,18 @@ const routes = require('../../../src/modules/add-licences/routes');
 const licenceLoaderPlugin = require('../../../src/lib/hapi-plugins/licence-loader');
 const viewContextPlugin = require('../../../src/lib/hapi-plugins/view-context');
 const requestStubPlugin = require('../../lib/hapi-plugins/request-stub-plugin');
+const { scope } = require('../../../src/lib/constants');
 
 const { set } = require('lodash');
 
 const getRequestSetupForAuthenticatedUser = request => {
   set(request, 'auth.isAuthenticated', true);
   set(request, 'auth.credentials.entity_id', '123');
+  set(request, 'auth.credentials.companyId', '456');
   set(request, 'state.sid', 'something');
-
-  request.permissions = {
-    admin: { defra: false },
-    returns: { submit: true, edit: true },
-    licences: { edit: true }
-  };
+  set(request, 'auth.credentials.scope', [
+    scope.licenceHolder
+  ]);
 };
 
 /**

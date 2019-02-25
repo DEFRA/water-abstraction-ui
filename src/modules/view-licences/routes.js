@@ -5,13 +5,15 @@ const { preAccessControl } = require('./pre-handlers');
 
 const { scope } = require('../../lib/constants');
 
+const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
+
 const getLicence = {
   method: 'GET',
   path: '/licences/{licence_id}',
   handler: controller.getLicence,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     pre: [{ method: preAccessControl }],
     description: 'View a single licence',
@@ -37,7 +39,7 @@ const getLicenceRename = {
   handler: controller.getLicenceDetail,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'Set user-defined name for licence',
     validate: {
@@ -63,7 +65,7 @@ const postLicenceRename = {
   config: {
     description: 'Update the user-defined licence name',
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     validate: {
       params: {
@@ -97,7 +99,7 @@ const getLicenceContact = {
   handler: controller.getLicenceDetail,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'View contact info for licence',
     validate: {
@@ -122,7 +124,7 @@ const getLicencePurposes = {
   handler: controller.getLicenceDetail,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'View abstraction purposes for licence',
     validate: {
@@ -147,7 +149,7 @@ const getLicencePoints = {
   handler: controller.getLicenceDetail,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'View abstraction points for licence',
     validate: {
@@ -172,7 +174,7 @@ const getLicenceConditions = {
   handler: controller.getLicenceDetail,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'View abstraction conditions info for licence',
     validate: {
@@ -197,7 +199,7 @@ const getLicenceGaugingStation = {
   handler: controller.getLicenceGaugingStation,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'View abstraction conditions info for licence',
     validate: {
@@ -226,7 +228,7 @@ const getLicenceCommunication = {
   handler: controller.getLicenceCommunication,
   config: {
     auth: {
-      scope: scope.external
+      scope: allowedScopes
     },
     description: 'Look at the content of a message sent to the user regarding the licence',
     validate: {
@@ -250,7 +252,7 @@ module.exports = {
     handler: controller.getLicences,
     config: {
       auth: {
-        scope: scope.external
+        scope: allowedScopes
       },
       description: 'View list of licences with facility to sort/filter',
       validate: {

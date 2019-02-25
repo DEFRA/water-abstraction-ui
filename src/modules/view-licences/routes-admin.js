@@ -17,7 +17,7 @@ const getLicenceAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}'
+  path: '/admin/licences/{documentId}'
 };
 
 const getLicenceContactAdmin = {
@@ -28,7 +28,7 @@ const getLicenceContactAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}/contact'
+  path: '/admin/licences/{documentId}/contact'
 };
 
 const getLicencePurposesAdmin = {
@@ -39,7 +39,7 @@ const getLicencePurposesAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}/purposes'
+  path: '/admin/licences/{documentId}/purposes'
 };
 
 const getLicencePointsAdmin = {
@@ -50,7 +50,7 @@ const getLicencePointsAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}/points'
+  path: '/admin/licences/{documentId}/points'
 };
 
 const getLicenceConditionsAdmin = {
@@ -61,7 +61,7 @@ const getLicenceConditionsAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}/conditions'
+  path: '/admin/licences/{documentId}/conditions'
 };
 
 const getLicenceGaugingStationAdmin = {
@@ -72,7 +72,7 @@ const getLicenceGaugingStationAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{licence_id}/station/{gauging_station}'
+  path: '/admin/licences/{documentId}/station/{gauging_station}'
 };
 
 const getLicenceCommunication = {

@@ -4,20 +4,17 @@
  */
 
 const Boom = require('boom');
-const { trim, partial } = require('lodash');
+const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
-const { hasScope } = require('../../lib/permissions');
-const { scope } = require('../../lib/constants');
 const { getLicenceReturns } = require('./lib/licence-returns');
 
 const { mapReturns } = require('../returns/lib/helpers');
-
-const isInternalUser = partial(hasScope, scope.internal);
+const { isInternal } = require('../../lib/permissions');
 const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
@@ -149,7 +146,9 @@ const getLicence = async (request, h) => {
     throw Boom.notFound(`Document ${documentId} not be found`);
   }
 
-  const returns = await getLicenceReturns(licence.licenceNumber, isInternalUser(request.permissions));
+  const isInternalUser = isInternal(request);
+
+  const returns = await getLicenceReturns(licence.licenceNumber, isInternalUser);
   const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {
@@ -159,7 +158,7 @@ const getLicence = async (request, h) => {
     returns: mapReturns(returns.data, request),
     hasMoreReturns: hasMultiplePages(returns.pagination),
     messages,
-    isInternal: isInternalUser(request.permissions),
+    isInternal: isInternalUser,
     pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`
   };
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
@@ -188,6 +187,8 @@ const getLicenceCommunication = async (request, h) => {
     throw Boom.notFound('Document not associated with communication');
   }
 
+  const isInternalUser = isInternal(request);
+
   const viewContext = {
     ...request.view,
     ...{ pageTitle: (licence.documentName || licence.licenceRef) + ', message review' },
@@ -195,8 +196,9 @@ const getLicenceCommunication = async (request, h) => {
     messageType: response.data.evt.name,
     sentDate: response.data.evt.createdDate,
     messageContent: response.data.notification.plainText,
-    back: `${request.isAdmin ? '/admin' : ''}/licences/${documentId}#communications`,
-    recipientAddressParts: getAddressParts(response.data.notification)
+    back: `${isInternalUser ? '/admin' : ''}/licences/${documentId}#communications`,
+    recipientAddressParts: getAddressParts(response.data.notification),
+    isInternal: isInternalUser
   };
 
   return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });

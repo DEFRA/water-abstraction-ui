@@ -66,6 +66,25 @@ const createRequestWithCompany = () => {
 };
 
 experiment('auth credentials plugin', () => {
+  test('it should be configured correctly', async () => {
+    expect(plugin.register).to.be.a.function();
+    expect(plugin.pkg.name).to.equal('authCredentials');
+    expect(plugin.pkg.version).to.equal('2.0.0');
+  });
+
+  test('it should register an onCredentials handler', async () => {
+    const server = {
+      ext: sinon.stub()
+    };
+    plugin.register(server);
+    expect(server.ext.callCount).to.equal(1);
+    const { method, type } = server.ext.lastCall.args[0];
+    expect(type).to.equal('onCredentials');
+    expect(method).to.equal(plugin.handler);
+  });
+});
+
+experiment('auth credentials plugin handler', () => {
   let h;
 
   const sandbox = sinon.createSandbox();

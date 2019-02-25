@@ -103,7 +103,7 @@ const handler = async (request, h) => {
 };
 
 const plugin = {
-  register: (server, options) => {
+  register: (server) => {
     server.ext({
       type: 'onCredentials',
       method: handler

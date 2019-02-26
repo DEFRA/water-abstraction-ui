@@ -21,9 +21,6 @@ const createMeterRoute = (method, path, handler, description, title) => {
           activeNavLink: 'returns',
           pageTitle: title
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -53,9 +50,6 @@ module.exports = {
           pageTitle: 'Abstraction return - has any water been abstracted?',
           activeNavLink: 'returns',
           showMeta: true
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     }
@@ -86,9 +80,6 @@ module.exports = {
             isNil: Joi.string().required().valid('Yes', 'No')
           }
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -109,9 +100,6 @@ module.exports = {
           activeNavLink: 'returns',
           showMeta: true
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -131,9 +119,6 @@ module.exports = {
           pageTitle: 'Abstraction return - nil submitted',
           activeNavLink: 'returns'
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -151,9 +136,6 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }
@@ -174,9 +156,6 @@ module.exports = {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -195,9 +174,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - how are you reporting your return?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }
@@ -218,9 +194,6 @@ module.exports = {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -239,9 +212,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }
@@ -262,9 +232,6 @@ module.exports = {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -283,9 +250,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }
@@ -306,9 +270,6 @@ module.exports = {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -327,9 +288,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - enter amounts',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }
@@ -351,9 +309,6 @@ module.exports = {
           activeNavLink: 'returns',
           showMeta: true
         },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
-        },
         returns: true
       }
     }
@@ -372,9 +327,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         },
         returns: true
       }

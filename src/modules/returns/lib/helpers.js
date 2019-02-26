@@ -233,7 +233,7 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const isInternal = isInternalUser(request.permissions);
+  const isInternal = isInternalUser(request);
 
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);

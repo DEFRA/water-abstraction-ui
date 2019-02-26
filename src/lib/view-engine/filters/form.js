@@ -176,6 +176,25 @@ const mapChoices = (field, prop = 'checked') => {
 };
 
 /**
+ * Gets radio legend options.  If field.options.heading is true, it sets
+ * options to render the label text as a page heading
+ * @param  {Object} field - radio button field description
+ * @return {Object}       - legend options
+ */
+const mapLegendOptions = (field) => {
+  const defaults = {
+    text: field.options.label
+  };
+
+  const heading = {
+    isPageHeading: true,
+    classes: 'govuk-fieldset__legend--xl'
+  };
+
+  return field.options.heading ? { ...defaults, ...heading } : defaults;
+};
+
+/**
  * Maps a radio field from internal form library to the GOV.UK radio
  * macro options object
  * @param  {Object} field - a radio field from internal form library
@@ -194,12 +213,11 @@ const mapFormRadioField = (field) => {
       text: field.options.hint
     },
     fieldset: {
-      legend: {
-        text: field.options.label
-      }
+      legend: mapLegendOptions(field)
     },
     items
   };
+
   return applyErrors(options, field.errors);
 };
 

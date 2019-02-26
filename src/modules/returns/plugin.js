@@ -2,14 +2,15 @@ const Boom = require('boom');
 const { get } = require('lodash');
 const { getSessionData } = require('./lib/session-helpers');
 const { getViewData } = require('./lib/helpers');
+const { isInternal } = require('../../lib/permissions');
 
 /**
  * Redirects user to view return rather than edit
  */
 const redirectToReturn = (request, h) => {
   const { returnId } = request.query;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const path = `${isInternal ? '/admin' : ''}/returns/return?id=${returnId}`;
+  const isInternalUser = isInternal(request);
+  const path = `${isInternalUser ? '/admin' : ''}/returns/return?id=${returnId}`;
   return h.redirect(path).takeover();
 };
 
@@ -28,7 +29,7 @@ const preHandler = async (request, h) => {
     request.returns = {
       data,
       view,
-      isInternal: request.permissions.hasPermission('admin.defra')
+      isInternal: isInternal(request)
     };
   } catch (err) {
     // Return data was not found in session

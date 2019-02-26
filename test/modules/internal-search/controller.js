@@ -7,6 +7,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const controller = require('../../../src/modules/internal-search/controller');
 const water = require('../../../src/lib/connectors/water');
 const waterServiceUserConnector = require('../../../src/lib/connectors/water-service/user');
+const { scope } = require('../../../src/lib/constants');
 
 const getUserStatusResponses = require('../../responses/water-service/user/_userId_/status');
 
@@ -14,12 +15,9 @@ experiment('getSearchForm', () => {
   const h = {};
   let apiStub;
   const baseRequest = {
-    permissions: {
-      returns: {
-        edit: true
-      },
-      admin: {
-        defra: true
+    auth: {
+      credentials: {
+        scope: [scope.internal, scope.returns]
       }
     },
     query: {},

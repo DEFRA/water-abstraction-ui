@@ -1,15 +1,13 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const { mapResponseToView } = require('../../../../src/modules/internal-search/lib/api-response-mapper');
+const { scope } = require('../../../../src/lib/constants');
 
 experiment('mapResponseToView', () => {
   const request = {
-    permissions: {
-      returns: {
-        edit: true
-      },
-      admin: {
-        defra: true
+    auth: {
+      credentials: {
+        scope: scope.internal
       }
     }
   };
@@ -32,7 +30,7 @@ experiment('mapResponseToView', () => {
   });
 
   test('Returns should be mapped and returned if present', async () => {
-    const returns = [{ return_id: 'v1:8:1234' }];
+    const returns = [{ return_id: 'v1:8:1234', status: 'completed' }];
 
     const { returns: [ret] } = mapResponseToView({ returns }, request);
 

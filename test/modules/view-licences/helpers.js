@@ -156,9 +156,9 @@ experiment('loadRiverLevelData', () => {
 });
 
 experiment('mapFilter', () => {
-  test('adds the entity id to the filter', async () => {
+  test('adds the company entity id to the filter', async () => {
     const filter = mapFilter('1234', {});
-    expect(filter.entity_id).to.equal('1234');
+    expect(filter.company_entity_id).to.equal('1234');
   });
 
   test('adds the licence number to the filter if supplied', async () => {

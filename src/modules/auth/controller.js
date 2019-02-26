@@ -2,13 +2,20 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
+const Boom = require('boom');
 const { get } = require('lodash');
+
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
-const { getPermissions } = require('../../lib/permissions');
+const { isInternal } = require('../../lib/permissions');
 const logger = require('../../lib/logger');
 
 const { destroySession, authValidationErrorResponse } = require('./helpers');
+
+const { selectCompanyForm } = require('./forms/select-company');
+const { handleRequest, getValues } = require('../../lib/forms');
+
+const loginHelpers = require('./lib/login-helpers');
 
 /**
  * Welcome page before routing to signin/register
@@ -32,7 +39,7 @@ function getSignin (request, h) {
  * @param {Object} h - the HAPI response toolkit
  */
 async function getSignout (request, h) {
-  const params = `?u=${request.permissions.admin.defra ? 'i' : 'e'}`;
+  const params = `?u=${isInternal(request) ? 'i' : 'e'}`;
   try {
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
@@ -87,12 +94,11 @@ async function postSignin (request, h) {
     await signIn.auto(request, request.payload.user_id);
 
     // Redirect user
-    const permissions = getPermissions(request.auth.credentials);
-    const redirectPath = permissions.admin.defra ? '/admin/licences' : '/licences';
+    const path = await loginHelpers.getLoginRedirectPath(request);
 
     // Resolves Chrome issue where it won't set cookie and redirect in same request
     // @see {@link https://stackoverflow.com/questions/40781534/chrome-doesnt-send-cookies-after-redirect}
-    return h.response(getLoginRedirectHtml(request, redirectPath));
+    return h.response(getLoginRedirectHtml(request, path));
   } catch (error) {
     if (error.statusCode === 401) {
       return authValidationErrorResponse(request, h);
@@ -108,10 +114,66 @@ const getLoginRedirectHtml = (request, redirectPath) => {
   return meta + script;
 };
 
+/**
+ * Renders select company form for current user
+ * @param  {Object} request - HAPI request
+ * @param  {Object} h       - HAPI reply interface
+ * @param  {Object} form    - select company form object
+ * @return {String}         rendered page
+ */
+const renderForm = (request, h, form) => {
+  const view = {
+    ...request.view,
+    form,
+    back: '/licences'
+  };
+  return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
+};
+
+/**
+ * Displays a page where the user can select the company they wish to manage
+ */
+const getSelectCompany = async (request, h) => {
+  const userId = loginHelpers.getUserID(request);
+  const data = await loginHelpers.loadUserData(userId);
+  const form = selectCompanyForm(request, data);
+  return renderForm(request, h, form);
+};
+
+/**
+ * POST handler for when user has selected the company they wish to manage
+ * @param {String} request.payload.company - the index of the company to select
+ */
+const postSelectCompany = async (request, h) => {
+  const userId = loginHelpers.getUserID(request);
+  const data = await loginHelpers.loadUserData(userId);
+  const form = handleRequest(selectCompanyForm(request, data), request);
+
+  // Set company entity and redirect if valid
+  if (form.isValid) {
+    const { company: index } = getValues(form);
+
+    const company = get(data, `companies.${index}`);
+
+    if (!company) {
+      throw Boom.badRequest(`Company not found`, { index });
+    }
+
+    // Set company ID in session cookie
+    loginHelpers.selectCompany(request, company);
+
+    // Redirect
+    return h.redirect('/licences');
+  }
+  return renderForm(request, h, form);
+};
+
 module.exports = {
   getWelcome,
   getSignin,
   getSignout,
   getSignedOut,
-  postSignin
+  postSignin,
+  getSelectCompany,
+  postSelectCompany
 };

@@ -15,10 +15,8 @@ const contactDetailsRoutes = require('./contact-details/routes');
 const abstractionReformRoutes = require('./abstraction-reform/routes');
 const wr22Routes = require('./abstraction-reform/wr22-routes');
 const returnsRoutes = require('./returns/routes');
-const naldPOCRoutes = require('./nald-poc/routes');
 const returnNotificationRoutes = require('./returns-notifications/routes');
 const cspRoutes = require('./csp/routes');
-const nunjucksTestRoutes = require('./nunjucks-test/routes');
 const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 
@@ -40,10 +38,8 @@ module.exports = [
   ...Object.values(abstractionReformRoutes),
   ...Object.values(wr22Routes),
   ...Object.values(returnsRoutes),
-  ...Object.values(naldPOCRoutes),
   ...Object.values(returnNotificationRoutes),
   ...Object.values(cspRoutes),
-  ...Object.values(nunjucksTestRoutes),
   ...Object.values(returnsReports),
   ...Object.values(internalSearch)
 ];

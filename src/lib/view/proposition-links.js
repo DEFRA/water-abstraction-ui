@@ -1,5 +1,9 @@
 const { get } = require('lodash');
-const { isAuthenticated, isAdmin, createLink, setActiveLink } = require('./helpers');
+const { createLink, setActiveLink } = require('./helpers');
+
+const {
+  isAuthenticated, isInternal
+} = require('../permissions');
 
 const createPropositionLink = (label, path, id) => {
   return createLink(label, path, id, { id });
@@ -21,7 +25,7 @@ const getPropositionLinks = (request) => {
   }
 
   // Select links relevant to user type
-  const links = isAdmin(request)
+  const links = isInternal(request)
     ? [contactLink, changePasswordLink, signoutLink]
     : [changePasswordLink, signoutLink];
 

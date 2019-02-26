@@ -26,6 +26,10 @@ const {
   getLinesWithReadings, applyStatus, applyUnderQuery
 } = require('../lib/return-helpers');
 
+const { getReturnPath } = require('../lib/return-path');
+
+const { isInternal } = require('../../../lib/permissions');
+
 const {
   STEP_START,
   STEP_NIL_RETURN,
@@ -47,7 +51,7 @@ const {
   deleteSessionData,
   submitReturnData } = require('../lib/session-helpers');
 
-const { getViewData, getLicenceNumbers, getReturnTotal, canEdit } = require('../lib/helpers');
+const { getViewData, getLicenceNumbers, getReturnTotal } = require('../lib/helpers');
 
 /**
  * Render form to display whether amounts / nil return for this cycle
@@ -59,16 +63,16 @@ const getAmounts = async (request, h) => {
   const data = await returns.getReturn(returnId);
 
   // Check CRM ownership of document
-  const { entity_id: entityId } = request.auth.credentials;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const documentHeaders = await getLicenceNumbers(entityId, { system_external_id: data.licenceNumber }, isInternal);
+  const filter = { system_external_id: data.licenceNumber };
+  const documentHeaders = await getLicenceNumbers(request, filter);
   if (documentHeaders.length === 0) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
+    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }
 
   // Check date/roles
-  if (!canEdit(request.permissions, data)) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId} for entity ${entityId}`);
+  const { isEdit } = getReturnPath(data, request);
+  if (!isEdit) {
+    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }
 
   const view = await getViewData(request, data);
@@ -138,8 +142,7 @@ const postConfirm = async (request, h) => {
     try {
       // Apply status / under query
       let updated = applyStatus(data);
-      const isInternal = request.permissions.hasPermission('returns.edit');
-      if (isInternal) {
+      if (isInternal(request)) {
         updated = applyUnderQuery(updated, getValues(form));
       }
       await submitReturnData(updated, request);

@@ -6,6 +6,8 @@ const Joi = require('joi');
 
 const { setStatusForm, setStatusSchema } = require('../../../../src/modules/abstraction-reform/forms/set-status');
 
+const { scope } = require('../../../../src/lib/constants');
+
 const {
   STATUS_IN_PROGRESS,
   STATUS_IN_REVIEW,
@@ -16,6 +18,9 @@ const {
 const lab = exports.lab = Lab.script();
 
 const getRequest = (isApprover) => {
+  const scopes = isApprover
+    ? [scope.internal, scope.abstractionReformApprover]
+    : [scope.internal, scope.abstractionReformUser];
   return {
     params: {
       documentId: '7af974c4-ce20-4d85-bf41-bd42c9fd5c0e'
@@ -23,8 +28,10 @@ const getRequest = (isApprover) => {
     view: {
       csrfToken: 'ccc36230-b93f-4d47-b028-b563f1fdc949'
     },
-    permissions: {
-      hasPermission: () => (isApprover)
+    auth: {
+      credentials: {
+        scope: scopes
+      }
     }
   };
 };

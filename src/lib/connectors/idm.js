@@ -96,7 +96,7 @@ const getUser = userId => client.findOne(userId);
  */
 function getUserByEmail (email) {
   return client.findMany({
-    user_name: email,
+    user_name: email.toLowerCase().trim(),
     application: config.idm.application
   });
 }

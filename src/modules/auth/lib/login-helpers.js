@@ -34,11 +34,11 @@ const selectCompany = (request, company) => {
  * @return {Promise}         [description]
  */
 const getLoginRedirectPath = async (request) => {
-  const userId = getUserID(request);
-
   if (isInternal(request)) {
     return '/admin/licences';
   }
+
+  const userId = getUserID(request);
 
   // Load companies to see how many they can access
   const data = await loadUserData(userId);

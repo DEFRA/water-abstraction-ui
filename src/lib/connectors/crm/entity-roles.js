@@ -3,6 +3,7 @@
  * @module lib/connectors/crm/entity-roles
  */
 const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
+const serviceRequest = require('../service-request');
 
 const rp = require('request-promise-native').defaults({
   proxy: null,
@@ -65,19 +66,13 @@ client.getCompanyRoles = async (entityId, companyEntityId) => {
   const filter = {
     company_entity_id: companyEntityId
   };
-
   const options = {
-    method: 'GET',
-    uri,
-    headers: { Authorization: process.env.JWT_TOKEN },
     qs: {
       filter: JSON.stringify(filter)
-    },
-    json: true
+    }
   };
 
-  const { error, data } = await rp(options);
-
+  const { error, data } = await serviceRequest.get(uri, options);
   throwIfError(error);
 
   return data;

@@ -66,13 +66,13 @@ const createRequestWithCompany = () => {
 };
 
 experiment('auth credentials plugin', () => {
-  test('it should be configured correctly', async () => {
+  test('is configured correctly', async () => {
     expect(plugin.register).to.be.a.function();
     expect(plugin.pkg.name).to.equal('authCredentials');
     expect(plugin.pkg.version).to.equal('2.0.0');
   });
 
-  test('it should register an onCredentials handler', async () => {
+  test('registers an onCredentials handler', async () => {
     const server = {
       ext: sinon.stub()
     };
@@ -101,12 +101,12 @@ experiment('auth credentials plugin handler', () => {
     sandbox.restore();
   });
 
-  test('it should return h.continue on unauthenticated routes', async () => {
+  test('returns h.continue on unauthenticated routes', async () => {
     const result = await plugin.handler({}, h);
     expect(result).to.equal(h.continue);
   });
 
-  test('it should log throw an error if there is an IDM error', async () => {
+  test('throws and logs an error if there is an IDM error', async () => {
     const request = createRequest();
     idmConnector.getUserByEmail.resolves(responses.error);
     const func = () => plugin.handler(request, h);
@@ -120,7 +120,7 @@ experiment('auth credentials plugin handler', () => {
       idmConnector.getUserByEmail.resolves(responses.idmInternal);
     });
 
-    test('it should return the scopes loaded from the IDM', async () => {
+    test('returns the scopes loaded from the IDM', async () => {
       const request = createRequest();
       const result = await plugin.handler(request, h);
       expect(result).to.equal(h.continue);
@@ -136,19 +136,19 @@ experiment('auth credentials plugin handler', () => {
       });
     });
 
-    test('it should place all user roles on the request', async () => {
+    test('places all user roles on the request', async () => {
       const request = createRequest();
       await plugin.handler(request, h);
       expect(request.entityRoles).to.equal(responses.crmRoles);
     });
 
-    test('if no company selected, company roles should not be in the scope', async () => {
+    test('does not place company roles in scope if no company selected', async () => {
       const request = createRequest();
       await plugin.handler(request, h);
       expect(request.auth.credentials.scope).to.equal([scope.external]);
     });
 
-    test('if company is selected, the roles in that company should be placed in the scope', async () => {
+    test('places company roles in scope if company is selected', async () => {
       const request = createRequestWithCompany();
       const result = await plugin.handler(request, h);
       expect(result).to.equal(h.continue);

@@ -1,11 +1,8 @@
-// const { LicenceNotFoundError } = require('./errors');
-// const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
 const Boom = require('boom');
-// const permissions = require('../../lib/permissions');
 
 /**
  * Maps the sort in the HTTP query to the field names used internally

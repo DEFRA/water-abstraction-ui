@@ -3,6 +3,7 @@ const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
 const { selectSchemaCategoryForm } = require('../../../../src/modules/abstraction-reform/forms/select-schema-category');
+const { scope } = require('../../../../src/lib/constants');
 
 const lab = exports.lab = Lab.script();
 
@@ -12,6 +13,11 @@ const request = {
   },
   params: {
     documentId: '76288bd8-5d26-4b49-b7cc-b4ba8d3fb3c4'
+  },
+  auth: {
+    credentials: {
+      scope: [scope.internal]
+    }
   }
 };
 

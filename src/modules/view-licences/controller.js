@@ -11,7 +11,7 @@ const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
-const { getLicenceReturns } = require('./lib/licence-returns');
+const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
 const { isInternal } = require('../../lib/permissions');
@@ -148,7 +148,8 @@ const getLicence = async (request, h) => {
 
   const isInternalUser = isInternal(request);
 
-  const returns = await getLicenceReturns(licence.licenceNumber, isInternalUser);
+  const pagination = { page: 1, perPage: 10 };
+  const returns = await getLicenceReturns([licence.licenceNumber], pagination, isInternalUser);
   const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {

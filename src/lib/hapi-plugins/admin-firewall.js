@@ -18,7 +18,7 @@ const adminFirewallPlugin = {
         // Detect any URL starting /admin
         if (/\/admin/i.test(path)) {
           if (!hasScope(request, scope.internal)) {
-            throw Boom.unauthorized(`admin.defra permission required to view ${path}`);
+            throw Boom.unauthorized(`internal scope required to view ${path}`);
           }
         }
         // Continue processing request

@@ -2,6 +2,7 @@ const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const { internalRoutingForm } = require('../../../../src/modules/returns/forms/internal-routing');
+const { scope } = require('../../../../src/lib/constants');
 
 experiment('internalRoutingForm', () => {
   const request = {
@@ -11,9 +12,9 @@ experiment('internalRoutingForm', () => {
     query: {
       returnId: 'abc'
     },
-    permissions: {
-      hasPermission: () => {
-        return true;
+    auth: {
+      credentials: {
+        scope: [scope.internal]
       }
     }
   };

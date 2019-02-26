@@ -1,5 +1,7 @@
 const { get } = require('lodash');
 
+const { isInternal } = require('../../../lib/permissions');
+
 const STEP_INTERNAL_ROUTING = '/return/internal';
 const STEP_LOG_RECEIPT = '/return/log-receipt';
 const STEP_RECEIPT_LOGGED = '/return/receipt-logged';
@@ -26,8 +28,8 @@ const STEP_SUBMITTED = '/return/submitted';
  */
 const getPath = (path, request, data) => {
   const returnId = get(data, 'returnId', request.query.returnId);
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  const scopedPath = (isInternal ? `/admin${path}` : path);
+  const isInternalUser = isInternal(request);
+  const scopedPath = (isInternalUser ? `/admin${path}` : path);
   return `${scopedPath}?returnId=${returnId}`;
 };
 
@@ -57,8 +59,8 @@ const next = {
     return getPath(isVolumes ? STEP_UNITS : STEP_METER_DETAILS, request, data);
   },
   [STEP_UNITS]: (request, data) => {
-    const isInternal = request.permissions.hasPermission('admin.defra');
-    return getPath(isInternal ? STEP_SINGLE_TOTAL : STEP_BASIS, request, data);
+    const isInternalUser = isInternal(request);
+    return getPath(isInternalUser ? STEP_SINGLE_TOTAL : STEP_BASIS, request, data);
   },
   [STEP_SINGLE_TOTAL]: (request, data) => {
     return getPath(STEP_BASIS, request, data);
@@ -105,8 +107,8 @@ const previous = {
     return '/admin/licences';
   },
   [STEP_START]: (request) => {
-    const isInternal = request.permissions.hasPermission('admin.defra');
-    return isInternal ? getPath(STEP_INTERNAL_ROUTING, request) : '/returns';
+    const isInternalUser = isInternal(request);
+    return isInternalUser ? getPath(STEP_INTERNAL_ROUTING, request) : '/returns';
   },
   [STEP_NIL_RETURN]: (request, data) => {
     return getPath(STEP_START, request, data);
@@ -121,8 +123,8 @@ const previous = {
     return getPath(STEP_UNITS, request, data);
   },
   [STEP_BASIS]: (request, data) => {
-    const isInternal = request.permissions.hasPermission('admin.defra');
-    return getPath(isInternal ? STEP_SINGLE_TOTAL : STEP_UNITS, request, data);
+    const isInternalUser = isInternal(request);
+    return getPath(isInternalUser ? STEP_SINGLE_TOTAL : STEP_UNITS, request, data);
   },
   [STEP_QUANTITIES]: (request, data) => {
     const isMeasured = get(data, 'reading.type') === 'measured';

@@ -1,4 +1,5 @@
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./statuses');
+const { isARApprover } = require('../../../lib/permissions');
 
 /**
  * Calculates the permissions the current user has on the current document
@@ -8,14 +9,13 @@ const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./statuses');
  */
 const getPermissions = (request, finalState) => {
   const { status } = finalState;
-  const { approve, review } = request.permissions.ar;
+  const approve = isARApprover(request);
   const inProgress = status === STATUS_IN_PROGRESS;
   const inReview = status === STATUS_IN_REVIEW;
   const canEdit = (inReview && approve) || inProgress;
-  const canSubmit = canEdit && !review;
   return {
     canEdit,
-    canSubmit,
+    canSubmit: canEdit,
     canApprove: approve
   };
 };

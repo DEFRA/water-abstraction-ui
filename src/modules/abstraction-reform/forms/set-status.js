@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('../../../lib/forms');
+const { isARApprover } = require('../../../lib/permissions');
 
 const {
   STATUS_IN_PROGRESS,
@@ -38,7 +39,7 @@ const setStatusForm = (request) => {
 
   f.fields.push(fields.text('notes', { required: false, multiline: true, label: 'Notes about these changes (optional)' }));
 
-  const isApprover = request.permissions.hasPermission('ar.approve');
+  const isApprover = isARApprover(request);
 
   if (isApprover) {
     f.fields.push(fields.radio('status', {
@@ -68,7 +69,7 @@ const setStatusForm = (request) => {
  * @return {Object} Joi schema
  */
 const setStatusSchema = (request) => {
-  const isApprover = request.permissions.hasPermission('ar.approve');
+  const isApprover = isARApprover(request);
   const validStatus = isApprover ? [STATUS_IN_PROGRESS,
     STATUS_APPROVED,
     STATUS_LICENCE_REVIEW] : STATUS_IN_REVIEW;

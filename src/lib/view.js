@@ -3,6 +3,7 @@ const config = require('../../config');
 
 const { getPropositionLinks } = require('./view/proposition-links');
 const { getMainNav } = require('./view/main-nav');
+const { isInternal } = require('./permissions');
 
 const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   if (isAuthenticated) {
@@ -93,7 +94,7 @@ function viewContextDefaults (request) {
   viewContext.crownCopyrightMessage = '© Crown copyright';
   viewContext.surveyType = getSurveyType(
     viewContext.isAuthenticated,
-    get(viewContext, 'permissions.admin.defra', false)
+    isInternal(request)
   );
 
   viewContext.hasMultipleCompanies = hasMultipleCompanies(request);

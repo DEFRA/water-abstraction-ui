@@ -1,7 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
-const { get } = require('lodash');
+const { get, isObject } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser } = require('../../../lib/permissions');
@@ -76,12 +76,17 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     licence_ref: 1
   };
 
-  const columns = ['return_id', 'licence_ref', 'start_date', 'end_date', 'metadata', 'status', 'received_date', 'due_date'];
+  const columns = [
+    'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
+    'status', 'received_date', 'due_date', 'return_requirement'
+  ];
 
-  const requestPagination = {
+  const requestPagination = isObject(page) ? page : {
     page,
     perPage: 50
   };
+
+  console.log(filter, sort, requestPagination, columns);
 
   const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
@@ -178,29 +183,6 @@ const getReturnTotal = (ret) => {
     return acc + parseFloat(line.quantity);
   }, 0);
 };
-
-/**
- * Whether the user of the current request can edit the supplied return row
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} return - the return row from the return service or water service model
- * @param {String} [today] - allows today's date to be set for test purposes, defaults to current timestamp
- * @return {Boolean}
- */
-// const canEdit = (permissions, ret, today) => {
-//   const showFutureReturns = get(config, 'returns.showFutureReturns', false);
-//   const endDate = ret.endDate || ret.end_date;
-//   const { status } = ret;
-//   const isAfterSummer2018 = moment(endDate).isSameOrAfter('2018-10-31');
-//   const canSubmit = hasPermission('returns.submit', permissions);
-//   const canEdit = hasPermission('returns.edit', permissions);
-//   const isPast = moment(today).isSameOrAfter(endDate);
-//
-//   return isAfterSummer2018 &&
-//     (
-//       (canEdit) ||
-//       (canSubmit && (status === 'due') && (showFutureReturns || isPast))
-//     );
-// };
 
 const isReturnPastDueDate = returnRow => {
   const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');

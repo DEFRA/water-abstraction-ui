@@ -14,9 +14,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -33,9 +30,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -52,9 +46,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send paper return forms to licence holders'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -71,9 +62,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Paper forms have been sent'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -91,9 +79,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Send final return reminders'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -111,9 +96,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Download CSV file of recipients of final reminder letter'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },
@@ -131,9 +113,6 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications',
           pageTitle: 'Final return reminders sent'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:submit']
         }
       }
     },

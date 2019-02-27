@@ -86,8 +86,6 @@ function viewContextDefaults (request) {
 
   viewContext.user = request.auth.credentials;
 
-  viewContext.permissions = request.permissions;
-
   viewContext.tracking = getTracking(request.auth.credentials);
 
   viewContext.env = process.env.NODE_ENV;

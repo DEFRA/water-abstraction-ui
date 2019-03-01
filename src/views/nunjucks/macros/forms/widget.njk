@@ -6,6 +6,7 @@
 {% from "./paragraph.njk" import formParagraphWidget %}
 {% from "./checkbox.njk" import formCheckboxWidget %}
 {% from "./search.njk" import formSearchWidget %}
+{% from "./file.njk" import formFileWidget %}
 
 {% macro formWidget(field, form) %}
 
@@ -34,5 +35,8 @@
   {% endif %}
   {% if widget=='search' %}
     {{ formSearchWidget(field) }}
+  {% endif %}
+  {% if widget=='file' %}
+    {{ formFileWidget(field) }}
   {% endif %}
 {% endmacro %}

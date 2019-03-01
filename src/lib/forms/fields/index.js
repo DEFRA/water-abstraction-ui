@@ -6,6 +6,7 @@ const text = require('./text');
 const checkbox = require('./checkbox');
 const dropdown = require('./dropdown');
 const paragraph = require('./paragraph');
+const file = require('./file');
 
 module.exports = {
   button,
@@ -15,5 +16,6 @@ module.exports = {
   text,
   checkbox,
   dropdown,
-  paragraph
+  paragraph,
+  file
 };

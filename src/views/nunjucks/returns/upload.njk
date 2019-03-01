@@ -1,0 +1,7 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+  {{ formErrorSummary(form) }}
+  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+  {{ formRender(form) }}
+{% endblock %}

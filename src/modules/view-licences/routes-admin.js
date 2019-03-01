@@ -99,8 +99,6 @@ const getLicenceCommunication = {
 };
 
 exports.getLicenceAdmin = getLicenceAdmin;
-exports.getLicenceRenameAdmin = getLicenceRenameAdmin;
-exports.postLicenceRenameAdmin = postLicenceRenameAdmin;
 exports.getLicenceContactAdmin = getLicenceContactAdmin;
 exports.getLicencePurposesAdmin = getLicencePurposesAdmin;
 exports.getLicencePointsAdmin = getLicencePointsAdmin;

@@ -428,14 +428,12 @@ async function postSecurityCode (request, reply) {
   }
 }
 
-module.exports = {
-  getLicenceAdd,
-  postLicenceAdd,
-  getLicenceSelect,
-  postLicenceSelect,
-  getLicenceSelectError,
-  getAddressSelect,
-  postAddressSelect,
-  getSecurityCode,
-  postSecurityCode
-};
+exports.getLicenceAdd = getLicenceAdd;
+exports.postLicenceAdd = postLicenceAdd;
+exports.getLicenceSelect = getLicenceSelect;
+exports.postLicenceSelect = postLicenceSelect;
+exports.getLicenceSelectError = getLicenceSelectError;
+exports.getAddressSelect = getAddressSelect;
+exports.postAddressSelect = postAddressSelect;
+exports.getSecurityCode = getSecurityCode;
+exports.postSecurityCode = postSecurityCode;

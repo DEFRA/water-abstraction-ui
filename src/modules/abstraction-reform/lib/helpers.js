@@ -193,14 +193,12 @@ const isVersion = (version, issueNumber, incrementNumber) => {
   return issueNumber === parseInt(version.ISSUE_NO) && incrementNumber === parseInt(version.INCR_NO);
 };
 
-module.exports = {
-  filterScalars,
-  generateJsonSchema,
-  extractData,
-  transformNulls,
-  prepareData,
-  setObject,
-  isMatch,
-  isVersion,
-  mapARItem
-};
+exports.filterScalars = filterScalars;
+exports.generateJsonSchema = generateJsonSchema;
+exports.extractData = extractData;
+exports.transformNulls = transformNulls;
+exports.prepareData = prepareData;
+exports.setObject = setObject;
+exports.isMatch = isMatch;
+exports.isVersion = isVersion;
+exports.mapARItem = mapARItem;

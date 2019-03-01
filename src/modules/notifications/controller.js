@@ -428,14 +428,12 @@ async function postSend (request, reply) {
   return reply.view('water/notifications/sent', view);
 }
 
-module.exports = {
-  getIndex,
-  getStep,
-  postStep,
-  getRefine,
-  postRefine,
-  getVariableData,
-  postVariableData,
-  getPreview,
-  postSend
-};
+exports.getIndex = getIndex;
+exports.getStep = getStep;
+exports.postStep = postStep;
+exports.getRefine = getRefine;
+exports.postRefine = postRefine;
+exports.getVariableData = getVariableData;
+exports.postVariableData = postVariableData;
+exports.getPreview = getPreview;
+exports.postSend = postSend;

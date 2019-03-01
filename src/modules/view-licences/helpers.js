@@ -278,14 +278,12 @@ function errorMapper (error) {
   return error;
 }
 
-module.exports = {
-  mapSort,
-  mapFilter,
-  getLicencePageTitle,
-  loadLicenceData,
-  loadRiverLevelData,
-  selectRiverLevelMeasure,
-  validateStationReference,
-  riverLevelFlags,
-  errorMapper
-};
+exports.mapSort = mapSort;
+exports.mapFilter = mapFilter;
+exports.getLicencePageTitle = getLicencePageTitle;
+exports.loadLicenceData = loadLicenceData;
+exports.loadRiverLevelData = loadRiverLevelData;
+exports.selectRiverLevelMeasure = selectRiverLevelMeasure;
+exports.validateStationReference = validateStationReference;
+exports.riverLevelFlags = riverLevelFlags;
+exports.errorMapper = errorMapper;

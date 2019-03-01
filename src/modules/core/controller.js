@@ -1,6 +1,7 @@
+const { isInternal } = require('../../lib/permissions');
+
 const index = async (request, h) => {
-  const { permissions } = request;
-  if (permissions && permissions.admin.defra) {
+  if (isInternal(request)) {
     return h.redirect('/admin/licences');
   } else {
     return h.redirect('/licences');

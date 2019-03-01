@@ -64,7 +64,21 @@
     html: 'This is a new service – your <a class="govuk-link" href="/feedback">feedback</a> will help us to improve it.'
   }) }}
 
+  {% block mainNav %}
+
+  {% if hasMultipleCompanies %}
+  <div class="company-switcher">
+    You are managing <b>{{ companyName }}</b>
+    <a href="/select-company" class="company-switcher__link">
+      Change <span class="govuk-visually-hidden">the company you manage</span>
+    </a>
+  </div>
+  {% endif %}
+
+
+
   {{ mainNav(mainNavLinks) }}
+  {% endblock %}
 
   {% if back %}
   {{ govukBackLink({

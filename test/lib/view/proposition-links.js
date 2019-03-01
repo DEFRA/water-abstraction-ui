@@ -7,6 +7,7 @@ const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const { getPropositionLinks } = require('../../../src/lib/view/proposition-links.js');
+const { scope } = require('../../../src/lib/constants');
 
 const getAuthenticatedRequest = (isInternal = false) => {
   return {
@@ -16,9 +17,9 @@ const getAuthenticatedRequest = (isInternal = false) => {
     state: {
       sid: '00000000-0000-0000-0000-000000000000'
     },
-    permissions: {
-      admin: {
-        defra: isInternal
+    auth: {
+      credentials: {
+        scope: isInternal ? scope.internal : scope.external
       }
     }
   };

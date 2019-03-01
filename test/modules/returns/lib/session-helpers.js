@@ -3,11 +3,14 @@ const { experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers.js');
+const { scope } = require('../../../../src/lib/constants');
 
 const getTestRequest = (returnId, isInternal) => {
   return {
-    permissions: {
-      hasPermission: () => isInternal
+    auth: {
+      credentials: {
+        scope: [isInternal ? scope.internal : scope.external]
+      }
     },
     query: {
       returnId

@@ -20,8 +20,8 @@ async function getIndex (request, reply) {
   };
   const { data: tasks, error } = await taskConfig.findMany(filter);
 
-  const notifications = getNotificationsList(tasks, request.permissions);
-  const reports = getReportsList(request.permissions);
+  const notifications = getNotificationsList(tasks, request);
+  const reports = getReportsList(request);
 
   if (error) {
     return reply(error);

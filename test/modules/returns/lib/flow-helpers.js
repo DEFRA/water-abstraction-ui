@@ -3,6 +3,8 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 
+const { scope } = require('../../../../src/lib/constants');
+
 const {
   STEP_INTERNAL_ROUTING, STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
   STEP_START, STEP_NIL_RETURN, STEP_METHOD, STEP_UNITS, STEP_SINGLE_TOTAL,
@@ -15,11 +17,13 @@ const returnId = 'v1:123:456';
 
 const getRequest = (isInternal = false) => {
   return {
+    auth: {
+      credentials: {
+        scope: [isInternal ? scope.internal : scope.external]
+      }
+    },
     query: {
       returnId
-    },
-    permissions: {
-      hasPermission: () => isInternal
     }
   };
 };

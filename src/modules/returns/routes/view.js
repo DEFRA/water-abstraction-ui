@@ -1,5 +1,8 @@
 const Joi = require('joi');
 const controller = require('../controllers/view');
+const { scope } = require('../../../lib/constants');
+
+const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
 
 module.exports = {
   getAllReturns: {
@@ -7,6 +10,9 @@ module.exports = {
     path: '/returns',
     handler: controller.getReturns,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Displays a list of returns for the current licence holder',
       validate: {
         query: {
@@ -17,9 +23,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Your returns',
           activeNavLink: 'returns'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:read']
         }
       }
     }
@@ -30,6 +33,9 @@ module.exports = {
     path: '/licences/{documentId}/returns',
     handler: controller.getReturnsForLicence,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Displays a list of returns for a particular licence',
       validate: {
         params: {
@@ -42,9 +48,6 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'view'
-        },
-        hapiRouteAcl: {
-          permissions: ['returns:read']
         }
       }
     }
@@ -55,6 +58,9 @@ module.exports = {
     path: '/returns/return',
     handler: controller.getReturn,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Displays data for a single return',
       validate: {
         query: {
@@ -62,9 +68,6 @@ module.exports = {
         }
       },
       plugins: {
-        hapiRouteAcl: {
-          permissions: ['returns:read']
-        },
         viewContext: {
           activeNavLink: 'returns',
           showMeta: true

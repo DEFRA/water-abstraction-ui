@@ -20,10 +20,10 @@ async function getLicences (request, h) {
     return h.view(viewName, request.view);
   }
 
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entity_id: entityId, companyId } = request.auth.credentials;
   const { page, emailAddress } = request.query;
   const sort = mapSort(request.query);
-  const filter = mapFilter(entityId, request.query);
+  const filter = mapFilter(companyId, request.query);
 
   // Check if user exists
   if (emailAddress) {

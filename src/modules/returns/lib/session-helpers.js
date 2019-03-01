@@ -2,6 +2,7 @@ const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { applyUserDetails } = require('../lib/return-helpers');
 const logger = require('../../../lib/logger');
+const { isInternal } = require('../../../lib/permissions');
 
 /**
  * Gets the key to use for storing return data in user session
@@ -10,8 +11,8 @@ const logger = require('../../../lib/logger');
  */
 const getSessionKey = (request) => {
   const { returnId } = request.query;
-  const isInternal = request.permissions.hasPermission('admin.defra');
-  return `${isInternal ? 'internal' : 'external'}ReturnFlow:${returnId}`;
+  const isInternalUser = isInternal(request);
+  return `${isInternalUser ? 'internal' : 'external'}ReturnFlow:${returnId}`;
 };
 
 /**

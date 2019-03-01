@@ -1,8 +1,9 @@
-const { get } = require('lodash');
+const { get, uniq } = require('lodash');
 const config = require('../../config');
 
 const { getPropositionLinks } = require('./view/proposition-links');
 const { getMainNav } = require('./view/main-nav');
+const { isInternal } = require('./permissions');
 
 const getSurveyType = (isAuthenticated, isDefraAdmin) => {
   if (isAuthenticated) {
@@ -36,6 +37,18 @@ const getTracking = (credentials) => {
   };
 
   return base;
+};
+
+/**
+ * Checks whether the user has multiple companies - i.e. agent
+ * this determines whether to show company switcher
+ * @param  {Object}  request - current request
+ * @return {Boolean}         true if user can access > 1 company
+ */
+const hasMultipleCompanies = (request) => {
+  const roles = get(request, 'entityRoles', []);
+  const companyIds = roles.map(role => role.company_entity_id);
+  return uniq(companyIds).length > 1;
 };
 
 function viewContextDefaults (request) {
@@ -73,16 +86,17 @@ function viewContextDefaults (request) {
 
   viewContext.user = request.auth.credentials;
 
-  viewContext.permissions = request.permissions;
-
   viewContext.tracking = getTracking(request.auth.credentials);
 
   viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
   viewContext.surveyType = getSurveyType(
     viewContext.isAuthenticated,
-    get(viewContext, 'permissions.admin.defra', false)
+    isInternal(request)
   );
+
+  viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
+  viewContext.companyName = get(request, 'auth.credentials.companyName');
 
   return viewContext;
 }

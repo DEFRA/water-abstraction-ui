@@ -1,8 +1,15 @@
-// const { get, groupBy, mapValues } = require('lodash');
+const { get } = require('lodash');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
 const logger = require('../../../lib/logger');
 const confirmForm = require('../forms/confirm-upload');
 const uploadHelpers = require('../lib/return-upload-helpers');
+
+const pageTitles = {
+  ok: 'Your data is ready to send',
+  error: 'There are some problems with your data'
+};
+
+const hasErrors = grouped => get(grouped, 'returnsWithErrors.length') > 0;
 
 /**
  * A page to show a summary of the data before it is submitted
@@ -16,16 +23,13 @@ const getSummary = async (request, h) => {
 
     const grouped = uploadHelpers.groupReturns(returns, eventId);
     const form = confirmForm(request, grouped.returnsWithoutErrors.length);
-    const pageTitle = grouped.returnsWithErrors.length > 0
-      ? 'There are some problems with your data'
-      : 'Your data is ready to send';
 
     const view = {
       back: '/returns/upload',
       ...request.view,
       ...grouped,
       form,
-      pageTitle
+      pageTitle: hasErrors(grouped) ? pageTitles.error : pageTitles.ok
     };
 
     return h.view('nunjucks/returns/upload-summary.njk', view, { layout: false });
@@ -60,7 +64,7 @@ const getSummaryReturn = async (request, h) => {
 
     return h.view('nunjucks/returns/upload-return.njk', view, { layout: false });
   } catch (err) {
-    const params = { eventId, options };
+    const params = { eventId, returnId, options };
     logger.error(`Return upload error`, params);
     throw err;
   }
@@ -68,3 +72,4 @@ const getSummaryReturn = async (request, h) => {
 
 exports.getSummary = getSummary;
 exports.getSummaryReturn = getSummaryReturn;
+exports.pageTitles = pageTitles;

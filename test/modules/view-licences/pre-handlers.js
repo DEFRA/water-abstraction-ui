@@ -1,32 +1,51 @@
 const sinon = require('sinon');
+const { set } = require('lodash');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
 const preHandlers = require('../../../src/modules/view-licences/pre-handlers');
 const CRM = require('../../../src/lib/connectors/crm');
 const licenceConnector = require('../../../src/lib/connectors/water-service/licences');
+const { scope } = require('../../../src/lib/constants');
 
-const entityId = 'entity_1';
 const documentId = 'document_1';
+const companyId = 'company_1';
 
-const request = {
-  auth: {
-    credentials: {
-      entity_id: entityId
+const createRequest = () => {
+  return {
+    auth: {
+      credentials: {
+      }
+    },
+    params: {
+      documentId
     }
-  },
-  params: {
-    licence_id: documentId
-  }
+  };
+};
+
+const createInternalRequest = () => {
+  const request = createRequest();
+  set(request, 'auth.credentials.scope', [scope.internal]);
+  return request;
+};
+const createExternalRequest = () => {
+  const request = createRequest();
+  set(request, 'auth.credentials.scope', [scope.external, scope.licenceHolder]);
+  set(request, 'auth.credentials.companyId', companyId);
+  return request;
 };
 
 const responses = {
   found: {
-    data: [{}],
+    data: [{ company_entity_id: companyId }],
     error: null
   },
   notFound: {
     data: [],
+    error: null
+  },
+  wrongCompany: {
+    data: [{ company_entity_id: 'not_my_company' }],
     error: null
   },
   error: {
@@ -37,7 +56,7 @@ const responses = {
 
 const h = { continue: 'continue' };
 
-experiment('preAccessControl', () => {
+experiment('preLoadDocument', () => {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(async () => {
@@ -48,36 +67,98 @@ experiment('preAccessControl', () => {
     sandbox.restore();
   });
 
-  test('calls CRM with correct filter and continues with request', async () => {
-    CRM.documents.findMany.resolves(responses.found);
-    const response = await preHandlers.preAccessControl(request, h);
+  experiment('for internal users', () => {
+    let request;
 
-    const [filter] = CRM.documents.findMany.firstCall.args;
-    expect(filter.entity_id).to.equal(entityId);
-    expect(filter.document_id).to.equal(documentId);
-    expect(response).to.equal(h.continue);
+    beforeEach(async () => {
+      request = createInternalRequest();
+      CRM.documents.findMany.resolves(responses.found);
+    });
+
+    test('calls CRM with correct document filter', async () => {
+      await preHandlers.preLoadDocument(request, h);
+      const [filter] = CRM.documents.findMany.firstCall.args;
+      expect(filter).to.equal({ document_id: documentId });
+    });
+
+    test('if document found, responds with h.continue', async () => {
+      const response = await preHandlers.preLoadDocument(request, h);
+      expect(response).to.equal(h.continue);
+    });
+
+    test('if document not found, throw not found error', async () => {
+      CRM.documents.findMany.resolves(responses.notFound);
+
+      try {
+        await preHandlers.preLoadDocument(request, h);
+      } catch (error) {
+        expect(error.isBoom).to.equal(true);
+        expect(error.output.statusCode).to.equal(404);
+      }
+    });
+
+    test('if CRM error, throw error', async () => {
+      CRM.documents.findMany.resolves(responses.error);
+      const func = () => preHandlers.preLoadDocument(request, h);
+      expect(func()).to.reject();
+    });
   });
 
-  test('throws an error if error response', async () => {
-    CRM.documents.findMany.resolves(responses.error);
-    const func = () => (preHandlers.preAccessControl(request, h));
-    expect(func()).to.reject();
-  });
+  experiment('for external users', () => {
+    let request;
 
-  test('throws Boom unauthorized error if no document found', async () => {
-    CRM.documents.findMany.resolves(responses.notFound);
-    return preHandlers.preAccessControl(request, h)
-      .catch(err => {
-        expect(err.isBoom).to.equal(true);
-        expect(err.output.statusCode).to.equal(401);
-      });
+    beforeEach(async () => {
+      request = createExternalRequest();
+      CRM.documents.findMany.resolves(responses.found);
+    });
+
+    test('calls CRM with correct document filter', async () => {
+      await preHandlers.preLoadDocument(request, h);
+      const [filter] = CRM.documents.findMany.firstCall.args;
+      expect(filter).to.equal({ document_id: documentId });
+    });
+
+    test('if document found, responds with h.continue', async () => {
+      const response = await preHandlers.preLoadDocument(request, h);
+      expect(response).to.equal(h.continue);
+    });
+
+    test('if document not found, throw not found error', async () => {
+      CRM.documents.findMany.resolves(responses.notFound);
+
+      try {
+        await preHandlers.preLoadDocument(request, h);
+      } catch (error) {
+        expect(error.isBoom).to.equal(true);
+        expect(error.output.statusCode).to.equal(404);
+      }
+    });
+
+    test('if document had wrong company, throws 401 error', async () => {
+      CRM.documents.findMany.resolves(responses.wrongCompany);
+
+      try {
+        await preHandlers.preLoadDocument(request, h);
+      } catch (error) {
+        expect(error.isBoom).to.equal(true);
+        expect(error.output.statusCode).to.equal(401);
+      }
+    });
+
+    test('if CRM error, throw error', async () => {
+      CRM.documents.findMany.resolves(responses.error);
+      const func = () => preHandlers.preLoadDocument(request, h);
+      expect(func()).to.reject();
+    });
   });
 });
 
 experiment('preInternalView', () => {
   const sandbox = sinon.sandbox.create();
+  let request;
 
   beforeEach(async () => {
+    request = createInternalRequest();
     sandbox.stub(CRM, 'getDocumentVerifications');
     sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId');
   });

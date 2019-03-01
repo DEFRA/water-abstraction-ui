@@ -2,6 +2,7 @@ const { expect } = require('code');
 const moment = require('moment');
 const { experiment, test } = exports.lab = require('lab').script();
 const { logReceiptForm } = require('../../../../src/modules/returns/forms/log-receipt');
+const { scope } = require('../../../../src/lib/constants');
 
 experiment('logReceiptForm', () => {
   test('should generate a form object from request', async () => {
@@ -14,9 +15,9 @@ experiment('logReceiptForm', () => {
       query: {
         returnId: 'abc'
       },
-      permissions: {
-        hasPermission: () => {
-          return true;
+      auth: {
+        credentials: {
+          scope: [scope.internal]
         }
       }
     };

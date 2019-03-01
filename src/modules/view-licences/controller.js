@@ -4,18 +4,17 @@
  */
 
 const Boom = require('boom');
-const { trim, get, partial } = require('lodash');
+const { trim } = require('lodash');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
-const { hasPermission } = require('../../lib/permissions');
-const { getLicenceReturns } = require('./lib/licence-returns');
+const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
-
-const isInternalUser = partial(hasPermission, 'admin.defra');
+const { isInternal } = require('../../lib/permissions');
 const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
@@ -45,38 +44,25 @@ async function getLicences (request, reply) {
   view.showVerificationAlert = verifications.length > 0;
   view.enableSearch = licenceCount > 5;
 
-  // Count primary_user/user roles to determine if agent
-  // Agents have the ability to search by user email address
-  view.showEmailFilter = request.permissions.licences.multi;
-
   return baseGetLicences(request, reply);
 }
 
-const userCanViewReturns = (permissions, companyEntityId) => {
-  const canViewReturns = get(permissions, `companies.${companyEntityId}.returns.read`) ||
-    get(permissions, 'returns.read');
-
-  return canViewReturns;
-};
-
 async function getLicenceDetail (request, reply) {
-  const { entity_id: entityId } = request.auth.credentials;
-  const { licence_id: documentHeaderId } = request.params;
+  const { documentId } = request.params;
 
   try {
-    const { documentHeader, viewData, gaugingStations } = await loadLicenceData(entityId, documentHeaderId);
+    const { documentHeader, viewData, gaugingStations } = await loadLicenceData(request, documentId);
 
-    const canViewReturns = userCanViewReturns(request.permissions, documentHeader.company_entity_id);
-    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentHeaderId);
-    documentHeader.verifications = await CRM.getDocumentVerifications(documentHeaderId);
+    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
+    documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
 
     return reply.view(request.config.view, {
       ...request.view,
-      canViewReturns,
+      canViewReturns: true,
       gaugingStations,
-      licence_id: documentHeaderId,
+      licence_id: documentId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
@@ -100,31 +86,13 @@ async function postLicenceRename (request, reply) {
   }
 
   const { name } = request.formValue;
-  const { entity_id: entityId } = request.auth.credentials;
-
-  // Check user has access to supplied document
-  const filter = {
-    entity_id: entityId,
-    document_id: request.params.licence_id
-  };
-
-  const { data, error } = await CRM.documents.findMany(filter);
-
-  if (error || data.length === 0) {
-    return reply(Boom.notFound('Document not found', error));
-  }
-
-  const { document_id: documentId } = data[0];
+  const { documentId } = request.params;
 
   // Rename licence
-  const { error: error2 } = CRM.documents.setLicenceName(documentId, name);
+  const { error } = await CRM.documents.setLicenceName(documentId, name);
+  throwIfError(error);
 
-  if (error2) {
-    return reply(Boom.badImplementation('CRM error', error2));
-  }
-
-  const { redirectBasePath = '/licences' } = request.config;
-  return reply.redirect(`${redirectBasePath}/${documentId}`);
+  return reply.redirect(`/licences/${documentId}`);
 }
 
 /**
@@ -132,12 +100,11 @@ async function postLicenceRename (request, reply) {
  * for the selected licence
  */
 async function getLicenceGaugingStation (request, reply) {
-  const { entity_id: entityId } = request.auth.credentials;
   const { measure: mode } = request.query;
   const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
   // Load licence data
-  const licenceData = await loadLicenceData(entityId, documentHeaderId);
+  const licenceData = await loadLicenceData(request, documentHeaderId);
 
   // Validate - check that the requested station reference is in licence metadata
   if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
@@ -173,13 +140,16 @@ const hasMultiplePages = pagination => pagination.pageCount > 1;
  * @param {Object} reply - HAPI reply interface
  */
 const getLicence = async (request, h) => {
-  const { licence_id: documentId } = request.params;
+  const { documentId } = request.params;
   const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
   if (!licence) {
     throw Boom.notFound(`Document ${documentId} not be found`);
   }
 
-  const returns = await getLicenceReturns(licence.licenceNumber, isInternalUser(request.permissions));
+  const isInternalUser = isInternal(request);
+
+  const pagination = { page: 1, perPage: 10 };
+  const returns = await getLicenceReturns([licence.licenceNumber], pagination, isInternalUser);
   const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {
@@ -189,17 +159,10 @@ const getLicence = async (request, h) => {
     returns: mapReturns(returns.data, request),
     hasMoreReturns: hasMultiplePages(returns.pagination),
     messages,
-    isInternal: isInternalUser(request.permissions),
+    isInternal: isInternalUser,
     pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`
   };
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
-};
-
-const validateMessageAccess = (request, companyId) => {
-  const isAdmin = request.permissions.hasPermission('admin.defra');
-  const entityCompanies = request.entityRoles.map(role => role.company_entity_id);
-
-  return isAdmin || entityCompanies.includes(companyId);
 };
 
 const getAddressParts = notification => {
@@ -216,24 +179,16 @@ const getAddressParts = notification => {
   }, []);
 };
 
-const validateLicenceCommunicationResponses = (request, licence) => {
-  if (!licence) {
-    return Boom.notFound('Document not associated with communication');
-  }
-
-  if (!validateMessageAccess(request, licence.companyEntityId)) {
-    return Boom.forbidden();
-  }
-};
-
 const getLicenceCommunication = async (request, h) => {
   const { communicationId, documentId } = request.params;
   const response = await communicationsConnector.getCommunication(communicationId);
 
   const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
+  if (!licence) {
+    throw Boom.notFound('Document not associated with communication');
+  }
 
-  const validationError = validateLicenceCommunicationResponses(request, licence);
-  if (validationError) throw validationError;
+  const isInternalUser = isInternal(request);
 
   const viewContext = {
     ...request.view,
@@ -242,8 +197,9 @@ const getLicenceCommunication = async (request, h) => {
     messageType: response.data.evt.name,
     sentDate: response.data.evt.createdDate,
     messageContent: response.data.notification.plainText,
-    back: `${request.isAdmin ? '/admin' : ''}/licences/${documentId}#communications`,
-    recipientAddressParts: getAddressParts(response.data.notification)
+    back: `${isInternalUser ? '/admin' : ''}/licences/${documentId}#communications`,
+    recipientAddressParts: getAddressParts(response.data.notification),
+    isInternal: isInternalUser
   };
 
   return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });

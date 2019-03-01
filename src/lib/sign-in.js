@@ -56,7 +56,10 @@ async function auto (request, emailAddress) {
   // update the credentials object with the scopes to allow permissions
   // to be calculated elsewhere. On subsequent requests this will be
   // done by the auth-credentials plugin in the onCredentials phase.
-  request.auth.credentials = { scope: get(user, 'role.scopes') };
+  request.auth.credentials = {
+    ...session,
+    scope: get(user, 'role.scopes')
+  };
 }
 
 /**

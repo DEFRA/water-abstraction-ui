@@ -1,10 +1,11 @@
 'use strict';
-
+const { set } = require('lodash');
 const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const view = require('../../src/lib/view');
+const { scope } = require('../../src/lib/constants');
 
 /*
  * Gets the minimal request object that allows the tests to run.
@@ -16,24 +17,6 @@ const getBaseRequest = () => ({
     get: (key) => key
   },
   url: {},
-  permissions: {
-    admin: {
-      defra: false
-    },
-    licences: {
-      edit: false
-    },
-    returns: {
-      submit: false,
-      edit: false
-    },
-    ar: {
-      read: false
-    },
-    hasPermission: () => {
-      return false;
-    }
-  },
   auth: {
     credentials: {}
   },
@@ -63,7 +46,7 @@ experiment('lib/view.contextDefaults', () => {
   test('surveyType is external for a logged in vml user', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };
-    request.permissions.admin.defra = false;
+    set(request, 'auth.credentials.scope', [scope.external]);
 
     const viewContext = view.contextDefaults(request);
     expect(viewContext.surveyType).to.equal('external');
@@ -72,7 +55,7 @@ experiment('lib/view.contextDefaults', () => {
   test('surveyType is internal for a logged in admin user', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };
-    request.permissions.admin.defra = true;
+    set(request, 'auth.credentials.scope', [scope.internal]);
 
     const viewContext = view.contextDefaults(request);
     expect(viewContext.surveyType).to.equal('internal');

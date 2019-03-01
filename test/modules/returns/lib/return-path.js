@@ -8,6 +8,8 @@ const {
   getReturnPath
 } = require('../../../../src/modules/returns/lib/return-path');
 
+const { scope } = require('../../../../src/lib/constants');
+
 const ret = {
   return_id: 'v1:123:456',
   received_date: '2018-11-08',
@@ -21,19 +23,29 @@ const externalView = `/returns/return?id=${ret.return_id}`;
 const externalEdit = `/return?returnId=${ret.return_id}`;
 
 const getExternalRequest = (isSubmitter = false) => {
-  const permissions = {
-    admin: { defra: false },
-    returns: { submit: isSubmitter, edit: false }
+  const scopes = isSubmitter
+    ? [scope.external, scope.licenceHolder]
+    : [scope.external, scope.colleague];
+  return {
+    auth: {
+      credentials: {
+        scope: scopes
+      }
+    }
   };
-  return { permissions };
 };
 
 const getInternalRequest = (isEditor = false) => {
-  const permissions = {
-    admin: { defra: true },
-    returns: { submit: false, edit: isEditor }
+  const scopes = isEditor
+    ? [scope.internal, scope.returns]
+    : [scope.internal];
+  return {
+    auth: {
+      credentials: {
+        scope: scopes
+      }
+    }
   };
-  return { permissions };
 };
 
 experiment('returnPath -  external users', () => {

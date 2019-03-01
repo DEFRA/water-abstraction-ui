@@ -1,0 +1,87 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "forms/index.njk" import formRender %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+
+  {% if returnsWithErrors.length %}
+  <div class="govuk-form-group govuk-form-group--error">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Warning</th>
+          <th class="govuk-table__header" scope="col">Return reference</th>
+          <th class="govuk-table__header" scope="col">Licence number</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for return in returnsWithErrors %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">
+            <ul class="govuk-list govuk-!-margin-0">
+            {% for message in return.errors %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          </td>
+          <td class="govuk-table__cell">
+            {{ return.returnRequirement }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ return.licenceNumber }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if returnsWithoutErrors.length %}
+
+    {% if returnsWithErrors.length %}
+    <h2 class="govuk-heading-m">
+      You can send the data that does not have problems
+    </h2>
+    {% endif %}
+
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Return reference</th>
+          <th class="govuk-table__header" scope="col">Licence number</th>
+          <th class="govuk-table__header" scope="col">Total abstracted volume</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for return in returnsWithoutErrors %}
+        <td class="govuk-table__cell">
+          <a href="{{ return.path }}">
+            {{ return.returnRequirement }}
+          </a>
+        </td>
+        <td class="govuk-table__cell">
+          {{ return.licenceNumber }}
+        </td>
+        <td class="govuk-table__cell">
+          {% if return.isNil %}
+          Nil return
+          {% else %}
+          {{ return.totalVolume }} {{ return.reading.units | units }}
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p>You cannot change this data after it has been sent.</p>
+
+    {{ formRender(form) }}
+  {% endif %}
+
+
+
+{% endblock %}

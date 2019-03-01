@@ -125,7 +125,8 @@ const renderForm = (request, h, form) => {
   const view = {
     ...request.view,
     form,
-    back: '/licences'
+    back: '/licences',
+    pageTitle: 'Choose a licence holder'
   };
   return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
 };

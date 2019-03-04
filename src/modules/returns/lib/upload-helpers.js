@@ -20,7 +20,7 @@ const getFile = () => {
  */
 const applyFormError = (form, error, errorMessages) => {
   if (error) {
-    form = applyErrors(form, [{
+    return applyErrors(form, [{
       message: errorMessages[error],
       name: 'file'
     }]);

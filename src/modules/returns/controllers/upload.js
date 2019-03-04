@@ -5,13 +5,14 @@ const files = require('../../../lib/files');
 const { get } = require('lodash');
 const uploadHelpers = require('../lib/upload-helpers');
 const returns = require('../../../lib/connectors/water-service/returns.js');
+const logger = require('../../../lib/logger');
 
 const errorMessages = {
-  virus: 'The selected file contains a virus',
-  notxml: 'The selected file must be an XML'
+  invalidxml: 'The selected file must use the template',
+  notxml: 'The selected file must be an XML',
+  uploaderror: 'The selected file could not be uploaded – try again',
+  virus: 'The selected file contains a virus'
 };
-
-let redirectUrl;
 
 /**
  * Upload xml return
@@ -38,6 +39,8 @@ const getXmlUpload = (request, h) => {
  * @param {Object} h - HAPI HTTP reply
  */
 async function postXmlUpload (request, h) {
+  let redirectUrl;
+  let eventId;
   const file = uploadHelpers.getFile();
 
   try {
@@ -45,19 +48,20 @@ async function postXmlUpload (request, h) {
 
     // Get redirect Url to error page if checks fail
     redirectUrl = await uploadHelpers.runChecks(file);
+
+    const userName = get(request, 'auth.credentials.username');
+    const fileData = await files.readFile(file);
+
+    // Send XML return data to API
+    const postData = await returns.postXML(fileData.toString(), userName);
+    eventId = get(postData, 'data.eventId');
   } catch (error) {
     // Log error
-    throw error;
+    logger.error('Error with XML upload checks', error);
+  } finally {
+    // Delete temporary file
+    await files.deleteFile(file);
   }
-
-  const userName = get(request, 'auth.credentials.username');
-
-  // Send XML return data to API
-  const postData = await returns.postXML(file, userName);
-  const eventId = get(postData, 'data.eventId');
-
-  // Delete temporary file
-  await files.deleteFile(file);
 
   // if failed any checks, redirect
   if (redirectUrl) return h.redirect(redirectUrl);
@@ -77,28 +81,39 @@ const getSpinnerPage = async (request, h) => {
     ...request.view,
     pageTitle: 'Uploading returns data'
   };
-
   const eventId = request.params.event_id;
+  const userName = get(request, 'auth.credentials.username');
+  const filter = { event_id: eventId, issuer: userName };
 
   // Get data from event database
-  const { data, error } = await water.events.findOne(eventId);
+  const { data, error } = await water.events.findMany(filter);
   throwIfError(error);
 
-  // ******************************* error needs updating
+  if (!data[0]) logger.error('No event found with selected event_id and issuer');
+
   const statusActions = {
     validated: `/returns/upload-summary/${eventId}`,
-    error: `/returns/upload-errors/${eventId}`
+    undefined: '/returns/upload?error=uploaderror'
+  };
+
+  const errorRedirects = {
+    'invalid-xml': '/returns/upload?error=invalidxml'
   };
 
   // Once the status has been updated to 'validated', redirect to success page
-  const { status } = data;
+  const status = get(data, [0, 'status']);
   if (status in statusActions) {
     return h.redirect(statusActions[status]);
+  } else if (status === 'error') {
+    // get error details and redirect accordingly
+    const error = get(data, [0, 'metadata', 'error', 'key']);
+    return h.redirect(errorRedirects[error]);
   }
 
   return h.view('nunjucks/returns/processing-upload.njk', view, { layout: false });
 };
 
+exports.errorMessages = errorMessages;
 exports.getXmlUpload = getXmlUpload;
 exports.postXmlUpload = postXmlUpload;
 exports.getSpinnerPage = getSpinnerPage;

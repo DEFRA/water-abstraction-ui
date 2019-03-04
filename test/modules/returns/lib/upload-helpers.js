@@ -5,13 +5,10 @@ const fs = require('fs');
 const EventEmitter = require('events');
 
 const uploadHelpers = require('../../../../src/modules/returns/lib/upload-helpers.js');
+const { errorMessages } = require('../../../../src/modules/returns/controllers/upload');
 const fileCheck = require('../../../../src/lib/file-check');
 
 const csrfToken = '4a0b2424-6c02-45a5-9935-70a4c41538d2';
-const errorMessages = {
-  virus: 'The selected file contains a virus',
-  notxml: 'The selected file must be an XML'
-};
 
 const form = {
   file: {
@@ -61,7 +58,8 @@ experiment('upload Helpers', () => {
   experiment('applyFormError', () => {
     test('Form is returned with no error message if no error', async () => {
       const error = undefined;
-      expect(await uploadHelpers.applyFormError(form, error, errorMessages)).to.equal(form);
+      const output = await uploadHelpers.applyFormError(form, error, errorMessages);
+      expect(output).to.equal(form);
     });
 
     test('Form is returned with virus error message', async () => {
@@ -73,7 +71,8 @@ experiment('upload Helpers', () => {
           name: 'file'
         }]
       };
-      expect(await uploadHelpers.applyFormError(form, error, errorMessages)).to.equal(updated);
+      const output = await uploadHelpers.applyFormError(form, error, errorMessages);
+      expect(output).to.equal(updated);
     });
     test('Form is returned with notxml error message', async () => {
       const error = 'notxml';
@@ -84,7 +83,8 @@ experiment('upload Helpers', () => {
           name: 'file'
         }]
       };
-      expect(await uploadHelpers.applyFormError(form, error, errorMessages)).to.equal(updated);
+      const output = await uploadHelpers.applyFormError(form, error, errorMessages);
+      expect(output).to.equal(updated);
     });
   });
   experiment('uploadFile', () => {
@@ -133,19 +133,22 @@ experiment('upload Helpers', () => {
     test('Returns undefined when both checks pass', async () => {
       fileCheck.virusCheck.returns(true);
       fileCheck.isXml.returns(true);
-      expect(await uploadHelpers.runChecks('fileName')).to.equal(undefined);
+      const checkResults = await uploadHelpers.runChecks('fileName');
+      expect(checkResults).to.equal(undefined);
     });
 
     test('Returns "/returns/upload?error=virus" when virus check fails', async () => {
       fileCheck.virusCheck.returns(false);
       fileCheck.isXml.returns(true);
-      expect(await uploadHelpers.runChecks('fileName')).to.equal('/returns/upload?error=virus');
+      const checkResults = await uploadHelpers.runChecks('fileName');
+      expect(checkResults).to.equal('/returns/upload?error=virus');
     });
 
     test('Returns "/returns/upload?error=notxml" when virus check fails', async () => {
       fileCheck.virusCheck.returns(true);
       fileCheck.isXml.returns(false);
-      expect(await uploadHelpers.runChecks('fileName')).to.equal('/returns/upload?error=notxml');
+      const checkResults = await uploadHelpers.runChecks('fileName');
+      expect(checkResults).to.equal('/returns/upload?error=notxml');
     });
   });
 });

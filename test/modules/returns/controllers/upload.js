@@ -38,11 +38,12 @@ const createErrorResponse = () => {
   };
 };
 
-const createResponse = status => ({
+const createResponse = (status, metadata) => ({
   error: null,
-  data: {
-    status
-  }
+  data: [{
+    status,
+    metadata
+  }]
 });
 
 experiment('upload controller', () => {
@@ -52,13 +53,14 @@ experiment('upload controller', () => {
       view: sandbox.stub(),
       redirect: sandbox.stub()
     };
-    sandbox.stub(water.events, 'findOne');
+    sandbox.stub(water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'runChecks');
     sandbox.stub(returns, 'postXML').returns({ data: { eventId: 'kjdr46-w38rjg34' } });
     sandbox.stub(files, 'deleteFile');
+    sandbox.stub(files, 'readFile').returns('fileData');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -75,17 +77,15 @@ experiment('upload controller', () => {
   });
   experiment('postXmlUpload', () => {
     test('it should redirect to spinner page if there are no errors', async () => {
-      const request = createRequest();
-      await controller.postXmlUpload(request, h);
+      await controller.postXmlUpload(createRequest(), h);
 
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/processing-upload/kjdr46-w38rjg34');
     });
 
     test('it should redirect to same page with error message if error', async () => {
-      const request = createRequest();
       uploadHelpers.runChecks.returns('/test/url');
-      await controller.postXmlUpload(request, h);
+      await controller.postXmlUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/test/url');
     });
@@ -93,7 +93,7 @@ experiment('upload controller', () => {
   experiment('getSpinnerPage', () => {
     test('throws an error if there is an error response from the events API', async () => {
       const response = createErrorResponse();
-      water.events.findOne.resolves(response);
+      water.events.findMany.resolves(response);
       const func = () => controller.getSpinnerPage(createRequest(), h);
       expect(func()).to.reject();
     });
@@ -101,7 +101,7 @@ experiment('upload controller', () => {
     test('it should redirect to the summary page if status is validated', async () => {
       const response = createResponse('validated');
       const request = createRequest();
-      water.events.findOne.resolves(response);
+      water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
       expect(h.redirect.callCount).to.equal(1);
@@ -109,15 +109,24 @@ experiment('upload controller', () => {
       expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
     });
 
-    test('it should redirect to errors page if status is error ', async () => {
-      const response = createResponse('error');
-      const request = createRequest();
-      water.events.findOne.resolves(response);
-      await controller.getSpinnerPage(request, h);
+    test('it should redirect to upload page with "uploaderror"', async () => {
+      const response = createResponse('undefined');
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(createRequest(), h);
 
       expect(h.redirect.callCount).to.equal(1);
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal(`/returns/upload-errors/${request.params.event_id}`);
+      expect(path).to.equal('/returns/upload?error=uploaderror');
+    });
+
+    test('if status === "error", it should redirect to upload page with "invalid-xml" error', async () => {
+      const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(createRequest(), h);
+
+      expect(h.redirect.callCount).to.equal(1);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=invalidxml');
     });
   });
 });

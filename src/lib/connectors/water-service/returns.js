@@ -1,6 +1,5 @@
 const { pick } = require('lodash');
 const serviceRequest = require('../service-request');
-const files = require('../../files');
 
 const rp = require('request-promise-native').defaults({
   proxy: null,
@@ -77,15 +76,14 @@ const patchReturn = (data) => {
 
 /**
  * Post to send XML return to water service
- * @param {string} file - name & location of temp file
+ * @param {string} fileData - file data to be sent as a string
  * @param {string} userName - userName of active user
  * @return {string} - JSON containing, eventId, filename, location, etc
  */
-const postXML = async (file, userName) => {
+const postXML = async (xmlData, userName) => {
   const url = `${endpoint}/upload-xml`;
-  const fileData = await files.readFile(file);
 
-  return serviceRequest.post(url, { body: { fileData: fileData.toString(), userName } });
+  return serviceRequest.post(url, { body: { fileData: xmlData, userName } });
 };
 
 module.exports = {

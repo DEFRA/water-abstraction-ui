@@ -5,11 +5,12 @@
  */
 
 const http = require('./http');
+const { partial } = require('lodash');
 
 const makeRequest = (method, url, additionalOptions = {}) => {
   const options = Object.assign({
     url,
-    method: method,
+    method,
     json: true,
     headers: {
       Authorization: process.env.JWT_TOKEN
@@ -18,16 +19,6 @@ const makeRequest = (method, url, additionalOptions = {}) => {
   return http.request(options);
 };
 
-module.exports = {
-  get: (url, additionalOptions = {}) => {
-    makeRequest('GET', url, additionalOptions);
-  },
-
-  post: (url, additionalOptions = {}) => {
-    makeRequest('POST', url, additionalOptions);
-  },
-
-  patch: (url, additionalOptions = {}) => {
-    makeRequest('PATCH', url, additionalOptions);
-  }
-};
+exports.get = partial(makeRequest, 'GET');
+exports.post = partial(makeRequest, 'POST');
+exports.patch = partial(makeRequest, 'PATCH');

@@ -5,10 +5,11 @@ const { set, get } = require('lodash');
 const addToRequest = (request, key, value) => set(request, `licence.${key}`, value);
 
 const getEntityId = request => request.auth.credentials.entity_id;
+const getCompanyId = request => get(request, 'auth.credentials.companyId');
 
 const loadUserLicenceCount = async request => {
-  const entityId = getEntityId(request);
-  const licenceCount = await crmDocumentConnector.getLicenceCount(entityId);
+  const companyId = getCompanyId(request);
+  const licenceCount = await crmDocumentConnector.getLicenceCount(companyId);
   addToRequest(request, 'userLicenceCount', licenceCount);
 };
 

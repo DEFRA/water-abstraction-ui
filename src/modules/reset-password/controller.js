@@ -99,10 +99,8 @@ async function postChangePassword (request, reply) {
   }
 }
 
-module.exports = {
-  getResetPassword,
-  postResetPassword,
-  getResetSuccess,
-  getChangePassword,
-  postChangePassword
-};
+exports.getResetPassword = getResetPassword;
+exports.postResetPassword = postResetPassword;
+exports.getResetSuccess = getResetSuccess;
+exports.getChangePassword = getChangePassword;
+exports.postChangePassword = postChangePassword;

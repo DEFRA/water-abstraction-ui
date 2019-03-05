@@ -244,10 +244,8 @@ const postSetStatus = async (request, h) => {
   }
 };
 
-module.exports = {
-  getViewLicences,
-  getViewLicence,
-  getEditObject,
-  postEditObject,
-  postSetStatus
-};
+exports.getViewLicences = getViewLicences;
+exports.getViewLicence = getViewLicence;
+exports.getEditObject = getEditObject;
+exports.postEditObject = postEditObject;
+exports.postSetStatus = postSetStatus;

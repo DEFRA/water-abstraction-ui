@@ -76,10 +76,8 @@ const submitReturnData = (data, request) => {
   }
 };
 
-module.exports = {
-  getSessionKey,
-  getSessionData,
-  saveSessionData,
-  deleteSessionData,
-  submitReturnData
-};
+exports.getSessionKey = getSessionKey;
+exports.getSessionData = getSessionData;
+exports.saveSessionData = saveSessionData;
+exports.deleteSessionData = deleteSessionData;
+exports.submitReturnData = submitReturnData;

@@ -32,7 +32,7 @@ const findLatestReturn = (formatId, regionCode) => {
 
   const columns = ['return_id', 'status', 'licence_ref', 'return_requirement'];
 
-  return {filter, sort, pagination, columns};
+  return { filter, sort, pagination, columns };
 };
 
 /**
@@ -114,10 +114,8 @@ const findLatestReturnsByFormatId = async (formatId) => {
   return filterReturnsByCRMDocument(returns);
 };
 
-module.exports = {
-  findLatestReturn,
-  getRecentReturns,
-  filterReturnsByCRMDocument,
-  findLatestReturnsByFormatId,
-  filterReturn
-};
+exports.findLatestReturn = findLatestReturn;
+exports.getRecentReturns = getRecentReturns;
+exports.filterReturnsByCRMDocument = filterReturnsByCRMDocument;
+exports.findLatestReturnsByFormatId = findLatestReturnsByFormatId;
+exports.filterReturn = filterReturn;

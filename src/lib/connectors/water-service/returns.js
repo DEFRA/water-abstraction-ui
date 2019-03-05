@@ -88,10 +88,8 @@ const getUploadPreview = async (eventId, qs, returnId) => {
   return responseHandler(response);
 };
 
-module.exports = {
-  getReturn,
-  postReturn,
-  patchReturn,
-  postXML,
-  getUploadPreview
-};
+exports.getReturn = getReturn;
+exports.postReturn = postReturn;
+exports.patchReturn = patchReturn;
+exports.postXML = postXML;
+exports.getUploadPreview = getUploadPreview;

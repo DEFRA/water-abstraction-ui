@@ -50,27 +50,28 @@ experiment('getUploadPreview', () => {
       expect(url).to.contain(['/returns/upload-xml']);
       expect(options.body).to.include({ fileData: 'fileData', userName: 'bob.jones@gmail.com' });
     });
-  test('should call service request with correct params', async () => {
-    await returns.getUploadPreview(eventId, qs);
-    const [uri, options] = serviceRequest.get.lastCall.args;
-    expect(uri).to.equal(`http://127.0.0.1:8001/water/1.0/returns/upload-preview/${eventId}`);
-    expect(options).to.equal({ qs });
-  });
+    test('should call service request with correct params', async () => {
+      await returns.getUploadPreview(eventId, qs);
+      const [uri, options] = serviceRequest.get.lastCall.args;
+      expect(uri).to.equal(`http://127.0.0.1:8001/water/1.0/returns/upload-preview/${eventId}`);
+      expect(options).to.equal({ qs });
+    });
 
-  test('should throw an error if API returns error response', async () => {
-    serviceRequest.get.resolves(responses.error);
-    const func = () => returns.getUploadPreview(eventId, qs);
-    expect(func()).to.reject();
-  });
+    test('should throw an error if API returns error response', async () => {
+      serviceRequest.get.resolves(responses.error);
+      const func = () => returns.getUploadPreview(eventId, qs);
+      expect(func()).to.reject();
+    });
 
-  test('should resolve with data from API response', async () => {
-    const response = await returns.getUploadPreview(eventId, qs);
-    expect(response).to.equal(responses.multi.data);
-  });
+    test('should resolve with data from API response', async () => {
+      const response = await returns.getUploadPreview(eventId, qs);
+      expect(response).to.equal(responses.multi.data);
+    });
 
-  test('should call service request with correct URL if return ID supplied', async () => {
-    await returns.getUploadPreview(eventId, qs, returnId);
-    const [uri] = serviceRequest.get.lastCall.args;
-    expect(uri).to.equal(`http://127.0.0.1:8001/water/1.0/returns/upload-preview/${eventId}/${returnId}`);
+    test('should call service request with correct URL if return ID supplied', async () => {
+      await returns.getUploadPreview(eventId, qs, returnId);
+      const [uri] = serviceRequest.get.lastCall.args;
+      expect(uri).to.equal(`http://127.0.0.1:8001/water/1.0/returns/upload-preview/${eventId}/${returnId}`);
+    });
   });
 });

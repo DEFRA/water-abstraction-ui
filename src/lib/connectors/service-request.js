@@ -3,29 +3,23 @@
  * downstream services that are always JSON content type and
  * always pass a JWT auth header.
  */
-const rp = require('request-promise-native').defaults({
-  proxy: null,
-  strictSSL: false
-});
 
-const getOptions = (method, url, additionalOptions) => {
-  return Object.assign({
+const http = require('./http');
+const { partial } = require('lodash');
+
+const makeRequest = (method, url, additionalOptions = {}) => {
+  const options = Object.assign({
     url,
-    method: method,
+    method,
     json: true,
     headers: {
       Authorization: process.env.JWT_TOKEN
     }
   }, additionalOptions);
+  
+  return http.request(options);
 };
 
-module.exports = {
-  get: (url, additionalOptions = {}) => {
-    const options = getOptions('GET', url, additionalOptions);
-    return rp(options);
-  },
-  post: (url, additionalOptions = {}) => {
-    const options = getOptions('POST', url, additionalOptions);
-    return rp(options);
-  }
-};
+exports.get = partial(makeRequest, 'GET');
+exports.post = partial(makeRequest, 'POST');
+exports.patch = partial(makeRequest, 'PATCH');

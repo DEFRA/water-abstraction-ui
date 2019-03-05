@@ -1,6 +1,7 @@
 const BaseJoi = require('joi');
 const joiPasswordValidator = require('./joi-password-validator');
 const Joi = BaseJoi.extend(joiPasswordValidator);
+const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
 module.exports = {
 
@@ -28,5 +29,7 @@ module.exports = {
     page: Joi.number().allow('').min(1).default(1)
   },
 
-  VALID_LICENCE_NAME: Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ']+$/i)
+  VALID_LICENCE_NAME: Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ']+$/i),
+
+  VALID_RETURN_ID: Joi.string().regex(returnIDRegex).required()
 };

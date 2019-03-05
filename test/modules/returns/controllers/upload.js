@@ -4,28 +4,35 @@ const sinon = require('sinon');
 const water = require('../../../../src/lib/connectors/water.js');
 const forms = require('../../../../src/lib/forms/index');
 const files = require('../../../../src/lib/files');
-const returns = require('../../../../src/lib/connectors/water-service/returns.js');
+const waterReturns = require('../../../../src/lib/connectors/water-service/returns');
 
 const controller = require('../../../../src/modules/returns/controllers/upload');
+const logger = require('../../../../src/lib/logger');
 const uploadHelpers = require('../../../../src/modules/returns/lib/upload-helpers');
 
 const sandbox = sinon.createSandbox();
+        
+const eventId = 'event_1';
+const userName = 'user_1';
+const entityId = 'entity_1';
+const companyId = 'company_1';
+const csrfToken = 'csrf';
+const returnId = 'v1:1:01/123:4567:2017-11-01:2018-10-31';
 
 const createRequest = () => {
   return {
-    view: sandbox.stub(),
-    query: {
-      error: undefined
-    },
-    payload: {
-      file: 'file'
+    view: {
+      csrfToken
     },
     params: {
-      event_id: '934nfo5-dfndfkh45'
+      eventId,
+      returnId
     },
     auth: {
       credentials: {
-        username: 'bob.jones@gmail.com'
+        username: userName,
+        entity_id: entityId,
+        companyId
       }
     }
   };
@@ -46,6 +53,16 @@ const createResponse = (status, metadata) => ({
   }]
 });
 
+const returns = [{
+  returnId,
+  isNil: true,
+  errors: []
+}, {
+  returnId,
+  isNil: true,
+  errors: ['oh no']
+}];
+
 experiment('upload controller', () => {
   let h;
   beforeEach(async () => {
@@ -58,7 +75,7 @@ experiment('upload controller', () => {
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'runChecks');
-    sandbox.stub(returns, 'postXML').returns({ data: { eventId: 'kjdr46-w38rjg34' } });
+    sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId: 'kjdr46-w38rjg34' } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
   });
@@ -80,7 +97,7 @@ experiment('upload controller', () => {
       await controller.postXmlUpload(createRequest(), h);
 
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/returns/processing-upload/kjdr46-w38rjg34');
+      expect(path).to.equal('/returns/processing-upload/entityId');
     });
 
     test('it should redirect to same page with error message if error', async () => {
@@ -127,6 +144,122 @@ experiment('upload controller', () => {
       expect(h.redirect.callCount).to.equal(1);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=invalidxml');
+
+
+experiment('XML return upload controller', () => {
+  const h = {
+    view: sandbox.stub()
+  };
+  let request;
+
+  beforeEach(async () => {
+    sandbox.stub(logger, 'error');
+    request = createRequest();
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  experiment('getSummary', () => {
+    beforeEach(async () => {
+      sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns);
+    });
+
+    test('should call water returns API with correct params', async () => {
+      await controller.getSummary(request, h);
+      const { args } = waterReturns.getUploadPreview.lastCall;
+      expect(args[0]).to.equal(eventId);
+      expect(args[1]).to.equal({
+        userName,
+        entityId,
+        companyId
+      });
+    });
+
+    test('should use the correct template', async () => {
+      await controller.getSummary(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns/upload-summary.njk');
+    });
+
+    test('should set the correct view data', async () => {
+      await controller.getSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.pageTitle).to.equal(controller.pageTitles.error);
+      expect(view.back).to.equal('/returns/upload');
+      expect(view.returnsWithErrors).to.be.an.array();
+      expect(view.returnsWithoutErrors).to.be.an.array();
+      expect(view.form).to.be.an.object();
+    });
+
+    test('should have correct page title if there are no errors', async () => {
+      waterReturns.getUploadPreview.resolves([returns[0]]);
+      await controller.getSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.pageTitle).to.equal(controller.pageTitles.ok);
+    });
+
+    test('should log an error if water returns API error', async () => {
+      waterReturns.getUploadPreview.rejects();
+      const func = () => controller.getSummary(request, h);
+      await expect(func()).to.reject();
+
+      const [message, params] = logger.error.lastCall.args;
+      expect(message).to.be.a.string();
+      expect(params).to.equal({
+        eventId,
+        options: {
+          userName,
+          entityId,
+          companyId
+        }
+      });
+    });
+  });
+
+  experiment('getSummaryReturn', () => {
+    beforeEach(async () => {
+      sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns[0]);
+    });
+
+    test('should call water returns API with correct params', async () => {
+      await controller.getSummaryReturn(request, h);
+      const { args } = waterReturns.getUploadPreview.lastCall;
+      expect(args[0]).to.equal(eventId);
+      expect(args[1]).to.equal({
+        userName,
+        entityId,
+        companyId
+      });
+      expect(args[2]).to.equal(returnId);
+    });
+
+    test('should output correct view data', async () => {
+      await controller.getSummaryReturn(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(`/returns/upload-summary/${eventId}`);
+      expect(view.return).to.be.an.object();
+      expect(view.pageTitle).to.be.a.string();
+      expect(view.lines).to.be.an.array();
+    });
+
+    test('should log an error if water returns API error', async () => {
+      waterReturns.getUploadPreview.rejects();
+      const func = () => controller.getSummaryReturn(request, h);
+      await expect(func()).to.reject();
+
+      const [message, params] = logger.error.lastCall.args;
+      expect(message).to.be.a.string();
+      expect(params).to.equal({
+        eventId,
+        returnId,
+        options: {
+          userName,
+          entityId,
+          companyId
+        }
+      });
     });
   });
 });

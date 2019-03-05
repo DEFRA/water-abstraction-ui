@@ -4,6 +4,7 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
+const config = require('../../../../config');
 const serviceRequest = require('../../../../src/lib/connectors/service-request');
 const licencesConnector = require('../../../../src/lib/connectors/water-service/licences');
 
@@ -20,7 +21,7 @@ experiment('getLicenceByDocumentId', () => {
 
   test('passes the expected URL to the request', async () => {
     await licencesConnector.getLicenceByDocumentId('test-id');
-    const expectedUrl = `${process.env.WATER_URI}/documents/test-id/licence`;
+    const expectedUrl = `${config.services.water}/documents/test-id/licence`;
     const [url] = serviceRequest.get.lastCall.args;
     expect(url).to.equal(expectedUrl);
   });
@@ -37,7 +38,7 @@ experiment('getLicenceUsersByDocumentId', () => {
 
   test('passes the expected URL to the request', async () => {
     await licencesConnector.getLicenceUsersByDocumentId('test-id');
-    const expectedUrl = `${process.env.WATER_URI}/documents/test-id/licence/users`;
+    const expectedUrl = `${config.services.water}/documents/test-id/licence/users`;
     const [url] = serviceRequest.get.lastCall.args;
     expect(url).to.equal(expectedUrl);
   });
@@ -54,7 +55,7 @@ experiment('getLicencePointsByDocumentId', () => {
 
   test('passes the expected URL to the request', async () => {
     await licencesConnector.getLicencePointsByDocumentId('test-id');
-    const expectedUrl = `${process.env.WATER_URI}/documents/test-id/licence/points`;
+    const expectedUrl = `${config.services.water}/documents/test-id/licence/points`;
     const [url] = serviceRequest.get.lastCall.args;
     expect(url).to.equal(expectedUrl);
   });
@@ -71,7 +72,7 @@ experiment('getLicenceConditionsByDocumentId', () => {
 
   test('passes the expected URL to the request', async () => {
     await licencesConnector.getLicenceConditionsByDocumentId('test-id');
-    const expectedUrl = `${process.env.WATER_URI}/documents/test-id/licence/conditions`;
+    const expectedUrl = `${config.services.water}/documents/test-id/licence/conditions`;
     const [url] = serviceRequest.get.lastCall.args;
     expect(url).to.equal(expectedUrl);
   });

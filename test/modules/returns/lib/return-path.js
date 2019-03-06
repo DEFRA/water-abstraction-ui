@@ -100,7 +100,7 @@ experiment('returnPath -  internal users', () => {
     });
   });
 
-  test('An internal user can view a return if has completed status', async () => {
+  test('An internal user can view a return if has void status', async () => {
     const request = getInternalRequest();
     expect(getReturnPath({ ...ret, status: 'void' }, request)).to.equal({
       path: internalView,
@@ -129,11 +129,11 @@ experiment('returnPath -  internal users', () => {
     });
   });
 
-  test('An internal returns user can view a return if has completed status', async () => {
+  test('An internal returns user can edit a return if has completed status', async () => {
     const request = getInternalRequest(true);
     expect(getReturnPath({ ...ret, status: 'completed' }, request)).to.equal({
-      path: internalView,
-      isEdit: false
+      path: internalEdit,
+      isEdit: true
     });
   });
 

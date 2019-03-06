@@ -107,12 +107,23 @@ experiment('getUserStatus', () => {
     expect(userId).to.equal(request.params.userId);
   });
 
-  test('adds a total licence count to the view', async () => {
+  test('adds the number of licences with outstanding verifications', async () => {
     const [, view] = h.view.firstCall.args;
-    expect(view.userStatus.totalLicenceCount).to.equal(3);
+    expect(view.userStatus.unverifiedLicenceCount).to.equal(2);
   });
 
-  test('total licences is zero when there are none', async () => {
+  test('adds the number of verified licences', async () => {
+    const [, view] = h.view.firstCall.args;
+    expect(view.userStatus.verifiedLicenceCount).to.equal(3);
+  });
+
+  test('adds a licence count to the view', async () => {
+    const [, view] = h.view.firstCall.args;
+    // three registered, plus two outstanding verifications
+    expect(view.userStatus.licenceCount).to.equal(5);
+  });
+
+  test('licences is zero when there are none', async () => {
     waterServiceUserConnector.getUserStatus.resolves(
       getUserStatusResponses.externalUserWithoutLicences()
     );
@@ -120,6 +131,6 @@ experiment('getUserStatus', () => {
     await controller.getUserStatus(request, h);
 
     const [, view] = h.view.lastCall.args;
-    expect(view.userStatus.totalLicenceCount).to.equal(0);
+    expect(view.userStatus.licenceCount).to.equal(0);
   });
 });

@@ -11,7 +11,7 @@ const validationAdapterFactory = require('./validationAdapters');
  * @param {string} method='POST' Which HTTP method will be used to handle the form submit
  * @param {string} validationType='joi' Which type of validation adapter is used for form validation and error messages
  */
-const formFactory = (action, method = 'POST', validationType = 'joi') => {
+const formFactory = (action, method = 'POST', validationType = 'joi', options = {}) => {
   return {
     action,
     method,
@@ -19,7 +19,8 @@ const formFactory = (action, method = 'POST', validationType = 'joi') => {
     isValid: undefined,
     fields: [],
     errors: [],
-    validationType
+    validationType,
+    ...options
   };
 };
 
@@ -154,5 +155,6 @@ module.exports = {
   formFactory,
   handleRequest,
   fields,
-  importData
+  importData,
+  applyErrors
 };

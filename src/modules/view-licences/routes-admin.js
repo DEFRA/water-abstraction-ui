@@ -98,12 +98,10 @@ const getLicenceCommunication = {
   }
 };
 
-module.exports = {
-  getLicenceAdmin,
-  getLicenceContactAdmin,
-  getLicencePurposesAdmin,
-  getLicencePointsAdmin,
-  getLicenceConditionsAdmin,
-  getLicenceGaugingStationAdmin,
-  getLicenceCommunication
-};
+exports.getLicenceAdmin = getLicenceAdmin;
+exports.getLicenceContactAdmin = getLicenceContactAdmin;
+exports.getLicencePurposesAdmin = getLicencePurposesAdmin;
+exports.getLicencePointsAdmin = getLicencePointsAdmin;
+exports.getLicenceConditionsAdmin = getLicenceConditionsAdmin;
+exports.getLicenceGaugingStationAdmin = getLicenceGaugingStationAdmin;
+exports.getLicenceCommunication = getLicenceCommunication;

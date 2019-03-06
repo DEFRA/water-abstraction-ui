@@ -16,6 +16,7 @@ const makeRequest = (method, url, additionalOptions = {}) => {
       Authorization: process.env.JWT_TOKEN
     }
   }, additionalOptions);
+  
   return http.request(options);
 };
 

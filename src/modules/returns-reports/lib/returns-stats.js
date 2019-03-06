@@ -86,10 +86,8 @@ const getReturnStats = async (endDate) => {
   return data;
 };
 
-module.exports = {
-  getKeyAndValue,
-  isGrouped,
-  isSingleValue,
-  mapReportResponse,
-  getReturnStats
-};
+exports.getKeyAndValue = getKeyAndValue;
+exports.isGrouped = isGrouped;
+exports.isSingleValue = isSingleValue;
+exports.mapReportResponse = mapReportResponse;
+exports.getReturnStats = getReturnStats;

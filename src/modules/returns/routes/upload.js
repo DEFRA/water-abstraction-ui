@@ -6,6 +6,53 @@ const validators = require('../../../lib/validators');
 const allowedScopes = [scope.licenceHolder, scope.colleagueWithReturns];
 
 module.exports = {
+  getXmlUpload: {
+    method: 'GET',
+    path: '/returns/upload',
+    handler: controller.getXmlUpload,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Upload xml return',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+  postXmlUpload: {
+    method: 'POST',
+    path: '/returns/upload',
+    handler: controller.postXmlUpload,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Upload xml return',
+      payload: {
+        output: 'stream',
+        allow: 'multipart/form-data'
+      }
+    }
+  },
+  getSpinnerPage: {
+    method: 'GET',
+    path: '/returns/processing-upload/{event_id}',
+    handler: controller.getSpinnerPage,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Uploading returns data',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
   getSummary: {
     method: 'GET',
     path: '/returns/upload-summary/{eventId}',

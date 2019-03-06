@@ -1,10 +1,15 @@
 const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const sinon = require('sinon');
+const water = require('../../../../src/lib/connectors/water.js');
+const forms = require('../../../../src/lib/forms/index');
+const files = require('../../../../src/lib/files');
 const waterReturns = require('../../../../src/lib/connectors/water-service/returns');
+
 const controller = require('../../../../src/modules/returns/controllers/upload');
 const logger = require('../../../../src/lib/logger');
+const uploadHelpers = require('../../../../src/modules/returns/lib/upload-helpers');
 
-const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const eventId = 'event_1';
@@ -23,6 +28,9 @@ const createRequest = () => {
       eventId,
       returnId
     },
+    payload: {
+      file: '<xml>'
+    },
     auth: {
       credentials: {
         username: userName,
@@ -32,6 +40,21 @@ const createRequest = () => {
     }
   };
 };
+
+const createErrorResponse = () => {
+  return {
+    error: 'oh no',
+    data: null
+  };
+};
+
+const createResponse = (status, metadata) => ({
+  error: null,
+  data: [{
+    status,
+    metadata
+  }]
+});
 
 const returns = [{
   returnId,
@@ -43,119 +66,224 @@ const returns = [{
   errors: ['oh no']
 }];
 
-experiment('XML return upload controller', () => {
-  const h = {
-    view: sandbox.stub()
-  };
-  let request;
-
+experiment('upload controller', () => {
+  let h;
   beforeEach(async () => {
-    sandbox.stub(logger, 'error');
-    request = createRequest();
+    h = {
+      view: sandbox.stub(),
+      redirect: sandbox.stub()
+    };
+    sandbox.stub(water.events, 'findMany');
+    sandbox.stub(forms, 'handleRequest');
+    sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
+    sandbox.stub(uploadHelpers, 'uploadFile');
+    sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
+    sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId } });
+    sandbox.stub(files, 'deleteFile');
+    sandbox.stub(files, 'readFile').returns('fileData');
   });
-
   afterEach(async () => {
     sandbox.restore();
   });
+  experiment('getXmlUpload', () => {
+    test('it should display the upload xml page', async () => {
+      const request = createRequest();
+      await controller.getXmlUpload(request, h);
+      const [template, view] = h.view.lastCall.args;
 
-  experiment('getSummary', () => {
-    beforeEach(async () => {
-      sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns);
+      expect(template).to.equal('nunjucks/returns/upload.njk');
+      expect(view.form.action).to.equal('/returns/upload');
+    });
+  });
+  experiment('postXmlUpload', () => {
+    test('it should redirect to spinner page if there are no errors', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
+      await controller.postXmlUpload(createRequest(), h);
+
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal(`/returns/processing-upload/${eventId}`);
     });
 
-    test('should call water returns API with correct params', async () => {
-      await controller.getSummary(request, h);
-      const { args } = waterReturns.getUploadPreview.lastCall;
-      expect(args[0]).to.equal(eventId);
-      expect(args[1]).to.equal({
-        userName,
-        entityId,
-        companyId
-      });
+    test('it should redirect to same page with virus error message if virus', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.VIRUS);
+      await controller.postXmlUpload(createRequest(), h);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=virus');
     });
 
-    test('should use the correct template', async () => {
-      await controller.getSummary(request, h);
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/upload-summary.njk');
+    test('it should redirect to same page with XML error message if not XML', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.NOT_XML);
+      await controller.postXmlUpload(createRequest(), h);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=notxml');
+    });
+  });
+  experiment('getSpinnerPage', () => {
+    test('throws an error if there is an error response from the events API', async () => {
+      const response = createErrorResponse();
+      water.events.findMany.resolves(response);
+      const func = () => controller.getSpinnerPage(createRequest(), h);
+      expect(func()).to.reject();
     });
 
-    test('should set the correct view data', async () => {
-      await controller.getSummary(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal(controller.pageTitles.error);
-      expect(view.back).to.equal('/returns/upload');
-      expect(view.returnsWithErrors).to.be.an.array();
-      expect(view.returnsWithoutErrors).to.be.an.array();
-      expect(view.form).to.be.an.object();
+    test('it should redirect to the summary page if status is validated', async () => {
+      const response = createResponse('validated');
+      const request = createRequest();
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(request, h);
+
+      expect(h.redirect.callCount).to.equal(1);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
     });
 
-    test('should have correct page title if there are no errors', async () => {
-      waterReturns.getUploadPreview.resolves([returns[0]]);
-      await controller.getSummary(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal(controller.pageTitles.ok);
+    // test('it should redirect to upload page with "uploaderror"', async () => {
+    //   const response = createResponse('undefined');
+    //
+    //   water.events.findMany.resolves(response);
+    //   await controller.getSpinnerPage(createRequest(), h);
+    //
+    //   expect(h.redirect.callCount).to.equal(1);
+    //   const [path] = h.redirect.lastCall.args;
+    //   expect(path).to.equal('/returns/upload?error=uploaderror');
+    // });
+
+    test('throws a Boom 404 error if the event is not found', async () => {
+      water.events.findMany.resolves({ error: null, data: [] });
+      try {
+        await controller.getSpinnerPage(createRequest(), h);
+        fail();
+      } catch (err) {
+        expect(err.isBoom).to.equal(true);
+        expect(err.output.statusCode).to.equal(404);
+      }
     });
 
-    test('should log an error if water returns API error', async () => {
-      waterReturns.getUploadPreview.rejects();
-      const func = () => controller.getSummary(request, h);
-      await expect(func()).to.reject();
+    test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
+      const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(createRequest(), h);
 
-      const [message, params] = logger.error.lastCall.args;
-      expect(message).to.be.a.string();
-      expect(params).to.equal({
-        eventId,
-        options: {
-          userName,
-          entityId,
-          companyId
-        }
-      });
+      expect(h.redirect.callCount).to.equal(1);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=invalid-xml');
     });
   });
 
-  experiment('getSummaryReturn', () => {
+  experiment('XML return upload controller', () => {
+    const h = {
+      view: sandbox.stub()
+    };
+    let request;
+
     beforeEach(async () => {
-      sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns[0]);
+      sandbox.stub(logger, 'error');
+      request = createRequest();
     });
 
-    test('should call water returns API with correct params', async () => {
-      await controller.getSummaryReturn(request, h);
-      const { args } = waterReturns.getUploadPreview.lastCall;
-      expect(args[0]).to.equal(eventId);
-      expect(args[1]).to.equal({
-        userName,
-        entityId,
-        companyId
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    experiment('getSummary', () => {
+      beforeEach(async () => {
+        sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns);
       });
-      expect(args[2]).to.equal(returnId);
-    });
 
-    test('should output correct view data', async () => {
-      await controller.getSummaryReturn(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal(`/returns/upload-summary/${eventId}`);
-      expect(view.return).to.be.an.object();
-      expect(view.pageTitle).to.be.a.string();
-      expect(view.lines).to.be.an.array();
-    });
-
-    test('should log an error if water returns API error', async () => {
-      waterReturns.getUploadPreview.rejects();
-      const func = () => controller.getSummaryReturn(request, h);
-      await expect(func()).to.reject();
-
-      const [message, params] = logger.error.lastCall.args;
-      expect(message).to.be.a.string();
-      expect(params).to.equal({
-        eventId,
-        returnId,
-        options: {
+      test('should call water returns API with correct params', async () => {
+        await controller.getSummary(request, h);
+        const { args } = waterReturns.getUploadPreview.lastCall;
+        expect(args[0]).to.equal(eventId);
+        expect(args[1]).to.equal({
           userName,
           entityId,
           companyId
-        }
+        });
+      });
+
+      test('should use the correct template', async () => {
+        await controller.getSummary(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/returns/upload-summary.njk');
+      });
+
+      test('should set the correct view data', async () => {
+        await controller.getSummary(request, h);
+        const [, view] = h.view.lastCall.args;
+        expect(view.pageTitle).to.equal(controller.pageTitles.error);
+        expect(view.back).to.equal('/returns/upload');
+        expect(view.returnsWithErrors).to.be.an.array();
+        expect(view.returnsWithoutErrors).to.be.an.array();
+        expect(view.form).to.be.an.object();
+      });
+
+      test('should have correct page title if there are no errors', async () => {
+        waterReturns.getUploadPreview.resolves([returns[0]]);
+        await controller.getSummary(request, h);
+        const [, view] = h.view.lastCall.args;
+        expect(view.pageTitle).to.equal(controller.pageTitles.ok);
+      });
+
+      test('should log an error if water returns API error', async () => {
+        waterReturns.getUploadPreview.rejects();
+        const func = () => controller.getSummary(request, h);
+        await expect(func()).to.reject();
+
+        const [message, params] = logger.error.lastCall.args;
+        expect(message).to.be.a.string();
+        expect(params).to.equal({
+          eventId,
+          options: {
+            userName,
+            entityId,
+            companyId
+          }
+        });
+      });
+    });
+
+    experiment('getSummaryReturn', () => {
+      beforeEach(async () => {
+        sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns[0]);
+      });
+
+      test('should call water returns API with correct params', async () => {
+        await controller.getSummaryReturn(request, h);
+        const { args } = waterReturns.getUploadPreview.lastCall;
+        expect(args[0]).to.equal(eventId);
+        expect(args[1]).to.equal({
+          userName,
+          entityId,
+          companyId
+        });
+        expect(args[2]).to.equal(returnId);
+      });
+
+      test('should output correct view data', async () => {
+        await controller.getSummaryReturn(request, h);
+        const [, view] = h.view.lastCall.args;
+        expect(view.back).to.equal(`/returns/upload-summary/${eventId}`);
+        expect(view.return).to.be.an.object();
+        expect(view.pageTitle).to.be.a.string();
+        expect(view.lines).to.be.an.array();
+      });
+
+      test('should log an error if water returns API error', async () => {
+        waterReturns.getUploadPreview.rejects();
+        const func = () => controller.getSummaryReturn(request, h);
+        await expect(func()).to.reject();
+
+        const [message, params] = logger.error.lastCall.args;
+        expect(message).to.be.a.string();
+        expect(params).to.equal({
+          eventId,
+          returnId,
+          options: {
+            userName,
+            entityId,
+            companyId
+          }
+        });
       });
     });
   });

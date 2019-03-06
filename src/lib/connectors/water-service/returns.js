@@ -54,6 +54,18 @@ const patchReturn = (data) => {
   });
 };
 
+/**
+ * Post to send XML return to water service
+ * @param {string} fileData - file data to be sent as a string
+ * @param {string} userName - userName of active user
+ * @return {string} - JSON containing, eventId, filename, location, etc
+ */
+const postXML = async (xmlData, userName) => {
+  const url = `${endpoint}/upload-xml`;
+
+  return serviceRequest.post(url, { body: { fileData: xmlData, userName } });
+};
+
 const responseHandler = response => {
   throwIfError(response.error);
   return response.data;
@@ -76,9 +88,8 @@ const getUploadPreview = async (eventId, qs, returnId) => {
   return responseHandler(response);
 };
 
-module.exports = {
-  getReturn,
-  postReturn,
-  patchReturn,
-  getUploadPreview
-};
+exports.getReturn = getReturn;
+exports.postReturn = postReturn;
+exports.patchReturn = patchReturn;
+exports.postXML = postXML;
+exports.getUploadPreview = getUploadPreview;

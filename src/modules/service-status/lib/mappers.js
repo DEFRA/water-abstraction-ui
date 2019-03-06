@@ -108,10 +108,8 @@ const mapToJSON = (data) => {
   };
 };
 
-module.exports = {
-  countErrors,
-  mapCRMKPI,
-  mapIDMKPI,
-  mapToView,
-  mapToJSON
-};
+exports.countErrors = countErrors;
+exports.mapCRMKPI = mapCRMKPI;
+exports.mapIDMKPI = mapIDMKPI;
+exports.mapToView = mapToView;
+exports.mapToJSON = mapToJSON;

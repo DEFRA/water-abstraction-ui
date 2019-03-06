@@ -49,7 +49,7 @@
     "xmldom": "^0.1.27"
   },
   "dependencies": {
-    "@envage/hapi-pg-rest-api": "^4.1.1",
+    "@envage/hapi-pg-rest-api": "^4.1.2",
     "@envage/water-abstraction-helpers": "^1.0.2",
     "accessible-autocomplete": "^1.6.2",
     "airbrake-js": "^1.5.0",
@@ -91,6 +91,7 @@
     "lodash": "^4.17.11",
     "marked": "^0.6.0",
     "minimatch": "^3.0.4",
+    "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "nunjucks": "^3.2.0",

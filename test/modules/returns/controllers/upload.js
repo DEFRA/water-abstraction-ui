@@ -1,5 +1,5 @@
 const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const water = require('../../../../src/lib/connectors/water.js');
 const forms = require('../../../../src/lib/forms/index');
@@ -27,6 +27,9 @@ const createRequest = () => {
     params: {
       eventId,
       returnId
+    },
+    payload: {
+      file: '<xml>'
     },
     auth: {
       credentials: {
@@ -74,8 +77,8 @@ experiment('upload controller', () => {
     sandbox.stub(forms, 'handleRequest');
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
-    sandbox.stub(uploadHelpers, 'runChecks');
-    sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId: 'kjdr46-w38rjg34' } });
+    sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
+    sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
   });
@@ -94,17 +97,25 @@ experiment('upload controller', () => {
   });
   experiment('postXmlUpload', () => {
     test('it should redirect to spinner page if there are no errors', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       await controller.postXmlUpload(createRequest(), h);
 
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/returns/processing-upload/entityId');
+      expect(path).to.equal(`/returns/processing-upload/${eventId}`);
     });
 
-    test('it should redirect to same page with error message if error', async () => {
-      uploadHelpers.runChecks.returns('/test/url');
+    test('it should redirect to same page with virus error message if virus', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.VIRUS);
       await controller.postXmlUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/test/url');
+      expect(path).to.equal('/returns/upload?error=virus');
+    });
+
+    test('it should redirect to same page with XML error message if not XML', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.NOT_XML);
+      await controller.postXmlUpload(createRequest(), h);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=notxml');
     });
   });
   experiment('getSpinnerPage', () => {
@@ -126,24 +137,36 @@ experiment('upload controller', () => {
       expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
     });
 
-    test('it should redirect to upload page with "uploaderror"', async () => {
-      const response = createResponse('undefined');
-      water.events.findMany.resolves(response);
-      await controller.getSpinnerPage(createRequest(), h);
+    // test('it should redirect to upload page with "uploaderror"', async () => {
+    //   const response = createResponse('undefined');
+    //
+    //   water.events.findMany.resolves(response);
+    //   await controller.getSpinnerPage(createRequest(), h);
+    //
+    //   expect(h.redirect.callCount).to.equal(1);
+    //   const [path] = h.redirect.lastCall.args;
+    //   expect(path).to.equal('/returns/upload?error=uploaderror');
+    // });
 
-      expect(h.redirect.callCount).to.equal(1);
-      const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/returns/upload?error=uploaderror');
+    test('throws a Boom 404 error if the event is not found', async () => {
+      water.events.findMany.resolves({ error: null, data: [] });
+      try {
+        await controller.getSpinnerPage(createRequest(), h);
+        fail();
+      } catch (err) {
+        expect(err.isBoom).to.equal(true);
+        expect(err.output.statusCode).to.equal(404);
+      }
     });
 
-    test('if status === "error", it should redirect to upload page with "invalid-xml" error', async () => {
+    test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
       const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
       water.events.findMany.resolves(response);
       await controller.getSpinnerPage(createRequest(), h);
 
       expect(h.redirect.callCount).to.equal(1);
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/returns/upload?error=invalidxml');
+      expect(path).to.equal('/returns/upload?error=invalid-xml');
     });
   });
 

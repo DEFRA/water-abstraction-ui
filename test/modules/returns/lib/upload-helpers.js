@@ -129,26 +129,27 @@ experiment('upload Helpers', () => {
       read.emit('error');
     });
   });
-  experiment('runChecks', () => {
-    test('Returns undefined when both checks pass', async () => {
-      fileCheck.virusCheck.returns(true);
+
+  experiment('getUploadedFileStatus', () => {
+    test('returns OK status when both checks pass', async () => {
+      fileCheck.virusCheck.resolves(true);
       fileCheck.isXml.returns(true);
-      const checkResults = await uploadHelpers.runChecks('fileName');
-      expect(checkResults).to.equal(undefined);
+      const status = await uploadHelpers.getUploadedFileStatus('fileName');
+      expect(status).to.equal(uploadHelpers.fileStatuses.OK);
     });
 
-    test('Returns "/returns/upload?error=virus" when virus check fails', async () => {
-      fileCheck.virusCheck.returns(false);
+    test('returns virus status when virus check fails', async () => {
+      fileCheck.virusCheck.resolves(false);
       fileCheck.isXml.returns(true);
-      const checkResults = await uploadHelpers.runChecks('fileName');
-      expect(checkResults).to.equal('/returns/upload?error=virus');
+      const status = await uploadHelpers.getUploadedFileStatus('fileName');
+      expect(status).to.equal(uploadHelpers.fileStatuses.VIRUS);
     });
 
-    test('Returns "/returns/upload?error=notxml" when virus check fails', async () => {
-      fileCheck.virusCheck.returns(true);
+    test('returns not xml status when XML check fails', async () => {
+      fileCheck.virusCheck.resolves(true);
       fileCheck.isXml.returns(false);
-      const checkResults = await uploadHelpers.runChecks('fileName');
-      expect(checkResults).to.equal('/returns/upload?error=notxml');
+      const checkResults = await uploadHelpers.getUploadedFileStatus('fileName');
+      expect(checkResults).to.equal(uploadHelpers.fileStatuses.NOT_XML);
     });
   });
 });

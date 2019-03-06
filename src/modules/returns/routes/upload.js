@@ -11,6 +11,9 @@ module.exports = {
     path: '/returns/upload',
     handler: controller.getXmlUpload,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Upload xml return',
       plugins: {
         viewContext: {
@@ -24,6 +27,9 @@ module.exports = {
     path: '/returns/upload',
     handler: controller.postXmlUpload,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Upload xml return',
       payload: {
         output: 'stream',
@@ -36,6 +42,9 @@ module.exports = {
     path: '/returns/processing-upload/{event_id}',
     handler: controller.getSpinnerPage,
     config: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Uploading returns data',
       plugins: {
         viewContext: {

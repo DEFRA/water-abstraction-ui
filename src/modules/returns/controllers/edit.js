@@ -71,7 +71,6 @@ const getAmounts = async (request, h) => {
 
   // Check date/roles
   const { isEdit } = getReturnPath(data, request);
-  console.log('data', data);
   if (!isEdit) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }

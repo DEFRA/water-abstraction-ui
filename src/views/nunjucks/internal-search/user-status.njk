@@ -7,7 +7,7 @@
     <div class="govuk-grid-column-two-thirds">
       {{ userDetails(userStatus.user) }}
 
-      {% if userStatus.totalLicenceCount %}
+      {% if userStatus.licenceCount %}
         {{ userCompanies(userStatus.companies) }}
       {% else %}
         <p class="govuk-body-l">

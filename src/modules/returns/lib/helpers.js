@@ -370,22 +370,20 @@ const getBadge = (status, isPastDueDate) => {
   };
 };
 
-module.exports = {
-  getLicenceNumbers,
-  getLicenceReturns,
-  isXmlUpload,
-  groupReturnsByYear,
-  mergeReturnsAndLicenceNames,
-  getLatestVersion,
-  hasGallons,
-  getReturnsViewData,
-  getReturnTotal,
-  getScopedPath,
-  getViewData,
-  isReturnPastDueDate,
-  getRedirectPath,
-  isReturnId,
-  getSuffix,
-  getBadge,
-  mapReturns
-};
+exports.getLicenceNumbers = getLicenceNumbers;
+exports.getLicenceReturns = getLicenceReturns;
+exports.isXmlUpload = isXmlUpload;
+exports.groupReturnsByYear = groupReturnsByYear;
+exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
+exports.getLatestVersion = getLatestVersion;
+exports.hasGallons = hasGallons;
+exports.getReturnsViewData = getReturnsViewData;
+exports.getReturnTotal = getReturnTotal;
+exports.getScopedPath = getScopedPath;
+exports.getViewData = getViewData;
+exports.isReturnPastDueDate = isReturnPastDueDate;
+exports.getRedirectPath = getRedirectPath;
+exports.isReturnId = isReturnId;
+exports.getSuffix = getSuffix;
+exports.getBadge = getBadge;
+exports.mapReturns = mapReturns;

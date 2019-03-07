@@ -144,14 +144,6 @@ experiment('auth credentials plugin handler', async () => {
     test('adds the companyId to the defra object', async () => {
       expect(request.defra.companyId).to.equal(companyId);
     });
-
-    test('sets isInternalUser to true', async () => {
-      expect(request.defra.isInternalUser).to.be.true();
-    });
-
-    test('sets isExternalUser to false', async () => {
-      expect(request.defra.isExternalUser).to.be.false();
-    });
   });
 
   experiment('for external users', async () => {
@@ -191,18 +183,6 @@ experiment('auth credentials plugin handler', async () => {
       const request = createRequestWithCompany();
       await plugin._handler(request, h);
       expect(request.defra.companyId).to.equal(companyId);
-    });
-
-    test('sets isInternalUser to false', async () => {
-      const request = createRequest();
-      await plugin._handler(request, h);
-      expect(request.defra.isInternalUser).to.be.false();
-    });
-
-    test('sets isExternalUser to true', async () => {
-      const request = createRequest();
-      await plugin._handler(request, h);
-      expect(request.defra.isExternalUser).to.be.true();
     });
 
     test('adds the entityRoles to the defra object', async () => {

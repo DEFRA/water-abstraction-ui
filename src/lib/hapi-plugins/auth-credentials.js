@@ -74,11 +74,9 @@ const augmentAuthenticatedRequest = async request => {
 
     data.user = await loadIDMUser(username);
     data.userScopes = getUserScopes(data.user);
-    data.isExternalUser = isExternalUser(data.user);
-    data.isInternalUser = !data.isExternalUser;
     data.companyId = companyId;
 
-    if (data.isExternalUser) {
+    if (isExternalUser(data.user)) {
       await assignExternalProperties(data, request);
     }
     set(request, 'auth.credentials.scope', data.userScopes);

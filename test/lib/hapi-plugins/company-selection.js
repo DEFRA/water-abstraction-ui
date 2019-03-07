@@ -25,11 +25,14 @@ const getTestRequest = (overrides = {}) => {
 
   const request = { path: defaults.path };
   set(request, 'auth.isAuthenticated', defaults.isAuthenticated);
-  set(request, 'defra.isExternalUser', defaults.isExternal);
-  set(request, 'defra.isInternalUser', !defaults.isExternal);
   set(request, 'defra.companyId', defaults.companyId);
   set(request, 'defra.companyCount', defaults.companyCount);
   set(request, 'route.settings.auth.access', defaults.access);
+
+  if (defaults.isExternal) {
+    set(request, 'auth.credentials.scope', ['external']);
+  }
+
   return request;
 };
 

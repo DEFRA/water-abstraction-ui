@@ -12,13 +12,15 @@
 const { get } = require('lodash');
 const SELECT_COMPANY_PATH = '/select-company';
 const ADD_LICENCES_PATH = '/add-licences';
+const permissions = require('../permissions');
 
 const shouldRedirect = request => {
-  const { companyId, isExternalUser } = request.defra;
+  const isExternal = permissions.isExternal(request);
+  const { companyId } = request.defra;
   const { path } = request;
   const access = get(request, 'route.settings.auth.access', false);
 
-  return (access && isExternalUser && !companyId && path !== SELECT_COMPANY_PATH);
+  return (access && isExternal && !companyId && path !== SELECT_COMPANY_PATH);
 };
 
 const getRedirectPath = companyCount => {

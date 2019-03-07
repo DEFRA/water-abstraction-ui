@@ -4,7 +4,7 @@ const moment = require('moment');
 const { get, isObject } = require('lodash');
 const titleCase = require('title-case');
 
-const { isInternal: isInternalUser } = require('../../../lib/permissions');
+const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../../config');
@@ -86,14 +86,36 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     perPage: 50
   };
 
-  console.log(filter, sort, requestPagination, columns);
-
   const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
     throw Boom.badImplementation('Returns error', error);
   }
 
   return { data, pagination };
+};
+
+/**
+ * Checks whether user uses XML Upload for a list of licence numbers
+ * @param {Array} licenceNumbers to check if isUpload flag is true
+ * @param {Boolean} isInternal to specify user type
+ * @return {Boolean} if user has XML Upload functionality
+ */
+const isXmlUpload = async (licenceNumbers) => {
+  const filter = {
+    'metadata->>isUpload': 'true',
+    'licence_ref': { '$in': licenceNumbers }
+  };
+
+  const requestPagination = { 'page': 1, 'perPage': 1 };
+  const columns = ['return_id'];
+
+  const { error, pagination } = await returns.findMany(filter, {}, requestPagination, columns);
+  if (error) {
+    throw Boom.badImplementation('Returns error', error);
+  }
+  const hasXmlReturnLicences = pagination.totalRows > 0;
+
+  return hasXmlReturnLicences;
 };
 
 /**
@@ -237,11 +259,14 @@ const getReturnsViewData = async (request) => {
 
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
+  const xmlUpload = await isXmlUpload(licenceNumbers);
+  const externalReturns = await isExternalReturns(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
+    xmlUser: xmlUpload && externalReturns,
     returns: []
   };
 
@@ -348,6 +373,7 @@ const getBadge = (status, isPastDueDate) => {
 module.exports = {
   getLicenceNumbers,
   getLicenceReturns,
+  isXmlUpload,
   groupReturnsByYear,
   mergeReturnsAndLicenceNames,
   getLatestVersion,

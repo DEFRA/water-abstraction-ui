@@ -142,3 +142,45 @@ experiment('getBadge', () => {
     });
   });
 });
+
+experiment('isXmlUpload', () => {
+  experiment('pagination.totalRows > 0', () => {
+    beforeEach(async () => {
+      sandbox.stub(returnsConnector, 'findMany').resolves({
+        data: {},
+        error: null,
+        pagination: {
+          totalRows: 3
+        }
+      });
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('returns true for external XML Upload user', async () => {
+      const result = await helpers.isXmlUpload([]);
+      expect(result).to.equal(true);
+    });
+  });
+  experiment('pagination.totalRows === 0', () => {
+    beforeEach(async () => {
+      sandbox.stub(returnsConnector, 'findMany').resolves({
+        data: {},
+        error: null,
+        pagination: {
+          totalRows: 0
+        }
+      });
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    });
+    test('returns false for regular external user', async () => {
+      const result = await helpers.isXmlUpload([]);
+      expect(result).to.equal(false);
+    });
+  });
+});

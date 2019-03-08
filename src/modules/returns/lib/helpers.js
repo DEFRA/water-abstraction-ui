@@ -11,6 +11,7 @@ const config = require('../../../../config');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 
 const { getReturnPath } = require('./return-path');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -97,25 +98,23 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
 /**
  * Checks whether user uses XML Upload for a list of licence numbers
  * @param {Array} licenceNumbers to check if isUpload flag is true
- * @param {Boolean} isInternal to specify user type
- * @return {Boolean} if user has XML Upload functionality
+ * @return {Promise<boolean>} if user has XML Upload functionality
  */
 const isXmlUpload = async (licenceNumbers) => {
   const filter = {
     'metadata->>isUpload': 'true',
-    'licence_ref': { '$in': licenceNumbers }
+    status: 'due',
+    end_date: { '$gte': '2018-10-31' },
+    licence_ref: { '$in': licenceNumbers }
   };
 
   const requestPagination = { 'page': 1, 'perPage': 1 };
   const columns = ['return_id'];
 
   const { error, pagination } = await returns.findMany(filter, {}, requestPagination, columns);
-  if (error) {
-    throw Boom.badImplementation('Returns error', error);
-  }
-  const hasXmlReturnLicences = pagination.totalRows > 0;
+  throwIfError(error);
 
-  return hasXmlReturnLicences;
+  return pagination.totalRows > 0;
 };
 
 /**
@@ -260,7 +259,7 @@ const getReturnsViewData = async (request) => {
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
   const xmlUpload = await isXmlUpload(licenceNumbers);
-  const externalReturns = await isExternalReturns(request);
+  const externalReturns = isExternalReturns(request);
 
   const view = {
     ...request.view,

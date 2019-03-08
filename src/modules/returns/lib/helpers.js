@@ -103,6 +103,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
 const isXmlUpload = async (licenceNumbers) => {
   const filter = {
     'metadata->>isUpload': 'true',
+    'metadata->>isCurrent': 'true',
     status: 'due',
     end_date: { '$gte': '2018-10-31' },
     licence_ref: { '$in': licenceNumbers }

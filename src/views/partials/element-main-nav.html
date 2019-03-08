@@ -1,11 +1,13 @@
 
 {{#if hasMultipleCompanies }}
-<div class="company-switcher">
-  You are managing <b>{{ companyName }}</b>
-  <a href="/select-company" class="company-switcher__link">
-    Change <span class="sr-only">the company you manage</span>
-  </a>
-</div>
+  {{#if companyName }}
+    <div class="company-switcher">
+      You are managing <b>{{ companyName }}</b>
+      <a href="/select-company" class="company-switcher__link">
+        Change <span class="sr-only">the company you manage</span>
+      </a>
+    </div>
+  {{/if}}
 {{/if}}
 
 {{#if isAuthenticated}}

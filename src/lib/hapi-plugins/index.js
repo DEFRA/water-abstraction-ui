@@ -2,7 +2,6 @@ module.exports = {
   config: require('./config'),
   sessions: require('./sessions'),
   csrf: require('./csrf'),
-  error: require('./error'),
   adminFirewall: require('./admin-firewall'),
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),
@@ -14,5 +13,7 @@ module.exports = {
   viewContext: require('./view-context'),
   formValidator: require('./form-validator'),
   anonGoogleAnalytics: require('./anon-google-analytics'),
-  authCredentials: require('./auth-credentials')
+  authCredentials: require('./auth-credentials'),
+  companySelection: require('./company-selection'),
+  error: require('./error')
 };

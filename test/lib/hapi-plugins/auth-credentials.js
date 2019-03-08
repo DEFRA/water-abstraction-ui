@@ -65,7 +65,7 @@ const createRequestWithCompany = () => {
   return request;
 };
 
-experiment('auth credentials plugin', () => {
+experiment('auth credentials plugin', async () => {
   test('is configured correctly', async () => {
     expect(plugin.register).to.be.a.function();
     expect(plugin.pkg.name).to.equal('authCredentials');
@@ -80,11 +80,11 @@ experiment('auth credentials plugin', () => {
     expect(server.ext.callCount).to.equal(1);
     const { method, type } = server.ext.lastCall.args[0];
     expect(type).to.equal('onCredentials');
-    expect(method).to.equal(plugin.handler);
+    expect(method).to.equal(plugin._handler);
   });
 });
 
-experiment('auth credentials plugin handler', () => {
+experiment('auth credentials plugin handler', async () => {
   let h;
 
   const sandbox = sinon.createSandbox();
@@ -102,57 +102,115 @@ experiment('auth credentials plugin handler', () => {
   });
 
   test('returns h.continue on unauthenticated routes', async () => {
-    const result = await plugin.handler({}, h);
+    const result = await plugin._handler({
+      auth: { isAuthenticated: false }
+    }, h);
     expect(result).to.equal(h.continue);
   });
 
   test('throws and logs an error if there is an IDM error', async () => {
     const request = createRequest();
     idmConnector.getUserByEmail.resolves(responses.error);
-    const func = () => plugin.handler(request, h);
+    const func = () => plugin._handler(request, h);
     expect(func()).to.reject().then(() => {
       expect(logger.error.callCount).to.equal(1);
     });
   });
 
-  experiment('for internal users', () => {
+  experiment('for internal users', async () => {
+    let request;
+    let result;
+
     beforeEach(async () => {
       idmConnector.getUserByEmail.resolves(responses.idmInternal);
+      request = createRequest();
+      request.auth.credentials.companyId = companyId;
+      result = await plugin._handler(request, h);
     });
 
     test('returns the scopes loaded from the IDM', async () => {
-      const request = createRequest();
-      const result = await plugin.handler(request, h);
       expect(result).to.equal(h.continue);
       expect(request.auth.credentials.scope).to.equal([scope.internal]);
     });
+
+    test('adds the user to the defra object', async () => {
+      expect(request.defra.user).to.equal(responses.idmInternal.data[0]);
+    });
+
+    test('adds the userScopes to the defra object', async () => {
+      expect(request.defra.userScopes).to.equal(['internal']);
+    });
+
+    test('adds the companyId to the defra object', async () => {
+      expect(request.defra.companyId).to.equal(companyId);
+    });
   });
 
-  experiment('for external users', () => {
+  experiment('for external users', async () => {
     beforeEach(async () => {
       idmConnector.getUserByEmail.resolves(responses.idmExternal);
       sandbox.stub(crmConnector.entityRoles, 'setParams').returns({
-        findAll: sandbox.stub().resolves(responses.crmRoles)
+        findAll: () => Promise.resolve(responses.crmRoles)
       });
     });
 
     test('places all user roles on the request', async () => {
       const request = createRequest();
-      await plugin.handler(request, h);
-      expect(request.entityRoles).to.equal(responses.crmRoles);
+      await plugin._handler(request, h);
+      expect(request.defra.entityRoles).to.equal(responses.crmRoles);
     });
 
     test('does not place company roles in scope if no company selected', async () => {
       const request = createRequest();
-      await plugin.handler(request, h);
+      await plugin._handler(request, h);
       expect(request.auth.credentials.scope).to.equal([scope.external]);
     });
 
     test('places company roles in scope if company is selected', async () => {
       const request = createRequestWithCompany();
-      const result = await plugin.handler(request, h);
+      const result = await plugin._handler(request, h);
       expect(result).to.equal(h.continue);
       expect(request.auth.credentials.scope).to.equal([scope.external, 'foo', 'bar']);
+    });
+
+    test('adds the user to the defra object', async () => {
+      const request = createRequest();
+      await plugin._handler(request, h);
+      expect(request.defra.user).to.equal(responses.idmExternal.data[0]);
+    });
+
+    test('adds the companyId to the defra object', async () => {
+      const request = createRequestWithCompany();
+      await plugin._handler(request, h);
+      expect(request.defra.companyId).to.equal(companyId);
+    });
+
+    test('adds the entityRoles to the defra object', async () => {
+      const request = createRequestWithCompany();
+      await plugin._handler(request, h);
+      expect(request.defra.entityRoles).to.equal([
+        { company_entity_id: 'company_1', role: 'foo' },
+        { company_entity_id: 'company_1', role: 'bar' },
+        { company_entity_id: 'company_2', role: 'baz' }
+      ]);
+    });
+
+    test('adds the unique company ids to the defra object', async () => {
+      const request = createRequestWithCompany();
+      await plugin._handler(request, h);
+      expect(request.defra.companyIds).to.equal(['company_1', 'company_2']);
+    });
+
+    test('adds the count of unique company ids to the defra object', async () => {
+      const request = createRequestWithCompany();
+      await plugin._handler(request, h);
+      expect(request.defra.companyCount).to.equal(2);
+    });
+
+    test('adds the userScopes to the defra object', async () => {
+      const request = createRequestWithCompany();
+      await plugin._handler(request, h);
+      expect(request.defra.userScopes).to.equal(['external', 'foo', 'bar']);
     });
   });
 });

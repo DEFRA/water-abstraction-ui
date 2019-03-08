@@ -1,4 +1,4 @@
-const { get, uniq } = require('lodash');
+const { get } = require('lodash');
 const config = require('../../config');
 
 const { getPropositionLinks } = require('./view/proposition-links');
@@ -45,11 +45,7 @@ const getTracking = (credentials) => {
  * @param  {Object}  request - current request
  * @return {Boolean}         true if user can access > 1 company
  */
-const hasMultipleCompanies = (request) => {
-  const roles = get(request, 'entityRoles', []);
-  const companyIds = roles.map(role => role.company_entity_id);
-  return uniq(companyIds).length > 1;
-};
+const hasMultipleCompanies = request => get(request, 'defra.companyCount', 0) > 1;
 
 function viewContextDefaults (request) {
   const viewContext = request.view || {};

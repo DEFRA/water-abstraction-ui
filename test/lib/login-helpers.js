@@ -2,9 +2,9 @@ const sinon = require('sinon');
 const { expect } = require('code');
 const { set } = require('lodash');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
-const loginHelpers = require('../../../../src/modules/auth/lib/login-helpers');
-const waterUser = require('../../../../src/lib/connectors/water-service/user');
-const { scope } = require('../../../../src/lib/constants');
+const loginHelpers = require('../../src/lib/login-helpers');
+const waterUser = require('../../src/lib/connectors/water-service/user');
+const { scope } = require('../../src/lib/constants');
 
 const userId = 'user_1';
 

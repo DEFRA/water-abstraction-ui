@@ -15,7 +15,7 @@ const { destroySession, authValidationErrorResponse } = require('./helpers');
 const { selectCompanyForm } = require('./forms/select-company');
 const { handleRequest, getValues } = require('../../lib/forms');
 
-const loginHelpers = require('./lib/login-helpers');
+const loginHelpers = require('../../lib/login-helpers');
 
 /**
  * Welcome page before routing to signin/register

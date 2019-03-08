@@ -1,9 +1,9 @@
 const { get } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-const waterUser = require('../../../lib/connectors/water-service/user');
+const waterUser = require('./connectors/water-service/user');
 const getUserID = request => get(request, 'auth.credentials.user_id');
-const { isInternal } = require('../../../lib/permissions');
+const { isInternal } = require('./permissions');
 
 /**
  * Asynchronously loads user data from the water service, including their list

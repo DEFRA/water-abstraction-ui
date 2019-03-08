@@ -162,22 +162,20 @@ const picklistItems = new APIClient(rp, {
   }
 });
 
-module.exports = {
-  sendNotifyMessage,
-  pendingImport,
-  lookup,
-  taskConfig,
-  sendNotification,
-  events,
-  notifications,
-  getRiverLevel,
-  gaugingStations,
-  returns,
-  getReturnsLogs,
-  getReturnsLines,
-  picklists,
-  picklistItems,
-  arLicenceAnalyis,
-  arRefreshLicenceWebhook,
-  getInternalSearchResults
-};
+exports.sendNotifyMessage = sendNotifyMessage;
+exports.pendingImport = pendingImport;
+exports.lookup = lookup;
+exports.taskConfig = taskConfig;
+exports.sendNotification = sendNotification;
+exports.events = events;
+exports.notifications = notifications;
+exports.getRiverLevel = getRiverLevel;
+exports.gaugingStations = gaugingStations;
+exports.returns = returns;
+exports.getReturnsLogs = getReturnsLogs;
+exports.getReturnsLines = getReturnsLines;
+exports.picklists = picklists;
+exports.picklistItems = picklistItems;
+exports.arLicenceAnalyis = arLicenceAnalyis;
+exports.arRefreshLicenceWebhook = arRefreshLicenceWebhook;
+exports.getInternalSearchResults = getInternalSearchResults;

@@ -4,13 +4,14 @@ const moment = require('moment');
 const { get, isObject } = require('lodash');
 const titleCase = require('title-case');
 
-const { isInternal: isInternalUser } = require('../../../lib/permissions');
+const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../../config');
 const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
 
 const { getReturnPath } = require('./return-path');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -86,14 +87,35 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     perPage: 50
   };
 
-  console.log(filter, sort, requestPagination, columns);
-
   const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
     throw Boom.badImplementation('Returns error', error);
   }
 
   return { data, pagination };
+};
+
+/**
+ * Checks whether user uses XML Upload for a list of licence numbers
+ * @param {Array} licenceNumbers to check if isUpload flag is true
+ * @return {Promise<boolean>} if user has XML Upload functionality
+ */
+const isXmlUpload = async (licenceNumbers) => {
+  const filter = {
+    'metadata->>isUpload': 'true',
+    'metadata->>isCurrent': 'true',
+    status: 'due',
+    end_date: { '$gte': '2018-10-31' },
+    licence_ref: { '$in': licenceNumbers }
+  };
+
+  const requestPagination = { 'page': 1, 'perPage': 1 };
+  const columns = ['return_id'];
+
+  const { error, pagination } = await returns.findMany(filter, {}, requestPagination, columns);
+  throwIfError(error);
+
+  return pagination.totalRows > 0;
 };
 
 /**
@@ -237,11 +259,14 @@ const getReturnsViewData = async (request) => {
 
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
+  const xmlUpload = await isXmlUpload(licenceNumbers);
+  const externalReturns = isExternalReturns(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
+    xmlUser: xmlUpload && externalReturns,
     returns: []
   };
 
@@ -345,21 +370,20 @@ const getBadge = (status, isPastDueDate) => {
   };
 };
 
-module.exports = {
-  getLicenceNumbers,
-  getLicenceReturns,
-  groupReturnsByYear,
-  mergeReturnsAndLicenceNames,
-  getLatestVersion,
-  hasGallons,
-  getReturnsViewData,
-  getReturnTotal,
-  getScopedPath,
-  getViewData,
-  isReturnPastDueDate,
-  getRedirectPath,
-  isReturnId,
-  getSuffix,
-  getBadge,
-  mapReturns
-};
+exports.getLicenceNumbers = getLicenceNumbers;
+exports.getLicenceReturns = getLicenceReturns;
+exports.isXmlUpload = isXmlUpload;
+exports.groupReturnsByYear = groupReturnsByYear;
+exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
+exports.getLatestVersion = getLatestVersion;
+exports.hasGallons = hasGallons;
+exports.getReturnsViewData = getReturnsViewData;
+exports.getReturnTotal = getReturnTotal;
+exports.getScopedPath = getScopedPath;
+exports.getViewData = getViewData;
+exports.isReturnPastDueDate = isReturnPastDueDate;
+exports.getRedirectPath = getRedirectPath;
+exports.isReturnId = isReturnId;
+exports.getSuffix = getSuffix;
+exports.getBadge = getBadge;
+exports.mapReturns = mapReturns;

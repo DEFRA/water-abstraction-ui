@@ -80,11 +80,26 @@ const responseHandler = response => {
  * @param {String} qs.companyId - CRM company ID for current selected company
  * @param {String} qs.userName - IDM email address of current user
  * @param {String} [returnId] - individual return to fetch, optional
- * @return {Promise} resolves with { error, data } -  data is array of returns
+ * @return {Promise} resolves with array of returns
  */
 const getUploadPreview = async (eventId, qs, returnId) => {
   const uri = urlJoin(endpoint, `/upload-preview/${eventId}`, returnId || '');
   const response = await serviceRequest.get(uri, { qs });
+  return responseHandler(response);
+};
+
+/**
+ * POST to finally submit and finalise the valid uploaded returns
+ * @param  {String} eventId - the water service event for tracking the upload
+ * @param  {Object} qs    - additional data to authorise the request
+ * @param {String} qs.entityId - CRM individual entity ID for current user
+ * @param {String} qs.companyId - CRM company ID for current selected company
+ * @param {String} qs.userName - IDM email address of current user
+ * @return {Promise} resolves with { error, data } -  data is array of returns
+ */
+const postUploadSubmit = async (eventId, qs) => {
+  const uri = urlJoin(endpoint, `/upload-submit/${eventId}`);
+  const response = await serviceRequest.post(uri, { qs });
   return responseHandler(response);
 };
 
@@ -93,3 +108,4 @@ exports.postReturn = postReturn;
 exports.patchReturn = patchReturn;
 exports.postXML = postXML;
 exports.getUploadPreview = getUploadPreview;
+exports.postUploadSubmit = postUploadSubmit;

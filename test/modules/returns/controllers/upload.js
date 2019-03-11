@@ -1,4 +1,5 @@
 const { expect } = require('code');
+const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const water = require('../../../../src/lib/connectors/water.js');
@@ -41,6 +42,12 @@ const createRequest = () => {
   };
 };
 
+const createSpinnerRequest = () => {
+  const request = createRequest();
+  set(request, 'params.status', 'processing');
+  return request;
+};
+
 const createErrorResponse = () => {
   return {
     error: 'oh no',
@@ -81,6 +88,7 @@ experiment('upload controller', () => {
     sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
+    sandbox.stub(waterReturns, 'postUploadSubmit');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -101,7 +109,7 @@ experiment('upload controller', () => {
       await controller.postXmlUpload(createRequest(), h);
 
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal(`/returns/processing-upload/${eventId}`);
+      expect(path).to.equal(`/returns/processing-upload/processing/${eventId}`);
     });
 
     test('it should redirect to same page with virus error message if virus', async () => {
@@ -122,13 +130,13 @@ experiment('upload controller', () => {
     test('throws an error if there is an error response from the events API', async () => {
       const response = createErrorResponse();
       water.events.findMany.resolves(response);
-      const func = () => controller.getSpinnerPage(createRequest(), h);
+      const func = () => controller.getSpinnerPage(createSpinnerRequest(), h);
       expect(func()).to.reject();
     });
 
     test('it should redirect to the summary page if status is validated', async () => {
       const response = createResponse('validated');
-      const request = createRequest();
+      const request = createSpinnerRequest();
       water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
@@ -137,21 +145,10 @@ experiment('upload controller', () => {
       expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
     });
 
-    // test('it should redirect to upload page with "uploaderror"', async () => {
-    //   const response = createResponse('undefined');
-    //
-    //   water.events.findMany.resolves(response);
-    //   await controller.getSpinnerPage(createRequest(), h);
-    //
-    //   expect(h.redirect.callCount).to.equal(1);
-    //   const [path] = h.redirect.lastCall.args;
-    //   expect(path).to.equal('/returns/upload?error=uploaderror');
-    // });
-
     test('throws a Boom 404 error if the event is not found', async () => {
       water.events.findMany.resolves({ error: null, data: [] });
       try {
-        await controller.getSpinnerPage(createRequest(), h);
+        await controller.getSpinnerPage(createSpinnerRequest(), h);
         fail();
       } catch (err) {
         expect(err.isBoom).to.equal(true);
@@ -162,7 +159,7 @@ experiment('upload controller', () => {
     test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
       const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
       water.events.findMany.resolves(response);
-      await controller.getSpinnerPage(createRequest(), h);
+      await controller.getSpinnerPage(createSpinnerRequest(), h);
 
       expect(h.redirect.callCount).to.equal(1);
       const [path] = h.redirect.lastCall.args;
@@ -171,13 +168,11 @@ experiment('upload controller', () => {
   });
 
   experiment('XML return upload controller', () => {
-    const h = {
-      view: sandbox.stub()
-    };
     let request;
 
     beforeEach(async () => {
       sandbox.stub(logger, 'error');
+      sandbox.stub(logger, 'info');
       request = createRequest();
     });
 
@@ -284,6 +279,60 @@ experiment('upload controller', () => {
             companyId
           }
         });
+      });
+    });
+
+    experiment('postSubmit', () => {
+      test('should call the water service upload submit API with correct params', async () => {
+        const request = createRequest();
+        await controller.postSubmit(request, h);
+        const { args } = waterReturns.postUploadSubmit.lastCall;
+        expect(args[0]).to.equal(eventId);
+        expect(args[1]).to.equal({
+          companyId,
+          entityId,
+          userName
+        });
+      });
+
+      test('should redirect to the correct URL if the API call succeeds', async () => {
+        const request = createRequest();
+        await controller.postSubmit(request, h);
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal(`/returns/processing-upload/submitting/${eventId}`);
+      });
+
+      test('should log an error if the submission fails', async () => {
+        waterReturns.postUploadSubmit.rejects();
+        const func = () => controller.postSubmit(request, h);
+        await expect(func()).to.reject();
+        const [message, params] = logger.error.lastCall.args;
+        expect(message).to.be.a.string();
+        expect(params).to.equal({
+          eventId,
+          options: {
+            entityId,
+            userName,
+            companyId
+          }
+        });
+      });
+    });
+
+    experiment('getSubmitted', () => {
+      test('should render a success page', async () => {
+        const request = createRequest();
+        await controller.getSubmitted(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/returns/upload-submitted.njk');
+      });
+
+      test('should log an info message', async () => {
+        const request = createRequest();
+        await controller.getSubmitted(request, h);
+        const [message, params] = logger.info.lastCall.args;
+        expect(message).to.be.a.string();
+        expect(params).to.equal({ eventId });
       });
     });
   });

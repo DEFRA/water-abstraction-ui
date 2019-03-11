@@ -1,4 +1,4 @@
-const { get } = require('lodash');
+const { get, set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
@@ -10,6 +10,19 @@ const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const logger = require('../../../lib/logger');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
 const confirmForm = require('../forms/confirm-upload');
+
+const spinnerConfig = {
+  processing: {
+    await: 'validated',
+    path: '/returns/upload-summary',
+    pageTitle: 'Uploading returns data'
+  },
+  submitting: {
+    await: 'submitted',
+    path: '/returns/upload-submitted',
+    pageTitle: 'Submitting returns data'
+  }
+};
 
 /**
  * Upload xml return
@@ -40,7 +53,7 @@ const getRedirectPath = (status, eventId) => {
   const paths = {
     [uploadHelpers.fileStatuses.VIRUS]: '/returns/upload?error=virus',
     [uploadHelpers.fileStatuses.NOT_XML]: '/returns/upload?error=notxml',
-    [uploadHelpers.fileStatuses.OK]: `/returns/processing-upload/${eventId}`
+    [uploadHelpers.fileStatuses.OK]: `/returns/processing-upload/processing/${eventId}`
   };
   return paths[status];
 };
@@ -83,22 +96,37 @@ async function postXmlUpload (request, h) {
 }
 
 const isError = evt => get(evt, 'status') === 'error';
-const isValidated = evt => get(evt, 'status') === 'validated';
 
-const getSpinnerRedirectPath = (evt) => {
+/**
+ * Gets the path the spinner page will redirect to.
+ * If the event is in error status, it always redirects back to the upload
+ * form with a relevant error status.
+ * Otherwise it redirects to the next page in the flow depending on the 'status'
+ *
+ * @param  {Object} evt    - event data loaded from water service
+ * @param  {String} status - success status we are awaiting
+ * @param {String} path - the path to redirect to if event status matches status
+ *                        the event ID is appended to this path
+ * @return {String|Undefined} - URL path to redirect to
+ */
+const getSpinnerRedirectPath = (evt, status, path) => {
   // If error redirect to error page
   if (isError(evt)) {
     const errorType = get(evt, 'metadata.error.key', 'default');
     return `/returns/upload?error=${errorType}`;
   }
 
-  const eventId = get(evt, 'event_id');
-
-  if (isValidated(evt)) {
-    return `/returns/upload-summary/${eventId}`;
+  if (evt.status === status) {
+    return `${path}/${evt.event_id}`;
   }
 };
 
+/**
+ * Retrieves the upload event from the water service
+ * @param  {String}  eventId  - water service event GUID
+ * @param  {String}  userName - current user's email address
+ * @return {Promise}          resolves with row of event data
+ */
 const getUploadEvent = async (eventId, userName) => {
   const filter = {
     event_id: eventId,
@@ -117,66 +145,32 @@ const getUploadEvent = async (eventId, userName) => {
  * page refreshes every 5 seconds and checks the status of the event
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
+ * @param {String} status - the status the event should resolve to for redirect
  */
 const getSpinnerPage = async (request, h) => {
-  const view = {
-    ...request.view,
-    pageTitle: 'Uploading returns data'
-  };
-  const eventId = request.params.event_id;
+  // Get data from request
+  const { eventId, status } = request.params;
+  const config = spinnerConfig[status];
   const userName = get(request, 'auth.credentials.username');
 
+  // Set page title
+  set(request, 'view.pageTitle', config.pageTitle);
+
+  // Load event data from water service
   const evt = await getUploadEvent(eventId, userName);
 
   if (evt) {
-    const path = getSpinnerRedirectPath(evt);
+    const path = getSpinnerRedirectPath(evt, config.await, config.path);
 
     if (path) {
       return h.redirect(path);
     }
 
-    return h.view('nunjucks/returns/processing-upload.njk', view, { layout: false });
+    return h.view('nunjucks/returns/processing-upload.njk', request.view, { layout: false });
   } else {
     logger.error('No event found with selected event_id and issuer', { eventId });
     throw Boom.notFound(`Upload event not found`, { eventId });
   }
-
-  // if (!evt) {
-  //
-  // }
-  // const filter = {
-  //   event_id: eventId,
-  //   issuer: userName,
-  //   type: 'returns-upload'
-  // };
-  //
-  // // Get data from event database
-  // const { data, error } = await water.events.findMany(filter);
-  // throwIfError(error);
-  //
-  // // console.log(getSpinnerRedirectPath(data[0]));
-  // // console.log(data);
-  //
-  // const statusActions = {
-  //   validated: `/returns/upload-summary/${eventId}`,
-  //   undefined: '/returns/upload?error=uploaderror'
-  // };
-  //
-  // const errorRedirects = {
-  //   'invalid-xml': '/returns/upload?error=invalidxml'
-  // };
-  //
-  // // Once the status has been updated to 'validated', redirect to success page
-  // const status = get(data, [0, 'status']);
-  // if (status in statusActions) {
-  //   return h.redirect(statusActions[status]);
-  // } else if (status === 'error') {
-  //   // get error details and redirect accordingly
-  //   const error = get(data, [0, 'metadata', 'error', 'key']);
-  //   return h.redirect(errorRedirects[error]);
-  // }
-  //
-  // return h.view('nunjucks/returns/processing-upload.njk', view, { layout: false });
 };
 
 const pageTitles = {
@@ -197,7 +191,7 @@ const getSummary = async (request, h) => {
     const returns = await waterReturns.getUploadPreview(eventId, options);
 
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
-    const form = confirmForm(request, grouped.returnsWithoutErrors.length);
+    const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
 
     const view = {
       back: '/returns/upload',
@@ -245,10 +239,46 @@ const getSummaryReturn = async (request, h) => {
   }
 };
 
-// exports.errorMessages = errorMessages;
+/**
+ * Submit valid returns within the uploaded data
+ * This:
+ * - Posts data to the water service to kick of return submission process
+ * - Redirects to page with success message
+ * @param  {String} request.params.eventId - the upload event ID
+ */
+const postSubmit = async (request, h) => {
+  const { eventId } = request.params;
+  const options = uploadSummaryHelpers.mapRequestOptions(request);
+  try {
+    await waterReturns.postUploadSubmit(eventId, options);
+
+    // Redirect to spinner page while event resolves
+    return h.redirect(`/returns/processing-upload/submitting/${eventId}`);
+  } catch (err) {
+    const params = { eventId, options };
+    logger.error(`Return upload error`, params);
+    throw err;
+  }
+};
+
+/**
+ * Page to render a success message
+ */
+const getSubmitted = async (request, h) => {
+  const { eventId } = request.params;
+  logger.info(`Return upload submitted`, { eventId });
+  const view = {
+    ...request.view,
+    pageTitle: `Returns submitted`
+  };
+  return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
+};
+
 exports.getXmlUpload = getXmlUpload;
 exports.postXmlUpload = postXmlUpload;
 exports.getSpinnerPage = getSpinnerPage;
 exports.getSummary = getSummary;
 exports.getSummaryReturn = getSummaryReturn;
 exports.pageTitles = pageTitles;
+exports.postSubmit = postSubmit;
+exports.getSubmitted = getSubmitted;

@@ -27,7 +27,8 @@ const isEndDatePast = ret => moment().isSameOrAfter(getEndDate(ret), 'day');
 const getEditButtonPath = (ret, request) => {
   // Link to editable return
   if (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request) && !isVoid(ret)) {
-    return `/admin/return/internal?returnId=${ret.return_id}`;
+    const returnId = getReturnId(ret);
+    return `/admin/return/internal?returnId=${returnId}`;
   }
 };
 
@@ -45,7 +46,7 @@ const getInternalPath = (ret, request) => {
   }
   // Link to editable return
   if (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request)) {
-    return { path: `/admin/return/internal?returnId=${ret.return_id}`, isEdit: true };
+    return { path: `/admin/return/internal?returnId=${returnId}`, isEdit: true };
   }
 };
 

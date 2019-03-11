@@ -1,26 +1,37 @@
 'use strict';
 
-const Lab = require('lab');
-const { experiment, test, before, after, beforeEach } = exports.lab = Lab.script();
+const {
+  experiment,
+  test,
+  before,
+  after,
+  beforeEach
+} = exports.lab = require('lab').script();
 
 const { expect } = require('code');
 
-const { getPaperFormFilter, buildRequest, getFinalReminderRequestOptions } = require('../../../../src/lib/connectors/water-service/returns-notifications.js');
+const {
+  getPaperFormFilter,
+  buildRequest,
+  getFinalReminderRequestOptions
+} = require('../../../../src/lib/connectors/water-service/returns-notifications.js');
 
 const licenceNumbers = ['01/123', '02/456'];
 
-experiment('Test getPaperFormFilter', () => {
-  test('It should return valid filter object', async () => {
+experiment('getPaperFormFilter', () => {
+  test('returns a valid filter object', async () => {
     const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
-    expect(filter).to.equal({ status: 'due',
-      end_date: { '$gt': '2017-09-25' },
-      licence_ref: { '$in': licenceNumbers },
-      'metadata->>isCurrent': 'true'
+    expect(filter).to.equal({
+      status: {
+        $in: ['due', 'completed']
+      },
+      end_date: { $gt: '2017-09-25' },
+      licence_ref: { $in: licenceNumbers }
     });
   });
 });
 
-experiment('Test buildRequest', () => {
+experiment('buildRequest', () => {
   const waterUri = process.env.WATER_URI;
   const jwtToken = process.env.JWT_TOKEN;
 
@@ -34,61 +45,57 @@ experiment('Test buildRequest', () => {
     process.env.JWT_TOKEN = jwtToken;
   });
 
-  test('It should call the preview API when send flag false', async () => {
+  test('calls the preview API when send flag false', async () => {
     const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
     const request = buildRequest(filter, 'mail@example.com', 'Test notification', 'pdf.test', false);
 
     expect(request).to.equal({
-      'method': 'POST',
-      'uri': 'http://example.com/returns-notifications/preview/pdf.test',
-      'headers': { Authorization: 'xyz' },
-      'body': {
-        'filter': {
-          'status': 'due',
-          'end_date': {
-            '$gt': '2017-09-25'
+      method: 'POST',
+      uri: 'http://example.com/returns-notifications/preview/pdf.test',
+      headers: { Authorization: 'xyz' },
+      body: {
+        filter: {
+          status: {
+            $in: ['due', 'completed']
           },
-          'licence_ref': {
-            '$in': [
-              '01/123',
-              '02/456'
-            ]
+          end_date: {
+            $gt: '2017-09-25'
           },
-          'metadata->>isCurrent': 'true'
+          licence_ref: {
+            $in: ['01/123', '02/456']
+          }
         },
-        'issuer': 'mail@example.com',
-        'name': 'Test notification'
+        issuer: 'mail@example.com',
+        name: 'Test notification'
       },
-      'json': true
+      json: true
     });
   });
 
-  test('It should call the send API when send flag true', async () => {
+  test('calls the send API when send flag true', async () => {
     const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
     const request = buildRequest(filter, 'mail@example.com', 'Test notification', 'pdf.test', true);
 
     expect(request).to.equal({
-      'method': 'POST',
-      'uri': 'http://example.com/returns-notifications/send/pdf.test',
-      'headers': { Authorization: 'xyz' },
-      'body': {
-        'filter': {
-          'status': 'due',
-          'end_date': {
-            '$gt': '2017-09-25'
+      method: 'POST',
+      uri: 'http://example.com/returns-notifications/send/pdf.test',
+      headers: { Authorization: 'xyz' },
+      body: {
+        filter: {
+          status: {
+            $in: ['due', 'completed']
           },
-          'licence_ref': {
-            '$in': [
-              '01/123',
-              '02/456'
-            ]
+          end_date: {
+            $gt: '2017-09-25'
           },
-          'metadata->>isCurrent': 'true'
+          licence_ref: {
+            $in: ['01/123', '02/456']
+          }
         },
-        'issuer': 'mail@example.com',
-        'name': 'Test notification'
+        issuer: 'mail@example.com',
+        name: 'Test notification'
       },
-      'json': true
+      json: true
     });
   });
 });
@@ -130,10 +137,6 @@ experiment('getFinalReminderRequestOptions', () => {
 
   test('It should set the return status filter', async () => {
     expect(result.body.filter.status).to.equal('due');
-  });
-
-  test('It should only send messages regarding returns for the current version of the licence (split on succ code)', async () => {
-    expect(result.body.filter['metadata->>isCurrent']).to.equal('true');
   });
 
   test('It should send to returns contact if present, defaulting to licence holder', async () => {

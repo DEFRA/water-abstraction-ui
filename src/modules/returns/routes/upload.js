@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { scope } = require('../../../lib/constants');
 const controller = require('../controllers/upload');
 
@@ -37,13 +38,20 @@ module.exports = {
       }
     }
   },
+
   getSpinnerPage: {
     method: 'GET',
-    path: '/returns/processing-upload/{event_id}',
+    path: '/returns/processing-upload/{status}/{eventId}',
     handler: controller.getSpinnerPage,
     config: {
       auth: {
         scope: allowedScopes
+      },
+      validate: {
+        params: {
+          status: Joi.string().valid(['processing', 'submitting']),
+          eventId: Joi.string().guid()
+        }
       },
       description: 'Uploading returns data',
       plugins: {
@@ -53,6 +61,7 @@ module.exports = {
       }
     }
   },
+
   getSummary: {
     method: 'GET',
     path: '/returns/upload-summary/{eventId}',
@@ -85,6 +94,48 @@ module.exports = {
         params: {
           eventId: validators.VALID_GUID,
           returnId: validators.VALID_RETURN_ID
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  postSubmit: {
+    method: 'POST',
+    path: '/returns/upload-submit/{eventId}',
+    handler: controller.postSubmit,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      validate: {
+        params: {
+          eventId: validators.VALID_GUID
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'returns'
+        }
+      }
+    }
+  },
+
+  getSubmitted: {
+    method: 'GET',
+    path: '/returns/upload-submitted/{eventId}',
+    handler: controller.getSubmitted,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      validate: {
+        params: {
+          eventId: validators.VALID_GUID
         }
       },
       plugins: {

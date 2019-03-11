@@ -28,7 +28,6 @@ experiment('confirmUploadForm', () => {
 
   test('it should have singular button text for 1 return', async () => {
     const form = confirmForm(createRequest(), 1);
-    console.log(form.fields);
     const button = find(form.fields, findButton);
     expect(button.options.label).to.equal(`Submit 1 return`);
   });

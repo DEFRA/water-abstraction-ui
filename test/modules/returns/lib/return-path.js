@@ -5,7 +5,8 @@ const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const {
-  getReturnPath
+  getReturnPath,
+  getEditButtonPath
 } = require('../../../../src/modules/returns/lib/return-path');
 
 const { scope } = require('../../../../src/lib/constants');
@@ -132,8 +133,8 @@ experiment('returnPath -  internal users', () => {
   test('An internal returns user can edit a return if has completed status', async () => {
     const request = getInternalRequest(true);
     expect(getReturnPath({ ...ret, status: 'completed' }, request)).to.equal({
-      path: internalEdit,
-      isEdit: true
+      path: internalView,
+      isEdit: false
     });
   });
 
@@ -145,5 +146,32 @@ experiment('returnPath -  internal users', () => {
   test('An internal returns user cannot edit a return if the cycle ends before 2018-10-31', async () => {
     const request = getInternalRequest(true);
     expect(getReturnPath({ ...ret, status: 'received', end_date: '2018-10-30' }, request)).to.equal(undefined);
+  });
+});
+
+experiment('Edit Return button - internal users', () => {
+  test('An internal user cannot see the edit return button', async () => {
+    const request = getInternalRequest();
+    expect(getEditButtonPath(ret, request)).to.equal(undefined);
+  });
+
+  test('An internal returns user cannot see the edit return button if it has void status', async () => {
+    const request = getInternalRequest(true);
+    expect(getEditButtonPath({ ...ret, status: 'void' }, request)).to.equal(undefined);
+  });
+
+  test('An internal returns user cannot see the edit return button if it is before Summer 2018', async () => {
+    const request = getInternalRequest(true);
+    expect(getEditButtonPath({ ...ret, end_date: '2018-10-30' }, request)).to.equal(undefined);
+  });
+
+  test('An internal returns user cannot see the edit return button if it the end date has not passed', async () => {
+    const request = getInternalRequest(true);
+    expect(getEditButtonPath({ ...ret, end_date: '3000-01-01' }, request)).to.equal(undefined);
+  });
+
+  test('An internal returns user can see the edit return button if it has completed status', async () => {
+    const request = getInternalRequest(true);
+    expect(getEditButtonPath({ ...ret, status: 'completed' }, request)).to.equal(internalEdit);
   });
 });

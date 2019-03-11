@@ -14,7 +14,7 @@ const {
   getLinesWithReadings
 } = require('../lib/return-helpers');
 
-const { getReturnPath } = require('../lib/return-path');
+const { getEditButtonPath } = require('../lib/return-path');
 
 const { returns } = require('../../../lib/connectors/water');
 
@@ -81,7 +81,7 @@ const getReturn = async (request, h) => {
     lines,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
-    path: getReturnPath(data, request),
+    editButtonPath: getEditButtonPath(data, request),
     showVersions,
     isVoid: data.status === 'void'
   };

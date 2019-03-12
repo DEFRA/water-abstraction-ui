@@ -50,7 +50,7 @@ const _handler = async (request, h) => {
     // Render 500 page
     const statusCode = getStatusCode(request);
     view.pageTitle = 'Something went wrong';
-    return h.view('water/error.html', view).code(statusCode);
+    return h.view('nunjucks/errors/error.njk', view).code(statusCode);
   }
 
   return h.continue;

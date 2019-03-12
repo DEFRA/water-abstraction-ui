@@ -14,7 +14,8 @@ const index = async (request, h) => {
 const getNotFoundError = (request, h) => {
   const view = {
     ...request.view,
-    isExternal: isExternal(request)
+    isExternal: isExternal(request),
+    pageTitle: 'We cannot find that page'
   };
   return h
     .view('nunjucks/errors/404.njk', view, { layout: false })

@@ -1,10 +1,12 @@
 const sinon = require('sinon');
 const { expect } = require('code');
-const { set } = require('lodash');
+const logger = require('../../src/lib/logger');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const loginHelpers = require('../../src/lib/login-helpers');
 const waterUser = require('../../src/lib/connectors/water-service/user');
 const { scope } = require('../../src/lib/constants');
+
+const sandbox = sinon.createSandbox();
 
 const userId = 'user_1';
 
@@ -40,23 +42,35 @@ const responses = {
 };
 
 experiment('loginHelpers', () => {
-  const sandbox = sinon.createSandbox();
+  let h;
 
-  const getRequest = () => {
+  const getRequest = (scope = []) => {
     return {
+      path: '/request-path',
       auth: {
         credentials: {
-          user_id: userId
+          user_id: userId,
+          scope
         }
       },
       cookieAuth: {
         set: sandbox.stub()
+      },
+      state: {
+        sid: 'session_id'
       }
     };
   };
 
   beforeEach(async () => {
     sandbox.stub(waterUser, 'getUserStatus').resolves(responses.user);
+    h = {
+      redirect: sandbox.stub().returns({
+        takeover: sandbox.stub()
+      }),
+      continue: 'continue'
+    };
+    sandbox.stub(logger, 'info');
   });
 
   afterEach(async () => {
@@ -99,33 +113,54 @@ experiment('loginHelpers', () => {
     });
 
     test('it should redirect to admin licences for internal users', async () => {
-      const request = getRequest();
-      set(request, 'auth.credentials.scope', scope.internal);
+      const request = getRequest(scope.internal);
       const result = await loginHelpers.getLoginRedirectPath(request);
       expect(result).to.equal('/admin/licences');
     });
 
     test('it should redirect to add licences if the user has no companies', async () => {
-      const request = getRequest();
-      set(request, 'auth.credentials.scope', scope.external);
+      const request = getRequest(scope.external);
       waterUser.getUserStatus.resolves(responses.userWithNoCompanies);
       const result = await loginHelpers.getLoginRedirectPath(request);
       expect(result).to.equal('/add-licences');
     });
 
     test('it should redirect to view licences if the user has 1 company', async () => {
-      const request = getRequest();
-      set(request, 'auth.credentials.scope', scope.external);
+      const request = getRequest(scope.external);
       const result = await loginHelpers.getLoginRedirectPath(request);
       expect(result).to.equal('/licences');
     });
 
     test('it should redirect to select company if the user has >1 company', async () => {
-      const request = getRequest();
-      set(request, 'auth.credentials.scope', scope.external);
+      const request = getRequest(scope.external);
       waterUser.getUserStatus.resolves(responses.userWithMultipleCompanies);
       const result = await loginHelpers.getLoginRedirectPath(request);
       expect(result).to.equal('/select-company');
+    });
+  });
+
+  experiment('preRedirectIfAuthenticated', () => {
+    test('returns h.continue if the request is not authenticated', async () => {
+      const request = getRequest();
+      delete request.state.sid;
+      const result = await loginHelpers.preRedirectIfAuthenticated(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('returns h.redirect if request is authenticated', async () => {
+      const request = getRequest(scope.external);
+      await loginHelpers.preRedirectIfAuthenticated(request, h);
+      const [ path ] = h.redirect.lastCall.args;
+      expect(path).to.equal('/licences');
+    });
+
+    test('logs a message if a redirect has taken place', async () => {
+      const request = getRequest(scope.external);
+      await loginHelpers.preRedirectIfAuthenticated(request, h);
+      const [ message, params ] = logger.info.lastCall.args;
+      expect(message).to.be.a.string();
+      expect(params.from).to.equal(request.path);
+      expect(params.path).to.equal('/licences');
     });
   });
 });

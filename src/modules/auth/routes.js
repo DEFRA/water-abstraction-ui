@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
+const loginHelpers = require('../../lib/login-helpers');
 
 module.exports = {
 
@@ -8,7 +9,11 @@ module.exports = {
     path: '/welcome',
     handler: controller.getWelcome,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       plugins: {
         viewContext: {
           pageTitle: 'Sign in or create an account'
@@ -22,7 +27,11 @@ module.exports = {
     path: '/signin',
     handler: controller.getSignin,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       validate: {
         query: {
           flash: Joi.string().max(32),

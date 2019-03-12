@@ -19,17 +19,26 @@ const isAfterSummer2018 = ret => moment(getEndDate(ret)).isSameOrAfter('2018-10-
 const isEndDatePast = ret => moment().isSameOrAfter(getEndDate(ret), 'day');
 
 /**
+ * Checks if return can be edited by internal returns user
+ * @param  {Object} ret     - return row
+ * @param  {Object} request - HAPI request
+ * @return {Boolean}        whether return can be edited
+ */
+const isInternalEdit = (ret, request) => {
+  return (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request) && !isVoid(ret));
+};
+
+/**
  * Gets a link to the edit return page
  * @param  {Object} ret     - return row
  * @param  {Object} request - HAPI request
  * @return {String}         link to edit return page
  */
 const getEditButtonPath = (ret, request) => {
-  // Link to editable return
-  if (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request) && !isVoid(ret)) {
+  if (isInternalEdit(ret, request)) {
     const returnId = getReturnId(ret);
     return `/admin/return/internal?returnId=${returnId}`;
-  }
+  };
 };
 
 /**
@@ -81,5 +90,6 @@ const getReturnPath = (ret, request) => {
 
 module.exports = {
   getReturnPath,
+  isInternalEdit,
   getEditButtonPath
 };

@@ -6,6 +6,7 @@ const { expect } = require('code');
 
 const {
   getReturnPath,
+  isInternalEdit,
   getEditButtonPath
 } = require('../../../../src/modules/returns/lib/return-path');
 
@@ -155,23 +156,40 @@ experiment('Edit Return button - internal users', () => {
     expect(getEditButtonPath(ret, request)).to.equal(undefined);
   });
 
-  test('An internal returns user cannot see the edit return button if it has void status', async () => {
+  test('An internal returns user cannot see the edit return button if isInternalEdit is false', async () => {
     const request = getInternalRequest(true);
     expect(getEditButtonPath({ ...ret, status: 'void' }, request)).to.equal(undefined);
   });
 
-  test('An internal returns user cannot see the edit return button if it is before Summer 2018', async () => {
+  test('An internal returns user can see the edit return button if isInternalEdit is true', async () => {
     const request = getInternalRequest(true);
-    expect(getEditButtonPath({ ...ret, end_date: '2018-10-30' }, request)).to.equal(undefined);
+    expect(getEditButtonPath(ret, request)).to.equal(internalEdit);
+  });
+});
+
+experiment('isInternalEdit - internal users', () => {
+  test('An internal user cannot see the edit return button', async () => {
+    const request = getInternalRequest();
+    expect(isInternalEdit(ret, request)).to.equal(false);
   });
 
-  test('An internal returns user cannot see the edit return button if it the end date has not passed', async () => {
+  test('An internal returns user cannot edit a return if it has void status', async () => {
     const request = getInternalRequest(true);
-    expect(getEditButtonPath({ ...ret, end_date: '3000-01-01' }, request)).to.equal(undefined);
+    expect(isInternalEdit({ ...ret, status: 'void' }, request)).to.equal(false);
   });
 
-  test('An internal returns user can see the edit return button if it has completed status', async () => {
+  test('An internal returns user cannot edit a return if the end date is before Summer 2018', async () => {
     const request = getInternalRequest(true);
-    expect(getEditButtonPath({ ...ret, status: 'completed' }, request)).to.equal(internalEdit);
+    expect(isInternalEdit({ ...ret, end_date: '2018-10-30' }, request)).to.equal(false);
+  });
+
+  test('An internal returns user cannot edit a return if it the end date has not passed', async () => {
+    const request = getInternalRequest(true);
+    expect(isInternalEdit({ ...ret, end_date: '3000-01-01' }, request)).to.equal(false);
+  });
+
+  test('An internal returns user can edit a return if it has completed status', async () => {
+    const request = getInternalRequest(true);
+    expect(isInternalEdit({ ...ret, status: 'completed' }, request)).to.equal(true);
   });
 });

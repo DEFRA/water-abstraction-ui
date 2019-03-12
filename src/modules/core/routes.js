@@ -27,7 +27,6 @@ module.exports = {
       directory: {
         path: 'public/',
         listing: false
-
       }
     }
   },
@@ -70,5 +69,17 @@ module.exports = {
     path: '/robots.txt',
     handler: () => 'User-agent: * Disallow: /',
     config: { auth: false, description: 'Ooh. Robots' }
+  },
+
+  404: {
+    method: 'GET',
+    path: '/{all*}',
+    handler: controller.getNotFoundError,
+    config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      }
+    }
   }
 };

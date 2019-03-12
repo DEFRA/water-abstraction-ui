@@ -14,7 +14,7 @@ const errorPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
-      method: async (request, reply) => {
+      method: async (request, h) => {
         const res = request.response;
 
         // Create view context
@@ -33,25 +33,26 @@ const errorPlugin = {
           if (res.data && res.data.isCsrfError) {
             await request.sessionStore.destroy();
             request.cookieAuth.clear();
-            return reply.redirect('/signout');
+            return h.redirect('/signout');
           }
 
           // Unauthorised
           if (statusCode >= 401 && statusCode <= 403) {
-            return reply.redirect('/welcome');
+            return h.redirect('/welcome');
           }
-          // Not found
+
+          // Not found - will be caught by catch-all route handler
           if (statusCode === 404) {
-            view.pageTitle = "We can't find that page";
-            return reply.view('water/404.html', view).code(statusCode);
+            return h.continue;
           }
+
           // Other errors
           view.pageTitle = 'Something went wrong';
-          return reply.view('water/error.html', view).code(statusCode);
+          return h.view('water/error.html', view).code(statusCode);
         }
 
         // Continue processing request
-        return reply.continue;
+        return h.continue;
       }
     });
   },

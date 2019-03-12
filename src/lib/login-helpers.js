@@ -1,9 +1,10 @@
 const { get } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const logger = require('./logger');
 
 const waterUser = require('./connectors/water-service/user');
 const getUserID = request => get(request, 'auth.credentials.user_id');
-const { isInternal } = require('./permissions');
+const { isInternal, isAuthenticated } = require('./permissions');
 
 /**
  * Asynchronously loads user data from the water service, including their list
@@ -56,7 +57,24 @@ const getLoginRedirectPath = async (request) => {
   return '/add-licences';
 };
 
+/**
+ * A pre-handler to redirect the user to the correct page if they attempt
+ * to access the current page while authenticated
+ * This for pages such as register, sign in etc.
+ */
+const preRedirectIfAuthenticated = async (request, h) => {
+  if (isAuthenticated(request)) {
+    const path = await getLoginRedirectPath(request);
+    if (path) {
+      logger.info('Redirecting authenticated user', { from: request.path, path });
+      return h.redirect(path).takeover();
+    }
+  }
+  return h.continue;
+};
+
 exports.loadUserData = loadUserData;
 exports.selectCompany = selectCompany;
 exports.getLoginRedirectPath = getLoginRedirectPath;
 exports.getUserID = getUserID;
+exports.preRedirectIfAuthenticated = preRedirectIfAuthenticated;

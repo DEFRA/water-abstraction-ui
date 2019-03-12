@@ -26,7 +26,7 @@ const {
   getLinesWithReadings, applyStatus, applyUnderQuery
 } = require('../lib/return-helpers');
 
-const { getReturnPath } = require('../lib/return-path');
+const { isInternalEdit } = require('../lib/return-path');
 
 const { isInternal } = require('../../../lib/permissions');
 
@@ -70,8 +70,7 @@ const getAmounts = async (request, h) => {
   }
 
   // Check date/roles
-  const { isEdit } = getReturnPath(data, request);
-  if (!isEdit) {
+  if (!isInternalEdit(data, request)) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }
 

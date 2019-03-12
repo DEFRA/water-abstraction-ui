@@ -25,40 +25,42 @@ const isUnauthorized = request => {
   return (statusCode >= 401 && statusCode <= 403);
 };
 
+const _handler = async (request, h) => {
+  const res = request.response;
+
+  // Create view context
+  const view = contextDefaults(request);
+
+  if (!isIgnored(request) && res.isBoom && !is404(request)) {
+    // ALWAYS Log the error
+    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+
+    // Destroy session for CSRF error
+    if (isCsrfError(request)) {
+      await request.sessionStore.destroy();
+      request.cookieAuth.clear();
+      return h.redirect('/signout');
+    }
+
+    // Unauthorised - redirect to welcome
+    if (isUnauthorized(request)) {
+      return h.redirect('/welcome');
+    }
+
+    // Render 500 page
+    const statusCode = getStatusCode(request);
+    view.pageTitle = 'Something went wrong';
+    return h.view('water/error.html', view).code(statusCode);
+  }
+
+  return h.continue;
+};
+
 const errorPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
-      method: async (request, h) => {
-        const res = request.response;
-
-        // Create view context
-        const view = contextDefaults(request);
-
-        if (!isIgnored(request) && res.isBoom && !is404(request)) {
-          // ALWAYS Log the error
-          logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-
-          // Destroy session for CSRF error
-          if (isCsrfError(request)) {
-            await request.sessionStore.destroy();
-            request.cookieAuth.clear();
-            return h.redirect('/signout');
-          }
-
-          // Unauthorised - redirect to welcome
-          if (isUnauthorized(request)) {
-            return h.redirect('/welcome');
-          }
-
-          // Render 500 page
-          const statusCode = getStatusCode(request);
-          view.pageTitle = 'Something went wrong';
-          return h.view('water/error.html', view).code(statusCode);
-        }
-
-        return h.continue;
-      }
+      method: _handler
     });
   },
 
@@ -69,3 +71,4 @@ const errorPlugin = {
 };
 
 module.exports = errorPlugin;
+module.exports._handler = _handler;

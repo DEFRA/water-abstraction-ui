@@ -28,32 +28,32 @@ const isUnauthorized = request => {
 const _handler = async (request, h) => {
   const res = request.response;
 
-  // Create view context
-  const view = contextDefaults(request);
-
-  if (!isIgnored(request) && res.isBoom && !is404(request)) {
-    // ALWAYS Log the error
-    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-
-    // Destroy session for CSRF error
-    if (isCsrfError(request)) {
-      await request.sessionStore.destroy();
-      request.cookieAuth.clear();
-      return h.redirect('/signout');
-    }
-
-    // Unauthorised - redirect to welcome
-    if (isUnauthorized(request)) {
-      return h.redirect('/welcome');
-    }
-
-    // Render 500 page
-    const statusCode = getStatusCode(request);
-    view.pageTitle = 'Something went wrong';
-    return h.view('nunjucks/errors/error.njk', view).code(statusCode);
+  if (isIgnored(request) || !res.isBoom || is404(request)) {
+    return h.continue;
   }
 
-  return h.continue;
+  // ALWAYS Log the error
+  logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+
+  // Destroy session for CSRF error
+  if (isCsrfError(request)) {
+    await request.sessionStore.destroy();
+    request.cookieAuth.clear();
+    return h.redirect('/signout');
+  }
+
+  // Unauthorised - redirect to welcome
+  if (isUnauthorized(request)) {
+    return h.redirect('/welcome');
+  }
+
+  // Render 500 page
+  const view = {
+    ...contextDefaults(request),
+    pageTitle: 'Something went wrong'
+  };
+  const statusCode = getStatusCode(request);
+  return h.view('nunjucks/errors/error.njk', view).code(statusCode);
 };
 
 const errorPlugin = {

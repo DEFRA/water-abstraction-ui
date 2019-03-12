@@ -30,7 +30,8 @@ const errorPlugin = {
           const { statusCode } = res.output;
 
           // CSRF error detected - sign out user and redirect to login page
-          if (res.data && res.data.isCsrfError) {
+          const isCsrfError = get(res, 'data.isCsrfError', false);
+          if (isCsrfError) {
             await request.sessionStore.destroy();
             request.cookieAuth.clear();
             return h.redirect('/signout');

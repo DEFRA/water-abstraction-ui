@@ -28,7 +28,7 @@ const {
 
 const { isInternalEdit } = require('../lib/return-path');
 
-const { isInternal } = require('../../../lib/permissions');
+const { isInternal, isExternalReturns } = require('../../../lib/permissions');
 
 const {
   STEP_START,
@@ -70,7 +70,7 @@ const getAmounts = async (request, h) => {
   }
 
   // Check date/roles
-  if (!isInternalEdit(data, request)) {
+  if (!(isInternalEdit(data, request) || isExternalReturns(request))) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }
 

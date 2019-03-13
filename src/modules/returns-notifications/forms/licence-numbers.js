@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const { cloneDeep, set } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 
 const licenceNumbersForm = (request) => {

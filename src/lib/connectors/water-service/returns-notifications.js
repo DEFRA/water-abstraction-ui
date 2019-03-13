@@ -41,14 +41,15 @@ const buildRequest = (filter, issuer, name, messageRef, isSending = false) => {
 const getPaperFormFilter = (licenceNumbers, refDate) => {
   const minEndDate = moment(refDate).subtract(1, 'years').format('YYYY-MM-DD');
   return {
-    status: 'due',
+    status: {
+      $in: ['due', 'completed']
+    },
     end_date: {
       $gt: minEndDate
     },
     licence_ref: {
       $in: licenceNumbers
-    },
-    'metadata->>isCurrent': 'true'
+    }
   };
 };
 

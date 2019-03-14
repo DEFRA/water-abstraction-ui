@@ -1,3 +1,4 @@
+const moment = require('moment');
 const { expect } = require('code');
 const {
   beforeEach,
@@ -114,6 +115,26 @@ experiment('postPreviewRecipients', () => {
       expect(l3.endedReasons).to.equal('Expired');
       expect(l4.endedReasons).to.equal('Lapsed');
       expect(l5.endedReasons).to.equal('Revoked, Expired');
+    });
+
+    test('licence objects with future end dates do not have endedReasons', async () => {
+      const futureDate = moment().add(1, 'year').format('YYYYMMDD');
+
+      notificationsConnector.previewPaperForms.resolves({
+        error: null,
+        data: [
+          createLicence(1, { dateRevoked: futureDate }),
+          createLicence(2, { dateExpired: futureDate }),
+          createLicence(3, { dateLapsed: futureDate })
+        ]
+      });
+
+      await controller.postPreviewRecipients(request, h);
+      const [, context] = h.view.lastCall.args;
+      const [l1, l2, l3] = context.uniqueLicences;
+      expect(l1.endedReasons).to.equal('');
+      expect(l2.endedReasons).to.equal('');
+      expect(l3.endedReasons).to.equal('');
     });
   });
 });

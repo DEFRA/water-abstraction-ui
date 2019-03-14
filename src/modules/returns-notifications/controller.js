@@ -1,3 +1,4 @@
+const moment = require('moment');
 const Boom = require('boom');
 const { reduce, pick, uniqBy, difference } = require('lodash');
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
@@ -22,9 +23,15 @@ const getSendForms = async (request, h) => {
   });
 };
 
+const isValidDateBeforeNow = val => {
+  const date = moment(val, 'YYYYMMDD');
+  return date.isValid() && date.isSameOrBefore(moment());
+};
+
 /**
  * Takes the return data object that has the licence end date properties
- * and adds comma separated string for any of the end dates that are set.
+ * and adds comma separated string for any of the end dates that are set
+ * to dates in the past.
  *
  * e.g.
  * { licence_ref: '12', dateRevoked: null, dateExpired: 'a date', dateLapsed: 'a date' }
@@ -41,7 +48,7 @@ const addEndedReasonList = returnData => {
   const ret = pick(returnData, 'dateRevoked', 'dateExpired', 'dateLapsed');
 
   const reasons = reduce(ret, (acc, val, key) => {
-    return val ? [...acc, key.replace('date', '')] : acc;
+    return isValidDateBeforeNow(val) ? [...acc, key.replace('date', '')] : acc;
   }, []);
 
   returnData.endedReasons = reasons.join(', ');

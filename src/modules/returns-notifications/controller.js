@@ -1,5 +1,6 @@
+const moment = require('moment');
 const Boom = require('boom');
-const { difference } = require('lodash');
+const { reduce, pick, uniqBy, difference } = require('lodash');
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
@@ -7,8 +8,9 @@ const confirmLicenceNumbersForm = require('./forms/licence-numbers-confirm');
 const { schema } = require('./forms/licence-numbers');
 const { sendRemindersForm } = require('./forms/send-reminders');
 
-const { previewPaperForms, sendPaperForms, finalReturnReminders } = require('../../lib/connectors/water-service/returns-notifications');
-const { getUniqueLicenceNumbers, getFinalReminderConfig } = require('./lib/helpers');
+const notificationsConnector = require('../../lib/connectors/water-service/returns-notifications');
+
+const { getFinalReminderConfig } = require('./lib/helpers');
 
 /**
  * Renders a page for the user to input a list of licences to whom
@@ -19,6 +21,43 @@ const getSendForms = async (request, h) => {
     ...request.view,
     form: licenceNumbersForm(request)
   });
+};
+
+const isValidDateBeforeNow = val => {
+  const date = moment(val, 'YYYYMMDD');
+  return date.isValid() && date.isSameOrBefore(moment());
+};
+
+/**
+ * Takes the return data object that has the licence end date properties
+ * and adds comma separated string for any of the end dates that are set
+ * to dates in the past.
+ *
+ * e.g.
+ * { licence_ref: '12', dateRevoked: null, dateExpired: 'a date', dateLapsed: 'a date' }
+ *
+ * will be augmented with an value 'Expired, Lapsed'
+ *
+ * {
+ *  licence_ref: '12',
+ *  dateRevoked: null, dateExpired: 'a date', dateLapsed: 'a date',
+ *  endedReasons: 'Expired, Lapsed'
+ * }
+ */
+const addEndedReasonList = returnData => {
+  const ret = pick(returnData, 'dateRevoked', 'dateExpired', 'dateLapsed');
+
+  const reasons = reduce(ret, (acc, val, key) => {
+    return isValidDateBeforeNow(val) ? [...acc, key.replace('date', '')] : acc;
+  }, []);
+
+  returnData.endedReasons = reasons.join(', ');
+  return returnData;
+};
+
+const getUniqueLicences = returns => {
+  const uniqueLicences = uniqBy(returns, 'licence_ref');
+  return uniqueLicences.map(addEndedReasonList);
 };
 
 /**
@@ -36,21 +75,24 @@ const postPreviewRecipients = async (request, h) => {
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
-    const result = await previewPaperForms(licenceNumbers, emailAddress);
+    const result = await notificationsConnector.previewPaperForms(licenceNumbers, emailAddress);
 
     if (result.error) {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
     }
 
-    const foundLicenceNumbers = getUniqueLicenceNumbers(result.data);
+    const uniqueLicences = getUniqueLicences(result.data);
+    const uniqueLicenceNumbers = uniqueLicences.map(l => l.licence_ref);
 
-    const confirmForm = setValues(confirmLicenceNumbersForm(request), { licenceNumbers: foundLicenceNumbers });
+    const confirmForm = setValues(confirmLicenceNumbersForm(request), {
+      licenceNumbers: uniqueLicenceNumbers
+    });
 
     return h.view('water/returns-notifications/forms-confirm', {
       ...request.view,
       form: confirmForm,
-      licenceNumbers: foundLicenceNumbers,
-      notMatched: difference(licenceNumbers, foundLicenceNumbers)
+      uniqueLicences,
+      notMatched: difference(licenceNumbers, uniqueLicenceNumbers)
     });
   } else {
     return h.view('water/returns-notifications/forms', {
@@ -74,7 +116,7 @@ const postSendForms = async (request, h) => {
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
-    const result = await sendPaperForms(licenceNumbers, emailAddress);
+    const result = await notificationsConnector.sendPaperForms(licenceNumbers, emailAddress);
 
     if (result.error) {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
@@ -114,7 +156,7 @@ const getFinalReminder = async (request, h) => {
  */
 const getFinalReminderCSV = async (request, h) => {
   const { email, endDate } = getFinalReminderConfig(request);
-  const { messages } = await finalReturnReminders(endDate, email, true);
+  const { messages } = await notificationsConnector.finalReturnReminders(endDate, email, true);
   const data = messages.map(row => row.personalisation);
   return csvDownload(h, data, `final-reminders-${endDate}.csv`);
 };
@@ -124,7 +166,7 @@ const getFinalReminderCSV = async (request, h) => {
  */
 const postSendFinalReminder = async (request, h) => {
   const { email, endDate } = getFinalReminderConfig(request);
-  const { event } = await finalReturnReminders(endDate, email, false);
+  const { event } = await notificationsConnector.finalReturnReminders(endDate, email, false);
   const view = {
     ...request.view,
     event

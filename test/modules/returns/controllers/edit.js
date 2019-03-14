@@ -12,13 +12,27 @@ const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers.js
 
 const sandbox = sinon.createSandbox();
 
-const eventId = 'event_1';
 const userName = 'user_1';
 const entityId = 'entity_1';
 const companyId = 'company_1';
 const csrfToken = 'csrf';
 const returnId = 'v1:1:01/123:4567:2017-11-01:2018-10-31';
 const documentHeaders = ['documentHeader_1', 'documentHeader_2'];
+const returnLines = {
+  '2017-11-01_2017-11-30': 60,
+  '2017-12-01_2017-12-31': 65,
+  '2018-01-01_2018-01-31': 78,
+  '2018-02-01_2018-02-28': 82,
+  '2018-03-01_2018-03-31': 85,
+  '2018-04-01_2018-04-30': null,
+  '2018-05-01_2018-05-31': null,
+  '2018-06-01_2018-06-30': null,
+  '2018-07-01_2018-07-31': null,
+  '2018-08-01_2018-08-31': null,
+  '2018-09-01_2018-09-30': null,
+  '2018-10-01_2018-10-31': null,
+  csrfToken
+};
 
 const createRequest = (isInternal, isNil, internal, external) => {
   return {
@@ -189,21 +203,7 @@ experiment('edit controller', () => {
     sandbox.stub(forms, 'getValues');
     sandbox.stub(forms, 'setValues').returns({ form: { fields: 'fields' } });
     sandbox.stub(forms, 'handleRequest');
-    sandbox.stub(forms, 'importData').returns({
-      '2017-11-01_2017-11-30': 60,
-      '2017-12-01_2017-12-31': 65,
-      '2018-01-01_2018-01-31': 78,
-      '2018-02-01_2018-02-28': 82,
-      '2018-03-01_2018-03-31': 85,
-      '2018-04-01_2018-04-30': null,
-      '2018-05-01_2018-05-31': null,
-      '2018-06-01_2018-06-30': null,
-      '2018-07-01_2018-07-31': null,
-      '2018-08-01_2018-08-31': null,
-      '2018-09-01_2018-09-30': null,
-      '2018-10-01_2018-10-31': null,
-      csrfToken
-    });
+    sandbox.stub(forms, 'importData').returns(returnLines);
 
     sandbox.spy(flowHelpers, 'getPreviousPath');
     sandbox.spy(flowHelpers, 'getNextPath');
@@ -555,21 +555,7 @@ experiment('edit controller', () => {
   experiment('postQuantities', () => {
     test('it should call getNextPath with STEP_QUANTITIES, request', async () => {
       forms.handleRequest.returns({ isValid: true });
-      forms.getValues.returns({
-        '2017-11-01_2017-11-30': 60,
-        '2017-12-01_2017-12-31': 65,
-        '2018-01-01_2018-01-31': 78,
-        '2018-02-01_2018-02-28': 82,
-        '2018-03-01_2018-03-31': 85,
-        '2018-04-01_2018-04-30': null,
-        '2018-05-01_2018-05-31': null,
-        '2018-06-01_2018-06-30': null,
-        '2018-07-01_2018-07-31': null,
-        '2018-08-01_2018-08-31': null,
-        '2018-09-01_2018-09-30': null,
-        '2018-10-01_2018-10-31': null,
-        csrfToken
-      });
+      forms.getValues.returns(returnLines);
 
       const request = createRequest();
 

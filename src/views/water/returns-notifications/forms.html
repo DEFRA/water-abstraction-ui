@@ -1,29 +1,20 @@
 {{> styles}}
+
 <main id="content" tabindex="-1">
-  {{>element-phase-tag}}{{>element-main-nav}}
-
-
-
+  {{>element-phase-tag}}
+  {{>element-main-nav}}
 
   <div class="grid-row">
 
-  {{>form-errors form }}
+    {{>form-errors form }}
 
     <div class="column-two-thirds">
-
       <h1 class="heading-large">{{ pageTitle }}</h1>
-
-
-
-  {{>form form }}
-
+      
+      {{>form form }}
     </div>
   </div>
 </main>
 
-
-
 {{> footerjs}}
-
-
 {{> debug}}

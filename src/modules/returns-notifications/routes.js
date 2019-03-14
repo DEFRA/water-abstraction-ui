@@ -13,7 +13,7 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'notifications',
-          pageTitle: 'Send paper return forms to licence holders'
+          pageTitle: 'Send paper return forms'
         }
       }
     },
@@ -29,7 +29,7 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'notifications',
-          pageTitle: 'Send paper return forms to licence holders'
+          pageTitle: 'Send paper return forms'
         }
       }
     },
@@ -45,7 +45,7 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'notifications',
-          pageTitle: 'Send paper return forms to licence holders'
+          pageTitle: 'Send paper return forms'
         }
       }
     },

@@ -1,8 +1,17 @@
 'use strict';
 
 const { expect } = require('code');
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+
+const {
+  beforeEach,
+  afterEach,
+  experiment,
+  test
+} = exports.lab = require('lab').script();
+
+const CRM = require('../../../src/lib/connectors/crm');
 
 const controller = require('../../../src/modules/manage-licences/controller');
 
@@ -38,18 +47,18 @@ const editableRolesResponse = [
   }
 ];
 
-lab.experiment('createAccessListViewModel', () => {
+experiment('createAccessListViewModel', () => {
   let viewModel;
 
-  lab.beforeEach(async () => {
+  beforeEach(async () => {
     viewModel = controller.createAccessListViewModel(editableRolesResponse);
   });
 
-  lab.test('there are two entries', async () => {
+  test('there are two entries', async () => {
     expect(viewModel).have.length(2);
   });
 
-  lab.test('there is a result for the user without returns', async () => {
+  test('there is a result for the user without returns', async () => {
     const role = viewModel.find(er => er.colleagueEntityID === 'user_only');
     expect(role.hasReturns).to.be.false();
     expect(role.returnsEntityRoleID).to.be.undefined();
@@ -57,11 +66,98 @@ lab.experiment('createAccessListViewModel', () => {
     expect(role.name).to.equal('2@example.com');
   });
 
-  lab.test('there is a result for the user with returns', async () => {
+  test('there is a result for the user with returns', async () => {
     const role = viewModel.find(er => er.colleagueEntityID === 'user_with_returns');
     expect(role.hasReturns).to.be.true();
     expect(role.returnsEntityRoleID).to.equal('erid:1');
     expect(role.createdAt).to.equal('created_2');
     expect(role.name).to.equal('1@example.com');
+  });
+});
+
+experiment('postChangeAccess', () => {
+  let h;
+
+  beforeEach(async () => {
+    sandbox.stub(CRM.entityRoles, 'addColleagueRole').resolves({});
+    sandbox.stub(CRM.entityRoles, 'deleteColleagueRole').resolves({});
+
+    h = {
+      redirect: sinon.spy()
+    };
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  const getBaseRequest = () => {
+    return {
+      auth: {
+        credentials: {
+          entity_id: 'test-entity-id'
+        }
+      },
+      payload: {
+        returns: true,
+        colleagueEntityID: 'test-colleague-id'
+      }
+    };
+  };
+  experiment('if the user has a returns role', () => {
+    test('another is not added', async () => {
+      const request = getBaseRequest();
+      request.payload.returns = true;
+      request.payload.returnsEntityRoleID = 'test-returns-entity-id';
+
+      await controller.postChangeAccess(request, h);
+
+      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
+      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
+    });
+
+    test('it can be deleted', async () => {
+      const request = getBaseRequest();
+      request.payload.returns = false;
+      request.payload.returnsEntityRoleID = 'test-returns-entity-id';
+
+      await controller.postChangeAccess(request, h);
+
+      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
+      expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
+
+      const [entityId, returnsEntityRoleId] = CRM.entityRoles.deleteColleagueRole.lastCall.args;
+      expect(entityId).to.equal('test-entity-id');
+      expect(returnsEntityRoleId).to.equal('test-returns-entity-id');
+    });
+  });
+
+  experiment('if the user does not have a returns role', () => {
+    test('it cannot be deleted', async () => {
+      const request = getBaseRequest();
+      request.payload.returns = false;
+
+      await controller.postChangeAccess(request, h);
+
+      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
+      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
+    });
+
+    test('it can be added', async () => {
+      const request = getBaseRequest();
+      request.payload.returns = true;
+
+      await controller.postChangeAccess(request, h);
+
+      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
+
+      const [entityId, colleagueEntityId, role] = CRM.entityRoles.addColleagueRole.lastCall.args;
+      expect(entityId).to.equal('test-entity-id');
+      expect(colleagueEntityId).to.equal('test-colleague-id');
+      expect(role).to.equal('user_returns');
+    });
   });
 });

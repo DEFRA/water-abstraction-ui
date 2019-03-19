@@ -23,6 +23,7 @@ module.exports = {
   meterUnitsForm,
   meterReadingsForm,
   meterReadingsSchema,
+  estimateBasisForm: require('./estimate'),
   internalRoutingForm,
   logReceiptForm,
   logReceiptSchema

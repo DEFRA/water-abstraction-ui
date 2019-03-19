@@ -18,6 +18,7 @@ const STEP_BASIS = '/return/basis';
 const STEP_QUANTITIES = '/return/quantities';
 const STEP_CONFIRM = '/return/confirm';
 const STEP_SUBMITTED = '/return/submitted';
+const STEP_ESTIMATE_BASIS = '/return/estimate/basis';
 
 /**
  * Gets path with return ID query param and admin/ if required depending on scopes
@@ -99,6 +100,9 @@ const next = {
   },
   [STEP_METER_READINGS]: (request, data) => {
     return getPath(STEP_CONFIRM, request, data);
+  },
+  [STEP_ESTIMATE_BASIS]: (request, data) => {
+    return getPath(STEP_CONFIRM, request, data);
   }
 };
 
@@ -143,6 +147,9 @@ const previous = {
   },
   [STEP_METER_READINGS]: (request, data) => {
     return getPath(STEP_METER_UNITS, request, data);
+  },
+  [STEP_ESTIMATE_BASIS]: (request, data) => {
+    return getPath(STEP_QUANTITIES, request, data);
   }
 };
 
@@ -183,6 +190,7 @@ module.exports = {
   STEP_CONFIRM,
   STEP_SUBMITTED,
   STEP_QUERY_LOGGED,
+  STEP_ESTIMATE_BASIS,
   getPath,
   getNextPath,
   getPreviousPath

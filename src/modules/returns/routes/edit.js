@@ -333,6 +333,45 @@ module.exports = {
     }
   },
 
+  getEstimatesBasis: {
+    method: 'GET',
+    path: '/return/estimates/basis',
+    handler: controller.getEstimatesBasis,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Get basis of abstraction volumes for estimated return',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - reporting without a meter',
+          activeNavLink: 'returns'
+        },
+        returns: true
+      }
+    }
+  },
+
+  posttEstimatesBasis: {
+    method: 'POST',
+    path: '/return/estimates/basis',
+    handler: controller.postEstimatesBasis,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Post handler for estimates basis form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - reporting without a meter',
+          activeNavLink: 'returns',
+          showMeta: true
+        },
+        returns: true
+      }
+    }
+  },
+
   getMeterDetails: createGetMeterRoute(
     '/return/meter/details',
     controller.getMeterDetails,

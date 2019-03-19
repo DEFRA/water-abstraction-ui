@@ -89,7 +89,7 @@ const applyMethod = (data, method) => {
 
   set(d, 'reading.method', method);
 
-  if (method === 'abstractionVolumes') {
+  if (method === 'abstractionVolumes' || method === 'estimatedVolumes') {
     const meters = d.meters || [];
     for (let meter of meters) {
       delete meter.readings;
@@ -277,6 +277,7 @@ const getDefaultQuantity = (line, options) => {
 
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
+
   const lines = getFormLines(updated);
   const { startReading, multiplier = 1 } = data.meters[0];
 

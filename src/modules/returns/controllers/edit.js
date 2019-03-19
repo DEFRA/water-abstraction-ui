@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { set } = require('lodash');
+const { get, set } = require('lodash');
 const Boom = require('boom');
 const forms = require('../../../lib/forms');
 const logger = require('../../../lib/logger');
@@ -14,7 +14,8 @@ const {
   basisForm, basisSchema,
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
-  meterUnitsForm, meterReadingsForm, meterReadingsSchema
+  meterUnitsForm, meterReadingsForm, meterReadingsSchema,
+  estimateBasisForm
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -183,7 +184,7 @@ const postMethod = async (request, h) => {
     const { method } = forms.getValues(form);
     const d = applyMethod(data, method);
     sessionHelpers.saveSessionData(request, d);
-
+    console.log(d);
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
   }
 
@@ -218,7 +219,12 @@ const postUnits = async (request, h) => {
   if (form.isValid) {
     // Persist chosen units to session
     const { units } = forms.getValues(form);
+    const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+    const readingType = isVolumes ? 'measured' : 'estimated';
+    console.log('reading.method', data.reading.method);
+
     set(data, 'reading.units', units);
+    set(data, 'reading.type', readingType);
     sessionHelpers.saveSessionData(request, data);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_UNITS, request, data));
@@ -362,6 +368,7 @@ const getConfirm = async (request, h) => {
 
 const getMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
+
   return h.view('water/returns/meter-details', {
     ...view,
     form: meterDetailsForm(request, data),
@@ -377,6 +384,8 @@ const postMeterDetails = async (request, h) => {
   if (form.isValid) {
     const d = applyMeterDetails(data, forms.getValues(form));
     sessionHelpers.saveSessionData(request, d);
+
+    console.log(d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_DETAILS, request, d));
   }
@@ -438,6 +447,7 @@ const postMeterReadings = async (request, h) => {
   // schema to cater for checking if the readings are not lower than
   // previous readings.
   const internalData = forms.importData(readingsForm, request.payload);
+  console.log('internalData', internalData);
   const schema = meterReadingsSchema(data, internalData);
 
   const form = forms.handleRequest(readingsForm, request, schema);
@@ -449,6 +459,39 @@ const postMeterReadings = async (request, h) => {
   }
 
   return h.view('water/returns/meter-readings', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const getEstimatesBasis = async (request, h) => {
+  const { view, data } = request.returns;
+
+  console.log(data);
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form: estimateBasisForm(request, data),
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_ESTIMATE_BASIS, request, data)
+  });
+};
+
+const postEstimatesBasis = async (request, h) => {
+  const { view, data } = request.returns;
+  const form = forms.handleRequest(forms.setValues(estimateBasisForm(request), data), request);
+
+  if (form.isValid) {
+    // NEED TO CREATE APPLY FUNCTION
+    // sessionHelpers.saveSessionData(request, d);
+    //
+    // const path = flowHelpers.getNextPath(flowHelpers.STEP_ESTIMATE_BASIS, request, d);
+
+    // return h.redirect(path);
+  }
+
+  return h.view('water/returns/internal/form', {
     ...view,
     form,
     return: data
@@ -477,5 +520,7 @@ module.exports = {
   getMeterUnits,
   postMeterUnits,
   getMeterReadings,
-  postMeterReadings
+  postMeterReadings,
+  getEstimatesBasis,
+  postEstimatesBasis
 };

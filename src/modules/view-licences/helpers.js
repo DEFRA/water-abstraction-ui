@@ -1,5 +1,3 @@
-const { LicenceNotFoundError } = require('./errors');
-const CRM = require('../../lib/connectors/crm');
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
@@ -27,9 +25,9 @@ function mapSort (sort) {
  * @param {Object} query - the HTTP query params
  * @return {Object} sort ready for use in getLicences CRM request
  */
-function mapFilter (entityId, query) {
+function mapFilter (companyId, query) {
   const filter = {
-    entity_id: entityId
+    company_entity_id: companyId
   };
   // Search on licence name/number
   if (query.licenceNumber) {
@@ -88,25 +86,12 @@ function loadGaugingStations (metadata) {
 
 /**
  * Loads licence data for detail view from CRM and permit repo
- * @param {String} entityId - GUID for current individual entity
+ * @param {Object} request - the current request
  * @param {String} documentId - GUID for the CRM document ID
  * @return {Promise} - resolves with CRM, permit repo and transformed licence data
  */
-async function loadLicenceData (entityId, documentId) {
-  const filter = {
-    entity_id: entityId,
-    document_id: documentId
-  };
-
-  // Get CRM data
-  const { error, data: [documentHeader] } = await CRM.documents.findMany(filter);
-  if (error) {
-    throw error;
-  }
-
-  if (!documentHeader) {
-    throw new LicenceNotFoundError(`Licence with document ID ${documentId} missing in CRM`);
-  }
+async function loadLicenceData (request, documentId) {
+  const { documentHeader } = request;
 
   // Get permit repo data
   const {
@@ -278,14 +263,12 @@ function errorMapper (error) {
   return error;
 }
 
-module.exports = {
-  mapSort,
-  mapFilter,
-  getLicencePageTitle,
-  loadLicenceData,
-  loadRiverLevelData,
-  selectRiverLevelMeasure,
-  validateStationReference,
-  riverLevelFlags,
-  errorMapper
-};
+exports.mapSort = mapSort;
+exports.mapFilter = mapFilter;
+exports.getLicencePageTitle = getLicencePageTitle;
+exports.loadLicenceData = loadLicenceData;
+exports.loadRiverLevelData = loadRiverLevelData;
+exports.selectRiverLevelMeasure = selectRiverLevelMeasure;
+exports.validateStationReference = validateStationReference;
+exports.riverLevelFlags = riverLevelFlags;
+exports.errorMapper = errorMapper;

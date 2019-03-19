@@ -1,8 +1,10 @@
 const serviceRequest = require('../service-request');
 const { partialRight } = require('lodash');
+const config = require('../../../../config');
 
 const get = (documentId, tail) => {
-  const baseUrl = `${process.env.WATER_URI}/documents/${documentId}/licence`;
+  const baseUrl = `${config.services.water}/documents/${documentId}/licence`;
+
   const url = tail ? `${baseUrl}/${tail}` : baseUrl;
   return serviceRequest.get(url);
 };

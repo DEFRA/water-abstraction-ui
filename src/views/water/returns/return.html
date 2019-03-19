@@ -37,8 +37,8 @@
       <h2 class="heading-medium">Abstraction volumes</h2>
     {{/if}}
 
-    {{#if canEdit }}
-    <a class="button" href="/admin/return/internal?returnId={{ return.returnId }}">Edit return</a>
+    {{#if editButtonPath }}
+    <a class="button" href="{{ editButtonPath }}">Edit return</a>
     <br />
     <br />
     {{/if}}

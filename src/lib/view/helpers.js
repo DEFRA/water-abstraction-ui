@@ -1,12 +1,3 @@
-const { get } = require('lodash');
-const { hasPermission } = require('../permissions');
-
-const isAuthenticated = request => !!get(request, 'state.sid');
-const isAdmin = request => hasPermission('admin.defra', request.permissions);
-const isAr = request => hasPermission('ar.read', request.permissions);
-const isInternalReturns = request => hasPermission('returns.edit', request.permissions);
-const isExternalReturns = request => hasPermission('returns.submit', request.permissions);
-const isPrimary = request => hasPermission('licences.edit', request.permissions);
 
 /**
  * Creates a link object
@@ -39,12 +30,6 @@ const setActiveLink = (links, activeNavLink) => {
 };
 
 module.exports = {
-  isAuthenticated,
-  isAdmin,
   createLink,
-  isAr,
-  isInternalReturns,
-  isExternalReturns,
-  isPrimary,
   setActiveLink
 };

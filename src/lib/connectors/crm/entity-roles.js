@@ -2,7 +2,9 @@
  * Creates a client connector for the CRM entity roles API endpoint
  * @module lib/connectors/crm/entity-roles
  */
-const { APIClient } = require('@envage/hapi-pg-rest-api');
+const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
+const serviceRequest = require('../service-request');
+
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
@@ -51,6 +53,29 @@ client.addColleagueRole = async function (entityID, colleagueEntityID, role = 'u
     logger.error('Error adding colleague role', error);
     throw error;
   }
+};
+
+/**
+ * Gets roles for an entity within a company
+ * @param  {String}  entityId        - CRM individual entity ID
+ * @param  {String}  companyEntityId - CRM company entity ID
+ * @return {Promise}                 resolves with array of roles
+ */
+client.getCompanyRoles = async (entityId, companyEntityId) => {
+  const uri = process.env.CRM_URI + '/entity/' + entityId + '/roles';
+  const filter = {
+    company_entity_id: companyEntityId
+  };
+  const options = {
+    qs: {
+      filter: JSON.stringify(filter)
+    }
+  };
+
+  const { error, data } = await serviceRequest.get(uri, options);
+  throwIfError(error);
+
+  return data;
 };
 
 module.exports = client;

@@ -5,7 +5,10 @@
 const {
   APIClient
 } = require('@envage/hapi-pg-rest-api');
+const { isExternal } = require('../../permissions');
 const Boom = require('boom');
+const { get } = require('lodash');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { crm } = require('../../../../config');
 const { entityId: waterRegimeEntityId } = crm.regimes.water;
 
@@ -23,23 +26,22 @@ const client = new APIClient(rp, {
 });
 
 /**
- * Get licence count - gets total number of licences the supplied entity ID
+ * Get licence count - gets total number of licences the supplied company ID
  * can view
- * @param {String} entityId - the individual entity ID
+ * @param {String} companyId - the individual entity ID
  * @return {Promise} resolves with integer number of licences available
  */
-client.getLicenceCount = async function (entityId) {
-  const {
-    pagination: {
-      totalRows
-    }
-  } = await client.findMany({
-    entity_id: entityId
-  }, null, {
+client.getLicenceCount = async function (companyId) {
+  const filter = {
+    company_entity_id: companyId
+  };
+  const pagination = {
     page: 1,
     perPage: 1
-  });
-  return totalRows;
+  };
+  const response = await client.findMany(filter, null, pagination, ['document_id']);
+  throwIfError(response.error);
+  return get(response, 'pagination.totalRows', 0);
 };
 
 const unregisteredLicenceQuery = (key, value) => {
@@ -115,6 +117,25 @@ client.getWaterLicence = async (licenceRef) => {
     throw Boom.notFound(`Water licence number ${licenceRef} not found in CRM`);
   }
   return document;
+};
+
+/**
+ * Creates a filter object, taking into account the regime entity ID for
+ * water abstraction licences, and filtering on the user's selected company for
+ * external users
+ * @param  {Object} request     - HAPI request
+ * @param  {Object} [filter={}] - filter
+ * @return {Object}             filter
+ */
+client.createFilter = (request, filter = {}) => {
+  const defaults = {
+    regime_entity_id: waterRegimeEntityId
+  };
+  if (isExternal(request)) {
+    const companyId = get(request, 'auth.credentials.companyId');
+    defaults.company_entity_id = companyId;
+  }
+  return Object.assign({}, defaults, filter);
 };
 
 module.exports = client;

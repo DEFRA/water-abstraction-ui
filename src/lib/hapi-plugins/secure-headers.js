@@ -27,6 +27,10 @@ const secureHeadersPlugin = {
 
           // Please note the CSP headers are handled and configured using the
           // Blankie plugin which is added in the index.js entry fie.
+
+          request.response.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
+          request.response.headers['Expires'] = 0;
+          request.response.headers['Pragma'] = 'no-cache';
         }
         return reply.continue;
       }

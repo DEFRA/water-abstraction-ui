@@ -140,13 +140,11 @@ function getResentSuccess (request, h) {
   return h.view('water/registration/register_resent_success', request.view);
 }
 
-module.exports = {
-  getRegisterStart,
-  getEmailAddress,
-  postEmailAddress,
-  getRegisterSuccess,
-  getSendAgain,
-  postSendAgain,
-  getResentSuccess,
-  getUrlWithEmailParam
-};
+exports.getRegisterStart = getRegisterStart;
+exports.getEmailAddress = getEmailAddress;
+exports.postEmailAddress = postEmailAddress;
+exports.getRegisterSuccess = getRegisterSuccess;
+exports.getSendAgain = getSendAgain;
+exports.postSendAgain = postSendAgain;
+exports.getResentSuccess = getResentSuccess;
+exports.getUrlWithEmailParam = getUrlWithEmailParam;

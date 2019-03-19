@@ -8,6 +8,7 @@ const communicationsConnector = require('../../../src/lib/connectors/water-servi
 const communicationResponses = require('../../responses/water-service/communications/_documentId_');
 
 const controller = require('../../../src/modules/view-licences/controller');
+const { scope } = require('../../../src/lib/constants');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -60,10 +61,11 @@ experiment('getLicenceCommunication', () => {
         documentId: 'doc-id-1',
         communicationId: 'notification-id'
       },
-      permissions: {
-        hasPermission: sandbox.stub().returns(true)
-      },
-      entityRoles: [{ company_entity_id: 'comany-id-1' }]
+      auth: {
+        credentials: {
+          scope: scope.licenceHolder
+        }
+      }
     };
   });
 
@@ -148,35 +150,6 @@ experiment('getLicenceCommunication', () => {
       expect(error.isBoom).to.be.true();
       expect(error.output.statusCode).to.equal(404);
     }
-  });
-
-  test('returns 403 if user not associated with any of the notification companies', async () => {
-    request.permissions.hasPermission.returns(false);
-    request.entityRoles = [{
-      entity_id: '2',
-      role: 'user',
-      company_entity_id: 'nope'
-    }];
-
-    try {
-      await controller.getLicenceCommunication(request, h);
-      fail('exception should have been thrown');
-    } catch (error) {
-      expect(error.isBoom).to.be.true();
-      expect(error.output.statusCode).to.equal(403);
-    }
-  });
-
-  test('an admin user has access without company association', async () => {
-    request.permissions.hasPermission.returns(true);
-    request.entityRoles = [{
-      entity_id: '2',
-      role: 'user',
-      company_entity_id: 'nope'
-    }];
-
-    const [, view] = await controller.getLicenceCommunication(request, h);
-    expect(view.licence.documentId).to.equal('doc-id-1');
   });
 
   test('requests the layout renders the back link', async () => {

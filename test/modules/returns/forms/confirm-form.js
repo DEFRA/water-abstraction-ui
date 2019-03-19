@@ -2,20 +2,21 @@ const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const confirmForm = require('../../../../src/modules/returns/forms/confirm');
+const { scope } = require('../../../../src/lib/constants');
 
 experiment('confirmForm', () => {
   const getRequest = (isInternal) => {
     return {
+      auth: {
+        credentials: {
+          scope: [isInternal ? scope.internal : scope.external]
+        }
+      },
       view: {
         csrfToken: 'xyz'
       },
       query: {
         returnId: 'abc'
-      },
-      permissions: {
-        hasPermission: () => {
-          return isInternal;
-        }
       }
     };
   };

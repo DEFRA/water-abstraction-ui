@@ -1,5 +1,4 @@
 module.exports = [
-
   {
     method: 'GET',
     path: '/public/{param*}',
@@ -17,7 +16,6 @@ module.exports = [
       }
     }
   },
-
   {
     method: 'GET',
     path: '/images/{param*}',
@@ -33,7 +31,6 @@ module.exports = [
       }
     }
   },
-
   {
     method: 'GET',
     path: '/stylesheets/{param*}',
@@ -49,7 +46,6 @@ module.exports = [
       }
     }
   },
-
   {
     method: 'GET',
     path: '/javascripts/{param*}',
@@ -65,5 +61,4 @@ module.exports = [
       }
     }
   }
-
 ];

@@ -1,347 +1,152 @@
 'use strict';
 
 const Lab = require('lab');
-const { experiment, beforeEach, test } = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const { getPermissions } = require('../../src/lib/permissions');
+const permissions = require('../../src/lib/permissions');
+const { scope } = require('../../src/lib/constants');
 
-const getCredentials = (scope = [], entityId = null) => ({
-  scope,
-  entity_id: entityId
+const createRequest = (scope) => ({
+  state: {
+    sid: '02e0994d-536a-4be5-8722-5ef9e7dfdcdd'
+  },
+  auth: {
+    credentials: {
+      scope
+    }
+  }
 });
 
-experiment('getPermissions::internal user', () => {
-  let internalPermissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['internal'], 'entity-id');
-    const entityRoles = [];
-    internalPermissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('can read licences', async () => {
-    expect(internalPermissions.licences.read).to.be.true();
-  });
-
-  test('cannot edit licences', async () => {
-    expect(internalPermissions.licences.edit).to.be.false();
-  });
-
-  test('can read returns', async () => {
-    expect(internalPermissions.returns.read).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(internalPermissions.returns.edit).to.be.false();
-  });
-
-  test('cannot be multi licence (agent)', async () => {
-    expect(internalPermissions.licences.multi).to.be.false();
-  });
-
-  test('has admin permission', async () => {
-    expect(internalPermissions.admin.defra).to.be.true();
-  });
-});
-
-experiment('getPermissions::primary user', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['external'], 'entity-id');
-    const entityRoles = [{ role: 'primary_user' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('can edit licences', async () => {
-    expect(permissions.licences.edit).to.be.true();
-  });
-
-  test('cannot be multi licence (agent)', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('does not have admin permission', async () => {
-    expect(permissions.admin.defra).to.be.false();
-  });
-
-  test('can read returns', async () => {
-    expect(permissions.returns.read).to.be.true();
-  });
-
-  test('can submit returns', async () => {
-    expect(permissions.returns.submit).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::agent', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['external'], 'entity-id');
-    const entityRoles = [{ role: 'user' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('user can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('user can edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('cannot read returns', async () => {
-    expect(permissions.returns.read).to.be.false();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-
-  test('user does not have admin permission', async () => {
-    expect(permissions.admin.defra).to.be.false();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::multi licence user', () => {
-  test('user can be multi licence (agent)', async () => {
-    const credentials = getCredentials(['external'], 'entity-id');
-    const entityRoles = [{ role: 'primary_user' }, { role: 'user' }];
-    const permissions = await getPermissions(credentials, entityRoles);
-    expect(permissions.licences.multi).to.be.true();
-  });
-});
-
-experiment('getPermissions::agent with data returns', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['external'], 'entity-id');
-    const entityRoles = [{ role: 'user' }, { role: 'user_returns' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('user can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('user can edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('user can be multi licence', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('user does not have admin permission', async () => {
-    expect(permissions.admin.defra).to.be.false();
-  });
-
-  test('can read returns', async () => {
-    expect(permissions.returns.read).to.be.true();
-  });
-
-  test('can submit returns', async () => {
-    expect(permissions.returns.submit).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::no entity id', () => {
-  test('sets licence.read to false for external', async () => {
-    const credentials = getCredentials(['external']);
-    const entityRoles = [];
-    const permissions = await getPermissions(credentials, entityRoles);
-    expect(permissions.licences.read).to.be.false();
-  });
-
-  test('sets licence.read to false for internal', async () => {
-    const credentials = getCredentials(['internal']);
-    const entityRoles = [];
-    const permissions = await getPermissions(credentials, entityRoles);
-    expect(permissions.licences.read).to.be.false();
-  });
-});
-
-experiment('getPermissions::no credentials', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    permissions = await getPermissions();
-  });
-
-  test('user cannot read licences', async () => {
-    expect(permissions.licences.read).to.be.false();
-  });
-
-  test('user cannot edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('user cannot be multi licence (agent)', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('user does not have admin permission', async () => {
-    expect(permissions.admin.defra).to.be.false();
-  });
-
-  test('cannot read returns', async () => {
-    expect(permissions.returns.read).to.be.false();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::ar_user', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['ar_user'], 'entity-id');
-    const entityRoles = [{ role: 'admin' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('cannot edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('cannot be multi licence (agent)', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('has admin permission', async () => {
-    expect(permissions.admin.defra).to.be.true();
-  });
-
-  test('can read abstraction reform', async () => {
-    expect(permissions.ar.read).to.be.true();
-  });
-
-  test('can edit abstraction reform', async () => {
-    expect(permissions.ar.edit).to.be.true();
-  });
-
-  test('can read returns', async () => {
-    expect(permissions.returns.read).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::ar_approver', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['ar_approver'], 'entity-id');
-    const entityRoles = [{ role: 'admin' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('cannot edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('cannot be multi licence (agent)', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('has admin permission', async () => {
-    expect(permissions.admin.defra).to.be.true();
-  });
-
-  test('can read abstraction reform', async () => {
-    expect(permissions.ar.read).to.be.true();
-  });
-
-  test('can edit abstraction reform', async () => {
-    expect(permissions.ar.edit).to.be.true();
-  });
-
-  test('can approve abstraction reform', async () => {
-    expect(permissions.ar.approve).to.be.true();
-  });
-
-  test('can read returns', async () => {
-    expect(permissions.returns.read).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.false();
-  });
-});
-
-experiment('getPermissions::internal returns user', () => {
-  let permissions;
-
-  beforeEach(async () => {
-    const credentials = getCredentials(['returns'], 'entity-id');
-    const entityRoles = [{ role: 'admin' }];
-    permissions = await getPermissions(credentials, entityRoles);
-  });
-
-  test('can read licences', async () => {
-    expect(permissions.licences.read).to.be.true();
-  });
-
-  test('cannot edit licences', async () => {
-    expect(permissions.licences.edit).to.be.false();
-  });
-
-  test('cannot be multi licence (agent)', async () => {
-    expect(permissions.licences.multi).to.be.false();
-  });
-
-  test('has admin permission', async () => {
-    expect(permissions.admin.defra).to.be.true();
-  });
-
-  test('can read abstraction reform', async () => {
-    expect(permissions.ar.read).to.be.false();
-  });
-
-  test('can edit abstraction reform', async () => {
-    expect(permissions.ar.edit).to.be.false();
-  });
-
-  test('can approve abstraction reform', async () => {
-    expect(permissions.ar.approve).to.be.false();
-  });
-
-  test('can read returns', async () => {
-    expect(permissions.returns.read).to.be.true();
-  });
-
-  test('cannot edit returns', async () => {
-    expect(permissions.returns.edit).to.be.true();
+experiment('permissions', () => {
+  experiment('hasScope', () => {
+    test('it should return true if scope is in the credentials', async () => {
+      const request = createRequest(['foo', 'bar']);
+      expect(permissions.hasScope(request, 'foo')).to.equal(true);
+    });
+
+    test('it should return true if scope is not in the credentials', async () => {
+      const request = createRequest(['foo', 'bar']);
+      expect(permissions.hasScope(request, 'baz')).to.equal(false);
+    });
+  });
+
+  experiment('isAuthenticated', () => {
+    test('it should return true if a session ID is present', async () => {
+      const request = createRequest();
+      expect(permissions.isAuthenticated(request)).to.equal(true);
+    });
+
+    test('it should return true if a session ID is absent', async () => {
+      const request = createRequest();
+      delete request.state.sid;
+      expect(permissions.isAuthenticated(request)).to.equal(false);
+    });
+  });
+
+  experiment('isInternal', async () => {
+    test('it should return true if internal in scope', async () => {
+      const request = createRequest([scope.internal]);
+      expect(permissions.isInternal(request)).to.equal(true);
+    });
+
+    test('it should return false if internal not in scope', async () => {
+      const request = createRequest([scope.external]);
+      expect(permissions.isInternal(request)).to.equal(false);
+    });
+  });
+
+  experiment('isExternal', async () => {
+    test('it should return true if external in scope', async () => {
+      const request = createRequest([scope.external]);
+      expect(permissions.isExternal(request)).to.equal(true);
+    });
+
+    test('it should return false if external not in scope', async () => {
+      const request = createRequest([scope.internal]);
+      expect(permissions.isExternal(request)).to.equal(false);
+    });
+  });
+
+  experiment('isPrimaryUser', async () => {
+    test('it should return true if primary user in scope', async () => {
+      const request = createRequest([scope.external, scope.licenceHolder]);
+      expect(permissions.isPrimaryUser(request)).to.equal(true);
+    });
+
+    test('it should return false if primary user not in scope', async () => {
+      const request = createRequest([scope.external]);
+      expect(permissions.isPrimaryUser(request)).to.equal(false);
+    });
+  });
+
+  experiment('isInternalReturns', async () => {
+    test('it should return true if internal returns in scope', async () => {
+      const request = createRequest([scope.internal, scope.returns]);
+      expect(permissions.isInternalReturns(request)).to.equal(true);
+    });
+
+    test('it should return false if internal returns not in scope', async () => {
+      const request = createRequest([scope.internal]);
+      expect(permissions.isInternalReturns(request)).to.equal(false);
+    });
+  });
+
+  experiment('isExternalReturns', async () => {
+    test('it should return true if primary user in scope', async () => {
+      const request = createRequest([scope.licenceHolder]);
+      expect(permissions.isExternalReturns(request)).to.equal(true);
+    });
+
+    test('it should return true if returns agent in scope', async () => {
+      const request = createRequest([scope.colleagueWithReturns]);
+      expect(permissions.isExternalReturns(request)).to.equal(true);
+    });
+
+    test('it should return false otherwise', async () => {
+      const request = createRequest([scope.external]);
+      expect(permissions.isExternalReturns(request)).to.equal(false);
+    });
+  });
+
+  experiment('isARUser', async () => {
+    test('it should return true if AR user in scope', async () => {
+      const request = createRequest([scope.abstractionReformUser]);
+      expect(permissions.isARUser(request)).to.equal(true);
+    });
+
+    test('it should return false if AR user not in scope', async () => {
+      const request = createRequest([scope.abstractionReformApprover]);
+      expect(permissions.isARUser(request)).to.equal(false);
+    });
+  });
+
+  experiment('isARApprover', async () => {
+    test('it should return true if AR approver in scope', async () => {
+      const request = createRequest([scope.abstractionReformApprover]);
+      expect(permissions.isARApprover(request)).to.equal(true);
+    });
+
+    test('it should return false if AR approver not in scope', async () => {
+      const request = createRequest([scope.abstractionReformUser]);
+      expect(permissions.isARApprover(request)).to.equal(false);
+    });
+  });
+
+  experiment('isAnyAR', async () => {
+    test('it should return true if AR user in scope', async () => {
+      const request = createRequest([scope.abstractionReformUser]);
+      expect(permissions.isAnyAR(request)).to.equal(true);
+    });
+
+    test('it should return true if AR approver in scope', async () => {
+      const request = createRequest([scope.abstractionReformApprover]);
+      expect(permissions.isAnyAR(request)).to.equal(true);
+    });
+
+    test('it should return false otherwise', async () => {
+      const request = createRequest([scope.internal]);
+      expect(permissions.isAnyAR(request)).to.equal(false);
+    });
   });
 });

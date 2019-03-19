@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
+const loginHelpers = require('../../lib/login-helpers');
 
 module.exports = {
   getStart: {
@@ -7,7 +8,11 @@ module.exports = {
     path: '/start',
     handler: controller.getRegisterStart,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       description: 'Register start page - information for users before registering',
       plugins: {
         viewContext: {
@@ -21,7 +26,11 @@ module.exports = {
     path: '/register',
     handler: controller.getEmailAddress,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       description: 'Register user account - get email address',
       plugins: {
         viewContext: {
@@ -49,7 +58,11 @@ module.exports = {
     path: '/success',
     handler: controller.getRegisterSuccess,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       description: 'Register user account - success page',
       plugins: {
         viewContext: {
@@ -68,7 +81,11 @@ module.exports = {
     path: '/send-again',
     handler: controller.getSendAgain,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       description: 'Register user account - resend email form',
       plugins: {
         viewContext: {
@@ -96,7 +113,11 @@ module.exports = {
     path: '/resent-success',
     handler: controller.getResentSuccess,
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
       description: 'Register user account - email resent success page',
       plugins: {
         viewContext: {

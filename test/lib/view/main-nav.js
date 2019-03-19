@@ -7,6 +7,7 @@ const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
 const { getMainNav } = require('../../../src/lib/view/main-nav.js');
+const { scope } = require('../../../src/lib/constants');
 
 const getAuthenticatedRequest = (isInternal = false) => {
   return {
@@ -16,22 +17,9 @@ const getAuthenticatedRequest = (isInternal = false) => {
     state: {
       sid: '00000000-0000-0000-0000-000000000000'
     },
-    permissions: {
-      licences: {
-        read: true,
-        edit: false
-      },
-      admin: {
-        defra: isInternal
-      },
-      returns: {
-        edit: false,
-        submit: false
-      },
-      ar: {
-        read: false,
-        edit: false,
-        approve: false
+    auth: {
+      credentials: {
+        scope: [isInternal ? scope.internal : scope.external]
       }
     }
   };
@@ -39,27 +27,25 @@ const getAuthenticatedRequest = (isInternal = false) => {
 
 const getPrimaryUserRequest = () => {
   const request = getAuthenticatedRequest();
-  set(request, 'permissions.licences.edit', true);
-  set(request, 'permissions.returns.submit', true);
+  set(request, 'auth.credentials.scope', [scope.external, scope.licenceHolder]);
   return request;
 };
 
 const getARUserRequest = () => {
   const request = getAuthenticatedRequest(true);
-  set(request, 'permissions.ar.read', true);
-  set(request, 'permissions.ar.edit', true);
+  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformUser]);
   return request;
 };
 
 const getARApproverRequest = () => {
-  const request = getARUserRequest();
-  set(request, 'permissions.ar.approve', true);
+  const request = getARUserRequest(true);
+  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformApprover]);
   return request;
 };
 
 const getReturnsRequest = () => {
   const request = getAuthenticatedRequest(true);
-  set(request, 'permissions.returns.edit', true);
+  set(request, 'auth.credentials.scope', [scope.internal, scope.returns]);
   return request;
 };
 

@@ -10,7 +10,8 @@ const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
 const logger = require('../../lib/logger');
-
+const loginHelpers = require('../../lib/login-helpers');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
 
 const {
@@ -274,76 +275,100 @@ async function getAddressSelect (request, reply) {
   }
 }
 
+const validateDocumentIdInSelectedIds = (addressDocumentId, selectedIds) => {
+  if (!selectedIds.includes(addressDocumentId)) {
+    throw new InvalidAddressError();
+  }
+};
+
+const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
+
+const getAddressSelectViewContext = async (request, verification, licence) => {
+  const entityId = getEntityIdFromRequest(request);
+  const userLicences = await getAllUserEntityLicences(entityId);
+
+  const context = request.view;
+  context.pageTitle = 'We are sending you a letter';
+  context.activeNavLink = 'manage';
+  context.verification = verification;
+  context.licence = licence;
+  context.licenceCount = userLicences.length;
+  return context;
+};
+
+const getLicences = async selectedIds => {
+  const { error, data } = await CRM.documents.findMany({
+    document_id: { $or: selectedIds }
+  });
+
+  throwIfError(error);
+  return data;
+};
+
+const getAllUserEntityLicences = async entityId => {
+  const { error, data } = await CRM.documents.findMany({
+    company_entity_id: { $ne: null },
+    entity_id: entityId
+  });
+
+  throwIfError(error);
+  return data;
+};
+
+const getLicence = async documentId => {
+  const { error, data } = await CRM.documents.findOne(documentId);
+  throwIfError(error);
+  return data;
+};
+
 /**
  * Post handler for select address form
  * @param {Object} request - HAPI HTTP request
  * @param {Object} request.payload - HTTP POST request params
  * @param {String} request.payload.token - signed Iron token containing all and selected licence IDs
  * @param {String} request.payload.address - documentId for licence with address for post verify
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - HAPI Response Toolkit
  */
-async function postAddressSelect (request, reply) {
+async function postAddressSelect (request, h) {
   const { address } = request.payload;
-  const { entity_id: entityId } = request.auth.credentials;
+  const entityId = getEntityIdFromRequest(request);
 
   try {
     // Load session data
     const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-    // Ensure address present in list of document IDs in data
-    if (!selectedIds.includes(address)) {
-      throw new InvalidAddressError();
-    }
+    validateDocumentIdInSelectedIds(address, selectedIds);
 
     // Find licences in CRM for selected documents
-    const { data: licenceData, error: licenceError } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
-    if (licenceError) {
-      throw licenceError;
-    }
+    const licenceData = await getLicences(selectedIds);
 
     // Get company entity ID for current user
-    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, licenceData[0].metadata.Name);
+    const companyName = licenceData[0].metadata.Name;
+    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, companyName);
 
     // Create verification
     const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
 
     // Get the licence containing the selected verification address
-    const { error, data } = await CRM.documents.findOne(address);
-    if (error) {
-      throw error;
-    }
+    const addressLicence = await getLicence(address);
 
     // Post letter
-    await Notify.sendSecurityCode(data, verification.verification_code);
-
-    // Get all licences - this is needed to determine whether to display link back to dashboard
-    const { error: err2, data: licences } = await CRM.documents.findMany({
-      company_entity_id: { $ne: null },
-      entity_id: entityId
-    });
-
-    if (err2) {
-      throw err2;
-    }
+    await Notify.sendSecurityCode(addressLicence, verification.verification_code);
 
     // Delete data in session
     request.sessionStore.delete('addLicenceFlow');
+    //
+    // add the company id to the cookie to configure company switcher correctly
+    loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
 
-    const viewContext = request.view;
-    viewContext.pageTitle = `We are sending you a letter`;
-    viewContext.activeNavLink = 'manage';
-    viewContext.verification = verification;
-    viewContext.licence = data;
-    viewContext.licenceCount = licences.length;
+    const viewContext = await getAddressSelectViewContext(request, verification, addressLicence);
 
-    return reply.view('water/licences-add/verification-sent', viewContext);
+    return h.view('water/licences-add/verification-sent', viewContext);
   } catch (err) {
     if (err.name === 'InvalidAddressError') {
-      return reply.redirect('/select-address?error=invalidAddress');
+      return h.redirect('/select-address?error=invalidAddress');
     }
-
     throw err;
-    // errorHandler(request, reply)(err);
   }
 }
 
@@ -428,14 +453,12 @@ async function postSecurityCode (request, reply) {
   }
 }
 
-module.exports = {
-  getLicenceAdd,
-  postLicenceAdd,
-  getLicenceSelect,
-  postLicenceSelect,
-  getLicenceSelectError,
-  getAddressSelect,
-  postAddressSelect,
-  getSecurityCode,
-  postSecurityCode
-};
+exports.getLicenceAdd = getLicenceAdd;
+exports.postLicenceAdd = postLicenceAdd;
+exports.getLicenceSelect = getLicenceSelect;
+exports.postLicenceSelect = postLicenceSelect;
+exports.getLicenceSelectError = getLicenceSelectError;
+exports.getAddressSelect = getAddressSelect;
+exports.postAddressSelect = postAddressSelect;
+exports.getSecurityCode = getSecurityCode;
+exports.postSecurityCode = postSecurityCode;

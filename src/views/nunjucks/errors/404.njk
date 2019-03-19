@@ -1,0 +1,17 @@
+{% extends "./nunjucks/layout.njk" %}
+
+
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <p>Please check that the web address is correct, or you can:</p>
+
+  <ul class="govuk-list govuk-list--bullet">
+    {% if user %}
+      <li class=""><a href="/licences">view</a> {{ 'your' if isExternal }} licences</li>
+    {% else %}
+      <li><a href="/signin">sign in</a> to manage your water abstraction or impoundment licences</li>
+    {% endif %}
+  </ul>
+{% endblock %}

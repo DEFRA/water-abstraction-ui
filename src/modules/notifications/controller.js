@@ -20,8 +20,8 @@ async function getIndex (request, reply) {
   };
   const { data: tasks, error } = await taskConfig.findMany(filter);
 
-  const notifications = getNotificationsList(tasks, request.permissions);
-  const reports = getReportsList(request.permissions);
+  const notifications = getNotificationsList(tasks, request);
+  const reports = getReportsList(request);
 
   if (error) {
     return reply(error);
@@ -428,14 +428,12 @@ async function postSend (request, reply) {
   return reply.view('water/notifications/sent', view);
 }
 
-module.exports = {
-  getIndex,
-  getStep,
-  postStep,
-  getRefine,
-  postRefine,
-  getVariableData,
-  postVariableData,
-  getPreview,
-  postSend
-};
+exports.getIndex = getIndex;
+exports.getStep = getStep;
+exports.postStep = postStep;
+exports.getRefine = getRefine;
+exports.postRefine = postRefine;
+exports.getVariableData = getVariableData;
+exports.postVariableData = postVariableData;
+exports.getPreview = getPreview;
+exports.postSend = postSend;

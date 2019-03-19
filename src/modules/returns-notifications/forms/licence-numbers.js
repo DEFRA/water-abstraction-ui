@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const { cloneDeep, set } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 
 const licenceNumbersForm = (request) => {
@@ -19,8 +18,7 @@ const licenceNumbersForm = (request) => {
     multiline: true,
     rows: 5,
     controlClass: 'form-control form-control-3-4',
-    label: 'Enter your licence numbers',
-    hint: 'Add licence numbers here for the licences you wish to send paper forms to. Return forms will be sent for any due returns.'
+    label: 'Add licence numbers that you wish to send paper return forms to.'
   }));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

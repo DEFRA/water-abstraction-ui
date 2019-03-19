@@ -1,0 +1,8 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+  <p class="govuk-body-l">Please wait. This may take up to a minute.</p>
+  <img src="/public/images/ajax-loader.gif" alt="spinner">
+  <meta http-equiv="refresh" content="5">
+{% endblock %}

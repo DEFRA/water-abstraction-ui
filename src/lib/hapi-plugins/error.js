@@ -10,49 +10,57 @@ const { contextDefaults } = require('../view');
 const logger = require('../logger');
 const { get, pick } = require('lodash');
 
+const getStatusCode = request => get(request, 'response.output.statusCode');
+
+const is404 = request => getStatusCode(request) === 404;
+
+const isIgnored = request =>
+  get(request, 'route.settings.plugins.errorPlugin.ignore', false);
+
+const isCsrfError = request =>
+  get(request, 'response.data.isCsrfError', false);
+
+const isUnauthorized = request => {
+  const statusCode = getStatusCode(request);
+  return (statusCode >= 401 && statusCode <= 403);
+};
+
+const _handler = async (request, h) => {
+  const res = request.response;
+
+  if (isIgnored(request) || !res.isBoom || is404(request)) {
+    return h.continue;
+  }
+
+  // ALWAYS Log the error
+  logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+
+  // Destroy session for CSRF error
+  if (isCsrfError(request)) {
+    await request.sessionStore.destroy();
+    request.cookieAuth.clear();
+    return h.redirect('/signout');
+  }
+
+  // Unauthorised - redirect to welcome
+  if (isUnauthorized(request)) {
+    return h.redirect('/welcome');
+  }
+
+  // Render 500 page
+  const view = {
+    ...contextDefaults(request),
+    pageTitle: 'Something went wrong'
+  };
+  const statusCode = getStatusCode(request);
+  return h.view('nunjucks/errors/error.njk', view).code(statusCode);
+};
+
 const errorPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
-      method: async (request, reply) => {
-        const res = request.response;
-
-        // Create view context
-        const view = contextDefaults(request);
-
-        const ignore = get(request, 'route.settings.plugins.errorPlugin.ignore', false);
-
-        // Boom errors
-        if (!ignore && res.isBoom) {
-          // ALWAYS Log the error
-          logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-
-          const { statusCode } = res.output;
-
-          // CSRF error detected - sign out user and redirect to login page
-          if (res.data && res.data.isCsrfError) {
-            await request.sessionStore.destroy();
-            request.cookieAuth.clear();
-            return reply.redirect('/signout');
-          }
-
-          // Unauthorised
-          if (statusCode >= 401 && statusCode <= 403) {
-            return reply.redirect('/welcome');
-          }
-          // Not found
-          if (statusCode === 404) {
-            view.pageTitle = "We can't find that page";
-            return reply.view('water/404.html', view).code(statusCode);
-          }
-          // Other errors
-          view.pageTitle = 'Something went wrong';
-          return reply.view('water/error.html', view).code(statusCode);
-        }
-
-        // Continue processing request
-        return reply.continue;
-      }
+      method: _handler
     });
   },
 
@@ -63,3 +71,4 @@ const errorPlugin = {
 };
 
 module.exports = errorPlugin;
+module.exports._handler = _handler;

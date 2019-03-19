@@ -1,8 +1,10 @@
 const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
 const signIn = require('../../lib/sign-in');
+const loginHelpers = require('../../lib/login-helpers');
 const mapJoiPasswordError = require('./map-joi-password-error');
 const logger = require('../../lib/logger');
+
 
 /**
  * Renders form for start of reset password flow
@@ -92,17 +94,15 @@ async function postChangePassword (request, reply) {
 
     // Log user in
     await signIn.auto(request, user.user_name);
-
-    return reply.redirect('/licences');
+    const redirectPath = await loginHelpers.getLoginRedirectPath(request);
+    return reply.redirect(redirectPath);
   } catch (error) {
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }
 }
 
-module.exports = {
-  getResetPassword,
-  postResetPassword,
-  getResetSuccess,
-  getChangePassword,
-  postChangePassword
-};
+exports.getResetPassword = getResetPassword;
+exports.postResetPassword = postResetPassword;
+exports.getResetSuccess = getResetSuccess;
+exports.getChangePassword = getChangePassword;
+exports.postChangePassword = postChangePassword;

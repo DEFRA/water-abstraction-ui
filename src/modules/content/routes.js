@@ -7,7 +7,10 @@ module.exports = {
     path: '/accessibility',
     config: {
       description: 'Displays accessibility information',
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Accessibility'
@@ -25,7 +28,10 @@ module.exports = {
     path: '/cookies',
     config: {
       description: 'Displays cookie information',
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Cookies'
@@ -42,7 +48,10 @@ module.exports = {
     method: 'GET',
     path: '/feedback',
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Tell us what you think about this service'
@@ -59,7 +68,10 @@ module.exports = {
     method: 'GET',
     path: '/privacy-policy',
     config: {
-      auth: false,
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
       plugins: {
         viewContext: {
           pageTitle: 'Privacy: how we use your personal information'

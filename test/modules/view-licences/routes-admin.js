@@ -15,13 +15,8 @@ lab.experiment('view-licences - admin routes', () => {
     expect(route.config.auth.scope).to.equal(allAdmin);
   });
 
-  lab.test('getLicenceRenameAdmin has admin auth scopes', async () => {
-    const route = adminRoutes.getLicenceRenameAdmin;
-    expect(route.config.auth.scope).to.equal(allAdmin);
-  });
-
   lab.test('getLicencePurposesAdmin has admin auth scopes', async () => {
-    const route = adminRoutes.getLicenceRenameAdmin;
+    const route = adminRoutes.getLicencePurposesAdmin;
     expect(route.config.auth.scope).to.equal(allAdmin);
   });
 

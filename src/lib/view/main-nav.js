@@ -1,9 +1,10 @@
 const { get } = require('lodash');
 
 const {
-  isAuthenticated, isAdmin, createLink, isAr,
-  isExternalReturns, isPrimary, setActiveLink
-} = require('./helpers');
+  isAnyAR, isExternalReturns, isPrimaryUser, isAuthenticated, isInternal
+} = require('../permissions');
+
+const { createLink, setActiveLink } = require('./helpers');
 
 const createNavLink = (label, path, id) => {
   return createLink(label, path, id, { id: `navbar-${id}` });
@@ -29,7 +30,7 @@ const externalLinks = {
  */
 const getInternalNav = (request) => {
   const links = [internalLinks.licences];
-  if (isAr(request)) {
+  if (isAnyAR(request)) {
     links.push(internalLinks.ar);
   }
   links.push(internalLinks.notifications);
@@ -60,7 +61,7 @@ const getExternalNav = (request) => {
       links.push(externalLinks.returns);
     }
 
-    if (isPrimary(request)) {
+    if (isPrimaryUser(request)) {
       links.push(externalLinks.manage);
     }
   }
@@ -77,7 +78,7 @@ const getMainNav = (request) => {
     return [];
   }
 
-  const getNav = isAdmin(request) ? getInternalNav : getExternalNav;
+  const getNav = isInternal(request) ? getInternalNav : getExternalNav;
   const links = getNav(request);
 
   // Add active boolean to correct link

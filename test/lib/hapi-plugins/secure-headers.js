@@ -52,4 +52,16 @@ experiment('secure-headers', () => {
     expect(policy).to.contain('geolocation \'self\'');
     expect(policy).to.contain('picture-in-picture \'none\'');
   });
+
+  test('adds cache-control header', async () => {
+    expect(request.response.headers['cache-control']).to.equal('no-cache, no-store, must-revalidate');
+  });
+
+  test('adds expires header', async () => {
+    expect(request.response.headers['Expires']).to.equal(0);
+  });
+
+  test('adds pragma header', async () => {
+    expect(request.response.headers['Pragma']).to.equal('no-cache');
+  });
 });

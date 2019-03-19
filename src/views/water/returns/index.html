@@ -5,6 +5,9 @@
 
   <h1 class="heading-large">{{ pageTitle }}</h1>
 
+  {{# if xmlUser }}
+  <p><a href="/returns/upload">Upload an XML data return</a></p>
+  {{/if}}
 
   {{# equal returns.length 0 }}
   <p>No returns found.</p>

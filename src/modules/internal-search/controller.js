@@ -1,6 +1,6 @@
 'use strict';
 
-const { get } = require('lodash');
+const { get, flatMap } = require('lodash');
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('../../lib/forms');
 const water = require('../../lib/connectors/water');
@@ -44,15 +44,29 @@ const getSearchForm = async (request, h) => {
   return h.view('nunjucks/internal-search/index.njk', view, { layout: false });
 };
 
+const getRegisteredLicenceCount = companies => {
+  return companies.reduce((acc, company) => {
+    const licences = get(company, 'registeredLicences', []);
+    return acc + licences.length;
+  }, 0);
+};
+
+const getOutstandingVerificationLicenceCount = companies => {
+  return companies.reduce((acc, company) => {
+    const verifications = get(company, 'outstandingVerifications', []);
+    const licences = flatMap(verifications, v => v.licences);
+    return acc + licences.length;
+  }, 0);
+};
+
 const getUserStatus = async (request, h) => {
   const { view } = request;
   const response = await waterServiceUserConnector.getUserStatus(request.params.userId);
 
   const userStatus = response.data;
-  userStatus.totalLicenceCount = userStatus.companies.reduce((acc, company) => {
-    const licences = get(company, 'registeredLicences', []);
-    return acc + licences.length;
-  }, 0);
+  userStatus.unverifiedLicenceCount = getOutstandingVerificationLicenceCount(userStatus.companies);
+  userStatus.verifiedLicenceCount = getRegisteredLicenceCount(userStatus.companies);
+  userStatus.licenceCount = userStatus.unverifiedLicenceCount + userStatus.verifiedLicenceCount;
 
   const viewContext = Object.assign(view, { userStatus });
 

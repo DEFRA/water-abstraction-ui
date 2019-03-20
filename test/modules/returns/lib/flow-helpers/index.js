@@ -3,7 +3,7 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 
-const { scope } = require('../../../../src/lib/constants');
+const { scope } = require('../../../../../src/lib/constants');
 
 const {
   STEP_INTERNAL_ROUTING, STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
@@ -11,7 +11,7 @@ const {
   STEP_BASIS, STEP_QUANTITIES, STEP_METER_DETAILS, STEP_METER_UNITS,
   STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED, STEP_QUERY_LOGGED,
   getPath, getNextPath
-} = require('../../../../src/modules/returns/lib/flow-helpers');
+} = require('../../../../../src/modules/returns/lib/flow-helpers');
 
 const returnId = 'v1:123:456';
 

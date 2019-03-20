@@ -8,7 +8,7 @@ const returnPath = require('../../../../src/modules/returns/lib/return-path');
 const permissions = require('../../../../src/lib/permissions');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers.js');
 const forms = require('../../../../src/lib/forms');
-const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers.js');
+const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();
 

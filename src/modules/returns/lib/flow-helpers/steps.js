@@ -1,3 +1,5 @@
+const STEP_LICENCES = '/licences';
+const STEP_RETURNS = '/returns';
 const STEP_INTERNAL_ROUTING = '/return/internal';
 const STEP_LOG_RECEIPT = '/return/log-receipt';
 const STEP_RECEIPT_LOGGED = '/return/receipt-logged';
@@ -16,6 +18,8 @@ const STEP_CONFIRM = '/return/confirm';
 const STEP_SUBMITTED = '/return/submitted';
 
 module.exports = {
+  STEP_LICENCES,
+  STEP_RETURNS,
   STEP_INTERNAL_ROUTING,
   STEP_LOG_RECEIPT,
   STEP_RECEIPT_LOGGED,

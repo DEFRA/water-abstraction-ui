@@ -370,5 +370,4 @@ module.exports = {
     'POST handler for meter readings',
     'Abstraction return - enter meter readings'
   )
-
 };

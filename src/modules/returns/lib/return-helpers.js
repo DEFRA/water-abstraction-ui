@@ -198,6 +198,14 @@ const applyMeterDetails = (data, formValues) => {
   return set(clone, 'meters', [meter]);
 };
 
+const applyMeterDetailsProvided = (data, formValues) => {
+  const clone = cloneDeep(data);
+  const { meterDetailsProvided } = formValues;
+  const meter = meterDetailsProvided === true ? getMeter(data) : {};
+  meter.meterDetailsProvided = meterDetailsProvided;
+  return set(clone, 'meters', [meter]);
+};
+
 const applyMeterUnits = (data, formValues) => {
   const { units } = formValues;
   if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
@@ -372,6 +380,20 @@ const getLinesWithReadings = (data) => {
   });
 };
 
+/**
+ * Applies the recieved date
+ * @param {Object} data - current return model data
+ * @param {Object} formValues - data collected from form
+ * @return {Object} new return model state
+ */
+const applyReceivedDate = (data, formValues) => {
+  return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
+};
+
+const applySingleTotalDates = (data, formValues) => {
+  return data;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
@@ -391,5 +413,8 @@ module.exports = {
   applyMethod,
   getMeter,
   getLinesWithReadings,
-  applyUnderQuery
+  applyUnderQuery,
+  applyReceivedDate,
+  applyMeterDetailsProvided,
+  applySingleTotalDates
 };

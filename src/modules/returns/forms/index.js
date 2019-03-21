@@ -4,12 +4,20 @@ const { meterDetailsForm, meterDetailsSchema } = require('./meter-details');
 const meterUnitsForm = require('./meter-units');
 const { meterReadingsForm, meterReadingsSchema } = require('./meter-readings');
 const { internalRoutingForm } = require('./internal-routing');
+const { internalMethodForm } = require('./internal-method');
 const { logReceiptForm, logReceiptSchema } = require('./log-receipt');
+const { meterDetailsProvidedForm } = require('./meter-details-provided');
+const {
+  singleTotalAbstractionPeriodForm,
+  singleTotalAbstractionPeriodSchema
+} = require('./single-total-abstraction-period');
+const { returnReceivedForm } = require('./return-received');
 
 module.exports = {
   amountsForm: require('./amounts'),
   confirmForm: require('./confirm'),
   methodForm: require('./method'),
+  internalMethodForm,
   singleTotalForm,
   singleTotalSchema,
   unitsForm: require('./units'),
@@ -23,5 +31,9 @@ module.exports = {
   meterResetForm: require('./meter-reset'),
   internalRoutingForm,
   logReceiptForm,
-  logReceiptSchema
+  logReceiptSchema,
+  meterDetailsProvidedForm,
+  singleTotalAbstractionPeriodForm,
+  singleTotalAbstractionPeriodSchema,
+  returnReceivedForm
 };

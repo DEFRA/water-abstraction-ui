@@ -9,15 +9,17 @@ const { STEP_INTERNAL_ROUTING, getPath } = require('../lib/flow-helpers');
 const getChoices = (data) => {
   const choices = [];
 
-  // Only add option to log receipt of form if not yet received
-  if (data.receivedDate === null) {
-    choices.push({ value: 'log_receipt', label: 'Record receipt (and come back to it later)' });
-  }
-  choices.push({ value: 'submit', label: 'Enter and submit it' });
+  choices.push({ value: 'submit', label: 'Enter and submit' });
+
   if (data.isUnderQuery === true) {
     choices.push({ value: 'clear_under_query', label: 'Resolve query' });
   } else {
-    choices.push({ value: 'set_under_query', label: 'Record as under query' });
+    choices.push({ value: 'set_under_query', label: 'Record under query' });
+  }
+
+  // Only add option to log receipt of form if not yet received
+  if (data.receivedDate === null) {
+    choices.push({ value: 'log_receipt', label: 'Record receipt' });
   }
 
   return choices;

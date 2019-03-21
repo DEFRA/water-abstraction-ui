@@ -4,11 +4,12 @@ const sinon = require('sinon');
 const controller = require('../../../../src/modules/returns/controllers/edit');
 const { returns } = require('../../../../src/lib/connectors/water');
 const helpers = require('../../../../src/modules/returns/lib/helpers.js');
+const { scope: { internal, external } } = require('../../../../src/lib/constants.js');
 const returnPath = require('../../../../src/modules/returns/lib/return-path');
 const permissions = require('../../../../src/lib/permissions');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers.js');
 const forms = require('../../../../src/lib/forms');
-const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers.js');
+const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();
 
@@ -34,7 +35,7 @@ const returnLines = {
   csrfToken
 };
 
-const createRequest = (isInternal, isNil, internal, external) => {
+const createRequest = (isInternal, isNil) => {
   return {
     view: {
       csrfToken
@@ -163,10 +164,7 @@ const createRequest = (isInternal, isNil, internal, external) => {
         username: userName,
         entity_id: entityId,
         companyId,
-        scope: [{
-          internal,
-          external
-        }]
+        scope: [ isInternal ? internal : external ]
       }
     }
   };
@@ -446,7 +444,8 @@ experiment('edit controller', () => {
 
   experiment('getSingleTotal', () => {
     test('it should take you to water/returns/internal/form page with returns data', async () => {
-      const request = createRequest();
+      permissions.isInternal.returns(true);
+      const request = createRequest(true);
 
       await controller.getSingleTotal(request, h);
       const [template, view] = h.view.lastCall.args;
@@ -455,6 +454,7 @@ experiment('edit controller', () => {
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_SINGLE_TOTAL, request and request.returns.data', async () => {
+      permissions.isInternal.returns(true);
       const request = createRequest();
 
       await controller.getSingleTotal(request, h);
@@ -466,6 +466,7 @@ experiment('edit controller', () => {
 
   experiment('postSingleTotal', () => {
     test('it should call getNextPath with STEP_SINGLE_TOTAL, request', async () => {
+      permissions.isInternal.returns(true);
       forms.handleRequest.returns({ isValid: true });
       forms.getValues.returns({ isSingleTotal: false, total: 8577 });
 

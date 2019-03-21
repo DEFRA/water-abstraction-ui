@@ -19,13 +19,14 @@ const {
 const licenceNumbers = ['01/123', '02/456'];
 
 experiment('getPaperFormFilter', () => {
-  test('returns a valid filter object', async () => {
-    const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
+  test('returns a valid filter object with date range current return cycle', async () => {
+    const filter = getPaperFormFilter(licenceNumbers, '2019-03-31');
     expect(filter).to.equal({
       status: {
         $in: ['due', 'completed']
       },
-      end_date: { $gt: '2017-09-25' },
+      start_date: { $gte: '2018-04-01' },
+      end_date: { $lte: '2019-03-31' },
       licence_ref: { $in: licenceNumbers }
     });
   });
@@ -46,7 +47,7 @@ experiment('buildRequest', () => {
   });
 
   test('calls the preview API when send flag false', async () => {
-    const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
+    const filter = getPaperFormFilter(licenceNumbers, '2018-10-31');
     const request = buildRequest(filter, 'mail@example.com', 'Test notification', 'pdf.test', false);
 
     expect(request).to.equal({
@@ -58,8 +59,11 @@ experiment('buildRequest', () => {
           status: {
             $in: ['due', 'completed']
           },
+          start_date: {
+            $gte: '2017-11-01'
+          },
           end_date: {
-            $gt: '2017-09-25'
+            $lte: '2018-10-31'
           },
           licence_ref: {
             $in: ['01/123', '02/456']
@@ -73,7 +77,7 @@ experiment('buildRequest', () => {
   });
 
   test('calls the send API when send flag true', async () => {
-    const filter = getPaperFormFilter(licenceNumbers, '2018-09-25');
+    const filter = getPaperFormFilter(licenceNumbers, '2019-10-31');
     const request = buildRequest(filter, 'mail@example.com', 'Test notification', 'pdf.test', true);
 
     expect(request).to.equal({
@@ -85,8 +89,11 @@ experiment('buildRequest', () => {
           status: {
             $in: ['due', 'completed']
           },
+          start_date: {
+            $gte: '2018-11-01'
+          },
           end_date: {
-            $gt: '2017-09-25'
+            $lte: '2019-10-31'
           },
           licence_ref: {
             $in: ['01/123', '02/456']

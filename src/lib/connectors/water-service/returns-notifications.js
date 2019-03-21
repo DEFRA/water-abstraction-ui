@@ -1,8 +1,9 @@
-const moment = require('moment');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
+const { last } = require('lodash');
+const helpers = require('@envage/water-abstraction-helpers');
 
 /**
  * Calls the returns notifications API and either previews or sends a message
@@ -39,13 +40,18 @@ const buildRequest = (filter, issuer, name, messageRef, isSending = false) => {
  * @return {Object} filter
  */
 const getPaperFormFilter = (licenceNumbers, refDate) => {
-  const minEndDate = moment(refDate).subtract(1, 'years').format('YYYY-MM-DD');
+  const cycles = helpers.returns.date.createReturnCycles('2017-11-01', refDate);
+  const currentCycle = last(cycles);
+
   return {
     status: {
       $in: ['due', 'completed']
     },
+    start_date: {
+      $gte: currentCycle.startDate
+    },
     end_date: {
-      $gt: minEndDate
+      $lte: currentCycle.endDate
     },
     licence_ref: {
       $in: licenceNumbers

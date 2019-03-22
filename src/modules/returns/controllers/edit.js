@@ -11,7 +11,6 @@ const logger = require('../../../lib/logger');
 const {
   amountsForm, methodForm, confirmForm, unitsForm,
   singleTotalForm, singleTotalSchema,
-  basisForm, basisSchema,
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
   meterUnitsForm, meterReadingsForm, meterReadingsSchema
@@ -20,7 +19,7 @@ const {
 const { returns } = require('../../../lib/connectors/water');
 
 const {
-  applySingleTotal, applyBasis, applyQuantities,
+  applySingleTotal, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
   getLinesWithReadings, applyStatus, applyUnderQuery
@@ -275,6 +274,7 @@ const postSingleTotal = async (request, h) => {
 /**
  * What is the basis for the return - amounts/pump/herd
  */
+/*
 const getBasis = async (request, h) => {
   const { data, view } = request.returns;
 
@@ -285,10 +285,12 @@ const getBasis = async (request, h) => {
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_BASIS, request, data)
   });
 };
+*/
 
 /**
  * Post handler for basis form
  */
+/*
 const postBasis = async (request, h) => {
   const { data, view } = request.returns;
   const form = forms.handleRequest(basisForm(request, data), request, basisSchema);
@@ -306,6 +308,7 @@ const postBasis = async (request, h) => {
     return: data
   });
 };
+*/
 
 /**
  * Screen for user to enter quantities
@@ -466,8 +469,6 @@ module.exports = {
   postUnits,
   getSingleTotal,
   postSingleTotal,
-  getBasis,
-  postBasis,
   getQuantities,
   postQuantities,
   getConfirm,

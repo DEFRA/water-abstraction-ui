@@ -6,10 +6,10 @@ const { experiment, test } = exports.lab = Lab.script();
 const { scope } = require('../../../../../src/lib/constants');
 
 const {
-  STEP_INTERNAL_ROUTING, STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
-  STEP_START, STEP_NIL_RETURN, STEP_METHOD, STEP_UNITS, STEP_SINGLE_TOTAL,
+  STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
+  STEP_START, STEP_NIL_RETURN, STEP_METHOD, STEP_UNITS,
   STEP_BASIS, STEP_QUANTITIES, STEP_METER_DETAILS, STEP_METER_UNITS,
-  STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED, STEP_QUERY_LOGGED,
+  STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED,
   getPath, getNextPath
 } = require('../../../../../src/modules/returns/lib/flow-helpers');
 
@@ -49,38 +49,6 @@ experiment('getPath', () => {
     const request = getRequest(true);
     const data = { returnId };
     expect(getPath('/return', request, data)).to.equal(`/admin/return?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_INTERNAL_ROUTING', () => {
-  const request = getRequest(true);
-
-  test('Redirects to log receipt if option selected', async () => {
-    const data = {
-      action: 'log_receipt'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_LOG_RECEIPT}?returnId=${returnId}`);
-  });
-
-  test('Redirects to enter return if option selected', async () => {
-    const data = {
-      action: 'submit'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_START}?returnId=${returnId}`);
-  });
-
-  test('Redirects to problem logged if option selected', async () => {
-    const data = {
-      action: 'set_under_query'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
-  });
-
-  test('Redirects to problem logged if option selected', async () => {
-    const data = {
-      action: 'clear_under_query'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
   });
 });
 
@@ -154,14 +122,6 @@ experiment('getNextPath: STEP_UNITS', () => {
       returnId
     };
     expect(getNextPath(STEP_UNITS, request, data)).to.equal(`${STEP_BASIS}?returnId=${returnId}`);
-  });
-
-  test('Redirects to single total if internal user', async () => {
-    const request = getRequest(true);
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_UNITS, request, data)).to.equal(`/admin${STEP_SINGLE_TOTAL}?returnId=${returnId}`);
   });
 });
 

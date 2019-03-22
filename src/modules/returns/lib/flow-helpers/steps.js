@@ -13,10 +13,10 @@ const STEP_METER_DETAILS_PROVIDED = '/return/meter/details-provided';
 const STEP_METER_DETAILS = '/return/meter/details';
 const STEP_METER_UNITS = '/return/meter/units';
 const STEP_METER_READINGS = '/return/meter/readings';
+const STEP_METER_ROLLOVER = '/return/meter/rollover';
 const STEP_UNITS = '/return/units';
 const STEP_SINGLE_TOTAL = '/return/single-total';
 const STEP_SINGLE_TOTAL_DATES = '/return/single-total-dates';
-const STEP_BASIS = '/return/basis';
 const STEP_QUANTITIES = '/return/quantities';
 const STEP_CONFIRM = '/return/confirm';
 const STEP_SUBMITTED = '/return/submitted';
@@ -35,12 +35,12 @@ module.exports = {
   STEP_UNITS,
   STEP_SINGLE_TOTAL,
   STEP_SINGLE_TOTAL_DATES,
-  STEP_BASIS,
   STEP_QUANTITIES,
   STEP_METER_DETAILS_PROVIDED,
   STEP_METER_DETAILS,
   STEP_METER_UNITS,
   STEP_METER_READINGS,
+  STEP_METER_ROLLOVER,
   STEP_CONFIRM,
   STEP_SUBMITTED,
   STEP_QUERY_LOGGED

@@ -57,7 +57,7 @@ experiment('buildRequest', () => {
       body: {
         filter: {
           status: {
-            $in: ['due', 'completed']
+            $in: ['due', 'completed', 'received']
           },
           start_date: {
             $gte: '2017-11-01'
@@ -87,7 +87,7 @@ experiment('buildRequest', () => {
       body: {
         filter: {
           status: {
-            $in: ['due', 'completed']
+            $in: ['due', 'completed', 'received']
           },
           start_date: {
             $gte: '2018-11-01'

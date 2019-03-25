@@ -16,6 +16,7 @@ const data = {
 };
 
 const createFormValues = (jan, feb, mar, apr) => ({
+  'startReading': 10,
   '2017-01-01_2017-01-31': jan,
   '2017-02-01_2017-02-28': feb,
   '2017-03-01_2017-03-30': mar,

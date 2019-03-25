@@ -5,7 +5,7 @@ const {
   STEP_METHOD,
   STEP_UNITS,
   STEP_QUANTITIES,
-  STEP_METER_ROLLOVER,
+  STEP_METER_RESET,
   STEP_METER_DETAILS,
   STEP_METER_UNITS,
   STEP_METER_READINGS,
@@ -23,9 +23,9 @@ const next = {
   },
   [STEP_NIL_RETURN]: () => STEP_SUBMITTED,
   [STEP_METHOD]: data => {
-    return isOneMeter(data) ? STEP_METER_ROLLOVER : STEP_UNITS;
+    return isOneMeter(data) ? STEP_METER_RESET : STEP_UNITS;
   },
-  [STEP_METER_ROLLOVER]: () => STEP_UNITS,
+  [STEP_METER_RESET]: () => STEP_UNITS,
   [STEP_UNITS]: data => {
     return isVolumes(data) ? STEP_QUANTITIES : STEP_METER_READINGS;
   },
@@ -42,9 +42,9 @@ const previous = {
   [STEP_START]: () => STEP_RETURNS,
   [STEP_NIL_RETURN]: () => STEP_START,
   [STEP_METHOD]: () => STEP_START,
-  [STEP_METER_ROLLOVER]: () => STEP_METHOD,
+  [STEP_METER_RESET]: () => STEP_METHOD,
   [STEP_UNITS]: data => {
-    return isOneMeter(data) ? STEP_METER_ROLLOVER : STEP_METHOD;
+    return isOneMeter(data) ? STEP_METER_RESET : STEP_METHOD;
   },
   [STEP_QUANTITIES]: () => STEP_UNITS,
   [STEP_CONFIRM]: data => {

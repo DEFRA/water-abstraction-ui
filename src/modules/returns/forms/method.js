@@ -7,20 +7,31 @@ const methodForm = (request, data) => {
   const action = getPath(STEP_METHOD, request);
 
   const method = get(data, 'reading.method');
+  const type = get(data, 'reading.type');
 
   const f = formFactory(action);
 
+  f.fields.push(fields.paragraph(null, {
+    text: 'How are you reporting your figures?',
+    element: 'h2',
+    controlClass: 'heading-medium'
+  }));
+
+  f.fields.push(fields.paragraph(null, {
+    text: 'If you used more than one meter you must provide volumes'
+  }));
+
   f.fields.push(fields.radio('method', {
-    label: 'How are you reporting your return?',
     errors: {
       'any.required': {
         message: 'Select readings from one meter, or other (abstraction volumes)'
       }
     },
     choices: [
-      { value: 'oneMeter', label: 'Readings from one meter' },
-      { value: 'abstractionVolumes', label: 'Other', hint: 'Use abstraction volumes' }
-    ]}, method));
+      { value: 'oneMeter,measured', label: 'Readings from a single meter' },
+      { value: 'abstractionVolumes,measured', label: 'Volumes from one or more meters' },
+      { value: 'abstractionVolumes,estimated', label: 'Estimates without a meter' }
+    ] }, `${method},${type}`));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

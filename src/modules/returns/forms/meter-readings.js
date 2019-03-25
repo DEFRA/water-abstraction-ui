@@ -1,9 +1,23 @@
 const Joi = require('joi');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
-const { get } = require('lodash');
+const { get, set } = require('lodash');
 const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
-const { getSuffix } = require('../lib/helpers');
+
+const getStartReadingInput = () => {
+  return fields.text('startReading', {
+    label: 'Start reading (before you began abstracting in this period)',
+    autoComplete: false,
+    mapper: 'numberMapper',
+    type: 'number',
+    controlClass: 'form-control form-control--reading',
+    errors: {
+      'number.base': { message: 'Enter a meter start reading' },
+      'any.required': { message: 'Enter a meter start reading' },
+      'number.positive': { message: 'This number should be positive' }
+    }
+  });
+};
 
 const getLineTextInput = (line, suffix) => {
   const name = getLineName(line);
@@ -13,17 +27,16 @@ const getLineTextInput = (line, suffix) => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
-    suffix,
     controlClass: 'form-control form-control--reading',
     errors: {
       'number.min': {
-        message: 'Reading must be equal to or greater than the previous reading'
+        message: 'Each meter reading should be higher than or equal to the last'
       },
       'number.startReading': {
-        message: 'Reading must be equal to or greater than the start reading'
+        message: 'Reading should be higher than or equal to the start reading'
       },
       'number.lastReading': {
-        message: 'Reading must be equal to or greater than the previous reading'
+        message: 'Each meter reading should be higher than or equal to the last'
       }
     }
   });
@@ -35,22 +48,27 @@ const form = (request, data) => {
   const action = getPath(STEP_METER_READINGS, request);
 
   const f = formFactory(action);
+  f.fields.push(fields.paragraph(null, {
+    text: 'Enter your readings exactly as they appear on your meter.',
+    controlClass: 'text-medium'
+  }));
 
-  const suffix = getSuffix(data.reading.units);
+  f.fields.push(getStartReadingInput());
 
   const lines = getFormLines(data);
 
   // add a text field for each required meter reading
-  lines.forEach(line => f.fields.push(getLineTextInput(line, suffix)));
+  lines.forEach(line => f.fields.push(getLineTextInput(line)));
 
   f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   const readings = getMeter(data).readings || {};
+  set(readings, 'startReading', get(data, 'meters[0].startReading'));
   return setValues(f, readings);
 };
 
-const getStartReading = data => get(data, 'meters[0].startReading', 0);
+const getStartReading = data => get(data, 'startReading', 0) || 0;
 
 const getMeterReadingValidator = (type, minValue) => Joi
   .number()
@@ -82,11 +100,12 @@ const getRecentReadingValidator = getMeterReadingValidator.bind(
  */
 const schema = (data, internalData) => {
   const baseSchema = {
-    csrf_token: Joi.string().guid().required()
+    csrf_token: Joi.string().guid().required(),
+    startReading: Joi.number().positive().allow(0).required()
   };
 
   const lines = getFormLines(data);
-  const startValidator = getStartReadingValidator(data);
+  const startValidator = getStartReadingValidator(internalData);
   let lastReading = false;
 
   return lines.reduce((acc, line, currentIndex) => {

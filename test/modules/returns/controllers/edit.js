@@ -20,6 +20,7 @@ const csrfToken = 'csrf';
 const returnId = 'v1:1:01/123:4567:2017-11-01:2018-10-31';
 const documentHeaders = ['documentHeader_1', 'documentHeader_2'];
 const returnLines = {
+  startReading: 45,
   '2017-11-01_2017-11-30': 60,
   '2017-12-01_2017-12-31': 65,
   '2018-01-01_2018-01-31': 78,
@@ -60,6 +61,7 @@ const createRequest = (isInternal, isNil) => {
             multiplier: 1,
             units: 'm³',
             readings: {
+              startReading: 58,
               '2017-11-01_2017-11-30': 60,
               '2017-12-01_2017-12-31': 65,
               '2018-01-01_2018-01-31': 78,
@@ -687,6 +689,50 @@ experiment('edit controller', () => {
       const request = createRequest();
 
       await controller.postMeterUnits(request, h);
+      const [template, view] = h.view.lastCall.args;
+
+      expect(template).to.equal('water/returns/internal/form');
+      expect(view.return).to.equal(request.returns.data);
+    });
+  });
+
+  experiment('getMeterReset', () => {
+    test('it should take you to water/returns/internal/form page with returns data', async () => {
+      const request = createRequest();
+
+      await controller.getMeterReset(request, h);
+      const [template, view] = h.view.lastCall.args;
+
+      expect(template).to.equal('water/returns/internal/form');
+      expect(view.return).to.equal(request.returns.data);
+    });
+    test('it should call getPreviousPath with STEP_METER_RESET, request and request.returns.data', async () => {
+      const request = createRequest();
+
+      await controller.getMeterReset(request, h);
+      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_METER_RESET, request, request.returns.data);
+
+      expect(getPreviousPathCalled).to.be.true();
+    });
+  });
+
+  experiment('postMeterReset', () => {
+    test('it should call getNextPath with STEP_METER_RESET, request', async () => {
+      forms.handleRequest.returns({ isValid: true });
+      forms.getValues.returns({ units: 'm³' });
+
+      const request = createRequest();
+
+      await controller.postMeterReset(request, h);
+      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_RESET, request);
+
+      expect(getNextPathCalled).to.be.true();
+    });
+    test('it should keep you on the same page if form is not valid', async () => {
+      forms.handleRequest.returns({ isValid: false });
+      const request = createRequest();
+
+      await controller.postMeterReset(request, h);
       const [template, view] = h.view.lastCall.args;
 
       expect(template).to.equal('water/returns/internal/form');

@@ -1,0 +1,88 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>You can let others view your licence information.
+         You can also allow them to complete your returns on your behalf.
+         You will be able to remove their access at any time.</p>
+      </p>
+
+      {{ govukWarningText({
+        text: "You will still be legally responsible for your returns",
+        iconFallbackText: "Warning"
+      }) }}
+
+
+      {{ govukButton({
+        href:"/manage_licences/add_access",
+        text: "Give access"
+      }) }}
+
+    </div>
+  </div>
+
+{% if licenceAccess.length %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Permission to access</th>
+        <th class="govuk-table__header" scope="col">Date</th>
+        <th class="govuk-table__header" scope="col">Manage returns</th>
+        <td class="govuk-table__header"></td>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+
+      {% for row in licenceAccess %}
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell" scope="row">{{ row.name }}</td>
+        <td class="govuk-table__cell">{{ row.createdAt | date }}</td>
+        <td class="govuk-table__cell">{{ 'Yes' if row.hasReturns }}</td>
+        <td class="govuk-table__cell">
+          <a href="/manage_licences/access/{{row.colleagueEntityID}}/change"
+             aria-hidden="false"
+             aria-label="Change access for {{ row.name }}"
+             title="Change access for {{row.name }}">Change</a>
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+
+  <div class="phone--show">
+    <br />
+    <h2 class="govuk-heading-m">Permission to access</h2>
+  {% for row in licenceAccess %}
+  <div>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1">
+      {{ row.name }}
+    </h3>
+    <p>
+      Access granted on {{ row.createdAt | date }}
+      <br />
+      {% if row.hasReturns %}
+      Can view licence details and submit returns
+      {% else %}
+      Can view licence details
+      {% endif %}
+
+
+      <br /><a href="/manage_licences/access/{{ row.colleagueEntityID }}/change" aria-hidden="false"
+         aria-label="Change access for {{ row.name }}" title="Change access for {{ row.name }}">Change</a>
+    </p>
+  </div>
+  {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}

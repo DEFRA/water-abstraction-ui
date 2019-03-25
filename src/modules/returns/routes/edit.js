@@ -333,39 +333,39 @@ module.exports = {
     }
   },
 
-  getEstimatesBasis: {
+  getMeterReset: {
     method: 'GET',
-    path: '/return/estimates/basis',
-    handler: controller.getEstimatesBasis,
+    path: '/return/meter/reset',
+    handler: controller.getMeterReset,
     options: {
       auth: {
         scope: allowedScopes
       },
-      description: 'Get basis of abstraction volumes for estimated return',
+      description: 'Find out if meter has reset or rolled over',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - reporting without a meter',
-          activeNavLink: 'returns'
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
+          activeNavLink: 'returns',
+          showMeta: true
         },
         returns: true
       }
     }
   },
 
-  posttEstimatesBasis: {
+  postMeterReset: {
     method: 'POST',
-    path: '/return/estimates/basis',
-    handler: controller.postEstimatesBasis,
+    path: '/return/meter/reset',
+    handler: controller.postMeterReset,
     options: {
       auth: {
         scope: allowedScopes
       },
-      description: 'Post handler for estimates basis form',
+      description: 'Post handler for meter reset routing',
       plugins: {
         viewContext: {
-          pageTitle: 'Abstraction return - reporting without a meter',
-          activeNavLink: 'returns',
-          showMeta: true
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
+          activeNavLink: 'returns'
         },
         returns: true
       }

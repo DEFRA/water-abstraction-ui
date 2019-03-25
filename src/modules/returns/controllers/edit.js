@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { get, set } = require('lodash');
+const { get, set, findLastKey } = require('lodash');
 const Boom = require('boom');
 const forms = require('../../../lib/forms');
 const logger = require('../../../lib/logger');
@@ -15,7 +15,7 @@ const {
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
   meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  estimateBasisForm
+  meterResetForm
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -24,7 +24,8 @@ const {
   applySingleTotal, applyBasis, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
-  getLinesWithReadings, applyStatus, applyUnderQuery
+  getLinesWithReadings, applyStatus, applyUnderQuery,
+  applyMeterReset
 } = require('../lib/return-helpers');
 
 const returnPath = require('../lib/return-path');
@@ -184,7 +185,7 @@ const postMethod = async (request, h) => {
     const { method } = forms.getValues(form);
     const d = applyMethod(data, method);
     sessionHelpers.saveSessionData(request, d);
-    console.log(d);
+
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
   }
 
@@ -210,7 +211,7 @@ const getUnits = async (request, h) => {
 };
 
 /**
- * Post handler for units form
+ * Post handler for units form - deals with Volumes or Estimates
  */
 const postUnits = async (request, h) => {
   const { data, view } = request.returns;
@@ -221,7 +222,6 @@ const postUnits = async (request, h) => {
     const { units } = forms.getValues(form);
     const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
     const readingType = isVolumes ? 'measured' : 'estimated';
-    console.log('reading.method', data.reading.method);
 
     set(data, 'reading.units', units);
     set(data, 'reading.type', readingType);
@@ -356,13 +356,18 @@ const getConfirm = async (request, h) => {
   const lines = getLinesWithReadings(data);
   const form = confirmForm(request, data, `/return/confirm`);
 
+  const isReadings = get(data, 'reading.method') === 'oneMeter';
+  const endReadingKey = findLastKey(get(data, 'meters[0].readings'), key => key > 0);
+
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
     lines,
     form,
     total: helpers.getReturnTotal(data),
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data)
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data),
+    makeChangePath: isReadings ? '/return/meter/readings' : 'return/quantities',
+    endReading: get(data, `meters[0].readings.${endReadingKey}`)
   });
 };
 
@@ -384,8 +389,6 @@ const postMeterDetails = async (request, h) => {
   if (form.isValid) {
     const d = applyMeterDetails(data, forms.getValues(form));
     sessionHelpers.saveSessionData(request, d);
-
-    console.log(d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_DETAILS, request, d));
   }
@@ -414,9 +417,39 @@ const postMeterUnits = async (request, h) => {
 
   if (form.isValid) {
     const d = applyMeterUnits(data, forms.getValues(form));
+
     sessionHelpers.saveSessionData(request, d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_UNITS, request, d));
+  }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const getMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form: meterResetForm(request, data),
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
+  });
+};
+
+const postMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+  const form = forms.handleRequest(meterResetForm(request, data), request);
+
+  if (form.isValid) {
+    const d = applyMeterReset(data, forms.getValues(form));
+    sessionHelpers.saveSessionData(request, d);
+
+    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
   }
 
   return h.view('water/returns/internal/form', {
@@ -447,7 +480,7 @@ const postMeterReadings = async (request, h) => {
   // schema to cater for checking if the readings are not lower than
   // previous readings.
   const internalData = forms.importData(readingsForm, request.payload);
-  console.log('internalData', internalData);
+
   const schema = meterReadingsSchema(data, internalData);
 
   const form = forms.handleRequest(readingsForm, request, schema);
@@ -459,39 +492,6 @@ const postMeterReadings = async (request, h) => {
   }
 
   return h.view('water/returns/meter-readings', {
-    ...view,
-    form,
-    return: data
-  });
-};
-
-const getEstimatesBasis = async (request, h) => {
-  const { view, data } = request.returns;
-
-  console.log(data);
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: estimateBasisForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_ESTIMATE_BASIS, request, data)
-  });
-};
-
-const postEstimatesBasis = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(forms.setValues(estimateBasisForm(request), data), request);
-
-  if (form.isValid) {
-    // NEED TO CREATE APPLY FUNCTION
-    // sessionHelpers.saveSessionData(request, d);
-    //
-    // const path = flowHelpers.getNextPath(flowHelpers.STEP_ESTIMATE_BASIS, request, d);
-
-    // return h.redirect(path);
-  }
-
-  return h.view('water/returns/internal/form', {
     ...view,
     form,
     return: data
@@ -519,8 +519,8 @@ module.exports = {
   postMeterDetails,
   getMeterUnits,
   postMeterUnits,
+  getMeterReset,
+  postMeterReset,
   getMeterReadings,
-  postMeterReadings,
-  getEstimatesBasis,
-  postEstimatesBasis
+  postMeterReadings
 };

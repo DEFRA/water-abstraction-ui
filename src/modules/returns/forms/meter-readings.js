@@ -1,9 +1,8 @@
 const Joi = require('joi');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
-const { get } = require('lodash');
+const { get, set } = require('lodash');
 const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
-const { getSuffix } = require('../lib/helpers');
 
 const getStartReadingInput = () => {
   return fields.text('startReading', {
@@ -31,13 +30,13 @@ const getLineTextInput = (line, suffix) => {
     controlClass: 'form-control form-control--reading',
     errors: {
       'number.min': {
-        message: 'Each meter reading should be higher than the last'
+        message: 'Each meter reading should be higher than or equal to the last'
       },
       'number.startReading': {
-        message: 'Reading should be higher than the start reading'
+        message: 'Reading should be higher than or equal to the start reading'
       },
       'number.lastReading': {
-        message: 'Each meter reading should be higher than the last'
+        message: 'Each meter reading should be higher than or equal to the last'
       }
     }
   });
@@ -65,10 +64,11 @@ const form = (request, data) => {
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   const readings = getMeter(data).readings || {};
+  set(readings, 'startReading', get(data, 'meters[0].startReading'));
   return setValues(f, readings);
 };
 
-const getStartReading = data => get(data, 'startReading');
+const getStartReading = data => get(data, 'startReading', 0) || 0;
 
 const getMeterReadingValidator = (type, minValue) => Joi
   .number()
@@ -100,13 +100,14 @@ const getRecentReadingValidator = getMeterReadingValidator.bind(
  */
 const schema = (data, internalData) => {
   const baseSchema = {
-    csrf_token: Joi.string().guid().required()
+    csrf_token: Joi.string().guid().required(),
+    startReading: Joi.number().positive().allow(0).required()
   };
 
   const lines = getFormLines(data);
   const startValidator = getStartReadingValidator(internalData);
   let lastReading = false;
-  console.log('startValidator', startValidator);
+
   return lines.reduce((acc, line, currentIndex) => {
     const name = getLineName(line);
     const validator = (currentIndex === 0 || lastReading === false)

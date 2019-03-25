@@ -23,7 +23,7 @@ module.exports = {
   meterUnitsForm,
   meterReadingsForm,
   meterReadingsSchema,
-  estimateBasisForm: require('./estimate'),
+  meterResetForm: require('./meter-reset'),
   internalRoutingForm,
   logReceiptForm,
   logReceiptSchema

@@ -342,7 +342,7 @@ experiment('internal returns controller', () => {
     });
   });
 
-  experiment('getSingleTotalAbstractionDates', () => {
+  experiment('getSingleTotalAbstractionPeriod', () => {
     let h;
     let request;
 
@@ -361,7 +361,7 @@ experiment('internal returns controller', () => {
 
       h = { view: sandbox.stub() };
 
-      await controller.getSingleTotalAbstractionDates(request, h);
+      await controller.getSingleTotalAbstractionPeriod(request, h);
     });
 
     test('uses the default form view', async () => {
@@ -373,72 +373,5 @@ experiment('internal returns controller', () => {
       const [, data] = h.view.lastCall.args;
       expect(data.back).to.equal('/admin/return/single-total?returnId=test-return-id');
     });
-  });
-
-  experiment('postSingleTotalAbstractionDates', () => {
-    let h;
-    let request;
-
-    beforeEach(async () => {
-      request = {
-        returns: {
-          data: {
-            requiredLines: [
-              { startDate: '2018-01-01', endDate: '2018-02-01' },
-              { startDate: '2018-02-01', endDate: '2018-03-01' }
-            ]
-          },
-          view: {}
-        },
-        query: { returnId: 'test-return-id' },
-        view: { csrfToken: 'test' },
-        auth: {
-          credentials: { scope: 'internal' }
-        },
-        payload: {
-          totalCustomDates: true,
-          csrf_token: 'test'
-        }
-      };
-
-      h = {
-        view: sandbox.stub(),
-        redirect: sandbox.stub()
-      };
-    });
-
-    experiment('for a valid request', () => {
-      beforeEach(async () => {
-        await controller.postSingleTotalAbstractionPeriod(request, h);
-      });
-
-      test.only('the expected data is saved to session', async () => {
-        const [, data] = sessionHelpers.saveSessionData.lastCall.args;
-        expect(data.test).to.equal(true);
-      });
-
-      // test('user is redirected to the next step', async () => {
-      //   const [redirectUrl] = h.redirect.lastCall.args;
-      //   expect(redirectUrl).to.equal('/admin/return/meter/details?returnId=test-return-id');
-      // });
-    });
-
-    // experiment('for an invalid request', () => {
-    //   beforeEach(async () => {
-    //     request.payload.totalCustomDates = true;
-    //     request.payload.totalCustomDateStart = '';
-    //     request.payload.totalCustomDateEnd = '';
-    //     await controller.postSingleTotalAbstractionDates(request, h);
-    //   });
-
-    //   test('the data is not saved to session', async () => {
-    //     expect(sessionHelpers.saveSessionData.called).to.be.false();
-    //   });
-
-    //   test('the view is shown again', async () => {
-    //     const [view] = h.view.lastCall.args;
-    //     expect(view).to.equal('water/returns/internal/form');
-    //   });
-    // });
   });
 });

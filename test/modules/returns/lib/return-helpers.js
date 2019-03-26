@@ -8,7 +8,7 @@ const { expect } = require('code');
 const testReturn = require('./test-return');
 
 const {
-  isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
+  isDateWithinAbstractionPeriod, applySingleTotal,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
   applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset,
@@ -89,11 +89,6 @@ experiment('Return reducers', () => {
         endDate: '2018-01-31',
         period: 'month',
         quantity: 50 } ]);
-  });
-
-  test('applyBasis should set the estimated/measured property', async () => {
-    const data = applyBasis(testReturn, { basis: 'estimated' });
-    expect(data.reading.type).to.equal('estimated');
   });
 
   test('applyQuantities should set the lines array', async () => {
@@ -208,7 +203,6 @@ experiment('applyMeterDetails', () => {
     formValues = {
       manufacturer: 'test-manufacturer',
       serialNumber: 'test-serial',
-      startReading: 1544,
       csrf_token: 'c7c72434-5844-4827-25d5-6dac3c31136d'
     };
     data = applyMeterDetails({}, formValues);
@@ -220,10 +214,6 @@ experiment('applyMeterDetails', () => {
 
   test('adds the serial number', async () => {
     expect(data.meters[0].serialNumber).to.equal('test-serial');
-  });
-
-  test('adds the start reading number', async () => {
-    expect(data.meters[0].startReading).to.equal(1544);
   });
 
   test('sets multiplier to 1 if undefined', async () => {

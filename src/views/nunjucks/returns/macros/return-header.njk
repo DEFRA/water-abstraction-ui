@@ -1,0 +1,84 @@
+{% from "../../macros/title.njk" import title %}
+
+{% macro returnHeader(return, documentHeader, showMeta) %}
+  {% if documentHeader.document_name %}
+    {{ title(documentHeader.document_name, 'Abstraction return for ' + documentHeader.system_external_id) }}
+  {% else %}
+    {{ title('Abstraction return for ' + documentHeader.system_external_id) }}
+  {% endif %}
+
+  {%if showMeta %}
+  <div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+  <dl class="meta">
+
+    {% if isAdmin %}
+
+    <div class="meta__row">
+    <dt class="meta__key">
+      Return reference
+    </dt>
+  </div>
+  <div class="meta__row">
+    <dd class="meta__value">
+      {{ return.metadata.nald.formatId }}
+    </dd>
+  </div>
+  <div class="meta__row">
+    <dt class="meta__key">
+      Region
+    </dt>
+    <dd class="meta__value">
+      {{ return.metadata.nald.regionCode }}
+    </dd>
+  </div>
+    {% endif %}
+    <div class="meta__row">
+      <dt class="meta__key">
+        Site description
+      </dt>
+      <dd class="meta__value">
+        {{ return.metadata.description }}
+      </dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">
+        Purpose
+      </dt>
+      <dd class="meta__value">
+        {% for purpose in return.metadata.purposes %}
+          {{ purpose.alias | titleCase }}
+          {{ purpose.tertiary.description if not purpose.alias }}
+        {% endfor %}
+      </dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">
+        Return period
+      </dt>
+      <dd class="meta__value">
+        {{ return.startDate | date }} to {{ return.endDate | date }}
+      </dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">
+        Abstraction period
+      </dt>
+      <dd class="meta__value">
+        {{ return.metadata.nald.periodStartDay | date('D') }}
+        {{ return.metadata.nald.periodStartMonth | date('MMMM') }}
+        to
+        {{ return.metadata.nald.periodEndDay | date('D') }}
+        {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
+      </dd>
+    </div>
+    </dl>
+
+  <p class="medium-space">
+    <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
+  </p>
+</div>
+
+  {%endif%}
+
+  {% endmacro %}

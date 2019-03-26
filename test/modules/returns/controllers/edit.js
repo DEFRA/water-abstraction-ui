@@ -219,7 +219,7 @@ experiment('edit controller', () => {
       await controller.getAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return.data).to.equal(returns.data);
     });
     test('it should call getPreviousPath with STEP_START, request and returns.data', async () => {
@@ -274,7 +274,7 @@ experiment('edit controller', () => {
       await controller.postAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
@@ -356,13 +356,13 @@ experiment('edit controller', () => {
   });
 
   experiment('getMethod', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMethod(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METHOD, request and request.returns.data', async () => {
@@ -393,19 +393,19 @@ experiment('edit controller', () => {
       await controller.postMethod(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_UNITS, request and request.returns.data', async () => {
@@ -437,20 +437,20 @@ experiment('edit controller', () => {
       await controller.postUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getSingleTotal', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       permissions.isInternal.returns(true);
       const request = createRequest(true);
 
       await controller.getSingleTotal(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_SINGLE_TOTAL, request and request.returns.data', async () => {
@@ -484,19 +484,19 @@ experiment('edit controller', () => {
       await controller.postSingleTotal(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getBasis', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getBasis(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_BASIS, request and request.returns.data', async () => {
@@ -528,19 +528,19 @@ experiment('edit controller', () => {
       await controller.postBasis(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getQuantities', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getQuantities(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_QUANTITIES, request and request.returns.data', async () => {
@@ -572,13 +572,13 @@ experiment('edit controller', () => {
       await controller.postQuantities(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getConfirm', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getConfirm(request, h);
@@ -650,13 +650,13 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should take you to nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METER_UNITS, request and request.returns.data', async () => {
@@ -688,7 +688,7 @@ experiment('edit controller', () => {
       await controller.postMeterUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });

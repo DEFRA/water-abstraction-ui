@@ -1,0 +1,8 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+
+{% block content %}
+  {{ formErrorSummary(form) }}
+  {{ returnHeader(data, documentHeader, showMeta) }}
+  {{ formRender(form) }}
+{% endblock %}

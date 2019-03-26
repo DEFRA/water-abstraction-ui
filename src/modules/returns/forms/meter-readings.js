@@ -49,8 +49,7 @@ const form = (request, data) => {
 
   const f = formFactory(action);
   f.fields.push(fields.paragraph(null, {
-    text: 'Enter your readings exactly as they appear on your meter.',
-    controlClass: 'text-medium'
+    text: 'Enter your readings exactly as they appear on your meter.'
   }));
 
   f.fields.push(getStartReadingInput());

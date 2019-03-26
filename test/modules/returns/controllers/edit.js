@@ -213,7 +213,7 @@ experiment('edit controller', () => {
     sandbox.restore();
   });
   experiment('getAmounts', () => {
-    test('it should take you to returns/internal/form page with returns data', async () => {
+    test('it should render returns/internal/form page with returns data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
       const returns = createReturn();
@@ -269,7 +269,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -282,7 +282,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getNilReturn', () => {
-    test('it should take you to returns/internal/nil-return page with returns data', async () => {
+    test('it should render returns/internal/nil-return page with returns data', async () => {
       const request = createRequest();
 
       await controller.getNilReturn(request, h);
@@ -314,7 +314,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getSubmitted', () => {
-    test('it should take you to returns/return?id=returnId', async () => {
+    test('it should render returns/return?id=returnId', async () => {
       const request = createRequest(false);
 
       await controller.getSubmitted(request, h);
@@ -358,7 +358,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getMethod', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMethod(request, h);
@@ -388,7 +388,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -401,7 +401,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getUnits(request, h);
@@ -432,7 +432,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -445,7 +445,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getSingleTotal', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       permissions.isInternal.returns(true);
       const request = createRequest(true);
 
@@ -479,7 +479,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -490,54 +490,9 @@ experiment('edit controller', () => {
       expect(view.return).to.equal(request.returns.data);
     });
   });
-  /*
-  experiment('getBasis', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
-      const request = createRequest();
-
-      await controller.getBasis(request, h);
-      const [template, view] = h.view.lastCall.args;
-
-      expect(template).to.equal('water/returns/internal/form');
-      expect(view.return).to.equal(request.returns.data);
-    });
-    test('it should call getPreviousPath with STEP_BASIS, request and request.returns.data', async () => {
-      const request = createRequest();
-
-      await controller.getBasis(request, h);
-      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_BASIS, request, request.returns.data);
-
-      expect(getPreviousPathCalled).to.be.true();
-    });
-  });
-
-  experiment('postBasis', () => {
-    test('it should call getNextPath with STEP_BASIS, request', async () => {
-      forms.handleRequest.returns({ isValid: true });
-      forms.getValues.returns({ basis: 'basis' });
-
-      const request = createRequest();
-
-      await controller.postBasis(request, h);
-      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_BASIS, request);
-
-      expect(getNextPathCalled).to.be.true();
-    });
-    test('it should keep you on the same page if form is not valid', async () => {
-      forms.handleRequest.returns({ isValid: false });
-      const request = createRequest();
-
-      await controller.postBasis(request, h);
-      const [template, view] = h.view.lastCall.args;
-
-      expect(template).to.equal('water/returns/internal/form');
-      expect(view.return).to.equal(request.returns.data);
-    });
-  });
-  */
 
   experiment('getQuantities', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getQuantities(request, h);
@@ -568,7 +523,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -581,7 +536,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getConfirm', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getConfirm(request, h);
@@ -609,7 +564,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterDetails', () => {
-    test('it should take you to water/returns/meter-details page with returns data', async () => {
+    test('it should render water/returns/meter-details page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterDetails(request, h);
@@ -640,7 +595,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -653,7 +608,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterUnits(request, h);
@@ -684,7 +639,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -697,7 +652,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterReset', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterReset(request, h);
@@ -728,7 +683,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -741,7 +696,7 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterReadings', () => {
-    test('it should take you to water/returns/meter-readings page with returns data', async () => {
+    test('it should render water/returns/meter-readings page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterReadings(request, h);
@@ -772,7 +727,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 

@@ -106,12 +106,12 @@ const postAmounts = async (request, h) => {
 const getNilReturn = async (request, h) => {
   const { data, view } = request.returns;
 
-  return h.view('water/returns/internal/nil-return', {
+  return h.view('nunjucks/returns/nil-return.njk', {
     ...view,
     return: data,
     form: confirmForm(request, data),
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_NIL_RETURN, request, data)
-  });
+  }, { layout: false });
 };
 
 /**

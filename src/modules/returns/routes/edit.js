@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
-const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
@@ -211,44 +210,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - what is the unit of measurement?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getBasis: {
-    method: 'GET',
-    path: '/return/basis',
-    handler: controller.getBasis,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Get basis for supplied return data',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postBasis: {
-    method: 'POST',
-    path: '/return/basis',
-    handler: controller.postBasis,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Post handler for records basis',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
           activeNavLink: 'returns'
         },
         returns: true

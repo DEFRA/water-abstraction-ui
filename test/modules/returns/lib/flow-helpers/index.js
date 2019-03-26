@@ -1,269 +1,77 @@
 'use strict';
 const { expect } = require('code');
 const Lab = require('lab');
-const { experiment, test } = exports.lab = Lab.script();
+const sinon = require('sinon');
+const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
-const { scope } = require('../../../../../src/lib/constants');
+const { createRequest } = require('./test-helpers');
 
-const {
-  STEP_INTERNAL_ROUTING, STEP_LOG_RECEIPT, STEP_RECEIPT_LOGGED,
-  STEP_START, STEP_NIL_RETURN, STEP_METHOD, STEP_UNITS, STEP_SINGLE_TOTAL,
-  STEP_BASIS, STEP_QUANTITIES, STEP_METER_DETAILS, STEP_METER_UNITS,
-  STEP_METER_READINGS, STEP_CONFIRM, STEP_SUBMITTED, STEP_QUERY_LOGGED,
-  getPath, getNextPath
-} = require('../../../../../src/modules/returns/lib/flow-helpers');
+const { getPath, getNextPath, getPreviousPath } =
+  require('../../../../../src/modules/returns/lib/flow-helpers');
 
-const returnId = 'v1:123:456';
+const internal =
+  require('../../../../../src/modules/returns/lib/flow-helpers/internal');
 
-const getRequest = (isInternal = false) => {
-  return {
-    auth: {
-      credentials: {
-        scope: [isInternal ? scope.internal : scope.external]
-      }
-    },
-    query: {
-      returnId
-    }
-  };
-};
+const external =
+    require('../../../../../src/modules/returns/lib/flow-helpers/external');
 
-experiment('getPath', () => {
-  test('Gets the return flow path for an external user', async () => {
-    const request = getRequest();
-    expect(getPath('/return', request)).to.equal(`/return?returnId=${returnId}`);
+const data = require('./test-data.json');
+
+const path = '/some/path';
+
+const sandbox = sinon.createSandbox();
+
+experiment('Returns flow helpers', () => {
+  beforeEach(async () => {
+    internal.next.TEST = sandbox.stub();
+    internal.previous.TEST = sandbox.stub();
+    external.next.TEST = sandbox.stub();
+    external.previous.TEST = sandbox.stub();
   });
 
-  test('Gets the return flow path for an internal user', async () => {
-    const request = getRequest(true);
-    expect(getPath('/return', request)).to.equal(`/admin/return?returnId=${returnId}`);
+  afterEach(async () => {
+    sandbox.restore();
   });
 
-  test('Gets the return flow path for an external user with return data supplied', async () => {
-    const request = getRequest();
-    const data = { returnId };
-    expect(getPath('/return', request, data)).to.equal(`/return?returnId=${returnId}`);
+  experiment('getPath', () => {
+    test('it should return an external path', async () => {
+      const request = createRequest(false);
+      const result = getPath(path, request, data.nilReturn);
+      expect(result).to.equal(`/some/path?returnId=nilReturn`);
+    });
+
+    test('it should return an internal path', async () => {
+      const request = createRequest(true);
+      const result = getPath(path, request, data.nilReturn);
+      expect(result).to.equal(`/admin/some/path?returnId=nilReturn`);
+    });
   });
 
-  test('Gets the return flow path for an internal user with return data supplied', async () => {
-    const request = getRequest(true);
-    const data = { returnId };
-    expect(getPath('/return', request, data)).to.equal(`/admin/return?returnId=${returnId}`);
-  });
-});
+  experiment('getNextPath', () => {
+    test('it should call an external flow helper for an external user', async () => {
+      const request = createRequest(false);
+      getNextPath('TEST', request, data.nilReturn);
+      expect(external.next.TEST.callCount).to.equal(1);
+    });
 
-experiment('getNextPath: STEP_INTERNAL_ROUTING', () => {
-  const request = getRequest(true);
-
-  test('Redirects to log receipt if option selected', async () => {
-    const data = {
-      action: 'log_receipt'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_LOG_RECEIPT}?returnId=${returnId}`);
+    test('it should call an external flow helper for an internal user', async () => {
+      const request = createRequest(true);
+      getNextPath('TEST', request, data.nilReturn);
+      expect(internal.next.TEST.callCount).to.equal(1);
+    });
   });
 
-  test('Redirects to enter return if option selected', async () => {
-    const data = {
-      action: 'submit'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_START}?returnId=${returnId}`);
-  });
+  experiment('getPreviousPath', () => {
+    test('it should call an external flow helper for an external user', async () => {
+      const request = createRequest(false);
+      getPreviousPath('TEST', request, data.nilReturn);
+      expect(external.previous.TEST.callCount).to.equal(1);
+    });
 
-  test('Redirects to problem logged if option selected', async () => {
-    const data = {
-      action: 'set_under_query'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
-  });
-
-  test('Redirects to problem logged if option selected', async () => {
-    const data = {
-      action: 'clear_under_query'
-    };
-    expect(getNextPath(STEP_INTERNAL_ROUTING, request, data)).to.equal(`/admin${STEP_QUERY_LOGGED}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_LOG_RECEIPT', () => {
-  const request = getRequest(true);
-
-  test('Redirects to success page', async () => {
-    expect(getNextPath(STEP_LOG_RECEIPT, request)).to.equal(`/admin${STEP_RECEIPT_LOGGED}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_START', () => {
-  const request = getRequest();
-
-  test('Redirects to nil return if no amounts', async () => {
-    const data = {
-      returnId,
-      isNil: true
-    };
-    expect(getNextPath(STEP_START, request, data)).to.equal(`${STEP_NIL_RETURN}?returnId=${returnId}`);
-  });
-
-  test('Redirects to method if amounts', async () => {
-    const data = {
-      returnId,
-      isNil: false
-    };
-    expect(getNextPath(STEP_START, request, data)).to.equal(`${STEP_METHOD}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_NIL_RETURN', () => {
-  const request = getRequest();
-
-  test('Redirects to submitted screen', async () => {
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_NIL_RETURN, request, data)).to.equal(`${STEP_SUBMITTED}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_METHOD', () => {
-  const request = getRequest();
-
-  test('Redirects to meter details if one meter', async () => {
-    const data = {
-      returnId,
-      reading: {
-        method: 'oneMeter'
-      }
-    };
-    expect(getNextPath(STEP_METHOD, request, data)).to.equal(`${STEP_METER_DETAILS}?returnId=${returnId}`);
-  });
-
-  test('Redirects to units if volumes', async () => {
-    const data = {
-      returnId,
-      reading: {
-        method: 'abstractionVolumes'
-      }
-    };
-    expect(getNextPath(STEP_METHOD, request, data)).to.equal(`${STEP_UNITS}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_UNITS', () => {
-  test('Redirects to basis if external user', async () => {
-    const request = getRequest();
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_UNITS, request, data)).to.equal(`${STEP_BASIS}?returnId=${returnId}`);
-  });
-
-  test('Redirects to single total if internal user', async () => {
-    const request = getRequest(true);
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_UNITS, request, data)).to.equal(`/admin${STEP_SINGLE_TOTAL}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_BASIS', () => {
-  const request = getRequest();
-
-  test('Redirects to meter details if measured', async () => {
-    const data = {
-      returnId,
-      reading: {
-        type: 'measured'
-      }
-    };
-    expect(getNextPath(STEP_BASIS, request, data)).to.equal(`${STEP_METER_DETAILS}?returnId=${returnId}`);
-  });
-
-  test('Redirects to quantities if estimated and not single total', async () => {
-    const data = {
-      returnId,
-      reading: {
-        type: 'estimated'
-      }
-    };
-    expect(getNextPath(STEP_BASIS, request, data)).to.equal(`${STEP_QUANTITIES}?returnId=${returnId}`);
-  });
-
-  test('Redirects to confirm if estimated and single total', async () => {
-    const data = {
-      returnId,
-      reading: {
-        type: 'estimated',
-        totalFlag: true
-      }
-    };
-    expect(getNextPath(STEP_BASIS, request, data)).to.equal(`${STEP_CONFIRM}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_QUANTITIES', () => {
-  const request = getRequest();
-
-  test('Redirects to confirm', async () => {
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_QUANTITIES, request, data)).to.equal(`${STEP_CONFIRM}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_CONFIRM', () => {
-  const request = getRequest();
-
-  test('Redirects to submitted', async () => {
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_CONFIRM, request, data)).to.equal(`${STEP_SUBMITTED}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_METER_DETAILS', () => {
-  const request = getRequest();
-
-  test('Redirects to meter units if meters flow', async () => {
-    const data = {
-      returnId,
-      reading: {
-        method: 'oneMeter'
-      }
-    };
-    expect(getNextPath(STEP_METER_DETAILS, request, data)).to.equal(`${STEP_METER_UNITS}?returnId=${returnId}`);
-  });
-
-  test('Redirects to quantities if volumes flow', async () => {
-    const data = {
-      returnId,
-      reading: {
-        method: 'abstractionVolumes'
-      }
-    };
-    expect(getNextPath(STEP_METER_DETAILS, request, data)).to.equal(`${STEP_QUANTITIES}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_METER_UNITS', () => {
-  const request = getRequest();
-
-  test('Redirects to meter readings', async () => {
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_METER_UNITS, request, data)).to.equal(`${STEP_METER_READINGS}?returnId=${returnId}`);
-  });
-});
-
-experiment('getNextPath: STEP_METER_READINGS', () => {
-  const request = getRequest();
-
-  test('Redirects to confirm', async () => {
-    const data = {
-      returnId
-    };
-    expect(getNextPath(STEP_METER_READINGS, request, data)).to.equal(`${STEP_CONFIRM}?returnId=${returnId}`);
+    test('it should call an external flow helper for an internal user', async () => {
+      const request = createRequest(true);
+      getPreviousPath('TEST', request, data.nilReturn);
+      expect(internal.previous.TEST.callCount).to.equal(1);
+    });
   });
 });

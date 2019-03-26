@@ -325,7 +325,7 @@ experiment('edit controller', () => {
       const request = createRequest(false);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.returnUrl).to.equal(`/returns/return?id=${returnId}`);
     });
@@ -333,7 +333,7 @@ experiment('edit controller', () => {
       const request = createRequest(true);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.returnUrl).to.equal(`/admin/returns/return?id=${returnId}`);
     });
@@ -341,7 +341,7 @@ experiment('edit controller', () => {
       const request = createRequest(false, true);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.pageTitle).to.equal('Abstraction return - nil submitted');
     });
@@ -349,7 +349,7 @@ experiment('edit controller', () => {
       const request = createRequest(false, false);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.pageTitle).to.equal('Abstraction return - submitted');
     });
@@ -488,7 +488,7 @@ experiment('edit controller', () => {
       expect(view.return).to.equal(request.returns.data);
     });
   });
-
+  /*
   experiment('getBasis', () => {
     test('it should take you to water/returns/internal/form page with returns data', async () => {
       const request = createRequest();
@@ -532,6 +532,7 @@ experiment('edit controller', () => {
       expect(view.return).to.equal(request.returns.data);
     });
   });
+  */
 
   experiment('getQuantities', () => {
     test('it should take you to water/returns/internal/form page with returns data', async () => {

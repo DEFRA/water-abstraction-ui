@@ -294,6 +294,44 @@ module.exports = {
     }
   },
 
+  getMeterReset: {
+    method: 'GET',
+    path: '/return/meter/reset',
+    handler: controller.getMeterReset,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Find out if meter has reset or rolled over',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
+          activeNavLink: 'returns'
+        },
+        returns: true
+      }
+    }
+  },
+
+  postMeterReset: {
+    method: 'POST',
+    path: '/return/meter/reset',
+    handler: controller.postMeterReset,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Post handler for meter reset routing',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
+          activeNavLink: 'returns'
+        },
+        returns: true
+      }
+    }
+  },
+
   getMeterDetails: createGetMeterRoute(
     '/return/meter/details',
     controller.getMeterDetails,

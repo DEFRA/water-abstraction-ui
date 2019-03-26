@@ -1,7 +1,7 @@
 const factory = require('./units-factory');
 
 const form = factory.create({
-  labelText: 'What is the unit of measurement?',
+  labelText: 'Which units are you using?',
   isMeterUnits: true
 });
 

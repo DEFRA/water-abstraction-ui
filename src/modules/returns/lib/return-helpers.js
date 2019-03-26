@@ -61,35 +61,19 @@ const applySingleTotal = (data, total) => {
 };
 
 /**
- * Applies data from returns basis form to model
- * and returns new model data
- * @param {Object} - return model
- * @param {Object} - basis form data
- * @return {Object} - updated return model
- */
-const applyBasis = (data, formValues) => {
-  const { basis } = formValues;
-  const f = cloneDeep(data);
-
-  set(f, 'reading.type', basis);
-
-  delete f.meters;
-
-  return f;
-};
-
-/**
  * Applies the method of return - either volumes or meter readings
  * @param {Object} - return model
- * @param {String} - abstractionVolumes | oneMeter
+ * @param {String} - comma separated list of reading method and type
  * @return {Object} - updated return model
  */
 const applyMethod = (data, method) => {
   const d = cloneDeep(data);
+  const [readingMethod, readingType] = method.split(',');
 
-  set(d, 'reading.method', method);
+  set(d, 'reading.method', readingMethod);
+  set(d, 'reading.type', readingType);
 
-  if (method === 'abstractionVolumes') {
+  if (readingMethod === 'abstractionVolumes') {
     const meters = d.meters || [];
     for (let meter of meters) {
       delete meter.readings;
@@ -207,7 +191,6 @@ const applyMeterDetails = (data, formValues) => {
   const details = {
     manufacturer: formValues.manufacturer,
     serialNumber: formValues.serialNumber,
-    startReading: formValues.startReading,
     multiplier
   };
 
@@ -277,14 +260,15 @@ const getDefaultQuantity = (line, options) => {
 
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
+
   const lines = getFormLines(updated);
-  const { startReading, multiplier = 1 } = data.meters[0];
+  const multiplier = get(data, 'meters[0].multiplier', 1);
 
   const options = getPeriodStartEnd(updated);
 
   const input = {
     lines: [],
-    lastMeterReading: startReading
+    lastMeterReading: formValues.startReading
   };
 
   const readings = lines.reduce((acc, line) => {
@@ -310,7 +294,25 @@ const applyMeterReadings = (data, formValues) => {
   }, input);
 
   updated.lines = readings.lines;
-  return set(updated, 'meters[0].readings', omit(formValues, 'csrf_token'));
+  set(updated, 'meters[0].startReading', formValues.startReading);
+  return set(updated, 'meters[0].readings', omit(formValues, ['csrf_token', 'startReading']));
+};
+
+const applyMeterReset = (data, formValues) => {
+  const { meterReset } = formValues;
+  const updated = cloneDeep(data);
+
+  if (meterReset) {
+    set(updated, 'reading.method', 'abstractionVolumes');
+    const meters = updated.meters || [];
+    for (let meter of meters) {
+      delete meter.readings;
+      delete meter.startReading;
+      delete meter.units;
+    }
+  }
+
+  return updated;
 };
 
 const getIsUnderQuery = value => {
@@ -373,7 +375,6 @@ const getLinesWithReadings = (data) => {
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
-  applyBasis,
   applyQuantities,
   applyUserDetails,
   applyNilReturn,
@@ -386,6 +387,7 @@ module.exports = {
   getLineName,
   getLineValues,
   applyMeterReadings,
+  applyMeterReset,
   applyMethod,
   getMeter,
   getLinesWithReadings,

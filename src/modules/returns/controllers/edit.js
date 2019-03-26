@@ -151,12 +151,12 @@ const getSubmitted = async (request, h) => {
 
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId}`;
 
-  return h.view('water/returns/internal/submitted', {
+  return h.view('nunjucks/returns/submitted.njk', {
     ...view,
     return: data,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
-  });
+  }, { layout: false });
 };
 
 /**

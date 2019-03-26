@@ -61,24 +61,6 @@ const applySingleTotal = (data, total) => {
 };
 
 /**
- * Applies data from returns basis form to model
- * and returns new model data
- * @param {Object} - return model
- * @param {Object} - basis form data
- * @return {Object} - updated return model
- */
-const applyBasis = (data, formValues) => {
-  const { basis } = formValues;
-  const f = cloneDeep(data);
-
-  set(f, 'reading.type', basis);
-
-  delete f.meters;
-
-  return f;
-};
-
-/**
  * Applies the method of return - either volumes or meter readings
  * @param {Object} - return model
  * @param {String} - comma separated list of reading method and type

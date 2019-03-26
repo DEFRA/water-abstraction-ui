@@ -306,8 +306,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - has your meter reset or rolled over?',
-          activeNavLink: 'returns',
-          showMeta: true
+          activeNavLink: 'returns'
         },
         returns: true
       }

@@ -2,12 +2,15 @@ const { get } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 const { STEP_METHOD, getPath } = require('../lib/flow-helpers');
 
+const getValue = data => {
+  const method = get(data, 'reading.method');
+  const type = get(data, 'reading.type');
+  return `${method},${type}`;
+};
+
 const methodForm = (request, data) => {
   const { csrfToken } = request.view;
   const action = getPath(STEP_METHOD, request);
-
-  const method = get(data, 'reading.method');
-  const type = get(data, 'reading.type');
 
   const f = formFactory(action);
 
@@ -31,7 +34,7 @@ const methodForm = (request, data) => {
       { value: 'oneMeter,measured', label: 'Readings from a single meter' },
       { value: 'abstractionVolumes,measured', label: 'Volumes from one or more meters' },
       { value: 'abstractionVolumes,estimated', label: 'Estimates without a meter' }
-    ] }, `${method},${type}`));
+    ] }, getValue(data)));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

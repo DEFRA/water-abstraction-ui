@@ -375,7 +375,6 @@ const getLinesWithReadings = (data) => {
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
-  applyBasis,
   applyQuantities,
   applyUserDetails,
   applyNilReturn,

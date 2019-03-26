@@ -91,11 +91,6 @@ lab.experiment('Return reducers', () => {
         quantity: 50 } ]);
   });
 
-  lab.test('applyBasis should set the estimated/measured property', async () => {
-    const data = applyBasis(testReturn, { basis: 'estimated' });
-    expect(data.reading.type).to.equal('estimated');
-  });
-
   lab.test('applyQuantities should set the lines array', async () => {
     const data = applyQuantities(testReturn, {
       '2017-11-01_2017-11-30': 15,

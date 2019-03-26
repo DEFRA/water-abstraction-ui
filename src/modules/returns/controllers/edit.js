@@ -375,12 +375,12 @@ const getConfirm = async (request, h) => {
 const getMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('water/returns/meter-details', {
+  return h.view('nunjucks/returns/meter-details.njk', {
     ...view,
     form: meterDetailsForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_DETAILS, request, data)
-  });
+  }, { layout: false });
 };
 
 const postMeterDetails = async (request, h) => {

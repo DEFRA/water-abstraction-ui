@@ -1,0 +1,23 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+{% from "nunjucks/macros/forms/header.njk" import formHeader %}
+{% from "nunjucks/macros/forms/widget.njk" import formWidget %}
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+  {{ returnHeader(data, documentHeader, showMeta) }}
+
+  <h2 class="govuk-heading-l">Tell us about your meter</h2>
+
+  {{ formHeader(form) }}
+
+  {{ formWidget(form.fields[0], form) }}
+  {{ formWidget(form.fields[1], form) }}
+  {{ formWidget(form.fields[2], form) }}
+
+  {{ formWidget(form.fields[3], form) }}
+  {{ formWidget(form.fields[4], form) }}
+  {{ formWidget(form.fields[5], form) }}
+
+{% endblock %}

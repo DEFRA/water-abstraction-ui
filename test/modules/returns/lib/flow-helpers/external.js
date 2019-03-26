@@ -43,9 +43,9 @@ experiment('external returns flow: ', () => {
       expect(result).to.equal(steps.STEP_START);
     });
 
-    test('next step is STEP_METER_ROLLOVER if one meter', async () => {
+    test('next step is STEP_METER_RESET if one meter', async () => {
       const result = external.next[steps.STEP_METHOD](data.meterReadings);
-      expect(result).to.equal(steps.STEP_METER_ROLLOVER);
+      expect(result).to.equal(steps.STEP_METER_RESET);
     });
 
     test('next step is STEP_UNITS otherwise', async () => {
@@ -54,22 +54,22 @@ experiment('external returns flow: ', () => {
     });
   });
 
-  experiment('for STEP_METER_ROLLOVER', () => {
+  experiment('for STEP_METER_RESET', () => {
     test('previous step is STEP_METHOD', async () => {
-      const result = external.previous[steps.STEP_METER_ROLLOVER]();
+      const result = external.previous[steps.STEP_METER_RESET]();
       expect(result).to.equal(steps.STEP_METHOD);
     });
 
     test('next step is STEP_UNITS', async () => {
-      const result = external.next[steps.STEP_METER_ROLLOVER]();
+      const result = external.next[steps.STEP_METER_RESET]();
       expect(result).to.equal(steps.STEP_UNITS);
     });
   });
 
   experiment('for STEP_UNITS', () => {
-    test('previous step is STEP_METER_ROLLOVER if oneMeter', async () => {
+    test('previous step is STEP_METER_RESET if oneMeter', async () => {
       const result = external.previous[steps.STEP_UNITS](data.meterReadings);
-      expect(result).to.equal(steps.STEP_METER_ROLLOVER);
+      expect(result).to.equal(steps.STEP_METER_RESET);
     });
 
     test('previous step is STEP_METHOD if volumes', async () => {

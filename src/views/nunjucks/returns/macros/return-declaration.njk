@@ -1,0 +1,12 @@
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% macro returnDeclaration(isAdmin) %}
+  {# {% if isAdmin %} #}
+
+    {{ govukWarningText({
+    text: "By submitting this return you are confirming that all the details you are providing are correct.",
+    iconFallbackText: "Warning"
+    }) }}
+
+  {# {%endif%} #}
+{%endmacro%}

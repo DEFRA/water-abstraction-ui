@@ -489,7 +489,36 @@ const postMeterReset = async (request, h) => {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
+};
+
+const getMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+
+  return h.view('nunjucks/returns/form.njk', {
+    ...view,
+    form: meterResetForm(request, data),
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
+  }, { layout: false });
+};
+
+const postMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+  const form = forms.handleRequest(meterResetForm(request, data), request);
+
+  if (form.isValid) {
+    const d = applyMeterReset(data, forms.getValues(form));
+    sessionHelpers.saveSessionData(request, d);
+
+    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
+  }
+
+  return h.view('nunjucks/returns/form.njk', {
+    ...view,
+    form,
+    return: data
+  }, { layout: false });
 };
 
 const getMeterReadings = async (request, h) => {

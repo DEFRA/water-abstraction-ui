@@ -47,8 +47,11 @@
       </dt>
       <dd class="meta__value">
         {% for purpose in return.metadata.purposes %}
+          {%if purpose.alias%}
           {{ purpose.alias | titleCase }}
-          {{ purpose.tertiary.description if not purpose.alias }}
+          {%else%}
+          {{ purpose.tertiary.description }}
+          {%endif%}
         {% endfor %}
       </dd>
     </div>

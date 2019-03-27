@@ -100,7 +100,8 @@ module.exports = {
           'date_received-day': Joi.string().allow(''),
           'date_received-month': Joi.string().allow(''),
           'date_received-year': Joi.string().allow(''),
-          csrf_token: Joi.string().guid()
+          csrf_token: Joi.string().guid(),
+          isUnderQuery: Joi.string().valid(['', 'under_query'])
         }
 
       },

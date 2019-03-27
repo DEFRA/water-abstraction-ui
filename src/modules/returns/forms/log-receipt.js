@@ -33,7 +33,17 @@ const form = (request, data) => {
       'date.min': {
         message: `Enter a date between ${minDate} and today`
       }
-    }}, dateReceived));
+    } }, dateReceived));
+
+  // Under query checkbox
+  const checked = get(data, 'isUnderQuery', false) ? ['under_query'] : [];
+  f.fields.push(fields.checkbox('isUnderQuery', {
+    mapper: 'arrayMapper',
+    choices: [{
+      label: 'Record as under query',
+      value: 'under_query'
+    }]
+  }), checked);
 
   f.fields.push(fields.button(null, { label: 'Submit' }));
 
@@ -48,7 +58,8 @@ const getSchema = () => {
   const minDate = getMinimumDate().format('YYYY-MM-DD');
   return {
     csrf_token: Joi.string().guid().required(),
-    date_received: Joi.date().max('now').min(minDate).iso()
+    date_received: Joi.date().max('now').min(minDate).iso(),
+    isUnderQuery: Joi.array().items(Joi.string().valid('under_query'))
   };
 };
 

@@ -365,6 +365,12 @@ module.exports = {
         },
         payload: {
           totalCustomDates: Joi.boolean().required(),
+          'totalCustomDateStart-day': Joi.string().allow(''),
+          'totalCustomDateStart-month': Joi.string().allow(''),
+          'totalCustomDateStart-year': Joi.string().allow(''),
+          'totalCustomDateEnd-day': Joi.string().allow(''),
+          'totalCustomDateEnd-month': Joi.string().allow(''),
+          'totalCustomDateEnd-year': Joi.string().allow(''),
           csrf_token: Joi.string().guid().required()
         }
       },

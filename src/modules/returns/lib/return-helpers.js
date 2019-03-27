@@ -390,8 +390,18 @@ const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
 };
 
-const applySingleTotalDates = (data, formValues) => {
-  return data;
+const applySingleTotalAbstractionDates = (data, formValues) => {
+  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = formValues;
+  const clone = cloneDeep(data);
+
+  const reading = Object.assign({}, clone.reading, {
+    totalCustomDates,
+    totalCustomDateStart: totalCustomDates ? totalCustomDateStart : null,
+    totalCustomDateEnd: totalCustomDates ? totalCustomDateEnd : null
+  });
+
+  clone.reading = reading;
+  return clone;
 };
 
 module.exports = {
@@ -416,5 +426,5 @@ module.exports = {
   applyUnderQuery,
   applyReceivedDate,
   applyMeterDetailsProvided,
-  applySingleTotalDates
+  applySingleTotalAbstractionDates
 };

@@ -8,7 +8,8 @@ const {
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const uuidv4 = require('uuid/v4');
+const uuid = require('uuid/v4');
+
 
 const waterConnector = require('../../../../src/lib/connectors/water');
 const helpers = require('../../../../src/modules/returns/lib/helpers');
@@ -20,7 +21,7 @@ const createRequest = () => ({
     returnId: 'test-return-id'
   },
   view: {
-    csrfToken: uuidv4()
+    csrfToken: uuid()
   },
   auth: {
     credentials: {
@@ -490,6 +491,102 @@ experiment('internal returns controller', () => {
     test('back is set to the correct previous page', async () => {
       const [, data] = h.view.lastCall.args;
       expect(data.back).to.equal('/admin/return/single-total?returnId=test-return-id');
+    });
+  });
+
+  experiment('postSingleTotalAbstractionPeriod', async () => {
+    let h;
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        returns: {
+          data: {
+            requiredLines: [
+              { startDate: '2019-01-01', endDate: '2019-02-01' },
+              { startDate: '2019-02-01', endDate: '2019-03-01' }
+            ]
+          },
+          view: {}
+        },
+        query: {
+          returnId: 'test-return-id'
+        },
+        view: {
+          csrfToken: 'test'
+        },
+        auth: {
+          credentials: {
+            scope: 'internal'
+          }
+        },
+        payload: {
+          totalCustomDates: 'false',
+          csrf_token: uuid()
+        }
+      };
+
+      h = {
+        view: sandbox.stub(),
+        redirect: sandbox.stub()
+      };
+    });
+
+    experiment('for a valid default period request', () => {
+      beforeEach(async () => {
+        await controller.postSingleTotalAbstractionPeriod(request, h);
+      });
+
+      test('the expected data is saved to session', async () => {
+        const [, data] = sessionHelpers.saveSessionData.lastCall.args;
+        expect(data.reading.totalCustomDates).to.be.false();
+      });
+
+      test('user is redirected to the next step', async () => {
+        const [redirectUrl] = h.redirect.lastCall.args;
+        expect(redirectUrl).to.equal('/admin/return/quantities?returnId=test-return-id');
+      });
+    });
+
+    experiment('for a valid custom period request', () => {
+      beforeEach(async () => {
+        request.payload.totalCustomDates = 'true';
+        request.payload['totalCustomDateStart-day'] = '01';
+        request.payload['totalCustomDateStart-month'] = '02';
+        request.payload['totalCustomDateStart-year'] = '2019';
+        request.payload['totalCustomDateEnd-day'] = '03';
+        request.payload['totalCustomDateEnd-month'] = '02';
+        request.payload['totalCustomDateEnd-year'] = '2019';
+        await controller.postSingleTotalAbstractionPeriod(request, h);
+      });
+
+      test('the expected data is saved to session', async () => {
+        const [, data] = sessionHelpers.saveSessionData.lastCall.args;
+        expect(data.reading.totalCustomDates).to.be.true();
+        expect(data.reading.totalCustomDateStart).to.equal(new Date(2019, 1, 1));
+        expect(data.reading.totalCustomDateEnd).to.equal(new Date(2019, 1, 3));
+      });
+
+      test('user is redirected to the next step', async () => {
+        const [redirectUrl] = h.redirect.lastCall.args;
+        expect(redirectUrl).to.equal('/admin/return/quantities?returnId=test-return-id');
+      });
+    });
+
+    experiment('for an invalid request', () => {
+      beforeEach(async () => {
+        request.payload.totalCustomDates = '';
+        await controller.postSingleTotalAbstractionPeriod(request, h);
+      });
+
+      test('the data is not saved to session', async () => {
+        expect(sessionHelpers.saveSessionData.called).to.be.false();
+      });
+
+      test('the view is shown again', async () => {
+        const [view] = h.view.lastCall.args;
+        expect(view).to.equal('water/returns/internal/form');
+      });
     });
   });
 });

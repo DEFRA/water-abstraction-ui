@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { mapValues } = require('lodash');
+const { pick, get, mapValues } = require('lodash');
 
 /**
  * Checks whether a supplied day/month is the same or after a reference day/month
@@ -68,6 +68,34 @@ const isDateWithinAbstractionPeriod = (date, options) => {
   }
 };
 
+const getDay = date => moment(date, 'YYYY-MM-DD').date();
+const getMonth = date => moment(date, 'YYYY-MM-DD').month() + 1;
+
+const hasCustomAbstractionPeriod = returnData => {
+  return get(returnData, 'reading.totalCustomDates', false);
+};
+
+const getCustomAbstractionPeriodStartEnd = returnData => {
+  const { totalCustomDateStart, totalCustomDateEnd } = returnData.reading;
+  return {
+    periodStartDay: getDay(totalCustomDateStart),
+    periodStartMonth: getMonth(totalCustomDateStart),
+    periodEndDay: getDay(totalCustomDateEnd),
+    periodEndMonth: getMonth(totalCustomDateEnd)
+  };
+};
+
+const getDefaultAbstractionPeriodStartEnd = returnData => {
+  const data = pick(
+    returnData.metadata.nald,
+    'periodEndDay',
+    'periodEndMonth',
+    'periodStartDay',
+    'periodStartMonth'
+  );
+  return mapValues(data, parseInt);
+};
+
 /**
  * Gets period start/end from NALD metadata in return,
  * and converts to integers
@@ -75,20 +103,9 @@ const isDateWithinAbstractionPeriod = (date, options) => {
  * @return {Object} only contains period start/end data as integers
  */
 const getPeriodStartEnd = (data) => {
-  // Get period start/end and convert to integers
-  const {
-    periodEndDay,
-    periodEndMonth,
-    periodStartDay,
-    periodStartMonth
-  } = data.metadata.nald;
-
-  return mapValues({
-    periodEndDay,
-    periodEndMonth,
-    periodStartDay,
-    periodStartMonth
-  }, parseInt);
+  return hasCustomAbstractionPeriod(data)
+    ? getCustomAbstractionPeriodStartEnd(data)
+    : getDefaultAbstractionPeriodStartEnd(data);
 };
 
 module.exports = {

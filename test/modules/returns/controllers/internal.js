@@ -10,6 +10,9 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const uuid = require('uuid/v4');
 
+const waterConnector = require('../../../../src/lib/connectors/water');
+const helpers = require('../../../../src/modules/returns/lib/helpers');
+
 const controller = require('../../../../src/modules/returns/controllers/internal');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers');
 

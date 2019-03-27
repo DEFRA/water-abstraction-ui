@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const moment = require('moment');
-const { pick, first, last } = require('lodash');
+const { first, last, get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getPath, STEP_SINGLE_TOTAL_DATES } = require('../lib/flow-helpers');
 const { getFormLines } = require('../lib/return-helpers');
@@ -8,6 +8,19 @@ const { getFormLines } = require('../lib/return-helpers');
 const dateError = {
   message: 'Enter a date in the right format, for example 31 3 2018',
   summary: 'Enter a date in the right format'
+};
+
+const mapDataToForm = data => {
+  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = get(data, 'reading', {});
+
+  if (totalCustomDates === true) {
+    return {
+      totalCustomDates,
+      totalCustomDateStart: moment(totalCustomDateStart).format('YYYY-MM-DD'),
+      totalCustomDateEnd: moment(totalCustomDateEnd).format('YYYY-MM-DD')
+    };
+  }
+  return { totalCustomDates };
 };
 
 const form = (request, data) => {
@@ -77,8 +90,7 @@ const form = (request, data) => {
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  const formData = pick(data.reading, 'totalCustomDates', 'totalCustomDateStart', 'totalCustomDateEnd');
-  return setValues(f, formData);
+  return setValues(f, mapDataToForm(data));
 };
 
 const formatLineDateForValidation = date => moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY');

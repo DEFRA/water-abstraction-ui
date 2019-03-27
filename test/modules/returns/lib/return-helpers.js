@@ -72,25 +72,6 @@ experiment('Test isDateWithinAbstractionPeriod', () => {
 });
 
 experiment('Return reducers', () => {
-  test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period, with null outside abstraction period', async () => {
-    const data = applySingleTotal(testReturn, 100);
-    expect(data.reading.totalFlag).to.equal(true);
-    expect(data.reading.total).to.equal(100);
-    expect(data.lines).to.equal([
-      { startDate: '2017-11-01',
-        endDate: '2017-11-30',
-        period: 'month',
-        quantity: 50 },
-      { startDate: '2017-12-01',
-        endDate: '2017-12-31',
-        period: 'month',
-        quantity: null },
-      { startDate: '2018-01-01',
-        endDate: '2018-01-31',
-        period: 'month',
-        quantity: 50 } ]);
-  });
-
   test('applyQuantities should set the lines array', async () => {
     const data = applyQuantities(testReturn, {
       '2017-11-01_2017-11-30': 15,
@@ -587,6 +568,37 @@ experiment('applyMeterDetailsProvided', () => {
   });
 });
 
+experiment('applySingleTotal', () => {
+  test('for a single value the value and flag are set', async () => {
+    const returnData = { reading: {} };
+    const formValues = { isSingleTotal: true, total: 1000 };
+    const applied = applySingleTotal(returnData, formValues);
+    expect(applied).to.equal({
+      reading: {
+        totalFlag: true,
+        total: 1000
+      }
+    });
+  });
+
+  test('if setting to mutliple values any existing total value is removed', async () => {
+    const returnData = {
+      reading: {
+        totalFlag: true,
+        total: 200
+      }
+    };
+    const formValues = { isSingleTotal: false };
+    const applied = applySingleTotal(returnData, formValues);
+    expect(applied).to.equal({
+      reading: {
+        totalFlag: false,
+        total: undefined
+      }
+    });
+  });
+});
+
 experiment('applySingleTotalAbstractionDates', () => {
   test('sets the data for a default period', async () => {
     const formValues = {
@@ -594,7 +606,10 @@ experiment('applySingleTotalAbstractionDates', () => {
     };
 
     const data = {
-      reading: {}
+      reading: {},
+      metadata: {
+        nald: {}
+      }
     };
 
     const applied = applySingleTotalAbstractionDates(data, formValues);
@@ -614,6 +629,9 @@ experiment('applySingleTotalAbstractionDates', () => {
         totalCustomDates: true,
         totalCustomDateStart: '2018-01-01',
         totalCustomDateEnd: '2018-01-02'
+      },
+      metadata: {
+        nald: {}
       }
     };
 
@@ -640,5 +658,57 @@ experiment('applySingleTotalAbstractionDates', () => {
     expect(applied.reading.totalCustomDates).to.be.true();
     expect(applied.reading.totalCustomDateStart).to.equal('2018-01-01');
     expect(applied.reading.totalCustomDateEnd).to.equal('2018-01-02');
+  });
+
+  test('updates lines to match abstraction period for default abstraction period', async () => {
+    const formValues = { totalCustomDates: false };
+
+    testReturn.reading.total = 100;
+    testReturn.reading.totalFlag = true;
+
+    const data = applySingleTotalAbstractionDates(testReturn, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01',
+        endDate: '2017-11-30',
+        period: 'month',
+        quantity: 50 },
+      { startDate: '2017-12-01',
+        endDate: '2017-12-31',
+        period: 'month',
+        quantity: null },
+      { startDate: '2018-01-01',
+        endDate: '2018-01-31',
+        period: 'month',
+        quantity: 50 }
+    ]);
+  });
+
+  test('updates lines to match abstraction period for custom abstraction period', async () => {
+    const formValues = {
+      totalCustomDates: true,
+      totalCustomDateStart: '2017-12-01',
+      totalCustomDateEnd: '2018-01-01'
+    };
+
+    testReturn.reading.total = 100;
+    testReturn.reading.totalFlag = true;
+
+    const data = applySingleTotalAbstractionDates(testReturn, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01',
+        endDate: '2017-11-30',
+        period: 'month',
+        quantity: null },
+      { startDate: '2017-12-01',
+        endDate: '2017-12-31',
+        period: 'month',
+        quantity: 100 },
+      { startDate: '2018-01-01',
+        endDate: '2018-01-31',
+        period: 'month',
+        quantity: null }
+    ]);
   });
 });

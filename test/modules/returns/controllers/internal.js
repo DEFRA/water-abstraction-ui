@@ -521,7 +521,10 @@ experiment('internal returns controller', () => {
             requiredLines: [
               { startDate: '2019-01-01', endDate: '2019-02-01' },
               { startDate: '2019-02-01', endDate: '2019-03-01' }
-            ]
+            ],
+            metadata: {
+              nald: {}
+            }
           },
           view: {}
         },

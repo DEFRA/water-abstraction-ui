@@ -250,15 +250,9 @@ const postSingleTotal = async (request, h) => {
   const form = forms.handleRequest(singleTotalForm(request, data), request, singleTotalSchema);
 
   if (form.isValid) {
-    // Persist to session
-    const { isSingleTotal, total } = forms.getValues(form);
-
-    const d = isSingleTotal ? applySingleTotal(data, total) : data;
-    set(d, 'reading.totalFlag', isSingleTotal);
-
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_SINGLE_TOTAL, request, d));
+    const updatedData = applySingleTotal(data, forms.getValues(form));
+    sessionHelpers.saveSessionData(request, updatedData);
+    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_SINGLE_TOTAL, request, updatedData));
   }
 
   return h.view('water/returns/internal/form', {

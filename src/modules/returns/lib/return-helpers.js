@@ -17,26 +17,28 @@ const applyExternalUser = (data) => {
   return d;
 };
 
-/**
- * Applies single total to lines by distributing the value among all
- * lines within abstraction period
- * Period start day/month
- * Period end day/month
- * @param {Object} data - return data model
- * @param {Number} total - single total value
- * @return {Object} data - updated return data model
- */
-const applySingleTotal = (data, total) => {
-  const d = cloneDeep(data);
+const applySingleTotal = (data, formData) => {
+  const updatedReturnData = cloneDeep(data);
+  const { isSingleTotal, total } = formData;
 
-  // Set single total
-  set(d, 'reading.totalFlag', true);
-  set(d, 'reading.total', total);
+  updatedReturnData.reading.totalFlag = isSingleTotal;
+  updatedReturnData.reading.total = isSingleTotal ? total : undefined;
+  return updatedReturnData;
+};
+
+const applySingleTotalAbstractionDates = (data, formValues) => {
+  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = formValues;
+  const clone = cloneDeep(data);
+
+  clone.reading = Object.assign({}, clone.reading, {
+    totalCustomDates,
+    totalCustomDateStart: totalCustomDates ? totalCustomDateStart : null,
+    totalCustomDateEnd: totalCustomDates ? totalCustomDateEnd : null
+  });
 
   // Get period start/end and convert to integers
-  const options = getPeriodStartEnd(d);
-
-  const lines = getFormLines(d);
+  const options = getPeriodStartEnd(clone);
+  const lines = getFormLines(clone);
 
   // Find which return lines are within abstraction period
   if (lines) {
@@ -47,9 +49,9 @@ const applySingleTotal = (data, total) => {
       return acc;
     }, []);
 
-    const perMonth = total / indexes.length;
+    const perMonth = clone.reading.total / indexes.length;
 
-    d.lines = lines.map((line, i) => {
+    clone.lines = lines.map((line, i) => {
       return {
         ...line,
         quantity: indexes.includes(i) ? perMonth : null
@@ -57,7 +59,7 @@ const applySingleTotal = (data, total) => {
     });
   }
 
-  return d;
+  return clone;
 };
 
 /**
@@ -388,20 +390,6 @@ const getLinesWithReadings = (data) => {
  */
 const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
-};
-
-const applySingleTotalAbstractionDates = (data, formValues) => {
-  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = formValues;
-  const clone = cloneDeep(data);
-
-  const reading = Object.assign({}, clone.reading, {
-    totalCustomDates,
-    totalCustomDateStart: totalCustomDates ? totalCustomDateStart : null,
-    totalCustomDateEnd: totalCustomDates ? totalCustomDateEnd : null
-  });
-
-  clone.reading = reading;
-  return clone;
 };
 
 module.exports = {

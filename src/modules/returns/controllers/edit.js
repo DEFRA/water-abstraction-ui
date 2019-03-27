@@ -17,8 +17,6 @@ const {
   meterResetForm
 } = require('../forms/');
 
-const { returns } = require('../../../lib/connectors/water');
-
 const {
   applySingleTotal, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
@@ -42,8 +40,7 @@ const helpers = require('../lib/helpers');
  */
 const getAmounts = async (request, h) => {
   const { returnId } = request.query;
-
-  const data = await returns.getReturn(returnId);
+  const { view, data } = request.returns;
 
   // Check CRM ownership of document
   const filter = { system_external_id: data.licenceNumber };
@@ -56,8 +53,6 @@ const getAmounts = async (request, h) => {
   if (!(returnPath.isInternalEdit(data, request) || permissions.isExternalReturns(request))) {
     throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
   }
-
-  const view = await helpers.getViewData(request, data);
 
   data.versionNumber = (data.versionNumber || 0) + 1;
   sessionHelpers.saveSessionData(request, applyExternalUser(data));

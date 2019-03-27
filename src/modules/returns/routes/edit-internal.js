@@ -52,7 +52,8 @@ module.exports = {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
           activeNavLink: 'view',
           showMeta: true
-        }
+        },
+        returns: true
       }
     }
   },

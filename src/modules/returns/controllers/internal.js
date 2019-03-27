@@ -186,10 +186,7 @@ const getQueryLogged = async (request, h) => {
 };
 
 const getDateReceived = async (request, h) => {
-  const { returnId } = request.query;
-
-  const data = await returns.getReturn(returnId);
-  const view = await helpers.getViewData(request, data);
+  const { view, data } = request.returns;
 
   return h.view('water/returns/internal/form', {
     ...view,
@@ -200,8 +197,7 @@ const getDateReceived = async (request, h) => {
 };
 
 const postDateReceived = async (request, h) => {
-  const data = await returns.getReturn(request.query.returnId);
-  const view = await helpers.getViewData(request, data);
+  const { view, data } = request.returns;
 
   const form = handleRequest(returnReceivedForm(request, data), request);
 

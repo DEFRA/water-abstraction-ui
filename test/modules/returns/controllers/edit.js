@@ -213,28 +213,28 @@ experiment('edit controller', () => {
     sandbox.restore();
   });
   experiment('getAmounts', () => {
-    test('it should render returns/internal/form page with returns data', async () => {
+    test('renders returns/internal/form page with returns data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
       expect(template).to.equal('water/returns/internal/form');
-      expect(view.return.data).to.equal(returns.data);
+      expect(view.return).to.equal(request.returns.data);
     });
-    test('it should call getPreviousPath with STEP_START, request and returns.data', async () => {
+
+    test('calls getPreviousPath with STEP_START, request and returns.data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
 
-      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, { ...returns, versionNumber: 2 });
+      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, request.returns.data);
 
       expect(getPreviousPathCalled).to.be.true();
     });
+
     test('throws a Boom unauthorized error if no documentHeaders', async () => {
       helpers.getLicenceNumbers.returns([]);
       try {

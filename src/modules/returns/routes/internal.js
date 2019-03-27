@@ -182,7 +182,8 @@ module.exports = {
           pageTitle: 'Abstraction return - enter date received',
           activeNavLink: 'view',
           showMeta: false
-        }
+        },
+        returns: true
       }
     }
   },
@@ -212,7 +213,8 @@ module.exports = {
           pageTitle: 'Abstraction return - enter date received',
           activeNavLink: 'view',
           showMeta: false
-        }
+        },
+        returns: true
       }
     }
   },

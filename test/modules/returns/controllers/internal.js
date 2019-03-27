@@ -10,9 +10,6 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const uuid = require('uuid/v4');
 
-
-const waterConnector = require('../../../../src/lib/connectors/water');
-const helpers = require('../../../../src/modules/returns/lib/helpers');
 const controller = require('../../../../src/modules/returns/controllers/internal');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers');
 
@@ -159,9 +156,23 @@ experiment('internal returns controller', () => {
     let request;
 
     beforeEach(async () => {
-      sandbox.stub(waterConnector.returns, 'getReturn').resolves({});
-      sandbox.stub(helpers, 'getViewData').resolves({});
-      request = createRequest();
+      request = {
+        returns: {
+          data: {},
+          view: {}
+        },
+        query: {
+          returnId: 'test-return-id'
+        },
+        view: {
+          csrfToken: 'test'
+        },
+        auth: {
+          credentials: {
+            scope: 'internal'
+          }
+        }
+      };
 
       h = {
         view: sinon.stub()
@@ -186,9 +197,11 @@ experiment('internal returns controller', () => {
     let request;
 
     beforeEach(async () => {
-      sandbox.stub(waterConnector.returns, 'getReturn').resolves({});
-      sandbox.stub(helpers, 'getViewData').resolves({});
       request = {
+        returns: {
+          data: {},
+          view: {}
+        },
         query: {
           returnId: 'test-return-id'
         },

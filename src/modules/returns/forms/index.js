@@ -12,6 +12,7 @@ const {
   singleTotalAbstractionPeriodSchema
 } = require('./single-total-abstraction-period');
 const { returnReceivedForm } = require('./return-received');
+const { meterUsedForm, meterUsedSchema } = require('./meter-used');
 
 module.exports = {
   amountsForm: require('./amounts'),
@@ -35,5 +36,7 @@ module.exports = {
   meterDetailsProvidedForm,
   singleTotalAbstractionPeriodForm,
   singleTotalAbstractionPeriodSchema,
-  returnReceivedForm
+  returnReceivedForm,
+  meterUsedForm,
+  meterUsedSchema
 };

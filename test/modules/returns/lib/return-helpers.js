@@ -12,7 +12,8 @@ const {
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
   applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset,
-  applyReceivedDate, applyMeterDetailsProvided, applySingleTotalAbstractionDates
+  applyReceivedDate, applyMeterDetailsProvided, applySingleTotalAbstractionDates,
+  applyReadingType
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -640,5 +641,17 @@ experiment('applySingleTotalAbstractionDates', () => {
     expect(applied.reading.totalCustomDates).to.be.true();
     expect(applied.reading.totalCustomDateStart).to.equal('2018-01-01');
     expect(applied.reading.totalCustomDateEnd).to.equal('2018-01-02');
+  });
+});
+
+experiment('applyReadingType', () => {
+  test('sets reading type to measured if second argument is true', async () => {
+    const data = applyReadingType({}, true);
+    expect(data.reading.type).to.equal('measured');
+  });
+
+  test('sets reading type to estimated if second argument is false', async () => {
+    const data = applyReadingType({}, false);
+    expect(data.reading.type).to.equal('estimated');
   });
 });

@@ -8,11 +8,40 @@ const {
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
+const uuidv4 = require('uuid/v4');
 
 const waterConnector = require('../../../../src/lib/connectors/water');
 const helpers = require('../../../../src/modules/returns/lib/helpers');
 const controller = require('../../../../src/modules/returns/controllers/internal');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers');
+
+const createRequest = () => ({
+  query: {
+    returnId: 'test-return-id'
+  },
+  view: {
+    csrfToken: uuidv4()
+  },
+  auth: {
+    credentials: {
+      scope: 'internal'
+    }
+  }
+});
+
+const createPostLogReceiptRequest = (isUnderQuery) => {
+  const request = createRequest();
+  return {
+    ...request,
+    payload: {
+      csrf_token: request.view.csrfToken,
+      'date_received-day': '27',
+      'date_received-month': '3',
+      'date_received-year': '2019',
+      isUnderQuery: isUnderQuery ? 'under_query' : undefined
+    }
+  };
+};
 
 experiment('internal returns controller', () => {
   beforeEach(async () => {
@@ -23,6 +52,107 @@ experiment('internal returns controller', () => {
     sandbox.restore();
   });
 
+  experiment('log receipt', () => {
+    let h, request;
+
+    beforeEach(async () => {
+      sandbox.stub(waterConnector.returns, 'getReturn').resolves({ bar: 'foo' });
+      sandbox.stub(helpers, 'getViewData').resolves({ foo: 'bar' });
+      sandbox.stub(waterConnector.returns, 'patchReturn').resolves({ error: null });
+      h = {
+        view: sandbox.stub(),
+        redirect: sandbox.stub()
+      };
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    experiment('getLogReceipt', () => {
+      beforeEach(async () => {
+        request = createRequest();
+      });
+
+      test('should get the return with the ID specified in the query', async () => {
+        await controller.getLogReceipt(request, h);
+        const [ returnId ] = waterConnector.returns.getReturn.lastCall.args;
+        expect(returnId).to.equal(request.query.returnId);
+      });
+
+      test('should get view data with the request and return data', async () => {
+        await controller.getLogReceipt(request, h);
+        const [ req, data ] = helpers.getViewData.lastCall.args;
+        expect(req).to.equal(request);
+        expect(data).to.equal({ bar: 'foo' });
+      });
+
+      test('should render the correct template', async () => {
+        await controller.getLogReceipt(request, h);
+        const [ template ] = h.view.lastCall.args;
+        expect(template).to.equal('water/returns/internal/form');
+      });
+
+      test('should pass correct data to the view', async () => {
+        await controller.getLogReceipt(request, h);
+        const [ , view ] = h.view.lastCall.args;
+        expect(view.return).to.equal({ bar: 'foo' });
+        expect(view.foo).to.equal('bar');
+        expect(view.back).to.be.a.string();
+        expect(view.form).to.be.an.object();
+      });
+    });
+
+    experiment('postLogReceipt', () => {
+      beforeEach(async () => {
+        request = createPostLogReceiptRequest();
+      });
+
+      test('should get the return with the ID specified in the query', async () => {
+        await controller.postLogReceipt(request, h);
+        const [ returnId ] = waterConnector.returns.getReturn.lastCall.args;
+        expect(returnId).to.equal(request.query.returnId);
+      });
+
+      test('should get view data with the request and return data', async () => {
+        await controller.postLogReceipt(request, h);
+        const [ req, data ] = helpers.getViewData.lastCall.args;
+        expect(req).to.equal(request);
+        expect(data).to.equal({ bar: 'foo' });
+      });
+
+      test('should re-render view if form data not valid', async () => {
+        request.payload['date_received-day'] = 'not-a-day';
+        await controller.postLogReceipt(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('water/returns/internal/form');
+      });
+
+      test('should patch the return with the correct details when not under query', async () => {
+        await controller.postLogReceipt(request, h);
+        const [ data ] = waterConnector.returns.patchReturn.lastCall.args;
+
+        expect(data.receivedDate).to.equal('2019-03-27');
+        expect(data.isUnderQuery).to.equal(false);
+        expect(data.status).to.equal('received');
+      });
+
+      test('should patch the return with the correct details when under query', async () => {
+        request = createPostLogReceiptRequest(true);
+        await controller.postLogReceipt(request, h);
+        const [ data ] = waterConnector.returns.patchReturn.lastCall.args;
+        expect(data.receivedDate).to.equal('2019-03-27');
+        expect(data.isUnderQuery).to.equal(true);
+        expect(data.status).to.equal('received');
+      });
+
+      test('should redirect', async () => {
+        await controller.postLogReceipt(request, h);
+        expect(h.redirect.callCount).to.equal(1);
+      });
+    });
+  });
+
   experiment('getDateReceived', () => {
     let h;
     let request;
@@ -30,19 +160,7 @@ experiment('internal returns controller', () => {
     beforeEach(async () => {
       sandbox.stub(waterConnector.returns, 'getReturn').resolves({});
       sandbox.stub(helpers, 'getViewData').resolves({});
-      request = {
-        query: {
-          returnId: 'test-return-id'
-        },
-        view: {
-          csrfToken: 'test'
-        },
-        auth: {
-          credentials: {
-            scope: 'internal'
-          }
-        }
-      };
+      request = createRequest();
 
       h = {
         view: sinon.stub()

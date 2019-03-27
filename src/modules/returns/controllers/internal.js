@@ -127,9 +127,10 @@ const postLogReceipt = async (request, h) => {
   const form = handleRequest(logReceiptForm(request, data), request, logReceiptSchema());
 
   if (form.isValid) {
-    // Apply received date and status to return data
-    const { date_received: receivedDate } = getValues(form);
-    let d = applyStatus(data, 'received', receivedDate);
+    const formValues = getValues(form);
+
+    let d = applyStatus(data, 'received', formValues.date_received);
+    d = applyUnderQuery(d, formValues);
     d = applyUserDetails(d, request.auth.credentials);
 
     // Patch returns service via water service

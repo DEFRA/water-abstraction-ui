@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { set } = require('lodash');
+const { get, set, findLastKey } = require('lodash');
 const Boom = require('boom');
 const forms = require('../../../lib/forms');
 const logger = require('../../../lib/logger');
@@ -11,19 +11,20 @@ const logger = require('../../../lib/logger');
 const {
   amountsForm, methodForm, confirmForm, unitsForm,
   singleTotalForm, singleTotalSchema,
-  basisForm, basisSchema,
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
-  meterUnitsForm, meterReadingsForm, meterReadingsSchema
+  meterUnitsForm, meterReadingsForm, meterReadingsSchema,
+  meterResetForm
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
 
 const {
-  applySingleTotal, applyBasis, applyQuantities,
+  applySingleTotal, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
-  getLinesWithReadings, applyStatus, applyUnderQuery
+  getLinesWithReadings, applyStatus, applyUnderQuery,
+  applyMeterReset
 } = require('../lib/return-helpers');
 
 const returnPath = require('../lib/return-path');
@@ -209,7 +210,7 @@ const getUnits = async (request, h) => {
 };
 
 /**
- * Post handler for units form
+ * Post handler for units form - deals with Volumes or Estimates
  */
 const postUnits = async (request, h) => {
   const { data, view } = request.returns;
@@ -275,6 +276,7 @@ const postSingleTotal = async (request, h) => {
 /**
  * What is the basis for the return - amounts/pump/herd
  */
+/*
 const getBasis = async (request, h) => {
   const { data, view } = request.returns;
 
@@ -285,10 +287,12 @@ const getBasis = async (request, h) => {
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_BASIS, request, data)
   });
 };
+*/
 
 /**
  * Post handler for basis form
  */
+/*
 const postBasis = async (request, h) => {
   const { data, view } = request.returns;
   const form = forms.handleRequest(basisForm(request, data), request, basisSchema);
@@ -306,6 +310,7 @@ const postBasis = async (request, h) => {
     return: data
   });
 };
+*/
 
 /**
  * Screen for user to enter quantities
@@ -350,18 +355,24 @@ const getConfirm = async (request, h) => {
   const lines = getLinesWithReadings(data);
   const form = confirmForm(request, data, `/return/confirm`);
 
+  const isReadings = get(data, 'reading.method') === 'oneMeter';
+  const endReadingKey = findLastKey(get(data, 'meters[0].readings'), key => key > 0);
+
   return h.view('water/returns/internal/confirm', {
     ...view,
     return: data,
     lines,
     form,
     total: helpers.getReturnTotal(data),
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data)
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data),
+    makeChangePath: isReadings ? '/return/meter/readings' : 'return/quantities',
+    endReading: get(data, `meters[0].readings.${endReadingKey}`)
   });
 };
 
 const getMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
+
   return h.view('water/returns/meter-details', {
     ...view,
     form: meterDetailsForm(request, data),
@@ -405,9 +416,39 @@ const postMeterUnits = async (request, h) => {
 
   if (form.isValid) {
     const d = applyMeterUnits(data, forms.getValues(form));
+
     sessionHelpers.saveSessionData(request, d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_UNITS, request, d));
+  }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
+const getMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form: meterResetForm(request, data),
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
+  });
+};
+
+const postMeterReset = async (request, h) => {
+  const { view, data } = request.returns;
+  const form = forms.handleRequest(meterResetForm(request, data), request);
+
+  if (form.isValid) {
+    const d = applyMeterReset(data, forms.getValues(form));
+    sessionHelpers.saveSessionData(request, d);
+
+    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
   }
 
   return h.view('water/returns/internal/form', {
@@ -466,8 +507,6 @@ module.exports = {
   postUnits,
   getSingleTotal,
   postSingleTotal,
-  getBasis,
-  postBasis,
   getQuantities,
   postQuantities,
   getConfirm,
@@ -476,6 +515,8 @@ module.exports = {
   postMeterDetails,
   getMeterUnits,
   postMeterUnits,
+  getMeterReset,
+  postMeterReset,
   getMeterReadings,
   postMeterReadings
 };

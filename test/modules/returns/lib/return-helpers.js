@@ -12,7 +12,7 @@ const {
   isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery
+  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -89,11 +89,6 @@ lab.experiment('Return reducers', () => {
         endDate: '2018-01-31',
         period: 'month',
         quantity: 50 } ]);
-  });
-
-  lab.test('applyBasis should set the estimated/measured property', async () => {
-    const data = applyBasis(testReturn, { basis: 'estimated' });
-    expect(data.reading.type).to.equal('estimated');
   });
 
   lab.test('applyQuantities should set the lines array', async () => {
@@ -222,10 +217,6 @@ lab.experiment('applyMeterDetails', () => {
     expect(data.meters[0].serialNumber).to.equal('test-serial');
   });
 
-  lab.test('adds the start reading number', async () => {
-    expect(data.meters[0].startReading).to.equal(1544);
-  });
-
   lab.test('sets multiplier to 1 if undefined', async () => {
     expect(data.meters[0].multiplier).to.equal(1);
   });
@@ -304,6 +295,22 @@ lab.experiment('applyMeterReadings', () => {
     expect(data.meters[0].readings).to.equal(omit(formValues, 'csrf_token'));
   });
 
+  lab.test('adds the start reading number', async () => {
+    const returnData = getTestReturnWithMeter();
+
+    const formValues = {
+      'startReading': 1544,
+      '2017-11-01_2017-11-30': 1,
+      '2017-12-01_2017-12-31': 2,
+      '2018-01-01_2018-01-31': 3,
+      csrf_token: '00000000-0000-0000-0000-000000000000'
+    };
+
+    const data = applyMeterReadings(returnData, formValues);
+
+    expect(data.meters[0].startReading).to.equal(1544);
+  });
+
   lab.test('sets abstraction volumes to 0 for null meter readings inside abstraction period, and null outside', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
@@ -324,6 +331,7 @@ lab.experiment('applyMeterReadings', () => {
   lab.test('sets abstraction volumes based on the start reading', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
+      'startReading': 100,
       '2017-11-01_2017-11-30': 150,
       '2017-12-01_2017-12-31': 250,
       '2018-01-01_2018-01-31': 255
@@ -342,6 +350,7 @@ lab.experiment('applyMeterReadings', () => {
     const tenTimesMeter = { startReading: 100, multiplier: 10, units: 'm³' };
     const returnData = getTestReturnWithMeter(tenTimesMeter);
     const formValues = {
+      'startReading': 100,
       '2017-11-01_2017-11-30': 150,
       '2017-12-01_2017-12-31': 250,
       '2018-01-01_2018-01-31': 255
@@ -359,6 +368,7 @@ lab.experiment('applyMeterReadings', () => {
   lab.test('handles a mixture of null and numeric meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
+      'startReading': 100,
       '2017-11-01_2017-11-30': 150,
       '2017-12-01_2017-12-31': null,
       '2018-01-01_2018-01-31': 255
@@ -376,6 +386,7 @@ lab.experiment('applyMeterReadings', () => {
   lab.test('sets the volume to 0 for identical meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
+      'startReading': 100,
       '2017-11-01_2017-11-30': 100,
       '2017-12-01_2017-12-31': 100,
       '2018-01-01_2018-01-31': 250
@@ -491,5 +502,35 @@ lab.experiment('applyUnderQuery', () => {
   lab.test('clear under query flag', async () => {
     const ret = applyUnderQuery(testReturn, { isUnderQuery: false });
     expect(ret.isUnderQuery).to.equal(false);
+  });
+});
+
+lab.experiment('applyMeterReset', () => {
+  const returnData = {
+    reading: {
+      method: 'oneMeter'
+    },
+    meters: [{
+      startReading: 5,
+      readings: {
+        '2017-10-01_2017-10-31': 10,
+        '2017-11-01_2017-11-30': 15,
+        '2017-12-01_2017-12-31': null,
+        '2018-01-01_2018-01-31': 17
+      },
+      units: 'L'
+    }]
+  };
+  lab.test('returns data if meterReset is false', async () => {
+    const data = applyMeterReset(returnData, { meterReset: false });
+    expect(data.reading.method).to.equal('oneMeter');
+  });
+  lab.test('removes meter details if meterReset is true', async () => {
+    const data = applyMeterReset(returnData, { meterReset: true });
+    expect(data.meters).to.equal([{}]);
+  });
+  lab.test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
+    const data = applyMeterReset(returnData, { meterReset: true });
+    expect(data.reading.method).to.equal('abstractionVolumes');
   });
 });

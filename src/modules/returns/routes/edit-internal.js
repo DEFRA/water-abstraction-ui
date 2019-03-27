@@ -258,44 +258,6 @@ module.exports = {
     }
   },
 
-  getBasis: {
-    method: 'GET',
-    path: '/admin/return/basis',
-    handler: controller.getBasis,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Get basis for supplied return data',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postBasis: {
-    method: 'POST',
-    path: '/admin/return/basis',
-    handler: controller.postBasis,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for records basis',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
   getQuantities: {
     method: 'GET',
     path: '/admin/return/quantities',

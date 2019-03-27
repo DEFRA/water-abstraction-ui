@@ -22,7 +22,7 @@ const confirmForm = (request, data, action = `/return/nil-return`) => {
     }, checked));
   }
 
-  f.fields.push(fields.button(null, { label: 'Submit return' }));
+  f.fields.push(fields.button(null, { label: 'Submit' }));
 
   return f;
 };

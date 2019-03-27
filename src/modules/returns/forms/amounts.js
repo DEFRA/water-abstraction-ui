@@ -9,7 +9,7 @@ const amountsForm = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isNil', {
-    label: 'Has any water been abstracted in this return period?',
+    label: 'Have you abstracted water in this return period?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {
@@ -19,7 +19,7 @@ const amountsForm = (request) => {
     choices: [
       { value: false, label: 'Yes' },
       { value: true, label: 'No' }
-    ]}));
+    ] }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

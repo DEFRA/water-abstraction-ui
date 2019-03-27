@@ -5,10 +5,10 @@ const { getMeter } = require('../lib/return-helpers');
 const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 
 const textFieldManufacturer = fields.text('manufacturer', {
-  label: 'Manufacturer',
+  label: 'Make',
   errors: {
-    'any.required': { message: 'Enter a manufacturer' },
-    'any.empty': { message: 'Enter a manufacturer' }
+    'any.required': { message: 'Enter the make of your meter' },
+    'any.empty': { message: 'Enter the make of your meter' }
   }
 });
 
@@ -17,15 +17,6 @@ const textFieldSerialNumber = fields.text('serialNumber', {
   errors: {
     'any.required': { message: 'Enter a serial number' },
     'any.empty': { message: 'Enter a serial number' }
-  }
-});
-
-const textFieldStartReading = fields.text('startReading', {
-  label: 'Meter start reading',
-  errors: {
-    'number.base': { message: 'Enter a meter start reading' },
-    'any.required': { message: 'Enter a meter start reading' },
-    'number.positive': { message: 'This number should be positive' }
   }
 });
 
@@ -49,10 +40,6 @@ const form = (request, data) => {
 
   f.fields.push(textFieldManufacturer);
   f.fields.push(textFieldSerialNumber);
-
-  if (!isVolumes) {
-    f.fields.push(textFieldStartReading);
-  }
 
   // Checkbox internal type is array
   const checked = meter.multiplier === 10 ? ['multiply'] : [];
@@ -84,10 +71,6 @@ const meterDetailsSchema = (data) => {
     isMultiplier: Joi.array().items(Joi.string().valid('multiply')),
     csrf_token: Joi.string().guid().required()
   };
-
-  if (!isVolumes) {
-    schema.startReading = Joi.number().positive().allow(0).required();
-  }
 
   return schema;
 };

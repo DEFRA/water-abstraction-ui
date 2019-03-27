@@ -29,7 +29,13 @@ module.exports = {
       auth: {
         scope: scope.licenceHolder
       },
-      description: 'Manage licences - give/remove access'
+      description: 'Manage licences - give/remove access',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Give access to your licences',
+          activeNavLink: 'manage'
+        }
+      }
     }
   },
   getRemoveAccess: {

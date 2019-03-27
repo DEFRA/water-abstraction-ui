@@ -59,14 +59,14 @@ const getLicenceAccessListViewModel = async userEntityID => {
  * @param {Object} [context] - additional view context data
  */
 
-async function getAccessList (request, reply, context = {}) {
+async function getAccessList (request, h, context = {}) {
   const { entity_id: entityId } = request.auth.credentials;
   const viewContext = Object.assign(request.view, context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Give access to your licences';
   viewContext.entity_id = entityId;
   viewContext.licenceAccess = await getLicenceAccessListViewModel(entityId);
-  return reply.view('water/manage-licences/manage_licences_access', viewContext);
+  return h.view('nunjucks/manage-licences/access-list.njk', viewContext, {
+    layout: false
+  });
 }
 
 /**

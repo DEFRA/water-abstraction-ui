@@ -45,7 +45,9 @@ experiment('meter-details-provided', () => {
   });
 
   test('sets the data if provided', async () => {
-    data.meterDetailsProvided = true;
+    data.meters = [
+      { meterDetailsProvided: true }
+    ];
     const form = meterDetailsProvidedForm(request, data);
     const meterDetails = form.fields.find(x => x.name === 'meterDetailsProvided');
 

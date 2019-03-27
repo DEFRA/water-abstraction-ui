@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getPath } = require('../lib/flow-helpers');
 const { STEP_METER_DETAILS_PROVIDED } = require('../lib/flow-helpers');
@@ -27,7 +28,8 @@ const form = (request, data = {}) => {
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
-  return setValues(f, data);
+  const firstMeter = get(data, 'meters[0]', {});
+  return setValues(f, firstMeter);
 };
 
 const schema = {

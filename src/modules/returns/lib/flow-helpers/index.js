@@ -27,7 +27,7 @@ const getPath = (path, request, data) => {
 
 const getNextPath = (current, request, data, direction = 'next') => {
   const flows = permissions.isInternal(request) ? internalFlows : externalFlows;
-  const step = flows[direction][current](request, data);
+  const step = flows[direction][current](data);
   return getPath(step, request, data);
 };
 

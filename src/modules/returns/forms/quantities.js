@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
 const { STEP_QUANTITIES, getPath } = require('../lib/flow-helpers');
@@ -6,13 +7,16 @@ const { getSuffix } = require('../lib/helpers');
 
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
+  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
 
   const action = getPath(STEP_QUANTITIES, request);
 
   const f = formFactory(action);
 
-  f.fields.push(fields.paragraph(null, { element: 'h2', controlClass: 'heading-medium', text: `Abstraction volumes` }));
-  f.fields.push(fields.paragraph(null, { element: 'p', text: `Enter volumes for the end of each ${data.frequency}.` }));
+  f.fields.push(fields.paragraph(null, { element: 'h2', controlClass: 'heading-medium', text: `Your abstraction volumes` }));
+  if (isVolumes) {
+    f.fields.push(fields.paragraph(null, { element: 'p', text: `Remember if you have a x10 meter you need to multiply your volumes.` }));
+  }
 
   const suffix = getSuffix(data.reading.units);
 

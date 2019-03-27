@@ -12,7 +12,7 @@ const {
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
   applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset,
-  applyReceivedDate, applyMeterDetailsProvided
+  applyReceivedDate, applyMeterDetailsProvided, applySingleTotalAbstractionDates
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -584,5 +584,61 @@ experiment('applyMeterDetailsProvided', () => {
     const applied = applyMeterDetailsProvided(data, formValues);
 
     expect(applied.meters[0]).to.equal({ meterDetailsProvided: false });
+  });
+});
+
+experiment('applySingleTotalAbstractionDates', () => {
+  test('sets the data for a default period', async () => {
+    const formValues = {
+      totalCustomDates: false
+    };
+
+    const data = {
+      reading: {}
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.false();
+    expect(applied.reading.totalCustomDateStart).to.be.null();
+    expect(applied.reading.totalCustomDateEnd).to.be.null();
+  });
+
+  test('makes start and end null when changing to default period', async () => {
+    const formValues = {
+      totalCustomDates: false
+    };
+
+    const data = {
+      reading: {
+        totalCustomDates: true,
+        totalCustomDateStart: '2018-01-01',
+        totalCustomDateEnd: '2018-01-02'
+      }
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.false();
+    expect(applied.reading.totalCustomDateStart).to.be.null();
+    expect(applied.reading.totalCustomDateEnd).to.be.null();
+  });
+
+  test('sets the data for a custom period', async () => {
+    const formValues = {
+      totalCustomDates: true,
+      totalCustomDateStart: '2018-01-01',
+      totalCustomDateEnd: '2018-01-02'
+    };
+
+    const data = {
+      reading: {}
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.true();
+    expect(applied.reading.totalCustomDateStart).to.equal('2018-01-01');
+    expect(applied.reading.totalCustomDateEnd).to.equal('2018-01-02');
   });
 });

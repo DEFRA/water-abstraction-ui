@@ -19,7 +19,6 @@ const form = (request, data) => {
 
   f.fields.push(fields.radio('totalCustomDates', {
     label: 'What period was used for this volume?',
-    mapper: 'booleanMapper',
     errors: {
       'any.required': {
         summary: 'Select the period used for this volume',

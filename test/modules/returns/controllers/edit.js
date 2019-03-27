@@ -738,4 +738,50 @@ experiment('edit controller', () => {
       expect(view.return).to.equal(request.returns.data);
     });
   });
+
+  experiment('getMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should use correct template', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+    });
+
+    test('is should provide data to view', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.be.a.string();
+      expect(view.form).to.be.an.object();
+      expect(view.return).to.be.an.object();
+    });
+  });
+
+  experiment('postMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should re-render page if form not valid', async () => {
+      forms.handleRequest.returns({ isValid: false });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+    });
+
+    test('it should call getNextPath with STEP_METER_USED, request', async () => {
+      forms.handleRequest.returns({ isValid: true });
+      forms.getValues.returns({ meterUsed: true });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_USED, request);
+
+      expect(getNextPathCalled).to.be.true();
+    });
+  });
 });

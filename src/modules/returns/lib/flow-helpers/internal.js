@@ -13,8 +13,8 @@ const {
   STEP_UNITS,
   STEP_SINGLE_TOTAL,
   STEP_SINGLE_TOTAL_DATES,
-  STEP_BASIS,
   STEP_QUANTITIES,
+  STEP_METER_USED,
   STEP_METER_DETAILS_PROVIDED,
   STEP_METER_DETAILS,
   STEP_METER_UNITS,
@@ -60,8 +60,9 @@ const next = {
     if (isMeterDetailsProvided(data)) {
       return STEP_METER_DETAILS;
     }
-    return isVolumes(data) ? STEP_SINGLE_TOTAL : STEP_METER_READINGS;
+    return isVolumes(data) ? STEP_METER_USED : STEP_METER_READINGS;
   },
+  [STEP_METER_USED]: () => STEP_SINGLE_TOTAL,
   [STEP_METER_DETAILS]: (data) => {
     return isVolumes(data) ? STEP_SINGLE_TOTAL : STEP_METER_READINGS;
   },
@@ -78,10 +79,9 @@ const previous = {
   [STEP_METHOD]: () => STEP_START,
   [STEP_UNITS]: () => STEP_INTERNAL_METHOD,
   [STEP_SINGLE_TOTAL]: (data) => {
-    return isMeterDetailsProvided(data) ? STEP_METER_DETAILS : STEP_METER_DETAILS_PROVIDED;
+    return isMeterDetailsProvided(data) ? STEP_METER_DETAILS : STEP_METER_USED;
   },
   [STEP_SINGLE_TOTAL_DATES]: () => STEP_SINGLE_TOTAL,
-  [STEP_BASIS]: () => STEP_SINGLE_TOTAL,
   [STEP_QUANTITIES]: (data) => {
     return isSingleTotal(data) ? STEP_SINGLE_TOTAL_DATES : STEP_SINGLE_TOTAL;
   },
@@ -89,6 +89,7 @@ const previous = {
     return isVolumes(data) ? STEP_QUANTITIES : STEP_METER_READINGS;
   },
   [STEP_METER_DETAILS_PROVIDED]: () => STEP_UNITS,
+  [STEP_METER_USED]: () => STEP_METER_DETAILS_PROVIDED,
   [STEP_METER_DETAILS]: () => STEP_METER_DETAILS_PROVIDED,
   [STEP_METER_UNITS]: () => STEP_METER_DETAILS,
   [STEP_METER_READINGS]: (data) => {

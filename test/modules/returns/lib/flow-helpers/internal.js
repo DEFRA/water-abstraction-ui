@@ -110,8 +110,20 @@ experiment('internal returns flow: ', () => {
       expect(result).to.equal(steps.STEP_METER_READINGS);
     });
 
-    test('next step is STEP_SINGLE_TOTAL if abstraction volumes', async () => {
+    test('next step is STEP_METER_USED if abstraction volumes', async () => {
       const result = internal.next[steps.STEP_METER_DETAILS_PROVIDED](data.volumes);
+      expect(result).to.equal(steps.STEP_METER_USED);
+    });
+  });
+
+  experiment('for STEP_METER_USED', () => {
+    test('previous step is STEP_METER_DETAILS_PROVIDED', async () => {
+      const result = internal.previous[steps.STEP_METER_USED]();
+      expect(result).to.equal(steps.STEP_METER_DETAILS_PROVIDED);
+    });
+
+    test('next step is STEP_SINGLE_TOTAL', async () => {
+      const result = internal.next[steps.STEP_METER_USED](data.withMeterDetails);
       expect(result).to.equal(steps.STEP_SINGLE_TOTAL);
     });
   });
@@ -168,9 +180,9 @@ experiment('internal returns flow: ', () => {
   });
 
   experiment('for STEP_SINGLE_TOTAL', () => {
-    test('previous step is STEP_METER_DETAILS_PROVIDED if no meter details', async () => {
+    test('previous step is STEP_METER_USED if no meter details', async () => {
       const result = internal.previous[steps.STEP_SINGLE_TOTAL](data.withoutMeterDetails);
-      expect(result).to.equal(steps.STEP_METER_DETAILS_PROVIDED);
+      expect(result).to.equal(steps.STEP_METER_USED);
     });
 
     test('previous step is STEP_METER_DETAILS if meter details provided', async () => {

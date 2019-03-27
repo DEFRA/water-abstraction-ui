@@ -10,6 +10,7 @@ const STEP_NIL_RETURN = '/return/nil-return';
 const STEP_METHOD = '/return/method';
 const STEP_INTERNAL_METHOD = '/return/internal-method';
 const STEP_METER_DETAILS_PROVIDED = '/return/meter/details-provided';
+const STEP_METER_USED = '/return/meter/used';
 const STEP_METER_DETAILS = '/return/meter/details';
 const STEP_METER_UNITS = '/return/meter/units';
 const STEP_METER_READINGS = '/return/meter/readings';
@@ -37,6 +38,7 @@ module.exports = {
   STEP_SINGLE_TOTAL_DATES,
   STEP_QUANTITIES,
   STEP_METER_DETAILS_PROVIDED,
+  STEP_METER_USED,
   STEP_METER_DETAILS,
   STEP_METER_UNITS,
   STEP_METER_READINGS,

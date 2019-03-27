@@ -14,7 +14,8 @@ const {
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
   meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  meterResetForm
+  meterResetForm,
+  meterUsedForm, meterUsedSchema
 } = require('../forms/');
 
 const { returns } = require('../../../lib/connectors/water');
@@ -24,7 +25,7 @@ const {
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
   getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset
+  applyMeterReset, applyReadingType
 } = require('../lib/return-helpers');
 
 const returnPath = require('../lib/return-path');
@@ -496,6 +497,43 @@ const postMeterReadings = async (request, h) => {
   });
 };
 
+/**
+ * Displays a screen for internal user to specify whether meter was used.
+ * This disambiguates estimated/measured when volumes but no meter details
+ * provided
+ */
+const getMeterUsed = (request, h) => {
+  const { view, data } = request.returns;
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form: meterUsedForm(request, data),
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_USED, request, data)
+  });
+};
+
+/**
+ * Post handler for internal user to specify whether meter was used.
+ */
+const postMeterUsed = (request, h) => {
+  const { view, data } = request.returns;
+  const form = forms.handleRequest(meterUsedForm(request, data), request, meterUsedSchema);
+
+  if (form.isValid) {
+    const { meterUsed } = forms.getValues(form);
+    const d = applyReadingType(data, meterUsed);
+    sessionHelpers.saveSessionData(request, d);
+    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_USED, request, d));
+  }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data
+  });
+};
+
 module.exports = {
   getAmounts,
   postAmounts,
@@ -518,5 +556,7 @@ module.exports = {
   getMeterReset,
   postMeterReset,
   getMeterReadings,
-  postMeterReadings
+  postMeterReadings,
+  getMeterUsed,
+  postMeterUsed
 };

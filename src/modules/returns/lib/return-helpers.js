@@ -17,26 +17,28 @@ const applyExternalUser = (data) => {
   return d;
 };
 
-/**
- * Applies single total to lines by distributing the value among all
- * lines within abstraction period
- * Period start day/month
- * Period end day/month
- * @param {Object} data - return data model
- * @param {Number} total - single total value
- * @return {Object} data - updated return data model
- */
-const applySingleTotal = (data, total) => {
-  const d = cloneDeep(data);
+const applySingleTotal = (data, formData) => {
+  const updatedReturnData = cloneDeep(data);
+  const { isSingleTotal, total } = formData;
 
-  // Set single total
-  set(d, 'reading.totalFlag', true);
-  set(d, 'reading.total', total);
+  updatedReturnData.reading.totalFlag = isSingleTotal;
+  updatedReturnData.reading.total = isSingleTotal ? total : undefined;
+  return updatedReturnData;
+};
+
+const applySingleTotalAbstractionDates = (data, formValues) => {
+  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = formValues;
+  const clone = cloneDeep(data);
+
+  clone.reading = Object.assign({}, clone.reading, {
+    totalCustomDates,
+    totalCustomDateStart: totalCustomDates ? totalCustomDateStart : null,
+    totalCustomDateEnd: totalCustomDates ? totalCustomDateEnd : null
+  });
 
   // Get period start/end and convert to integers
-  const options = getPeriodStartEnd(d);
-
-  const lines = getFormLines(d);
+  const options = getPeriodStartEnd(clone);
+  const lines = getFormLines(clone);
 
   // Find which return lines are within abstraction period
   if (lines) {
@@ -47,9 +49,9 @@ const applySingleTotal = (data, total) => {
       return acc;
     }, []);
 
-    const perMonth = total / indexes.length;
+    const perMonth = clone.reading.total / indexes.length;
 
-    d.lines = lines.map((line, i) => {
+    clone.lines = lines.map((line, i) => {
       return {
         ...line,
         quantity: indexes.includes(i) ? perMonth : null
@@ -57,7 +59,7 @@ const applySingleTotal = (data, total) => {
     });
   }
 
-  return d;
+  return clone;
 };
 
 /**
@@ -195,6 +197,15 @@ const applyMeterDetails = (data, formValues) => {
   };
 
   const meter = Object.assign(getMeter(data), details);
+  return set(clone, 'meters', [meter]);
+};
+
+const applyMeterDetailsProvided = (data, formValues) => {
+  const clone = cloneDeep(data);
+  const { meterDetailsProvided } = formValues;
+  const meter = meterDetailsProvided === true ? getMeter(data) : {};
+  meter.meterDetailsProvided = meterDetailsProvided;
+  meter.multiplier = 1;
   return set(clone, 'meters', [meter]);
 };
 
@@ -372,6 +383,29 @@ const getLinesWithReadings = (data) => {
   });
 };
 
+/**
+ * Applies the recieved date
+ * @param {Object} data - current return model data
+ * @param {Object} formValues - data collected from form
+ * @return {Object} new return model state
+ */
+const applyReceivedDate = (data, formValues) => {
+  return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
+};
+
+/**
+ * Applies measured/estimated reading type to model
+ * @param  {Object}  data       - return data model
+ * @param  {Boolean} isMeasured - whether measured / estimated
+ * @return {Object}             - updated return data model
+ */
+const applyReadingType = (data, isMeasured) => {
+  const d = cloneDeep(data);
+  const readingType = isMeasured ? 'measured' : 'estimated';
+  set(d, 'reading.type', readingType);
+  return d;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
@@ -391,5 +425,9 @@ module.exports = {
   applyMethod,
   getMeter,
   getLinesWithReadings,
-  applyUnderQuery
+  applyUnderQuery,
+  applyReceivedDate,
+  applyMeterDetailsProvided,
+  applySingleTotalAbstractionDates,
+  applyReadingType
 };

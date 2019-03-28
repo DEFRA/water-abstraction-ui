@@ -1,18 +1,19 @@
 'use strict';
 
-const Lab = require('lab');
 const moment = require('moment');
-const lab = exports.lab = Lab.script();
+const { beforeEach, test, experiment } = exports.lab = require('lab').script();
 const { omit } = require('lodash');
 
 const { expect } = require('code');
 const testReturn = require('./test-return');
 
 const {
-  isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
+  isDateWithinAbstractionPeriod, applySingleTotal,
   applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
   applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset
+  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset,
+  applyReceivedDate, applyMeterDetailsProvided, applySingleTotalAbstractionDates,
+  applyReadingType
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -44,8 +45,8 @@ const getTestReturnWithMeter = (meter = {
   return Object.assign({}, testReturn, { meters: [meter] });
 };
 
-lab.experiment('Test isDateWithinAbstractionPeriod', () => {
-  lab.test('Period start/end in same year', async () => {
+experiment('Test isDateWithinAbstractionPeriod', () => {
+  test('Period start/end in same year', async () => {
     expect(isDateWithinAbstractionPeriod('2018-01-01', sameYear)).to.equal(false);
     expect(isDateWithinAbstractionPeriod('2018-03-04', sameYear)).to.equal(false);
     expect(isDateWithinAbstractionPeriod('2018-03-05', sameYear)).to.equal(true);
@@ -54,7 +55,7 @@ lab.experiment('Test isDateWithinAbstractionPeriod', () => {
     expect(isDateWithinAbstractionPeriod('2018-12-31', sameYear)).to.equal(false);
   });
 
-  lab.test('Period start/end in different year', async () => {
+  test('Period start/end in different year', async () => {
     expect(isDateWithinAbstractionPeriod('2018-09-30', differentYear)).to.equal(false);
     expect(isDateWithinAbstractionPeriod('2018-10-01', differentYear)).to.equal(true);
     expect(isDateWithinAbstractionPeriod('2018-12-31', differentYear)).to.equal(true);
@@ -63,7 +64,7 @@ lab.experiment('Test isDateWithinAbstractionPeriod', () => {
     expect(isDateWithinAbstractionPeriod('2019-06-09', differentYear)).to.equal(false);
   });
 
-  lab.test('Period all year', async () => {
+  test('Period all year', async () => {
     expect(isDateWithinAbstractionPeriod('2017-12-31', allYear)).to.equal(true);
     expect(isDateWithinAbstractionPeriod('2018-01-01', allYear)).to.equal(true);
     expect(isDateWithinAbstractionPeriod('2018-12-31', allYear)).to.equal(true);
@@ -71,27 +72,8 @@ lab.experiment('Test isDateWithinAbstractionPeriod', () => {
   });
 });
 
-lab.experiment('Return reducers', () => {
-  lab.test('applySingleTotal should apply a single total abstraction amount and update lines to match abstraction period, with null outside abstraction period', async () => {
-    const data = applySingleTotal(testReturn, 100);
-    expect(data.reading.totalFlag).to.equal(true);
-    expect(data.reading.total).to.equal(100);
-    expect(data.lines).to.equal([
-      { startDate: '2017-11-01',
-        endDate: '2017-11-30',
-        period: 'month',
-        quantity: 50 },
-      { startDate: '2017-12-01',
-        endDate: '2017-12-31',
-        period: 'month',
-        quantity: null },
-      { startDate: '2018-01-01',
-        endDate: '2018-01-31',
-        period: 'month',
-        quantity: 50 } ]);
-  });
-
-  lab.test('applyQuantities should set the lines array', async () => {
+experiment('Return reducers', () => {
+  test('applyQuantities should set the lines array', async () => {
     const data = applyQuantities(testReturn, {
       '2017-11-01_2017-11-30': 15,
       '2017-12-01_2017-12-31': null,
@@ -112,7 +94,7 @@ lab.experiment('Return reducers', () => {
       quantity: 10.456 } ]);
   });
 
-  lab.test('applyQuantities should ignore lines for dates that are not expected', async () => {
+  test('applyQuantities should ignore lines for dates that are not expected', async () => {
     const data = applyQuantities(testReturn, {
       '1035-01-01_1035-01-31': null,
       '2017-11-01_2017-11-30': 15,
@@ -135,7 +117,7 @@ lab.experiment('Return reducers', () => {
       quantity: 10.456 } ]);
   });
 
-  lab.test('applyNilReturn set nil flag and remove lines', async () => {
+  test('applyNilReturn set nil flag and remove lines', async () => {
     const data = applyQuantities(testReturn, {
       '1035-01-01_1035-01-31': null,
       '2017-11-01_2017-11-30': 15,
@@ -150,7 +132,7 @@ lab.experiment('Return reducers', () => {
     expect(data2.isNil).to.equal(true);
   });
 
-  lab.test('applyExternalUser should clear the total value options from the return', async () => {
+  test('applyExternalUser should clear the total value options from the return', async () => {
     const data = applySingleTotal(testReturn, 100);
     const data2 = applyExternalUser(data);
 
@@ -158,14 +140,14 @@ lab.experiment('Return reducers', () => {
     expect(data2.reading.total).to.equal(null);
   });
 
-  lab.test('applyStatus should set status and received date if received date is null', async () => {
+  test('applyStatus should set status and received date if received date is null', async () => {
     const data = applyStatus(testReturn, 'due');
 
     expect(data.status).to.equal('due');
     expect(data.receivedDate).to.equal(moment().format('YYYY-MM-DD'));
   });
 
-  lab.test('applyStatus should set status and received date if received date is null', async () => {
+  test('applyStatus should set status and received date if received date is null', async () => {
     const data = applyStatus(testReturn, 'due');
     data.receivedDate = '2017-06-06';
 
@@ -175,14 +157,14 @@ lab.experiment('Return reducers', () => {
     expect(data2.receivedDate).to.equal('2017-06-06');
   });
 
-  lab.test('applyStatus should throw error if invalid status', async () => {
+  test('applyStatus should throw error if invalid status', async () => {
     const func = () => {
       applyStatus(testReturn, 'the-dog-chewed-it-up');
     };
     expect(func).to.throw();
   });
 
-  lab.test('applyUserDetails should set user details on the return object', async () => {
+  test('applyUserDetails should set user details on the return object', async () => {
     const data = applyUserDetails(testReturn, {
       username: 'test@example.com',
       scope: ['internal', 'returns'],
@@ -195,39 +177,38 @@ lab.experiment('Return reducers', () => {
   });
 });
 
-lab.experiment('applyMeterDetails', () => {
+experiment('applyMeterDetails', () => {
   let data;
   let formValues;
 
-  lab.beforeEach(async () => {
+  beforeEach(async () => {
     formValues = {
       manufacturer: 'test-manufacturer',
       serialNumber: 'test-serial',
-      startReading: 1544,
       csrf_token: 'c7c72434-5844-4827-25d5-6dac3c31136d'
     };
     data = applyMeterDetails({}, formValues);
   });
 
-  lab.test('adds the manufacturer', async () => {
+  test('adds the manufacturer', async () => {
     expect(data.meters[0].manufacturer).to.equal('test-manufacturer');
   });
 
-  lab.test('adds the serial number', async () => {
+  test('adds the serial number', async () => {
     expect(data.meters[0].serialNumber).to.equal('test-serial');
   });
 
-  lab.test('sets multiplier to 1 if undefined', async () => {
+  test('sets multiplier to 1 if undefined', async () => {
     expect(data.meters[0].multiplier).to.equal(1);
   });
 
-  lab.test('sets multiplier to 10 if true', async () => {
+  test('sets multiplier to 10 if true', async () => {
     formValues.isMultiplier = ['multiply'];
     data = applyMeterDetails({}, formValues);
     expect(data.meters[0].multiplier).to.equal(10);
   });
 
-  lab.test('does not overwrite existing readings', async () => {
+  test('does not overwrite existing readings', async () => {
     const earlierData = {
       meters: [{
         readings: {
@@ -240,47 +221,47 @@ lab.experiment('applyMeterDetails', () => {
   });
 });
 
-lab.experiment('applyMeterUnits', () => {
+experiment('applyMeterUnits', () => {
   const getFormValues = units => ({ units });
 
-  lab.test('assigns the units if "l"', async () => {
+  test('assigns the units if "l"', async () => {
     const data = applyMeterUnits({}, getFormValues('l'));
     expect(data.meters[0].units).to.equal('l');
     expect(data.reading.units).to.equal('l');
   });
 
-  lab.test('assigns the units if "m³"', async () => {
+  test('assigns the units if "m³"', async () => {
     const data = applyMeterUnits({}, getFormValues('m³'));
     expect(data.meters[0].units).to.equal('m³');
     expect(data.reading.units).to.equal('m³');
   });
 
-  lab.test('assigns the units if "Ml"', async () => {
+  test('assigns the units if "Ml"', async () => {
     const data = applyMeterUnits({}, getFormValues('Ml'));
     expect(data.meters[0].units).to.equal('Ml');
     expect(data.reading.units).to.equal('Ml');
   });
 
-  lab.test('assigns the units if "gal"', async () => {
+  test('assigns the units if "gal"', async () => {
     const data = applyMeterUnits({}, getFormValues('gal'));
     expect(data.meters[0].units).to.equal('gal');
     expect(data.reading.units).to.equal('gal');
   });
 
-  lab.test('sets reading type to measured', async () => {
+  test('sets reading type to measured', async () => {
     const data = applyMeterUnits({}, getFormValues('gal'));
     expect(data.reading.type).to.equal('measured');
   });
 
-  lab.test('throws for an unexpected value', async () => {
+  test('throws for an unexpected value', async () => {
     expect(() => {
       applyMeterUnits({}, getFormValues('oz'));
     }).to.throw();
   });
 });
 
-lab.experiment('applyMeterReadings', () => {
-  lab.test('keeps a copy of the readings against the meter', async () => {
+experiment('applyMeterReadings', () => {
+  test('keeps a copy of the readings against the meter', async () => {
     const returnData = getTestReturnWithMeter();
 
     const formValues = {
@@ -295,7 +276,7 @@ lab.experiment('applyMeterReadings', () => {
     expect(data.meters[0].readings).to.equal(omit(formValues, 'csrf_token'));
   });
 
-  lab.test('adds the start reading number', async () => {
+  test('adds the start reading number', async () => {
     const returnData = getTestReturnWithMeter();
 
     const formValues = {
@@ -311,7 +292,7 @@ lab.experiment('applyMeterReadings', () => {
     expect(data.meters[0].startReading).to.equal(1544);
   });
 
-  lab.test('sets abstraction volumes to 0 for null meter readings inside abstraction period, and null outside', async () => {
+  test('sets abstraction volumes to 0 for null meter readings inside abstraction period, and null outside', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       '2017-11-01_2017-11-30': null,
@@ -328,7 +309,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('sets abstraction volumes based on the start reading', async () => {
+  test('sets abstraction volumes based on the start reading', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       'startReading': 100,
@@ -346,7 +327,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('handles the multiplier', async () => {
+  test('handles the multiplier', async () => {
     const tenTimesMeter = { startReading: 100, multiplier: 10, units: 'm³' };
     const returnData = getTestReturnWithMeter(tenTimesMeter);
     const formValues = {
@@ -365,7 +346,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('handles a mixture of null and numeric meter readings', async () => {
+  test('handles a mixture of null and numeric meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       'startReading': 100,
@@ -383,7 +364,7 @@ lab.experiment('applyMeterReadings', () => {
     ]);
   });
 
-  lab.test('sets the volume to 0 for identical meter readings', async () => {
+  test('sets the volume to 0 for identical meter readings', async () => {
     const returnData = getTestReturnWithMeter();
     const formValues = {
       'startReading': 100,
@@ -402,20 +383,20 @@ lab.experiment('applyMeterReadings', () => {
   });
 });
 
-lab.experiment('applyMethod', () => {
-  lab.test('adds the method to the reading object', async () => {
+experiment('applyMethod', () => {
+  test('adds the method to the reading object', async () => {
     const returnData = getTestReturnWithMeter();
     const data = applyMethod(returnData, 'oneMeter');
     expect(data.reading.method).to.equal('oneMeter');
   });
 });
 
-lab.experiment('getMeter', () => {
-  lab.test('return an empty object when no meter data', async () => {
+experiment('getMeter', () => {
+  test('return an empty object when no meter data', async () => {
     expect(getMeter(testReturn)).to.equal({});
   });
 
-  lab.test('returns the meter if present', async () => {
+  test('returns the meter if present', async () => {
     expect(getMeter(getTestReturnWithMeter())).to.equal({
       startReading: 100,
       multiplier: 1,
@@ -424,7 +405,7 @@ lab.experiment('getMeter', () => {
   });
 });
 
-lab.experiment('getLinesWithReadings', () => {
+experiment('getLinesWithReadings', () => {
   const meter = {
     startReading: 5,
     readings: {
@@ -454,7 +435,7 @@ lab.experiment('getLinesWithReadings', () => {
     quantity: 2
   }];
 
-  lab.test('returns lines unchanged if using volumes', async () => {
+  test('returns lines unchanged if using volumes', async () => {
     const data = {
       reading: {
         method: 'abstractionVolumes'
@@ -465,7 +446,7 @@ lab.experiment('getLinesWithReadings', () => {
     expect(getLinesWithReadings(data)).to.equal(data.lines);
   });
 
-  lab.test('adds meter readings to lines if using one meter', async () => {
+  test('adds meter readings to lines if using one meter', async () => {
     const data = {
       reading: {
         method: 'oneMeter'
@@ -494,18 +475,18 @@ lab.experiment('getLinesWithReadings', () => {
   });
 });
 
-lab.experiment('applyUnderQuery', () => {
-  lab.test('set under query flag', async () => {
+experiment('applyUnderQuery', () => {
+  test('set under query flag', async () => {
     const ret = applyUnderQuery(testReturn, { isUnderQuery: true });
     expect(ret.isUnderQuery).to.equal(true);
   });
-  lab.test('clear under query flag', async () => {
+  test('clear under query flag', async () => {
     const ret = applyUnderQuery(testReturn, { isUnderQuery: false });
     expect(ret.isUnderQuery).to.equal(false);
   });
 });
 
-lab.experiment('applyMeterReset', () => {
+experiment('applyMeterReset', () => {
   const returnData = {
     reading: {
       method: 'oneMeter'
@@ -521,16 +502,244 @@ lab.experiment('applyMeterReset', () => {
       units: 'L'
     }]
   };
-  lab.test('returns data if meterReset is false', async () => {
+  test('returns data if meterReset is false', async () => {
     const data = applyMeterReset(returnData, { meterReset: false });
     expect(data.reading.method).to.equal('oneMeter');
   });
-  lab.test('removes meter details if meterReset is true', async () => {
+  test('removes meter details if meterReset is true', async () => {
     const data = applyMeterReset(returnData, { meterReset: true });
     expect(data.meters).to.equal([{}]);
   });
-  lab.test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
+  test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
     const data = applyMeterReset(returnData, { meterReset: true });
     expect(data.reading.method).to.equal('abstractionVolumes');
+  });
+});
+
+experiment('applyReceivedDate', () => {
+  test('sets the received date', async () => {
+    const formValues = {
+      'receivedDate': '2018-05-25'
+    };
+    const ret = applyReceivedDate(testReturn, formValues);
+    expect(ret.receivedDate).to.equal('2018-05-25');
+  });
+});
+
+experiment('applyMeterDetailsProvided', () => {
+  test('sets a meter if details are to be provided', async () => {
+    const formValues = { meterDetailsProvided: true };
+    const data = {};
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: true
+    });
+  });
+
+  test('leaves existing meter details if details are to be provided', async () => {
+    const formValues = { meterDetailsProvided: true };
+    const data = {
+      meters: [{ startReading: 100, multiplier: 1, units: 'm³' }]
+    };
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0]).to.equal({
+      startReading: 100,
+      multiplier: 1,
+      units: 'm³',
+      meterDetailsProvided: true
+    });
+  });
+
+  test('sets an empty meter if no details are to be provided', async () => {
+    const formValues = { meterDetailsProvided: false };
+    const data = {};
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: false
+    });
+  });
+
+  test('clears an existing meter if details are not to be provded', async () => {
+    const formValues = { meterDetailsProvided: false };
+    const data = {
+      meters: [{ startReading: 100, multiplier: 1, units: 'm³' }]
+    };
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: false
+    });
+  });
+
+  // the multiplier is required by the water service validation
+  test('by defaults sets the multiplier to one', async () => {
+    const formValues = { meterDetailsProvided: false };
+    const data = {};
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0].multiplier).to.equal(1);
+  });
+});
+
+experiment('applySingleTotal', () => {
+  test('for a single value the value and flag are set', async () => {
+    const returnData = { reading: {} };
+    const formValues = { isSingleTotal: true, total: 1000 };
+    const applied = applySingleTotal(returnData, formValues);
+    expect(applied).to.equal({
+      reading: {
+        totalFlag: true,
+        total: 1000
+      }
+    });
+  });
+
+  test('if setting to mutliple values any existing total value is removed', async () => {
+    const returnData = {
+      reading: {
+        totalFlag: true,
+        total: 200
+      }
+    };
+    const formValues = { isSingleTotal: false };
+    const applied = applySingleTotal(returnData, formValues);
+    expect(applied).to.equal({
+      reading: {
+        totalFlag: false,
+        total: undefined
+      }
+    });
+  });
+});
+
+experiment('applySingleTotalAbstractionDates', () => {
+  test('sets the data for a default period', async () => {
+    const formValues = {
+      totalCustomDates: false
+    };
+
+    const data = {
+      reading: {},
+      metadata: {
+        nald: {}
+      }
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.false();
+    expect(applied.reading.totalCustomDateStart).to.be.null();
+    expect(applied.reading.totalCustomDateEnd).to.be.null();
+  });
+
+  test('makes start and end null when changing to default period', async () => {
+    const formValues = {
+      totalCustomDates: false
+    };
+
+    const data = {
+      reading: {
+        totalCustomDates: true,
+        totalCustomDateStart: '2018-01-01',
+        totalCustomDateEnd: '2018-01-02'
+      },
+      metadata: {
+        nald: {}
+      }
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.false();
+    expect(applied.reading.totalCustomDateStart).to.be.null();
+    expect(applied.reading.totalCustomDateEnd).to.be.null();
+  });
+
+  test('sets the data for a custom period', async () => {
+    const formValues = {
+      totalCustomDates: true,
+      totalCustomDateStart: '2018-01-01',
+      totalCustomDateEnd: '2018-01-02'
+    };
+
+    const data = {
+      reading: {}
+    };
+
+    const applied = applySingleTotalAbstractionDates(data, formValues);
+
+    expect(applied.reading.totalCustomDates).to.be.true();
+    expect(applied.reading.totalCustomDateStart).to.equal('2018-01-01');
+    expect(applied.reading.totalCustomDateEnd).to.equal('2018-01-02');
+  });
+
+  test('updates lines to match abstraction period for default abstraction period', async () => {
+    const formValues = { totalCustomDates: false };
+
+    testReturn.reading.total = 100;
+    testReturn.reading.totalFlag = true;
+
+    const data = applySingleTotalAbstractionDates(testReturn, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01',
+        endDate: '2017-11-30',
+        period: 'month',
+        quantity: 50 },
+      { startDate: '2017-12-01',
+        endDate: '2017-12-31',
+        period: 'month',
+        quantity: null },
+      { startDate: '2018-01-01',
+        endDate: '2018-01-31',
+        period: 'month',
+        quantity: 50 }
+    ]);
+  });
+
+  test('updates lines to match abstraction period for custom abstraction period', async () => {
+    const formValues = {
+      totalCustomDates: true,
+      totalCustomDateStart: '2017-12-01',
+      totalCustomDateEnd: '2018-01-01'
+    };
+
+    testReturn.reading.total = 100;
+    testReturn.reading.totalFlag = true;
+
+    const data = applySingleTotalAbstractionDates(testReturn, formValues);
+
+    expect(data.lines).to.equal([
+      { startDate: '2017-11-01',
+        endDate: '2017-11-30',
+        period: 'month',
+        quantity: null },
+      { startDate: '2017-12-01',
+        endDate: '2017-12-31',
+        period: 'month',
+        quantity: 100 },
+      { startDate: '2018-01-01',
+        endDate: '2018-01-31',
+        period: 'month',
+        quantity: null }
+    ]);
+  });
+});
+
+experiment('applyReadingType', () => {
+  test('sets reading type to measured if second argument is true', async () => {
+    const data = applyReadingType({}, true);
+    expect(data.reading.type).to.equal('measured');
+  });
+
+  test('sets reading type to estimated if second argument is false', async () => {
+    const data = applyReadingType({}, false);
+    expect(data.reading.type).to.equal('estimated');
   });
 });

@@ -23,7 +23,8 @@ const form = (request, data) => {
       }
     },
     choices: [
-      { value: true,
+      {
+        value: true,
         label: 'Yes',
         fields: [
           fields.text('total', {
@@ -40,9 +41,11 @@ const form = (request, data) => {
               }
             }
           })
-        ]},
+        ]
+      },
       { value: false, label: 'No' }
-    ]}));
+    ]
+  }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

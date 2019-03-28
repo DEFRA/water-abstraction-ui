@@ -213,28 +213,28 @@ experiment('edit controller', () => {
     sandbox.restore();
   });
   experiment('getAmounts', () => {
-    test('it should render returns/internal/form page with returns data', async () => {
+    test('renders returns/internal/form page with returns data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
       expect(template).to.equal('water/returns/internal/form');
-      expect(view.return.data).to.equal(returns.data);
+      expect(view.return).to.equal(request.returns.data);
     });
-    test('it should call getPreviousPath with STEP_START, request and returns.data', async () => {
+
+    test('calls getPreviousPath with STEP_START, request and returns.data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
 
-      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, { ...returns, versionNumber: 2 });
+      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, request.returns.data);
 
       expect(getPreviousPathCalled).to.be.true();
     });
+
     test('throws a Boom unauthorized error if no documentHeaders', async () => {
       helpers.getLicenceNumbers.returns([]);
       try {
@@ -736,6 +736,52 @@ experiment('edit controller', () => {
 
       expect(template).to.equal('water/returns/meter-readings');
       expect(view.return).to.equal(request.returns.data);
+    });
+  });
+
+  experiment('getMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should use correct template', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+    });
+
+    test('is should provide data to view', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.be.a.string();
+      expect(view.form).to.be.an.object();
+      expect(view.return).to.be.an.object();
+    });
+  });
+
+  experiment('postMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should re-render page if form not valid', async () => {
+      forms.handleRequest.returns({ isValid: false });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+    });
+
+    test('it should call getNextPath with STEP_METER_USED, request', async () => {
+      forms.handleRequest.returns({ isValid: true });
+      forms.getValues.returns({ meterUsed: true });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_USED, request);
+
+      expect(getNextPathCalled).to.be.true();
     });
   });
 });

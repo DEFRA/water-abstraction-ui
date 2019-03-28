@@ -69,7 +69,7 @@ const getInternalRouting = async (request, h) => {
 const postInternalRouting = async (request, h) => {
   const { returnId } = request.query;
 
-  const data = await returns.getReturn(returnId);
+  let data = await returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
 
   const form = handleRequest(internalRoutingForm(request, data), request);
@@ -80,22 +80,23 @@ const postInternalRouting = async (request, h) => {
     const isUnderQuery = values.action === 'set_under_query';
 
     if (isQueryOption) {
-      let updated = applyUnderQuery(data, { isUnderQuery });
-      updated = applyStatus(updated, 'received');
-      updated = applyUserDetails(updated, request.auth.credentials);
-      await returns.patchReturn(updated);
+      data = applyUnderQuery(data, { isUnderQuery });
+      data = applyStatus(data, 'received');
+      data = applyUserDetails(data, request.auth.credentials);
+      await returns.patchReturn(data);
     }
 
+    sessionHelpers.saveSessionData(request, data);
     const path = getNextPath(STEP_INTERNAL_ROUTING, request, values);
     return h.redirect(path);
-  } else {
-    return h.view('water/returns/internal/form', {
-      ...view,
-      form,
-      return: data,
-      back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
-    });
   }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data,
+    back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
+  });
 };
 
 /**

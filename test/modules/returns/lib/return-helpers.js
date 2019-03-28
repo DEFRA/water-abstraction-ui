@@ -532,7 +532,10 @@ experiment('applyMeterDetailsProvided', () => {
     const data = {};
     const applied = applyMeterDetailsProvided(data, formValues);
 
-    expect(applied.meters[0]).to.equal({ meterDetailsProvided: true });
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: true
+    });
   });
 
   test('leaves existing meter details if details are to be provided', async () => {
@@ -555,7 +558,10 @@ experiment('applyMeterDetailsProvided', () => {
     const data = {};
     const applied = applyMeterDetailsProvided(data, formValues);
 
-    expect(applied.meters[0]).to.equal({ meterDetailsProvided: false });
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: false
+    });
   });
 
   test('clears an existing meter if details are not to be provded', async () => {
@@ -565,7 +571,19 @@ experiment('applyMeterDetailsProvided', () => {
     };
     const applied = applyMeterDetailsProvided(data, formValues);
 
-    expect(applied.meters[0]).to.equal({ meterDetailsProvided: false });
+    expect(applied.meters[0]).to.equal({
+      multiplier: 1,
+      meterDetailsProvided: false
+    });
+  });
+
+  // the multiplier is required by the water service validation
+  test('by defaults sets the multiplier to one', async () => {
+    const formValues = { meterDetailsProvided: false };
+    const data = {};
+    const applied = applyMeterDetailsProvided(data, formValues);
+
+    expect(applied.meters[0].multiplier).to.equal(1);
   });
 });
 

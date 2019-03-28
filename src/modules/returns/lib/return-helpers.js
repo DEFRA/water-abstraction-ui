@@ -205,6 +205,7 @@ const applyMeterDetailsProvided = (data, formValues) => {
   const { meterDetailsProvided } = formValues;
   const meter = meterDetailsProvided === true ? getMeter(data) : {};
   meter.meterDetailsProvided = meterDetailsProvided;
+  meter.multiplier = 1;
   return set(clone, 'meters', [meter]);
 };
 

@@ -227,14 +227,14 @@ const applyMeterDetailsProvided = (data, formValues) => {
   const { meterDetailsProvided } = formValues;
   const meter = meterDetailsProvided === true ? getMeter(data) : {};
   meter.meterDetailsProvided = meterDetailsProvided;
-  meter.multiplier = 1;
+  meter.multiplier = meter.multiplier || 1;
   return set(clone, 'meters', [meter]);
 };
 
 const applyMeterUnits = (data, formValues) => {
   const { units } = formValues;
   if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
-    const clone = cloneDeep(data);
+    const clone = applyReadingType(data, 'measured');
     set(clone, 'meters[0].units', units);
     return set(clone, 'reading.units', units);
   }

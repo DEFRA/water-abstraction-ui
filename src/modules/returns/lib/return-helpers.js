@@ -214,8 +214,7 @@ const applyMeterUnits = (data, formValues) => {
   if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
     const clone = cloneDeep(data);
     set(clone, 'meters[0].units', units);
-    set(clone, 'reading.units', units);
-    return set(clone, 'reading.type', 'measured');
+    return set(clone, 'reading.units', units);
   }
   throw new Error('Unexpected unit');
 };
@@ -314,16 +313,10 @@ const applyMeterReset = (data, formValues) => {
   const updated = cloneDeep(data);
 
   if (meterReset) {
-    set(updated, 'reading.method', 'abstractionVolumes');
-    const meters = updated.meters || [];
-    for (let meter of meters) {
-      delete meter.readings;
-      delete meter.startReading;
-      delete meter.units;
-    }
+    return set(updated, 'reading.method', 'abstractionVolumes');
   }
 
-  return updated;
+  return set(updated, 'reading.method', 'oneMeter');
 };
 
 const getIsUnderQuery = value => {
@@ -383,6 +376,14 @@ const getLinesWithReadings = (data) => {
   });
 };
 
+const checkMeterDetails = data => {
+  const d = cloneDeep(data);
+  if (d.reading.type === 'estimated') {
+    return set(d, 'meters', []);
+  }
+  return d;
+};
+
 /**
  * Applies the recieved date
  * @param {Object} data - current return model data
@@ -406,28 +407,32 @@ const applyReadingType = (data, isMeasured) => {
   return d;
 };
 
-module.exports = {
-  applySingleTotal,
-  isDateWithinAbstractionPeriod,
-  applyQuantities,
-  applyUserDetails,
-  applyNilReturn,
-  getFormLines,
-  applyStatus,
+module.exports = {  
   applyExternalUser,
+  applyMeterDetailsProvided,
   applyMeterDetails,
+  applyMeterReadings,
+  applyMeterReset,
   applyMeterUnits,
+  applyMethod, 
+  applyNilReturn,
+  applyQuantities,
+  applyReadingType,
+  applyReceivedDate,
+  applySingleTotal,
+  applySingleTotalAbstractionDates,
+  applyStatus,
+  applyUnderQuery,
+  applyUserDetails,
+
+  checkMeterDetails,
+    
+  getFormLines,
   getLineLabel,
   getLineName,
   getLineValues,
-  applyMeterReadings,
-  applyMeterReset,
-  applyMethod,
-  getMeter,
   getLinesWithReadings,
-  applyUnderQuery,
-  applyReceivedDate,
-  applyMeterDetailsProvided,
-  applySingleTotalAbstractionDates,
-  applyReadingType
+  getMeter,
+  
+  isDateWithinAbstractionPeriod
 };

@@ -23,7 +23,7 @@ const {
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
   getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset, applyReadingType
+  applyMeterReset, checkMeterDetails, applyReadingType
 } = require('../lib/return-helpers');
 
 const returnPath = require('../lib/return-path');
@@ -60,12 +60,12 @@ const getAmounts = async (request, h) => {
 
   const form = forms.setValues(amountsForm(request), data);
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_START, request, data)
-  });
+  }, { layout: false });
 };
 
 /**
@@ -87,11 +87,11 @@ const postAmounts = async (request, h) => {
     return h.redirect(path);
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 /**
@@ -100,12 +100,12 @@ const postAmounts = async (request, h) => {
 const getNilReturn = async (request, h) => {
   const { data, view } = request.returns;
 
-  return h.view('water/returns/internal/nil-return', {
+  return h.view('nunjucks/returns/nil-return.njk', {
     ...view,
     return: data,
     form: confirmForm(request, data),
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_NIL_RETURN, request, data)
-  });
+  }, { layout: false });
 };
 
 /**
@@ -115,11 +115,11 @@ const getNilReturn = async (request, h) => {
 const postConfirm = async (request, h) => {
   const { data } = request.returns;
   const form = forms.handleRequest(confirmForm(request, data), request);
-
   if (form.isValid) {
     try {
       // Apply status / under query
       let updated = applyStatus(data);
+      updated = checkMeterDetails(updated);
       if (permissions.isInternal(request)) {
         updated = applyUnderQuery(updated, forms.getValues(form));
       }
@@ -145,12 +145,12 @@ const getSubmitted = async (request, h) => {
 
   const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId}`;
 
-  return h.view('water/returns/internal/submitted', {
+  return h.view('nunjucks/returns/submitted.njk', {
     ...view,
     return: data,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
-  });
+  }, { layout: false });
 };
 
 /**
@@ -159,13 +159,12 @@ const getSubmitted = async (request, h) => {
  */
 const getMethod = async (request, h) => {
   const { data, view } = request.returns;
-
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: methodForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METHOD, request, data)
-  });
+  }, { layout: false });
 };
 
 /**
@@ -184,11 +183,11 @@ const postMethod = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 /**
@@ -197,12 +196,12 @@ const postMethod = async (request, h) => {
 const getUnits = async (request, h) => {
   const { data, view } = request.returns;
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: unitsForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_UNITS, request, data)
-  });
+  }, { layout: false });
 };
 
 /**
@@ -221,11 +220,11 @@ const postUnits = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_UNITS, request, data));
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 /**
@@ -234,12 +233,12 @@ const postUnits = async (request, h) => {
 const getSingleTotal = async (request, h) => {
   const { data, view } = request.returns;
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: singleTotalForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_SINGLE_TOTAL, request, data)
-  });
+  }, { layout: false });
 };
 
 /**
@@ -256,51 +255,12 @@ const postSingleTotal = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_SINGLE_TOTAL, request, updatedData));
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
-
-/**
- * What is the basis for the return - amounts/pump/herd
- */
-/*
-const getBasis = async (request, h) => {
-  const { data, view } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: basisForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_BASIS, request, data)
-  });
-};
-*/
-
-/**
- * Post handler for basis form
- */
-/*
-const postBasis = async (request, h) => {
-  const { data, view } = request.returns;
-  const form = forms.handleRequest(basisForm(request, data), request, basisSchema);
-
-  if (form.isValid) {
-    const d = applyBasis(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_BASIS, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data
-  });
-};
-*/
 
 /**
  * Screen for user to enter quantities
@@ -308,12 +268,12 @@ const postBasis = async (request, h) => {
 const getQuantities = async (request, h) => {
   const { data, view } = request.returns;
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: quantitiesForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_QUANTITIES, request, data)
-  });
+  }, { layout: false });
 };
 
 const postQuantities = async (request, h) => {
@@ -329,11 +289,11 @@ const postQuantities = async (request, h) => {
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_QUANTITIES, request, d));
   }
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 /**
@@ -341,34 +301,33 @@ const postQuantities = async (request, h) => {
  */
 const getConfirm = async (request, h) => {
   const { data, view } = request.returns;
-
   const lines = getLinesWithReadings(data);
   const form = confirmForm(request, data, `/return/confirm`);
 
   const isReadings = get(data, 'reading.method') === 'oneMeter';
   const endReadingKey = findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
-  return h.view('water/returns/internal/confirm', {
+  return h.view('nunjucks/returns/confirm.njk', {
     ...view,
     return: data,
     lines,
     form,
     total: helpers.getReturnTotal(data),
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data),
-    makeChangePath: isReadings ? '/return/meter/readings' : 'return/quantities',
+    makeChangePath: flowHelpers.getPath(isReadings ? flowHelpers.STEP_METER_READINGS : flowHelpers.STEP_QUANTITIES, request, data),
     endReading: get(data, `meters[0].readings.${endReadingKey}`)
-  });
+  }, { layout: false });
 };
 
 const getMeterDetails = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('water/returns/meter-details', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: meterDetailsForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_DETAILS, request, data)
-  });
+  }, { layout: false });
 };
 
 const postMeterDetails = async (request, h) => {
@@ -382,22 +341,22 @@ const postMeterDetails = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_DETAILS, request, d));
   }
 
-  return h.view('water/returns/meter-details', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 const getMeterUnits = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: meterUnitsForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_UNITS, request, data)
-  });
+  }, { layout: false });
 };
 
 const postMeterUnits = async (request, h) => {
@@ -406,28 +365,27 @@ const postMeterUnits = async (request, h) => {
 
   if (form.isValid) {
     const d = applyMeterUnits(data, forms.getValues(form));
-
     sessionHelpers.saveSessionData(request, d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_UNITS, request, d));
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 const getMeterReset = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: meterResetForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
-  });
+  }, { layout: false });
 };
 
 const postMeterReset = async (request, h) => {
@@ -441,22 +399,22 @@ const postMeterReset = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
   }
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 const getMeterReadings = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('water/returns/meter-readings', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form: meterReadingsForm(request, data),
     return: data,
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_READINGS, request, data)
-  });
+  }, { layout: false });
 };
 
 const postMeterReadings = async (request, h) => {
@@ -469,6 +427,7 @@ const postMeterReadings = async (request, h) => {
   // schema to cater for checking if the readings are not lower than
   // previous readings.
   const internalData = forms.importData(readingsForm, request.payload);
+
   const schema = meterReadingsSchema(data, internalData);
 
   const form = forms.handleRequest(readingsForm, request, schema);
@@ -479,11 +438,11 @@ const postMeterReadings = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_READINGS, request, d));
   }
 
-  return h.view('water/returns/meter-readings', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
     return: data
-  });
+  }, { layout: false });
 };
 
 /**

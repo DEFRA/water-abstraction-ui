@@ -8,8 +8,12 @@ const amountsForm = (request) => {
 
   const f = formFactory(action);
 
+  f.fields.push(fields.paragraph(null, {
+    text: 'Have you abstracted water in this return period?',
+    element: 'h3',
+    controlClass: 'govuk-heading-m' }));
+
   f.fields.push(fields.radio('isNil', {
-    label: 'Have you abstracted water in this return period?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {

@@ -10,7 +10,7 @@ const getStartReadingInput = () => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
-    controlClass: 'form-control form-control--reading',
+    controlClass: 'text-input--meter-reading',
     errors: {
       'number.base': { message: 'Enter a meter start reading' },
       'any.required': { message: 'Enter a meter start reading' },
@@ -27,7 +27,7 @@ const getLineTextInput = (line, suffix) => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
-    controlClass: 'form-control form-control--reading',
+    controlClass: 'text-input--meter-reading',
     errors: {
       'number.min': {
         message: 'Each meter reading should be higher than or equal to the last'
@@ -49,7 +49,9 @@ const form = (request, data) => {
 
   const f = formFactory(action);
   f.fields.push(fields.paragraph(null, {
-    text: 'Enter your readings exactly as they appear on your meter.'
+    text: 'Enter your readings exactly as they appear on your meter',
+    element: 'h3',
+    controlClass: 'govuk-heading-m'
   }));
 
   f.fields.push(getStartReadingInput());

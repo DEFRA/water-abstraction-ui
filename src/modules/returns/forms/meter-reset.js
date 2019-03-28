@@ -10,12 +10,8 @@ const meterResetForm = (request) => {
 
   f.fields.push(fields.paragraph(null, {
     text: 'Did your meter reset in this abstraction period?',
-    element: 'h2',
-    controlClass: 'heading-medium'
-  }));
-
-  f.fields.push(fields.paragraph(null, {
-    text: 'If it did, you need to give us abstraction volumes'
+    element: 'h3',
+    controlClass: 'govuk-heading-m'
   }));
 
   f.fields.push(fields.radio('meterReset', {
@@ -26,7 +22,7 @@ const meterResetForm = (request) => {
       }
     },
     choices: [
-      { value: true, label: 'Yes' },
+      { value: true, label: 'Yes', hint: 'You will need to provide abstraction volumes instead of meter readings' },
       { value: false, label: 'No' }
     ] }));
 

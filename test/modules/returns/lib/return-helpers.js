@@ -8,12 +8,25 @@ const { expect } = require('code');
 const testReturn = require('./test-return');
 
 const {
-  isDateWithinAbstractionPeriod, applySingleTotal,
-  applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
-  applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset,
-  applyReceivedDate, applyMeterDetailsProvided, applySingleTotalAbstractionDates,
-  applyReadingType
+  isDateWithinAbstractionPeriod,
+  getLinesWithReadings,
+  getMeter,
+  applyExternalUser,
+  applyMeterDetails,
+  applyMeterDetailsProvided,
+  applyMeterReadings,
+  applyMeterReset,
+  applyMeterUnits,
+  applyMethod,
+  applyNilReturn,
+  applyQuantities,
+  applyReadingType,
+  applyReceivedDate,
+  applySingleTotal,
+  applySingleTotalAbstractionDates,
+  applyStatus,
+  applyUnderQuery,
+  applyUserDetails
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -487,33 +500,32 @@ experiment('applyUnderQuery', () => {
 });
 
 experiment('applyMeterReset', () => {
-  const returnData = {
-    reading: {
-      method: 'oneMeter'
-    },
-    meters: [{
-      startReading: 5,
-      readings: {
-        '2017-10-01_2017-10-31': 10,
-        '2017-11-01_2017-11-30': 15,
-        '2017-12-01_2017-12-31': null,
-        '2018-01-01_2018-01-31': 17
+  const returnData = method => {
+    return { 
+      reading: {
+        method
       },
-      units: 'L'
-    }]
+      meters: [{
+        startReading: 5,
+        readings: {
+          '2017-10-01_2017-10-31': 10,
+          '2017-11-01_2017-11-30': 15,
+          '2017-12-01_2017-12-31': null,
+          '2018-01-01_2018-01-31': 17
+        },
+        units: 'L'
+      }]
+    };
   };
-  test('returns data if meterReset is false', async () => {
-    const data = applyMeterReset(returnData, { meterReset: false });
+  test('updates reading.method to "oneMeter" if meterReset is false', async () => {
+    const data = applyMeterReset(returnData('abstractionVolumes'), { meterReset: false });
     expect(data.reading.method).to.equal('oneMeter');
   });
-  test('removes meter details if meterReset is true', async () => {
-    const data = applyMeterReset(returnData, { meterReset: true });
-    expect(data.meters).to.equal([{}]);
-  });
+  
   test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
-    const data = applyMeterReset(returnData, { meterReset: true });
+    const data = applyMeterReset(returnData('oneMeter'), { meterReset: true });
     expect(data.reading.method).to.equal('abstractionVolumes');
-  });
+  });    
 });
 
 experiment('applyReceivedDate', () => {

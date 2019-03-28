@@ -4,20 +4,25 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter } = require('../lib/return-helpers');
 const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 
-const textFieldManufacturer = fields.text('manufacturer', {
-  label: 'Make',
-  errors: {
-    'any.required': { message: 'Enter the make of your meter' },
-    'any.empty': { message: 'Enter the make of your meter' }
-  }
-});
+const getErrors = message => {
+  return {
+    'any.required': { message },
+    'any.empty': { message }
+  };
+};
 
-const textFieldSerialNumber = fields.text('serialNumber', {
-  label: 'Serial number',
-  errors: {
-    'any.required': { message: 'Enter a serial number' },
-    'any.empty': { message: 'Enter a serial number' }
-  }
+const getTextField = (fieldName, label, errorMessage) => {
+  return fields.text(fieldName, {
+    label,
+    controlClass: 'govuk-!-width-one-quarter',
+    errors: getErrors(errorMessage)
+  });
+};
+
+const pageHeading = fields.paragraph(null, {
+  text: 'Tell us about your meter',
+  element: 'h3',
+  controlClass: 'govuk-heading-m'
 });
 
 const introText = fields.paragraph(null, {
@@ -34,12 +39,14 @@ const form = (request, data) => {
   const f = formFactory(action);
   const meter = getMeter(data);
 
+  f.fields.push(pageHeading);
+
   if (isVolumes) {
     f.fields.push(introText);
   }
 
-  f.fields.push(textFieldManufacturer);
-  f.fields.push(textFieldSerialNumber);
+  f.fields.push(getTextField('manufacturer', 'Make', 'Enter the make of your meter'));
+  f.fields.push(getTextField('serialNumber', 'Serial Number', 'Enter a serial number'));
 
   // Checkbox internal type is array
   const checked = meter.multiplier === 10 ? ['multiply'] : [];
@@ -53,7 +60,6 @@ const form = (request, data) => {
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
-
   return setValues(f, meter);
 };
 
@@ -63,8 +69,6 @@ const form = (request, data) => {
  * @return {Object} Joi schema
  */
 const meterDetailsSchema = (data) => {
-  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
-
   const schema = {
     manufacturer: Joi.string().required(),
     serialNumber: Joi.string().required(),

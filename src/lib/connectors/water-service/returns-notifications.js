@@ -45,7 +45,7 @@ const getPaperFormFilter = (licenceNumbers, refDate) => {
 
   return {
     status: {
-      $in: ['due', 'completed']
+      $in: ['due', 'completed', 'received']
     },
     start_date: {
       $gte: currentCycle.startDate

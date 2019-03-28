@@ -1,6 +1,12 @@
 const { formFactory, fields } = require('../../../lib/forms');
 const { STEP_INTERNAL_ROUTING, getPath } = require('../lib/flow-helpers');
 
+const isReceived = data => data.receivedDate !== null;
+const isUnderQuery = data => data.isUnderQuery;
+
+const showSetQuery = data => isReceived(data) && !isUnderQuery(data);
+const showClearQuery = data => isReceived(data) && isUnderQuery(data);
+
 /**
  * Gets radio button options depending on return state
  * @param {Object} data - return model data
@@ -9,15 +15,18 @@ const { STEP_INTERNAL_ROUTING, getPath } = require('../lib/flow-helpers');
 const getChoices = (data) => {
   const choices = [];
 
+  choices.push({ value: 'submit', label: 'Enter and submit' });
+
   // Only add option to log receipt of form if not yet received
-  if (data.receivedDate === null) {
-    choices.push({ value: 'log_receipt', label: 'Record receipt (and come back to it later)' });
+  if (!isReceived(data)) {
+    choices.push({ value: 'log_receipt', label: 'Record receipt' });
   }
-  choices.push({ value: 'submit', label: 'Enter and submit it' });
-  if (data.isUnderQuery === true) {
+
+  if (showSetQuery(data)) {
+    choices.push({ value: 'set_under_query', label: 'Record under query' });
+  }
+  if (showClearQuery(data)) {
     choices.push({ value: 'clear_under_query', label: 'Resolve query' });
-  } else {
-    choices.push({ value: 'set_under_query', label: 'Record as under query' });
   }
 
   return choices;

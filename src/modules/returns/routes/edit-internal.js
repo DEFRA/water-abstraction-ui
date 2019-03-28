@@ -52,7 +52,8 @@ module.exports = {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
           activeNavLink: 'view',
           showMeta: true
-        }
+        },
+        returns: true
       }
     }
   },
@@ -369,6 +370,17 @@ module.exports = {
     '/admin/return/meter/readings',
     'POST handler for meter readings',
     'Abstraction return - enter meter readings'
-  )
+  ),
 
+  getMeterUsed: createGetMeterRoute(
+    '/admin/return/meter/used',
+    'View for internal user to specify whether a meter was used',
+    'Abstraction return - was a meter or meters used?'
+  ),
+
+  postMeterUsed: createPostMeterRoute(
+    '/admin/return/meter/used',
+    'POST handler for meter used',
+    'Abstraction return - was a meter or meters used?'
+  )
 };

@@ -261,13 +261,6 @@ experiment('applyMeterUnits', () => {
     expect(data.reading.units).to.equal('gal');
   });
 
-  /*
-  test('sets reading type to measured', async () => {
-    const data = applyMeterUnits({}, getFormValues('gal'));
-    expect(data.reading.type).to.equal('measured');
-  });
-  */
-
   test('throws for an unexpected value', async () => {
     expect(() => {
       applyMeterUnits({}, getFormValues('oz'));

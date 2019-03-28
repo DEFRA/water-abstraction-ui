@@ -87,9 +87,9 @@ const applyMethod = (data, readingMethod) => {
 
 /**
  * Applies the reading type
- * @param  {[type]} data        [description]
- * @param  {[type]} readingType [description]
- * @return {[type]}             [description]
+ * @param  {Object} data        - return model data
+ * @param  {String} readingType - can be estimated|measured
+ * @return {Object}             - updated return model
  */
 const applyReadingType = (data, readingType) => {
   const d = cloneDeep(data);
@@ -97,6 +97,13 @@ const applyReadingType = (data, readingType) => {
   return d;
 };
 
+/**
+ * For external returns, both reading method and type are set at the
+ * same time with a comma separated string
+ * @param  {Object} data   - return model
+ * @param  {String} method - readingMethod,readingType
+ * @return {Object}        - updated return model
+ */
 const applyMethodExternal = (data, method) => {
   const [readingMethod, readingType] = method.split(',');
   return applyReadingType(applyMethod(data, readingMethod), readingType);

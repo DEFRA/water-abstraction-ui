@@ -11,5 +11,6 @@ module.exports = {
   ...require('./pluralize'),
   ...require('./query-string'),
   ...require('./title-case'),
+  ...require('./unit-conversion'),
   ...require('./units')
 };

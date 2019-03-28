@@ -1,0 +1,25 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+{% from "nunjucks/returns/macros/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "nunjucks/returns/macros/return-declaration.njk" import returnDeclaration %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ returnHeader(data, documentHeader, showMeta) }}
+  </div>
+</div>
+
+  <div class="govuk-grid-column-two-thirds">
+    <h3 class="govuk-heading-m">Confirm your return</h3>
+  </div>
+    <div class="{% if return.reading.units == 'm³' %}govuk-grid-column-two-thirds{% else %}govuk-grid-column-full{%endif%}">
+      {{ returnQuantitiesTable(return, lines, endReading) }}
+      <p><a href="{{ makeChangePath }}">Edit your {%if return.reading.method == 'oneMeter'%}meter readings{%else%}volumes{%endif%} </a></p>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      {{ returnDeclaration(isAdmin) }}
+      {{ formRender(form) }}
+    </div>
+{% endblock %}

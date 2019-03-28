@@ -9,10 +9,10 @@ const { expect } = require('code');
 const testReturn = require('./test-return');
 
 const {
-  isDateWithinAbstractionPeriod, applySingleTotal, applyBasis,
-  applyQuantities, applyNilReturn, applyExternalUser, applyStatus,
-  applyUserDetails, applyMeterDetails, applyMeterUnits, applyMeterReadings,
-  applyMethod, getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset
+  isDateWithinAbstractionPeriod, applySingleTotal, applyQuantities,
+  applyNilReturn, applyExternalUser, applyStatus, applyUserDetails,
+  applyMeterDetails, applyMeterUnits, applyMeterReadings, applyMethod,
+  getMeter, getLinesWithReadings, applyUnderQuery, applyMeterReset
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -267,11 +267,6 @@ lab.experiment('applyMeterUnits', () => {
     expect(data.reading.units).to.equal('gal');
   });
 
-  lab.test('sets reading type to measured', async () => {
-    const data = applyMeterUnits({}, getFormValues('gal'));
-    expect(data.reading.type).to.equal('measured');
-  });
-
   lab.test('throws for an unexpected value', async () => {
     expect(() => {
       applyMeterUnits({}, getFormValues('oz'));
@@ -506,9 +501,9 @@ lab.experiment('applyUnderQuery', () => {
 });
 
 lab.experiment('applyMeterReset', () => {
-  const returnData = {
-    reading: {
-      method: 'oneMeter'
+  const returnData = method => {
+    return { reading: {
+      method
     },
     meters: [{
       startReading: 5,
@@ -519,18 +514,14 @@ lab.experiment('applyMeterReset', () => {
         '2018-01-01_2018-01-31': 17
       },
       units: 'L'
-    }]
+    }] };
   };
-  lab.test('returns data if meterReset is false', async () => {
-    const data = applyMeterReset(returnData, { meterReset: false });
+  lab.test('updates reading.method to "oneMeter" if meterReset is false', async () => {
+    const data = applyMeterReset(returnData('abstractionVolumes'), { meterReset: false });
     expect(data.reading.method).to.equal('oneMeter');
   });
-  lab.test('removes meter details if meterReset is true', async () => {
-    const data = applyMeterReset(returnData, { meterReset: true });
-    expect(data.meters).to.equal([{}]);
-  });
   lab.test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
-    const data = applyMeterReset(returnData, { meterReset: true });
+    const data = applyMeterReset(returnData('oneMeter'), { meterReset: true });
     expect(data.reading.method).to.equal('abstractionVolumes');
   });
 });

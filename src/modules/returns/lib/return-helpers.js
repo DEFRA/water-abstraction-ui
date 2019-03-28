@@ -203,8 +203,7 @@ const applyMeterUnits = (data, formValues) => {
   if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
     const clone = cloneDeep(data);
     set(clone, 'meters[0].units', units);
-    set(clone, 'reading.units', units);
-    return set(clone, 'reading.type', 'measured');
+    return set(clone, 'reading.units', units);
   }
   throw new Error('Unexpected unit');
 };
@@ -303,16 +302,10 @@ const applyMeterReset = (data, formValues) => {
   const updated = cloneDeep(data);
 
   if (meterReset) {
-    set(updated, 'reading.method', 'abstractionVolumes');
-    const meters = updated.meters || [];
-    for (let meter of meters) {
-      delete meter.readings;
-      delete meter.startReading;
-      delete meter.units;
-    }
+    return set(updated, 'reading.method', 'abstractionVolumes');
   }
 
-  return updated;
+  return set(updated, 'reading.method', 'oneMeter');
 };
 
 const getIsUnderQuery = value => {

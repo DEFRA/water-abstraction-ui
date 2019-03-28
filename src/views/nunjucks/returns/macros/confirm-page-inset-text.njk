@@ -1,0 +1,61 @@
+{% from "inset-text/macro.njk" import govukInsetText %}
+
+{%macro confirmPageInsetText(return, endReading)%}
+{% set html %}
+  {%if return.reading.type == 'measured'%}
+  <div class="meta__row">
+    <dd class="meta__value">
+      {{ return.meters[0].manufacturer }}
+    </dd>
+  </div>
+  <div class="meta__row">
+    <dd class="meta__value">
+      {{ return.meters[0].serialNumber }}
+    </dd>
+  </div>
+  {%endif%}
+  {% if return.meters[0].multiplier == 10 %}
+  <div class="meta__row">
+    <dd class="meta__value">
+      Has a x10 display
+    </dd>
+  </div>
+  {%endif%}
+  {%if return.reading.method == 'oneMeter' %}
+  <div class="meta__row">
+    <dd class="meta__value">
+    Start Reading
+    {{ return.meters[0].startReading }}
+    </dd>
+  </div>
+  <div class="meta__row">
+    <dd class="meta__value">
+    End Reading
+    {{ endReading }}
+    </dd>
+  </div>
+  {%endif%}
+  {%if return.reading.type == 'estimated' %}
+  <div class="meta__row">
+    <dd class="meta__value">
+      Estimated
+    </dd>
+  </div>
+  <div class="meta__row">
+    <dd class="meta__value">
+    <!-- {{ estimateMethod? }} -->
+    </dd>
+  </div>
+  {%endif%}
+{% endset %}
+
+{%if return.reading.type == 'measured'%}
+  <br/>
+  <h4 class="govuk-heading-s">Your meter</h4>
+{%endif%}
+
+{{ govukInsetText({
+html: html
+}) }}
+
+{%endmacro%}

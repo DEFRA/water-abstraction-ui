@@ -13,7 +13,7 @@ const quantitiesForm = (request, data) => {
 
   const f = formFactory(action);
 
-  f.fields.push(fields.paragraph(null, { element: 'h2', controlClass: 'heading-medium', text: `Your abstraction volumes` }));
+  f.fields.push(fields.paragraph(null, { element: 'h3', controlClass: 'govuk-heading-m', text: `Your abstraction volumes` }));
   if (isVolumes) {
     f.fields.push(fields.paragraph(null, { element: 'p', text: `Remember if you have a x10 meter you need to multiply your volumes.` }));
   }
@@ -31,7 +31,7 @@ const quantitiesForm = (request, data) => {
       suffix,
       mapper: 'numberMapper',
       type: 'number',
-      controlClass: 'form-control form-control--small',
+      controlClass: 'govuk-!-width-one-quarter',
       errors: {
         'number.base': {
           message: 'Enter an amount in numbers'

@@ -6,6 +6,7 @@ const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 
 const textFieldManufacturer = fields.text('manufacturer', {
   label: 'Make',
+  controlClass: 'govuk-!-width-one-quarter',
   errors: {
     'any.required': { message: 'Enter the make of your meter' },
     'any.empty': { message: 'Enter the make of your meter' }
@@ -14,10 +15,17 @@ const textFieldManufacturer = fields.text('manufacturer', {
 
 const textFieldSerialNumber = fields.text('serialNumber', {
   label: 'Serial number',
+  controlClass: 'govuk-!-width-one-quarter',
   errors: {
     'any.required': { message: 'Enter a serial number' },
     'any.empty': { message: 'Enter a serial number' }
   }
+});
+
+const pageHeading = fields.paragraph(null, {
+  text: 'Tell us about your meter',
+  element: 'h3',
+  controlClass: 'govuk-heading-m'
 });
 
 const introText = fields.paragraph(null, {
@@ -33,6 +41,8 @@ const form = (request, data) => {
 
   const f = formFactory(action);
   const meter = getMeter(data);
+
+  f.fields.push(pageHeading);
 
   if (isVolumes) {
     f.fields.push(introText);
@@ -53,7 +63,6 @@ const form = (request, data) => {
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
-
   return setValues(f, meter);
 };
 
@@ -63,8 +72,6 @@ const form = (request, data) => {
  * @return {Object} Joi schema
  */
 const meterDetailsSchema = (data) => {
-  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
-
   const schema = {
     manufacturer: Joi.string().required(),
     serialNumber: Joi.string().required(),

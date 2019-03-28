@@ -23,7 +23,6 @@ const getSessionKey = (request) => {
  */
 const getSessionData = (request) => {
   const sessionKey = getSessionKey(request);
-
   const data = request.sessionStore.get(sessionKey);
 
   if (!data) {

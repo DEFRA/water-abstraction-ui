@@ -16,8 +16,8 @@ const methodForm = (request, data) => {
 
   f.fields.push(fields.paragraph(null, {
     text: 'How are you reporting your figures?',
-    element: 'h2',
-    controlClass: 'heading-medium'
+    element: 'h3',
+    controlClass: 'govuk-heading-m'
   }));
 
   f.fields.push(fields.paragraph(null, {

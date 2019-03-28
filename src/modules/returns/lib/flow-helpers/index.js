@@ -14,6 +14,7 @@ const steps = require('./steps');
 const getPath = (path, request, data) => {
   const returnId = get(data, 'returnId', request.query.returnId);
   const scopedPath = (permissions.isInternal(request) ? `/admin${path}` : path);
+  if (path === '/returns') return scopedPath;
   return `${scopedPath}?returnId=${returnId}`;
 };
 

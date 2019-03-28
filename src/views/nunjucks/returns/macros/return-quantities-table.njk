@@ -1,0 +1,68 @@
+{% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
+
+{% macro returnQuantitiesTable(return, lines, endReading) %}
+  {{ confirmPageInsetText(return, endReading) }}
+
+  <table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">
+        {% if return.lines[0].timePeriod == 'day' %}Day{%endif%}
+        {% if return.lines[0].timePeriod == 'week' %}Week ending{%endif%}
+        {% if return.lines[0].timePeriod == 'month' %}Month{%endif%}
+        {% if return.lines[0].timePeriod == 'year' %}Year{%endif%}
+      </th>
+      {% if return.reading.method == 'oneMeter' %}
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Reading</th>
+      {%endif%}
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">
+        {% if return.reading.units == 'gal' %}Gallons{%endif%}
+        {% if return.reading.units == 'l' %}Litres{%endif%}
+        {% if return.reading.units == 'Ml' %}Megalitres{%endif%}
+        {% if return.reading.units == 'm³' %}Cubic metres{%endif%}
+      </th>
+      {% if return.reading.units != 'm³' %}
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Cubic Meters</th>
+      {%endif%}
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for line in lines %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell" scope="row">
+          {% if line.timePeriod == 'day' %}
+          {{ line.startDate | date('D MMMM')}}
+          {%endif%}
+
+          {% if line.timePeriod == 'week' %}
+          {{ line.endDate | date('D MMMM')}}
+          {%endif%}
+
+          {% if line.timePeriod == 'month' %}
+          {{line.startDate | date('MMMM')}}
+          {%endif%}
+
+          {% if line.timePeriod == 'year' %}
+          {{ line.startDate | date('D MMMM YYYY')}} -
+          {{ line.endDate | date('D MMMM YYYY')}}
+          {%endif%}
+      </td>
+      {%if return.reading.method == 'oneMeter' %}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row">
+        {{ line.endReading }}
+      </td>
+      {%endif%}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row">
+        {{ line.quantity | number }}
+      </td>
+      {%if return.reading.units != 'm³' %}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row">
+        {{ line.quantity | unitConversion(return.reading.units) | number }}
+      </td>
+      {%endif%}
+    </tr>
+      {%endfor%}
+  </tbody>
+</table>
+
+{%endmacro%}

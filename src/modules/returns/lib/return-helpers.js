@@ -65,15 +65,13 @@ const applySingleTotalAbstractionDates = (data, formValues) => {
 /**
  * Applies the method of return - either volumes or meter readings
  * @param {Object} - return model
- * @param {String} - comma separated list of reading method and type
+ * @param {String} - reading method
  * @return {Object} - updated return model
  */
-const applyMethod = (data, method) => {
+const applyMethod = (data, readingMethod) => {
   const d = cloneDeep(data);
-  const [readingMethod, readingType] = method.split(',');
 
   set(d, 'reading.method', readingMethod);
-  set(d, 'reading.type', readingType);
 
   if (readingMethod === 'abstractionVolumes') {
     const meters = d.meters || [];
@@ -85,6 +83,23 @@ const applyMethod = (data, method) => {
   }
 
   return d;
+};
+
+/**
+ * Applies the reading type
+ * @param  {[type]} data        [description]
+ * @param  {[type]} readingType [description]
+ * @return {[type]}             [description]
+ */
+const applyReadingType = (data, readingType) => {
+  const d = cloneDeep(data);
+  set(d, 'reading.type', readingType);
+  return d;
+};
+
+const applyMethodExternal = (data, method) => {
+  const [readingMethod, readingType] = method.split(',');
+  return applyReadingType(applyMethod(data, readingMethod), readingType);
 };
 
 /**
@@ -394,27 +409,15 @@ const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
 };
 
-/**
- * Applies measured/estimated reading type to model
- * @param  {Object}  data       - return data model
- * @param  {Boolean} isMeasured - whether measured / estimated
- * @return {Object}             - updated return data model
- */
-const applyReadingType = (data, isMeasured) => {
-  const d = cloneDeep(data);
-  const readingType = isMeasured ? 'measured' : 'estimated';
-  set(d, 'reading.type', readingType);
-  return d;
-};
-
-module.exports = {  
+module.exports = {
   applyExternalUser,
   applyMeterDetailsProvided,
   applyMeterDetails,
   applyMeterReadings,
   applyMeterReset,
   applyMeterUnits,
-  applyMethod, 
+  applyMethod,
+  applyMethodExternal,
   applyNilReturn,
   applyQuantities,
   applyReadingType,
@@ -426,13 +429,13 @@ module.exports = {
   applyUserDetails,
 
   checkMeterDetails,
-    
+
   getFormLines,
   getLineLabel,
   getLineName,
   getLineValues,
   getLinesWithReadings,
   getMeter,
-  
+
   isDateWithinAbstractionPeriod
 };

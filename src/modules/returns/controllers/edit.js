@@ -24,7 +24,7 @@ const {
   applyNilReturn, applyExternalUser, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethod,
   getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset
+  applyMeterReset, checkMeterDetails
 } = require('../lib/return-helpers');
 
 const returnPath = require('../lib/return-path');
@@ -123,7 +123,7 @@ const postConfirm = async (request, h) => {
     try {
       // Apply status / under query
       let updated = applyStatus(data);
-      if (updated.reading.type === 'estimated') set(updated, 'meters', []);
+      updated = checkMeterDetails(updated);
       if (permissions.isInternal(request)) {
         updated = applyUnderQuery(updated, forms.getValues(form));
       }

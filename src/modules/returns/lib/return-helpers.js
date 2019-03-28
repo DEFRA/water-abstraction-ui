@@ -365,6 +365,14 @@ const getLinesWithReadings = (data) => {
   });
 };
 
+const checkMeterDetails = data => {
+  const d = cloneDeep(data);
+  if (d.reading.type === 'estimated') {
+    return set(d, 'meters', []);
+  }
+  return d;
+};
+
 module.exports = {
   applySingleTotal,
   isDateWithinAbstractionPeriod,
@@ -384,5 +392,6 @@ module.exports = {
   applyMethod,
   getMeter,
   getLinesWithReadings,
-  applyUnderQuery
+  applyUnderQuery,
+  checkMeterDetails
 };

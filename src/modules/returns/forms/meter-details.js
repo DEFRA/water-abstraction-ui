@@ -14,7 +14,7 @@ const getErrors = message => {
 const getTextField = (fieldName, label, errorMessage) => {
   return fields.text(fieldName, {
     label,
-    controlClass: 'govuk-!-width-one-quarter',
+    controlClass: 'govuk-input--width-10',
     errors: getErrors(errorMessage)
   });
 };

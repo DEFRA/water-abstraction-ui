@@ -234,28 +234,6 @@ experiment('edit controller', () => {
 
       expect(getPreviousPathCalled).to.be.true();
     });
-
-    test('throws a Boom unauthorized error if no documentHeaders', async () => {
-      helpers.getLicenceNumbers.returns([]);
-      try {
-        await controller.getAmounts(createRequest(), h);
-        fail();
-      } catch (err) {
-        expect(err.isBoom).to.equal(true);
-        expect(err.output.statusCode).to.equal(401);
-      }
-    });
-    test('throws a Boom unauthorized error if user is not internalEdit or externalReturns', async () => {
-      returnPath.isInternalEdit.returns(false);
-      permissions.isExternalReturns.returns(false);
-      try {
-        await controller.getAmounts(createRequest(), h);
-        fail();
-      } catch (err) {
-        expect(err.isBoom).to.equal(true);
-        expect(err.output.statusCode).to.equal(401);
-      }
-    });
   });
 
   experiment('postAmounts', () => {

@@ -548,13 +548,13 @@ experiment('applyMeterDetailsProvided', () => {
   test('leaves existing meter details if details are to be provided', async () => {
     const formValues = { meterDetailsProvided: true };
     const data = {
-      meters: [{ startReading: 100, multiplier: 1, units: 'm³' }]
+      meters: [{ startReading: 100, multiplier: 10, units: 'm³' }]
     };
     const applied = applyMeterDetailsProvided(data, formValues);
 
     expect(applied.meters[0]).to.equal({
       startReading: 100,
-      multiplier: 1,
+      multiplier: 10,
       units: 'm³',
       meterDetailsProvided: true
     });

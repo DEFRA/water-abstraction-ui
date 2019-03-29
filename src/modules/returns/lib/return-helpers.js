@@ -416,20 +416,6 @@ const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
 };
 
-
-/**
- * Applies measured/estimated reading type to model
- * @param  {Object}  data       - return data model
- * @param  {Boolean} isMeasured - whether measured / estimated
- * @return {Object}             - updated return data model
- */
-const applyReadingType = (data, isMeasured) => {
-  const d = cloneDeep(data);
-  const readingType = isMeasured ? 'measured' : 'estimated';
-  set(d, 'reading.type', readingType);
-  return d;
-};
-
 module.exports = {
   applyExternalUser,
   applyMeterDetailsProvided,

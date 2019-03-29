@@ -65,15 +65,13 @@ const applySingleTotalAbstractionDates = (data, formValues) => {
 /**
  * Applies the method of return - either volumes or meter readings
  * @param {Object} - return model
- * @param {String} - comma separated list of reading method and type
+ * @param {String} - reading method
  * @return {Object} - updated return model
  */
-const applyMethod = (data, method) => {
+const applyMethod = (data, readingMethod) => {
   const d = cloneDeep(data);
-  const [readingMethod, readingType] = method.split(',');
 
   set(d, 'reading.method', readingMethod);
-  set(d, 'reading.type', readingType);
 
   if (readingMethod === 'abstractionVolumes') {
     const meters = d.meters || [];
@@ -85,6 +83,30 @@ const applyMethod = (data, method) => {
   }
 
   return d;
+};
+
+/**
+ * Applies the reading type
+ * @param  {Object} data        - return model data
+ * @param  {String} readingType - can be estimated|measured
+ * @return {Object}             - updated return model
+ */
+const applyReadingType = (data, readingType) => {
+  const d = cloneDeep(data);
+  set(d, 'reading.type', readingType);
+  return d;
+};
+
+/**
+ * For external returns, both reading method and type are set at the
+ * same time with a comma separated string
+ * @param  {Object} data   - return model
+ * @param  {String} method - readingMethod,readingType
+ * @return {Object}        - updated return model
+ */
+const applyMethodExternal = (data, method) => {
+  const [readingMethod, readingType] = method.split(',');
+  return applyReadingType(applyMethod(data, readingMethod), readingType);
 };
 
 /**
@@ -205,14 +227,14 @@ const applyMeterDetailsProvided = (data, formValues) => {
   const { meterDetailsProvided } = formValues;
   const meter = meterDetailsProvided === true ? getMeter(data) : {};
   meter.meterDetailsProvided = meterDetailsProvided;
-  meter.multiplier = 1;
+  meter.multiplier = meter.multiplier || 1;
   return set(clone, 'meters', [meter]);
 };
 
 const applyMeterUnits = (data, formValues) => {
   const { units } = formValues;
   if (['m³', 'l', 'Ml', 'gal'].includes(units)) {
-    const clone = cloneDeep(data);
+    const clone = applyReadingType(data, 'measured');
     set(clone, 'meters[0].units', units);
     return set(clone, 'reading.units', units);
   }
@@ -394,27 +416,15 @@ const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
 };
 
-/**
- * Applies measured/estimated reading type to model
- * @param  {Object}  data       - return data model
- * @param  {Boolean} isMeasured - whether measured / estimated
- * @return {Object}             - updated return data model
- */
-const applyReadingType = (data, isMeasured) => {
-  const d = cloneDeep(data);
-  const readingType = isMeasured ? 'measured' : 'estimated';
-  set(d, 'reading.type', readingType);
-  return d;
-};
-
-module.exports = {  
+module.exports = {
   applyExternalUser,
   applyMeterDetailsProvided,
   applyMeterDetails,
   applyMeterReadings,
   applyMeterReset,
   applyMeterUnits,
-  applyMethod, 
+  applyMethod,
+  applyMethodExternal,
   applyNilReturn,
   applyQuantities,
   applyReadingType,
@@ -426,13 +436,13 @@ module.exports = {
   applyUserDetails,
 
   checkMeterDetails,
-    
+
   getFormLines,
   getLineLabel,
   getLineName,
   getLineValues,
   getLinesWithReadings,
   getMeter,
-  
+
   isDateWithinAbstractionPeriod
 };

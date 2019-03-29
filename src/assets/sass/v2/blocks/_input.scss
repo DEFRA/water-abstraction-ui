@@ -1,0 +1,5 @@
+.input--meter-reading {
+  @extend .govuk-input--width-10;
+  font-family: monospace;
+  text-align: right;
+}

@@ -10,7 +10,7 @@ const getStartReadingInput = () => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
-    controlClass: 'text-input--meter-reading',
+    controlClass: 'input--meter-reading',
     errors: {
       'number.base': { message: 'Enter a meter start reading' },
       'any.required': { message: 'Enter a meter start reading' },
@@ -27,7 +27,7 @@ const getLineTextInput = (line, suffix) => {
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
-    controlClass: 'text-input--meter-reading',
+    controlClass: 'input--meter-reading',
     errors: {
       'number.min': {
         message: 'Each meter reading should be higher than or equal to the last'

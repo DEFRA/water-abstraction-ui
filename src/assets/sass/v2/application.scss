@@ -7,15 +7,17 @@ $govuk-global-styles: true;
 // Patterns that aren't in Frontend
 @import "blocks/alert";
 @import "blocks/badge";
-@import "blocks/subnav";
-@import "blocks/data-row";
-@import "blocks/pagination";
-@import "blocks/link";
-@import "blocks/phone";
-@import "blocks/search";
-@import "blocks/text";
-@import "blocks/message-preview";
 @import "blocks/company-switcher";
+@import "blocks/data-row";
+@import "blocks/input";
+@import "blocks/link";
+@import "blocks/message-preview";
 @import "blocks/meta";
 @import "blocks/meter-readings";
+@import "blocks/pagination";
+@import "blocks/phone";
+@import "blocks/search";
+@import "blocks/subnav";
+@import "blocks/text";
+
 @import "utils";

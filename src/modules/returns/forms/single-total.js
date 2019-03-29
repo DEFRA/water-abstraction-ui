@@ -30,7 +30,7 @@ const form = (request, data) => {
           fields.text('total', {
             label: 'Enter the total amount',
             type: 'number',
-            controlClass: 'form-control form-control--small',
+            controlClass: 'govuk-input--width-10',
             suffix,
             errors: {
               'number.base': {

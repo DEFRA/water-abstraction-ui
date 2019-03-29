@@ -582,8 +582,8 @@ experiment('internal returns controller', () => {
       test('the expected data is saved to session', async () => {
         const [, data] = sessionHelpers.saveSessionData.lastCall.args;
         expect(data.reading.totalCustomDates).to.be.true();
-        expect(data.reading.totalCustomDateStart).to.equal(new Date(2019, 1, 1));
-        expect(data.reading.totalCustomDateEnd).to.equal(new Date(2019, 1, 3));
+        expect(data.reading.totalCustomDateStart).to.equal('2019-02-01');
+        expect(data.reading.totalCustomDateEnd).to.equal('2019-02-03');
       });
 
       test('user is redirected to the next step', async () => {

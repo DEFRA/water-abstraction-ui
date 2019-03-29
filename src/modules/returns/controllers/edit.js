@@ -40,23 +40,7 @@ const helpers = require('../lib/helpers');
  * @param {String} request.query.returnId - the return to edit
  */
 const getAmounts = async (request, h) => {
-  const { returnId } = request.query;
   const { view, data } = request.returns;
-
-  // Check CRM ownership of document
-  const filter = { system_external_id: data.licenceNumber };
-  const documentHeaders = await helpers.getLicenceNumbers(request, filter);
-  if (documentHeaders.length === 0) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
-  }
-
-  // Check date/roles
-  if (!(returnPath.isInternalEdit(data, request) || permissions.isExternalReturns(request))) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
-  }
-
-  data.versionNumber = (data.versionNumber || 0) + 1;
-  sessionHelpers.saveSessionData(request, applyExternalUser(data));
 
   const form = forms.setValues(amountsForm(request), data);
 

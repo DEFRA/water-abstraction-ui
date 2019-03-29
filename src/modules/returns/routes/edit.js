@@ -49,6 +49,9 @@ module.exports = {
           pageTitle: 'Abstraction return - has any water been abstracted?',
           activeNavLink: 'returns',
           showMeta: true
+        },
+        returns: {
+          load: true
         }
       }
     }

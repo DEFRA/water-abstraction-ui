@@ -32,8 +32,8 @@ const applySingleTotalAbstractionDates = (data, formValues) => {
 
   clone.reading = Object.assign({}, clone.reading, {
     totalCustomDates,
-    totalCustomDateStart: totalCustomDates ? totalCustomDateStart : null,
-    totalCustomDateEnd: totalCustomDates ? totalCustomDateEnd : null
+    totalCustomDateStart: totalCustomDates ? isoDateAndTimeToIsoDate(totalCustomDateStart) : null,
+    totalCustomDateEnd: totalCustomDates ? isoDateAndTimeToIsoDate(totalCustomDateEnd) : null
   });
 
   // Get period start/end and convert to integers
@@ -69,12 +69,14 @@ const applySingleTotalAbstractionDates = (data, formValues) => {
  * @return {Object} - updated return model
  */
 const applyMethod = (data, readingMethod) => {
-  const d = cloneDeep(data);
+  const applied = set(cloneDeep(data), 'reading.method', readingMethod);
 
-  set(d, 'reading.method', readingMethod);
+  if (readingMethod === 'oneMeter') {
+    return applyReadingType(applied, 'measured');
+  }
 
   if (readingMethod === 'abstractionVolumes') {
-    const meters = d.meters || [];
+    const meters = applied.meters || [];
     for (let meter of meters) {
       delete meter.readings;
       delete meter.startReading;
@@ -82,7 +84,7 @@ const applyMethod = (data, readingMethod) => {
     }
   }
 
-  return d;
+  return applied;
 };
 
 /**
@@ -92,9 +94,7 @@ const applyMethod = (data, readingMethod) => {
  * @return {Object}             - updated return model
  */
 const applyReadingType = (data, readingType) => {
-  const d = cloneDeep(data);
-  set(d, 'reading.type', readingType);
-  return d;
+  return set(cloneDeep(data), 'reading.type', readingType);
 };
 
 /**
@@ -183,6 +183,12 @@ const applyNilReturn = (data, isNil) => {
   }
   return d;
 };
+
+/**
+ * Converts a full ISO 8601 date and time to just the date part in the ISO format
+ * e.g. 2019-01-01T01:01:01+00:00 becomes 2019-01-01
+ */
+const isoDateAndTimeToIsoDate = dateAndTime => moment(dateAndTime).format('YYYY-MM-DD');
 
 /**
  * Applys received date and completed status to return
@@ -398,12 +404,10 @@ const getLinesWithReadings = (data) => {
   });
 };
 
+const isEstimatedReading = data => get(data, 'reading.type') === 'estimated';
+
 const checkMeterDetails = data => {
-  const d = cloneDeep(data);
-  if (d.reading.type === 'estimated') {
-    return set(d, 'meters', []);
-  }
-  return d;
+  return isEstimatedReading(data) ? set(cloneDeep(data), 'meters', []) : data;
 };
 
 /**

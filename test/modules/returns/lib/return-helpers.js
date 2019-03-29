@@ -8,6 +8,7 @@ const { expect } = require('code');
 const testReturn = require('./test-return');
 
 const {
+  checkMeterDetails,
   isDateWithinAbstractionPeriod,
   getLinesWithReadings,
   getMeter,
@@ -397,6 +398,25 @@ experiment('applyMethod', () => {
     const data = applyMethod(returnData, 'oneMeter');
     expect(data.reading.method).to.equal('oneMeter');
   });
+
+  test('when the method is meters the reading type is set to measured', async () => {
+    const returnData = getTestReturnWithMeter();
+    const data = applyMethod(returnData, 'oneMeter');
+    expect(data.reading.type).to.equal('measured');
+  });
+
+  test('for volumes the meter details are removed', async () => {
+    const data = {
+      meters: [
+        { readings: [], startReading: 100, units: 'l' },
+        { readings: [], startReading: 101, units: 'l' }
+      ]
+    };
+    const updated = applyMethod(data, 'abstractionVolumes');
+
+    expect(updated.meters[0]).to.equal({});
+    expect(updated.meters[1]).to.equal({});
+  });
 });
 
 experiment('getMeter', () => {
@@ -548,13 +568,13 @@ experiment('applyMeterDetailsProvided', () => {
   test('leaves existing meter details if details are to be provided', async () => {
     const formValues = { meterDetailsProvided: true };
     const data = {
-      meters: [{ startReading: 100, multiplier: 1, units: 'm³' }]
+      meters: [{ startReading: 100, multiplier: 10, units: 'm³' }]
     };
     const applied = applyMeterDetailsProvided(data, formValues);
 
     expect(applied.meters[0]).to.equal({
       startReading: 100,
-      multiplier: 1,
+      multiplier: 10,
       units: 'm³',
       meterDetailsProvided: true
     });
@@ -653,8 +673,8 @@ experiment('applySingleTotalAbstractionDates', () => {
     const data = {
       reading: {
         totalCustomDates: true,
-        totalCustomDateStart: '2018-01-01',
-        totalCustomDateEnd: '2018-01-02'
+        totalCustomDateStart: '2018-01-01T03:02:01+00:00',
+        totalCustomDateEnd: '2018-01-02T03:02:01+00:00'
       },
       metadata: {
         nald: {}
@@ -671,8 +691,8 @@ experiment('applySingleTotalAbstractionDates', () => {
   test('sets the data for a custom period', async () => {
     const formValues = {
       totalCustomDates: true,
-      totalCustomDateStart: '2018-01-01',
-      totalCustomDateEnd: '2018-01-02'
+      totalCustomDateStart: '2018-01-01T03:02:01+00:00',
+      totalCustomDateEnd: '2018-01-02T03:02:01+00:00'
     };
 
     const data = {
@@ -740,13 +760,50 @@ experiment('applySingleTotalAbstractionDates', () => {
 });
 
 experiment('applyReadingType', () => {
-  test('sets reading type to measured if second argument is true', async () => {
-    const data = applyReadingType({}, true);
+  test('sets reading type', async () => {
+    const data = applyReadingType({}, 'measured');
     expect(data.reading.type).to.equal('measured');
   });
+});
 
-  test('sets reading type to estimated if second argument is false', async () => {
-    const data = applyReadingType({}, false);
-    expect(data.reading.type).to.equal('estimated');
+experiment('checkMeterDetails', () => {
+  test('sets the meters to an empty array for estimates', async () => {
+    const data = {
+      reading: {
+        type: 'estimated'
+      }
+    };
+
+    expect(checkMeterDetails(data)).to.equal({
+      reading: {
+        type: 'estimated'
+      },
+      meters: []
+    });
+  });
+
+  test('does not overwrite meters for measured', async () => {
+    const data = {
+      reading: {
+        type: 'measured'
+      },
+      meters: [
+        { example: 'test' }
+      ]
+    };
+
+    expect(checkMeterDetails(data)).to.equal({
+      reading: {
+        type: 'measured'
+      },
+      meters: [
+        { example: 'test' }
+      ]
+    });
+  });
+
+  test('does nothing for no reading', async () => {
+    const data = {};
+    expect(checkMeterDetails(data)).to.equal({});
   });
 });

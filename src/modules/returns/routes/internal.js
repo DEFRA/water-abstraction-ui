@@ -183,7 +183,9 @@ module.exports = {
           activeNavLink: 'view',
           showMeta: false
         },
-        returns: true
+        returns: {
+          load: true
+        }
       }
     }
   },

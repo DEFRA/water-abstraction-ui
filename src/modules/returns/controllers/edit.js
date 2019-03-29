@@ -21,7 +21,7 @@ const {
 const {
   applySingleTotal, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
-  applyMeterUnits, applyMeterReadings, applyMethod,
+  applyMeterUnits, applyMeterReadings, applyMethodExternal,
   getLinesWithReadings, applyStatus, applyUnderQuery,
   applyMeterReset, checkMeterDetails, applyReadingType
 } = require('../lib/return-helpers');
@@ -40,23 +40,7 @@ const helpers = require('../lib/helpers');
  * @param {String} request.query.returnId - the return to edit
  */
 const getAmounts = async (request, h) => {
-  const { returnId } = request.query;
   const { view, data } = request.returns;
-
-  // Check CRM ownership of document
-  const filter = { system_external_id: data.licenceNumber };
-  const documentHeaders = await helpers.getLicenceNumbers(request, filter);
-  if (documentHeaders.length === 0) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
-  }
-
-  // Check date/roles
-  if (!(returnPath.isInternalEdit(data, request) || permissions.isExternalReturns(request))) {
-    throw Boom.unauthorized(`Access denied to submit return ${returnId}`, request.auth.credentials);
-  }
-
-  data.versionNumber = (data.versionNumber || 0) + 1;
-  sessionHelpers.saveSessionData(request, applyExternalUser(data));
 
   const form = forms.setValues(amountsForm(request), data);
 
@@ -177,7 +161,7 @@ const postMethod = async (request, h) => {
 
   if (form.isValid) {
     const { method } = forms.getValues(form);
-    const d = applyMethod(data, method);
+    const d = applyMethodExternal(data, method);
     sessionHelpers.saveSessionData(request, d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
@@ -470,7 +454,7 @@ const postMeterUsed = (request, h) => {
 
   if (form.isValid) {
     const { meterUsed } = forms.getValues(form);
-    const d = applyReadingType(data, meterUsed);
+    const d = applyReadingType(data, meterUsed ? 'measured' : 'estimated');
     sessionHelpers.saveSessionData(request, d);
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_USED, request, d));
   }

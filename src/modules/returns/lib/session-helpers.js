@@ -1,6 +1,6 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
-const { applyUserDetails } = require('../lib/return-helpers');
+const { applyUserDetails, applyCleanup } = require('../lib/return-helpers');
 const logger = require('../../../lib/logger');
 const { isInternal } = require('../../../lib/permissions');
 
@@ -58,19 +58,15 @@ const deleteSessionData = (request) => {
  * @return {Promise} resolve when data posted to water service
  */
 const submitReturnData = (data, request) => {
-  const d = applyUserDetails(data, request.auth.credentials);
-
-  // Don't bother sending required return lines/versions
-  delete d.requiredLines;
-  delete d.versions;
+  const dataWithUser = applyUserDetails(data, request.auth.credentials);
+  const dataToSubmit = applyCleanup(dataWithUser, request);
 
   // Post return
   try {
-    request.log('info', `Posting return`);
-    request.log('info', JSON.stringify(d, null, 2));
-    return returns.postReturn(d);
+    request.log(`Posting return`, { data: dataToSubmit });
+    return returns.postReturn(dataToSubmit);
   } catch (err) {
-    logger.error('Submit return data error', err);
+    logger.error('Submit return data error', { data: dataToSubmit });
     throw err;
   }
 };

@@ -3,6 +3,8 @@ const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
 const { maxPrecision } = require('../../../lib/number-formatter');
 const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
+const permissions = require('../../../lib/permissions');
+
 /**
  * Sets up data model for external user
  * External users do not have the option to enter a single total figure
@@ -420,6 +422,36 @@ const applyReceivedDate = (data, formValues) => {
   return Object.assign(cloneDeep(data), { receivedDate: formValues.receivedDate });
 };
 
+/**
+ * Tidies data ready for submission
+ * @param  {Object} data    - return data model
+ * @param  {Object} request - HAPI request
+ * @return {Object}         ready for submission
+ */
+const applyCleanup = (data, request) => {
+  const updated = cloneDeep(data);
+
+  const isExternal = permissions.isExternal(request);
+
+  if (isExternal) {
+    // External users can't submit single total value
+    set(updated, 'reading.totalFlag', false);
+    // External users must provide meter details for all meters
+    updated.meters = updated.meters.map(row => {
+      return {
+        ...row,
+        meterDetailsProvided: true
+      };
+    });
+  }
+
+  // Required lines and versions shouldn't be posted back to water service
+  delete updated.requiredLines;
+  delete updated.versions;
+
+  return updated;
+};
+
 module.exports = {
   applyExternalUser,
   applyMeterDetailsProvided,
@@ -438,6 +470,7 @@ module.exports = {
   applyStatus,
   applyUnderQuery,
   applyUserDetails,
+  applyCleanup,
 
   checkMeterDetails,
 

@@ -21,7 +21,7 @@ const {
 const {
   applySingleTotal, applyQuantities,
   applyNilReturn, applyExternalUser, applyMeterDetails,
-  applyMeterUnits, applyMeterReadings, applyMethod,
+  applyMeterUnits, applyMeterReadings, applyMethodExternal,
   getLinesWithReadings, applyStatus, applyUnderQuery,
   applyMeterReset, checkMeterDetails, applyReadingType
 } = require('../lib/return-helpers');
@@ -177,7 +177,7 @@ const postMethod = async (request, h) => {
 
   if (form.isValid) {
     const { method } = forms.getValues(form);
-    const d = applyMethod(data, method);
+    const d = applyMethodExternal(data, method);
     sessionHelpers.saveSessionData(request, d);
 
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
@@ -470,7 +470,7 @@ const postMeterUsed = (request, h) => {
 
   if (form.isValid) {
     const { meterUsed } = forms.getValues(form);
-    const d = applyReadingType(data, meterUsed);
+    const d = applyReadingType(data, meterUsed ? 'measured' : 'estimated');
     sessionHelpers.saveSessionData(request, d);
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_USED, request, d));
   }

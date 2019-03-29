@@ -3,8 +3,7 @@ const { get } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const sessionHelpers = require('./lib/session-helpers');
-const { getViewData } = require('./lib/helpers');
-const { isInternal } = require('../../lib/permissions');
+const helpers = require('./lib/helpers');
 const waterConnector = require('../../lib/connectors/water');
 const crmConnector = require('../../lib/connectors/crm');
 const returnPath = require('./lib/return-path');
@@ -15,7 +14,7 @@ const permissions = require('../../lib/permissions');
  */
 const redirectToReturn = (request, h) => {
   const { returnId } = request.query;
-  const isInternalUser = isInternal(request);
+  const isInternalUser = permissions.isInternal(request);
   const path = `${isInternalUser ? '/admin' : ''}/returns/return?id=${returnId}`;
   return h.redirect(path).takeover();
 };
@@ -32,11 +31,10 @@ const loadCRMDocument = async (request, data) => {
   const filter = crmConnector.documents.createFilter(request, {
     system_external_id: data.licenceNumber
   });
-  const sort = {};
   const pagination = { page: 1, perPage: 1 };
   const columns = ['document_id'];
   const { data: [ document ], error } =
-    await crmConnector.documents.findMany(filter, sort, pagination, columns);
+    await crmConnector.documents.findMany(filter, null, pagination, columns);
   throwIfError(error);
   return document;
 };
@@ -101,7 +99,7 @@ const preHandler = async (request, h) => {
 
   try {
     const data = await getReturnData(request);
-    const view = await getViewData(request, data);
+    const view = await helpers.getViewData(request, data);
 
     // If no return ID in session, then throw error
     if (returnId !== data.returnId) {
@@ -111,7 +109,7 @@ const preHandler = async (request, h) => {
     request.returns = {
       data,
       view,
-      isInternal: isInternal(request)
+      isInternal: permissions.isInternal(request)
     };
   } catch (err) {
     // Return data was not found in session
@@ -125,14 +123,16 @@ const preHandler = async (request, h) => {
   return h.continue;
 };
 
+const _handler = async (request, h) => {
+  const isEnabled = get(request, 'route.settings.plugins.returns', false);
+  return isEnabled ? preHandler(request, h) : h.continue;
+};
+
 const returnsPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
-      method: async (request, h) => {
-        const isEnabled = get(request, 'route.settings.plugins.returns', false);
-        return isEnabled ? preHandler(request, h) : h.continue;
-      }
+      method: _handler
     });
   },
 
@@ -143,3 +143,4 @@ const returnsPlugin = {
 };
 
 module.exports = returnsPlugin;
+module.exports._handler = _handler;

@@ -434,9 +434,7 @@ module.exports = {
   applyStatus,
   applyUnderQuery,
   applyUserDetails,
-
   checkMeterDetails,
-
   getFormLines,
   getLineLabel,
   getLineName,

@@ -4,23 +4,27 @@ const { experiment, test } = exports.lab = require('lab').script();
 const confirmForm = require('../../../../src/modules/returns/forms/confirm');
 const { scope } = require('../../../../src/lib/constants');
 
-experiment('confirmForm', () => {
-  const getRequest = (isInternal) => {
-    return {
-      auth: {
-        credentials: {
-          scope: [isInternal ? scope.internal : scope.external]
-        }
-      },
-      view: {
-        csrfToken: 'xyz'
-      },
-      query: {
-        returnId: 'abc'
-      }
-    };
-  };
+const { convertHandlerToApply } = require('../test-helpers');
+const controller = require('../../../../src/modules/returns/controllers/edit');
+const moment = require('moment');
 
+const getRequest = (isInternal) => {
+  return {
+    auth: {
+      credentials: {
+        scope: [isInternal ? scope.internal : scope.external]
+      }
+    },
+    view: {
+      csrfToken: 'xyz'
+    },
+    query: {
+      returnId: 'abc'
+    }
+  };
+};
+
+experiment('confirmForm', () => {
   const externalForm = confirmForm(getRequest(false), {});
   const internalForm = confirmForm(getRequest(true), {});
 
@@ -59,5 +63,63 @@ experiment('confirmForm', () => {
     const form = confirmForm(request, { isUnderQuery: true });
     const checkbox = find(form.fields, { name: 'isUnderQuery' });
     expect(checkbox.value).to.equal(['under_query']);
+  });
+});
+
+experiment('applyConfirm', () => {
+  const returnModel = {
+    returnId: 'test',
+    reading: {
+      type: 'measured'
+    },
+    meters: [{
+      manufacturer: 'Very accurate'
+    }]
+  };
+  const formData = {};
+
+  experiment('for external users', () => {
+    const apply = convertHandlerToApply(controller.postConfirm);
+
+    test('sets status to "completed"', async () => {
+      const result = await apply(returnModel, formData);
+      expect(result.status).to.equal('completed');
+    });
+
+    test('sets received date to today', async () => {
+      const today = moment().format('YYYY-MM-DD');
+      const result = await apply(returnModel, formData);
+      expect(result.receivedDate).to.equal(today);
+    });
+
+    test('passes through meters array when reading type is measured', async () => {
+      const result = await apply(returnModel, formData);
+      expect(result.meters).to.equal(returnModel.meters);
+    });
+
+    test('resets meters to empty array when reading type is estimated', async () => {
+      const ret = {
+        ...returnModel,
+        reading: {
+          type: 'estimated'
+        }
+      };
+      const result = await apply(ret, formData);
+      expect(result.meters).to.equal([]);
+    });
+
+    test('does not set under query flag', async () => {
+      const result = await apply(returnModel, { isUnderQuery: 'under_query' });
+      expect(result.isUnderQuery).to.be.undefined();
+    });
+  });
+
+  experiment('for internal users', () => {
+    const apply = convertHandlerToApply(controller.postConfirm, true);
+
+    test('does set under query flag', async () => {
+      const result = await apply(returnModel, { isUnderQuery: 'under_query' });
+      expect(result.isUnderQuery).to.equal(true);
+    });
   });
 });

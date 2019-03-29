@@ -14,8 +14,7 @@ const {
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
   meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  meterResetForm,
-  meterUsedForm, meterUsedSchema
+  meterResetForm, meterUsedForm, meterUsedSchema
 } = require('../forms/');
 
 const {
@@ -289,7 +288,6 @@ const getConfirm = async (request, h) => {
   const form = confirmForm(request, data, `/return/confirm`);
 
   const isReadings = get(data, 'reading.method') === 'oneMeter';
-  const endReadingKey = findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
   return h.view('nunjucks/returns/confirm.njk', {
     ...view,
@@ -299,7 +297,7 @@ const getConfirm = async (request, h) => {
     total: helpers.getReturnTotal(data),
     back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data),
     makeChangePath: flowHelpers.getPath(isReadings ? flowHelpers.STEP_METER_READINGS : flowHelpers.STEP_QUANTITIES, request, data),
-    endReading: get(data, `meters[0].readings.${endReadingKey}`)
+    endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
   }, { layout: false });
 };
 

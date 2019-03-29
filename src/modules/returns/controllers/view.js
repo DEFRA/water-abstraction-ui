@@ -7,7 +7,8 @@ const { isInternal } = require('../../../lib/permissions');
 const {
   getLicenceNumbers,
   getReturnsViewData,
-  getReturnTotal
+  getReturnTotal,
+  endReadingKey
 } = require('../lib/helpers');
 
 const {
@@ -73,7 +74,6 @@ const getReturn = async (request, h) => {
   }
 
   const showVersions = isInternal && get(data, 'versions[0].email');
-  const endReadingKey = findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
   const view = {
     total: getReturnTotal(data),
@@ -85,7 +85,7 @@ const getReturn = async (request, h) => {
     editButtonPath: getEditButtonPath(data, request),
     showVersions,
     isVoid: data.status === 'void',
-    endReading: get(data, `meters[0].readings.${endReadingKey}`)
+    endReading: get(data, `meters[0].readings.${endReadingKey(data)}`)
   };
 
   return h.view('water/returns/return', view);

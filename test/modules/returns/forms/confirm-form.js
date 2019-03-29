@@ -117,9 +117,18 @@ experiment('applyConfirm', () => {
   experiment('for internal users', () => {
     const apply = convertHandlerToApply(controller.postConfirm, true);
 
-    test('does set under query flag', async () => {
+    test('sets under query flag', async () => {
       const result = await apply(returnModel, { isUnderQuery: 'under_query' });
       expect(result.isUnderQuery).to.equal(true);
+    });
+
+    test('clears under query flag', async () => {
+      const ret = {
+        ...returnModel,
+        isUnderQuery: true
+      };
+      const result = await apply(ret, formData);
+      expect(result.isUnderQuery).to.equal(false);
     });
   });
 });

@@ -41,7 +41,7 @@ const helpers = require('../lib/helpers');
  */
 const getAmounts = async (request, h) => {
   const { returnId } = request.query;
-  const { view, data } = request.returns;
+  const { data, view } = await helpers.getReturnDataAndView(request, returnId);
 
   // Check CRM ownership of document
   const filter = { system_external_id: data.licenceNumber };

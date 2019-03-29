@@ -407,14 +407,14 @@ const applyReadingType = (data, isMeasured) => {
   return d;
 };
 
-module.exports = {  
+module.exports = {
   applyExternalUser,
   applyMeterDetailsProvided,
   applyMeterDetails,
   applyMeterReadings,
   applyMeterReset,
   applyMeterUnits,
-  applyMethod, 
+  applyMethod,
   applyNilReturn,
   applyQuantities,
   applyReadingType,
@@ -424,15 +424,12 @@ module.exports = {
   applyStatus,
   applyUnderQuery,
   applyUserDetails,
-
   checkMeterDetails,
-    
   getFormLines,
   getLineLabel,
   getLineName,
   getLineValues,
   getLinesWithReadings,
   getMeter,
-  
   isDateWithinAbstractionPeriod
 };

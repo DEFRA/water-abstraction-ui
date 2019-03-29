@@ -8,6 +8,8 @@ const sandbox = sinon.createSandbox();
 const { get } = require('lodash');
 
 const returnsConnector = require('../../../../src/lib/connectors/returns').returns;
+const waterConnector = require('../../../../src/lib/connectors/water').returns;
+const documentsConnector = require('../../../../src/lib/connectors/crm/documents');
 const helpers = require('../../../../src/modules/returns/lib/helpers');
 
 experiment('isReturnPastDueDate', () => {
@@ -182,5 +184,48 @@ experiment('isXmlUpload', () => {
       const result = await helpers.isXmlUpload([]);
       expect(result).to.equal(false);
     });
+  });
+});
+const createRequest = scope => {
+  return { auth: {
+    credentials: {
+      scope
+    }
+  },
+  returns: {
+    data: {
+      returnId: '123/456',
+      licenceNumber: '1/23/456/789'
+    },
+    view: {
+      pageTitle: 'View data from request'
+    }
+  }
+  };
+};
+experiment('getReturnDataAndView', () => {
+  beforeEach(async () => {
+    sandbox.stub(waterConnector, 'getReturn').resolves('Fresh return data for external flow');
+    sandbox.stub(documentsConnector, 'getWaterLicence').returns('documentHeader');
+    sandbox.stub(helpers, 'getViewData').returns({ pageTitle: 'View data for external flow' });
+  });
+  afterEach(async () => {
+    sandbox.restore();
+  });
+  test('If Internal user, return data and view from request', async () => {
+    const request = createRequest(['internal']);
+    const { data, view } = await helpers.getReturnDataAndView(request, 'returnId');
+    expect(data).to.equal(request.returns.data);
+    expect(view).to.equal(request.returns.view);
+  });
+  test('If ExternalReturns user, call getReturn to retrieve data', async () => {
+    const request = createRequest(['external', 'primary_user']);
+    const { data } = await helpers.getReturnDataAndView(request, 'returnId');
+    expect(data).to.equal('Fresh return data for external flow');
+  });
+  test('If ExternalReturns user, call getReturn to retrieve data', async () => {
+    const request = createRequest(['external', 'primary_user']);
+    const { view } = await helpers.getReturnDataAndView(request, 'returnId');
+    expect(view).to.equal({ documentHeader: 'documentHeader', data: 'Fresh return data for external flow' });
   });
 });

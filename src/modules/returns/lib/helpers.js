@@ -7,8 +7,9 @@ const titleCase = require('title-case');
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
+const waterConnector = require('../../../lib/connectors/water');
 const config = require('../../../../config');
-const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
+const documentsConnector = require('../../../lib/connectors/crm/documents');
 
 const { getReturnPath } = require('./return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -296,12 +297,31 @@ const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path
  * @return {Promise} resolves with view data
  */
 const getViewData = async (request, data) => {
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const documentHeader = await documentsConnector.getWaterLicence(data.licenceNumber);
   return {
     ...request.view,
     documentHeader,
     data
   };
+};
+
+/**
+ * If external user, get return and view data, otherwise, getreturn and view
+ * data from request
+ * @param {Object} request - current HAPI request
+ * @param {String} returnId
+ * @return {Object} return data and view data
+ */
+const getReturnDataAndView = async (request, returnId) => {
+  let data, view;
+  if (isExternalReturns(request)) {
+    data = await waterConnector.returns.getReturn(returnId);
+    view = await getViewData(request, data);
+  } else {
+    data = get(request, 'returns.data');
+    view = get(request, 'returns.view');
+  }
+  return { data, view };
 };
 
 /**
@@ -381,6 +401,7 @@ exports.getReturnsViewData = getReturnsViewData;
 exports.getReturnTotal = getReturnTotal;
 exports.getScopedPath = getScopedPath;
 exports.getViewData = getViewData;
+exports.getReturnDataAndView = getReturnDataAndView;
 exports.isReturnPastDueDate = isReturnPastDueDate;
 exports.getRedirectPath = getRedirectPath;
 exports.isReturnId = isReturnId;

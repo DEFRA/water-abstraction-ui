@@ -261,11 +261,6 @@ experiment('applyMeterUnits', () => {
     expect(data.reading.units).to.equal('gal');
   });
 
-  test('sets reading type to measured', async () => {
-    const data = applyMeterUnits({}, getFormValues('gal'));
-    expect(data.reading.type).to.equal('measured');
-  });
-
   test('throws for an unexpected value', async () => {
     expect(() => {
       applyMeterUnits({}, getFormValues('oz'));
@@ -501,7 +496,7 @@ experiment('applyUnderQuery', () => {
 
 experiment('applyMeterReset', () => {
   const returnData = method => {
-    return { 
+    return {
       reading: {
         method
       },
@@ -521,11 +516,11 @@ experiment('applyMeterReset', () => {
     const data = applyMeterReset(returnData('abstractionVolumes'), { meterReset: false });
     expect(data.reading.method).to.equal('oneMeter');
   });
-  
+
   test('updates reading.method to "abstractionVolumes" if meterReset is true', async () => {
     const data = applyMeterReset(returnData('oneMeter'), { meterReset: true });
     expect(data.reading.method).to.equal('abstractionVolumes');
-  });    
+  });
 });
 
 experiment('applyReceivedDate', () => {

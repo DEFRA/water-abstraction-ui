@@ -845,6 +845,11 @@ experiment('applyCleanup', () => {
       const result = applyCleanup(createReturn(), createRequest());
       expect(result.meters[0].meterDetailsProvided).to.equal(true);
     });
+
+    test('ignores the meters if they are undefined (nil return)', async () => {
+      const result = applyCleanup({}, createRequest());
+      expect(result.meters).to.be.undefined();
+    });
   });
 
   experiment('for internal users', () => {

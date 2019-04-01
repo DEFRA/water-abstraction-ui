@@ -1,6 +1,6 @@
 {% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
 
-{% macro returnQuantitiesTable(return, lines, endReading) %}
+{% macro returnQuantitiesTable(return, lines, total, endReading) %}
   {{ confirmPageInsetText(return, endReading) }}
 
   <table class="govuk-table">
@@ -62,6 +62,22 @@
       {%endif%}
     </tr>
       {%endfor%}
+    <tr class="govuk-table_row">
+      <td class="govuk-table__header" scope="row">
+        Total abstraction
+      </td>
+      {%if return.reading.method == 'oneMeter' %}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row"></td>
+      {%endif%}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row">
+        <strong>{{ total | number }}</strong>
+      </td>
+      {%if return.reading.units != 'm³' %}
+      <td class="govuk-table__cell govuk-table__cell--numeric" scope="row">
+        <strong>{{ total | unitConversion(return.reading.units) | number }}</strong>
+      </td>
+      {%endif%}
+    </tr>
   </tbody>
 </table>
 

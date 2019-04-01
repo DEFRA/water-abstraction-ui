@@ -117,7 +117,7 @@ experiment('getBadge', () => {
   test('If return is due, return due badge', async () => {
     expect(helpers.getBadge('due', false)).to.equal({
       text: 'Due',
-      status: 'success'
+      status: 'due'
     });
   });
 

@@ -676,7 +676,7 @@ experiment('edit controller', () => {
       await controller.getMeterReset(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('nunjucks/returns/form.njk');
+      expect(template).to.equal('nunjucks/returns/meter-reset.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METER_RESET, request and request.returns.data', async () => {
@@ -708,7 +708,7 @@ experiment('edit controller', () => {
       await controller.postMeterReset(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('nunjucks/returns/form.njk');
+      expect(template).to.equal('nunjucks/returns/meter-reset.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });

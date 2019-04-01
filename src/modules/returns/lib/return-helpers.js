@@ -437,12 +437,15 @@ const applyCleanup = (data, request) => {
     // External users can't submit single total value
     set(updated, 'reading.totalFlag', false);
     // External users must provide meter details for all meters
-    updated.meters = updated.meters.map(row => {
-      return {
-        ...row,
-        meterDetailsProvided: true
-      };
-    });
+
+    if (updated.meters) {
+      updated.meters = updated.meters.map(row => {
+        return {
+          ...row,
+          meterDetailsProvided: true
+        };
+      });
+    }
   }
 
   // Required lines and versions shouldn't be posted back to water service

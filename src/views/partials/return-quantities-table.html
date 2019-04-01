@@ -7,10 +7,13 @@
   {{/equal}}
 
   {{#equal return.reading.type 'measured'}}
-  <br/>
+    <br/>
     <h4 class="heading-small">Your meter</h4>
-    {{/equal}}
-    <div class="panel panel-border-wide">
+  {{/equal}}
+    {{#if return.reading.type}}
+      <div class="panel panel-border-wide">
+    {{/if}}
+      {{#equal return.reading.type 'measured'}}
       <dl class="meta">
         <dd class="meta__description">
           {{ return.meters.0.manufacturer }}
@@ -18,6 +21,7 @@
         <dd class="meta__description">
           {{ return.meters.0.serialNumber }}
         </dd>
+        {{/equal}}
         {{#equal return.meters.0.multiplier 10}}
         <dd class="meta__description">
           Has a x10 display
@@ -34,12 +38,9 @@
           </dd>
         {{/equal}}
 
-        {{#equal return.reading.method 'estimatedVolumes' }}
+        {{#equal return.reading.type 'estimated' }}
           <dd class="meta__description">
             Estimated
-          </dd>
-          <dd class="meta__description">
-          <!-- {{ formatQuantity return.estimateMethod }} -->
           </dd>
         {{/equal}}
       </dl>

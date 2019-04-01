@@ -1,13 +1,14 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { get } = require('lodash');
+const { get, findLastKey } = require('lodash');
 
 const { isInternal } = require('../../../lib/permissions');
 
 const {
   getLicenceNumbers,
   getReturnsViewData,
-  getReturnTotal
+  getReturnTotal,
+  endReadingKey
 } = require('../lib/helpers');
 
 const {
@@ -83,7 +84,8 @@ const getReturn = async (request, h) => {
     documentHeader,
     editButtonPath: getEditButtonPath(data, request),
     showVersions,
-    isVoid: data.status === 'void'
+    isVoid: data.status === 'void',
+    endReading: get(data, `meters[0].readings.${endReadingKey(data)}`)
   };
 
   return h.view('water/returns/return', view);

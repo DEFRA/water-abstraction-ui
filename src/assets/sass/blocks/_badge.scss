@@ -1,43 +1,49 @@
 .badge {
   min-width: 4rem;
-  line-height: 2.25rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
   font-weight: bold;
-  font-size: 16px;
-  padding: 3px 5px 0 5px;
-  background: #005ea5;
+  padding: 5px 7px 1px 7px;
+  vertical-align: middle;
+
+  color: #005ea5;
+  border: 1px solid #005ea5;
+  border-radius: 2px;
+
   letter-spacing: 1px;
-  color: $page-colour;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
 .badge--error {
-  background: $error-colour;
+  border: 1px solid $error-colour;
+  color: $error-colour;
 }
 
 .badge--success {
-  background: $button-colour;
+  border: 1px solid $button-colour;
+  color: $button-colour;
 }
 
 .badge--completed {
-  background: $link-colour;
+  border: 1px solid $link-colour;
+  color: $link-colour;
 }
 
 .badge--due {
-  background: #f47738;
+  border: 1px solid #df3034;
+  color: #df3034;
 }
 
 .badge--void {
-  background: #b10e1e;
+  border: 1px solid #b10e1e;
+  color: #b10e1e;
 }
 
 .badge--info {
-  background: #6f777b;
-}
-
-.badge--caps {
+  border: 1px solid #6f777b;
+  color: #6f777b;
 }
 
 .badge--no-wrap {

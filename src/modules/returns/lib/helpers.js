@@ -358,7 +358,7 @@ const getBadge = (status, isPastDueDate) => {
 
   const styles = {
     overdue: 'success',
-    due: 'success',
+    due: 'due',
     received: 'completed',
     completed: 'completed',
     void: 'void'

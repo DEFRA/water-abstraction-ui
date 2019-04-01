@@ -4,17 +4,18 @@
 
 {% block content %}
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ returnHeader(data, documentHeader, showMeta) }}
-      </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ returnHeader(data, documentHeader, showMeta) }}
     </div>
+  </div>
 
-      <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-heading-l">Nil return</h2>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">Nil return</h2>
         {{ returnDeclaration(isAdmin) }}
         {{ formRender(form) }}
-      </div>
-  </main>
-</div>
+    </div>
+  </div>
+
 {% endblock %}

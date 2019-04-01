@@ -27,7 +27,8 @@ const {
   applySingleTotalAbstractionDates,
   applyStatus,
   applyUnderQuery,
-  applyUserDetails
+  applyUserDetails,
+  applyCleanup
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
 const sameYear = {
@@ -805,5 +806,61 @@ experiment('checkMeterDetails', () => {
   test('does nothing for no reading', async () => {
     const data = {};
     expect(checkMeterDetails(data)).to.equal({});
+  });
+});
+
+experiment('applyCleanup', () => {
+  const createReturn = () => ({
+    reading: {
+      totalFlag: true
+    },
+    meters: [{
+      meterDetailsProvided: false
+    }],
+    requiredLines: [],
+    versions: []
+  });
+
+  const createRequest = isInternal => ({
+    auth: {
+      credentials: {
+        scope: [isInternal ? 'internal' : 'external']
+      }
+    }
+  });
+
+  test('removes requiredLines and versions', async () => {
+    const result = applyCleanup(createReturn(), createRequest());
+    const keys = Object.keys(result);
+    expect(keys).to.not.include(['requiredLines', 'versions']);
+  });
+
+  experiment('for external users', () => {
+    test('sets reading.totalFlag to false', async () => {
+      const result = applyCleanup(createReturn(), createRequest());
+      expect(result.reading.totalFlag).to.equal(false);
+    });
+
+    test('sets meters[].meterDetailsProvided to true', async () => {
+      const result = applyCleanup(createReturn(), createRequest());
+      expect(result.meters[0].meterDetailsProvided).to.equal(true);
+    });
+
+    test('ignores the meters if they are undefined (nil return)', async () => {
+      const result = applyCleanup({}, createRequest());
+      expect(result.meters).to.be.undefined();
+    });
+  });
+
+  experiment('for internal users', () => {
+    test('does not change reading.totalFlag', async () => {
+      const result = applyCleanup(createReturn(), createRequest(true));
+      expect(result.reading.totalFlag).to.equal(true);
+    });
+
+    test('does not set meters[].meterDetailsProvided', async () => {
+      const result = applyCleanup(createReturn(), createRequest(true));
+      expect(result.meters[0].meterDetailsProvided).to.equal(false);
+    });
   });
 });

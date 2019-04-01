@@ -15,26 +15,18 @@
   crossorigin="anonymous"></script>
 <script>
 
-
 /**
- * Checks whether the 'Yes' radio option is ticked
- * @return {Boolean}
+ * [updateView description]
+ * @return {[type]} [description]
  */
-function isChecked() {
-  return $('#meterReset-1').is(':checked');
-}
-
-function initView() {
-  $('#meterReset-1-item-hint').toggle(isChecked());
-}
-
 function updateView() {
+  const isChecked = $('#meterReset-1').is(':checked');
   var $hint = $('#meterReset-1-item-hint');
-  isChecked() ? $hint.slideDown() : $hint.slideUp();
+  $('#meterReset-1-item-hint').toggle(isChecked);
 };
 
 $(function() {
-  initView();
+  updateView();
   $('[name=meterReset]').on('change', updateView);
 });
 </script>

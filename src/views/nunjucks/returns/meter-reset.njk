@@ -1,0 +1,41 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/macros/forms/index.njk" import formRender, formErrorSummary %}
+{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+
+{% block content %}
+  {{ formErrorSummary(form) }}
+  {{ returnHeader(data, documentHeader, showMeta) }}
+  {{ formRender(form) }}
+{% endblock %}
+
+{% block bodyEnd %}
+<script
+  src="/public/javascripts/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+
+
+/**
+ * Checks whether the 'Yes' radio option is ticked
+ * @return {Boolean}
+ */
+function isChecked() {
+  return $('#meterReset-1').is(':checked');
+}
+
+function initView() {
+  $('#meterReset-1-item-hint').toggle(isChecked());
+}
+
+function updateView() {
+  var $hint = $('#meterReset-1-item-hint');
+  isChecked() ? $hint.slideDown() : $hint.slideUp();
+};
+
+$(function() {
+  initView();
+  $('[name=meterReset]').on('change', updateView);
+});
+</script>
+{% endblock %}

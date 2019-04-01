@@ -362,7 +362,7 @@ const postMeterUnits = async (request, h) => {
 const getMeterReset = async (request, h) => {
   const { view, data } = request.returns;
 
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/meter-reset.njk', {
     ...view,
     form: meterResetForm(request, data),
     return: data,
@@ -381,7 +381,7 @@ const postMeterReset = async (request, h) => {
     return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
   }
 
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/meter-reset.njk', {
     ...view,
     form,
     return: data

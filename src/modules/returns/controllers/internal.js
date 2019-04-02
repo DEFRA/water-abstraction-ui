@@ -112,7 +112,7 @@ const getLogReceipt = async (request, h) => {
     ...view,
     form: logReceiptForm(request, data),
     return: data,
-    back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
+    back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
   });
 };
 

@@ -96,7 +96,8 @@ const previous = {
     return isMeterDetailsProvided(data)
       ? STEP_METER_DETAILS
       : STEP_METER_DETAILS_PROVIDED;
-  }
+  },
+  [STEP_LOG_RECEIPT]: () => STEP_INTERNAL_ROUTING
 };
 
 module.exports = {

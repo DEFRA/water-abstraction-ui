@@ -15,6 +15,8 @@
   text-decoration: none;
   color: govuk-colour("white");
   border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
 
   @include govuk-media-query($until: tablet) {
     padding-bottom:  3px;
@@ -22,27 +24,32 @@
 }
 
 .badge--error {
-  border: 1px solid $govuk-error-colour;
+  border-color: $govuk-error-colour;
   color: $govuk-error-colour;
 }
 
 .badge--success {
-  border: 1px solid govuk-colour("green");
+  border-color: govuk-colour("green");
   color: govuk-colour("green");
 }
 
+.badge--due {
+  border-color: govuk-colour("bright-red");
+  color: govuk-colour("bright-red");
+}
+
 .badge--completed {
-  border: 1px solid $govuk-link-colour;
+  border-color: $govuk-link-colour;
   color: $govuk-link-colour;
 }
 
 .badge--void {
-  border: 1px solid #b10e1e;
+  border-color: #b10e1e;
   color: #b10e1e;
 }
 
 .badge--info {
-  border: 1px solid #6f777b;
+  border-color: #6f777b;
   color: #6f777b;
 }
 

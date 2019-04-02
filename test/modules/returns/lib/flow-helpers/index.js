@@ -45,6 +45,18 @@ experiment('Returns flow helpers', () => {
       const result = getPath(path, request, data.nilReturn);
       expect(result).to.equal(`/admin/some/path?returnId=nilReturn`);
     });
+
+    test('does not add the return param for the licences route', async () => {
+      const request = createRequest(true);
+      const result = getPath('/licences', request, data.nilReturn);
+      expect(result).to.equal(`/admin/licences`);
+    });
+
+    test('does not add the return param for the returns route', async () => {
+      const request = createRequest(true);
+      const result = getPath('/returns', request, data.nilReturn);
+      expect(result).to.equal(`/admin/returns`);
+    });
   });
 
   experiment('getNextPath', () => {

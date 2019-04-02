@@ -229,4 +229,16 @@ experiment('internal returns flow: ', () => {
       expect(result).to.equal(steps.STEP_CONFIRM);
     });
   });
+
+  experiment('for STEP_LOG_RECEIPT', () => {
+    test('next step is STEP_RECEIPT_LOGGED', async () => {
+      const result = internal.next[steps.STEP_LOG_RECEIPT]();
+      expect(result).to.equal(steps.STEP_RECEIPT_LOGGED);
+    });
+
+    test('previous step is STEP_INTERNAL_ROUTING', async () => {
+      const result = internal.previous[steps.STEP_LOG_RECEIPT]();
+      expect(result).to.equal(steps.STEP_INTERNAL_ROUTING);
+    });
+  });
 });

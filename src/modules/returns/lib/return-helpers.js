@@ -300,10 +300,7 @@ const getDefaultQuantity = (line, options) => {
 
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
-
   const lines = getFormLines(updated);
-  const multiplier = get(data, 'meters[0].multiplier', 1);
-
   const options = getPeriodStartEnd(updated);
 
   const input = {
@@ -322,7 +319,7 @@ const applyMeterReadings = (data, formValues) => {
 
     if (meterReading !== null) {
       // get the quantity and multiply. Set to null for zero.
-      quantity = ((meterReading - acc.lastMeterReading) * multiplier);
+      quantity = (meterReading - acc.lastMeterReading);
       acc.lastMeterReading = meterReading;
     }
 
@@ -423,13 +420,35 @@ const applyReceivedDate = (data, formValues) => {
 };
 
 /**
+ * Applies the multiplication to the return lines if the return is not a nil
+ * return, and the method is oneMeter
+ * @param  {Object} data - return model
+ * @return {Object}      - return model with multiplication applied
+ */
+const applyMultiplication = (data) => {
+  const updated = cloneDeep(data);
+
+  // For meter readings, apply x10 to volumes
+  const isNil = get(updated, 'isNil');
+  const isMeter = get(updated, 'reading.method') === 'oneMeter';
+  if (!isNil && isMeter) {
+    const multiplier = parseFloat(get(updated, 'meters[0].multiplier'));
+    updated.lines = updated.lines.map(row => ({
+      ...row,
+      quantity: row.quantity * multiplier
+    }));
+  }
+  return updated;
+};
+
+/**
  * Tidies data ready for submission
  * @param  {Object} data    - return data model
  * @param  {Object} request - HAPI request
  * @return {Object}         ready for submission
  */
 const applyCleanup = (data, request) => {
-  const updated = cloneDeep(data);
+  let updated = cloneDeep(data);
 
   const isExternal = permissions.isExternal(request);
 
@@ -447,6 +466,9 @@ const applyCleanup = (data, request) => {
       });
     }
   }
+
+  // Apply meter multiplication
+  updated = applyMultiplication(updated);
 
   // Required lines and versions shouldn't be posted back to water service
   delete updated.requiredLines;
@@ -473,6 +495,7 @@ module.exports = {
   applyStatus,
   applyUnderQuery,
   applyUserDetails,
+  applyMultiplication,
   applyCleanup,
 
   checkMeterDetails,

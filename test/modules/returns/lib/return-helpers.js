@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const { beforeEach, test, experiment } = exports.lab = require('lab').script();
-const { omit } = require('lodash');
+const { omit, set } = require('lodash');
 
 const { expect } = require('code');
 const testReturn = require('./test-return');
@@ -28,6 +28,7 @@ const {
   applyStatus,
   applyUnderQuery,
   applyUserDetails,
+  applyMultiplication,
   applyCleanup
 } = require('../../../../src/modules/returns/lib/return-helpers');
 
@@ -337,7 +338,7 @@ experiment('applyMeterReadings', () => {
     ]);
   });
 
-  test('handles the multiplier', async () => {
+  test('does not multiply values by the multiplier', async () => {
     const tenTimesMeter = { startReading: 100, multiplier: 10, units: 'm³' };
     const returnData = getTestReturnWithMeter(tenTimesMeter);
     const formValues = {
@@ -350,9 +351,9 @@ experiment('applyMeterReadings', () => {
     const data = applyMeterReadings(returnData, formValues);
 
     expect(data.lines).to.equal([
-      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 500 },
-      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 1000 },
-      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 50 }
+      { startDate: '2017-11-01', endDate: '2017-11-30', period: 'month', quantity: 50 },
+      { startDate: '2017-12-01', endDate: '2017-12-31', period: 'month', quantity: 100 },
+      { startDate: '2018-01-01', endDate: '2018-01-31', period: 'month', quantity: 5 }
     ]);
   });
 
@@ -806,6 +807,40 @@ experiment('checkMeterDetails', () => {
   test('does nothing for no reading', async () => {
     const data = {};
     expect(checkMeterDetails(data)).to.equal({});
+  });
+});
+
+experiment('applyMultiplication', () => {
+  test('does not apply multiplication to volumes', async () => {
+    const ret = {
+      ...testReturn,
+      lines: [{
+        quantity: 5
+      }]
+    };
+    const result = applyMultiplication(ret);
+    expect(result.lines[0].quantity).to.equal(5);
+  });
+
+  test('does not apply multiplication for nil returns', async () => {
+    const ret = {
+      ...testReturn,
+      isNil: true
+    };
+    const result = applyMultiplication(ret);
+    expect(result.lines).to.equal(undefined);
+  });
+
+  test('applies multiplier for oneMeter', async () => {
+    const ret = getTestReturnWithMeter({
+      multiplier: 5
+    });
+    ret.lines = [{
+      quantity: 5
+    }];
+    set(ret, 'reading.method', 'oneMeter');
+    const result = applyMultiplication(ret);
+    expect(result.lines[0].quantity).to.equal(25);
   });
 });
 

@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { get, set, findLastKey } = require('lodash');
+const { get, set } = require('lodash');
 const Boom = require('boom');
 const forms = require('../../../lib/forms');
 const logger = require('../../../lib/logger');
@@ -19,13 +19,13 @@ const {
 
 const {
   applySingleTotal, applyQuantities,
-  applyNilReturn, applyExternalUser, applyMeterDetails,
+  applyNilReturn, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethodExternal,
   getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset, checkMeterDetails, applyReadingType
+  applyMeterReset, checkMeterDetails, applyReadingType,
+  applyMultiplication
 } = require('../lib/return-helpers');
 
-const returnPath = require('../lib/return-path');
 const permissions = require('../../../lib/permissions');
 
 const flowHelpers = require('../lib/flow-helpers');
@@ -283,7 +283,8 @@ const postQuantities = async (request, h) => {
  * Confirm screen for user to check amounts before submission
  */
 const getConfirm = async (request, h) => {
-  const { data, view } = request.returns;
+  const { view } = request.returns;
+  const data = applyMultiplication(request.returns.data);
   const lines = getLinesWithReadings(data);
   const form = confirmForm(request, data, `/return/confirm`);
 

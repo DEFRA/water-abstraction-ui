@@ -300,10 +300,7 @@ const getDefaultQuantity = (line, options) => {
 
 const applyMeterReadings = (data, formValues) => {
   const updated = cloneDeep(data);
-
   const lines = getFormLines(updated);
-  // const multiplier = get(data, 'meters[0].multiplier', 1);
-
   const options = getPeriodStartEnd(updated);
 
   const input = {

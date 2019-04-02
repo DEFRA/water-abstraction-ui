@@ -223,7 +223,8 @@ const applyMeterDetails = (data, formValues) => {
   const details = {
     manufacturer: formValues.manufacturer,
     serialNumber: formValues.serialNumber,
-    multiplier
+    multiplier,
+    meterDetailsProvided: true
   };
 
   const meter = Object.assign(getMeter(data), details);

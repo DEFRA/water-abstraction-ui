@@ -74,6 +74,7 @@ const applyMethod = (data, readingMethod) => {
   const applied = set(cloneDeep(data), 'reading.method', readingMethod);
 
   if (readingMethod === 'oneMeter') {
+    set(applied, 'reading.totalFlag', false);
     return applyReadingType(applied, 'measured');
   }
 
@@ -457,7 +458,6 @@ const applyCleanup = (data, request) => {
     // External users can't submit single total value
     set(updated, 'reading.totalFlag', false);
     // External users must provide meter details for all meters
-
     if (updated.meters) {
       updated.meters = updated.meters.map(row => {
         return {

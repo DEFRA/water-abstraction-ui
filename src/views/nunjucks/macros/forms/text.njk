@@ -1,5 +1,7 @@
-{% from "input/macro.njk" import govukInput %}
+{# {% from "input/macro.njk" import govukInput %} #}
 {% from "textarea/macro.njk" import govukTextarea %}
+{% from "input/macro.njk" import govukInput %}
+
 
 {% macro formTextWidget(field) %}
 
@@ -12,7 +14,15 @@
     {% if field.options.multiline %}
       {{ govukTextarea(options) }}
     {% else %}
-      {{ govukInput(options) }}
+
+      {% if field.options.suffix %}
+        {% set str %}{{ govukInput(options) }}{% endset %}
+        {{ str | slice(0, -7) | safe }}
+        <span class="govuk-body">{{ field.options.suffix }}</span>
+        </div>
+      {% else %}
+        {{ govukInput(options) }}
+      {% endif %}
     {% endif %}
 
   {% endif %}

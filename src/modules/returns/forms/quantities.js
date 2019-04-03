@@ -7,14 +7,14 @@ const { getSuffix } = require('../lib/helpers');
 
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
-  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+  const isMeasured = get(data, 'reading.type') === 'measured';
 
   const action = getPath(STEP_QUANTITIES, request);
 
   const f = formFactory(action);
 
   f.fields.push(fields.paragraph(null, { element: 'h3', controlClass: 'govuk-heading-m', text: `Your abstraction volumes` }));
-  if (isVolumes) {
+  if (isMeasured) {
     f.fields.push(fields.paragraph(null, { element: 'p', text: `Remember if you have a x10 meter you need to multiply your volumes.` }));
   }
 

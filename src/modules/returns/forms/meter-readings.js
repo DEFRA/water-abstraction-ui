@@ -6,11 +6,8 @@ const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
 const { isInternal } = require('../../../lib/permissions');
 
 const getStartReadingInput = request => {
-  const label = isInternal(request)
-    ? 'Start reading'
-    : 'Start reading (before you began abstracting in this period)';
   return fields.text('startReading', {
-    label,
+    label: isInternal(request) ? 'Start reading' : 'Start reading (before you began abstracting in this period)',
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',

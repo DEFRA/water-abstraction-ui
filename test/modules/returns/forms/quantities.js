@@ -27,16 +27,20 @@ const createReturn = (type = 'measured') => {
     requiredLines: []
   };
 };
+const isParagraph = (field) => {
+  return field.options.widget === 'paragraph';
+};
+
 experiment('quantitiesForm', () => {
   test('adds help text about x10 meters if measured volumes', async () => {
     const form = quantitiesForm(createRequest(), createReturn());
-    const text = filter(form.fields).map(row => row.options.text);
+    const text = filter(form.fields, isParagraph).map(row => row.options.text);
     expect(text).to.include('Remember if you have a x10 meter you need to multiply your volumes.');
   });
 
   test('does not add help text about x10 meters if measured volumes', async () => {
     const form = quantitiesForm(createRequest(), createReturn('estimated'));
-    const text = filter(form.fields).map(row => row.options.text);
+    const text = filter(form.fields, isParagraph).map(row => row.options.text);
     expect(text).to.not.include('Remember if you have a x10 meter you need to multiply your volumes.');
   });
 });

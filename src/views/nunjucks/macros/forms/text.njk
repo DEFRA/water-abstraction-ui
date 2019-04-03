@@ -1,5 +1,7 @@
-{% from "input/macro.njk" import govukInput %}
+{# {% from "input/macro.njk" import govukInput %} #}
 {% from "textarea/macro.njk" import govukTextarea %}
+{% from "./govuk-input.njk" import govukInput %}
+
 
 {% macro formTextWidget(field) %}
 
@@ -12,6 +14,9 @@
     {% if field.options.multiline %}
       {{ govukTextarea(options) }}
     {% else %}
+
+
+
       {{ govukInput(options) }}
     {% endif %}
 

@@ -63,28 +63,23 @@
           Abstraction period
         </dt>
         <dd class="meta__value">
-          {{ return.metadata.nald.periodStartDay | date('D') }}
+          {{ return.metadata.nald.periodStartDay }}
           {{ return.metadata.nald.periodStartMonth | date('MMMM') }}
           to
-          {{ return.metadata.nald.periodEndDay | date('D') }}
+          {{ return.metadata.nald.periodEndDay }}
           {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
         </dd>
       </div>
       <div class="meta__row">
         <dt class="meta__key">
-          {%if isTwoPartTariff%}
-          Two Part tariff
-          {%else%}
-          Standard tariff
-          {%endif%}
+        {{ "Two part" if return.metadata.isTwoPartTariff else "Standard" }} tariff
         </dt>
       </div>
+    </dl>
 
-      </dl>
-
-  <p class="medium-space">
-    <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
-  </p>
+    <p class="medium-space">
+      <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
+    </p>
 
   {%endif%}
 

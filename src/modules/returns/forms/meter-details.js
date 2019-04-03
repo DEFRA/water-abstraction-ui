@@ -20,15 +20,9 @@ const getTextField = (fieldName, label, errorMessage) => {
   });
 };
 
-const getHeading = request => {
-  return isInternal(request)
-    ? 'Meter Details'
-    : 'Tell us about your meter';
-};
-
-const pageHeading = request => {
+const getPageHeading = isInternal => {
   return fields.paragraph(null, {
-    text: getHeading(request),
+    text: isInternal ? 'Meter details' : 'Your current meter details',
     element: 'h3',
     controlClass: 'govuk-heading-m'
   });
@@ -53,14 +47,14 @@ const form = (request, data) => {
   const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
   const isInternalUser = isInternal(request);
 
-  const { csrfToken } = request.view;
+  const { csrfToken, isAdmin } = request.view;
 
   const action = getPath(STEP_METER_DETAILS, request);
 
   const f = formFactory(action);
   const meter = getMeter(data);
 
-  f.fields.push(pageHeading(request));
+  f.fields.push(getPageHeading(isAdmin));
 
   if (!isInternalUser && isVolumes) {
     f.fields.push(introText);

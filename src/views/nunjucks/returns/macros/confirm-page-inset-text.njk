@@ -1,6 +1,6 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 
-{%macro confirmPageInsetText(return, endReading)%}
+{%macro confirmPageInsetText(return, endReading, isAdmin)%}
 
   {% set html %}
     {%if return.meters[0].meterDetailsProvided%}
@@ -35,11 +35,7 @@
 
   {%if return.meters[0].meterDetailsProvided%}
     <h4 class="govuk-heading-s">
-      {%if isAdmin%}
-      Meter details
-      {%else%}
-      Your meter
-      {%endif%}
+      {{ "Meter details" if isAdmin else "Your meter" }}
     </h4>
   {%endif%}
 

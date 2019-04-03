@@ -407,6 +407,12 @@ experiment('applyMethod', () => {
     expect(data.reading.type).to.equal('measured');
   });
 
+  test('when the method is meters the totalFlag is set to false', async () => {
+    const returnData = getTestReturnWithMeter();
+    const data = applyMethod(returnData, 'oneMeter');
+    expect(data.reading.totalFlag).to.equal(false);
+  });
+
   test('for volumes the meter details are removed', async () => {
     const data = {
       meters: [

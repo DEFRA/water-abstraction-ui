@@ -1,7 +1,7 @@
 {% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
 
-{% macro returnQuantitiesTable(return, lines, total, endReading) %}
-  {{ confirmPageInsetText(return, endReading) }}
+{% macro returnQuantitiesTable(return, lines, total, endReading, isAdmin) %}
+  {{ confirmPageInsetText(return, endReading, isAdmin) }}
 
   <table class="govuk-table">
   <thead class="govuk-table__head">

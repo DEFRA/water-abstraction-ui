@@ -73,7 +73,8 @@ const postAmounts = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_START, request, data)
   }, { layout: false });
 };
 
@@ -169,7 +170,8 @@ const postMethod = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METHOD, request, data)
   }, { layout: false });
 };
 
@@ -206,7 +208,8 @@ const postUnits = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_UNITS, request, data)
   }, { layout: false });
 };
 
@@ -231,7 +234,6 @@ const postSingleTotal = async (request, h) => {
   const { data, view } = request.returns;
 
   const form = forms.handleRequest(singleTotalForm(request, data), request, singleTotalSchema);
-
   if (form.isValid) {
     const updatedData = applySingleTotal(data, forms.getValues(form));
     sessionHelpers.saveSessionData(request, updatedData);
@@ -241,7 +243,8 @@ const postSingleTotal = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_SINGLE_TOTAL, request, data)
   }, { layout: false });
 };
 
@@ -275,7 +278,8 @@ const postQuantities = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_QUANTITIES, request, data)
   }, { layout: false });
 };
 
@@ -327,7 +331,8 @@ const postMeterDetails = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_DETAILS, request, data)
   }, { layout: false });
 };
 
@@ -356,7 +361,8 @@ const postMeterUnits = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_UNITS, request, data)
   }, { layout: false });
 };
 
@@ -385,7 +391,8 @@ const postMeterReset = async (request, h) => {
   return h.view('nunjucks/returns/meter-reset.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
   }, { layout: false });
 };
 
@@ -424,7 +431,8 @@ const postMeterReadings = async (request, h) => {
   return h.view('nunjucks/returns/form.njk', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_READINGS, request, data)
   }, { layout: false });
 };
 
@@ -461,7 +469,8 @@ const postMeterUsed = (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_USED, request, data)
   });
 };
 

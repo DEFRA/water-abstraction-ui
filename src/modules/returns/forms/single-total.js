@@ -14,7 +14,7 @@ const form = (request, data) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isSingleTotal', {
-    label: 'Is it a single amount of abstracted water?',
+    label: 'Is it a single volume?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {

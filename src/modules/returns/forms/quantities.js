@@ -4,6 +4,20 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
 const { STEP_QUANTITIES, getPath } = require('../lib/flow-helpers');
 const { getSuffix } = require('../lib/helpers');
+const { isInternal } = require('../../../lib/permissions');
+
+const getHeading = request => {
+  const text = isInternal(request) ? 'Volumes' : 'Your abstraction volumes';
+  return fields.paragraph(null, { element: 'h3', controlClass: 'govuk-heading-m', text });
+};
+
+const getIntroText = request => {
+  if (isInternal(request)) {
+    return [fields.paragraph(null, { element: 'span', controlClass: 'govuk-body', text: 'Volumes entered should be calculated manually.' }),
+      fields.paragraph(null, { text: 'Take into consideration the x10 display.' })];
+  }
+  fields.paragraph(null, { text: 'Remember if you have a x10 meter you need to multiply your volumes.' });
+};
 
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
@@ -13,9 +27,10 @@ const quantitiesForm = (request, data) => {
 
   const f = formFactory(action);
 
-  f.fields.push(fields.paragraph(null, { element: 'h3', controlClass: 'govuk-heading-m', text: `Your abstraction volumes` }));
-  if (isVolumes) {
-    f.fields.push(fields.paragraph(null, { element: 'p', text: `Remember if you have a x10 meter you need to multiply your volumes.` }));
+  f.fields.push(getHeading(request));
+
+  if (isInternal(request) || isVolumes) {
+    f.fields.push.apply(f.fields, getIntroText(request));
   }
 
   const suffix = getSuffix(data.reading.units);

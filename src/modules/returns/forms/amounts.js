@@ -1,5 +1,12 @@
 const { formFactory, fields } = require('../../../lib/forms');
 const { STEP_START, getPath } = require('../lib/flow-helpers');
+const { isInternal } = require('../../../lib/permissions');
+
+const getLabelText = request => {
+  return isInternal(request)
+    ? 'Has water been abstracted in this return period?'
+    : 'Have you abstracted water in this return period?';
+};
 
 const amountsForm = (request) => {
   const { csrfToken } = request.view;
@@ -9,7 +16,7 @@ const amountsForm = (request) => {
   const f = formFactory(action);
 
   f.fields.push(fields.paragraph(null, {
-    text: 'Have you abstracted water in this return period?',
+    text: getLabelText(request),
     element: 'h3',
     controlClass: 'govuk-heading-m' }));
 

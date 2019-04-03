@@ -7,15 +7,24 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    {{ returnHeader(data, documentHeader, showMeta) }}
-    <h3 class="govuk-heading-m">Confirm your return</h3>
+    {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
+    <h3 class="govuk-heading-m">
+      {%if isAdmin%}
+      Confirm this return
+      {%else%}
+      Confirm your return
+      {%endif%}
+    </h3>
   </div>
 </div>
 
   <div class="govuk-grid-row">
     <div class="{% if return.reading.units == 'm³' %}govuk-grid-column-two-thirds{% else %}govuk-grid-column-full{%endif%}">
       {{ returnQuantitiesTable(return, lines, total, endReading) }}
-      <p><a href="{{ makeChangePath }}">Edit your {%if return.reading.method == 'oneMeter'%}meter readings{%else%}volumes{%endif%} </a></p>
+      <p><a href="{{ makeChangePath }}">
+        Edit {%if isAdmin%} these{%else%} your{%endif%}
+        {%if return.reading.method == 'oneMeter'%} meter readings{%else%} volumes{%endif%}
+      </a></p>
     </div>
   </div>
   <div class="govuk-grid-row">

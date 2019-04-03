@@ -16,7 +16,7 @@ const confirmForm = (request, data, action = `/return/nil-return`) => {
     const checked = isUnderQuery ? ['under_query'] : [];
     f.fields.push(fields.checkbox('isUnderQuery', {
       choices: [{
-        label: 'Record as under query',
+        label: 'Mark as under query',
         value: 'under_query'
       }]
     }, checked));

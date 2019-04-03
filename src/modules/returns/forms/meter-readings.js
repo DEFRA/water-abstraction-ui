@@ -3,10 +3,14 @@ const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter, getFormLines, getLineName, getLineLabel } = require('../lib/return-helpers');
 const { get, set } = require('lodash');
 const { STEP_METER_READINGS, getPath } = require('../lib/flow-helpers');
+const { isInternal } = require('../../../lib/permissions');
 
-const getStartReadingInput = () => {
+const getStartReadingInput = request => {
+  const label = isInternal(request)
+    ? 'Start reading'
+    : 'Start reading (before you began abstracting in this period)';
   return fields.text('startReading', {
-    label: 'Start reading (before you began abstracting in this period)',
+    label,
     autoComplete: false,
     mapper: 'numberMapper',
     type: 'number',
@@ -42,6 +46,12 @@ const getLineTextInput = (line, suffix) => {
   });
 };
 
+const getLabelText = request => {
+  return isInternal(request)
+    ? 'Meter Readings'
+    : 'Enter your readings exactly as they appear on your meter';
+};
+
 const form = (request, data) => {
   const { csrfToken } = request.view;
 
@@ -49,12 +59,12 @@ const form = (request, data) => {
 
   const f = formFactory(action);
   f.fields.push(fields.paragraph(null, {
-    text: 'Enter your readings exactly as they appear on your meter',
+    text: getLabelText(request),
     element: 'h3',
     controlClass: 'govuk-heading-m'
   }));
 
-  f.fields.push(getStartReadingInput());
+  f.fields.push(getStartReadingInput(request));
 
   const lines = getFormLines(data);
 

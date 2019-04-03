@@ -28,18 +28,19 @@
 
     {%if return.reading.type == 'estimated' %}
       <div class="meta__row">
-        <dd class="meta__value">Estimated</dd>
-      </div>
-      <div class="meta__row">
-        <dd class="meta__value">
-        <!-- {{ estimateMethod? }} -->
-        </dd>
+        <dd class="meta__value">Estimated volumes</dd>
       </div>
     {%endif%}
   {% endset %}
 
   {%if return.meters[0].meterDetailsProvided%}
-    <h4 class="govuk-heading-s">Your meter</h4>
+    <h4 class="govuk-heading-s">
+      {%if isAdmin%}
+      Meter details
+      {%else%}
+      Your meter
+      {%endif%}
+    </h4>
   {%endif%}
 
   {% if html | trim | length %}

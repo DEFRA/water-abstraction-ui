@@ -19,11 +19,13 @@ const getTextField = (fieldName, label, errorMessage) => {
   });
 };
 
-const pageHeading = fields.paragraph(null, {
-  text: 'Tell us about your meter',
-  element: 'h3',
-  controlClass: 'govuk-heading-m'
-});
+const getPageHeading = isInternal => {
+  return fields.paragraph(null, {
+    text: isInternal ? 'Meter details' : 'Your current meter details',
+    element: 'h3',
+    controlClass: 'govuk-heading-m'
+  });
+};
 
 const introText = fields.paragraph(null, {
   text: 'You only need to tell us about one meter.'
@@ -32,14 +34,14 @@ const introText = fields.paragraph(null, {
 const form = (request, data) => {
   const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
 
-  const { csrfToken } = request.view;
+  const { csrfToken, isAdmin } = request.view;
 
   const action = getPath(STEP_METER_DETAILS, request);
 
   const f = formFactory(action);
   const meter = getMeter(data);
 
-  f.fields.push(pageHeading);
+  f.fields.push(getPageHeading(isAdmin));
 
   if (isVolumes) {
     f.fields.push(introText);

@@ -70,11 +70,16 @@
           {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
         </dd>
       </div>
-      </dl>
+      <div class="meta__row">
+        <dt class="meta__key">
+        {{ "Two part" if return.metadata.isTwoPartTariff else "Standard" }} tariff
+        </dt>
+      </div>
+    </dl>
 
-  <p class="medium-space">
-    <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
-  </p>
+    <p class="medium-space">
+      <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
+    </p>
 
   {%endif%}
 

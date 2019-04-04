@@ -143,7 +143,7 @@ const postLogReceipt = async (request, h) => {
       ...view,
       form,
       return: data,
-      back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
+      back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
     });
   }
 };
@@ -212,7 +212,8 @@ const postDateReceived = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_DATE_RECEIVED, request, data)
   });
 };
 
@@ -241,7 +242,8 @@ const postInternalMethod = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_INTERNAL_METHOD, request, data)
   });
 };
 
@@ -270,7 +272,8 @@ const postMeterDetailsProvided = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_METER_DETAILS_PROVIDED, request, data)
   });
 };
 
@@ -303,7 +306,8 @@ const postSingleTotalAbstractionPeriod = async (request, h) => {
   return h.view('water/returns/internal/form', {
     ...view,
     form,
-    return: data
+    return: data,
+    back: getPreviousPath(STEP_SINGLE_TOTAL_DATES, request, data)
   });
 };
 

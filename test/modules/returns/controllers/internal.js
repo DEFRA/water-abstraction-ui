@@ -260,6 +260,11 @@ experiment('internal returns controller', () => {
         const [view] = h.view.lastCall.args;
         expect(view).to.equal('water/returns/internal/form');
       });
+
+      test('the back link is configured', async () => {
+        const [, context] = h.view.lastCall.args;
+        expect(context.back).to.startWith('/admin/return/internal');
+      });
     });
   });
 
@@ -605,6 +610,11 @@ experiment('internal returns controller', () => {
       test('the view is shown again', async () => {
         const [view] = h.view.lastCall.args;
         expect(view).to.equal('water/returns/internal/form');
+      });
+
+      test('the back link is configured', async () => {
+        const [, context] = h.view.lastCall.args;
+        expect(context.back).to.startWith('/admin/return/single-total?returnId');
       });
     });
   });

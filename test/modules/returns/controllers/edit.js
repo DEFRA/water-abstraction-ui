@@ -1,5 +1,5 @@
 const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const controller = require('../../../../src/modules/returns/controllers/edit');
 const { returns } = require('../../../../src/lib/connectors/water');
@@ -256,6 +256,7 @@ experiment('edit controller', () => {
 
       expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.equal('/returns');
     });
   });
 
@@ -406,6 +407,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
+
     test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
@@ -415,6 +417,7 @@ experiment('edit controller', () => {
 
       expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.equal(`/return?returnId=${request.returns.data.returnId}`);
     });
   });
 
@@ -497,7 +500,9 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should render same page if form is not valid', async () => {
+
+    test('renders the same page if form is not valid', async () => {
+      permissions.isInternal.returns(true);
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
@@ -701,6 +706,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
+
     test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
@@ -710,6 +716,7 @@ experiment('edit controller', () => {
 
       expect(template).to.equal('nunjucks/returns/meter-reset.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.startWith('/return/method?returnId=');
     });
   });
 
@@ -745,6 +752,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
+
     test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
@@ -754,6 +762,7 @@ experiment('edit controller', () => {
 
       expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.startWith('/return/units?returnId');
     });
   });
 
@@ -788,8 +797,9 @@ experiment('edit controller', () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest(true);
       await controller.postMeterUsed(request, h);
-      const [template] = h.view.lastCall.args;
+      const [template, view] = h.view.lastCall.args;
       expect(template).to.equal('water/returns/internal/form');
+      expect(view.back).to.startWith('/admin/return/meter/details-provided?returnId=');
     });
 
     test('it should call getNextPath with STEP_METER_USED, request', async () => {

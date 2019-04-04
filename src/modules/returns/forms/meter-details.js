@@ -3,6 +3,7 @@ const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('../../../lib/forms');
 const { getMeter } = require('../lib/return-helpers');
 const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
+const { isInternal } = require('../../../lib/permissions');
 
 const getErrors = message => {
   return {
@@ -31,8 +32,20 @@ const introText = fields.paragraph(null, {
   text: 'You only need to tell us about one meter.'
 });
 
+const getLabelText = isInternalUser => {
+  return isInternalUser ? 'Has a ×10 display' : 'My meter has a ×10 display';
+};
+
+const getHintText = (isInternalUser, isVolumes) => {
+  if (!isInternalUser) return;
+  return isVolumes
+    ? 'This will not recalculate any of the volumes provided'
+    : 'This will affect calculated volumes based on your readings';
+};
+
 const form = (request, data) => {
   const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+  const isInternalUser = isInternal(request);
 
   const { csrfToken, isAdmin } = request.view;
 
@@ -43,19 +56,20 @@ const form = (request, data) => {
 
   f.fields.push(getPageHeading(isAdmin));
 
-  if (isVolumes) {
+  if (!isInternalUser && isVolumes) {
     f.fields.push(introText);
   }
 
   f.fields.push(getTextField('manufacturer', 'Make', 'Enter the make of your meter'));
-  f.fields.push(getTextField('serialNumber', 'Serial Number', 'Enter a serial number'));
+  f.fields.push(getTextField('serialNumber', 'Serial number', 'Enter a serial number'));
 
   // Checkbox internal type is array
   const checked = meter.multiplier === 10 ? ['multiply'] : [];
 
   f.fields.push(fields.checkbox('isMultiplier', {
     choices: [{
-      label: 'This meter has a ×10 display',
+      label: getLabelText(isInternalUser),
+      hint: getHintText(isInternalUser, isVolumes),
       value: 'multiply'
     }]
   }, checked));

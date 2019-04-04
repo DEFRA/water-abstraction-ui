@@ -3,8 +3,12 @@
 
 {% block content %}
 
-{% set html %}Purpose <strong>{{ return.metadata.purposes[0].tertiary.description }}</strong>
-<br />Licence number <strong>{{ return.licenceNumber }}</strong>{% endset %}
+{% set html %}
+Licence number <strong>{{ return.licenceNumber }}</strong><br />
+Site description <strong>{{ return.metadata.description }}</strong><br />
+Purpose <strong>{{ return.metadata.purposes[0].tertiary.description }}</strong>
+{% endset %}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     {{ govukPanel({

@@ -32,11 +32,9 @@ const _handler = async (request, h) => {
     return h.continue;
   }
 
-  // ALWAYS Log the error
-  logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-
   // Destroy session for CSRF error
   if (isCsrfError(request)) {
+    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     await request.sessionStore.destroy();
     request.cookieAuth.clear();
     return h.redirect('/signout');
@@ -44,8 +42,11 @@ const _handler = async (request, h) => {
 
   // Unauthorised - redirect to welcome
   if (isUnauthorized(request)) {
+    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     return h.redirect('/welcome');
   }
+
+  logger.error(pick(res, ['error', 'message', 'statusCode', 'stack']));
 
   // Render 500 page
   const view = {
@@ -53,7 +54,7 @@ const _handler = async (request, h) => {
     pageTitle: 'Something went wrong'
   };
   const statusCode = getStatusCode(request);
-  return h.view('nunjucks/errors/error.njk', view).code(statusCode);
+  return h.view('nunjucks/errors/error.njk', view, { layout: false }).code(statusCode);
 };
 
 const errorPlugin = {

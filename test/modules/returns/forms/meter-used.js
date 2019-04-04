@@ -32,7 +32,7 @@ experiment('meterUsedForm', () => {
   test('has a radio field for whether meter used field', async () => {
     const form = meterUsedForm(request, data);
     const meterUsed = find(form.fields, { name: 'meterUsed' });
-    expect(meterUsed.options.label).to.equal('Are the volumes based on readings from a meter or meters?');
+    expect(meterUsed.options.label).to.equal('Did they use a meter or meters?');
     expect(meterUsed.options.widget).to.equal('radio');
   });
 

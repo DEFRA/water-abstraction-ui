@@ -1,7 +1,12 @@
 <div class="form-group {{#if errors }}form-group-error{{/if}}">
   <fieldset>
     <legend>
-      <span class="form-label-bold">{{ options.label }}</span>
+
+      {{#if options.label }}
+      <h2 class="heading-medium">
+        {{ options.label }}
+      </h2>
+      {{/if}}
       <span class="form-hint">{{ options.hint }}</span>
 
       {{#each errors}}
@@ -32,9 +37,9 @@
       <script>
         $(function () {
           var setDate = function (date) {
-            $('#{{name}}-day').val(date.getDate()); 
-            $('#{{name}}-month').val(date.getMonth() + 1); 
-            $('#{{name}}-year').val(date.getFullYear()); 
+            $('#{{name}}-day').val(date.getDate());
+            $('#{{name}}-month').val(date.getMonth() + 1);
+            $('#{{name}}-year').val(date.getFullYear());
           };
 
           $('#btn{{name}}Today').show().on('click', function(e) {

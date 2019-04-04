@@ -1,6 +1,6 @@
 {% from "../../macros/title.njk" import title %}
 
-{% macro returnHeader(return, documentHeader, showMeta) %}
+{% macro returnHeader(return, documentHeader, showMeta, isAdmin) %}
   {% if documentHeader.document_name %}
     {{ title(documentHeader.document_name, 'Abstraction return for ' + documentHeader.system_external_id) }}
   {% else %}

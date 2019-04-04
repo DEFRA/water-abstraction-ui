@@ -23,7 +23,7 @@ const form = (request, data = {}) => {
 
   f.fields.push(fields.radio('meterUsed', {
     mapper: 'booleanMapper',
-    label: 'Are the volumes based on readings from a meter or meters?',
+    label: 'Did they use a meter or meters?',
     errors: {
       'any.required': {
         message: 'Select if a meter or meters were used'

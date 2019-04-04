@@ -1,6 +1,7 @@
 const { get } = require('lodash');
 const { setValues, formFactory, fields } = require('../../../lib/forms');
 const { STEP_UNITS, STEP_METER_UNITS, getPath } = require('../lib/flow-helpers');
+const { isInternal } = require('../../../lib/permissions');
 
 const choices = [
   { value: 'm³', label: 'Cubic metres' },
@@ -20,8 +21,14 @@ const getUnitsRadioButtons = () => {
   });
 };
 
+const getLabelText = request => {
+  return isInternal(request)
+    ? 'Which units were used?'
+    : 'Which units are you using?';
+};
+
 const create = (options = {}) => {
-  const { labelText, isMeterUnits } = options;
+  const { isMeterUnits } = options;
 
   const unitsForm = (request, data) => {
     const { csrfToken } = request.view;
@@ -30,7 +37,7 @@ const create = (options = {}) => {
     const f = formFactory(action);
 
     f.fields.push(fields.paragraph(null, {
-      text: labelText,
+      text: getLabelText(request),
       element: 'h3',
       controlClass: 'govuk-heading-m'
     }));

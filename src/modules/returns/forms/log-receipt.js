@@ -18,8 +18,7 @@ const form = (request, data) => {
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   f.fields.push(fields.date('date_received', {
-    label: 'Enter date received',
-    hint: 'For example, 31 3 2018',
+    label: 'When was the return received?',
     errors: {
       'any.required': {
         message: 'Enter a date in the right format, for example 31 3 2018'
@@ -40,7 +39,7 @@ const form = (request, data) => {
   f.fields.push(fields.checkbox('isUnderQuery', {
     mapper: 'arrayMapper',
     choices: [{
-      label: 'Record as under query',
+      label: 'Mark as under query',
       value: 'under_query'
     }]
   }), checked);

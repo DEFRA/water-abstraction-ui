@@ -851,19 +851,23 @@ experiment('applyMultiplication', () => {
 });
 
 experiment('applyCleanup', () => {
-  const createReturn = (method) => ({
+  const meterDetails = {
+    startReading: 10,
+    readings: {
+      '2017-01-01_2017-01-31': 15,
+      '2017-02-01_2017-02-28': 22,
+      '2017-03-01_2017-03-30': 31
+    },
+    meterDetailsProvided: false
+  };
+
+  const createReturn = (method, meter = meterDetails) => ({
     reading: {
       method,
       totalFlag: true
     },
     meters: [{
-      startReading: 10,
-      readings: {
-        '2017-01-01_2017-01-31': 15,
-        '2017-02-01_2017-02-28': 22,
-        '2017-03-01_2017-03-30': 31
-      },
-      meterDetailsProvided: false
+      ...meter
     }],
     requiredLines: [],
     versions: []
@@ -909,6 +913,12 @@ experiment('applyCleanup', () => {
       const result = applyCleanup(createReturn(), createRequest());
       expect(result.meters[0].readings).to.exist();
       expect(result.meters[0].startReading).to.exist();
+    });
+
+    test('returns other meter details if startReading and readings do not exist', async () => {
+      const meterDetails = { 'make': 'meterMake', 'serialNumber': '374595-387456', 'meterDetailsProvided': true };
+      const result = applyCleanup(createReturn('abstractionVolumes', meterDetails), createRequest());
+      expect(result.meters).to.equal([meterDetails]);
     });
   });
 

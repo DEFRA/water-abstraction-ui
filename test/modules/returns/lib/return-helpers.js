@@ -851,11 +851,18 @@ experiment('applyMultiplication', () => {
 });
 
 experiment('applyCleanup', () => {
-  const createReturn = () => ({
+  const createReturn = (method) => ({
     reading: {
+      method,
       totalFlag: true
     },
     meters: [{
+      startReading: 10,
+      readings: {
+        '2017-01-01_2017-01-31': 15,
+        '2017-02-01_2017-02-28': 22,
+        '2017-03-01_2017-03-30': 31
+      },
       meterDetailsProvided: false
     }],
     requiredLines: [],
@@ -890,6 +897,18 @@ experiment('applyCleanup', () => {
     test('ignores the meters if they are undefined (nil return)', async () => {
       const result = applyCleanup({}, createRequest());
       expect(result.meters).to.be.undefined();
+    });
+
+    test('removes meter readings and startReading if method is abstractionVolumes', async () => {
+      const result = applyCleanup(createReturn('abstractionVolumes'), createRequest());
+      expect(result.meters[0].readings).to.not.exist();
+      expect(result.meters[0].startReading).to.not.exist();
+    });
+
+    test('does not remove meter readings and startReading if method is not abstractionVolumes', async () => {
+      const result = applyCleanup(createReturn(), createRequest());
+      expect(result.meters[0].readings).to.exist();
+      expect(result.meters[0].startReading).to.exist();
     });
   });
 

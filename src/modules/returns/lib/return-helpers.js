@@ -466,6 +466,11 @@ const applyCleanup = (data, request) => {
         };
       });
     }
+    // Delete startReading and meter readings if submitting abstractionVolumes
+    if (get(updated, 'reading.method') === 'abstractionVolumes') {
+      delete updated.meters[0].startReading;
+      delete updated.meters[0].readings;
+    }
   }
 
   // Apply meter multiplication

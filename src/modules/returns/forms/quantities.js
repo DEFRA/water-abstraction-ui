@@ -16,12 +16,12 @@ const getIntroText = request => {
     return [fields.paragraph(null, { element: 'span', controlClass: 'govuk-body', text: 'Volumes entered should be calculated manually.' }),
       fields.paragraph(null, { text: 'Take into consideration the x10 display.' })];
   }
-  fields.paragraph(null, { text: 'Remember if you have a x10 meter you need to multiply your volumes.' });
+  return [fields.paragraph(null, { text: 'Remember if you have a x10 meter you need to multiply your volumes.' })];
 };
 
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
-  const isVolumes = get(data, 'reading.method') === 'abstractionVolumes';
+  const isMeasured = get(data, 'reading.type') === 'measured';
 
   const action = getPath(STEP_QUANTITIES, request);
 
@@ -29,8 +29,8 @@ const quantitiesForm = (request, data) => {
 
   f.fields.push(getHeading(request));
 
-  if (isInternal(request) || isVolumes) {
-    f.fields.push.apply(f.fields, getIntroText(request));
+  if (isInternal(request) || isMeasured) {
+    f.fields.push(...getIntroText(request));
   }
 
   const suffix = getSuffix(data.reading.units);

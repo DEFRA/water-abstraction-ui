@@ -121,8 +121,14 @@ const getFormLines = (data) => {
   return data.lines && data.lines.length ? data.lines : data.requiredLines;
 };
 
+/**
+ * Returns a clone of the first meter if present, or an empty object otherwise
+ * @param  {Object} data - return model
+ * @return {Object}      - meter object or empty object
+ */
 const getMeter = data => {
-  return get(data, 'meters[0]', {});
+  const clone = cloneDeep(data);
+  return get(clone, 'meters[0]', {});
 };
 
 /**
@@ -238,6 +244,12 @@ const applyMeterDetailsProvided = (data, formValues) => {
   const meter = meterDetailsProvided === true ? getMeter(data) : {};
   meter.meterDetailsProvided = meterDetailsProvided;
   meter.multiplier = meter.multiplier || 1;
+
+  // If meter details have been provided, then we must be using measured
+  if (meterDetailsProvided) {
+    set(clone, 'reading.type', 'measured');
+  }
+
   return set(clone, 'meters', [meter]);
 };
 

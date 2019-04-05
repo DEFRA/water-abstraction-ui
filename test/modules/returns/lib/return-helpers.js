@@ -573,6 +573,20 @@ experiment('applyMeterDetailsProvided', () => {
     });
   });
 
+  test('sets reading type to measured if details are to be provided', async () => {
+    const formValues = { meterDetailsProvided: true };
+    const data = {};
+    const applied = applyMeterDetailsProvided(data, formValues);
+    expect(applied.reading.type).to.equal('measured');
+  });
+
+  test('does not change reading type if details are not to be provided', async () => {
+    const formValues = { meterDetailsProvided: false };
+    const data = { reading: { type: 'estimated' } };
+    const applied = applyMeterDetailsProvided(data, formValues);
+    expect(applied.reading.type).to.equal('estimated');
+  });
+
   test('leaves existing meter details if details are to be provided', async () => {
     const formValues = { meterDetailsProvided: true };
     const data = {

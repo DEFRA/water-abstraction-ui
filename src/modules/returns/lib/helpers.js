@@ -1,7 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
-const { get, isObject } = require('lodash');
+const { get, isObject, findLastKey } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
@@ -358,7 +358,7 @@ const getBadge = (status, isPastDueDate) => {
 
   const styles = {
     overdue: 'success',
-    due: 'success',
+    due: 'due',
     received: 'completed',
     completed: 'completed',
     void: 'void'
@@ -369,6 +369,8 @@ const getBadge = (status, isPastDueDate) => {
     status: styles[viewStatus]
   };
 };
+
+const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
 exports.getLicenceNumbers = getLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
@@ -387,3 +389,4 @@ exports.isReturnId = isReturnId;
 exports.getSuffix = getSuffix;
 exports.getBadge = getBadge;
 exports.mapReturns = mapReturns;
+exports.endReadingKey = endReadingKey;

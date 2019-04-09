@@ -6,34 +6,45 @@
   <div class="{{#equal return.reading.units 'm³' }}column-two-thirds{{ else }}column-full{{/equal}}">
   {{/equal}}
 
-  {{#equal return.reading.method 'oneMeter' }}
-    <div class="panel panel-border-wide">
+  {{#equal return.reading.type 'measured'}}
+    <br/>
+    <h4 class="heading-small">Your meter</h4>
+  {{/equal}}
+    {{#if return.reading.type}}
+      <div class="panel panel-border-wide">
+    {{/if}}
+      {{#equal return.reading.type 'measured'}}
       <dl class="meta">
-        <dt class="meta__label">
-          Meter manufacturer
-        </dt>
         <dd class="meta__description">
           {{ return.meters.0.manufacturer }}
         </dd>
-        <dt class="meta__label">
-          Serial number
-        </dt>
         <dd class="meta__description">
           {{ return.meters.0.serialNumber }}
         </dd>
-        <dt class="meta__label">
-        Start reading
-        </dt>
+        {{/equal}}
+        {{#equal return.meters.0.multiplier 10}}
         <dd class="meta__description">
-        {{ formatQuantity return.meters.0.startReading }}
-        {{#equal return.reading.units 'gal' }}gallons{{/equal}}
-        {{#equal return.reading.units 'l' }}litres{{/equal}}
-        {{#equal return.reading.units 'Ml' }}megalitres{{/equal}}
-        {{#equal return.reading.units 'm³' }}cubic metres{{/equal}}
+          Has a x10 display
         </dd>
+        {{/equal}}
+          {{#equal return.reading.method 'oneMeter' }}
+          <dd class="meta__description">
+          Start Reading
+          {{ return.meters.0.startReading }}
+          </dd>
+          <dd class="meta__description">
+          End Reading
+          {{ endReading }}
+          </dd>
+        {{/equal}}
+
+        {{#equal return.reading.type 'estimated' }}
+          <dd class="meta__description">
+            Estimated
+          </dd>
+        {{/equal}}
       </dl>
     </div>
-    {{/equal}}
 
     <div class="table medium-space table-return-quantities">                                          <!-- a table -->
       <div class="table-row table-head">                                      <!-- the table head -->
@@ -85,7 +96,7 @@
         {{#equal ../return.reading.method 'oneMeter' }}
         <div class="table-cell numbers">
           <h4 class="context">Reading</h4>
-          {{ formatQuantity this.endReading }}
+          {{ this.endReading }}
         </div>
         {{/equal}}
 

@@ -1,7 +1,8 @@
 const Joi = require('joi');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { meterReadingsSchema } = require('../../../../src/modules/returns/forms/meter-readings');
+const { find } = require('lodash');
+const { meterReadingsSchema, meterReadingsForm } = require('../../../../src/modules/returns/forms/meter-readings');
 
 const data = {
   meters: [{
@@ -16,12 +17,29 @@ const data = {
 };
 
 const createFormValues = (jan, feb, mar, apr) => ({
+  'startReading': 10,
   '2017-01-01_2017-01-31': jan,
   '2017-02-01_2017-02-28': feb,
   '2017-03-01_2017-03-30': mar,
   '2017-04-01_2017-04-30': apr,
   csrf_token: '4a95f0e2-4861-49ef-af95-0a269fae982c'
 });
+
+const createRequest = (isInternal = true) => {
+  return {
+    view: {
+      csrfToken: 'test-csrf-token'
+    },
+    query: {
+      returnId: 'test-return-id'
+    },
+    auth: {
+      credentials: {
+        scope: isInternal ? 'internal' : 'external'
+      }
+    }
+  };
+};
 
 experiment('meterReadingsSchema', () => {
   test('is valid for all null values', async () => {
@@ -92,5 +110,52 @@ experiment('meterReadingsSchema', () => {
     const schema = meterReadingsSchema(data, formValues);
     const result = Joi.validate(formValues, schema, { abortEarly: false });
     expect(result.error).to.not.be.null();
+  });
+});
+
+experiment('meterReadingsForm', () => {
+  test('has a text input field for startReading', async () => {
+    const request = createRequest();
+    const form = meterReadingsForm(request, data);
+    const startReading = find(form.fields, { name: 'startReading' });
+    expect(startReading.options.widget).to.equal('text');
+  });
+
+  test('sets startReading data if provided', async () => {
+    const request = createRequest();
+    const form = meterReadingsForm(request, data);
+    const startReading = form.fields.find(x => x.name === 'startReading');
+
+    expect(startReading.value).to.equal(10);
+  });
+
+  test('internal label is shown for internal user', async () => {
+    const request = createRequest();
+    const form = meterReadingsForm(request, data);
+    const label = form.fields[0];
+    expect(label.options.text).to.equal('Meter Readings');
+  });
+
+  test('external label is shown for external user', async () => {
+    const request = createRequest(false);
+    const form = meterReadingsForm(request, data);
+    const label = form.fields[0];
+    expect(label.options.text).to.equal('Enter your readings exactly as they appear on your meter');
+  });
+
+  test('has a continue button', async () => {
+    const request = createRequest();
+    const form = meterReadingsForm(request, data);
+    const button = form.fields.find(f => {
+      return f.options.widget === 'button';
+    });
+    expect(button).to.exist();
+  });
+
+  test('has a hidden csrf field', async () => {
+    const request = createRequest();
+    const form = meterReadingsForm(request, data);
+    const csrf = form.fields.find(x => x.name === 'csrf_token');
+    expect(csrf.value).to.equal('test-csrf-token');
   });
 });

@@ -1,0 +1,24 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+{% set html %}
+Licence number <strong>{{ return.licenceNumber }}</strong><br />
+Site description <strong>{{ return.metadata.description }}</strong><br />
+Purpose <strong>{{ return.metadata.purposes[0].tertiary.description }}</strong>
+{% endset %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukPanel({
+      titleText: "Return submitted",
+      html: html
+    }) }}
+
+    <p class="govuk-body govuk-!-margin-bottom-9">
+      <a href="{{ returnUrl }}">View this return</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

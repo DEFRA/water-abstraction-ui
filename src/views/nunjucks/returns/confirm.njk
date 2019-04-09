@@ -1,0 +1,37 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+{% from "nunjucks/returns/macros/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "nunjucks/returns/macros/return-declaration.njk" import returnDeclaration %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
+    <h3 class="govuk-heading-m">
+      <span>Confirm </span>
+      {{ "this" if isAdmin else "your" }}
+      <span> return</span>
+    </h3>
+  </div>
+</div>
+
+  <div class="govuk-grid-row">
+    <div class="{% if return.reading.units == 'm³' %}govuk-grid-column-two-thirds{% else %}govuk-grid-column-full{%endif%}">
+      {{ returnQuantitiesTable(return, lines, total, endReading, isAdmin) }}
+      <p>
+        <a href="{{ makeChangePath }}">
+          <span>Edit </span>
+          <span>{{ "these" if isAdmin else "your"}} </span>
+          <span>{{ "meter readings" if return.reading.method else "volumes" }}</span>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ returnDeclaration(isAdmin) }}
+      {{ formRender(form) }}
+    </div>
+  </div>
+{% endblock %}

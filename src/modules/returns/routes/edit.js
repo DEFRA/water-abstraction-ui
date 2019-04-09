@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
-const external = constants.scope.external;
 const { VALID_GUID } = require('../../../lib/validators');
 
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
@@ -50,6 +49,9 @@ module.exports = {
           pageTitle: 'Abstraction return - has any water been abstracted?',
           activeNavLink: 'returns',
           showMeta: true
+        },
+        returns: {
+          load: true
         }
       }
     }
@@ -218,44 +220,6 @@ module.exports = {
     }
   },
 
-  getBasis: {
-    method: 'GET',
-    path: '/return/basis',
-    handler: controller.getBasis,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Get basis for supplied return data',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postBasis: {
-    method: 'POST',
-    path: '/return/basis',
-    handler: controller.postBasis,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Post handler for records basis',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'returns'
-        },
-        returns: true
-      }
-    }
-  },
-
   getQuantities: {
     method: 'GET',
     path: '/return/quantities',
@@ -326,6 +290,44 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - check the information before submitting',
+          activeNavLink: 'returns'
+        },
+        returns: true
+      }
+    }
+  },
+
+  getMeterReset: {
+    method: 'GET',
+    path: '/return/meter/reset',
+    handler: controller.getMeterReset,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Find out if meter has reset or rolled over',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
+          activeNavLink: 'returns'
+        },
+        returns: true
+      }
+    }
+  },
+
+  postMeterReset: {
+    method: 'POST',
+    path: '/return/meter/reset',
+    handler: controller.postMeterReset,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Post handler for meter reset routing',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Abstraction return - has your meter reset or rolled over?',
           activeNavLink: 'returns'
         },
         returns: true

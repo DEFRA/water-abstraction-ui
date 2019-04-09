@@ -14,7 +14,7 @@ const form = (request, data) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('isSingleTotal', {
-    label: 'Is it a single amount of abstracted water?',
+    label: 'Is it a single volume?',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {
@@ -23,13 +23,14 @@ const form = (request, data) => {
       }
     },
     choices: [
-      { value: true,
+      {
+        value: true,
         label: 'Yes',
         fields: [
           fields.text('total', {
             label: 'Enter the total amount',
             type: 'number',
-            controlClass: 'form-control form-control--small',
+            controlClass: 'govuk-input--width-10',
             suffix,
             errors: {
               'number.base': {
@@ -40,9 +41,11 @@ const form = (request, data) => {
               }
             }
           })
-        ]},
+        ]
+      },
       { value: false, label: 'No' }
-    ]}));
+    ]
+  }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

@@ -1,7 +1,7 @@
 .badge {
 
   font-family: "nta", Arial, sans-serif;
-  @include govuk-font($size: 16);
+  @include govuk-font($size: 19);
 
   min-width: 4rem;
   display: inline-block;
@@ -10,9 +10,13 @@
   font-weight: bold;
   padding: 5px 7px 1px 7px;
   vertical-align: middle;
-  background: $govuk-link-colour;
   letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
   color: govuk-colour("white");
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
 
   @include govuk-media-query($until: tablet) {
     padding-bottom:  3px;
@@ -20,27 +24,33 @@
 }
 
 .badge--error {
-  background: $govuk-error-colour;
+  border-color: $govuk-error-colour;
+  color: $govuk-error-colour;
 }
 
 .badge--success {
-  background:  govuk-colour("green");
+  border-color: govuk-colour("green");
+  color: govuk-colour("green");
+}
+
+.badge--due {
+  border-color: govuk-colour("bright-red");
+  color: govuk-colour("bright-red");
 }
 
 .badge--completed {
-  background: $govuk-link-colour;
+  border-color: $govuk-link-colour;
+  color: $govuk-link-colour;
 }
 
 .badge--void {
-  background: #b10e1e;
+  border-color: #b10e1e;
+  color: #b10e1e;
 }
 
 .badge--info {
-  background: #6f777b;
-}
-
-.badge--caps {
-  text-transform: uppercase;
+  border-color: #6f777b;
+  color: #6f777b;
 }
 
 .badge--no-wrap {

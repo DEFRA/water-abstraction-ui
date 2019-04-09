@@ -10,6 +10,8 @@ module.exports = {
   ...require('./number'),
   ...require('./pluralize'),
   ...require('./query-string'),
+  ...require('./slice'),
   ...require('./title-case'),
+  ...require('./unit-conversion'),
   ...require('./units')
 };

@@ -50,9 +50,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'view',
-          showMeta: true
-        }
+          activeNavLink: 'view'
+        },
+        returns: true
       }
     }
   },
@@ -258,44 +258,6 @@ module.exports = {
     }
   },
 
-  getBasis: {
-    method: 'GET',
-    path: '/admin/return/basis',
-    handler: controller.getBasis,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Get basis for supplied return data',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postBasis: {
-    method: 'POST',
-    path: '/admin/return/basis',
-    handler: controller.postBasis,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for records basis',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are you using estimates?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
   getQuantities: {
     method: 'GET',
     path: '/admin/return/quantities',
@@ -407,6 +369,17 @@ module.exports = {
     '/admin/return/meter/readings',
     'POST handler for meter readings',
     'Abstraction return - enter meter readings'
-  )
+  ),
 
+  getMeterUsed: createGetMeterRoute(
+    '/admin/return/meter/used',
+    'View for internal user to specify whether a meter was used',
+    'Abstraction return - was a meter or meters used?'
+  ),
+
+  postMeterUsed: createPostMeterRoute(
+    '/admin/return/meter/used',
+    'POST handler for meter used',
+    'Abstraction return - was a meter or meters used?'
+  )
 };

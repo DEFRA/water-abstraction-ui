@@ -9,6 +9,8 @@
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block head %}
+    <meta name="format-detection" content="telephone=no">
+
   <!--[if !IE 8]><!-->
     <link href="/public/stylesheets/v2/application.css" rel="stylesheet" />
   <!--<![endif]-->
@@ -85,9 +87,6 @@
   }) }}
   {% endif %}
 {% endblock %}
-
-
-
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}

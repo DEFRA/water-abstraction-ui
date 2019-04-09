@@ -115,8 +115,6 @@ const handleRequest = (form, request, validationSchema) => {
 
   const { error, value } = adapter.validate(requestData, schema);
 
-  request.log('info', JSON.stringify(error, null, 2));
-
   const customErrors = getCustomErrors(form);
   const formattedErrors = adapter.formatErrors(error, customErrors);
   f = applyErrors(f, formattedErrors);

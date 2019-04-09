@@ -1,14 +1,15 @@
 const { expect } = require('code');
 const moment = require('moment');
-const { experiment, test } = exports.lab = require('lab').script();
-const { logReceiptForm } = require('../../../../src/modules/returns/forms/log-receipt');
+const { find } = require('lodash');
+const { experiment, test, beforeEach } = exports.lab = require('lab').script();
+const { logReceiptForm, logReceiptSchema } = require('../../../../src/modules/returns/forms/log-receipt');
 const { scope } = require('../../../../src/lib/constants');
 
 experiment('logReceiptForm', () => {
-  test('should generate a form object from request', async () => {
-    const today = moment().format('YYYY-MM-DD');
+  let form, request;
 
-    const request = {
+  beforeEach(async () => {
+    request = {
       view: {
         csrfToken: 'xyz'
       },
@@ -22,63 +23,30 @@ experiment('logReceiptForm', () => {
       }
     };
 
-    const form = logReceiptForm(request);
+    form = logReceiptForm(request);
+  });
 
-    const minDate = moment().subtract(1, 'years').format('D MM YYYY');
+  test('should contain the correct fields', async () => {
+    const names = form.fields.map(row => row.name).filter(x => x);
+    expect(names).to.include(['csrf_token', 'date_received', 'isUnderQuery']);
+  });
 
-    expect(form).to.equal({
-      'action': '/admin/return/log-receipt?returnId=abc',
-      'method': 'POST',
-      'isSubmitted': false,
-      'fields': [
-        {
-          'name': 'csrf_token',
-          'value': 'xyz',
-          'options': {
-            'widget': 'text',
-            'type': 'hidden',
-            'label': null,
-            'required': true
-          }
-        },
-        {
-          'name': 'date_received',
-          'value': today,
-          'options': {
-            'label': 'Enter date received',
-            'widget': 'date',
-            'required': true,
-            'mapper': 'dateMapper',
-            'hint': 'For example, 31 3 2018',
-            'errors': {
-              'any.required': {
-                'message': 'Enter a date in the right format, for example 31 3 2018'
-              },
-              'date.isoDate': {
-                'message': 'Enter a date in the right format, for example 31 3 2018'
-              },
-              'date.max': {
-                'message': `Enter a date between ${minDate} and today`
-              },
-              'date.min': {
-                'message': `Enter a date between ${minDate} and today`
-              }
-            }
-          },
-          'errors': []
-        },
-        {
-          'name': null,
-          'value': undefined,
-          'options': {
-            'widget': 'button',
-            'label': 'Submit'
-          }
-        }
-      ],
-      'errors': [],
-      'validationType': 'joi',
-      'isValid': undefined
-    });
+  test('should include the CSRF token from the request', async () => {
+    const csrf = find(form.fields, { name: 'csrf_token' });
+    expect(csrf.value).to.equal(request.view.csrfToken);
+  });
+
+  test('the received date field should default to today', async () => {
+    const today = moment().format('YYYY-MM-DD');
+    const date = find(form.fields, { name: 'date_received' });
+    expect(date.value).to.equal(today);
+  });
+});
+
+experiment('logReceiptSchema', () => {
+  test('should contain the correct fields', async () => {
+    const schema = logReceiptSchema();
+    const keys = Object.keys(schema);
+    expect(keys).to.only.include(['csrf_token', 'date_received', 'isUnderQuery']);
   });
 });

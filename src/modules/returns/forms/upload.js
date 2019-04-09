@@ -5,7 +5,12 @@ const form = (request) => {
 
   const f = formFactory('/returns/upload', 'POST', 'joi', { encType: 'multipart/form-data' });
 
-  f.fields.push(fields.file('file', { label: 'Upload a file' }));
+  f.fields.push(fields.file('file', {
+    label: 'Upload a file',
+    attr: {
+      accept: '.xml'
+    }
+  }));
   f.fields.push(fields.paragraph('', { text: 'The licence holder is responsible for the data you are sending.' }));
   f.fields.push(fields.button(null, { label: 'Upload' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

@@ -1,14 +1,15 @@
 const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const controller = require('../../../../src/modules/returns/controllers/edit');
 const { returns } = require('../../../../src/lib/connectors/water');
 const helpers = require('../../../../src/modules/returns/lib/helpers.js');
+const { scope: { internal, external } } = require('../../../../src/lib/constants.js');
 const returnPath = require('../../../../src/modules/returns/lib/return-path');
 const permissions = require('../../../../src/lib/permissions');
 const sessionHelpers = require('../../../../src/modules/returns/lib/session-helpers.js');
 const forms = require('../../../../src/lib/forms');
-const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers.js');
+const flowHelpers = require('../../../../src/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();
 
@@ -19,6 +20,7 @@ const csrfToken = 'csrf';
 const returnId = 'v1:1:01/123:4567:2017-11-01:2018-10-31';
 const documentHeaders = ['documentHeader_1', 'documentHeader_2'];
 const returnLines = {
+  startReading: 45,
   '2017-11-01_2017-11-30': 60,
   '2017-12-01_2017-12-31': 65,
   '2018-01-01_2018-01-31': 78,
@@ -34,7 +36,7 @@ const returnLines = {
   csrfToken
 };
 
-const createRequest = (isInternal, isNil, internal, external) => {
+const createRequest = (isInternal, isNil, readingType) => {
   return {
     view: {
       csrfToken
@@ -48,7 +50,7 @@ const createRequest = (isInternal, isNil, internal, external) => {
         licenceNumber: '123/456',
         versionNumber: '1',
         reading: {
-          type: 'measured',
+          type: readingType,
           units: 'm³'
         },
         meters: [
@@ -59,6 +61,7 @@ const createRequest = (isInternal, isNil, internal, external) => {
             multiplier: 1,
             units: 'm³',
             readings: {
+              startReading: 58,
               '2017-11-01_2017-11-30': 60,
               '2017-12-01_2017-12-31': 65,
               '2018-01-01_2018-01-31': 78,
@@ -163,10 +166,7 @@ const createRequest = (isInternal, isNil, internal, external) => {
         username: userName,
         entity_id: entityId,
         companyId,
-        scope: [{
-          internal,
-          external
-        }]
+        scope: [ isInternal ? internal : external ]
       }
     }
   };
@@ -213,48 +213,26 @@ experiment('edit controller', () => {
     sandbox.restore();
   });
   experiment('getAmounts', () => {
-    test('it should take you to returns/internal/form page with returns data', async () => {
+    test('renders nunjucks/returns/form.njk with returns data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
-      expect(view.return.data).to.equal(returns.data);
+      expect(template).to.equal('nunjucks/returns/form.njk');
+      expect(view.return).to.equal(request.returns.data);
     });
-    test('it should call getPreviousPath with STEP_START, request and returns.data', async () => {
+
+    test('calls getPreviousPath with STEP_START, request and returns.data', async () => {
       permissions.isExternalReturns.returns(true);
       const request = createRequest();
-      const returns = createReturn();
 
       await controller.getAmounts(request, h);
 
-      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, { ...returns, versionNumber: 2 });
+      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_START, request, request.returns.data);
 
       expect(getPreviousPathCalled).to.be.true();
-    });
-    test('throws a Boom unauthorized error if no documentHeaders', async () => {
-      helpers.getLicenceNumbers.returns([]);
-      try {
-        await controller.getAmounts(createRequest(), h);
-        fail();
-      } catch (err) {
-        expect(err.isBoom).to.equal(true);
-        expect(err.output.statusCode).to.equal(401);
-      }
-    });
-    test('throws a Boom unauthorized error if user is not internalEdit or externalReturns', async () => {
-      returnPath.isInternalEdit.returns(false);
-      permissions.isExternalReturns.returns(false);
-      try {
-        await controller.getAmounts(createRequest(), h);
-        fail();
-      } catch (err) {
-        expect(err.isBoom).to.equal(true);
-        expect(err.output.statusCode).to.equal(401);
-      }
     });
   });
 
@@ -269,26 +247,27 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postAmounts(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.equal('/returns');
     });
   });
 
   experiment('getNilReturn', () => {
-    test('it should take you to returns/internal/nil-return page with returns data', async () => {
+    test('it should render nunjucks/returns/nil-return.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getNilReturn(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/nil-return');
+      expect(template).to.equal('nunjucks/returns/nil-return.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_NIL_RETURN, request and request.returns.data', async () => {
@@ -302,6 +281,30 @@ experiment('edit controller', () => {
   });
 
   experiment('postConfirm', () => {
+    let meters = [
+      {
+        manufacturer: 'Unknown',
+        serialNumber: '4678',
+        startReading: 58,
+        multiplier: 1,
+        units: 'm³',
+        readings: {
+          startReading: 58,
+          '2017-11-01_2017-11-30': 60,
+          '2017-12-01_2017-12-31': 65,
+          '2018-01-01_2018-01-31': 78,
+          '2018-02-01_2018-02-28': 82,
+          '2018-03-01_2018-03-31': 85,
+          '2018-04-01_2018-04-30': null,
+          '2018-05-01_2018-05-31': null,
+          '2018-06-01_2018-06-30': null,
+          '2018-07-01_2018-07-31': null,
+          '2018-08-01_2018-08-31': null,
+          '2018-09-01_2018-09-30': null,
+          '2018-10-01_2018-10-31': null
+        }
+      }
+    ];
     test('it should call getNextPath with STEP_START, request', async () => {
       forms.handleRequest.returns({ isValid: true });
       const request = createRequest();
@@ -311,23 +314,39 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
+    test('it should delete meter details if reading.type is "estimated"', async () => {
+      forms.handleRequest.returns({ isValid: true, meters });
+      const request = createRequest(null, null, 'estimated');
+
+      await controller.postConfirm(request, h);
+      const [updatedData] = sessionHelpers.submitReturnData.lastCall.args;
+      expect(updatedData.meters).to.equal([]);
+    });
+    test('it should leave meter details as they are if reading.type is "measured"', async () => {
+      forms.handleRequest.returns({ isValid: true, meters });
+      const request = createRequest(null, null, 'measured');
+
+      await controller.postConfirm(request, h);
+      const [updatedData] = sessionHelpers.submitReturnData.lastCall.args;
+      expect(updatedData.meters).to.equal(meters);
+    });
   });
 
   experiment('getSubmitted', () => {
-    test('it should take you to returns/return?id=returnId', async () => {
+    test('it should render nunjucks/returns/submitted.njk with returns data', async () => {
       const request = createRequest(false);
 
       await controller.getSubmitted(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/submitted');
+      expect(template).to.equal('nunjucks/returns/submitted.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('returnUrl should be returns/return?id=returnId page for external users', async () => {
       const request = createRequest(false);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.returnUrl).to.equal(`/returns/return?id=${returnId}`);
     });
@@ -335,7 +354,7 @@ experiment('edit controller', () => {
       const request = createRequest(true);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.returnUrl).to.equal(`/admin/returns/return?id=${returnId}`);
     });
@@ -343,7 +362,7 @@ experiment('edit controller', () => {
       const request = createRequest(false, true);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.pageTitle).to.equal('Abstraction return - nil submitted');
     });
@@ -351,20 +370,20 @@ experiment('edit controller', () => {
       const request = createRequest(false, false);
 
       await controller.getSubmitted(request, h);
-      const [template, view] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
 
       expect(view.pageTitle).to.equal('Abstraction return - submitted');
     });
   });
 
   experiment('getMethod', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getMethod(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METHOD, request and request.returns.data', async () => {
@@ -388,26 +407,28 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postMethod(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.equal(`/return?returnId=${request.returns.data.returnId}`);
     });
   });
 
   experiment('getUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_UNITS, request and request.returns.data', async () => {
@@ -432,29 +453,31 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getSingleTotal', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
-      const request = createRequest();
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
+      permissions.isInternal.returns(true);
+      const request = createRequest(true);
 
       await controller.getSingleTotal(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_SINGLE_TOTAL, request and request.returns.data', async () => {
+      permissions.isInternal.returns(true);
       const request = createRequest();
 
       await controller.getSingleTotal(request, h);
@@ -466,6 +489,7 @@ experiment('edit controller', () => {
 
   experiment('postSingleTotal', () => {
     test('it should call getNextPath with STEP_SINGLE_TOTAL, request', async () => {
+      permissions.isInternal.returns(true);
       forms.handleRequest.returns({ isValid: true });
       forms.getValues.returns({ isSingleTotal: false, total: 8577 });
 
@@ -476,70 +500,28 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+
+    test('renders the same page if form is not valid', async () => {
+      permissions.isInternal.returns(true);
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postSingleTotal(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
-      expect(view.return).to.equal(request.returns.data);
-    });
-  });
-
-  experiment('getBasis', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
-      const request = createRequest();
-
-      await controller.getBasis(request, h);
-      const [template, view] = h.view.lastCall.args;
-
-      expect(template).to.equal('water/returns/internal/form');
-      expect(view.return).to.equal(request.returns.data);
-    });
-    test('it should call getPreviousPath with STEP_BASIS, request and request.returns.data', async () => {
-      const request = createRequest();
-
-      await controller.getBasis(request, h);
-      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_BASIS, request, request.returns.data);
-
-      expect(getPreviousPathCalled).to.be.true();
-    });
-  });
-
-  experiment('postBasis', () => {
-    test('it should call getNextPath with STEP_BASIS, request', async () => {
-      forms.handleRequest.returns({ isValid: true });
-      forms.getValues.returns({ basis: 'basis' });
-
-      const request = createRequest();
-
-      await controller.postBasis(request, h);
-      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_BASIS, request);
-
-      expect(getNextPathCalled).to.be.true();
-    });
-    test('it should keep you on the same page if form is not valid', async () => {
-      forms.handleRequest.returns({ isValid: false });
-      const request = createRequest();
-
-      await controller.postBasis(request, h);
-      const [template, view] = h.view.lastCall.args;
-
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getQuantities', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getQuantities(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_QUANTITIES, request and request.returns.data', async () => {
@@ -564,26 +546,26 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postQuantities(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getConfirm', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render nunjucks/returns/confirm.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getConfirm(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/confirm');
+      expect(template).to.equal('nunjucks/returns/confirm.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_CONFIRM, request and request.returns.data', async () => {
@@ -605,13 +587,13 @@ experiment('edit controller', () => {
   });
 
   experiment('getMeterDetails', () => {
-    test('it should take you to water/returns/meter-details page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterDetails(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/meter-details');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METER_DETAILS, request and request.returns.data', async () => {
@@ -636,26 +618,26 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postMeterDetails(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/meter-details');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
   experiment('getMeterUnits', () => {
-    test('it should take you to water/returns/internal/form page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METER_UNITS, request and request.returns.data', async () => {
@@ -680,26 +662,72 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postMeterUnits(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/internal/form');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
   });
 
+  experiment('getMeterReset', () => {
+    test('it should render nunjucks/returns/form.njk page with returns data', async () => {
+      const request = createRequest();
+
+      await controller.getMeterReset(request, h);
+      const [template, view] = h.view.lastCall.args;
+
+      expect(template).to.equal('nunjucks/returns/meter-reset.njk');
+      expect(view.return).to.equal(request.returns.data);
+    });
+    test('it should call getPreviousPath with STEP_METER_RESET, request and request.returns.data', async () => {
+      const request = createRequest();
+
+      await controller.getMeterReset(request, h);
+      const getPreviousPathCalled = flowHelpers.getPreviousPath.calledWith(flowHelpers.STEP_METER_RESET, request, request.returns.data);
+
+      expect(getPreviousPathCalled).to.be.true();
+    });
+  });
+
+  experiment('postMeterReset', () => {
+    test('it should call getNextPath with STEP_METER_RESET, request', async () => {
+      forms.handleRequest.returns({ isValid: true });
+      forms.getValues.returns({ units: 'm³' });
+
+      const request = createRequest();
+
+      await controller.postMeterReset(request, h);
+      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_RESET, request);
+
+      expect(getNextPathCalled).to.be.true();
+    });
+
+    test('it should render same page if form is not valid', async () => {
+      forms.handleRequest.returns({ isValid: false });
+      const request = createRequest();
+
+      await controller.postMeterReset(request, h);
+      const [template, view] = h.view.lastCall.args;
+
+      expect(template).to.equal('nunjucks/returns/meter-reset.njk');
+      expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.startWith('/return/method?returnId=');
+    });
+  });
+
   experiment('getMeterReadings', () => {
-    test('it should take you to water/returns/meter-readings page with returns data', async () => {
+    test('it should render nunjucks/returns/form.njk page with returns data', async () => {
       const request = createRequest();
 
       await controller.getMeterReadings(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/meter-readings');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
     });
     test('it should call getPreviousPath with STEP_METER_READINGS, request and request.returns.data', async () => {
@@ -724,15 +752,64 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
-    test('it should keep you on the same page if form is not valid', async () => {
+
+    test('it should render same page if form is not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
       const request = createRequest();
 
       await controller.postMeterReadings(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('water/returns/meter-readings');
+      expect(template).to.equal('nunjucks/returns/form.njk');
       expect(view.return).to.equal(request.returns.data);
+      expect(view.back).to.startWith('/return/units?returnId');
+    });
+  });
+
+  experiment('getMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should use correct template', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+    });
+
+    test('is should provide data to view', async () => {
+      const request = createRequest(true);
+      await controller.getMeterUsed(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.be.a.string();
+      expect(view.form).to.be.an.object();
+      expect(view.return).to.be.an.object();
+    });
+  });
+
+  experiment('postMeterUsed', () => {
+    beforeEach(async () => {
+      permissions.isInternal.returns(true);
+    });
+
+    test('it should re-render page if form not valid', async () => {
+      forms.handleRequest.returns({ isValid: false });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const [template, view] = h.view.lastCall.args;
+      expect(template).to.equal('water/returns/internal/form');
+      expect(view.back).to.startWith('/admin/return/meter/details-provided?returnId=');
+    });
+
+    test('it should call getNextPath with STEP_METER_USED, request', async () => {
+      forms.handleRequest.returns({ isValid: true });
+      forms.getValues.returns({ meterUsed: true });
+      const request = createRequest(true);
+      await controller.postMeterUsed(request, h);
+      const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_USED, request);
+
+      expect(getNextPathCalled).to.be.true();
     });
   });
 });

@@ -56,6 +56,13 @@
     <dd class="meta__description">
       {{ returnPeriod return.metadata.nald }}
     </dd>
+    <dd class="meta__description">
+      {{#if isTwoPartTariff}}
+      Two Part tariff
+      {{else}}
+      Standard tariff
+      {{/if}}
+    </dd>
 
   </dl>
 

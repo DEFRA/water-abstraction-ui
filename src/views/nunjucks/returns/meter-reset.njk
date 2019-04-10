@@ -4,7 +4,7 @@
 
 {% block content %}
   {{ formErrorSummary(form) }}
-  {{ returnHeader(data, documentHeader, showMeta) }}
+  {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
   {{ formRender(form) }}
 {% endblock %}
 

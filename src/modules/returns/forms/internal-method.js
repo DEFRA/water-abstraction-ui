@@ -11,7 +11,7 @@ const form = (request, data) => {
   const f = formFactory(action);
 
   f.fields.push(fields.radio('method', {
-    label: 'How is the return reported?',
+    label: 'How was this return reported?',
     errors: {
       'any.required': {
         message: 'Select meter readings, or abstraction volumes'

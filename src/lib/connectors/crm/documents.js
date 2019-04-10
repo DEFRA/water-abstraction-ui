@@ -101,13 +101,14 @@ client.setLicenceName = function (documentId, name) {
  * @param {String} licenceRef - the licence number
  * @return {Promise} resolves with document header
  */
-client.getWaterLicence = async (licenceRef) => {
+client.getWaterLicence = async (licenceRef, includeExpired = false) => {
   if (!licenceRef) {
     throw Boom.badImplementation('Licence number is required');
   }
   const filter = {
     regime_entity_id: waterRegimeEntityId,
-    system_external_id: licenceRef
+    system_external_id: licenceRef,
+    includeExpired
   };
   const { error, data: [document] } = await client.findMany(filter);
   if (error) {

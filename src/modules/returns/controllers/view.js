@@ -65,7 +65,7 @@ const getReturn = async (request, h) => {
 
   // Load licence from CRM to check user has access
   const isInternalUser = isInternal(request);
-  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber });
+  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: isInternalUser });
 
   const canView = documentHeader && (isInternalUser || (data.isCurrent && data.metadata.isCurrent));
 

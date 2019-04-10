@@ -98,6 +98,30 @@ const getLicenceCommunication = {
   }
 };
 
+const getExpiredLicence = {
+  method: 'GET',
+  path: '/admin/expired-licences/{documentId}',
+  handler: controller.getExpiredLicence,
+  config: {
+    pre: [
+      { method: preInternalView }
+    ],
+    description: 'Shows expired licence details to internal users',
+    validate: {
+      params: {
+        documentId: VALID_GUID
+      }
+    },
+    plugins: {
+      viewContext: {
+        activeNavLink: 'view'
+      }
+    },
+    auth: { scope: allAdmin }
+  }
+};
+
+exports.getExpiredLicence = getExpiredLicence;
 exports.getLicenceAdmin = getLicenceAdmin;
 exports.getLicenceContactAdmin = getLicenceContactAdmin;
 exports.getLicencePurposesAdmin = getLicencePurposesAdmin;

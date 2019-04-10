@@ -1,0 +1,10 @@
+.warning {
+  @include govuk-responsive-padding(6); // 20px small, 30px larger
+  border: 5px solid $govuk-text-colour;
+}
+
+// Remove the margin at the bottom originally supplied by
+// the govuk-warning-text.
+.warning > .govuk-warning-text {
+  margin: 0;
+}

@@ -158,16 +158,71 @@ experiment('postAddressSelect', () => {
 
     await expect(controller.postAddressSelect(request, h)).to.reject();
   });
+});
+
+experiment('postFAO', () => {
+  let request;
+  let h;
+
+  beforeEach(async () => {
+    request = {
+      sessionStore: {
+        get: () => ({
+          selectedIds: [1, 2]
+        }),
+        delete: sinon.spy()
+      },
+      auth: {
+        credentials: {
+          entity_id: 'test-entity-id'
+        }
+      },
+      payload: {
+        address: 1,
+        fao: 'name'
+      },
+      view: {},
+      cookieAuth: {
+        set: sinon.spy()
+      }
+    };
+
+    h = {
+      redirect: sinon.spy(),
+      view: sinon.spy()
+    };
+
+    sandbox.stub(crmConnector.documents, 'findMany').resolves({
+      error: null,
+      data: [{ metadata: { Name: 'test-company-name' } }]
+    });
+
+    sandbox.stub(crmConnector.documents, 'findOne').resolves({
+      error: null,
+      data: { licence_ref: 'test-licence-id' }
+    });
+
+    sandbox.stub(crmConnector, 'getOrCreateCompanyEntity').resolves('test-company-entity-id');
+    sandbox.stub(crmConnector, 'createVerification').resolves({
+      verification_code: 'test-verification-code'
+    });
+
+    sandbox.stub(notifyConnector, 'sendSecurityCode').resolves();
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
 
   test('gets the company id user entity id', async () => {
-    await controller.postAddressSelect(request, h);
+    await controller.postFAO(request, h);
     const [companyEntityId, companyName] = crmConnector.getOrCreateCompanyEntity.lastCall.args;
     expect(companyEntityId).to.equal('test-entity-id');
     expect(companyName).to.equal('test-company-name');
   });
 
   test('uses the company id to create the verification', async () => {
-    await controller.postAddressSelect(request, h);
+    await controller.postFAO(request, h);
     const [entityId, companyEntityId, selectedIds] = crmConnector.createVerification.lastCall.args;
 
     expect(entityId).to.equal('test-entity-id');
@@ -181,32 +236,33 @@ experiment('postAddressSelect', () => {
       data: null
     });
 
-    await expect(controller.postAddressSelect(request, h)).to.reject();
+    await expect(controller.postFAO(request, h)).to.reject();
   });
 
-  test('delete the licence flow data from session', async () => {
-    await controller.postAddressSelect(request, h);
+  test('delete the licence flow and address data from session', async () => {
+    await controller.postFAO(request, h);
     expect(request.sessionStore.delete.calledWith('addLicenceFlow')).to.be.true();
+    expect(request.sessionStore.delete.calledWith('address')).to.be.true();
   });
 
   test('renders the expected view', async () => {
-    await controller.postAddressSelect(request, h);
+    await controller.postFAO(request, h);
     const [viewName] = h.view.lastCall.args;
-    expect(viewName).to.equal('water/licences-add/verification-sent');
+    expect(viewName).to.equal('nunjucks/licences-add/verification-sent.njk');
   });
 
   test('passes the expected data to the view', async () => {
-    await controller.postAddressSelect(request, h);
+    await controller.postFAO(request, h);
     const [, viewData] = h.view.lastCall.args;
     expect(viewData.pageTitle).to.equal('We are sending you a letter');
-    expect(viewData.activeNavLink).to.equal('manage');
     expect(viewData.verification.verification_code).to.equal('test-verification-code');
     expect(viewData.licence.licence_ref).to.equal('test-licence-id');
     expect(viewData.licenceCount).to.equal(1);
+    expect(viewData.fao).to.equal('name');
   });
 
   test('adds the company id to the cookie', async () => {
-    await controller.postAddressSelect(request, h);
+    await controller.postFAO(request, h);
 
     expect(request.cookieAuth.set.calledWith('companyId', 'test-company-entity-id'))
       .to.be.true();

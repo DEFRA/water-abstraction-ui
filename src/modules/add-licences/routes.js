@@ -92,6 +92,34 @@ module.exports = {
       }
     }
   },
+
+  getForAttentionOf: {
+    method: 'GET',
+    path: '/add-addressee',
+    handler: controller.getFAO,
+    config: {
+      description: 'Specify a name or department for security code letter',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage'
+        }
+      }
+    }
+  },
+  postForAttentionOf: {
+    method: 'POST',
+    path: '/add-addressee',
+    handler: controller.postFAO,
+    config: {
+      description: 'Specify a name or department for security code letter',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage'
+        }
+      }
+    }
+  },
+
   getSecurityCode: {
     method: 'GET',
     path: '/security-code',

@@ -1,0 +1,45 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/macros/title.njk" import title %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+
+      <p class="govuk-body">
+        Your letter containing a security code and instructions will be sent by 1st Class post to:
+      </p>
+
+      {%set addressText%}
+        {{fao}}{%if fao %},<br/>{%endif%}
+        {{ licence.metadata.AddressLine1 }}{%if licence.metadata.AddressLine2 %},<br/>{%endif%}
+        {{ licence.metadata.AddressLine2 }}{%if licence.metadata.AddressLine3 %},<br/>{%endif%}
+        {{ licence.metadata.AddressLine3 }}{%if licence.metadata.AddressLine4 %},<br/>{%endif%}
+        {{ licence.metadata.AddressLine4 }}{%if licence.metadata.Town %},<br/>{%endif%}
+        {{ licence.metadata.Town }}{%if licence.metadata.County %},<br/>{%endif%}
+        {{ licence.metadata.County }}{%if licence.metadata.Postcode %},<br/>{%endif%}
+        {{ licence.metadata.Postcode }}
+      {%endset%}
+      {{ govukInsetText({
+        html: addressText
+      }) }}
+      <p class="govuk-body">
+        You should receive it within 2 to 3 days
+      </p>
+
+      <p class="govuk-body">
+        {%if licenceCount %}
+        <a href="/licences">Return to your licence list</a><br>
+        {%endif%}
+        <a href="/signout">Sign out</a>
+      </p>
+
+      {%if isTestMode%}
+      <p>
+        Your code is <code><b>{{ verification.verification_code }}</b></code>
+      </p>
+      {%endif%}
+    </div>
+  </div>
+{% endblock %}

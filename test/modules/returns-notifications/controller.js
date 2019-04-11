@@ -12,6 +12,7 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('../../../src/modules/returns-notifications/controller');
 const notificationsConnector = require('../../../src/lib/connectors/water-service/returns-notifications');
+var batchNotificationsConnector = require('../../../src/lib/connectors/water-service/batch-notifications');
 
 const createLicence = (id, overrides = {}) => {
   return {
@@ -136,5 +137,93 @@ experiment('postPreviewRecipients', () => {
       expect(l2.endedReasons).to.equal('');
       expect(l3.endedReasons).to.equal('');
     });
+  });
+});
+
+experiment('getReturnsReminderStart', () => {
+  let request;
+  let h;
+
+  beforeEach(async () => {
+    request = {
+      view: {}
+    };
+
+    h = {
+      view: sandbox.spy()
+    };
+
+    await controller.getReturnsReminderStart(request, h);
+  });
+
+  test('the expected view template is used', async () => {
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/returns-notifications/reminders.njk');
+  });
+
+  test('view context is assigned a form', async () => {
+    const [, view] = h.view.lastCall.args;
+    expect(view.form.action).to.equal('/admin/returns-notifications/reminders');
+  });
+
+  test('view context is assigned a back link path', async () => {
+    const [, view] = h.view.lastCall.args;
+    expect(view.back).to.equal('/admin/notifications');
+  });
+});
+
+experiment('postReturnsReminderStart', () => {
+  let request;
+  let h;
+  let username;
+
+  beforeEach(async () => {
+    username = 'test@example.com';
+    h = {
+      redirect: sandbox.spy()
+    };
+
+    request = {
+      view: {
+        csrfToken: 'test-csrf-token'
+      },
+      auth: {
+        credentials: {
+          username,
+          scope: ['internal']
+        }
+      },
+      payload: {
+        excludeLicences: '123\n456'
+      }
+    };
+
+    sandbox.stub(batchNotificationsConnector, 'prepareReturnsReminders').resolves({
+      data: {
+        eventId: 'test-event-id'
+      }
+    });
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('the username is used as the notification issuer', async () => {
+    await controller.postReturnsReminderStart(request, h);
+    const [issuer] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
+    expect(issuer).to.equal(username);
+  });
+
+  test('the excluded licences are passed as csv', async () => {
+    await controller.postReturnsReminderStart(request, h);
+    const [, excludeLicences] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
+    expect(excludeLicences).to.equal('123,456');
+  });
+
+  test('the user is redirected to the event waiting page', async () => {
+    await controller.postReturnsReminderStart(request, h);
+    const [url] = h.redirect.lastCall.args;
+    expect(url).to.equal('/admin/waiting/test-event-id');
   });
 });

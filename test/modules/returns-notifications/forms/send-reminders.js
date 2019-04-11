@@ -1,7 +1,7 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { sendRemindersForm } = require('../../../../src/modules/returns-notifications/forms/send-reminders');
+const { sendFinalRemindersForm } = require('../../../../src/modules/returns-notifications/forms/send-final-reminders');
 
 const request = {
   view: {
@@ -9,8 +9,8 @@ const request = {
   }
 };
 
-experiment('sendRemindersForm', () => {
-  const f = sendRemindersForm(request);
+experiment('sendFinalRemindersForm', () => {
+  const f = sendFinalRemindersForm(request);
 
   test('it should have the CSRF token set from the request', async () => {
     const csrfField = find(f.fields, field => field.name === 'csrf_token');

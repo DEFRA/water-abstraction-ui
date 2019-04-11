@@ -1,17 +1,16 @@
 
 {{#if documentHeader.document_name }}
-<h1 class="heading-large">
+  <h1 class="heading-large">
     <span class="heading-secondary">Abstraction return for {{ documentHeader.system_external_id }}</span>
     {{ documentHeader.document_name }}
   </h1>
 {{else}}
-<h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
+  <h1 class="heading-large">Abstraction return for {{ documentHeader.system_external_id }}</h1>
 {{/if}}
 
 {{#if showMeta }}
 
 <dl class="meta small-space">
-
 
   {{#if isAdmin }}
   <dt class="meta__label">
@@ -66,8 +65,8 @@
 
   </dl>
 
-<p class="medium-space">
-  <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ documentHeader.document_id }}">View this licence</a>
-</p>
+  <p class="medium-space">
+    <a href="{{#if isAdmin }}/admin{{/if}}/{{#unless documentHeader.metadata.IsCurrent}}expired-{{/unless}}licences/{{ documentHeader.document_id }}">View this licence</a>
+  </p>
 
 {{/if}}

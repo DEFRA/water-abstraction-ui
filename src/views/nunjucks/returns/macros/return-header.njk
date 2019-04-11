@@ -78,7 +78,7 @@
     </dl>
 
     <p class="medium-space">
-      <a href="{%if isAdmin %}/admin{%endif%}/licences/{{ documentHeader.document_id }}">View this licence</a>
+      <a href="{%if isAdmin %}/admin{%endif%}/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
     </p>
 
   {%endif%}

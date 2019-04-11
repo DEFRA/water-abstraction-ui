@@ -25,6 +25,13 @@ experiment('getLicenceByDocumentId', () => {
     const [url] = serviceRequest.get.lastCall.args;
     expect(url).to.equal(expectedUrl);
   });
+
+  test('allows expired licences to be included', async () => {
+    await licencesConnector.getLicenceByDocumentId('test-id', true);
+    const expectedUrl = `${config.services.water}/documents/test-id/licence?includeExpired=true`;
+    const [url] = serviceRequest.get.lastCall.args;
+    expect(url).to.equal(expectedUrl);
+  });
 });
 
 experiment('getLicenceUsersByDocumentId', () => {
@@ -111,5 +118,29 @@ experiment('getLicencePrimaryUserByDocumentId', async () => {
       userName: 'test4@example.com',
       roles: ['primary_user']
     });
+  });
+});
+
+experiment('getLicenceCommunicationsByDocumentId', () => {
+  beforeEach(async () => {
+    sandbox.stub(serviceRequest, 'get').resolves({});
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('passes the expected URL to the request', async () => {
+    await licencesConnector.getLicenceCommunicationsByDocumentId('test-id');
+    const expectedUrl = `${config.services.water}/documents/test-id/licence/communications`;
+    const [url] = serviceRequest.get.lastCall.args;
+    expect(url).to.equal(expectedUrl);
+  });
+
+  test('allows expired licences to be included', async () => {
+    await licencesConnector.getLicenceCommunicationsByDocumentId('test-id', true);
+    const expectedUrl = `${config.services.water}/documents/test-id/licence/communications?includeExpired=true`;
+    const [url] = serviceRequest.get.lastCall.args;
+    expect(url).to.equal(expectedUrl);
   });
 });

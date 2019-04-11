@@ -42,7 +42,11 @@ experiment('prepareReturnsReminders', () => {
 experiment('sendReturnsReminders', () => {
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post').resolves({});
+<<<<<<< HEAD
     await batchNotificationsConnector.sendReturnsReminders('test-event-id', 'issuer');
+=======
+    await batchNotificationsConnector.sendReturnsReminders('test-event-id');
+>>>>>>> WATER-2087
   });
 
   afterEach(async () => {
@@ -53,9 +57,12 @@ experiment('sendReturnsReminders', () => {
     const [url] = serviceRequest.post.lastCall.args;
     expect(url).to.equal(`${config.services.water}/batch-notifications/send/test-event-id`);
   });
+<<<<<<< HEAD
 
   test('includes the issuer in the request body', async () => {
     const [, options] = serviceRequest.post.lastCall.args;
     expect(options.body.issuer).to.equal('issuer');
   });
+=======
+>>>>>>> WATER-2087
 });

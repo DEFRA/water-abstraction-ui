@@ -5,7 +5,7 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const { difference } = require('lodash');
+const { difference, find } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
@@ -13,7 +13,7 @@ const logger = require('../../lib/logger');
 const loginHelpers = require('../../lib/login-helpers');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
-const { handleRequest } = require('../../lib/forms');
+const forms = require('../../lib/forms');
 const { faoForm, faoSchema } = require('../add-licences/forms/for-attention-of');
 const { selectAddressForm } = require('../add-licences/forms/select-address');
 
@@ -21,7 +21,6 @@ const {
   LicenceNotFoundError,
   LicenceMissingError,
   LicenceSimilarityError,
-  InvalidAddressError,
   NoLicencesSelectedError,
   LicenceFlowError
 } = require('./errors');
@@ -246,10 +245,14 @@ function getLicenceSelectError (request, reply) {
 }
 
 const getUniqueAddresses = async selectedIds => {
+  try {
   // Find licences in CRM for selected documents
-  const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
+    const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
 
-  return uniqueAddresses(data);
+    return uniqueAddresses(data);
+  } catch (err) {
+    throw (err);
+  }
 };
 
 /**
@@ -273,11 +276,7 @@ async function getAddressSelect (request, reply) {
   }, { layout: false });
 }
 
-const validateDocumentIdInSelectedIds = (addressDocumentId, selectedIds) => {
-  if (!selectedIds.includes(addressDocumentId)) {
-    throw new InvalidAddressError();
-  }
-};
+const validateDocumentIdInSelectedIds = (addressDocumentId, selectedIds) => selectedIds.includes(addressDocumentId);
 
 const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
 
@@ -328,25 +327,33 @@ const getLicence = async documentId => {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postAddressSelect (request, h) {
-  const { addressId } = request.payload;
+  const { selectedAddressId } = request.payload;
   const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
+  const isSelectedAddressValid = validateDocumentIdInSelectedIds(selectedAddressId, selectedIds);
+
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
-  const form = handleRequest(selectAddressForm(request, uniqueAddressLicences), request);
+  const form = forms.handleRequest(selectAddressForm(request, uniqueAddressLicences), request);
 
-  if (form.isValid) {
-    // Load session data
-    const { selectedIds } = request.sessionStore.get('addLicenceFlow');
-
-    validateDocumentIdInSelectedIds(addressId, selectedIds);
-
+  if (form.isValid && isSelectedAddressValid) {
     // add selected address to addLicenceFlow in sessionStore
     const flowData = request.sessionStore.get('addLicenceFlow');
-    flowData.selectedAddressId = addressId;
+    flowData.selectedAddressId = selectedAddressId;
     request.sessionStore.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
   }
+
+  // if selectedAddressId exists && is not valid, set error message
+  if (selectedAddressId && !isSelectedAddressValid) {
+    const invalidAddressError = [{
+      name: 'selectedAddressId',
+      message: 'Address is invalid',
+      summary: 'Address is invalid' }];
+    const addressField = find(form.fields, { name: 'selectedAddressId' });
+    addressField.errors = invalidAddressError;
+  }
+
   return h.view('nunjucks/form.njk', {
     ...request.view,
     back: '/select-licences',
@@ -378,17 +385,16 @@ function getFAO (request, h) {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postFAO (request, h) {
-  const { addressId, fao } = request.payload;
+  const { selectedAddressId, fao } = request.payload;
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
   const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-  validateDocumentIdInSelectedIds(addressId, selectedIds);
+  const isSelectedAddressValid = validateDocumentIdInSelectedIds(selectedAddressId, selectedIds);
+  const form = forms.handleRequest(faoForm(request), request, faoSchema());
 
-  const form = handleRequest(faoForm(request), request, faoSchema());
-
-  if (form.isValid) {
+  if (form.isValid && isSelectedAddressValid) {
     // Find licences in CRM for selected documents
     const licenceData = await getLicences(selectedIds);
 
@@ -400,7 +406,7 @@ async function postFAO (request, h) {
     const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
 
     // Get the licence containing the selected verification address
-    const addressLicence = await getLicence(addressId);
+    const addressLicence = await getLicence(selectedAddressId);
 
     // Post letter
     await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
@@ -415,6 +421,17 @@ async function postFAO (request, h) {
 
     return h.view('nunjucks/licences-add/verification-sent.njk', viewContext, { layout: false });
   }
+
+  // if selectedAddressId exists && is not valid, set error message
+  if (selectedAddressId && !isSelectedAddressValid) {
+    const invalidAddressError = [{
+      name: 'selectedAddressId',
+      message: 'Address is invalid',
+      summary: 'Address is invalid' }];
+    const addressField = find(form.fields, { name: 'selectedAddressId' });
+    addressField.errors = invalidAddressError;
+  }
+
   return h.view('nunjucks/form.njk', {
     ...request.view,
     form

@@ -98,7 +98,7 @@ module.exports = {
       },
       validate: {
         payload: {
-          addressId: Joi.string().allow('').guid(),
+          selectedAddressId: Joi.string().allow('').guid(),
           csrf_token: Joi.string().guid().required()
         }
       }
@@ -127,7 +127,7 @@ module.exports = {
       description: 'Specify a name or department for security code letter',
       validate: {
         payload: {
-          addressId: Joi.string().guid(),
+          selectedAddressId: Joi.string().guid(),
           fao: Joi.string().allow('').trim().uppercase(),
           csrf_token: Joi.string().guid().required()
         }

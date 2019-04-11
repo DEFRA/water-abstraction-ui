@@ -1,10 +1,10 @@
 const { expect } = require('code');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { faoForm } = require('../../../../src/modules/add-licences/forms/for-attention-of');
+const { selectAddressForm } = require('../../../../src/modules/add-licences/forms/select-address');
 
-experiment('faoForm', () => {
-  let form, request;
+experiment('selectAddressForm', () => {
+  let form, request, licences;
 
   beforeEach(async () => {
     request = {
@@ -20,22 +20,29 @@ experiment('faoForm', () => {
       }
     };
 
-    form = faoForm(request);
+    licences = [{
+      metadata: {
+        AddressLine1: 'one',
+        AddressLine2: 'two',
+        AddressLine3: 'three',
+        AddressLine4: 'four',
+        Town: 'town',
+        County: 'county',
+        Postcode: 'postcode'
+      }
+    }];
+
+    form = selectAddressForm(request, licences);
   });
 
   test('should contain the correct fields', async () => {
     const names = form.fields.map(row => row.name).filter(x => x);
-    expect(names).to.include(['csrf_token', 'fao', 'selectedAddressId']);
+    expect(names).to.include(['csrf_token', 'selectedAddressId']);
   });
 
   test('should include the CSRF token from the request', async () => {
     const csrf = find(form.fields, { name: 'csrf_token' });
     expect(csrf.value).to.equal(request.view.csrfToken);
-  });
-
-  test('should include the address from the request', async () => {
-    const address = find(form.fields, { name: 'selectedAddressId' });
-    expect(address.value).to.equal(request.sessionStore.data.addLicenceFlow.selectedAddressId);
   });
 
   test('has a continue button', async () => {

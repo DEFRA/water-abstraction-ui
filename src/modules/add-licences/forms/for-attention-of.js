@@ -25,7 +25,7 @@ const faoForm = (request) => {
   }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('addressId', {}, selectedAddressId));
+  f.fields.push(fields.hidden('selectedAddressId', {}, selectedAddressId));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;
@@ -38,7 +38,7 @@ const faoForm = (request) => {
 const getSchema = () => {
   return {
     csrf_token: Joi.string().guid().required(),
-    addressId: Joi.string().guid().required(),
+    selectedAddressId: Joi.string().guid().required(),
     fao: Joi.string().max(32).allow('')
   };
 };

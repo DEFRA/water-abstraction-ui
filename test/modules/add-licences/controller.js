@@ -15,8 +15,9 @@ const requestStubPlugin = require('../../lib/hapi-plugins/request-stub-plugin');
 const { scope } = require('../../../src/lib/constants');
 const controller = require('../../../src/modules/add-licences/controller');
 const notifyConnector = require('../../../src/lib/connectors/notify');
+const forms = require('../../../src/lib/forms');
 
-const { set } = require('lodash');
+const { find, set } = require('lodash');
 
 const getRequestSetupForAuthenticatedUser = request => {
   set(request, 'auth.isAuthenticated', true);
@@ -92,7 +93,16 @@ experiment('postAddressSelect', () => {
         get: () => ({
           selectedIds: [1, 2]
         }),
-        delete: sinon.spy()
+        set: () => ({
+          selectedAddressId: 1
+        }),
+        delete: sinon.spy(),
+        data: {
+          addLicenceFlow: {
+            selectedIds: [1, 2],
+            selectedAddressId: 1
+          }
+        }
       },
       auth: {
         credentials: {
@@ -100,7 +110,7 @@ experiment('postAddressSelect', () => {
         }
       },
       payload: {
-        address: 1
+        selectedAddressId: 1
       },
       view: {},
       cookieAuth: {
@@ -123,6 +133,8 @@ experiment('postAddressSelect', () => {
       data: { licence_ref: 'test-licence-id' }
     });
 
+    sandbox.stub(forms, 'handleRequest').returns({ isValid: true, fields: [{ name: 'selectedAddressId', errors: [] }] });
+
     sandbox.stub(crmConnector, 'getOrCreateCompanyEntity').resolves('test-company-entity-id');
     sandbox.stub(crmConnector, 'createVerification').resolves({
       verification_code: 'test-verification-code'
@@ -137,16 +149,22 @@ experiment('postAddressSelect', () => {
 
   experiment('when payload address id is not in the selected documents', () => {
     test('an error is not thrown', async () => {
-      request.payload.address = 999;
+      request.payload.selectedAddressId = 999;
       await expect(controller.postAddressSelect(request, h)).to.not.reject();
     });
 
-    test('a redirect is returned', async () => {
-      request.payload.address = 999;
+    test('a view is returned with an invalidAddress error', async () => {
+      const errorMessage = {
+        name: 'selectedAddressId',
+        message: 'Address is invalid',
+        summary: 'Address is invalid' };
+
+      request.payload.selectedAddressId = 999;
       await controller.postAddressSelect(request, h);
 
-      const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/select-address?error=invalidAddress');
+      const [, view] = h.view.lastCall.args;
+      const addressIdField = find(view.form.fields, { name: 'selectedAddressId' });
+      expect(addressIdField.errors).to.include(errorMessage);
     });
   });
 
@@ -170,6 +188,11 @@ experiment('postFAO', () => {
         get: () => ({
           selectedIds: [1, 2]
         }),
+        data: {
+          addLicenceFlow: {
+            selectedAddressId: 1
+          }
+        },
         delete: sinon.spy()
       },
       auth: {
@@ -178,7 +201,7 @@ experiment('postFAO', () => {
         }
       },
       payload: {
-        address: 1,
+        selectedAddressId: 1,
         fao: 'name'
       },
       view: {},
@@ -208,10 +231,34 @@ experiment('postFAO', () => {
     });
 
     sandbox.stub(notifyConnector, 'sendSecurityCode').resolves();
+
+    sandbox.stub(forms, 'handleRequest').returns({ isValid: true, fields: [{ name: 'selectedAddressId', errors: [] }] });
   });
 
   afterEach(async () => {
     sandbox.restore();
+  });
+
+  test('a view is returned with an invalidAddress error', async () => {
+    const errorMessage = {
+      name: 'selectedAddressId',
+      message: 'Address is invalid',
+      summary: 'Address is invalid' };
+
+    request.payload.selectedAddressId = 999;
+    await controller.postAddressSelect(request, h);
+
+    const [, view] = h.view.lastCall.args;
+    const addressIdField = find(view.form.fields, { name: 'selectedAddressId' });
+    expect(addressIdField.errors).to.include(errorMessage);
+  });
+
+  test('redners expected page if form is invalid', async () => {
+    forms.handleRequest.returns({ isValid: false });
+    await controller.postFAO(request, h);
+
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/form.njk');
   });
 
   test('gets the company id user entity id', async () => {
@@ -242,7 +289,6 @@ experiment('postFAO', () => {
   test('delete the licence flow and address data from session', async () => {
     await controller.postFAO(request, h);
     expect(request.sessionStore.delete.calledWith('addLicenceFlow')).to.be.true();
-    expect(request.sessionStore.delete.calledWith('address')).to.be.true();
   });
 
   test('renders the expected view', async () => {

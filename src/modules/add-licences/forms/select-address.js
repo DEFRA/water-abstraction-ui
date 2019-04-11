@@ -32,10 +32,13 @@ const selectAddressForm = (request, licences) => {
 
   const lines = getLines(licences);
 
-  f.fields.push(fields.radio('addressId', {
+  f.fields.push(fields.radio('selectedAddressId', {
     errors: {
       'any.required': {
         message: 'Select an address'
+      },
+      'invalidAddress': {
+        message: 'Address is invalid'
       }
     },
     choices: lines

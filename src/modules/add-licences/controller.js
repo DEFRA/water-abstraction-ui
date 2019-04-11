@@ -5,7 +5,7 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const { difference, find } = require('lodash');
+const { cloneDeep, difference, find } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
@@ -318,6 +318,17 @@ const getLicence = async documentId => {
   return data;
 };
 
+const updateFormForInvalidAddress = (form) => {
+  const f = cloneDeep(form);
+  const invalidAddressError = [{
+    name: 'selectedAddressId',
+    message: 'Address is invalid',
+    summary: 'Address is invalid' }];
+  const addressField = find(f.fields, { name: 'selectedAddressId' });
+  addressField.errors = invalidAddressError;
+  return f;
+};
+
 /**
  * Post handler for select address form
  * @param {Object} request - HAPI HTTP request
@@ -344,20 +355,10 @@ async function postAddressSelect (request, h) {
     return h.redirect('/add-addressee');
   }
 
-  // if selectedAddressId exists && is not valid, set error message
-  if (selectedAddressId && !isSelectedAddressValid) {
-    const invalidAddressError = [{
-      name: 'selectedAddressId',
-      message: 'Address is invalid',
-      summary: 'Address is invalid' }];
-    const addressField = find(form.fields, { name: 'selectedAddressId' });
-    addressField.errors = invalidAddressError;
-  }
-
   return h.view('nunjucks/form.njk', {
     ...request.view,
     back: '/select-licences',
-    form
+    form: (selectedAddressId && !isSelectedAddressValid) ? updateFormForInvalidAddress(form) : form
   }, { layout: false });
 }
 
@@ -422,19 +423,9 @@ async function postFAO (request, h) {
     return h.view('nunjucks/licences-add/verification-sent.njk', viewContext, { layout: false });
   }
 
-  // if selectedAddressId exists && is not valid, set error message
-  if (selectedAddressId && !isSelectedAddressValid) {
-    const invalidAddressError = [{
-      name: 'selectedAddressId',
-      message: 'Address is invalid',
-      summary: 'Address is invalid' }];
-    const addressField = find(form.fields, { name: 'selectedAddressId' });
-    addressField.errors = invalidAddressError;
-  }
-
   return h.view('nunjucks/form.njk', {
     ...request.view,
-    form
+    form: (selectedAddressId && !isSelectedAddressValid) ? updateFormForInvalidAddress(form) : form
   }, { layout: false });
 }
 

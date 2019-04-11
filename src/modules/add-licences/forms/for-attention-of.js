@@ -1,8 +1,14 @@
 const { formFactory, fields } = require('../../../lib/forms');
+const Joi = require('joi');
 
+/**
+ * form for page to enter FAO information
+ * @param  {Object} request HAPI request object
+ * @return {Object} form object with FAO text field, hidden CSRF and AddressId and Continue button
+ */
 const faoForm = (request) => {
   const { csrfToken } = request.view;
-  const { address } = request.sessionStore.data;
+  const { selectedAddressId } = request.sessionStore.data.addLicenceFlow;
 
   const action = `/add-addressee`;
 
@@ -10,14 +16,32 @@ const faoForm = (request) => {
 
   f.fields.push(fields.text('fao', {
     label: 'Enter a name and, or department (optional)',
-    controlClass: 'govuk-!-width-three-quarters'
+    controlClass: 'govuk-!-width-one-half',
+    errors: {
+      'string.max': {
+        message: 'Name and/or department must be 32 characters or less'
+      }
+    }
   }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('address', {}, address));
+  f.fields.push(fields.hidden('addressId', {}, selectedAddressId));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;
 };
 
-module.exports = faoForm;
+/**
+ * Gets validation schema for log receipt form
+ * @return {Object} Joi validation schema
+ */
+const getSchema = () => {
+  return {
+    csrf_token: Joi.string().guid().required(),
+    addressId: Joi.string().guid().required(),
+    fao: Joi.string().max(32).allow('')
+  };
+};
+
+exports.faoForm = faoForm;
+exports.faoSchema = getSchema;

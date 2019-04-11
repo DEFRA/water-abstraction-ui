@@ -13,7 +13,9 @@ const logger = require('../../lib/logger');
 const loginHelpers = require('../../lib/login-helpers');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
-const faoForm = require('../add-licences/forms/for-attention-of');
+const { handleRequest } = require('../../lib/forms');
+const { faoForm, faoSchema } = require('../add-licences/forms/for-attention-of');
+const { selectAddressForm } = require('../add-licences/forms/select-address');
 
 const {
   LicenceNotFoundError,
@@ -243,6 +245,13 @@ function getLicenceSelectError (request, reply) {
   return reply.view('water/licences-add/select-licences-error', viewContext);
 }
 
+const getUniqueAddresses = async selectedIds => {
+  // Find licences in CRM for selected documents
+  const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
+
+  return uniqueAddresses(data);
+};
+
 /**
  * Renders an HTML form for the user to select their address for postal
  * verification
@@ -251,29 +260,17 @@ function getLicenceSelectError (request, reply) {
  * @param {String} request.query.token - signed Iron token containing all and selected licence IDs
  */
 async function getAddressSelect (request, reply) {
-  const viewContext = request.view;
-  viewContext.pageTitle = 'Where should we send your security code?';
-  viewContext.activeNavLink = 'manage';
+  const { view } = request;
 
-  if (request.query.error === 'invalidAddress') {
-    viewContext.error = { name: 'AddressInvalidError' };
-  }
+  // Load from session
+  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
-  try {
-    // Load from session
-    const { selectedIds } = request.sessionStore.get('addLicenceFlow');
-
-    // Find licences in CRM for selected documents
-    const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
-
-    const uniqueAddressLicences = uniqueAddresses(data);
-
-    viewContext.licences = uniqueAddressLicences;
-
-    return reply.view('water/licences-add/select-address', viewContext);
-  } catch (err) {
-    throw err;
-  }
+  return reply.view('nunjucks/form.njk', {
+    ...view,
+    back: '/select-licences',
+    form: selectAddressForm(request, uniqueAddressLicences)
+  }, { layout: false });
 }
 
 const validateDocumentIdInSelectedIds = (addressDocumentId, selectedIds) => {
@@ -331,23 +328,30 @@ const getLicence = async documentId => {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postAddressSelect (request, h) {
-  const { address } = request.payload;
+  const { addressId } = request.payload;
+  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-  try {
+  const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
+  const form = handleRequest(selectAddressForm(request, uniqueAddressLicences), request);
+
+  if (form.isValid) {
     // Load session data
     const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-    validateDocumentIdInSelectedIds(address, selectedIds);
+    validateDocumentIdInSelectedIds(addressId, selectedIds);
 
-    request.sessionStore.set('address', address);
+    // add selected address to addLicenceFlow in sessionStore
+    const flowData = request.sessionStore.get('addLicenceFlow');
+    flowData.selectedAddressId = addressId;
+    request.sessionStore.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
-  } catch (err) {
-    if (err.name === 'InvalidAddressError') {
-      return h.redirect('/select-address?error=invalidAddress');
-    }
-    throw err;
   }
+  return h.view('nunjucks/form.njk', {
+    ...request.view,
+    back: '/select-licences',
+    form
+  }, { layout: false });
 }
 
 /**
@@ -360,7 +364,7 @@ function getFAO (request, h) {
 
   return h.view('nunjucks/form.njk', {
     ...view,
-    pageTitle: 'Tell us if you want the security code marked for someone’s attention',
+    back: '/select-address',
     form: faoForm(request)
   }, { layout: false });
 }
@@ -374,40 +378,47 @@ function getFAO (request, h) {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postFAO (request, h) {
-  const { address, fao } = request.payload;
+  const { addressId, fao } = request.payload;
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
   const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-  validateDocumentIdInSelectedIds(address, selectedIds);
+  validateDocumentIdInSelectedIds(addressId, selectedIds);
 
-  // Find licences in CRM for selected documents
-  const licenceData = await getLicences(selectedIds);
+  const form = handleRequest(faoForm(request), request, faoSchema());
 
-  // Get company entity ID for current user
-  const companyName = licenceData[0].metadata.Name;
-  const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, companyName);
+  if (form.isValid) {
+    // Find licences in CRM for selected documents
+    const licenceData = await getLicences(selectedIds);
 
-  // Create verification
-  const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
+    // Get company entity ID for current user
+    const companyName = licenceData[0].metadata.Name;
+    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, companyName);
 
-  // Get the licence containing the selected verification address
-  const addressLicence = await getLicence(address);
+    // Create verification
+    const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
 
-  // Post letter
-  await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
+    // Get the licence containing the selected verification address
+    const addressLicence = await getLicence(addressId);
 
-  // Delete data in session
-  request.sessionStore.delete('addLicenceFlow');
-  request.sessionStore.delete('address');
+    // Post letter
+    await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
 
-  // add the company id to the cookie to configure company switcher correctly
-  loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
+    // Delete data in session
+    request.sessionStore.delete('addLicenceFlow');
 
-  const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
+    // add the company id to the cookie to configure company switcher correctly
+    loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
 
-  return h.view('nunjucks/licences-add/verification-sent.njk', viewContext, { layout: false });
+    const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
+
+    return h.view('nunjucks/licences-add/verification-sent.njk', viewContext, { layout: false });
+  }
+  return h.view('nunjucks/form.njk', {
+    ...request.view,
+    form
+  }, { layout: false });
 }
 
 /**

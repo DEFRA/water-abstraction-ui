@@ -70,6 +70,12 @@ module.exports = {
     handler: controller.getAddressSelect,
     config: {
       description: 'Select the address to send postal verification letter',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Where should we send your security code?',
+          activeNavLink: 'manage'
+        }
+      },
       validate: {
         query: {
           error: Joi.string().allow('').max(32)
@@ -84,9 +90,15 @@ module.exports = {
     handler: controller.postAddressSelect,
     config: {
       description: 'Post handler for select address form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Where should we send your security code?',
+          activeNavLink: 'manage'
+        }
+      },
       validate: {
         payload: {
-          address: Joi.string().allow('').guid(),
+          addressId: Joi.string().allow('').guid(),
           csrf_token: Joi.string().guid().required()
         }
       }
@@ -101,6 +113,7 @@ module.exports = {
       description: 'Specify a name or department for security code letter',
       plugins: {
         viewContext: {
+          pageTitle: 'Tell us if you want the security code marked for someone’s attention',
           activeNavLink: 'manage'
         }
       }
@@ -112,8 +125,16 @@ module.exports = {
     handler: controller.postFAO,
     config: {
       description: 'Specify a name or department for security code letter',
+      validate: {
+        payload: {
+          addressId: Joi.string().guid(),
+          fao: Joi.string().allow('').trim().uppercase(),
+          csrf_token: Joi.string().guid().required()
+        }
+      },
       plugins: {
         viewContext: {
+          pageTitle: 'Tell us if you want the security code marked for someone’s attention',
           activeNavLink: 'manage'
         }
       }

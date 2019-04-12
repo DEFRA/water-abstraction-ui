@@ -11,7 +11,6 @@ const { sendRemindersForm, sendRemindersSchema } = require('./forms/send-reminde
 
 const notificationsConnector = require('../../lib/connectors/water-service/returns-notifications');
 const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
-const stringFormatter = require('../../lib/string-formatter');
 
 const { getFinalReminderConfig } = require('./lib/helpers');
 
@@ -197,7 +196,7 @@ const postReturnsReminderStart = async (request, h) => {
   // get the event id from the water service and redirect
   const { data: event } = await batchNotificationsConnector.prepareReturnsReminders(
     issuer,
-    stringFormatter.commaOrLineSeparatedValuesToCsv(excludeLicences)
+    excludeLicences
   );
 
   return h.redirect(`/admin/waiting/${event.eventId}`);

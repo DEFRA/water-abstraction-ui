@@ -15,9 +15,13 @@ const prepareReturnsReminders = (issuer, excludeLicences) => {
   });
 };
 
-const sendReturnsReminders = eventId => {
+const sendReturnsReminders = (eventId, issuer) => {
   const url = `${getBaseUrl()}/send/${eventId}`;
-  return serviceRequest.post(url);
+  return serviceRequest.post(url, {
+    body: {
+      issuer
+    }
+  });
 };
 
 exports.prepareReturnsReminders = prepareReturnsReminders;

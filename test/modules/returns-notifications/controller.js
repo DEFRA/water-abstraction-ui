@@ -218,7 +218,7 @@ experiment('postReturnsReminderStart', () => {
   test('the excluded licences are passed as csv', async () => {
     await controller.postReturnsReminderStart(request, h);
     const [, excludeLicences] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
-    expect(excludeLicences).to.equal('123,456');
+    expect(excludeLicences).to.equal(['123', '456']);
   });
 
   test('the user is redirected to the event waiting page', async () => {

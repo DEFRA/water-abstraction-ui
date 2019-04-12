@@ -6,9 +6,11 @@ const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
 const confirmLicenceNumbersForm = require('./forms/licence-numbers-confirm');
 const { schema } = require('./forms/licence-numbers');
-const { sendRemindersForm } = require('./forms/send-reminders');
+const { sendFinalRemindersForm } = require('./forms/send-final-reminders');
+const { sendRemindersForm, sendRemindersSchema } = require('./forms/send-reminders');
 
 const notificationsConnector = require('../../lib/connectors/water-service/returns-notifications');
+const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
 
 const { getFinalReminderConfig } = require('./lib/helpers');
 
@@ -144,7 +146,7 @@ const getSendFormsSuccess = (request, h) => {
 const getFinalReminder = async (request, h) => {
   const view = {
     ...request.view,
-    form: sendRemindersForm(request),
+    form: sendFinalRemindersForm(request),
     back: `/admin/notifications`
   };
   const options = { layout: false };
@@ -175,12 +177,38 @@ const postSendFinalReminder = async (request, h) => {
   return h.view('nunjucks/returns-notifications/final-reminder-confirmation.njk', view, { layout: false });
 };
 
-module.exports = {
-  getSendForms,
-  postPreviewRecipients,
-  postSendForms,
-  getSendFormsSuccess,
-  getFinalReminder,
-  getFinalReminderCSV,
-  postSendFinalReminder
+const getReturnsReminderStart = async (request, h) => {
+  const view = {
+    ...request.view,
+    form: sendRemindersForm(request),
+    back: `/admin/notifications`
+  };
+  const options = { layout: false };
+  return h.view('nunjucks/returns-notifications/reminders.njk', view, options);
 };
+
+const postReturnsReminderStart = async (request, h) => {
+  const form = handleRequest(sendRemindersForm(request), request, sendRemindersSchema);
+
+  const { excludeLicences } = getValues(form);
+  const { username: issuer } = request.auth.credentials;
+
+  // get the event id from the water service and redirect
+  const { data: event } = await batchNotificationsConnector.prepareReturnsReminders(
+    issuer,
+    excludeLicences
+  );
+
+  return h.redirect(`/admin/waiting/${event.eventId}`);
+};
+
+exports.getSendForms = getSendForms;
+exports.postPreviewRecipients = postPreviewRecipients;
+exports.postSendForms = postSendForms;
+exports.getSendFormsSuccess = getSendFormsSuccess;
+exports.getFinalReminder = getFinalReminder;
+exports.getFinalReminderCSV = getFinalReminderCSV;
+exports.postSendFinalReminder = postSendFinalReminder;
+
+exports.getReturnsReminderStart = getReturnsReminderStart;
+exports.postReturnsReminderStart = postReturnsReminderStart;

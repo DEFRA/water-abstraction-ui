@@ -19,6 +19,7 @@ const returnNotificationRoutes = require('./returns-notifications/routes');
 const cspRoutes = require('./csp/routes');
 const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
+const waiting = require('./waiting/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -41,5 +42,6 @@ module.exports = [
   ...Object.values(returnNotificationRoutes),
   ...Object.values(cspRoutes),
   ...Object.values(returnsReports),
-  ...Object.values(internalSearch)
+  ...Object.values(internalSearch),
+  ...Object.values(waiting)
 ];

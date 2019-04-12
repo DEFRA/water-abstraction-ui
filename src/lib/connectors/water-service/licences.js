@@ -1,25 +1,29 @@
 const serviceRequest = require('../service-request');
-const { partialRight } = require('lodash');
 const config = require('../../../../config');
 
-const get = (documentId, tail) => {
+const get = (documentId, tail, includeExpired = false) => {
   const baseUrl = `${config.services.water}/documents/${documentId}/licence`;
 
-  const url = tail ? `${baseUrl}/${tail}` : baseUrl;
+  let url = tail ? `${baseUrl}/${tail}` : baseUrl;
+
+  if (includeExpired) {
+    url += '?includeExpired=true';
+  }
+
   return serviceRequest.get(url);
 };
 
-const getLicenceByDocumentId = documentId => get(documentId);
+const getLicenceByDocumentId = (documentId, includeExpired) => get(documentId, null, includeExpired);
 
-const getLicenceConditionsByDocumentId = partialRight(get, 'conditions');
+const getLicenceConditionsByDocumentId = documentId => get(documentId, 'conditions');
 
-const getLicencePointsByDocumentId = partialRight(get, 'points');
+const getLicencePointsByDocumentId = documentId => get(documentId, 'points');
 
-const getLicenceUsersByDocumentId = partialRight(get, 'users');
+const getLicenceUsersByDocumentId = (documentId, includeExpired) => get(documentId, 'users', includeExpired);
 
-const getLicencePrimaryUserByDocumentId = async documentId => {
+const getLicencePrimaryUserByDocumentId = async (documentId, includeExpired = false) => {
   try {
-    const userResponse = await getLicenceUsersByDocumentId(documentId);
+    const userResponse = await getLicenceUsersByDocumentId(documentId, includeExpired);
     const users = userResponse.data || [];
     return users.find(user => user.roles.includes('primary_user'));
   } catch (error) {
@@ -29,9 +33,9 @@ const getLicencePrimaryUserByDocumentId = async documentId => {
   }
 };
 
-const getLicenceSummaryByDocumentId = partialRight(get, 'summary');
+const getLicenceSummaryByDocumentId = documentId => get(documentId, 'summary');
 
-const getLicenceCommunicationsByDocumentId = partialRight(get, 'communications');
+const getLicenceCommunicationsByDocumentId = (documentId, includeExpired = false) => get(documentId, 'communications', includeExpired);
 
 module.exports = {
   getLicenceByDocumentId,

@@ -8,7 +8,7 @@ const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/
 const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../../config');
-const { getWaterLicence } = require('../../../lib/connectors/crm/documents');
+const crmConnector = require('../../../lib/connectors/crm');
 
 const { getReturnPath } = require('./return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -22,7 +22,7 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const getLicenceNumbers = (request, filter = {}) => {
   const f = documents.createFilter(request, filter);
   const sort = {};
-  const columns = ['system_external_id', 'document_name', 'document_id'];
+  const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
   return documents.findAll(f, sort, columns);
 };
 
@@ -296,7 +296,8 @@ const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path
  * @return {Promise} resolves with view data
  */
 const getViewData = async (request, data) => {
-  const documentHeader = await getWaterLicence(data.licenceNumber);
+  const isInternal = isInternalUser(request);
+  const documentHeader = await crmConnector.documents.getWaterLicence(data.licenceNumber, isInternal);
   return {
     ...request.view,
     documentHeader,

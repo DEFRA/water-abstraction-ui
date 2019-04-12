@@ -202,6 +202,10 @@ const postReturnsReminderStart = async (request, h) => {
   return h.redirect(`/admin/waiting/${event.eventId}`);
 };
 
+const getReturnsReminderConfirm = async (request, h) => {
+  return 'Under construction - Confirm send';
+};
+
 exports.getSendForms = getSendForms;
 exports.postPreviewRecipients = postPreviewRecipients;
 exports.postSendForms = postSendForms;
@@ -212,3 +216,5 @@ exports.postSendFinalReminder = postSendFinalReminder;
 
 exports.getReturnsReminderStart = getReturnsReminderStart;
 exports.postReturnsReminderStart = postReturnsReminderStart;
+
+exports.getReturnsReminderConfirm = getReturnsReminderConfirm;

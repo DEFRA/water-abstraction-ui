@@ -1,6 +1,56 @@
-const getWaiting = (request, h) => {
+const water = require('../../lib/connectors/water');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const { get } = require('lodash');
+const logger = require('../../lib/logger');
+const Boom = require('boom');
+
+const handleProcessing = (request, h, event) => {
+  // Still processing, render the template which will refresh in 5 seconds.
+  const view = {
+    ...request.view,
+    pageTitle: event.metadata.name
+  };
+  return h.view('nunjucks/waiting/index.njk', view, { layout: false });
+};
+
+const handleReturnReminderError = (request, h) => {
+  throw Boom.badImplementation('Errored event.');
+};
+
+const handleReturnsRemindersProcessed = (request, h, event) => {
+  // Redirect to a new page showing a send button and a means
+  // of acquiring a csv download of all the recipients.
+  const { event_id: eventId } = event;
+  return h.redirect(`/admin/returns-notifications/confirm/${eventId}`);
+};
+
+const subTypeHandlers = {
+  returnReminder: {
+    processing: handleProcessing,
+    processed: handleReturnsRemindersProcessed,
+    error: handleReturnReminderError
+  }
+};
+
+const getEventHandler = event => {
+  return get(subTypeHandlers, [event.subtype, event.status]);
+};
+
+const getWaiting = async (request, h) => {
   const { eventId } = request.params;
-  return `Waiting for event ${eventId}`;
+  const { data: event, error } = await water.events.findOne(eventId);
+
+  throwIfError(error);
+
+  const handler = getEventHandler(event);
+
+  if (!handler) {
+    const message = 'Unknown event type';
+    logger.error(message, { params: event });
+    throw new Error('Unknown event type');
+  }
+
+  return handler(request, h, event);
 };
 
 exports.getWaiting = getWaiting;

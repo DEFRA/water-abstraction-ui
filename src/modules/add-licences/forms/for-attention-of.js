@@ -20,6 +20,9 @@ const faoForm = (request) => {
     errors: {
       'string.max': {
         message: 'Name and/or department must be 32 characters or less'
+      },
+      'any.allowOnly': {
+        message: 'Address is invalid'
       }
     }
   }));
@@ -35,10 +38,10 @@ const faoForm = (request) => {
  * Gets validation schema for log receipt form
  * @return {Object} Joi validation schema
  */
-const getSchema = () => {
+const getSchema = selectedIds => {
   return {
     csrf_token: Joi.string().guid().required(),
-    selectedAddressId: Joi.string().guid().required(),
+    selectedAddressId: Joi.string().guid().required().valid(selectedIds),
     fao: Joi.string().max(32).allow('')
   };
 };

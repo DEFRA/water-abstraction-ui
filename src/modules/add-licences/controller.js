@@ -5,7 +5,7 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const { cloneDeep, difference, find } = require('lodash');
+const { difference } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
@@ -15,7 +15,7 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
 const forms = require('../../lib/forms');
 const { faoForm, faoSchema } = require('../add-licences/forms/for-attention-of');
-const { selectAddressForm } = require('../add-licences/forms/select-address');
+const { selectAddressForm, selectAddressSchema } = require('../add-licences/forms/select-address');
 
 const {
   LicenceNotFoundError,
@@ -276,8 +276,6 @@ async function getAddressSelect (request, reply) {
   }, { layout: false });
 }
 
-const validateDocumentIdInSelectedIds = (addressDocumentId, selectedIds) => selectedIds.includes(addressDocumentId);
-
 const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
 
 const getAddressSelectViewContext = async (request, verification, licence, fao) => {
@@ -318,17 +316,6 @@ const getLicence = async documentId => {
   return data;
 };
 
-const updateFormForInvalidAddress = (form) => {
-  const f = cloneDeep(form);
-  const invalidAddressError = [{
-    name: 'selectedAddressId',
-    message: 'Address is invalid',
-    summary: 'Address is invalid' }];
-  const addressField = find(f.fields, { name: 'selectedAddressId' });
-  addressField.errors = invalidAddressError;
-  return f;
-};
-
 /**
  * Post handler for select address form
  * @param {Object} request - HAPI HTTP request
@@ -341,12 +328,10 @@ async function postAddressSelect (request, h) {
   const { selectedAddressId } = request.payload;
   const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-  const isSelectedAddressValid = validateDocumentIdInSelectedIds(selectedAddressId, selectedIds);
+  const uniqueAddresses = await getUniqueAddresses(selectedIds);
+  const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
 
-  const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
-  const form = forms.handleRequest(selectAddressForm(request, uniqueAddressLicences), request);
-
-  if (form.isValid && isSelectedAddressValid) {
+  if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
     const flowData = request.sessionStore.get('addLicenceFlow');
     flowData.selectedAddressId = selectedAddressId;
@@ -358,7 +343,7 @@ async function postAddressSelect (request, h) {
   return h.view('nunjucks/form.njk', {
     ...request.view,
     back: '/select-licences',
-    form: (selectedAddressId && !isSelectedAddressValid) ? updateFormForInvalidAddress(form) : form
+    form
   }, { layout: false });
 }
 
@@ -392,10 +377,9 @@ async function postFAO (request, h) {
   // Load session data
   const { selectedIds } = request.sessionStore.get('addLicenceFlow');
 
-  const isSelectedAddressValid = validateDocumentIdInSelectedIds(selectedAddressId, selectedIds);
-  const form = forms.handleRequest(faoForm(request), request, faoSchema());
+  const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
 
-  if (form.isValid && isSelectedAddressValid) {
+  if (form.isValid) {
     // Find licences in CRM for selected documents
     const licenceData = await getLicences(selectedIds);
 
@@ -420,12 +404,12 @@ async function postFAO (request, h) {
 
     const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
 
-    return h.view('nunjucks/licences-add/verification-sent.njk', viewContext, { layout: false });
+    return h.view('nunjucks/add-licences/verification-sent.njk', viewContext, { layout: false });
   }
 
   return h.view('nunjucks/form.njk', {
     ...request.view,
-    form: (selectedAddressId && !isSelectedAddressValid) ? updateFormForInvalidAddress(form) : form
+    form
   }, { layout: false });
 }
 

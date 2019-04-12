@@ -17,7 +17,7 @@ const controller = require('../../../src/modules/add-licences/controller');
 const notifyConnector = require('../../../src/lib/connectors/notify');
 const forms = require('../../../src/lib/forms');
 
-const { find, set } = require('lodash');
+const { set } = require('lodash');
 
 const getRequestSetupForAuthenticatedUser = request => {
   set(request, 'auth.isAuthenticated', true);
@@ -125,7 +125,7 @@ experiment('postAddressSelect', () => {
 
     sandbox.stub(crmConnector.documents, 'findMany').resolves({
       error: null,
-      data: [{ metadata: { Name: 'test-company-name' } }]
+      data: [{ document_id: '789', metadata: { Name: 'test-company-name' } }]
     });
 
     sandbox.stub(crmConnector.documents, 'findOne').resolves({
@@ -147,24 +147,25 @@ experiment('postAddressSelect', () => {
     sandbox.restore();
   });
 
+  test('renders expected page if form is valid', async () => {
+    await controller.postAddressSelect(request, h);
+
+    const [path] = h.redirect.lastCall.args;
+    expect(path).to.equal('/add-addressee');
+  });
+
+  test('renders expected page if form is invalid', async () => {
+    forms.handleRequest.returns({ isValid: false });
+    await controller.postAddressSelect(request, h);
+
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/form.njk');
+  });
+
   experiment('when payload address id is not in the selected documents', () => {
     test('an error is not thrown', async () => {
       request.payload.selectedAddressId = 999;
       await expect(controller.postAddressSelect(request, h)).to.not.reject();
-    });
-
-    test('a view is returned with an invalidAddress error', async () => {
-      const errorMessage = {
-        name: 'selectedAddressId',
-        message: 'Address is invalid',
-        summary: 'Address is invalid' };
-
-      request.payload.selectedAddressId = 999;
-      await controller.postAddressSelect(request, h);
-
-      const [, view] = h.view.lastCall.args;
-      const addressIdField = find(view.form.fields, { name: 'selectedAddressId' });
-      expect(addressIdField.errors).to.include(errorMessage);
     });
   });
 
@@ -217,7 +218,7 @@ experiment('postFAO', () => {
 
     sandbox.stub(crmConnector.documents, 'findMany').resolves({
       error: null,
-      data: [{ metadata: { Name: 'test-company-name' } }]
+      data: [{ document_id: '789', metadata: { Name: 'test-company-name' } }]
     });
 
     sandbox.stub(crmConnector.documents, 'findOne').resolves({
@@ -238,22 +239,14 @@ experiment('postFAO', () => {
   afterEach(async () => {
     sandbox.restore();
   });
+  test('renders expected page if form is valid', async () => {
+    await controller.postFAO(request, h);
 
-  test('a view is returned with an invalidAddress error', async () => {
-    const errorMessage = {
-      name: 'selectedAddressId',
-      message: 'Address is invalid',
-      summary: 'Address is invalid' };
-
-    request.payload.selectedAddressId = 999;
-    await controller.postAddressSelect(request, h);
-
-    const [, view] = h.view.lastCall.args;
-    const addressIdField = find(view.form.fields, { name: 'selectedAddressId' });
-    expect(addressIdField.errors).to.include(errorMessage);
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/add-licences/verification-sent.njk');
   });
 
-  test('redners expected page if form is invalid', async () => {
+  test('renders expected page if form is invalid', async () => {
     forms.handleRequest.returns({ isValid: false });
     await controller.postFAO(request, h);
 
@@ -294,7 +287,7 @@ experiment('postFAO', () => {
   test('renders the expected view', async () => {
     await controller.postFAO(request, h);
     const [viewName] = h.view.lastCall.args;
-    expect(viewName).to.equal('nunjucks/licences-add/verification-sent.njk');
+    expect(viewName).to.equal('nunjucks/add-licences/verification-sent.njk');
   });
 
   test('passes the expected data to the view', async () => {

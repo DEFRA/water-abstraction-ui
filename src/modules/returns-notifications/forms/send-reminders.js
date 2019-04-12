@@ -11,12 +11,8 @@ const sendRemindersForm = (request) => {
   f.fields.push(fields.text('excludeLicences', {
     label: 'Exclude licences',
     multiline: true,
-<<<<<<< HEAD
     hint: 'Separate licence numbers with a comma or new line',
     mapper: 'licenceNumbersMapper'
-=======
-    hint: 'Separate licence numbers with a comma or new line'
->>>>>>> WATER-2087
   }));
   f.fields.push(fields.button(null, { label: 'Send reminders' }));
 

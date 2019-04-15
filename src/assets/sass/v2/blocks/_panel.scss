@@ -1,12 +1,19 @@
-.panel-body-title--white-text {
-  @extend .govuk-body-l;
-
-  color: #ffffff;
-  font-weight: bold;
+.panel {
+  @extend .govuk-panel;
 }
 
-.panel-body--white-text {
-  @extend .govuk-body;
+.panel--confirmation {
+  @extend .govuk-panel--confirmation;
+}
 
-  color: #ffffff;
+.panel__title {
+  @extend .govuk-panel__title;
+}
+
+.panel__body {
+  @extend .govuk-panel__body;
+}
+
+.panel__body--small {
+  font-size: 1.5rem;
 }

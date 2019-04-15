@@ -3,16 +3,24 @@
 
 {% block content %}
 
+{% set titleHtml %}
+<p class="panel-body-title--white-text">
+  Return submitted
+</p>
+{% endset %}
+
 {% set html %}
-Licence number <strong>{{ return.licenceNumber }}</strong><br />
-Site description <strong>{{ return.metadata.description }}</strong><br />
-Purpose <strong>{{ return.metadata.purposes[0].tertiary.description }}</strong>
+<p class="panel-body--white-text">
+  Licence number <strong>{{ return.licenceNumber }}</strong><br /></br/>
+  Site description <strong>{{ return.metadata.description }}</strong><br /></br/>
+  Purpose <strong>{{ return.metadata.purposes[0].tertiary.description }}</strong>
+</p>
 {% endset %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     {{ govukPanel({
-      titleText: "Return submitted",
+      titleHtml: titleHtml,
       html: html
     }) }}
 

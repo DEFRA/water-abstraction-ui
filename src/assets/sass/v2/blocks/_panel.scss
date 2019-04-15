@@ -1,0 +1,12 @@
+.panel-body-title--white-text {
+  @extend .govuk-body-l;
+
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.panel-body--white-text {
+  @extend .govuk-body;
+
+  color: #ffffff;
+}

@@ -23,6 +23,9 @@ const getLicenceNumbers = (request, filter = {}) => {
   const f = documents.createFilter(request, filter);
   const sort = {};
   const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
+  if (isInternalUser(request)) {
+    f.includeExpired = true;
+  }
   return documents.findAll(f, sort, columns);
 };
 

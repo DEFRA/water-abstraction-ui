@@ -1,8 +1,13 @@
 {% extends "./nunjucks/layout.njk" %}
 
 {% block content %}
-  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-  <p class="govuk-body-l">Please wait. This may take up to a minute.</p>
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-l">{{ text | default('Please wait. This may take a few minutes.') }}</p>
+    </div>
+  </div>
   <img src="/public/images/ajax-loader.gif" alt="spinner">
-  <meta http-equiv="refresh" content="5">
+  <meta http-equiv="refresh" content="10">
 {% endblock %}

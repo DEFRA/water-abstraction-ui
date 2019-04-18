@@ -8,7 +8,8 @@ const handleProcessing = (request, h, event) => {
   // Still processing, render the template which will refresh in 5 seconds.
   const view = {
     ...request.view,
-    pageTitle: event.metadata.name
+    pageTitle: 'Send returns reminders',
+    text: 'Please wait while the mailing list is assembled. This may take a few minutes. The letters will not be sent yet.'
   };
   return h.view('nunjucks/waiting/index.njk', view, { layout: false });
 };
@@ -21,7 +22,7 @@ const handleReturnsRemindersProcessed = (request, h, event) => {
   // Redirect to a new page showing a send button and a means
   // of acquiring a csv download of all the recipients.
   const { event_id: eventId } = event;
-  return h.redirect(`/admin/returns-notifications/confirm/${eventId}`);
+  return h.redirect(`/admin/batch-notifications/review/${eventId}`);
 };
 
 const subTypeHandlers = {

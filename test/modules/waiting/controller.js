@@ -71,12 +71,12 @@ experiment('getWaiting', () => {
         expect(template).to.equal('nunjucks/waiting/index.njk');
       });
 
-      test('the event name is used for the page title', async () => {
+      test('sets the correct page title', async () => {
         waterConnector.events.findOne.resolves(getTestEventResponse('processing'));
         await controller.getWaiting(request, h);
 
         const [, context] = h.view.lastCall.args;
-        expect(context.pageTitle).to.equal('test-event-name');
+        expect(context.pageTitle).to.equal('Send returns reminders');
       });
     });
 
@@ -91,12 +91,12 @@ experiment('getWaiting', () => {
     });
 
     experiment('when the event status is processed', () => {
-      test('the user is redirected to the confirmation page', async () => {
+      test('the user is redirected to the review page', async () => {
         waterConnector.events.findOne.resolves(getTestEventResponse('processed'));
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/admin/returns-notifications/confirm/test-event-id');
+        expect(url).to.equal('/admin/batch-notifications/review/test-event-id');
       });
     });
   });

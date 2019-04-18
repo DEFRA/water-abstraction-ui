@@ -22,7 +22,7 @@ exports.getWaiting = {
         view: 'water/view-licences/licence'
       },
       viewContext: {
-        activeNavLink: 'view'
+        activeNavLink: 'notifications'
       }
     }
   }

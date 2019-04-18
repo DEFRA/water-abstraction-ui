@@ -1,6 +1,5 @@
 const controller = require('./controller');
 const constants = require('../../lib/constants');
-const Joi = require('joi');
 const returns = constants.scope.returns;
 
 module.exports = {
@@ -152,27 +151,6 @@ module.exports = {
       }
     },
     handler: controller.postReturnsReminderStart
-  },
-
-  getReturnsReminderConfirm: {
-    method: 'GET',
-    path: '/admin/returns-notifications/confirm/{eventId}',
-    config: {
-      auth: {
-        scope: returns
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Confirm send returns reminders'
-        }
-      },
-      validate: {
-        params: {
-          eventId: Joi.string().uuid().required()
-        }
-      }
-    },
-    handler: controller.getReturnsReminderConfirm
   }
+
 };

@@ -15,7 +15,7 @@ const prepareReturnsReminders = (issuer, excludeLicences) => {
   });
 };
 
-const sendReturnsReminders = (eventId, issuer) => {
+const sendReminders = (eventId, issuer) => {
   const url = `${getBaseUrl()}/send/${eventId}`;
   return serviceRequest.post(url, {
     body: {
@@ -25,4 +25,4 @@ const sendReturnsReminders = (eventId, issuer) => {
 };
 
 exports.prepareReturnsReminders = prepareReturnsReminders;
-exports.sendReturnsReminders = sendReturnsReminders;
+exports.sendReminders = sendReminders;

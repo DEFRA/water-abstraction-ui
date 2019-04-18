@@ -22,7 +22,7 @@ const loadEvent = async (request) => {
 
   // Check type is "notification"
   if (ev.type !== 'notification') {
-    throw Boom.unauthorized(`Event ${eventId} is not a notification`);
+    throw Boom.badRequest(`Event ${eventId} is not a notification`);
   }
 
   return ev;

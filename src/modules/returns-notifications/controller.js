@@ -1,6 +1,7 @@
 const moment = require('moment');
 const Boom = require('boom');
 const { reduce, pick, uniqBy, difference } = require('lodash');
+
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
@@ -174,7 +175,7 @@ const postSendFinalReminder = async (request, h) => {
     event
   };
 
-  return h.view('nunjucks/returns-notifications/final-reminder-confirmation.njk', view, { layout: false });
+  return h.view('nunjucks/returns-notifications/confirmation.njk', view, { layout: false });
 };
 
 const getReturnsReminderStart = async (request, h) => {
@@ -202,10 +203,6 @@ const postReturnsReminderStart = async (request, h) => {
   return h.redirect(`/admin/waiting/${event.eventId}`);
 };
 
-const getReturnsReminderConfirm = async (request, h) => {
-  return 'Under construction - Confirm send';
-};
-
 exports.getSendForms = getSendForms;
 exports.postPreviewRecipients = postPreviewRecipients;
 exports.postSendForms = postSendForms;
@@ -216,5 +213,3 @@ exports.postSendFinalReminder = postSendFinalReminder;
 
 exports.getReturnsReminderStart = getReturnsReminderStart;
 exports.postReturnsReminderStart = postReturnsReminderStart;
-
-exports.getReturnsReminderConfirm = getReturnsReminderConfirm;

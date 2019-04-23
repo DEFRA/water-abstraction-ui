@@ -39,10 +39,10 @@ experiment('prepareReturnsReminders', () => {
   });
 });
 
-experiment('sendReturnsReminders', () => {
+experiment('sendReminders', () => {
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post').resolves({});
-    await batchNotificationsConnector.sendReturnsReminders('test-event-id', 'issuer');
+    await batchNotificationsConnector.sendReminders('test-event-id', 'issuer');
   });
 
   afterEach(async () => {

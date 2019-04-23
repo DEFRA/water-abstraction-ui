@@ -1,6 +1,7 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { documents } = require('../../../lib/connectors/crm');
+const { isInternal: isInternalUser } = require('../../../lib/permissions');
 
 const helpers = require('../lib/helpers');
 const sessionHelpers = require('../lib/session-helpers');
@@ -17,9 +18,7 @@ const {
   applySingleTotalAbstractionDates
 } = require('../lib/return-helpers');
 
-const {
-  internalRoutingForm
-} = require('../forms/');
+const { internalRoutingForm } = require('../forms/');
 
 const {
   STEP_INTERNAL_ROUTING,
@@ -52,7 +51,6 @@ const getInternalRouting = async (request, h) => {
 
   const data = await returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
-
   const form = internalRoutingForm(request, data);
 
   return h.view('water/returns/internal/form', {
@@ -138,14 +136,14 @@ const postLogReceipt = async (request, h) => {
     await returns.patchReturn(d);
 
     return h.redirect(getNextPath(STEP_LOG_RECEIPT, request, data));
-  } else {
-    return h.view('water/returns/internal/form', {
-      ...view,
-      form,
-      return: data,
-      back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
-    });
   }
+
+  return h.view('water/returns/internal/form', {
+    ...view,
+    form,
+    return: data,
+    back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
+  });
 };
 
 /**
@@ -160,17 +158,21 @@ const getSubmittedViewData = async (request) => {
   const view = await helpers.getViewData(request, data);
 
   // Redirect path is returns page for this licence
-  const { data: [{ document_id: documentId }], error } = await documents.findMany({ system_external_id: data.licenceNumber });
-  if (error) {
-    throw Boom.badImplementation(`Error finding CRM document for ${data.licenceNumber}`, error);
-  }
-  const returnsUrl = `/admin/licences/${documentId}/returns`;
+  const documentResponse = await documents.findMany({
+    system_external_id: data.licenceNumber,
+    includeExpired: isInternalUser(request)
+  });
 
-  return {
-    ...view,
-    return: data,
-    returnsUrl
-  };
+  if (documentResponse.error) {
+    throw Boom.badImplementation(`Error finding CRM document for ${data.licenceNumber}`, documentResponse.error);
+  }
+
+  const document = documentResponse.data[0];
+  const returnsUrl = document.metadata.IsCurrent
+    ? `/admin/licences/${document.document_id}/returns`
+    : `/admin/expired-licences/${document.document_id}`;
+
+  return { ...view, return: data, returnsUrl };
 };
 
 /**

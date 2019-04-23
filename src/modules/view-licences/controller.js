@@ -1,8 +1,4 @@
-/**
- * HAPI Route handlers for viewing and managing licences
- * @module controllers/licences
- */
-
+const moment = require('moment');
 const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -132,6 +128,40 @@ async function getLicenceGaugingStation (request, reply) {
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
+const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
+  const isInternalUser = isInternal(request);
+  const pagination = { page: 1, perPage: 10 };
+  const returns = await getLicenceReturns([licenceNumber], pagination, isInternalUser);
+
+  return {
+    returns: mapReturns(returns.data, request),
+    hasMoreReturns: hasMultiplePages(returns.pagination)
+  };
+};
+
+/**
+ * Prepares a common object of values ready to assign to the view context
+ * for licence responses
+ *
+ * @param {string} licenceNumber The licence number/ref e.g 12/12/ab/123
+ * @param {string/uuid} documentId Document ID
+ * @param {string} documentName A name that the user may have assigned to the document
+ * @param {object} request The HAPI request
+ * @returns {object} An object of values that can be spread into the view context
+ */
+const getCommonLicenceViewContext = async (licenceNumber, documentId, documentName, request) => {
+  const isInternalUser = isInternal(request);
+  const returnsData = await getLicenceReturnsForViewContext(request, licenceNumber);
+
+  return {
+    documentId,
+    ...returnsData,
+    pageTitle: getPageTitle(documentName, licenceNumber),
+    back: `/admin/licences?query=${licenceNumber}`,
+    isInternal: isInternalUser
+  };
+};
+
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -142,25 +172,23 @@ const hasMultiplePages = pagination => pagination.pageCount > 1;
 const getLicence = async (request, h) => {
   const { documentId } = request.params;
   const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
+
   if (!licence) {
-    throw Boom.notFound(`Document ${documentId} not be found`);
+    throw Boom.notFound(`Document ${documentId} not found`);
   }
 
-  const isInternalUser = isInternal(request);
-
-  const pagination = { page: 1, perPage: 10 };
-  const returns = await getLicenceReturns([licence.licenceNumber], pagination, isInternalUser);
   const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {
     ...request.view,
-    documentId,
     licence,
-    returns: mapReturns(returns.data, request),
-    hasMoreReturns: hasMultiplePages(returns.pagination),
     messages,
-    isInternal: isInternalUser,
-    pageTitle: licence.documentName ? `Licence name ${licence.documentName}` : `Licence number ${licence.licenceNumber}`
+    ...await getCommonLicenceViewContext(
+      licence.licenceNumber,
+      documentId,
+      licence.documentName,
+      request
+    )
   };
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
 };
@@ -205,11 +233,46 @@ const getLicenceCommunication = async (request, h) => {
   return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });
 };
 
-module.exports = {
-  getLicences,
-  getLicenceDetail,
-  postLicenceRename,
-  getLicenceGaugingStation,
-  getLicence,
-  getLicenceCommunication
+const getPageTitle = (documentName, licenceNumber) => {
+  return 'Licence ' + (documentName ? `name ${documentName}` : `number ${licenceNumber}`);
 };
+
+const getExpiredLicence = async (request, h) => {
+  const { documentId } = request.params;
+  const { data: licenceData } = await licenceConnector.getLicenceByDocumentId(documentId, true);
+  const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId, true);
+
+  // create the licence data that will be displayed in the view
+  const licence = {
+    primaryUser,
+    licenceNumber: licenceData.licence_ref,
+    documentName: licenceData.document.name,
+    expiryDate: moment(licenceData.earliestEndDate).format('D MMMM YYYY'),
+    expiryReason: licenceData.earliestEndDateReason
+  };
+
+  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId, true);
+
+  const view = {
+    ...request.view,
+    licence,
+    messages,
+    ...await getCommonLicenceViewContext(
+      licence.licenceNumber,
+      documentId,
+      licence.documentName,
+      request
+    ),
+    back: `/admin/licences?query=${licence.licenceNumber}`
+  };
+
+  return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });
+};
+
+exports.getLicences = getLicences;
+exports.getLicenceDetail = getLicenceDetail;
+exports.postLicenceRename = postLicenceRename;
+exports.getLicenceGaugingStation = getLicenceGaugingStation;
+exports.getLicence = getLicence;
+exports.getLicenceCommunication = getLicenceCommunication;
+exports.getExpiredLicence = getExpiredLicence;

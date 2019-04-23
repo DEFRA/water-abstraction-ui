@@ -53,6 +53,11 @@
   color: #6f777b;
 }
 
+.badge--expired {
+  border-color: $govuk-text-colour;
+  color: $govuk-text-colour;
+}
+
 .badge--no-wrap {
   white-space: nowrap;
 }

@@ -36,9 +36,7 @@
     {% if doc.documentName %}
       <span class="govuk-caption-m link--no-underline">{{ doc.documentName }}</span>
     {% endif %}
-    <a href="/admin/licences/{{ doc.documentId }}">
-      {{ doc.licenceNumber }}
-    </a>
+    {{ documentLink(doc) }}
   </h3>
   <p>{{ doc.licenceHolder }}</p>
 
@@ -56,6 +54,12 @@
   <p>Licence number {{ return.licence_ref }}</p>
   {{ badge(return.badge.text, return.badge.status) }}
 </div>
+{% endmacro %}
+
+{% macro documentLink(doc) %}
+  <a href="/admin/{{ "expired-" if not doc.isCurrent }}licences/{{ doc.documentId }}">
+    {{ doc.licenceNumber }}
+  </a>
 {% endmacro %}
 
 {% block content %}
@@ -81,7 +85,6 @@
       {% if noResults %}
       <p>No results found.<p>
       {% endif %}
-
 
       <!-- User accounts -->
       {% if users %}
@@ -150,28 +153,22 @@
         <tbody class="govuk-table__body">
           {% for doc in documents %}
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
-              <a href="/admin/licences/{{ doc.documentId }}">{{ doc.licenceNumber }}</a>
-            </td>
+            <td class="govuk-table__cell">{{ documentLink(doc) }}</td>
             <td class="govuk-table__cell">{{ doc.documentName }}</td>
             <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
-            <td class="govuk-table__cell">{{ doc.expires | date }}</td>
+            <td class="govuk-table__cell">
+              {{ doc.expires | date if doc.isCurrent else badge("Expired", "expired") }}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       {% endif %}
 
-
-
-
       <!-- Pagination -->
       {{ paginate(pagination, '/admin/licences', { query : form.fields[0].value }) }}
 
-
-
+  </div>
 </div>
-</div>
-
 
 {% endblock %}

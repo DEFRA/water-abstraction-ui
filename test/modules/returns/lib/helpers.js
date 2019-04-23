@@ -7,6 +7,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { get } = require('lodash');
 
+const crmConnector = require('../../../../src/lib/connectors/crm');
 const returnsConnector = require('../../../../src/lib/connectors/returns').returns;
 const helpers = require('../../../../src/modules/returns/lib/helpers');
 
@@ -182,5 +183,74 @@ experiment('isXmlUpload', () => {
       const result = await helpers.isXmlUpload([]);
       expect(result).to.equal(false);
     });
+  });
+});
+
+experiment('getLicenceNumbers', () => {
+  beforeEach(async () => {
+    sandbox.stub(crmConnector.documents, 'findAll').resolves({});
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('requests the required columns', async () => {
+    await helpers.getLicenceNumbers({});
+    const [, , columns] = crmConnector.documents.findAll.lastCall.args;
+    expect(columns).to.only.include([
+      'system_external_id',
+      'document_name',
+      'document_id',
+      'metadata'
+    ]);
+  });
+
+  test('includes expired licences for internal users', async () => {
+    const request = {
+      auth: {
+        credentials: {
+          scope: ['internal']
+        }
+      }
+    };
+    await helpers.getLicenceNumbers(request);
+    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
+    expect(get(filter, 'includeExpired')).to.equal(true);
+  });
+
+  test('does not expired licences for external users', async () => {
+    const request = {};
+    await helpers.getLicenceNumbers(request);
+    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
+    expect(get(filter, 'includeExpired')).to.be.undefined();
+  });
+});
+
+experiment('getViewData', () => {
+  beforeEach(async () => {
+    sandbox.stub(crmConnector.documents, 'getWaterLicence').resolves({});
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('internal users can see expired documents', async () => {
+    const internalRequest = {
+      auth: {
+        credentials: {
+          scope: ['internal']
+        }
+      }
+    };
+
+    const data = { licenceNumber: '123' };
+
+    await helpers.getViewData(internalRequest, data);
+    const [licenceNumber, isInternal] = crmConnector.documents.getWaterLicence.lastCall.args;
+
+    expect(licenceNumber).to.equal('123');
+    expect(isInternal).to.be.true();
   });
 });

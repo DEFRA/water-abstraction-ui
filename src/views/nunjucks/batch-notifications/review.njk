@@ -1,0 +1,27 @@
+{% from "panel/macro.njk" import govukPanel %}
+{% extends "./nunjucks/layout.njk" %}
+
+
+
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ title(pageTitle) }}
+
+      <p>
+        Mailing list is ready to send.
+      </p>
+
+      <p>
+        <a href="{{ csvPath }}">Download recipients as a CSV file.</a>
+      </p>
+
+      {{ formRender(form) }}
+
+    </div>
+  </div>
+
+{% endblock %}

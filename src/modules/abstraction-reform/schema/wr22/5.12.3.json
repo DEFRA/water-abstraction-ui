@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.12.3",
+  "type": "object",
+  "title": "5.12.3",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The Licence Holder shall not operate the <<hydropower \tscheme/impounding works>> unless such confirmation has \tbeen submitted and written approval has been given by the \tAgency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

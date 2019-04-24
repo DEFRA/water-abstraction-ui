@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/16.1.1",
+  "type": "object",
+  "title": "16.1.1",
+  "category": "Screening",
+  "subcategory": "",
+  "description": "No <<abstraction/power production>> shall take place unless the Licence Holder has installed a <<screen type/basket strainer and aperture size>> <<and by wash>> to prevent the entrapment, entrainment or impingement of <<details of species of fish/eel species, life stage of size>> at <<the point of abstraction / discharge/description of outfall/intake>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

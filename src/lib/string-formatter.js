@@ -10,6 +10,4 @@ const splitString = (value, index = 0, separator = ',') => {
   return segments[index];
 };
 
-module.exports = {
-  splitString
-};
+exports.splitString = splitString;

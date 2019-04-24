@@ -99,7 +99,7 @@ experiment('upload controller', () => {
       await controller.getXmlUpload(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('nunjucks/returns/upload.njk');
+      expect(template).to.equal('nunjucks/waiting/index.njk');
       expect(view.form.action).to.equal('/returns/upload');
     });
   });

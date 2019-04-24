@@ -6,6 +6,7 @@ const {
   STATUS_IN_PROGRESS,
   STATUS_IN_REVIEW,
   STATUS_APPROVED,
+  STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
 } = require('../lib/statuses');
 
@@ -17,6 +18,10 @@ const choices = [
   {
     value: STATUS_APPROVED,
     label: 'Approved'
+  },
+  {
+    value: STATUS_NALD_UPDATE,
+    label: 'NALD update'
   },
   {
     value: STATUS_LICENCE_REVIEW,
@@ -72,6 +77,7 @@ const setStatusSchema = (request) => {
   const isApprover = isARApprover(request);
   const validStatus = isApprover ? [STATUS_IN_PROGRESS,
     STATUS_APPROVED,
+    STATUS_NALD_UPDATE,
     STATUS_LICENCE_REVIEW] : STATUS_IN_REVIEW;
   return {
     csrf_token: Joi.string().guid().required(),

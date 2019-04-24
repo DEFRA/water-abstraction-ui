@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/10.3.2",
+  "type": "object",
+  "title": "10.3.2",
+  "category": "Chemical conditions",
+  "subcategory": "",
+  "description": "Abstraction shall not recommence until <<two consecutive>> conductivity readings from the <<borehole etc>> show a conductivity of less than <<chemical ion concentration>>. The first reading shall be taken at least <<duration>> after abstraction has ceased and the second reading shall be taken at least <<duration>> thereafter.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

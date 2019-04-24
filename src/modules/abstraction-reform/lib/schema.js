@@ -34,7 +34,8 @@ const loadJson = (fileName) => {
 const loadSchema = () => {
   const files = glob.sync('*.json', { cwd: schemaPath });
   const sorted = sortBy(files, getSortableFilename);
-  return sorted.map(loadJson);
+  const sortedSchemas = sorted.map(loadJson);
+  return sortedSchemas.filter(schema => !schema.hidden);
 };
 
 const schema = loadSchema();

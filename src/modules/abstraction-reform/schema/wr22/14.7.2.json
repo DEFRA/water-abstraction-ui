@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.7.2",
+  "type": "object",
+  "title": "14.7.2",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "Should it become necessary to remove the dip tube to facilitate maintenance work, repair work or replacement of equipment, the Licence Holder shall replace the dip tube immediately on completion of the work.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

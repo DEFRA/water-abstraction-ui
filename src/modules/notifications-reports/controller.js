@@ -12,7 +12,10 @@ async function getNotificationsList (request, reply) {
   const field = sort.replace('notification', 'subtype').replace('status', 'metadata->>error').replace('recipients', 'metadata->>recipients');
 
   const filter = {
-    type: 'notification'
+    type: 'notification',
+    status: {
+      $in: ['sent', 'completed', 'sending']
+    }
   };
   const sortParams = {
     [field]: direction

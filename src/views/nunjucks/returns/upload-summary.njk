@@ -58,21 +58,23 @@
       </thead>
       <tbody>
         {% for return in returnsWithoutErrors %}
-        <td class="govuk-table__cell">
-          <a href="{{ return.path }}">
-            {{ return.returnRequirement }}
-          </a>
-        </td>
-        <td class="govuk-table__cell">
-          {{ return.licenceNumber }}
-        </td>
-        <td class="govuk-table__cell">
-          {% if return.isNil %}
-          Nil return
-          {% else %}
-          {{ return.totalVolume }} {{ return.reading.units | units }}
-          {% endif %}
-        </td>
+        <tr>
+          <td class="govuk-table__cell">
+            <a href="{{ return.path }}">
+              {{ return.returnRequirement }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">
+            {{ return.licenceNumber }}
+          </td>
+          <td class="govuk-table__cell">
+            {% if return.isNil %}
+            Nil return
+            {% else %}
+            {{ return.totalVolume | number }} {{ return.reading.units | units }}
+            {% endif %}
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>

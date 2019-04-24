@@ -1,8 +1,6 @@
-{% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
+{% macro returnQuantitiesTable(return, lines, total, endReading) %}
 
-{% macro returnQuantitiesTable(return, lines, total, endReading, isAdmin) %}
-  {{ confirmPageInsetText(return, endReading, isAdmin) }}
-
+  <div class="{% if return.reading.units == 'm³' %}govuk-grid-column-two-thirds{% else %}govuk-grid-column-full{%endif%}">
   <table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -80,5 +78,6 @@
     </tr>
   </tbody>
 </table>
+</div>
 
 {%endmacro%}

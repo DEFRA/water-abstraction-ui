@@ -205,6 +205,26 @@ experiment('getLicenceNumbers', () => {
       'metadata'
     ]);
   });
+
+  test('includes expired licences for internal users', async () => {
+    const request = {
+      auth: {
+        credentials: {
+          scope: ['internal']
+        }
+      }
+    };
+    await helpers.getLicenceNumbers(request);
+    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
+    expect(get(filter, 'includeExpired')).to.equal(true);
+  });
+
+  test('does not expired licences for external users', async () => {
+    const request = {};
+    await helpers.getLicenceNumbers(request);
+    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
+    expect(get(filter, 'includeExpired')).to.be.undefined();
+  });
 });
 
 experiment('getViewData', () => {

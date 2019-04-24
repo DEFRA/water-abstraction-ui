@@ -64,7 +64,7 @@ module.exports = {
   },
 
   logger: {
-    level: 'info',
+    level: testMode ? 'info' : 'error',
     airbrakeKey: process.env.ERRBIT_KEY,
     airbrakeHost: process.env.ERRBIT_SERVER,
     airbrakeLevel: 'error'

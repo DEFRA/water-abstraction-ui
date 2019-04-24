@@ -17,6 +17,20 @@ const getAddressLinesFromLicence = licence => {
 };
 
 /**
+ * Add FAO details to first line of address. If address lines are full, add FAO to start of first line
+ * @param {Array} lines address lines
+ * @param {String} fao  name of person to address letter to
+ */
+const addFaoToAddress = (lines, fao) => {
+  if (lines.length >= 6) {
+    lines[0] = `${fao}, `.concat(lines[0]);
+  } else {
+    lines.unshift(fao);
+  }
+  return lines;
+};
+
+/**
  * There are 6 available address slots in the notify templates, plus an extra for postcode.
  *
  * Therefore if there are more than 6, remove the AddressLine4 item which
@@ -29,8 +43,9 @@ const ensureMaximumAddressLength = lines => {
   return lines;
 };
 
-const createAddress = licence => {
+const createAddress = (licence, fao) => {
   const lines = getAddressLinesFromLicence(licence);
+  if (fao) addFaoToAddress(lines, fao);
   ensureMaximumAddressLength(lines);
 
   return lines.reduce((memo, line, i) => {
@@ -58,12 +73,13 @@ function sendExistingUserPasswordReset (emailAddress, resetGuid) {
  * the function always resolves.
  *
  * @param {Object} licence - licence document header data from CRM
+ * @param {String} addressee - name of person to address letter to
  * @param {String} accesscode - code user receives in post to verify access
  * @return {Promise} resolves with object if successful
  */
-function sendSecurityCode (licence, accesscode) {
+function sendSecurityCode (licence, fao, accesscode) {
   // Get address components from licence
-  const address = createAddress(licence);
+  const address = createAddress(licence, fao);
 
   // Format personalisation with address lines and postcode
   const personalisation = Object.assign({}, address, {

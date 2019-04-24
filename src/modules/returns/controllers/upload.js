@@ -40,7 +40,7 @@ const getXmlUpload = (request, h) => {
     form: uploadHelpers.applyFormError(f, error)
   };
 
-  return h.view('nunjucks/returns/upload.njk', view, { layout: false });
+  return h.view('nunjucks/waiting/index.njk', view, { layout: false });
 };
 
 /**

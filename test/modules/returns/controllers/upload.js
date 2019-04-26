@@ -99,7 +99,7 @@ experiment('upload controller', () => {
       await controller.getXmlUpload(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('nunjucks/waiting/index.njk');
+      expect(template).to.equal('nunjucks/returns/upload.njk');
       expect(view.form.action).to.equal('/returns/upload');
     });
   });
@@ -143,6 +143,16 @@ experiment('upload controller', () => {
       expect(h.redirect.callCount).to.equal(1);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
+    });
+
+    test('it should load the waiting page', async () => {
+      const response = createResponse();
+      const request = createSpinnerRequest();
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(request, h);
+
+      const [path] = h.view.lastCall.args;
+      expect(path).to.equal(`nunjucks/waiting/index.njk`);
     });
 
     test('throws a Boom 404 error if the event is not found', async () => {

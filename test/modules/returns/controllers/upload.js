@@ -145,6 +145,16 @@ experiment('upload controller', () => {
       expect(path).to.equal(`/returns/upload-summary/${request.params.event_id}`);
     });
 
+    test('it should load the waiting page', async () => {
+      const response = createResponse();
+      const request = createSpinnerRequest();
+      water.events.findMany.resolves(response);
+      await controller.getSpinnerPage(request, h);
+
+      const [path] = h.view.lastCall.args;
+      expect(path).to.equal(`nunjucks/waiting/index.njk`);
+    });
+
     test('throws a Boom 404 error if the event is not found', async () => {
       water.events.findMany.resolves({ error: null, data: [] });
       try {

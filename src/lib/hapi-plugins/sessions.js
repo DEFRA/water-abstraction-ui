@@ -29,6 +29,7 @@ const sessionsPlugin = {
           // Session not found - clear cookie
           if (err.name === 'NotFoundError') {
             request.cookieAuth.clear();
+            return reply.redirect('/welcome').takeover();
           }
 
           // Failed to load error

@@ -40,7 +40,7 @@ const getXmlUpload = (request, h) => {
     form: uploadHelpers.applyFormError(f, error)
   };
 
-  return h.view('nunjucks/waiting/index.njk', view, { layout: false });
+  return h.view('nunjucks/returns/upload.njk', view, { layout: false });
 };
 
 /**
@@ -166,7 +166,7 @@ const getSpinnerPage = async (request, h) => {
       return h.redirect(path);
     }
 
-    return h.view('nunjucks/returns/processing-upload.njk', request.view, { layout: false });
+    return h.view('nunjucks/waiting/index.njk', request.view, { layout: false });
   } else {
     logger.error('No event found with selected event_id and issuer', { eventId });
     throw Boom.notFound(`Upload event not found`, { eventId });

@@ -30,7 +30,18 @@ const createReturn = (type = 'measured') => {
     },
 
     lines: [],
-    requiredLines: []
+    requiredLines: [
+      {
+        startDate: '20190101',
+        endDate: '20190102',
+        timePeriod: 'day'
+      },
+      {
+        startDate: '20190102',
+        endDate: '20190103',
+        timePeriod: 'day'
+      }
+    ]
   };
 };
 const isParagraph = (field) => {
@@ -71,5 +82,26 @@ experiment('quantitiesForm', () => {
     const text = filter(form.fields, isParagraph).map(row => row.options.text);
     expect(text).to.not.include(internalExpectedText[0]);
     expect(text).to.not.include(internalExpectedText[1]);
+  });
+
+  test('adds inputs for each line', async () => {
+    const form = quantitiesForm(createRequest(), createReturn());
+    const inputs = filter(form.fields, field => {
+      return field.options.widget === 'text' &&
+        field.name !== 'csrf_token';
+    });
+
+    expect(inputs.length).to.equal(2);
+  });
+
+  test('adds autofocus to the first input', async () => {
+    const form = quantitiesForm(createRequest(), createReturn());
+    const inputs = filter(form.fields, field => {
+      return field.options.widget === 'text' &&
+        field.name !== 'csrf_token';
+    });
+
+    expect(inputs[0].options.attr.autofocus).to.be.true();
+    expect(inputs[1].options.attr.autofocus).to.be.undefined();
   });
 });

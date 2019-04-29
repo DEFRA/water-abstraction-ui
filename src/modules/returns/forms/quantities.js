@@ -19,6 +19,30 @@ const getIntroText = request => {
   return [fields.paragraph(null, { text: 'Remember if you have a x10 meter you need to multiply your volumes.' })];
 };
 
+const createLineTextField = (line, suffix, isFirstLine) => {
+  const name = getLineName(line);
+
+  return fields.text(name, {
+    label: getLineLabel(line),
+    autoComplete: false,
+    suffix,
+    attr: {
+      autofocus: isFirstLine || undefined
+    },
+    mapper: 'numberMapper',
+    type: 'number',
+    controlClass: 'govuk-!-width-one-quarter',
+    errors: {
+      'number.base': {
+        message: 'Enter an amount in numbers'
+      },
+      'number.min': {
+        message: 'Enter an amount of 0 or above'
+      }
+    }
+  });
+};
+
 const quantitiesForm = (request, data) => {
   const { csrfToken } = request.view;
   const isMeasured = get(data, 'reading.type') === 'measured';
@@ -37,26 +61,10 @@ const quantitiesForm = (request, data) => {
 
   const lines = getFormLines(data);
 
-  for (let line of lines) {
-    const name = getLineName(line);
-    const label = getLineLabel(line);
-    f.fields.push(fields.text(name, {
-      label,
-      autoComplete: false,
-      suffix,
-      mapper: 'numberMapper',
-      type: 'number',
-      controlClass: 'govuk-!-width-one-quarter',
-      errors: {
-        'number.base': {
-          message: 'Enter an amount in numbers'
-        },
-        'number.min': {
-          message: 'Enter an amount of 0 or above'
-        }
-      }
-    }));
-  }
+  lines.forEach((line, index) => {
+    const textField = createLineTextField(line, suffix, index === 0);
+    f.fields.push(textField);
+  });
 
   f.fields.push(fields.button());
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

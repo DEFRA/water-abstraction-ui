@@ -10,7 +10,7 @@ const waterReturns = require('../../../../src/lib/connectors/water-service/retur
 const waterCompany = require('../../../../src/lib/connectors/water-service/company');
 
 const controller = require('../../../../src/modules/returns/controllers/upload');
-const logger = require('../../../../src/lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const uploadHelpers = require('../../../../src/modules/returns/lib/upload-helpers');
 const csvTemplates = require('../../../../src/modules/returns/lib/csv-templates');
 

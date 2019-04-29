@@ -10,7 +10,6 @@ module.exports = {
     'govuk_modules',
     'node_modules',
     'public',
-    'src/lib/logger/vendor',
     'test',
     'views'
   ]

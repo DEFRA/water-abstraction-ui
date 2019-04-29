@@ -8,7 +8,7 @@ const { get } = require('lodash');
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
 const { isInternal } = require('../../lib/permissions');
-const logger = require('../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 const { destroySession, authValidationErrorResponse } = require('./helpers');
 

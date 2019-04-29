@@ -1,4 +1,4 @@
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const { expect } = require('code');
 const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');

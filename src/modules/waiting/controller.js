@@ -1,7 +1,7 @@
 const water = require('../../lib/connectors/water');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { get } = require('lodash');
-const logger = require('../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const Boom = require('boom');
 
 const getPageTitle = (ev) => {

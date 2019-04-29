@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();

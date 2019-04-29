@@ -4,7 +4,7 @@ const CRM = require('../../lib/connectors/crm');
 const IDM = require('../../lib/connectors/idm');
 const Boom = require('boom');
 const { find } = require('lodash');
-const logger = require('../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 /**
  * Index page for manage licences

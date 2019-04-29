@@ -4,11 +4,11 @@ require('dotenv').config();
 const Blipp = require('blipp');
 const Good = require('good');
 const GoodWinston = require('good-winston');
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiSanitizePayload = require('hapi-sanitize-payload');
-const Inert = require('inert');
-const Vision = require('vision');
+const Inert = require('@hapi/inert');
+const Vision = require('@hapi/vision');
 const HapiAuthJWT2 = require('hapi-auth-jwt2');
 const Blankie = require('blankie');
 const Scooter = require('scooter');
@@ -21,7 +21,7 @@ const returnsPlugin = require('./src/modules/returns/plugin.js');
 const viewEngine = require('./src/lib/view-engine/');
 
 // Initialise logger
-const logger = require('./src/lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 logger.init(config.logger);
 

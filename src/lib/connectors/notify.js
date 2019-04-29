@@ -1,6 +1,6 @@
 const { get, negate, isEmpty } = require('lodash');
 const Water = require('./water');
-const logger = require('../logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 const getAddressLinesFromLicence = licence => {
   return [

@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const { expect } = require('code');
-const logger = require('../../src/lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const loginHelpers = require('../../src/lib/login-helpers');
 const waterUser = require('../../src/lib/connectors/water-service/user');

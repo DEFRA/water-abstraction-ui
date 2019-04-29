@@ -3,7 +3,7 @@ const serviceRequest = require('./service-request');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
-const logger = require('../logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
 const { getInternalSearchResults } = require('./water-service/internal-search');
 

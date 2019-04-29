@@ -73,6 +73,14 @@ const postSendNotification = async (request, h) => {
   return h.redirect(`/admin/batch-notifications/confirmation/${eventId}`);
 };
 
+const getConfirmationHeading = (event) => {
+  const name = get(event, 'subtype');
+  const titles = {
+    'returnReminder': 'Return reminders sent'
+  };
+  return titles[name];
+};
+
 /**
  * Renders a confirmation page to show the message is sending
  * @param {String} request.params.eventId - the water service event for this message
@@ -81,7 +89,8 @@ const getConfirmation = async (request, h) => {
   const ev = await helpers.loadEvent(request);
   const view = {
     ...request.view,
-    event: ev
+    event: ev,
+    pageTitle: getConfirmationHeading(ev)
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/confirmation.njk', view, options);

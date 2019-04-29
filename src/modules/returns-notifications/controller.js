@@ -175,7 +175,7 @@ const postSendFinalReminder = async (request, h) => {
     event
   };
 
-  return h.view('nunjucks/returns-notifications/confirmation.njk', view, { layout: false });
+  return h.view('nunjucks/batch-notifications/confirmation.njk', view, { layout: false });
 };
 
 const getReturnsReminderStart = async (request, h) => {

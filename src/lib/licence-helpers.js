@@ -27,7 +27,7 @@ function _findTitle (data, code, subCode) {
  * @param {Object} point - abstraction point from licence data
  * @return {String} abstraction point info formatted as String
  */
-function _formatAbstractionPoint (point) {
+function formatAbstractionPoint (point) {
   const { name, ngr1, ngr2, ngr3, ngr4 } = point;
   const parts = [name, ngr1, ngr2, ngr3, ngr4].filter(x => x);
   return parts.join(', ');
@@ -92,7 +92,7 @@ async function _findCondition (data, condition, purpose) {
     id,
     code: condition.code,
     subCode: condition.subCode,
-    points: points.map(_formatAbstractionPoint),
+    points: points.map(formatAbstractionPoint),
     conditions: [],
     titles
   };
@@ -269,12 +269,11 @@ function licenceCount (summary) {
   }, 0);
 }
 
-module.exports = {
-  extractLicenceNumbers,
-  checkLicenceSimilarity,
-  checkNewLicenceSimilarity,
-  licenceRoles,
-  licenceCount,
-  uniqueAddresses,
-  licenceConditions
-};
+exports.extractLicenceNumbers = extractLicenceNumbers;
+exports.checkLicenceSimilarity = checkLicenceSimilarity;
+exports.checkNewLicenceSimilarity = checkNewLicenceSimilarity;
+exports.licenceRoles = licenceRoles;
+exports.licenceCount = licenceCount;
+exports.uniqueAddresses = uniqueAddresses;
+exports.licenceConditions = licenceConditions;
+exports.formatAbstractionPoint = formatAbstractionPoint;

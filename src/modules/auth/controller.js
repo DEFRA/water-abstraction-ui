@@ -169,12 +169,10 @@ const postSelectCompany = async (request, h) => {
   return renderForm(request, h, form);
 };
 
-module.exports = {
-  getWelcome,
-  getSignin,
-  getSignout,
-  getSignedOut,
-  postSignin,
-  getSelectCompany,
-  postSelectCompany
-};
+exports.getWelcome = getWelcome;
+exports.getSignin = getSignin;
+exports.getSignout = getSignout;
+exports.getSignedOut = getSignedOut;
+exports.postSignin = postSignin;
+exports.getSelectCompany = getSelectCompany;
+exports.postSelectCompany = postSelectCompany;

@@ -46,60 +46,48 @@ function forceArray (val) {
 // make a simple http request (without a body), uses promises
 function makeURIRequest (uri) {
   return new Promise((resolve, reject) => {
-    var options = {
-      method: 'get',
-      uri: uri
-    };
+    const options = { method: 'get', uri };
+
     rp(options)
-      .then(function (response) {
-        var responseData = {};
-        responseData.error = null;
-        responseData.statusCode = 200;
-        responseData.body = response;
-        resolve(responseData);
-      })
-      .catch(function (response) {
-        var responseData = {};
-        responseData.error = response.error;
-        responseData.statusCode = response.statusCode;
-        responseData.body = response.body;
-        reject(responseData);
-      });
+      .then(response => resolveResponse(response, resolve))
+      .catch(response => rejectResponse(response, reject));
   });
 }
 
+const createResponse = (body, statusCode = 200, error = null) => ({
+  statusCode,
+  error,
+  body
+});
+
+const resolveResponse = (response, resolve) => {
+  resolve(createResponse(response));
+};
+
+const rejectResponse = (response, reject) => {
+  const { body, error, statusCode } = response;
+  reject(createResponse(body, statusCode, error));
+};
+
 // make an http request (with a body), uses promises
 function makeURIRequestWithBody (uri, method, data) {
+  console.log('makeURIRequestWithBody');
   return new Promise((resolve, reject) => {
-    var options = {
-      method: method,
-      uri: uri,
+    const options = {
+      method,
+      uri,
       body: data,
       json: true
     };
 
     rp(options)
-      .then(function (response) {
-        var responseData = {};
-        responseData.error = null;
-        responseData.statusCode = 200;
-        responseData.body = response;
-        resolve(responseData);
-      })
-      .catch(function (response) {
-        var responseData = {};
-        responseData.error = response.error;
-        responseData.statusCode = response.statusCode;
-        responseData.body = response.body;
-        reject(responseData);
-      });
+      .then(response => resolveResponse(response, resolve))
+      .catch(response => rejectResponse(response, reject));
   });
 }
 
-module.exports = {
-  makeURIRequest: makeURIRequest,
-  makeURIRequestWithBody: makeURIRequestWithBody,
-  forceArray,
-  formatViewError,
-  exec
-};
+exports.makeURIRequest = makeURIRequest;
+exports.makeURIRequestWithBody = makeURIRequestWithBody;
+exports.forceArray = forceArray;
+exports.formatViewError = formatViewError;
+exports.exec = exec;

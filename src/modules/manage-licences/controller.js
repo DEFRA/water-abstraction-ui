@@ -310,15 +310,13 @@ async function postChangeAccess (request, h) {
   return h.redirect('/manage_licences/access');
 };
 
-module.exports = {
-  getManage,
-  getAccessList,
-  getAddAccess,
-  postAddAccess,
-  getRemoveAccess,
-  postRemoveAccess,
-  getAddLicences,
-  createAccessListViewModel,
-  getChangeAccess,
-  postChangeAccess
-};
+exports.getManage = getManage;
+exports.getAccessList = getAccessList;
+exports.getAddAccess = getAddAccess;
+exports.postAddAccess = postAddAccess;
+exports.getRemoveAccess = getRemoveAccess;
+exports.postRemoveAccess = postRemoveAccess;
+exports.getAddLicences = getAddLicences;
+exports.createAccessListViewModel = createAccessListViewModel;
+exports.getChangeAccess = getChangeAccess;
+exports.postChangeAccess = postChangeAccess;

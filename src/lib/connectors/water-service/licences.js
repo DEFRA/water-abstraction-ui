@@ -37,12 +37,10 @@ const getLicenceSummaryByDocumentId = documentId => get(documentId, 'summary');
 
 const getLicenceCommunicationsByDocumentId = (documentId, includeExpired = false) => get(documentId, 'communications', includeExpired);
 
-module.exports = {
-  getLicenceByDocumentId,
-  getLicenceConditionsByDocumentId,
-  getLicencePointsByDocumentId,
-  getLicenceUsersByDocumentId,
-  getLicencePrimaryUserByDocumentId,
-  getLicenceSummaryByDocumentId,
-  getLicenceCommunicationsByDocumentId
-};
+exports.getLicenceByDocumentId = getLicenceByDocumentId;
+exports.getLicenceConditionsByDocumentId = getLicenceConditionsByDocumentId;
+exports.getLicencePointsByDocumentId = getLicencePointsByDocumentId;
+exports.getLicenceUsersByDocumentId = getLicenceUsersByDocumentId;
+exports.getLicencePrimaryUserByDocumentId = getLicencePrimaryUserByDocumentId;
+exports.getLicenceSummaryByDocumentId = getLicenceSummaryByDocumentId;
+exports.getLicenceCommunicationsByDocumentId = getLicenceCommunicationsByDocumentId;

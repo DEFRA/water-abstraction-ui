@@ -147,12 +147,10 @@ const applyErrors = (form, formattedErrors = []) => {
   return f;
 };
 
-module.exports = {
-  setValues,
-  getValues,
-  formFactory,
-  handleRequest,
-  fields,
-  importData,
-  applyErrors
-};
+exports.setValues = setValues;
+exports.getValues = getValues;
+exports.formFactory = formFactory;
+exports.handleRequest = handleRequest;
+exports.fields = fields;
+exports.importData = importData;
+exports.applyErrors = applyErrors;

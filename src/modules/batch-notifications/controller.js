@@ -5,11 +5,14 @@ const csv = require('../../lib/csv-download');
 const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
 
 const getPageTitle = (ev) => {
-  const name = get(ev, 'metadata.name');
-  const titles = {
-    'Returns: reminder': 'Send returns reminders'
+  const name = get(ev, 'subtype');
+  const config = {
+    returnReminder: {
+      title: 'Send returns reminders',
+      confirmationTitle: 'Return reminders sent'
+    }
   };
-  return titles[name];
+  return config[name];
 };
 
 /**
@@ -20,13 +23,15 @@ const getPageTitle = (ev) => {
 const getReview = async (request, h) => {
   const ev = await helpers.loadEvent(request);
 
+  const { title } = getPageTitle(ev);
+
   const view = {
     ev,
     ...request.view,
     csvPath: `/admin/batch-notifications/csv/${ev.event_id}`,
     form: confirmForm(request, ev.metadata.recipients),
     back: `/admin/returns-notifications/reminders`,
-    pageTitle: getPageTitle(ev)
+    pageTitle: title
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/review.njk', view, options);
@@ -73,24 +78,18 @@ const postSendNotification = async (request, h) => {
   return h.redirect(`/admin/batch-notifications/confirmation/${eventId}`);
 };
 
-const getConfirmationHeading = (event) => {
-  const name = get(event, 'subtype');
-  const titles = {
-    'returnReminder': 'Return reminders sent'
-  };
-  return titles[name];
-};
-
 /**
  * Renders a confirmation page to show the message is sending
  * @param {String} request.params.eventId - the water service event for this message
  */
 const getConfirmation = async (request, h) => {
   const ev = await helpers.loadEvent(request);
+  const { confirmationTitle } = getPageTitle(ev);
+
   const view = {
     ...request.view,
     event: ev,
-    pageTitle: getConfirmationHeading(ev)
+    pageTitle: confirmationTitle
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/confirmation.njk', view, options);

@@ -1,6 +1,7 @@
 const { get, set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
 const water = require('../../../lib/connectors/water.js');
@@ -10,7 +11,7 @@ const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const logger = require('../../../lib/logger');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
 const waterCompany = require('../../../lib/connectors/water-service/company');
-const snakeCase = require('snake-case');
+const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
 
@@ -277,8 +278,6 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 
-const { createCSVData, buildZip } = require('../lib/csv-templates');
-
 const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
 
 /**
@@ -291,8 +290,8 @@ const getCSVTemplates = async (request, h) => {
   const returns = await waterCompany.getCurrentDueReturns(companyId);
 
   // Generate CSV data and build zip
-  const data = createCSVData(returns);
-  const zip = await buildZip(data, companyName);
+  const data = csvTemplates.createCSVData(returns);
+  const zip = await csvTemplates.buildZip(data, companyName);
   const fileName = getZipFilename(companyName);
 
   return h.response(zip)

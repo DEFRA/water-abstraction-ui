@@ -18,7 +18,6 @@ const getCurrentDueReturns = entityId => {
       status: 'due'
     }
   };
-  console.log(url, options);
   return serviceRequest.get(url, options);
 };
 

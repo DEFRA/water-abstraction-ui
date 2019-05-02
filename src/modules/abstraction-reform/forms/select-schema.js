@@ -1,4 +1,4 @@
-const { flatMap, find } = require('lodash');
+const { flatMap, find, sortBy } = require('lodash');
 const { formFactory, fields } = require('../../../lib/forms');
 
 const mapSchemaToChoice = schema => {
@@ -9,10 +9,27 @@ const mapSchemaToChoice = schema => {
   };
 };
 
+const isSingleDigit = string => {
+  return !isNaN(parseFloat(string)) && isFinite(string) && string.length === 1;
+};
+
+const sortChoices = choices => {
+  return sortBy(choices, choice => {
+    const schemaSections = choice.value.split('.');
+    const updatedSchema = schemaSections.map(section => {
+      // Check if the string is a number
+      if (isSingleDigit(section)) return `0${section}`;
+      return section;
+    });
+    return updatedSchema.join('');
+  });
+};
+
 const getChoices = (schemas, category) => {
-  return flatMap(category.subcategories, subcategory => {
+  const choices = flatMap(category.subcategories, subcategory => {
     return subcategory.schemas.map(id => mapSchemaToChoice(find(schemas, { id })));
   });
+  return sortChoices(choices);
 };
 
 /**

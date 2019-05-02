@@ -9,14 +9,16 @@ const mapSchemaToChoice = schema => {
   };
 };
 
+const isSingleDigit = string => {
+  return !isNaN(parseFloat(string)) && isFinite(string) && string.length === 1;
+};
+
 const sortChoices = choices => {
   return sortBy(choices, choice => {
     const schemaSections = choice.value.split('.');
     const updatedSchema = schemaSections.map(section => {
       // Check if the string is a number
-      if (!isNaN(parseFloat(section)) && isFinite(section)) {
-        return (section.length > 1) ? section : `0${section}`;
-      }
+      if (isSingleDigit(section)) return `0${section}`;
       return section;
     });
     return updatedSchema.join('');

@@ -33,6 +33,7 @@ experiment('batch notifications controller', () => {
   const ev = {
     event_id: eventId,
     reference_code: 'ABC',
+    subtype: 'returnReminder',
     metadata: {
       name: 'Returns: reminder',
       recipients: 10000
@@ -151,6 +152,10 @@ experiment('batch notifications controller', () => {
     test('outputs correct data to view', async () => {
       const [ , data ] = h.view.lastCall.args;
       expect(data.event).to.equal(ev);
+    });
+    test('uses correct confirmation heading', async () => {
+      const [ , data ] = h.view.lastCall.args;
+      expect(data.pageTitle).to.equal('Return reminders sent');
     });
   });
 });

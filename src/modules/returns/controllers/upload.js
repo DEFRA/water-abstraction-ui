@@ -9,6 +9,9 @@ const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const logger = require('../../../lib/logger');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
+const waterCompany = require('../../../lib/connectors/water-service/company');
+const snakeCase = require('snake-case');
+
 const confirmForm = require('../forms/confirm-upload');
 
 const spinnerConfig = {
@@ -274,6 +277,29 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 
+const { createCSVData, buildZip } = require('../lib/csv-templates');
+
+const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
+
+/**
+ * Downloads a ZIP of CSV templates
+ */
+const getCSVTemplates = async (request, h) => {
+  const { companyId, companyName } = request.auth.credentials;
+
+  // Fetch returns for current company
+  const returns = await waterCompany.getCurrentDueReturns(companyId);
+
+  // Generate CSV data and build zip
+  const data = createCSVData(returns);
+  const zip = await buildZip(data, companyName);
+  const fileName = getZipFilename(companyName);
+
+  return h.response(zip)
+    .header('Content-type', 'application/zip')
+    .header('Content-disposition', `attachment; filename=${fileName}`);
+};
+
 exports.getXmlUpload = getXmlUpload;
 exports.postXmlUpload = postXmlUpload;
 exports.getSpinnerPage = getSpinnerPage;
@@ -282,3 +308,4 @@ exports.getSummaryReturn = getSummaryReturn;
 exports.pageTitles = pageTitles;
 exports.postSubmit = postSubmit;
 exports.getSubmitted = getSubmitted;
+exports.getCSVTemplates = getCSVTemplates;

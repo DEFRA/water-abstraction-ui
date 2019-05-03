@@ -6,10 +6,12 @@ const water = require('../../../../src/lib/connectors/water.js');
 const forms = require('../../../../src/lib/forms/index');
 const files = require('../../../../src/lib/files');
 const waterReturns = require('../../../../src/lib/connectors/water-service/returns');
+const waterCompany = require('../../../../src/lib/connectors/water-service/company');
 
 const controller = require('../../../../src/modules/returns/controllers/upload');
 const logger = require('../../../../src/lib/logger');
 const uploadHelpers = require('../../../../src/modules/returns/lib/upload-helpers');
+const csvTemplates = require('../../../../src/modules/returns/lib/csv-templates');
 
 const sandbox = sinon.createSandbox();
 
@@ -17,6 +19,7 @@ const eventId = 'event_1';
 const userName = 'user_1';
 const entityId = 'entity_1';
 const companyId = 'company_1';
+const companyName = 'Test Co Ltd.';
 const csrfToken = 'csrf';
 const returnId = 'v1:1:01/123:4567:2017-11-01:2018-10-31';
 
@@ -36,7 +39,8 @@ const createRequest = () => {
       credentials: {
         username: userName,
         entity_id: entityId,
-        companyId
+        companyId,
+        companyName
       }
     }
   };
@@ -73,12 +77,37 @@ const returns = [{
   errors: ['oh no']
 }];
 
+const companyReturns = [{
+  returnId: 'v1:123',
+  startDate: '2018-04-01',
+  endDate: '2019-03-31',
+  returnRequirement: '01234',
+  status: 'due',
+  frequency: 'week'
+}];
+
+const csvData = {
+  day: [['foo', 'bar']]
+};
+
+const zipObject = { zip: true };
+
 experiment('upload controller', () => {
   let h;
+  let header;
+
   beforeEach(async () => {
+    header = sandbox.stub().returnsThis();
+    // const response = sandbox.stub().returns({
+    //   header: sandbox.stub().returnsThis()
+    // });
+
     h = {
       view: sandbox.stub(),
-      redirect: sandbox.stub()
+      redirect: sandbox.stub(),
+      response: sandbox.stub().returns({
+        header
+      })
     };
     sandbox.stub(water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
@@ -89,6 +118,9 @@ experiment('upload controller', () => {
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
     sandbox.stub(waterReturns, 'postUploadSubmit');
+    sandbox.stub(waterCompany, 'getCurrentDueReturns').resolves(companyReturns);
+    sandbox.stub(csvTemplates, 'createCSVData').returns(csvData);
+    sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject);
   });
   afterEach(async () => {
     sandbox.restore();
@@ -343,6 +375,43 @@ experiment('upload controller', () => {
         const [message, params] = logger.info.lastCall.args;
         expect(message).to.be.a.string();
         expect(params).to.equal({ eventId });
+      });
+    });
+
+    experiment('getCSVTemplates', () => {
+      beforeEach(async () => {
+        const request = createRequest();
+        await controller.getCSVTemplates(request, h);
+      });
+
+      test('should get current due returns for the correct company', async () => {
+        expect(waterCompany.getCurrentDueReturns.calledWith(companyId)).to.equal(true);
+      });
+
+      test('calls csvTemplates.createCSVData with the company returns', async () => {
+        expect(csvTemplates.createCSVData.calledWith(companyReturns)).to.equal(true);
+      });
+
+      test('calls csvTemplates.buildZip with CSV data and company name', async () => {
+        const { args } = csvTemplates.buildZip.lastCall;
+        expect(args[0]).to.equal(csvData);
+        expect(args[1]).to.equal(companyName);
+      });
+
+      test('responds with the zip stream', async () => {
+        expect(h.response.calledWith(zipObject)).to.equal(true);
+      });
+
+      test('sets the correct mime type header in the response', async () => {
+        const [key, value] = header.firstCall.args;
+        expect(key).to.equal('Content-type');
+        expect(value).to.equal('application/zip');
+      });
+
+      test('sets the correct content disposition in the response', async () => {
+        const [key, value] = header.secondCall.args;
+        expect(key).to.equal('Content-disposition');
+        expect(value).to.equal('attachment; filename=test_co_ltd.zip');
       });
     });
   });

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/13.x",
+  "type": "object",
+  "title": "13.x",
+  "category": "Temporary licence provision",
+  "subcategory": "",
+  "description": "This licence has a non-standard condition.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

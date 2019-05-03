@@ -19,7 +19,7 @@ const request = {
 
 const category = {
   subcategories: [{
-    schemas: ['/wr22/1.1']
+    schemas: ['/wr22/2.1', '/wr22/2.x', '/wr22/2.2', '/wr22/2.3']
   }]
 };
 
@@ -47,6 +47,15 @@ lab.experiment('selectSchemaForm', () => {
 
     for (let choice of field.options.choices) {
       expect(Object.keys(choice)).to.equal(['value', 'label', 'hint']);
+    }
+  });
+
+  lab.test('The form should have a schema radio field', async () => {
+    const sortedSchemas = ['/wr22/2.1', '/wr22/2.2', '/wr22/2.3', '/wr22/2.x'];
+    const field = find(form.fields, { name: 'schema' });
+
+    for (let i = 0; i < field.options.choices.length; i++) {
+      expect(field.options.choices[i].value).to.equal(sortedSchemas[i]);
     }
   });
 });

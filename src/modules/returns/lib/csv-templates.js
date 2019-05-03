@@ -6,7 +6,7 @@ const snakeCase = require('snake-case');
 const util = require('util');
 const csvStringify = util.promisify(require('csv-stringify'));
 const archiver = require('archiver');
-const logger = require('../../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const readFile = util.promisify(require('fs').readFile);
 const path = require('path');
 
@@ -22,21 +22,25 @@ const getCSVLineLabel = line => {
 
 /**
  * Gets the current active return cycle
+ * @param {String} [refDate] - for unit testing, controls the date for
+ *                             the current cycle calculation
  * @return {Object} - cycle description with { startDate, endDate, isSummer }
  */
-const getCurrentCycle = () => {
-  const cycles = helpers.returns.date.createReturnCycles();
+const getCurrentCycle = (refDate) => {
+  const cycles = helpers.returns.date.createReturnCycles(undefined, refDate);
   return last(cycles);
 };
 
 /**
  * Initialises a 2D array structure to hold on of the CSVs
  * @param  {String} frequency - day|week|month
+ * @param {String} [refDate] - for unit testing, controls the date for
+ *                             the current cycle calculation
  * @return {[type]}           [description]
  */
-const initialiseCSV = (frequency) => {
+const initialiseCSV = (frequency, refDate) => {
   // Get date range of current active return cycle
-  const { startDate, endDate } = getCurrentCycle();
+  const { startDate, endDate } = getCurrentCycle(refDate);
 
   // Get date lines for the cycle dates and frequency
   const dateLines = helpers.returns.lines.getRequiredLines(startDate, endDate, frequency);
@@ -170,20 +174,18 @@ const addReadmeToArchive = async (archive) => {
 };
 
 /**
- * Builds the ZIP archive containing several CSV templates for users
- * to complete their return data
- * @param  {Object}  data        - keys are return frequency,
- * @param  {[type]}  companyName [description]
- * @return {Promise}             [description]
+ * Creates an archiver instance for the zip file, with warning and error
+ * handlers registered
+ * @return {Object} archiver instance
  */
-const buildZip = async (data, companyName) => {
+const createArchive = () => {
   const archive = archiver('zip', {
     zlib: { level: 9 } // Sets the compression level.
   });
 
   archive.on('warning', err => {
     if (err.code === 'ENOENT') {
-      logger.warning('CSV returns archive error', err);
+      logger.warn('CSV returns archive error', err);
     } else {
       // throw error
       throw err;
@@ -193,6 +195,20 @@ const buildZip = async (data, companyName) => {
   archive.on('error', err => {
     throw err;
   });
+
+  return archive;
+};
+
+/**
+ * Builds the ZIP archive containing several CSV templates for users
+ * to complete their return data
+ * @param  {Object}  data        - CSV data object, keys are return frequency
+ * @param  {String}  companyName - the current company
+ * @param {Object} [archive] - an archiver instance can be passed in for test
+ * @return {Promise<Object>} resolves with archive object when finalised
+ */
+const buildZip = async (data, companyName, archive) => {
+  archive = archive || createArchive();
 
   // Add a CSV to the archive for each frequency
   const tasks = Object.keys(data).map(key => {
@@ -206,6 +222,15 @@ const buildZip = async (data, companyName) => {
   return archive;
 };
 
-// exports.initialiseCSVs = initialiseCSVs;
+exports._getCSVLineLabel = getCSVLineLabel;
+exports._getCurrentCycle = getCurrentCycle;
+exports._initialiseCSV = initialiseCSV;
+exports._createReturnColumn = createReturnColumn;
+exports._pushColumn = pushColumn;
+exports._getCSVFilename = getCSVFilename;
+exports._addCSVToArchive = addCSVToArchive;
+exports._addReadmeToArchive = addReadmeToArchive;
+exports._createArchive = createArchive;
+
 exports.createCSVData = createCSVData;
 exports.buildZip = buildZip;

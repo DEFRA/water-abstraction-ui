@@ -114,7 +114,7 @@ experiment('upload controller', () => {
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
-    sandbox.stub(waterReturns, 'postXML').returns({ data: { eventId } });
+    sandbox.stub(waterReturns, 'postUpload').returns({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
     sandbox.stub(waterReturns, 'postUploadSubmit');

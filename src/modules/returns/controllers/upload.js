@@ -83,7 +83,7 @@ async function postXmlUpload (request, h) {
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
-      const postData = await waterReturns.postXML(fileData.toString(), userName);
+      const postData = await waterReturns.postUpload(fileData.toString(), userName);
       eventId = get(postData, 'data.eventId');
     }
 

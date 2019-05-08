@@ -1,6 +1,6 @@
 const moment = require('moment');
 const Boom = require('boom');
-const { reduce, pick, uniqBy, difference } = require('lodash');
+const { reduce, pick, uniqBy, difference, last } = require('lodash');
 
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
@@ -125,7 +125,7 @@ const postSendForms = async (request, h) => {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
     }
 
-    return h.redirect('/admin/returns-notifications/forms-success');
+    return h.redirect('/forms-success');
   }
 
   return postPreviewRecipients(request, h);
@@ -177,28 +177,52 @@ const postSendFinalReminder = async (request, h) => {
 
   return h.view('nunjucks/batch-notifications/confirmation.njk', view, { layout: false });
 };
-
-const getReturnsReminderStart = async (request, h) => {
+/**
+ * First page of Return Reminders and Return Invitations flows
+ * Renders a form for the user to enter licence numbers to be excluded for the selected
+ * notifications
+ */
+const getReturnsNotificationsStart = async (request, h) => {
   const view = {
     ...request.view,
     form: sendRemindersForm(request),
     back: `/admin/notifications`
   };
   const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/reminders.njk', view, options);
+  return h.view('nunjucks/returns-notifications/notifications.njk', view, options);
 };
-
-const postReturnsReminderStart = async (request, h) => {
+/**
+ * Returns the relevant batch notifications connector based on the current path
+ */
+const getBatchNotificationsConnector = path => {
+  const messageType = last(path.split('/'));
+  const connectors = {
+    reminders: batchNotificationsConnector.prepareReturnsReminders,
+    invitations: batchNotificationsConnector.prepareReturnsInvitations
+  };
+  return connectors[messageType];
+};
+/**
+ * Calls the relevant API point with issuer and licences data
+ * Returning event data
+ */
+const getNotificationsData = async request => {
   const form = handleRequest(sendRemindersForm(request), request, sendRemindersSchema);
 
   const { excludeLicences } = getValues(form);
   const { username: issuer } = request.auth.credentials;
 
+  const connector = getBatchNotificationsConnector(request.path);
+
+  return connector(issuer, excludeLicences);
+};
+/**
+ * Sends licences to exclude and calls the relevant API point in the water service
+ * to prepare the requested notifications
+ */
+const postReturnsNotificationsStart = async (request, h) => {
   // get the event id from the water service and redirect
-  const { data: event } = await batchNotificationsConnector.prepareReturnsReminders(
-    issuer,
-    excludeLicences
-  );
+  const { data: event } = await getNotificationsData(request);
 
   return h.redirect(`/admin/waiting/${event.eventId}`);
 };
@@ -211,5 +235,5 @@ exports.getFinalReminder = getFinalReminder;
 exports.getFinalReminderCSV = getFinalReminderCSV;
 exports.postSendFinalReminder = postSendFinalReminder;
 
-exports.getReturnsReminderStart = getReturnsReminderStart;
-exports.postReturnsReminderStart = postReturnsReminderStart;
+exports.getReturnsNotificationsStart = getReturnsNotificationsStart;
+exports.postReturnsNotificationsStart = postReturnsNotificationsStart;

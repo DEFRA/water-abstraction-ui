@@ -133,7 +133,7 @@ module.exports = {
         }
       }
     },
-    handler: controller.getReturnsReminderStart
+    handler: controller.getReturnsNotificationsStart
   },
 
   postReturnsReminderStart: {
@@ -150,7 +150,41 @@ module.exports = {
         }
       }
     },
-    handler: controller.postReturnsReminderStart
+    handler: controller.postReturnsNotificationsStart
+  },
+
+  getReturnsInvitationsStart: {
+    method: 'GET',
+    path: '/admin/returns-notifications/invitations',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns invitations'
+        }
+      }
+    },
+    handler: controller.getReturnsNotificationsStart
+  },
+
+  postReturnsInvitationsStart: {
+    method: 'POST',
+    path: '/admin/returns-notifications/invitations',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns invitations'
+        }
+      }
+    },
+    handler: controller.postReturnsNotificationsStart
   }
 
 };

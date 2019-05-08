@@ -140,39 +140,81 @@ experiment('postPreviewRecipients', () => {
   });
 });
 
-experiment('getReturnsReminderStart', () => {
+experiment('getReturnsNotificationsStart', () => {
   let request;
   let h;
 
   beforeEach(async () => {
     request = {
-      view: {}
+      view: {
+        path: '/admin/returns-notifications/reminders'
+      }
     };
 
     h = {
       view: sandbox.spy()
     };
 
-    await controller.getReturnsReminderStart(request, h);
+    await controller.getReturnsNotificationsStart(request, h);
   });
 
   test('the expected view template is used', async () => {
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/returns-notifications/reminders.njk');
-  });
-
-  test('view context is assigned a form', async () => {
-    const [, view] = h.view.lastCall.args;
-    expect(view.form.action).to.equal('/admin/returns-notifications/reminders');
+    expect(templateName).to.equal('nunjucks/returns-notifications/notifications.njk');
   });
 
   test('view context is assigned a back link path', async () => {
     const [, view] = h.view.lastCall.args;
     expect(view.back).to.equal('/admin/notifications');
   });
+
+  experiment('Return Reminders', () => {
+    beforeEach(async () => {
+      request = {
+        view: {
+          path: '/admin/returns-notifications/reminders'
+        }
+      };
+
+      h = {
+        view: sandbox.spy()
+      };
+
+      await controller.getReturnsNotificationsStart(request, h);
+    });
+
+    test('view context is assigned a form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/admin/returns-notifications/reminders');
+    });
+  });
+
+  experiment('Return Invitations', () => {
+    let request;
+    let h;
+
+    beforeEach(async () => {
+      request = {
+        view: {
+          path: '/admin/returns-notifications/invitations'
+        }
+      };
+
+      h = {
+        view: sandbox.spy()
+      };
+
+      await controller.getReturnsNotificationsStart(request, h);
+    });
+
+    test('view context is assigned a form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/admin/returns-notifications/invitations');
+    });
+  });
 });
 
-experiment('postReturnsReminderStart', () => {
+experiment('postReturnsNotificationsStart', () => {
   let request;
   let h;
   let username;
@@ -193,6 +235,7 @@ experiment('postReturnsReminderStart', () => {
           scope: ['internal']
         }
       },
+      path: '/admin/return-notifications/reminders',
       payload: {
         excludeLicences: '123\n456'
       }
@@ -203,27 +246,92 @@ experiment('postReturnsReminderStart', () => {
         eventId: 'test-event-id'
       }
     });
+
+    sandbox.stub(batchNotificationsConnector, 'prepareReturnsInvitations').resolves({
+      data: {
+        eventId: 'test-event-id'
+      }
+    });
   });
 
   afterEach(async () => {
     sandbox.restore();
   });
-
   test('the username is used as the notification issuer', async () => {
-    await controller.postReturnsReminderStart(request, h);
+    await controller.postReturnsNotificationsStart(request, h);
     const [issuer] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
     expect(issuer).to.equal(username);
   });
 
   test('the excluded licences are passed as csv', async () => {
-    await controller.postReturnsReminderStart(request, h);
+    await controller.postReturnsNotificationsStart(request, h);
     const [, excludeLicences] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
     expect(excludeLicences).to.equal(['123', '456']);
   });
 
   test('the user is redirected to the event waiting page', async () => {
-    await controller.postReturnsReminderStart(request, h);
+    await controller.postReturnsNotificationsStart(request, h);
     const [url] = h.redirect.lastCall.args;
     expect(url).to.equal('/admin/waiting/test-event-id');
+  });
+
+  experiment('Return Reminders', () => {
+    beforeEach(async () => {
+      request = {
+        view: {
+          csrfToken: 'test-csrf-token'
+        },
+        auth: {
+          credentials: {
+            username,
+            scope: ['internal']
+          }
+        },
+        path: '/admin/return-notifications/reminders',
+        payload: {
+          excludeLicences: '123\n456'
+        }
+      };
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('the returnReminder connector is called', async () => {
+      await controller.postReturnsNotificationsStart(request, h);
+      const previouslyCalled = batchNotificationsConnector.prepareReturnsReminders.calledWith(username, ['123', '456']);
+      expect(previouslyCalled).to.be.true();
+    });
+  });
+
+  experiment('Return Reminders', () => {
+    beforeEach(async () => {
+      request = {
+        view: {
+          csrfToken: 'test-csrf-token'
+        },
+        auth: {
+          credentials: {
+            username,
+            scope: ['internal']
+          }
+        },
+        path: '/admin/return-notifications/invitations',
+        payload: {
+          excludeLicences: '123\n456'
+        }
+      };
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('the returnInvitations connector is called', async () => {
+      await controller.postReturnsNotificationsStart(request, h);
+      const previouslyCalled = batchNotificationsConnector.prepareReturnsInvitations.calledWith(username, ['123', '456']);
+      expect(previouslyCalled).to.be.true();
+    });
   });
 });

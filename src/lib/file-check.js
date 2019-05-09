@@ -5,7 +5,8 @@ const readChunk = require('read-chunk');
 const util = require('util');
 const parseCsv = util.promisify(require('csv-parse'));
 const helpers = require('./helpers');
-const logger = require('./logger');
+const { logger } = require('@envage/water-abstraction-helpers');
+const readFile = util.promisify(fs.readFile);
 
 /**
  * Throws an error if the specified file does not exist
@@ -58,27 +59,14 @@ const virusCheck = async (file) => {
 };
 
 /**
- * Checkes whether supplied file is XML.
- * If the file does not exist, an error is thrown
- * @param  {String}  file - path to file
- * @return {Boolean}
+ * Checks whether supplied file path is a valid CSV file
+ * @param  {String}  file - path to CSV file
+ * @return {Promise<Boolean>}
  */
-
-/*
-const isXml = file => {
-  const buffer = readChunk.sync(file, 0, fileType.minimumBytes);
-  const result = fileType(buffer);
-  if (!result) {
-    return false;
-  }
-  const xmlTypes = ['text/xml', 'application/xml'];
-  return xmlTypes.includes(result.mime);
-};
-*/
-
 const isCsv = async file => {
   try {
-    await parseCsv(file);
+    const str = await readFile(file);
+    await parseCsv(str);
     return true;
   } catch (err) {
     logger.info('invalid CSV', err);
@@ -107,5 +95,6 @@ module.exports = {
   throwIfFileDoesNotExist,
   clamScan,
   virusCheck,
-  detectFileType
+  detectFileType,
+  _isCsv: isCsv
 };

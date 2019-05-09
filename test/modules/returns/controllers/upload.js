@@ -424,4 +424,16 @@ experiment('upload controller', () => {
       });
     });
   });
+
+  experiment('getUploadInstructions', () => {
+    beforeEach(async () => {
+      const request = createRequest();
+      await controller.getUploadInstructions(request, h);
+    });
+
+    test('should render the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns/upload-instructions.njk');
+    });
+  });
 });

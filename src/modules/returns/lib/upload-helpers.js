@@ -12,13 +12,13 @@ const mkdirp = util.promisify(require('mkdirp'));
  * @return {string} - path to temp file
  */
 const getFile = () => {
-  return path.join(process.cwd(), `/temp/${uuidv4()}.xml`);
+  return path.join(process.cwd(), `/temp/${uuidv4()}`);
 };
 
 const getErrorMessage = (key) => {
   const errorMessages = {
     'invalid-xml': 'The selected file must use the template',
-    notxml: 'The selected file must be an XML',
+    notxml: 'The selected file must be a CSV or XML file',
     virus: 'The selected file contains a virus'
   };
   const defaultMessage = 'The selected file could not be uploaded – try again';
@@ -64,7 +64,7 @@ const createDirectory = file => mkdirp(path.dirname(file));
 const fileStatuses = {
   OK: 'ok',
   VIRUS: 'virus',
-  NOT_XML: 'not-xml'
+  INVALID_TYPE: 'invalid-type'
 };
 
 /**
@@ -73,9 +73,10 @@ const fileStatuses = {
  * Runs virus check and XML file check on the supplied file and returns
  * one of the possible statuses depending on the outcome of the checks
  * @param {String} file - the uploaded file path to check
+ * @param {String} type - the detected file type
  * @return {String} status string
  */
-const getUploadedFileStatus = async file => {
+const getUploadedFileStatus = async (file, type) => {
   // Run virus check on temp file
   const isClean = await fileCheck.virusCheck(file);
   // Set redirectUrl if virusCheck failed
@@ -83,14 +84,12 @@ const getUploadedFileStatus = async file => {
     return fileStatuses.VIRUS;
   }
 
-  // Check that file is an xml file
-  const isCorrectType = fileCheck.isXml(file);
   // Set redirectUrl if isXml failed
-  if (!isCorrectType) {
-    return fileStatuses.NOT_XML;
+  if (['csv', 'xml'].includes(type)) {
+    return fileStatuses.OK;
   }
 
-  return fileStatuses.OK;
+  return fileStatuses.INVALID_TYPE;
 };
 
 exports.getFile = getFile;

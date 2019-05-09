@@ -10,40 +10,44 @@ const sessionRequired = (request) => {
   return request.auth.isAuthenticated && (request.auth.strategy === 'standard');
 };
 
+const onPreHandler = {
+  type: 'onPreHandler',
+  async method (request, h) {
+    // Attach session store to HAPI request interface
+    request.sessionStore = new SessionStore(request);
+
+    if (!sessionRequired(request)) {
+      return h.continue;
+    }
+
+    try {
+      await request.sessionStore.load();
+      return h.continue;
+    } catch (err) {
+      // Session not found - clear cookie
+      if (err.name === 'NotFoundError') {
+        request.cookieAuth.clear();
+        return h.redirect('/welcome').takeover();
+      }
+
+      // Failed to load error
+      throw Boom.unauthorized('Session not found');
+    }
+  }
+};
+
+const onPostHandler = {
+  type: 'onPostHandler',
+  async method (request, h) {
+    await request.sessionStore.save();
+    return h.continue;
+  }
+};
+
 const sessionsPlugin = {
   register: (server, options) => {
-    server.ext({
-      type: 'onPreHandler',
-      async method (request, reply) {
-        // Attach session store to HAPI request interface
-        request.sessionStore = new SessionStore(request);
-
-        if (!sessionRequired(request)) {
-          return reply.continue;
-        }
-
-        try {
-          await request.sessionStore.load();
-          return reply.continue;
-        } catch (err) {
-          // Session not found - clear cookie
-          if (err.name === 'NotFoundError') {
-            request.cookieAuth.clear();
-          }
-
-          // Failed to load error
-          throw Boom.unauthorized('Session not found');
-        }
-      }
-    });
-
-    server.ext({
-      type: 'onPostHandler',
-      async method (request, reply) {
-        await request.sessionStore.save();
-        return reply.continue;
-      }
-    });
+    server.ext(onPreHandler);
+    server.ext(onPostHandler);
   },
 
   pkg: {

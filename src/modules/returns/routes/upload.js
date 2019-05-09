@@ -145,5 +145,16 @@ module.exports = {
         }
       }
     }
+  },
+
+  getCSVTemplates: {
+    method: 'GET',
+    path: '/returns/csv-templates',
+    handler: controller.getCSVTemplates,
+    config: {
+      auth: {
+        scope: allowedScopes
+      }
+    }
   }
 };

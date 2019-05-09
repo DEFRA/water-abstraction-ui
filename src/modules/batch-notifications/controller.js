@@ -5,11 +5,20 @@ const csv = require('../../lib/csv-download');
 const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
 
 const getPageTitle = (ev) => {
-  const name = get(ev, 'metadata.name');
-  const titles = {
-    'Returns: reminder': 'Send returns reminders'
+  const name = get(ev, 'subtype');
+  const config = {
+    returnReminder: {
+      pageTitle: 'Send returns reminders',
+      confirmationTitle: 'Return reminders sent',
+      back: '/admin/returns-notifications/reminders'
+    },
+    returnInvitation: {
+      pageTitle: 'Send returns invitations',
+      confirmationTitle: 'Return invitations sent',
+      back: '/admin/returns-notifications/invitations'
+    }
   };
-  return titles[name];
+  return config[name];
 };
 
 /**
@@ -20,13 +29,15 @@ const getPageTitle = (ev) => {
 const getReview = async (request, h) => {
   const ev = await helpers.loadEvent(request);
 
+  const { pageTitle, back } = getPageTitle(ev);
+
   const view = {
     ev,
     ...request.view,
     csvPath: `/admin/batch-notifications/csv/${ev.event_id}`,
     form: confirmForm(request, ev.metadata.recipients),
-    back: `/admin/returns-notifications/reminders`,
-    pageTitle: getPageTitle(ev)
+    back,
+    pageTitle
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/review.njk', view, options);
@@ -79,9 +90,12 @@ const postSendNotification = async (request, h) => {
  */
 const getConfirmation = async (request, h) => {
   const ev = await helpers.loadEvent(request);
+  const { confirmationTitle } = getPageTitle(ev);
+
   const view = {
     ...request.view,
-    event: ev
+    event: ev,
+    pageTitle: confirmationTitle
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/confirmation.njk', view, options);

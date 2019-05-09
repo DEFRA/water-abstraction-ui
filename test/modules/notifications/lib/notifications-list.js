@@ -45,6 +45,7 @@ experiment('getNotificationsList', () => {
     const names = result.map(row => row.name);
     expect(names).to.equal([
       'Test',
+      'Returns: send invitations',
       'Returns: send paper forms',
       'Returns: send reminders',
       'Returns: send final reminder'

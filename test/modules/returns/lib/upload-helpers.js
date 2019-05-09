@@ -35,7 +35,6 @@ experiment('upload Helpers', () => {
 
   beforeEach(async () => {
     sandbox.stub(fileCheck, 'virusCheck');
-    sandbox.stub(fileCheck, 'isXml');
     write = new EventEmitter();
     sandbox.spy(write, 'on');
 
@@ -50,9 +49,9 @@ experiment('upload Helpers', () => {
   });
 
   experiment('getFile', () => {
-    test('it should return a filepath to an xml file with a uuid filename', async () => {
+    test('it should return a filepath to a file with a uuid filename', async () => {
       const file = uploadHelpers.getFile();
-      expect(file).to.be.a.string().and.to.contain(['/temp/', '.xml']);
+      expect(file).to.be.a.string().and.to.include('/temp/');
     });
   });
   experiment('applyFormError', () => {
@@ -79,7 +78,7 @@ experiment('upload Helpers', () => {
       const updated = {
         ...form,
         errors: [{
-          message: 'The selected file must be an XML',
+          message: 'The selected file must be a CSV or XML file',
           name: 'file'
         }]
       };
@@ -131,25 +130,22 @@ experiment('upload Helpers', () => {
   });
 
   experiment('getUploadedFileStatus', () => {
-    test('returns OK status when both checks pass', async () => {
+    test('returns OK status when virus check passes and supported file type', async () => {
       fileCheck.virusCheck.resolves(true);
-      fileCheck.isXml.returns(true);
-      const status = await uploadHelpers.getUploadedFileStatus('fileName');
+      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
       expect(status).to.equal(uploadHelpers.fileStatuses.OK);
     });
 
     test('returns virus status when virus check fails', async () => {
       fileCheck.virusCheck.resolves(false);
-      fileCheck.isXml.returns(true);
-      const status = await uploadHelpers.getUploadedFileStatus('fileName');
+      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
       expect(status).to.equal(uploadHelpers.fileStatuses.VIRUS);
     });
 
-    test('returns not xml status when XML check fails', async () => {
+    test('returns invalid type status when unsupported file type supplied', async () => {
       fileCheck.virusCheck.resolves(true);
-      fileCheck.isXml.returns(false);
-      const checkResults = await uploadHelpers.getUploadedFileStatus('fileName');
-      expect(checkResults).to.equal(uploadHelpers.fileStatuses.NOT_XML);
+      const checkResults = await uploadHelpers.getUploadedFileStatus('fileName', 'ppt');
+      expect(checkResults).to.equal(uploadHelpers.fileStatuses.INVALID_TYPE);
     });
   });
 });

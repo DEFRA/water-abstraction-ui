@@ -125,7 +125,7 @@ const postSendForms = async (request, h) => {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
     }
 
-    return h.redirect('/forms-success');
+    return h.redirect('/admin/returns-notifications/forms-success');
   }
 
   return postPreviewRecipients(request, h);
@@ -141,15 +141,22 @@ const getSendFormsSuccess = (request, h) => {
 };
 
 /**
+ * Returns view object for first page in reminders flows
+ */
+const getRemindersStartView = (request, isFinalReminder = false) => {
+  return {
+    ...request.view,
+    form: isFinalReminder ? sendFinalRemindersForm(request) : sendRemindersForm(request),
+    back: `/admin/notifications`
+  };
+};
+
+/**
  * Renders a form so that the user can send a final returns reminder letter
  * We need a form to protect against CSRF
  */
 const getFinalReminder = async (request, h) => {
-  const view = {
-    ...request.view,
-    form: sendFinalRemindersForm(request),
-    back: `/admin/notifications`
-  };
+  const view = getRemindersStartView(request, true);
   const options = { layout: false };
   return h.view('nunjucks/returns-notifications/final-reminder.njk', view, options);
 };
@@ -183,11 +190,7 @@ const postSendFinalReminder = async (request, h) => {
  * notifications
  */
 const getReturnsNotificationsStart = async (request, h) => {
-  const view = {
-    ...request.view,
-    form: sendRemindersForm(request),
-    back: `/admin/notifications`
-  };
+  const view = getRemindersStartView(request);
   const options = { layout: false };
   return h.view('nunjucks/returns-notifications/notifications.njk', view, options);
 };

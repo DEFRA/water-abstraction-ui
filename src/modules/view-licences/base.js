@@ -20,7 +20,7 @@ async function getLicences (request, h) {
     return h.view(viewName, request.view);
   }
 
-  const { entity_id: entityId, companyId } = request.auth.credentials;
+  const { companyId } = request.auth.credentials;
   const { page, emailAddress } = request.query;
   const sort = mapSort(request.query);
   const filter = mapFilter(companyId, request.query);

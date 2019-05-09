@@ -7,8 +7,8 @@ const {
 } = require('./action-types');
 
 const formatUser = (user) => {
-  const {user_id: id, username: email} = user;
-  return {id, email};
+  const { user_id: id, username: email } = user;
+  return { id, email };
 };
 
 /**

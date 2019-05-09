@@ -1,5 +1,4 @@
 const moment = require('moment');
-const util = require('util');
 const water = require('../../../lib/connectors/water');
 
 /**

@@ -18,7 +18,7 @@ class CSVTransformer extends BaseTransformer {
   transformNull (data) {
     return deepMap(data, (val) => {
       // Convert string null to real null
-      if (typeof val === 'string' && (val === 'null' || val === '')) {
+      if (typeof (val) === 'string' && (val === 'null' || val === '')) {
         return null;
       }
       return val;

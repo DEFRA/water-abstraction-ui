@@ -2,10 +2,7 @@
  * Creates a client connector for the CRM verification API endpoint
  * @module lib/connectors/crm-verification
  */
-const {
-  APIClient
-} = require('@envage/hapi-pg-rest-api');
-const moment = require('moment');
+const { APIClient } = require('@envage/hapi-pg-rest-api');
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false

@@ -6,7 +6,6 @@ const { expect } = require('code');
 
 const {
   mapARComparisonTable,
-  ARConditionDescription,
   ARConditionPlaceholder
 } = require('../../../../src/lib/view-engine/filters/abstraction-reform.js');
 

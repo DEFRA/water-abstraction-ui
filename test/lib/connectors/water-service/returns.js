@@ -1,5 +1,4 @@
 const { expect } = require('code');
-const Lab = require('lab');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const returns = require('../../../../src/lib/connectors/water-service/returns');

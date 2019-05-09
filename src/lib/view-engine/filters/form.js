@@ -300,12 +300,10 @@ const mapFormDropdownField = (field) => {
   return applyErrors(options, field.errors);
 };
 
-module.exports = {
-  mapFormField,
-  mapFormErrorSummary,
-  mapFormDateField,
-  mapFormRadioField,
-  setConditionalRadioField,
-  mapFormCheckbox,
-  mapFormDropdownField
-};
+exports.mapFormField = mapFormField;
+exports.mapFormErrorSummary = mapFormErrorSummary;
+exports.mapFormDateField = mapFormDateField;
+exports.mapFormRadioField = mapFormRadioField;
+exports.setConditionalRadioField = setConditionalRadioField;
+exports.mapFormCheckbox = mapFormCheckbox;
+exports.mapFormDropdownField = mapFormDropdownField;

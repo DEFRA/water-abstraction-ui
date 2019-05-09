@@ -37,15 +37,13 @@ const isARUser = request => hasScope(request, scope.abstractionReformUser);
 const isARApprover = request => hasScope(request, scope.abstractionReformApprover);
 const isAnyAR = request => isARUser(request) || isARApprover(request);
 
-module.exports = {
-  hasScope,
-  isAuthenticated,
-  isInternal,
-  isExternal,
-  isPrimaryUser,
-  isInternalReturns,
-  isExternalReturns,
-  isARUser,
-  isARApprover,
-  isAnyAR
-};
+exports.hasScope = hasScope;
+exports.isAuthenticated = isAuthenticated;
+exports.isInternal = isInternal;
+exports.isExternal = isExternal;
+exports.isPrimaryUser = isPrimaryUser;
+exports.isInternalReturns = isInternalReturns;
+exports.isExternalReturns = isExternalReturns;
+exports.isARUser = isARUser;
+exports.isARApprover = isARApprover;
+exports.isAnyAR = isAnyAR;

@@ -103,15 +103,13 @@ const getWaterCompletedImports = () => {
   return getWaterImportStatus(1);
 };
 
-module.exports = {
-  getCount,
-  getIDMUserCount,
-  getKPIData,
-  getIDMKPIData,
-  getCRMDocumentCount,
-  getCRMKPIData,
-  getCRMVerificationCount,
-  getPermitCount,
-  getWaterPendingImports,
-  getWaterCompletedImports
-};
+exports.getCount = getCount;
+exports.getIDMUserCount = getIDMUserCount;
+exports.getKPIData = getKPIData;
+exports.getIDMKPIData = getIDMKPIData;
+exports.getCRMDocumentCount = getCRMDocumentCount;
+exports.getCRMKPIData = getCRMKPIData;
+exports.getCRMVerificationCount = getCRMVerificationCount;
+exports.getPermitCount = getPermitCount;
+exports.getWaterPendingImports = getWaterPendingImports;
+exports.getWaterCompletedImports = getWaterCompletedImports;

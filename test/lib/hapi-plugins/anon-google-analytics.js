@@ -1,4 +1,4 @@
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const anonGoogleAnalyticsPlugin = require('../../../src/lib/hapi-plugins/anon-google-analytics');

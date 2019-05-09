@@ -8,7 +8,7 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
-const logger = require('./logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 class NoSessionCookieError extends Error {
   constructor (message) {

@@ -33,7 +33,7 @@
     },
     "max_rate_unit": {
       "type" : "string",
-      "enum" : ["m³/s", "l/s"],
+      "enum" : ["m³/s", "m³/d", "l/s", "Ml/d"],
       "errors": {
         "required": {
           "message": "Select a rate unit"

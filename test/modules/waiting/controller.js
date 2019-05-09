@@ -100,4 +100,44 @@ experiment('getWaiting', () => {
       });
     });
   });
+
+  experiment('for an event sub type of returnInvitation', () => {
+    experiment('when the event status is processing', () => {
+      test('the waiting page is rendered', async () => {
+        waterConnector.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
+        await controller.getWaiting(request, h);
+
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/waiting/index.njk');
+      });
+
+      test('sets the correct page title', async () => {
+        waterConnector.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
+        await controller.getWaiting(request, h);
+
+        const [, context] = h.view.lastCall.args;
+        expect(context.pageTitle).to.equal('Send returns invitations');
+      });
+    });
+
+    experiment('when the event status is error', () => {
+      test('an error is thrown', async () => {
+        waterConnector.events.findOne.resolves(getTestEventResponse('error', 'returnInvitation'));
+        const err = await expect(controller.getWaiting(request, h)).to.reject();
+
+        expect(err.isBoom).to.be.true();
+        expect(err.output.statusCode).to.equal(500);
+      });
+    });
+
+    experiment('when the event status is processed', () => {
+      test('the user is redirected to the review page', async () => {
+        waterConnector.events.findOne.resolves(getTestEventResponse('processed', 'returnInvitation'));
+        await controller.getWaiting(request, h);
+
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/admin/batch-notifications/review/test-event-id');
+      });
+    });
+  });
 });

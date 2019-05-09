@@ -8,8 +8,14 @@ const getPageTitle = (ev) => {
   const name = get(ev, 'subtype');
   const config = {
     returnReminder: {
-      title: 'Send returns reminders',
-      confirmationTitle: 'Return reminders sent'
+      pageTitle: 'Send returns reminders',
+      confirmationTitle: 'Return reminders sent',
+      back: '/admin/returns-notifications/reminders'
+    },
+    returnInvitation: {
+      pageTitle: 'Send returns invitations',
+      confirmationTitle: 'Return invitations sent',
+      back: '/admin/returns-notifications/invitations'
     }
   };
   return config[name];
@@ -23,15 +29,15 @@ const getPageTitle = (ev) => {
 const getReview = async (request, h) => {
   const ev = await helpers.loadEvent(request);
 
-  const { title } = getPageTitle(ev);
+  const { pageTitle, back } = getPageTitle(ev);
 
   const view = {
     ev,
     ...request.view,
     csvPath: `/admin/batch-notifications/csv/${ev.event_id}`,
     form: confirmForm(request, ev.metadata.recipients),
-    back: `/admin/returns-notifications/reminders`,
-    pageTitle: title
+    back,
+    pageTitle
   };
   const options = { layout: false };
   return h.view('nunjucks/batch-notifications/review.njk', view, options);

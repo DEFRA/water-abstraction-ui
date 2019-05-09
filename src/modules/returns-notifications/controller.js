@@ -1,6 +1,6 @@
 const moment = require('moment');
 const Boom = require('boom');
-const { reduce, pick, uniqBy, difference } = require('lodash');
+const { reduce, pick, uniqBy, difference, last } = require('lodash');
 
 const { handleRequest, getValues, setValues } = require('../../lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
@@ -141,15 +141,22 @@ const getSendFormsSuccess = (request, h) => {
 };
 
 /**
+ * Returns view object for first page in reminders flows
+ */
+const getRemindersStartView = (request, isFinalReminder = false) => {
+  return {
+    ...request.view,
+    form: isFinalReminder ? sendFinalRemindersForm(request) : sendRemindersForm(request),
+    back: `/admin/notifications`
+  };
+};
+
+/**
  * Renders a form so that the user can send a final returns reminder letter
  * We need a form to protect against CSRF
  */
 const getFinalReminder = async (request, h) => {
-  const view = {
-    ...request.view,
-    form: sendFinalRemindersForm(request),
-    back: `/admin/notifications`
-  };
+  const view = getRemindersStartView(request, true);
   const options = { layout: false };
   return h.view('nunjucks/returns-notifications/final-reminder.njk', view, options);
 };
@@ -177,28 +184,48 @@ const postSendFinalReminder = async (request, h) => {
 
   return h.view('nunjucks/batch-notifications/confirmation.njk', view, { layout: false });
 };
-
-const getReturnsReminderStart = async (request, h) => {
-  const view = {
-    ...request.view,
-    form: sendRemindersForm(request),
-    back: `/admin/notifications`
-  };
+/**
+ * First page of Return Reminders and Return Invitations flows
+ * Renders a form for the user to enter licence numbers to be excluded for the selected
+ * notifications
+ */
+const getReturnsNotificationsStart = async (request, h) => {
+  const view = getRemindersStartView(request);
   const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/reminders.njk', view, options);
+  return h.view('nunjucks/returns-notifications/notifications.njk', view, options);
 };
-
-const postReturnsReminderStart = async (request, h) => {
+/**
+ * Returns the relevant batch notifications connector based on the current path
+ */
+const getBatchNotificationsConnector = path => {
+  const messageType = last(path.split('/'));
+  const connectors = {
+    reminders: batchNotificationsConnector.prepareReturnsReminders,
+    invitations: batchNotificationsConnector.prepareReturnsInvitations
+  };
+  return connectors[messageType];
+};
+/**
+ * Calls the relevant API point with issuer and licences data
+ * Returning event data
+ */
+const getNotificationsData = async request => {
   const form = handleRequest(sendRemindersForm(request), request, sendRemindersSchema);
 
   const { excludeLicences } = getValues(form);
   const { username: issuer } = request.auth.credentials;
 
+  const connector = getBatchNotificationsConnector(request.path);
+
+  return connector(issuer, excludeLicences);
+};
+/**
+ * Sends licences to exclude and calls the relevant API point in the water service
+ * to prepare the requested notifications
+ */
+const postReturnsNotificationsStart = async (request, h) => {
   // get the event id from the water service and redirect
-  const { data: event } = await batchNotificationsConnector.prepareReturnsReminders(
-    issuer,
-    excludeLicences
-  );
+  const { data: event } = await getNotificationsData(request);
 
   return h.redirect(`/admin/waiting/${event.eventId}`);
 };
@@ -211,5 +238,5 @@ exports.getFinalReminder = getFinalReminder;
 exports.getFinalReminderCSV = getFinalReminderCSV;
 exports.postSendFinalReminder = postSendFinalReminder;
 
-exports.getReturnsReminderStart = getReturnsReminderStart;
-exports.postReturnsReminderStart = postReturnsReminderStart;
+exports.getReturnsNotificationsStart = getReturnsNotificationsStart;
+exports.postReturnsNotificationsStart = postReturnsNotificationsStart;

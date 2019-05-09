@@ -5,7 +5,8 @@ const { sendRemindersForm } = require('../../../../src/modules/returns-notificat
 
 const request = {
   view: {
-    csrfToken: 'abc'
+    csrfToken: 'abc',
+    path: 'test/path'
   }
 };
 
@@ -22,7 +23,7 @@ experiment('sendRemindersForm', () => {
   });
 
   test('posts to the correct URL', async () => {
-    expect(form.action).to.equal('/admin/returns-notifications/reminders');
+    expect(form.action).to.equal('test/path');
     expect(form.method).to.equal('POST');
   });
 

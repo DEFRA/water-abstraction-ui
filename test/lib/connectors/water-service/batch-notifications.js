@@ -39,6 +39,32 @@ experiment('prepareReturnsReminders', () => {
   });
 });
 
+experiment('prepareReturnsInvitations', () => {
+  beforeEach(async () => {
+    sandbox.stub(serviceRequest, 'post').resolves({});
+    await batchNotificationsConnector.prepareReturnsInvitations('issuer', '1,2');
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('passes the expected URL to the request', async () => {
+    const [url] = serviceRequest.post.lastCall.args;
+    expect(url).to.equal(`${config.services.water}/batch-notifications/prepare/returnInvitation`);
+  });
+
+  test('adds the issuer to the request body', async () => {
+    const [, options] = serviceRequest.post.lastCall.args;
+    expect(options.body.issuer).to.equal('issuer');
+  });
+
+  test('adds the exclude licences values to the request body', async () => {
+    const [, options] = serviceRequest.post.lastCall.args;
+    expect(options.body.data.excludeLicences).to.equal('1,2');
+  });
+});
+
 experiment('sendReminders', () => {
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post').resolves({});

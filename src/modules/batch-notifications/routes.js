@@ -14,8 +14,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Send return reminders'
+          activeNavLink: 'notifications'
         }
       },
       validate: {

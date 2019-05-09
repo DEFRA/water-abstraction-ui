@@ -1,10 +1,11 @@
 const serviceRequest = require('../service-request');
 const config = require('../../../../config');
+const { partialRight } = require('lodash');
 
 const getBaseUrl = () => `${config.services.water}/batch-notifications`;
 
-const prepareReturnsReminders = (issuer, excludeLicences) => {
-  const url = `${getBaseUrl()}/prepare/returnReminder`;
+const prepareReturnsNotifications = (issuer, excludeLicences, messageType) => {
+  const url = `${getBaseUrl()}/prepare/${messageType}`;
   return serviceRequest.post(url, {
     body: {
       issuer,
@@ -15,6 +16,9 @@ const prepareReturnsReminders = (issuer, excludeLicences) => {
   });
 };
 
+const prepareReturnsReminders = partialRight(prepareReturnsNotifications, 'returnReminder');
+const prepareReturnsInvitations = partialRight(prepareReturnsNotifications, 'returnInvitation');
+
 const sendReminders = (eventId, issuer) => {
   const url = `${getBaseUrl()}/send/${eventId}`;
   return serviceRequest.post(url, {
@@ -23,6 +27,6 @@ const sendReminders = (eventId, issuer) => {
     }
   });
 };
-
 exports.prepareReturnsReminders = prepareReturnsReminders;
+exports.prepareReturnsInvitations = prepareReturnsInvitations;
 exports.sendReminders = sendReminders;

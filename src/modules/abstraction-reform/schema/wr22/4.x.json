@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/4.x",
+  "type": "object",
+  "title": "4.x",
+  "category": "Flow/level measurement devices",
+  "subcategory": "",
+  "description": "This licence has a non-standard condition.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.x",
+  "type": "object",
+  "title": "6.x",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "",
+  "description": "This licence has a non-standard condition.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

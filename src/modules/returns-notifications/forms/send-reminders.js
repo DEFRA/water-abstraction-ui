@@ -4,7 +4,7 @@ const { formFactory, fields } = require('../../../lib/forms');
 const sendRemindersForm = (request) => {
   const { csrfToken } = request.view;
 
-  const action = `/admin/returns-notifications/reminders`;
+  const action = request.view.path;
 
   const f = formFactory(action);
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

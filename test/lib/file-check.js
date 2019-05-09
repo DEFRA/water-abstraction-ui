@@ -2,9 +2,12 @@ const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
 const helpers = require('../../src/lib/helpers');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 const fileCheck = require('../../src/lib/file-check');
 const { experiment, test, afterEach, beforeEach } = exports.lab = Lab.script();
+
+const sandbox = sinon.createSandbox();
 
 experiment('throwIfFileDoesNotExist', () => {
   test('It returns true if file exists', async () => {
@@ -21,37 +24,31 @@ experiment('throwIfFileDoesNotExist', () => {
 });
 
 experiment('clamScan', () => {
-  let stub;
-
   beforeEach(async () => {
-    stub = sinon.stub(helpers, 'exec').resolves('OK');
+    sandbox.stub(helpers, 'exec').resolves('OK');
   });
 
   afterEach(async () => {
-    stub.restore();
+    sandbox.restore();
   });
 
   test('It should call exec with the correct command', async () => {
     await fileCheck.clamScan('test.txt');
     expect(helpers.exec.firstCall.args).to.equal(['clamdscan test.txt']);
-
-    stub.restore();
   });
 });
 
 experiment('virusCheck', () => {
-  let stub;
-
   beforeEach(async () => {
-    stub = sinon.stub(helpers, 'exec');
+    sandbox.stub(helpers, 'exec');
   });
 
   afterEach(async () => {
-    stub.restore();
+    sandbox.restore();
   });
 
   test('It should throw an error if the file does not exist', async () => {
-    stub.rejects();
+    helpers.exec.rejects();
     const func = () => {
       return fileCheck.virusCheck('test/lib/test-files/no-file-here.txt');
     };
@@ -59,7 +56,7 @@ experiment('virusCheck', () => {
   });
 
   test('It should resolve to true if a file does not contain a virus', async () => {
-    stub.resolves();
+    helpers.exec.resolves();
     const result = await fileCheck.virusCheck('test/lib/test-files/test-file.txt');
     expect(result).to.equal(true);
   });
@@ -67,20 +64,46 @@ experiment('virusCheck', () => {
   test('It should resolve to false if a file contains a virus', async () => {
     const err = new Error();
     err.code = 1;
-    stub.rejects(err);
+    helpers.exec.rejects(err);
     const result = await fileCheck.virusCheck('test/lib/test-files/eicar-test.txt');
     expect(result).to.equal(false);
   });
 });
 
-experiment('isXml', async () => {
-  test('It should return true if the file is XML', async () => {
-    const result = await fileCheck.isXml('test/lib/test-files/test-xml.xml');
+experiment('detectFileType', () => {
+  test('throws an error if the file does not exist', async () => {
+    const func = () => fileCheck.detectFileType('no-file-here.sorry');
+    expect(func()).to.reject();
+  });
+
+  test('returns "xml" if the file is XML', async () => {
+    const result = await fileCheck.detectFileType('test/lib/test-files/test-xml.xml');
+    expect(result).to.equal('xml');
+  });
+
+  test('returns "csv" if the file is CSV', async () => {
+    const result = await fileCheck.detectFileType('test/lib/test-files/test-file.csv');
+    expect(result).to.equal('csv');
+  });
+});
+
+experiment('isCsv', () => {
+  beforeEach(async () => {
+    sandbox.stub(logger, 'info');
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('resolves with true when a CSV file path is supplied', async () => {
+    const result = await fileCheck._isCsv('test/lib/test-files/test-file.csv');
     expect(result).to.equal(true);
   });
 
-  test('It should return false if the file is XML', async () => {
-    const result = await fileCheck.isXml('test/lib/test-files/test-file.txt');
+  test('resolves with false and logs message when a non-CSV file path is supplied', async () => {
+    const result = await fileCheck._isCsv('test/lib/test-files/test-xml.xml');
     expect(result).to.equal(false);
+    expect(logger.info.callCount).to.equal(1);
   });
 });

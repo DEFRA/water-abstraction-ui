@@ -4,11 +4,20 @@ const { get } = require('lodash');
 const logger = require('../../lib/logger');
 const Boom = require('boom');
 
+const getPageTitle = (ev) => {
+  const name = get(ev, 'subtype');
+  const config = {
+    returnReminder: 'Send returns reminders',
+    returnInvitation: 'Send returns invitations'
+  };
+  return config[name];
+};
+
 const handleProcessing = (request, h, event) => {
   // Still processing, render the template which will refresh in 5 seconds.
   const view = {
     ...request.view,
-    pageTitle: 'Send returns reminders',
+    pageTitle: getPageTitle(event),
     text: 'Please wait while the mailing list is assembled. This may take a few minutes. The letters will not be sent yet.'
   };
   return h.view('nunjucks/waiting/index.njk', view, { layout: false });
@@ -27,6 +36,11 @@ const handleReturnsRemindersProcessed = (request, h, event) => {
 
 const subTypeHandlers = {
   returnReminder: {
+    processing: handleProcessing,
+    processed: handleReturnsRemindersProcessed,
+    error: handleReturnReminderError
+  },
+  returnInvitation: {
     processing: handleProcessing,
     processed: handleReturnsRemindersProcessed,
     error: handleReturnReminderError

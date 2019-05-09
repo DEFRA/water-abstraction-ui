@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.x",
+  "type": "object",
+  "title": "14.x",
+  "category": "Groundwater conditions",
+  "subcategory": "",
+  "description": "This licence has a non-standard condition.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

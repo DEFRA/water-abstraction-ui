@@ -145,5 +145,33 @@ module.exports = {
         }
       }
     }
+  },
+
+  getCSVTemplates: {
+    method: 'GET',
+    path: '/returns/csv-templates',
+    handler: controller.getCSVTemplates,
+    config: {
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getUploadInstructions: {
+    method: 'GET',
+    path: '/returns/upload-instructions',
+    handler: controller.getUploadInstructions,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sending returns in bulk',
+          activeNavLink: 'returns'
+        }
+      }
+    }
   }
 };

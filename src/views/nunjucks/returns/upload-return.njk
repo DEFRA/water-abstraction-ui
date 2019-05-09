@@ -2,6 +2,15 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "forms/index.njk" import formRender %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% macro timePeriod(line) %}
+  {% if line.timePeriod == 'month' %}
+  {{ line.endDate | date('MMMM') }}
+  {% elif line.timePeriod == 'day' %}
+  {{ line.endDate | date('D MMMM') }}
+  {% elif line.timePeriod == 'week' %}
+  Week ending {{ line.endDate | date('D MMMM') }}
+  {% endif %}
+{% endmacro %}
 
 {% block content %}
 
@@ -62,6 +71,9 @@
       </dl>
 
 
+
+
+
   {% for group in lines %}
 
     <table class="govuk-table">
@@ -78,7 +90,9 @@
 
         {% for line in group.lines %}
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{{ line.startDate | date('D MMMM') }}</td>
+          <td class="govuk-table__cell" scope="row">
+            {{ timePeriod(line) }}
+          </td>
           <td class="govuk-table__cell govuk-table__header--numeric">{{ line.quantity | number }}</td>
         </tr>
         {% endfor %}

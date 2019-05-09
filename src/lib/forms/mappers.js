@@ -1,4 +1,4 @@
-const { isArray, isUndefined, negate, find } = require('lodash');
+const { trim, isArray, isUndefined, negate, find, identity } = require('lodash');
 const moment = require('moment');
 const isDefined = negate(isUndefined);
 const { extractLicenceNumbers } = require('../licence-helpers');
@@ -10,9 +10,7 @@ const defaultMapper = {
   import: (fieldName, payload) => {
     return payload[fieldName];
   },
-  export: (value) => {
-    return value;
-  }
+  export: identity
 };
 
 /**
@@ -91,18 +89,18 @@ const dateMapper = {
 
 const numberMapper = {
   import: (fieldName, payload) => {
-    const value = payload[fieldName];
+    const value = trim(payload[fieldName]).replace(/,/g, '');
+
     if (value === '') {
       return null;
     }
+
     if (!isNaN(value)) {
       return parseFloat(value);
     }
     return value;
   },
-  export: (value) => {
-    return value;
-  }
+  export: identity
 };
 
 /**
@@ -128,9 +126,7 @@ const arrayMapper = {
     const arr = isArray(value) ? value : [value];
     return arr.filter(isDefined);
   },
-  export: (value) => {
-    return value;
-  }
+  export: identity
 };
 
 const objectMapper = {
@@ -149,17 +145,13 @@ const objectMapper = {
     };
     return find(field.options.choices, findOptions);
   },
-  export: (value) => {
-    return value;
-  }
+  export: identity
 };
 
-module.exports = {
-  defaultMapper,
-  booleanMapper,
-  dateMapper,
-  numberMapper,
-  licenceNumbersMapper,
-  arrayMapper,
-  objectMapper
-};
+exports.defaultMapper = defaultMapper;
+exports.booleanMapper = booleanMapper;
+exports.dateMapper = dateMapper;
+exports.numberMapper = numberMapper;
+exports.licenceNumbersMapper = licenceNumbersMapper;
+exports.arrayMapper = arrayMapper;
+exports.objectMapper = objectMapper;

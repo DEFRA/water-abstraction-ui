@@ -67,7 +67,7 @@ const findSubcategory = (arr, schema) => {
 };
 
 /**
- * Categorises and subcategorises schema for display in schema selection page
+ * Categorises and subcategories schema for display in schema selection page
  * If no subcategory is set, it defaults to '-'
  * @param  {Array} schema - list of custom schemas
  * @return {Object}        - indexed by category, subcategory

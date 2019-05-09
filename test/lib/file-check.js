@@ -73,14 +73,19 @@ experiment('virusCheck', () => {
   });
 });
 
-experiment('isXml', async () => {
-  test('It should return true if the file is XML', async () => {
-    const result = await fileCheck.isXml('test/lib/test-files/test-xml.xml');
-    expect(result).to.equal(true);
+experiment('detectFileType', () => {
+  test('throws an error if the file does not exist', async () => {
+    const func = () => fileCheck.detectFileType('no-file-here.sorry');
+    expect(func()).to.reject();
   });
 
-  test('It should return false if the file is XML', async () => {
-    const result = await fileCheck.isXml('test/lib/test-files/test-file.txt');
-    expect(result).to.equal(false);
+  test('returns "xml" if the file is XML', async () => {
+    const result = await fileCheck.detectFileType('test/lib/test-files/test-xml.xml');
+    expect(result).to.equal('xml');
+  });
+
+  test('returns "csv" if the file is CSV', async () => {
+    const result = await fileCheck.detectFileType('test/lib/test-files/test-file.csv');
+    expect(result).to.equal('csv');
   });
 });

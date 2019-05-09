@@ -156,5 +156,22 @@ module.exports = {
         scope: allowedScopes
       }
     }
+  },
+
+  getUploadInstructions: {
+    method: 'GET',
+    path: '/returns/upload-instructions',
+    handler: controller.getUploadInstructions,
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sending returns in bulk',
+          activeNavLink: 'returns'
+        }
+      }
+    }
   }
 };

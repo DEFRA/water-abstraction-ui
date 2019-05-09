@@ -2,6 +2,6 @@
 
 {% block content %}
   {{ formErrorSummary(form) }}
-  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    {{ title(pageTitle) }}
   {{ formRender(form) }}
 {% endblock %}

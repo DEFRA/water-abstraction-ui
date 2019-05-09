@@ -1,9 +1,11 @@
 const fs = require('fs');
 const { pick } = require('lodash');
-const helpers = require('./helpers');
-const logger = require('./logger');
 const fileType = require('file-type');
 const readChunk = require('read-chunk');
+const util = require('util');
+const parseCsv = util.promisify(require('csv-parse'));
+const helpers = require('./helpers');
+const logger = require('./logger');
 
 /**
  * Throws an error if the specified file does not exist
@@ -58,23 +60,52 @@ const virusCheck = async (file) => {
 /**
  * Checkes whether supplied file is XML.
  * If the file does not exist, an error is thrown
- * @param  {[type]}  file [description]
- * @return {Boolean}      [description]
+ * @param  {String}  file - path to file
+ * @return {Boolean}
  */
-const isXml = (file) => {
-  throwIfFileDoesNotExist(file);
+
+/*
+const isXml = file => {
   const buffer = readChunk.sync(file, 0, fileType.minimumBytes);
   const result = fileType(buffer);
   if (!result) {
     return false;
   }
   const xmlTypes = ['text/xml', 'application/xml'];
-  return (result.ext === 'xml') && (xmlTypes.includes(result.mime));
+  return xmlTypes.includes(result.mime);
+};
+*/
+
+const isCsv = async file => {
+  try {
+    await parseCsv(file);
+    return true;
+  } catch (err) {
+    logger.info('invalid CSV', err);
+    return false;
+  }
+};
+
+const detectFileType = async (file) => {
+  throwIfFileDoesNotExist(file);
+
+  // Detect file types supported by file-type module
+  const buffer = readChunk.sync(file, 0, fileType.minimumBytes);
+  const result = fileType(buffer);
+  if (result) {
+    return result.ext;
+  }
+
+  // Detect CSV file
+  const isCsvResult = await isCsv(file);
+  if (isCsvResult) {
+    return 'csv';
+  }
 };
 
 module.exports = {
   throwIfFileDoesNotExist,
   clamScan,
   virusCheck,
-  isXml
+  detectFileType
 };

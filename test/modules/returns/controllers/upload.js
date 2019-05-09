@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const water = require('../../../../src/lib/connectors/water.js');
 const forms = require('../../../../src/lib/forms/index');
 const files = require('../../../../src/lib/files');
+const fileCheck = require('../../../../src/lib/file-check');
 const waterReturns = require('../../../../src/lib/connectors/water-service/returns');
 const waterCompany = require('../../../../src/lib/connectors/water-service/company');
 
@@ -98,9 +99,6 @@ experiment('upload controller', () => {
 
   beforeEach(async () => {
     header = sandbox.stub().returnsThis();
-    // const response = sandbox.stub().returns({
-    //   header: sandbox.stub().returnsThis()
-    // });
 
     h = {
       view: sandbox.stub(),
@@ -114,13 +112,14 @@ experiment('upload controller', () => {
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
-    sandbox.stub(waterReturns, 'postUpload').returns({ data: { eventId } });
+    sandbox.stub(waterReturns, 'postUpload').resolves({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
     sandbox.stub(waterReturns, 'postUploadSubmit');
     sandbox.stub(waterCompany, 'getCurrentDueReturns').resolves(companyReturns);
     sandbox.stub(csvTemplates, 'createCSVData').returns(csvData);
     sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject);
+    sandbox.stub(fileCheck, 'detectFileType').resolves('xml');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -151,11 +150,21 @@ experiment('upload controller', () => {
       expect(path).to.equal('/returns/upload?error=virus');
     });
 
-    test('it should redirect to same page with XML error message if not XML', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.NOT_XML);
+    test('it should redirect to same page with file type message if unsupported file type', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
       await controller.postXmlUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/returns/upload?error=notxml');
+      expect(path).to.equal('/returns/upload?error=invalid-type');
+    });
+
+    test('it should call the water returns upload API with the correct file type', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
+      fileCheck.detectFileType.resolves('csv');
+      await controller.postXmlUpload(createRequest(), h);
+      const [data, user, fileType] = waterReturns.postUpload.lastCall.args;
+      expect(data).to.equal('fileData');
+      expect(user).to.equal('user_1');
+      expect(fileType).to.equal('csv');
     });
   });
   experiment('getSpinnerPage', () => {

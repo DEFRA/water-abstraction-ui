@@ -8,7 +8,7 @@ const form = (request) => {
   f.fields.push(fields.file('file', {
     label: 'Upload a file',
     attr: {
-      accept: '.xml'
+      accept: '.xml,.csv'
     }
   }));
   f.fields.push(fields.paragraph('', { text: 'The licence holder is responsible for the data you are sending.' }));

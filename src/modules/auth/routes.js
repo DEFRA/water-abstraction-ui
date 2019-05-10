@@ -1,10 +1,8 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const loginHelpers = require('../../lib/login-helpers');
 
-module.exports = {
-
-  getSignIn: {
+module.exports = [
+  {
     method: 'GET',
     path: '/signin',
     handler: controller.getSignin,
@@ -13,7 +11,7 @@ module.exports = {
         strategy: 'standard',
         mode: 'try'
       },
-      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
+      // pre: [{ method: options.ifAuthenticated }],
       validate: {
         query: {
           flash: Joi.string().max(32),
@@ -30,8 +28,7 @@ module.exports = {
       }
     }
   },
-
-  postSignIn: {
+  {
     method: 'POST',
     path: '/signin',
     handler: controller.postSignin,
@@ -51,8 +48,7 @@ module.exports = {
       }
     }
   },
-
-  getSignOut: {
+  {
     method: 'GET',
     path: '/signout',
     config: {
@@ -60,8 +56,7 @@ module.exports = {
     },
     handler: controller.getSignout
   },
-
-  getSignedOut: {
+  {
     method: 'GET',
     path: '/signed-out',
     options: {
@@ -70,4 +65,4 @@ module.exports = {
     },
     handler: controller.getSignedOut
   }
-};
+];

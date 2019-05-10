@@ -32,8 +32,6 @@ const form = (request, userData) => {
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
-
-  // return setValues(f);
 };
 
 exports.selectCompanyForm = form;

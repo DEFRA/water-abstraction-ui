@@ -2,7 +2,6 @@
  * HAPI Route handlers for signing in to account
  * @module controllers/authentication
  */
-const Boom = require('boom');
 const { get } = require('lodash');
 
 const IDM = require('../../lib/connectors/idm');
@@ -12,9 +11,9 @@ const { logger } = require('@envage/water-abstraction-helpers');
 
 const { destroySession } = require('./helpers');
 
-const { selectCompanyForm, signInForm, signInSchema, signInApplyErrorState } = require('./forms');
+const { signInForm, signInSchema, signInApplyErrorState } = require('./forms');
 
-const { handleRequest, getValues } = require('../../lib/forms');
+const { handleRequest } = require('../../lib/forms');
 
 const loginHelpers = require('../../lib/login-helpers');
 
@@ -116,64 +115,7 @@ const getLoginRedirectHtml = (request, redirectPath) => {
   return meta + script;
 };
 
-/**
- * Renders select company form for current user
- * @param  {Object} request - HAPI request
- * @param  {Object} h       - HAPI reply interface
- * @param  {Object} form    - select company form object
- * @return {String}         rendered page
- */
-const renderForm = (request, h, form) => {
-  const view = {
-    ...request.view,
-    form,
-    back: '/licences',
-    pageTitle: 'Choose a licence holder'
-  };
-  return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
-};
-
-/**
- * Displays a page where the user can select the company they wish to manage
- */
-const getSelectCompany = async (request, h) => {
-  const userId = loginHelpers.getUserID(request);
-  const data = await loginHelpers.loadUserData(userId);
-  const form = selectCompanyForm(request, data);
-  return renderForm(request, h, form);
-};
-
-/**
- * POST handler for when user has selected the company they wish to manage
- * @param {String} request.payload.company - the index of the company to select
- */
-const postSelectCompany = async (request, h) => {
-  const userId = loginHelpers.getUserID(request);
-  const data = await loginHelpers.loadUserData(userId);
-  const form = handleRequest(selectCompanyForm(request, data), request);
-
-  // Set company entity and redirect if valid
-  if (form.isValid) {
-    const { company: index } = getValues(form);
-
-    const company = get(data, `companies.${index}`);
-
-    if (!company) {
-      throw Boom.badRequest(`Company not found`, { index });
-    }
-
-    // Set company ID in session cookie
-    loginHelpers.selectCompany(request, company);
-
-    // Redirect
-    return h.redirect('/licences');
-  }
-  return renderForm(request, h, form);
-};
-
 exports.getSignin = getSignin;
 exports.getSignout = getSignout;
 exports.getSignedOut = getSignedOut;
 exports.postSignin = postSignin;
-exports.getSelectCompany = getSelectCompany;
-exports.postSelectCompany = postSelectCompany;

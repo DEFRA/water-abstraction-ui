@@ -4,24 +4,6 @@ const loginHelpers = require('../../lib/login-helpers');
 
 module.exports = {
 
-  getWelcome: {
-    method: 'GET',
-    path: '/welcome',
-    handler: controller.getWelcome,
-    config: {
-      auth: {
-        strategy: 'standard',
-        mode: 'try'
-      },
-      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
-      plugins: {
-        viewContext: {
-          pageTitle: 'Sign in or create an account'
-        }
-      }
-    }
-  },
-
   getSignIn: {
     method: 'GET',
     path: '/signin',
@@ -58,19 +40,13 @@ module.exports = {
       auth: false,
       validate: {
         payload: {
-          user_id: Joi.string().max(254).allow(''),
+          email: Joi.string().max(254).allow(''),
           password: Joi.string().max(128).allow('')
         }
       },
       plugins: {
         viewContext: {
           pageTitle: 'Sign in - Manage your water abstraction or impoundment licence'
-        },
-        formValidator: {
-          payload: {
-            user_id: Joi.string().email().required(),
-            password: Joi.string().required()
-          }
         }
       }
     }

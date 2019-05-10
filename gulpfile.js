@@ -80,6 +80,18 @@ gulp.task('combine-minify-js', () => {
     .pipe(gulp.dest('./public/javascripts'));
 });
 
+gulp.task('combine-minify-js-nunjucks', () => {
+  // All JS files that are required by front end in order
+  const files = [
+    './node_modules/iframe-resizer/js/iframeResizer.min.js'
+  ];
+
+  return gulp.src(files)
+    .pipe(concat('application-v2.all.min.js'))
+    .pipe(uglify({ ie8: true }))
+    .pipe(gulp.dest('./public/javascripts'));
+});
+
 gulp.task('copy-static-assets-orig', () => {
   // copy images and javascript to public
   return gulp
@@ -120,6 +132,7 @@ gulp.task('copy-static-styles', () => {
 gulp.task('copy-static-assets', gulp.series(
   'copy-static-assets-orig',
   'combine-minify-js',
+  'combine-minify-js-nunjucks',
   'copy-static-javascript',
   'copy-static-styles',
   done => done()

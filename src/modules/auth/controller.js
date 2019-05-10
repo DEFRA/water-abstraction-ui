@@ -10,27 +10,27 @@ const signIn = require('../../lib/sign-in');
 const { isInternal } = require('../../lib/permissions');
 const { logger } = require('@envage/water-abstraction-helpers');
 
-const { destroySession, authValidationErrorResponse } = require('./helpers');
+const { destroySession } = require('./helpers');
 
-const { selectCompanyForm } = require('./forms/select-company');
+const { selectCompanyForm, signInForm, signInSchema, signInApplyErrorState } = require('./forms');
+
 const { handleRequest, getValues } = require('../../lib/forms');
 
 const loginHelpers = require('../../lib/login-helpers');
-
-/**
- * Welcome page before routing to signin/register
- */
-function getWelcome (request, h) {
-  return h.view('water/welcome', request.view);
-}
 
 /**
  * View signin page
  * @param {Object} request - the HAPI HTTP request
  * @param {Object} h - the Hapi Response Toolkit
  */
-function getSignin (request, h) {
-  return h.view('water/auth/signin', request.view);
+function getSignin (request, h, form) {
+  const view = {
+    ...request.view,
+    form: form || signInForm(),
+    pageTitle: 'Sign in',
+    showResetMessage: request.query.flash === 'password-reset'
+  };
+  return h.view('nunjucks/auth/sign-in.njk', view, { layout: false });
 }
 
 /**
@@ -59,7 +59,7 @@ async function getSignedOut (request, h) {
 
   request.view.surveyType = surveyType[request.query.u] || 'anonymous';
   request.view.pageTitle = 'You are signed out';
-  return h.view('water/auth/signed-out', request.view);
+  return h.view('nunjucks/auth/signed-out.njk', request.view, { layout: false });
 }
 
 /**
@@ -69,10 +69,12 @@ async function getSignedOut (request, h) {
  * @param {String} request.payload.password - the user password
  * @param {Object} h - the Hapi Response Toolkit
  */
-async function postSignin (request, h) {
-  // Handle form validation error
-  if (request.formError) {
-    return authValidationErrorResponse(request, h);
+const postSignin = async (request, h) => {
+  const form = handleRequest(signInForm(), request, signInSchema);
+
+  // Perform basic validation
+  if (!form.isValid) {
+    return getSignin(request, h, signInApplyErrorState(form));
   }
 
   // Attempt auth
@@ -82,7 +84,7 @@ async function postSignin (request, h) {
         reset_required: resetRequired,
         reset_guid: resetGuid
       }
-    } = await IDM.login(request.payload.user_id, request.payload.password);
+    } = await IDM.login(request.payload.email, request.payload.password);
 
     await destroySession(request);
 
@@ -91,7 +93,7 @@ async function postSignin (request, h) {
       return h.redirect(`reset_password_change_password?resetGuid=${resetGuid}&forced=1`);
     }
 
-    await signIn.auto(request, request.payload.user_id);
+    await signIn.auto(request, request.payload.email);
 
     // Redirect user
     const path = await loginHelpers.getLoginRedirectPath(request);
@@ -101,11 +103,11 @@ async function postSignin (request, h) {
     return h.response(getLoginRedirectHtml(request, path));
   } catch (error) {
     if (error.statusCode === 401) {
-      return authValidationErrorResponse(request, h);
+      return getSignin(request, h, signInApplyErrorState(form));
     }
     throw error;
   }
-}
+};
 
 const getLoginRedirectHtml = (request, redirectPath) => {
   const nonce = get(request, 'plugins.blankie.nonces.script', {});
@@ -169,7 +171,6 @@ const postSelectCompany = async (request, h) => {
   return renderForm(request, h, form);
 };
 
-exports.getWelcome = getWelcome;
 exports.getSignin = getSignin;
 exports.getSignout = getSignout;
 exports.getSignedOut = getSignedOut;

@@ -2,6 +2,7 @@
 
 {% macro formButtonWidget(field) %}
 {{ govukButton({
-  text: field.options.label
+  text: field.options.label,
+  classes: field.options.controlClass
 }) }}
 {% endmacro %}

@@ -9,6 +9,13 @@ const index = async (request, h) => {
 };
 
 /**
+ * Welcome page before routing to signin/register
+ */
+function getWelcome (request, h) {
+  return h.view('nunjucks/core/welcome.njk', request.view, { layout: false });
+}
+
+/**
  * 404 page
  */
 const getNotFoundError = (request, h) => {
@@ -23,5 +30,6 @@ const getNotFoundError = (request, h) => {
 };
 module.exports = {
   index,
+  getWelcome,
   getNotFoundError
 };

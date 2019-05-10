@@ -3,7 +3,7 @@ const textFactory = (name, opts = {}, value) => {
     label: '',
     widget: 'text',
     required: true,
-    type: 'text',
+    type: opts.type || 'text',
     controlClass: 'form-control',
     autoComplete: true
   };

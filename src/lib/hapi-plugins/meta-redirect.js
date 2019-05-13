@@ -8,20 +8,21 @@ const { get } = require('lodash');
  */
 const metaRedirect = function (redirectPath) {
   const nonce = get(this, 'request.plugins.blankie.nonces.script', {});
-  const meta = `<meta http-equiv="refresh" content="0; url=${redirectPath}" />`;
+  const meta = `<meta http-equiv="refresh" content="0; url="${redirectPath}" />`;
   const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`;
   const html = meta + script;
   return this.response(html);
 };
 
 module.exports = {
-  register: (server, options) => {
+  register: (server) => {
     server.decorate('toolkit', 'metaRedirect', metaRedirect);
   },
 
   pkg: {
     name: 'metaRedirectPlugin',
     version: '1.0.0'
-  }
+  },
 
+  _metaRedirect: metaRedirect
 };

@@ -39,7 +39,7 @@ const authPlugin = {
     },
     onSignOut: (request, h) => {
       const params = `?u=${isInternal(request) ? 'i' : 'e'}`;
-      return h.redirect(`/signed-out${params}`);
+      return h.metaRedirect(`/signed-out${params}`);
     }
   } };
 

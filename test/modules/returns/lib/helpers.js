@@ -209,6 +209,25 @@ experiment('isXmlUpload', () => {
         $in: ['01/123', '04/567']
       });
     });
+
+    experiment('for a summer return cycle', () => {
+      beforeEach(async () => {
+        await helpers.isXmlUpload(['01/123', '04/567'], '2019-11-01');
+        filter = returnsConnector.findMany.lastCall.args[0];
+      });
+
+      test('are in the current return cycle', async () => {
+        console.log(filter);
+        expect(filter['metadata->>isSummer']).to.equal('true');
+        expect(filter.start_date).to.equal({
+          $gte: '2018-11-01'
+        });
+        expect(filter.end_date).to.equal({
+          $gte: '2018-10-31',
+          $lte: '2019-10-31'
+        });
+      });
+    });
   });
 
   experiment('pagination.totalRows === 0', () => {

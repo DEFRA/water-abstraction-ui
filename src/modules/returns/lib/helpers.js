@@ -115,7 +115,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
  * @return {Promise<boolean>} if user has XML Upload functionality
  */
 const isXmlUpload = async (licenceNumbers, refDate) => {
-  const cycle = getCurrentCycle(undefined, refDate);
+  const cycle = getCurrentCycle(refDate);
 
   const filter = {
     'metadata->>isUpload': 'true',

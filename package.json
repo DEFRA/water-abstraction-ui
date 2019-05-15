@@ -12,7 +12,6 @@
     "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
     "test": "lab",
     "test-cov-html": "lab -r html -o coverage.html",
-    "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "eslint .",
     "codecov": "codecov",
     "sass": "gulp sass",
@@ -111,12 +110,6 @@
     "uuid": "^3.3.2",
     "winston": "^2.4.3",
     "yar": "^8.1.2"
-  },
-  "standard": {
-    "ignore": [
-      "node_modules/",
-      "public/"
-    ]
   },
   "snyk": true
 }

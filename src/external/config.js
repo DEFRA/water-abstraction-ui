@@ -80,7 +80,7 @@ module.exports = {
   },
 
   server: {
-    port: process.env.PORT,
+    port: process.env.PORT || 8000,
     router: {
       stripTrailingSlash: true
     }
@@ -95,5 +95,4 @@ module.exports = {
   },
 
   testMode
-
 };

@@ -49,15 +49,8 @@ gulp.task('copy-frontend-toolkit-assets', () => {
     .pipe(gulp.dest(paths.public));
 });
 
-gulp.task('copy-template-view', () => {
-  return gulp
-    .src('node_modules/govuk_template_mustache/views/**/*.*')
-    .pipe(gulp.dest('views/govuk_template_mustache'));
-});
-
 gulp.task('install-govuk-files', gulp.series(
   'copy-template-assets',
-  'copy-template-view',
   'copy-frontend-toolkit-assets',
   done => done()
 ));
@@ -75,8 +68,8 @@ gulp.task('combine-minify-js', () => {
     './public/javascripts/vendor/polyfills/bind.js',
     './public/javascripts/govuk/shim-links-with-button-role.js',
     './public/javascripts/govuk/show-hide-content.js',
-    './src/public/javascripts/govuk/details.polyfill.js',
-    './src/public/javascripts/application.js',
+    './src/shared/public/javascripts/govuk/details.polyfill.js',
+    './src/shared/public/javascripts/application.js',
     './node_modules/iframe-resizer/js/iframeResizer.min.js'
   ];
 
@@ -95,7 +88,7 @@ gulp.task('combine-minify-js-nunjucks', () => {
 gulp.task('copy-static-assets-orig', () => {
   // copy images and javascript to public
   return gulp
-    .src('src/public/{images/**/*.*,javascripts/**/*.*,stylesheets/**/*.*,data/**/*.*}')
+    .src('src/shared/public/{images/**/*.*,javascripts/**/*.*,stylesheets/**/*.*,data/**/*.*}')
     .pipe(gulp.dest(paths.public));
 });
 
@@ -140,7 +133,7 @@ gulp.task('copy-static-assets', gulp.series(
 
 // Build the sass-proto
 gulp.task('sass', () => {
-  return gulp.src('src/assets/sass/**/*.scss')
+  return gulp.src('src/shared/assets/sass/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass({
       outputStyle: 'expanded',
@@ -158,7 +151,7 @@ gulp.task('sass', () => {
 });
 
 gulp.task('sass:watch', () => {
-  return gulp.watch('src/assets/sass/**/*.scss', gulp.series('sass'));
+  return gulp.watch('src/shared/assets/sass/**/*.scss', gulp.series('sass'));
 });
 
 // Build task

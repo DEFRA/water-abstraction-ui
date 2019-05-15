@@ -12,7 +12,6 @@ module.exports = [
       directory: {
         path: 'public/',
         listing: false
-
       }
     }
   },
@@ -57,7 +56,6 @@ module.exports = [
       directory: {
         path: 'public/javascripts',
         listing: false
-
       }
     }
   }

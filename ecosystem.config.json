@@ -3,11 +3,12 @@
     {
       "name": "ui",
       "ignore_watch": [
-        "node_modules",
+        "coverage",
         "data",
+        "node_modules",
         "test"
       ],
-      "script": "index.js",
+      "script": "server-external.js",
       "env": {
         "watch": true
       },

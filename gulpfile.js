@@ -1,7 +1,6 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
-const standard = require('gulp-standard');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const del = require('del');
@@ -160,16 +159,6 @@ gulp.task('sass', () => {
 
 gulp.task('sass:watch', () => {
   return gulp.watch('src/assets/sass/**/*.scss', gulp.series('sass'));
-});
-
-// Run StardardJS checks
-gulp.task('standard', () => {
-  return gulp.src(['src/**/*.js'])
-    .pipe(standard())
-    .pipe(standard.reporter('default', {
-      breakOnError: true,
-      quiet: true
-    }));
 });
 
 // Build task

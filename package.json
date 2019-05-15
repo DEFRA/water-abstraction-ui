@@ -13,7 +13,7 @@
     "test": "lab",
     "test-cov-html": "lab -r html -o coverage.html",
     "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
-    "lint": "eslint ./src/**/*.js",
+    "lint": "eslint .",
     "codecov": "codecov",
     "sass": "gulp sass",
     "sass:watch": "gulp sass:watch",

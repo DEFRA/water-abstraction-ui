@@ -19,7 +19,7 @@ const getPurposes = (data) => {
  * @param
  */
 const getPurpose = (data, purposeId) => {
-  return find(getPurposes(data), {ID: purposeId});
+  return find(getPurposes(data), { ID: purposeId });
 };
 
 /**

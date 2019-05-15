@@ -71,7 +71,7 @@ const loadAbstractionReformLicences = async (crmLicences) => {
   const { data, error } = await licences.findMany(arFilter);
 
   if (error) {
-    throw new Boom.badImplementation(error);
+    throw Boom.badImplementation(error);
   }
 
   return data;
@@ -91,13 +91,13 @@ const search = async (q) => {
     system_external_id: +1
   };
 
-    // Get licences from CRM
+  // Get licences from CRM
   const { data, error, pagination } = await documents.findMany(filter, sort, {
     page,
     perPage
   });
   if (error) {
-    throw new Boom.badImplementation(error);
+    throw Boom.badImplementation(error);
   }
 
   // Now we need to match up with AR licences

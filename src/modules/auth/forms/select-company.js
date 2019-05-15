@@ -1,4 +1,4 @@
-const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../lib/forms');
 
 const mapChoices = userData => {
   return userData.companies.map((company, index) => ({

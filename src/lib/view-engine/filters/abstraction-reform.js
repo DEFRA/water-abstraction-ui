@@ -1,5 +1,3 @@
-const deepMap = require('deep-map');
-const Nunjucks = require('nunjucks');
 const Entities = require('html-entities').AllHtmlEntities;
 const htmlEntityEncoder = new Entities();
 

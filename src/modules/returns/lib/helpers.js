@@ -1,7 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
 const moment = require('moment');
-const { get, isObject, findLastKey } = require('lodash');
+const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
@@ -12,6 +12,16 @@ const crmConnector = require('../../../lib/connectors/crm');
 
 const { getReturnPath } = require('./return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const helpers = require('@envage/water-abstraction-helpers');
+
+/**
+ * Gets the current return cycle object
+ * @param  {String} [date] - reference date, for unit testing
+ * @return {Object}      { startDate, endDate, isSummer }
+ */
+const getCurrentCycle = (date) => {
+  return last(helpers.returns.date.createReturnCycles(undefined, date));
+};
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -101,14 +111,22 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
 /**
  * Checks whether user uses XML Upload for a list of licence numbers
  * @param {Array} licenceNumbers to check if isUpload flag is true
+ * @param {String} [refDate] todays date, used for unit testing
  * @return {Promise<boolean>} if user has XML Upload functionality
  */
-const isXmlUpload = async (licenceNumbers) => {
+const isXmlUpload = async (licenceNumbers, refDate) => {
+  const cycle = getCurrentCycle(refDate);
+
   const filter = {
     'metadata->>isUpload': 'true',
     'metadata->>isCurrent': 'true',
+    'metadata->>isSummer': cycle.isSummer ? 'true' : 'false',
     status: 'due',
-    end_date: { '$gte': '2018-10-31' },
+    start_date: { $gte: cycle.startDate },
+    end_date: {
+      $gte: '2018-10-31',
+      $lte: cycle.endDate
+    },
     licence_ref: { '$in': licenceNumbers }
   };
 

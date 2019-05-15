@@ -19,7 +19,8 @@ function sendNotifyMessage (messageRef, recipient, personalisation) {
       const data = response.body;
       return data;
     }).catch(response => {
-      logger.error('Error sending notify message', response.error);
+      const { error } = response;
+      logger.error('Error sending notify message', { error });
       return response;
     });
 }

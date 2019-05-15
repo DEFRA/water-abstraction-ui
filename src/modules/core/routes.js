@@ -1,5 +1,6 @@
 const { VALID_UTM } = require('../../lib/validators');
 const controller = require('./controller');
+const loginHelpers = require('../../lib/login-helpers');
 
 module.exports = {
 
@@ -79,6 +80,24 @@ module.exports = {
       auth: {
         strategy: 'standard',
         mode: 'try'
+      }
+    }
+  },
+
+  getWelcome: {
+    method: 'GET',
+    path: '/welcome',
+    handler: controller.getWelcome,
+    config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sign in or create an account'
+        }
       }
     }
   }

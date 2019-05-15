@@ -25,6 +25,24 @@ const { logger } = require('@envage/water-abstraction-helpers');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 logger.init(config.logger);
 
+// Configure auth plugin
+const loginHelpers = require('./src/lib/login-helpers');
+const { isInternal } = require('./src/lib/permissions');
+const authPlugin = {
+  plugin: require('./src/modules/auth'),
+  options: {
+    ifAuthenticated: loginHelpers.preRedirectIfAuthenticated,
+    onSignIn: async (request, h) => {
+      // Redirect user
+      const path = await loginHelpers.getLoginRedirectPath(request);
+      return h.metaRedirect(path);
+    },
+    onSignOut: (request, h) => {
+      const params = `?u=${isInternal(request) ? 'i' : 'e'}`;
+      return h.metaRedirect(`/signed-out${params}`);
+    }
+  } };
+
 // Define server
 const server = Hapi.server(config.server);
 
@@ -83,7 +101,8 @@ async function start () {
     // Set up Nunjucks view engine
     server.views(viewEngine);
 
-    // Import routes
+    // Auth plugin
+    await server.register(authPlugin);
     server.route(routes);
 
     await server.start();

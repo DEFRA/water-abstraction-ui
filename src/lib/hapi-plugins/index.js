@@ -3,6 +3,7 @@ module.exports = {
   sessions: require('./sessions'),
   csrf: require('./csrf'),
   adminFirewall: require('./admin-firewall'),
+  metaRedirect: require('./meta-redirect'),
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),
 

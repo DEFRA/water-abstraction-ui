@@ -1,3 +1,4 @@
+{% macro feedbackSurveyItem(nonces, frameId, surveyId) %}
 <script nonce="{{nonces.script}}">
   window.resizeSurveyFrame = function () {
     var options = { heightCalculationMethod: 'lowestElement' };
@@ -13,3 +14,4 @@
 <script nonce="{{nonces.script}}">
   document.getElementById('ss-embed-frame-{{frameId}}').addEventListener('load', window.resizeSurveyFrame);
 </script>
+{% endmacro %}

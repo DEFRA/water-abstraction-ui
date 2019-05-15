@@ -31,6 +31,7 @@ const mapFormField = (field) => {
   const options = {
     id: field.name,
     name: field.name,
+    type: field.options.type,
     label: {
       text: field.options.label
     },

@@ -1,5 +1,4 @@
 const addLicencesRoutes = require('./add-licences/routes');
-const authRoutes = require('./auth/routes');
 const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
 const manageLicencesRoutes = require('./manage-licences/routes');
@@ -21,10 +20,10 @@ const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 const waiting = require('./waiting/routes');
 const batchNotifications = require('./batch-notifications/routes');
+const companySelector = require('./company-selector/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
-  ...Object.values(authRoutes),
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
   ...Object.values(registrationRoutes),
@@ -45,5 +44,6 @@ module.exports = [
   ...Object.values(returnsReports),
   ...Object.values(internalSearch),
   ...Object.values(waiting),
-  ...Object.values(batchNotifications)
+  ...Object.values(batchNotifications),
+  ...Object.values(companySelector)
 ];

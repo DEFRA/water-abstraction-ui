@@ -63,6 +63,13 @@ gulp.task('install-govuk-files', gulp.series(
   done => done()
 ));
 
+const combineMinifyJs = (files, destination) => {
+  return gulp.src(files)
+    .pipe(concat(destination))
+    .pipe(uglify({ ie8: true }))
+    .pipe(gulp.dest('./public/javascripts'));
+};
+
 gulp.task('combine-minify-js', () => {
   // All JS files that are required by front end in order
   const files = [
@@ -74,10 +81,16 @@ gulp.task('combine-minify-js', () => {
     './node_modules/iframe-resizer/js/iframeResizer.min.js'
   ];
 
-  return gulp.src(files)
-    .pipe(concat('application.all.min.js'))
-    .pipe(uglify({ ie8: true }))
-    .pipe(gulp.dest('./public/javascripts'));
+  return combineMinifyJs(files, 'application.all.min.js');
+});
+
+gulp.task('combine-minify-js-nunjucks', () => {
+  // All JS files that are required by front end in order
+  const files = [
+    './node_modules/iframe-resizer/js/iframeResizer.min.js'
+  ];
+
+  return combineMinifyJs(files, 'application-v2.all.min.js');
 });
 
 gulp.task('copy-static-assets-orig', () => {
@@ -120,6 +133,7 @@ gulp.task('copy-static-styles', () => {
 gulp.task('copy-static-assets', gulp.series(
   'copy-static-assets-orig',
   'combine-minify-js',
+  'combine-minify-js-nunjucks',
   'copy-static-javascript',
   'copy-static-styles',
   done => done()

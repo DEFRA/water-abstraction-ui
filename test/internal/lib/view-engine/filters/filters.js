@@ -4,7 +4,7 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const { handleRequest } = require('../../../../../src/internal/lib/forms');
+const { handleRequest } = require('../../../../../src/shared/lib/forms');
 
 const {
   mapFormField,

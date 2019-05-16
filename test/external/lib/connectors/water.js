@@ -9,7 +9,7 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const waterConnector = require('../../../../src/external/lib/connectors/water');
-const serviceRequest = require('../../../../src/external/lib/connectors/service-request');
+const serviceRequest = require('../../../../src/shared/lib/connectors/service-request');
 const config = require('../../../../src/external/config');
 
 beforeEach(async () => {

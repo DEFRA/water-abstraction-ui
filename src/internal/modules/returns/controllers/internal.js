@@ -6,7 +6,7 @@ const { isInternal: isInternalUser } = require('../../../lib/permissions');
 const helpers = require('../lib/helpers');
 const sessionHelpers = require('../lib/session-helpers');
 
-const { handleRequest, getValues } = require('../../../lib/forms');
+const { handleRequest, getValues } = require('../../../../shared/lib/forms');
 
 const {
   applyStatus,

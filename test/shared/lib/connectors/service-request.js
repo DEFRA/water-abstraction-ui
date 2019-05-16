@@ -4,8 +4,8 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const http = require('../../../../src/external/lib/connectors/http');
-const serviceRequest = require('../../../../src/external/lib/connectors/service-request');
+const http = require('../../../../src/shared/lib/connectors/http');
+const serviceRequest = require('../../../../src/shared/lib/connectors/service-request');
 
 const getExpectedOptions = (method, data) => {
   return {

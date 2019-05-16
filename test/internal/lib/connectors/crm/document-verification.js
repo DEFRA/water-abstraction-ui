@@ -4,7 +4,7 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const serviceRequest = require('../../../../../src/internal/lib/connectors/service-request');
+const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
 const crmConnector = require('../../../../../src/internal/lib/connectors/crm/document-verification');
 
 experiment('getDocumentVerifications', () => {

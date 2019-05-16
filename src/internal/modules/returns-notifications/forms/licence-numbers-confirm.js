@@ -1,4 +1,4 @@
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const licenceNumbersForm = (request) => {
   const { csrfToken } = request.view;

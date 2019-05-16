@@ -2,7 +2,7 @@ const moment = require('moment');
 const Boom = require('boom');
 const { reduce, pick, uniqBy, difference, last } = require('lodash');
 
-const { handleRequest, getValues, setValues } = require('../../lib/forms');
+const { handleRequest, getValues, setValues } = require('../../../shared/lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
 const confirmLicenceNumbersForm = require('./forms/licence-numbers-confirm');

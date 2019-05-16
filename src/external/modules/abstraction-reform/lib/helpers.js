@@ -1,6 +1,13 @@
 const deepMap = require('deep-map');
 const { pickBy, isArray, isObject, mapValues, pick, setWith, find } = require('lodash');
-const { getPurposes, getPoints, getConditions, getCurrentVersion, getCurrentVersionParty, getCurrentVersionAddress } = require('./licence-helpers');
+const {
+  getPurposes,
+  getPoints,
+  getConditions,
+  getCurrentVersion,
+  getCurrentVersionParty,
+  getCurrentVersionAddress
+} = require('../../../../shared/lib/licence-helpers');
 const { getWR22 } = require('./schema');
 const { parseNaldDataURI } = require('../../../lib/nald-uri-parser');
 

@@ -2,7 +2,7 @@
 
 const { get, flatMap } = require('lodash');
 const { searchForm, searchFormSchema } = require('./forms/search-form');
-const { handleRequest, getValues } = require('../../lib/forms');
+const { handleRequest, getValues } = require('../../../shared/lib/forms');
 const water = require('../../lib/connectors/water');
 const waterServiceUserConnector = require('../../lib/connectors/water-service/user');
 const { mapResponseToView } = require('./lib/api-response-mapper');

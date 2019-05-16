@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields } = require('../../../../../src/external/lib/forms');
+const { formFactory, fields } = require('../../../../../src/shared/lib/forms');
 
 const textField = fields.text('text_field', {
   label: 'A text field',

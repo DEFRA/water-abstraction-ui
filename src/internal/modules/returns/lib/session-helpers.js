@@ -1,7 +1,7 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
 const { applyUserDetails, applyCleanup } = require('./return-helpers');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../logger');
 const { isInternal } = require('../../../lib/permissions');
 
 /**

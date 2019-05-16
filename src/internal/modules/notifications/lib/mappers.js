@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { licenceNumbersMapper } = require('../../../lib/forms/mappers');
+const { licenceNumbersMapper } = require('../../../../shared/lib/forms/mappers');
 
 /**
  * Default mapper - simply extracts the value of the named field

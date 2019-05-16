@@ -9,11 +9,16 @@ const { difference } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../lib/helpers');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../logger');
 const loginHelpers = require('../../lib/login-helpers');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const { checkLicenceSimilarity, checkNewLicenceSimilarity, extractLicenceNumbers, uniqueAddresses } = require('../../lib/licence-helpers');
-const forms = require('../../lib/forms');
+const {
+  checkLicenceSimilarity,
+  checkNewLicenceSimilarity,
+  extractLicenceNumbers,
+  uniqueAddresses
+} = require('../../../shared/lib/licence-helpers');
+const forms = require('../../../shared/lib/forms');
 const { faoForm, faoSchema } = require('./forms/for-attention-of');
 const { selectAddressForm, selectAddressSchema } = require('./forms/select-address');
 

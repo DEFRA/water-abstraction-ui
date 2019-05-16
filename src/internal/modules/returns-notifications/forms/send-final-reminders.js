@@ -1,4 +1,4 @@
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 /**
  * Creates a form object containing a single button and hidden CSRF token field

@@ -1,6 +1,6 @@
 const { pick } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const serviceRequest = require('../service-request');
+const serviceRequest = require('../../../../shared/lib/connectors/service-request');
 const urlJoin = require('url-join');
 const config = require('../../../config');
 

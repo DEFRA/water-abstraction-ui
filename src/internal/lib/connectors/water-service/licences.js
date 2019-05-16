@@ -1,4 +1,4 @@
-const serviceRequest = require('../service-request');
+const serviceRequest = require('../../../../shared/lib/connectors/service-request');
 const config = require('../../../config');
 
 const get = (documentId, tail, includeExpired = false) => {

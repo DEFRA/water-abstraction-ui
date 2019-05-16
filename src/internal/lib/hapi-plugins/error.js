@@ -7,7 +7,7 @@
  * @module lib/hapi-error-plugin
  */
 const { contextDefaults } = require('../view');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../logger');
 const { get, pick } = require('lodash');
 
 const getStatusCode = request => get(request, 'response.output.statusCode');

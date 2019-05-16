@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const adapter = require('../../../../../src/external/lib/forms/validationAdapters/json-schema');
+const adapter = require('../../../../../src/shared/lib/forms/validationAdapters/json-schema');
 
 experiment('validate', () => {
   const shallowSchema = {

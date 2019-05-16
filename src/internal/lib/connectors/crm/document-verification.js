@@ -4,7 +4,7 @@
  */
 const { APIClient } = require('@envage/hapi-pg-rest-api');
 const rp = require('request-promise-native').defaults({ proxy: null, strictSSL: false });
-const serviceRequest = require('../service-request');
+const serviceRequest = require('../../../../shared/lib/connectors/service-request');
 
 // Create API client
 const client = new APIClient(rp, {

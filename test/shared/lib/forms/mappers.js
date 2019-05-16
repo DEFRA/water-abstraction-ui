@@ -6,8 +6,14 @@ const {
 } = exports.lab = require('lab').script();
 
 const { expect } = require('code');
-const { licenceNumbersMapper, numberMapper, booleanMapper, defaultMapper,
-  dateMapper, arrayMapper } = require('../../../../src/external/lib/forms/mappers');
+const {
+  licenceNumbersMapper,
+  numberMapper,
+  booleanMapper,
+  defaultMapper,
+  dateMapper,
+  arrayMapper
+} = require('../../../../src/shared/lib/forms/mappers');
 
 experiment('defaultMapper', () => {
   const payload = {

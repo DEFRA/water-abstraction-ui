@@ -1,5 +1,5 @@
 const { flatMap, find, sortBy } = require('lodash');
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const mapSchemaToChoice = schema => {
   return {

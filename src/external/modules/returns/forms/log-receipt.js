@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const moment = require('moment');
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 const { STEP_LOG_RECEIPT, getPath } = require('../lib/flow-helpers');
 
 const getMinimumDate = () => moment().subtract(1, 'years');

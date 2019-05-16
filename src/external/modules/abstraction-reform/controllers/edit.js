@@ -1,11 +1,20 @@
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
-const { handleRequest, getValues } = require('../../../lib/forms');
+const { handleRequest, getValues } = require('../../../../shared/lib/forms');
 const { load, update } = require('../lib/loader');
 const { extractData, transformNulls, prepareData } = require('../lib/helpers');
 const { getPermissions } = require('../lib/permissions');
-const { getPurpose, getLicence, getPoint, getCondition, getVersion, getParty, getAddress } = require('../lib/licence-helpers');
+const {
+  getPurpose,
+  getLicence,
+  getPoint,
+  getCondition,
+  getVersion,
+  getParty,
+  getAddress
+} = require('../../../../shared/lib/licence-helpers');
+
 const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('../lib/action-creators');
 const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');

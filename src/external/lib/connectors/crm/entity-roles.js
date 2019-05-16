@@ -3,14 +3,14 @@
  * @module lib/connectors/crm/entity-roles
  */
 const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
-const serviceRequest = require('../service-request');
+const serviceRequest = require('../../../../shared/lib/connectors/service-request');
 
 const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
 
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../logger');
 
 // Create API client
 const client = new APIClient(rp, {

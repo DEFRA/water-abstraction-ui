@@ -1,9 +1,9 @@
-const apiClientFactory = require('./api-client-factory');
-const serviceRequest = require('./service-request');
+const apiClientFactory = require('../../../shared/lib/connectors/api-client-factory');
+const serviceRequest = require('../../../shared/lib/connectors/service-request');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../logger');
 const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
 const { getInternalSearchResults } = require('./water-service/internal-search');
 

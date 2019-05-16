@@ -7,7 +7,7 @@ const Boom = require('boom');
 const sandbox = sinon.createSandbox();
 
 const plugin = require('../../../../src/internal/lib/hapi-plugins/error');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../../src/internal/logger');
 
 const createRequest = (error = {}) => {
   return {

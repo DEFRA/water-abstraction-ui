@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { test, experiment } = exports.lab = require('lab').script();
-const { mapFields } = require('../../../../src/external/lib/forms/mapFields');
+const { mapFields } = require('../../../../src/shared/lib/forms/mapFields');
 
 const square = x => x ** 2;
 

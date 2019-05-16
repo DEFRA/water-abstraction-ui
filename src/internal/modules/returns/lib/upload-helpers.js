@@ -1,5 +1,5 @@
 const { get } = require('lodash');
-const { applyErrors } = require('../../../lib/forms');
+const { applyErrors } = require('../../../../shared/lib/forms');
 const fileCheck = require('../../../lib/file-check');
 const fs = require('fs');
 const path = require('path');

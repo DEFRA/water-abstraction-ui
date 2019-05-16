@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const moment = require('moment');
 const { first, last, get } = require('lodash');
-const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { formFactory, fields, setValues } = require('../../../../shared/lib/forms');
 const { getPath, STEP_SINGLE_TOTAL_DATES } = require('../lib/flow-helpers');
 const { getFormLines } = require('../lib/return-helpers');
 

@@ -8,7 +8,7 @@ const { scope: { internal, external } } = require('../../../../../src/external/l
 const returnPath = require('../../../../../src/external/modules/returns/lib/return-path');
 const permissions = require('../../../../../src/external/lib/permissions');
 const sessionHelpers = require('../../../../../src/external/modules/returns/lib/session-helpers');
-const forms = require('../../../../../src/external/lib/forms');
+const forms = require('../../../../../src/shared/lib/forms');
 const flowHelpers = require('../../../../../src/external/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();

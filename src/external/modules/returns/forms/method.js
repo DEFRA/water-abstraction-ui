@@ -1,5 +1,5 @@
 const { get } = require('lodash');
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 const { STEP_METHOD, getPath } = require('../lib/flow-helpers');
 
 const getValue = data => {

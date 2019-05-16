@@ -5,7 +5,7 @@
  * It must also parse the request payload of the current step, and for fields
  * such as dates which have multiple fields for a single value, mappers
  * allow the mapping of data to and from these fields
- * @module src/external/modules/notifications/task-data
+ * @module src/internal/modules/notifications/task-data
  */
 const nunjucks = require('nunjucks');
 const Joi = require('joi');

@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { get } = require('lodash');
-const { formFactory, fields, setValues } = require('../../../lib/forms');
+const { formFactory, fields, setValues } = require('../../../../shared/lib/forms');
 const { getFormLines, getLineLabel, getLineName, getLineValues } = require('../lib/return-helpers');
 const { STEP_QUANTITIES, getPath } = require('../lib/flow-helpers');
 const { getSuffix } = require('../lib/helpers');

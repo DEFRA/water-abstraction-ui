@@ -6,7 +6,7 @@ const snakeCase = require('snake-case');
 const util = require('util');
 const csvStringify = util.promisify(require('csv-stringify'));
 const archiver = require('archiver');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../logger');
 const readFile = util.promisify(require('fs').readFile);
 const path = require('path');
 

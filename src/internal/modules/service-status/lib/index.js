@@ -10,8 +10,7 @@ const {
 } = require('./connectors');
 
 const { getVirusScannerStatus } = require('./virus-scanner');
-
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../logger');
 
 /**
  * Handles error calling remote API, logs and returns 'ERROR' as a string

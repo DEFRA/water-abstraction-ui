@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
 const helpers = require('../../../src/external/lib/helpers');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../src/external/logger');
 
 const fileCheck = require('../../../src/external/lib/file-check');
 const { experiment, test, afterEach, beforeEach } = exports.lab = Lab.script();

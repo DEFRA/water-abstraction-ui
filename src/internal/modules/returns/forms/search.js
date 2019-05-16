@@ -1,5 +1,5 @@
 const { cloneDeep } = require('lodash');
-const { formFactory, fields } = require('../../../lib/forms');
+const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const form = (request, data) => {
   const f = formFactory('/admin/returns', 'GET');

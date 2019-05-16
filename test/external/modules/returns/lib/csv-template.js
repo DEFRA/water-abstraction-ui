@@ -4,7 +4,7 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../../../src/external/logger');
 
 const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
 

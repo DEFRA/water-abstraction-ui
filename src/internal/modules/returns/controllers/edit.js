@@ -5,8 +5,8 @@
  */
 const { get, set } = require('lodash');
 const Boom = require('boom');
-const forms = require('../../../lib/forms');
-const { logger } = require('@envage/water-abstraction-helpers');
+const forms = require('../../../../shared/lib/forms');
+const { logger } = require('../../../logger');
 
 const {
   amountsForm, methodForm, confirmForm, unitsForm,

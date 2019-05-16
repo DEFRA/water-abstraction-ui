@@ -21,9 +21,8 @@ const returnsPlugin = require('./src/external/modules/returns/plugin');
 const viewEngine = require('./src/external/lib/view-engine/');
 
 // Initialise logger
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('./src/external/logger');
 const goodWinstonStream = new GoodWinston({ winston: logger });
-logger.init(config.logger);
 
 // Configure auth plugin
 const loginHelpers = require('./src/external/lib/login-helpers');

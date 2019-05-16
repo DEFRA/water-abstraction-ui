@@ -6,10 +6,10 @@ const { get } = require('lodash');
 
 const IDM = require('../../lib/connectors/idm');
 const signIn = require('../../lib/sign-in');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../logger');
 const helpers = require('./helpers');
 const { signInForm, signInSchema, signInApplyErrorState } = require('./forms');
-const { handleRequest, setValues } = require('../../lib/forms');
+const { handleRequest, setValues } = require('../../../shared/lib/forms');
 const isAuthenticated = request => !!get(request, 'state.sid');
 
 /**

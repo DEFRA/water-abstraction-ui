@@ -1,6 +1,6 @@
 const { get } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../logger');
 
 const waterUser = require('./connectors/water-service/user');
 const getUserID = request => get(request, 'auth.credentials.user_id');

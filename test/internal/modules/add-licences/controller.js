@@ -15,7 +15,7 @@ const requestStubPlugin = require('../../lib/hapi-plugins/request-stub-plugin');
 const { scope } = require('../../../../src/internal/lib/constants');
 const controller = require('../../../../src/internal/modules/add-licences/controller');
 const notifyConnector = require('../../../../src/internal/lib/connectors/notify');
-const forms = require('../../../../src/internal/lib/forms');
+const forms = require('../../../../src/shared/lib/forms');
 
 const { set } = require('lodash');
 

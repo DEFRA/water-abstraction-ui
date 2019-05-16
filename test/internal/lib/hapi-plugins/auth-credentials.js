@@ -7,7 +7,7 @@ const { scope } = require('../../../../src/internal/lib/constants');
 const idmConnector = require('../../../../src/internal/lib/connectors/idm');
 const crmConnector = require('../../../../src/internal/lib/connectors/crm');
 const plugin = require('../../../../src/internal/lib/hapi-plugins/auth-credentials');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../../src/internal/logger');
 
 const username = 'user_1';
 const entityId = 'entity_1';

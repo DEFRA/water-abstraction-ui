@@ -5,7 +5,7 @@ const readChunk = require('read-chunk');
 const util = require('util');
 const parseCsv = util.promisify(require('csv-parse'));
 const helpers = require('./helpers');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../logger');
 const readFile = util.promisify(fs.readFile);
 
 /**

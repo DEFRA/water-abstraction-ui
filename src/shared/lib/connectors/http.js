@@ -3,6 +3,4 @@ const rp = require('request-promise-native').defaults({
   strictSSL: false
 });
 
-module.exports = {
-  request: rp
-};
+exports.request = rp;

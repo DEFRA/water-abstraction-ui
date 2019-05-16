@@ -5,9 +5,9 @@
 const deepMap = require('deep-map');
 const { find, uniqBy } = require('lodash');
 const BaseTransformer = require('./base-transformer');
-const LicenceTitleLoader = require('../licence-title-loader');
+const LicenceTitleLoader = require('../../../shared/lib/licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
-const licenceHelpers = require('../licence-helpers');
+const licenceHelpers = require('../../../shared/lib/licence-helpers');
 
 class CSVTransformer extends BaseTransformer {
   /**

@@ -10,7 +10,7 @@ const {
 } = exports.lab = require('lab').script();
 
 const config = require('../../../../../src/internal/config');
-const serviceRequest = require('../../../../../src/internal/lib/connectors/service-request');
+const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
 const batchNotificationsConnector = require('../../../../../src/internal/lib/connectors/water-service/batch-notifications');
 
 experiment('prepareReturnsReminders', () => {

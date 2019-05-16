@@ -3,14 +3,14 @@ const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const water = require('../../../../../src/external/lib/connectors/water');
-const forms = require('../../../../../src/external/lib/forms/index');
+const forms = require('../../../../../src/shared/lib/forms/index');
 const files = require('../../../../../src/external/lib/files');
 const fileCheck = require('../../../../../src/external/lib/file-check');
 const waterReturns = require('../../../../../src/external/lib/connectors/water-service/returns');
 const waterCompany = require('../../../../../src/external/lib/connectors/water-service/company');
 
 const controller = require('../../../../../src/external/modules/returns/controllers/upload');
-const { logger } = require('@envage/water-abstraction-helpers');
+const { logger } = require('../../../../../src/external/logger');
 const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
 const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
 

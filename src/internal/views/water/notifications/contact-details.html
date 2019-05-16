@@ -1,0 +1,51 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a href="/admin/notifications/contact" class="link-back link-back--space-above">Back</a>
+
+
+  <!-- page title -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <h1  class="heading-large">{{ pageTitle }}</h1>
+
+      {{#if error }}
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          {{>error-summary-heading description="There was a problem with some of the information entered" id="error-summary-heading"}}
+          <ul class="error-summary-list">
+            {{>error-summary-link hasError=error.contactEmail
+              id="contact-email" message="Enter a valid email" }}
+            {{>error-summary-link hasError=error.contactTel
+              id="contact-tel" message="Enter a valid telephone number"}}
+            {{>error-summary-link hasError=error.contactAddress
+              id="contact-address" message="Enter a valid postal address"}}
+          </ul>
+        </div>
+      {{/if}}
+
+      <p>This is the information that will be available to your public contacts.</p>
+
+
+      <form novalidate method="POST" action="/admin/notifications/contact-details">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+{{> contact-details-addresses }}
+        <button type="submit" class="button">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- confirmation panel -->
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+    </div>
+  </div>
+
+</main>
+
+
+
+{{> footerjs}}
+{{> debug}}

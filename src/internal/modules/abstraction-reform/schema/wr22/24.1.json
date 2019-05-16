@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/24.1",
+  "type": "object",
+  "title": "24.1",
+  "category": "Control on abstraction",
+  "subcategory": "",
+  "description": "No abstraction shall take place under this licence when abstraction is taking place under licence number <<xx>>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

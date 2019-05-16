@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/7.2",
+  "type": "object",
+  "title": "7.2",
+  "category": "Recording",
+  "subcategory": "",
+  "description": "The Licence Holder shall keep each record required by <<condition no.>> and make them available during all reasonable hours for inspection by the Agency for at least 6 years.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

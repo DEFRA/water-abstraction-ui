@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/9.3",
+  "type": "object",
+  "title": "9.3",
+  "category": "Time Limiting - abstractions start",
+  "subcategory": "",
+  "description": "No abstraction shall take place under this licence until the Agency has received a request in writing from the Licence Holder to revoke licence <<licence No.>> to abstract water and the Agency has thereafter revoked that licence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

@@ -1,0 +1,145 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a href="{{ back }}" class="link-back link-back--space-above">Back</a>
+
+  {{#if errors.noLicencesSelected }}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+        We need more information
+      </h2>
+
+      <ul class="error-summary-list">
+        <li><a href="#checkbox-0">Please select at least one licence.</a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+  {{/if}}
+
+  {{#if licenceErrors }}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+        There is a problem
+      </h2>
+
+      <ul class="error-summary-list">
+        {{#each licenceErrors }}
+        <li>{{ message }}</li>
+        {{/each}}
+      </ul>
+
+    </div>
+  </div>
+</div>
+  {{/if}}
+
+
+
+  <h1 class="heading-large heading-large--tight-above">{{ task.config.title }}</h1>
+
+  {{#greaterThan pagination.pageCount 1 }}
+  <div class="panel panel-border-wide alert-default medium-space">
+    Your search returned more than {{ pagination.perPage }} licences.
+    Only the first {{ pagination.perPage }} licences can be selected below.
+  </div>
+  {{/greaterThan}}
+
+  {{#greaterThan results.length 0 }}
+
+  <form method="POST" action="{{ formAction }}">
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+    <fieldset class="small-space">
+              <legend class="small-space">
+
+                {{#if replay.length }}
+                <p>
+                  You selected all licences
+                    {{#each replay }}
+
+                      {{#if @index}}
+                      and
+                      {{/if}}
+
+                      {{ this.label }} <span class="bold-small">{{ this.value }}</span>{{/each }}.
+                </p>
+                {{/if}}
+                <p>You can remove any licences you want to exclude from this notification below.</p>
+              </legend>
+
+              <!-- flextable function -->
+              <div class="grid-row">
+                <div class="column-full">
+
+                  <div class="table">
+
+                    <div class="table-row table-head">
+                      <div class="table-cell bold-small">
+                        Licence number
+                      </div>
+                      <div class="table-cell bold-small">
+                        Licence holder
+                      </div>
+                      <!-- <div class="table-cell bold-small">
+                        Contact information
+                      </div> -->
+                      <div class="table-cell bold-small">
+                        Licence end
+                      </div>
+                      <!-- <div class="table-cell bold-small">
+                        Contact
+                      </div> -->
+                    </div>
+                    {{#each results}}
+                    <div class="table-row medium-space">
+                      <div class="table-cell">
+                        <div class="multiple-choice">
+                          <input {{#unless ../errors.noLicencesSelected }}checked{{/unless}} value="{{ system_external_id }}" type="checkbox" id="checkbox-{{@index}}" name="system_external_id">
+                          <label for="checkbox-{{@index}}">
+                            <h2 class="bold-small">
+                              {{system_external_id}}
+                            </h2>
+                          </label></div>
+                      </div>
+                      <div class="table-cell">
+                        <span class="context">
+                          Licence holder
+                        </span>
+                        {{metadata.Forename}} {{metadata.Initials}} {{metadata.Name}}
+                      </div>
+                      <div class="table-cell table-cell--date">
+                        <span class="context">
+                          Licence end
+                        </span>
+                        {{^this.metadata.Expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.metadata.Expires}}
+                        {{#if this.metadata.Expires}}<span class="sr-only">Licence expires </span>{{/if}}
+                        {{ formatSortableDate this.metadata.Expires}}
+                      </div>
+
+                    </div>
+                    {{/each}}
+            </fieldset>
+            <button type="submit" class="button">Continue</button>
+
+          </form>
+
+          {{else}}
+          <p>Your search did not match any licences.</p>
+          {{/greaterThan}}
+
+
+        </main>
+
+
+
+{{> footerjs}}
+{{> debug}}

@@ -1,0 +1,25 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <h1 class="heading-large">{{ pageTitle }}</h1>
+  <div class="grid-row">
+    <div class="column-one-third">
+      <h2 class="heading-medium">Add licences</h2>
+      <ul class="list list-bullet">
+        <li><a href="/add-licences">Add more of your licences to the service</a></li>
+        <li><a href="/security-code">Enter the security code we sent you to link your licences to your account</a></li>
+      </ul>
+    </div>
+
+    <div class="column-one-third">
+      <h2 class="heading-medium">Share access</h2>
+      <ul class="list list-bullet">
+        <li><a href="/manage_licences/access">Give or remove access to your licence information</a></li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+{{> footerjs}}
+{{> debug}}

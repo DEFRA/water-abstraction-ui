@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.8",
+  "type": "object",
+  "title": "5.8",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The Licence Holder shall construct, operate and maintain the <<impounding works/hydropower scheme/intake works>> in accordance with the <<specifications/plans/drawings>> <<reference(s),submitted to, <<and approved by,>> the Agency on <<date>>, copies of which are appended to this licence/ specified in condition <<condition number>> or such minor amendments to these documents that are accepted in writing by the Agency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

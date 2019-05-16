@@ -1,0 +1,43 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+  <!-- <nav>
+    <div class="breadcrumbs">
+
+      <ol>
+        <li><a href="/licences">{{ labels.licences }}</a></li>
+        <li><a href="/manage_licences">Manage licences</a></li>
+        <li><a href="/manage_licences/remove_access">Remove access</a></li>
+      </ol>
+    </div>
+  </nav> -->
+
+  <div class="grid-row">
+      <div class="column-two-thirds">
+<!-- <a href="#" class="link-back" onclick="history.go(-1)">Back</a> -->
+
+
+  {{>element-heading-large content='Access removed'}}
+
+
+
+
+
+
+
+          <p><a href="mailto:{{email}}">{{email}}</a> can no longer view your licences. They will not be notified about this change.</p>
+
+
+          <a href="/manage_licences">Return to licences</a>
+
+
+
+      </div>
+      </div>
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

@@ -1,0 +1,89 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <div class="grid-row">
+
+      <div class="column-two-thirds medium-space">
+
+        <a class="link-back link-back--space-above" href="/admin/notifications/-licences">Back</a>
+
+        <h1 class="heading-xlarge heading-large--tight-above spaceless">
+            <span class="heading-secondary">{{ pageTitle }}</span>
+            {{ event.metadata.name }}
+        </h1>
+
+        <h2 class="heading-small notification-report-reference">
+          {{ event.reference_code  }}
+        </h2>
+        <h2 class="heading-small notification-report-date">
+          {{ formatISODate event.created  }},
+          {{ formatISOTime event.created  }}
+        </h2>
+      </div>
+  </div>
+
+  <div class="grid-row">
+    <div class="column-full">
+
+        <table class="notification-report-table">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                        Sent to
+                    </th>
+                    <th class="text" scope="col">
+                        Licence number
+                    </th>
+                    <th class="text" scope="col">
+                        Method
+                    </th>
+                    <th class="numeric center-text" scope="col">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {{#each messages}}
+                  <tr>
+                    <th class="text">
+                      {{#equal message_type 'email' }}
+                        {{ recipient }}
+                      {{/equal}}
+
+                      {{#equal message_type 'letter' }}
+                        {{{ formatNotifyAddress personalisation }}}
+                      {{/equal}}
+                    </th>
+                    <td scope="row">{{ join licences ', '}}</td>
+                    <td class="text">
+                      {{ sentenceCase message_type }}
+                    </td>
+                    <td class="text center-text">
+                      {{#equal status 'error'}}
+                        {{>notify-status-badge 'permanent-failure' }}
+                      {{else}}
+                        {{>notify-status-badge notify_status }}
+                      {{/equal}}
+
+                    </td>
+                  </tr>
+                  {{/each}}
+
+                </tbody>
+              </table>
+
+
+      </div>
+
+  </div>
+
+</main>
+
+
+{{> footerjs}}
+
+
+{{> debug}}

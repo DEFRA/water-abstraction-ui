@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.15",
+  "type": "object",
+  "title": "14.15",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "The Licence Holder shall measure and record each <<level recording frequency>> the water level in the <<abstraction/discharge/observation>> borehole(s) at National Grid Reference <<abstraction NGR>> marked ‘<<abs ref point>>’ on the site map <<specified in conditions <<condition number>> and <<condition number>> respectively. >>",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

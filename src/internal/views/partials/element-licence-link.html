@@ -1,0 +1,15 @@
+<div class="license-result">
+  <h2 class="heading-medium license-result__column license-result__column--number">
+    <a href="{{#if isAdmin }}/admin{{/if}}/licences/{{this.document_id}}"><span class="sr-only">View licence </span>{{this.system_external_id}}</a>
+  </h2>
+  <p class="license-result__column license-result__column--description">
+    {{^this.document_name}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.document_name}}
+    {{#if this.document_name}}<span class="sr-only">Licence name </span>{{/if}}
+    {{this.document_name}}
+  </p>
+  <p class="license-result__column license-result__column--expires">
+    {{^this.metadata.Expires}}<span aria-hidden="true" class="license-result__hyphen">-</span>{{/this.metadata.Expires}}
+    {{#if this.metadata.Expires}}<span class="sr-only">Licence expires </span>{{/if}}
+    {{ formatSortableDate this.metadata.Expires}}
+  </p>
+</div>

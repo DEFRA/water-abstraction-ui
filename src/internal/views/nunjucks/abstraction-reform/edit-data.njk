@@ -1,0 +1,42 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "forms/header.njk" import formHeader %}
+{% from "forms/footer.njk" import formFooter %}
+{% from "forms/widget.njk" import formWidget %}
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
+
+        {% set html = schema.description | ARConditionPlaceholder | nl2br | safe %}
+
+        {{ govukInsetText({
+          html: html
+        }) }}
+
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block bodyEnd %}
+<script
+  src="/public/javascripts/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="/public/javascripts/json-forms-toggle.js"></script>
+<script src="/public/javascripts/accessible-autocomplete.min.js"></script>
+<link href="/public/stylesheets/accessible-autocomplete.min.css" rel="stylesheet" />
+<script src="/public/javascripts/abstraction-reform.js"></script>
+<script nonce={{nonces.script}}>
+  WRLS.initAutoComplete();
+</script>
+{% endblock %}

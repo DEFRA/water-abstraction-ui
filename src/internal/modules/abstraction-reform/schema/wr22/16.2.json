@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/16.2",
+  "type": "object",
+  "title": "16.2",
+  "category": "Screening",
+  "subcategory": "",
+  "description": "To prevent the entrapment, entrainment or impingement of <<species>> at the point of abstraction specified in condition number <<xx>>, the Licence Holder shall ensure that the <<“approach velocity” or “through slot velocity”>> shall not exceed <<xx>> metres per second.\n“ Approach velocity” or “through slot velocity” is the water velocity perpendicular to and 10 centimetres upstream of the screen at National grid reference <<xx >> marked <<xx>> on the map.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

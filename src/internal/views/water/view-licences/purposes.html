@@ -1,0 +1,126 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back link-back--space-above" href="{{#if isAdmin }}/admin{{/if}}/licences">Licence number {{ licenceData.licenceNumber }}</a>
+
+
+  <div class="grid-row">
+      <div class="column-full">
+
+        {{#if crmData.document_name }}
+        <h1 class="heading-large heading-large--tight-above">
+          <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+          Abstraction details for {{ crmData.document_name }}
+        </h1>
+        {{else}}
+        <h1 class="heading-large heading-large--tight-above">Abstraction details for licence number {{ licenceData.licenceNumber }}</h1>
+        {{/if}}
+
+      </div>
+  </div>
+
+
+  {{#each licenceData.purposes }}
+  <div class="grid-row">
+    <div class="column-full">
+      <h2 class="heading-medium">{{ this.name }}</h2>
+
+      <div class="data-row">
+        <div class="data-row__param" id="points-{{@index}}">
+        Abstraction point{{#greaterThan this.points.length 1 }}s{{/greaterThan}}
+        </div>
+        <div class="data-row__value" aria-labelledby="points-{{@index}}">
+
+          {{#equal this.points.length 1}}
+            {{ ngrPoint this.points.[0] }}
+          {{else }}
+
+            {{#lessThan this.points.length 6}}
+              <ul class="sub-list sub-list--no-bottom-border">
+              {{#each this.points}}
+                <li>{{ ngrPoint this }}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+
+              <details>
+                <summary>View your {{ this.points.length }} abstraction points for {{toLowerCase this.name }}</summary>
+                <div>
+                  <ul class="sub-list sub-list--no-bottom-border">
+                  {{#each this.points}}
+                    <li>{{ ngrPoint this }}</li>
+                  {{/each}}
+                  </ul>
+                </div>
+              </details>
+
+            {{/lessThan}}
+
+          {{/equal}}
+
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-row__param" id="period-{{@index}}">
+        Period of abstraction
+        </div>
+        <div class="data-row__value" aria-labelledby="period-{{@index}}">
+        {{formatPeriod this.periodStart this.periodEnd }}
+        </div>
+      </div>
+
+      {{#notNull this.annualQty }}
+      <div class="data-row">
+        <div class="data-row__param" id="aqty-{{@index}}">
+        Abstraction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="aqty-{{@index}}">
+        {{precision this.annualQty 2}} cubic metres per year
+        </div>
+      </div>
+      {{/notNull}}
+
+      {{#notNull this.dailyQty }}
+      <div class="data-row">
+        <div class="data-row__param" id="dqty-{{@index}}">
+        Abstraction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="dqty-{{@index}}">
+        {{precision this.dailyQty 2}} cubic metres per day
+        </div>
+      </div>
+      {{/notNull}}
+
+      {{#notNull this.hourlyQty }}
+      <div class="data-row">
+        <div class="data-row__param" id="hqty-{{@index}}">
+        Abstraction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="hqty-{{@index}}">
+        {{precision this.hourlyQty 2}} cubic metres per hour
+        </div>
+      </div>
+      {{/notNull}}
+
+      {{#notNull this.instantaneousQty }}
+      <div class="data-row">
+        <div class="data-row__param" id="hqty-{{@index}}">
+        Abstraction amount
+        </div>
+        <div class="data-row__value" aria-labelledby="hqty-{{@index}}">
+        {{precision this.instantaneousQty 2}} cubic metres (Instantaneous Quantity)
+        </div>
+      </div>
+      {{/notNull}}
+    </div>
+  </div>
+  <br />
+  {{/each}}
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

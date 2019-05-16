@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.12",
+  "type": "object",
+  "title": "6.12",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall not alter or replace the existing <<two-door sluice gate/board crested weir/etc>> arrangement at the abstraction point(s) without the prior written approval of the Agency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

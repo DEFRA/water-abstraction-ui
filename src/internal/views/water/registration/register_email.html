@@ -1,0 +1,53 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back" href="/start">Back</a>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <form novalidate action="/register" method="post" class="form">
+
+          {{#if error}}
+          <script nonce="{{nonces.script}}">
+            sendEvent({category:'error', action:'register_email_invalid_email_address'})
+          </script>
+
+          <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+            <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+              There is a problem
+            </h2>
+            <ul class="error-summary-list">
+              <li><a href="#email">Enter an email address in the right format</a></li>
+            </ul>
+          </div>
+          {{/if}}
+
+          <h1 class="heading-large">{{ pageTitle }}</h1>
+
+          <p>Enter your email address and we will send you a link. Click on the link to finish setting up your account.</p>
+          <p>If it is not in your inbox check your spam folder.</p>
+          <p>We will only use your email address to send you notifications about your licence or the service.</p>
+
+          <div class="form-group {{#if error}}form-group-error{{/if}}">
+             <label for="email">
+                <span class="form-label-bold">Email address</span>
+                {{#if error}}
+                  <span class="error-message">Enter an email address in the right format, for example, name@example.com</span>
+                {{/if}}
+            </label>
+
+            <input maxlength="254" value="{{ payload.email }}" type="email" class="form-control" id="email" name="email" required=""/>
+          </div>
+
+          <input type="submit" value="Continue" class="button" role="button"/>
+      </form>
+
+
+    </div>
+  </div>
+</main>
+
+{{> footerjs}}
+{{> debug}}

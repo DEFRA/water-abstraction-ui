@@ -1,0 +1,62 @@
+{% from "button/macro.njk" import govukButton %}
+{% extends "./nunjucks/layout.njk" %}
+
+{% macro cycleHeader() %}
+<thead class="govuk-table__head">
+  <tr class="govuk-table__row">
+    <th class="govuk-table__header" scope="col">Period</th>
+    <th class="govuk-table__header" scope="col">Returns due</th>
+    <th class="govuk-table__header" scope="col">Licences</th>
+    <th class="govuk-table__header" scope="col">Monthly</th>
+    <th class="govuk-table__header" scope="col">Weekly</th>
+    <th class="govuk-table__header" scope="col">Daily</th>
+  </tr>
+</thead>
+{% endmacro %}
+
+{% macro cycleRow(cycle) %}
+<tr class="govuk-table__row">
+  <td class="govuk-table__cell">{{ cycle.startDate | date }} to {{ cycle.endDate | date }}</td>
+  <td class="govuk-table__cell">{{ cycle.stats.statuses.due }}</td>
+  <td class="govuk-table__cell">{{ cycle.stats.licenceCount }}</td>
+  <td class="govuk-table__cell">{{ cycle.stats.frequencies.month }}</td>
+  <td class="govuk-table__cell">{{ cycle.stats.frequencies.week }}</td>
+  <td class="govuk-table__cell">{{ cycle.stats.frequencies.day }}</td>
+</tr>
+{% endmacro %}
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <h2 class="govuk-heading-m">Current cycle</h2>
+
+  <table class="govuk-table">                                              <!-- a table -->
+    {{ cycleHeader() }}
+    <tbody>
+    {{ cycleRow(currentCycle) }}
+    </tbody>
+  </table>
+
+  {{ govukButton({
+    text: "Download CSV file",
+    href: csvPath
+  }) }}
+
+  {% if cycles.length %}
+
+  <h2 class="govuk-heading-m">Previous cycles</h2>
+
+  <table class="govuk-table">                                             <!-- a table -->
+    {{ cycleHeader() }}
+    <tbody>
+    {% for cycle in cycles %}
+    {{ cycleRow(cycle) }}
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+  {% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,109 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+      {{#equal error.name 'ValidationError' }}
+      <script nonce="{{nonces.script}}">
+        sendEvent({category:'error', action:'add_licence_validation_error'})
+      </script>
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        There is a problem
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Enter your licence numbers</a></li>
+      </ul>
+    </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceNotFoundError' }}
+      <script nonce="{{nonces.script}}">
+        sendEvent({category:'error', action:'add_licence_licence_not_found_error'})
+      </script>
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        There is a problem
+      </h2>
+      {{#if missingNumbers}}
+      <p>We cannot find these licence numbers:</p>
+      <p>{{missingNumbers.data}}</p>
+      {{/if}}
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence numbers</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceSimilarityError' }}
+      <script nonce="{{nonces.script}}">
+        sendEvent({category:'error', action:'add_licence_licence_similarity_error'})
+      </script>
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+          There is a problem
+      </h2>
+      {{#if missingNumbers}}
+      <p>We cannot find these licence numbers:</p>
+      <p>{{missingNumbers.data}}</p>
+      {{/if}}
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence number</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+      {{#equal error.name 'LicenceMissingError' }}
+      <script nonce="{{nonces.script}}">
+        sendEvent({category:'error', action:'add_licence_licence_missing_error'})
+      </script>
+
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        There is a problem
+      </h2>
+      {{#if missingNumbers}}
+      <p>We cannot find these licence numbers:</p>
+      <p>{{missingNumbers.data}}</p>
+      {{/if}}
+      <ul class="error-summary-list">
+        <li><a href="#licence_no">Check your licence numbers</a></li>
+      </ul>
+     </div>
+      {{/equal}}
+
+
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+      <form method="POST" novalidate action="/add-licences">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        <!-- licence number field -->
+        <div class="form-group {{#if error }}form-group-error{{/if}}">
+          <label for="licence_no">
+            <span>You can enter one or many of your licence numbers</span>
+            <span class="form-hint">Separate the numbers with spaces, commas, or by entering them on different lines.</span>
+          </label>
+          <textarea maxlength="8000" class="form-control form-control-3-4" name="licence_no" id="licence_no" rows="5" required >{{ payload.licence_no }}</textarea>
+        </div>
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+    </form>
+    <br />
+    <details class="closeOnOpen">
+      <summary><span class="summary">Do you need help?</span></summary>
+      <div>
+        <p>Please contact us for help.</p>
+        {{> contact-details }}
+      </div>
+    </details>
+
+    </div>
+  </div>
+</main>
+{{> footerjs}}
+{{> debug}}

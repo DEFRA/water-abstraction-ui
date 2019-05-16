@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/7.3",
+  "type": "object",
+  "title": "7.3",
+  "category": "Recording",
+  "subcategory": "",
+  "description": "The level transducer specified in condition <<condition number>> shall be connected to a logger which accurately records the residual flow every <<time interval i.e. seconds, minutes>> or at such other intervals as may be approved in writing by the Agency.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

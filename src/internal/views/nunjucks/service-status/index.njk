@@ -1,0 +1,68 @@
+<html>
+   <head>
+   <body>
+
+
+      <table>
+      <tr>
+         <th>Service</th>
+         <th>Info</th>
+      </tr>
+      <tr>
+         <td>IDM Users</td>
+         <td>{{ userCount }}</td>
+      </tr>
+
+        {% for kpi in idmKPI %}
+        <tr>
+           <td></td>
+           <td>{{ kpi.datapoint }}</td>
+           <td>{{ kpi.measure }}</td>
+           <td>{{ kpi.dimension }}</td>
+        </tr>
+        {% endfor %}
+
+
+
+      <tr>
+         <td>CRM Documents</td>
+         <td>{{ crmDocumentCount }}</td>
+      </tr>
+
+      {% for kpi in crmKPI %}
+      <tr>
+         <td></td>
+         <td>{{ kpi.datapoint }}</td>
+         <td>{{ kpi.value }}</td>
+         <td>{{ kpi.description }}</td>
+      </tr>
+      {% endfor %}
+
+
+      <tr>
+         <td>CRM Verifications</td>
+         <td>{{ crmVerificationCount }}</td>
+      </tr>
+      <tr>
+         <td>Permit Repo Permits</td>
+         <td>{{ permitCount }}</td>
+      </tr>
+      <tr>
+         <td>Imported Permits</td>
+         <td>{{ waterCompletedImports }}</td>
+      </tr>
+      <tr>
+         <td>Pending Permits</td>
+         <td>{{ waterPendingImports }}</td>
+      </tr>
+      <tr>
+        <td>Virus scanner</td>
+        <td>{{ virusScanner }}</td>
+      </tr>
+      <tr>
+         <td><b>Errors<b></td>
+         <td>{{ errorCount }} ERRORS REPORTED</td>
+      </tr>
+
+   </body>
+</html>

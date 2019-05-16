@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/7.5",
+  "type": "object",
+  "title": "7.5",
+  "category": "Recording",
+  "subcategory": "",
+  "description": "The Licence Holder shall send to the Agency a copy of the records required by <<condition number>> above within 28 calendar days after 31 March in each year, and also within 28 calendar days of the Agency requiring it to do so in writing.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

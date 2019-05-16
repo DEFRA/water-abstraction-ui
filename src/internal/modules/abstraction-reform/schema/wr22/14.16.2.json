@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.16.2",
+  "type": "object",
+  "title": "14.16.2",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "The Licence Holder shall maintain any <<dip meter/ recording instrument>>, and if necessary replace it, in such a condition so as to ensure that accurate measurements of the level of water in the <<borehole/boreholes>> <<is/are>> recorded at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

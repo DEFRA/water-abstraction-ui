@@ -1,0 +1,63 @@
+<script src="/public/javascripts/jquery-2.2.4.min.js"></script>
+<script nonce={{nonces.script}}>
+  if (!GOVUK){
+    var GOVUK={details:{init:function(){}}}
+  }
+  if (!GOVUK.details){
+    GOVUK.details={init:function(){}}
+    var GOVUK={details:{init:function(){}}}
+  }
+</script>
+
+<link href="/public/stylesheets/screen-fec0f5ae66419b405bcb5a41e87deef2ef53d41bbd7650baeedd9074ba2ed2d0.css" rel="stylesheet" />
+
+<!--[if gt IE 8]><!--><link href="/public/stylesheets/govuk-elements-styles.css"  rel="stylesheet" type="text/css"><!--<![endif]-->
+<!--[if IE 6]><link href="/public/stylesheets/govuk-elements-styles-ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if IE 7]><link href="/public/stylesheets/govuk-elements-styles-ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if IE 8]><link href="/public/stylesheets/govuk-elements-styles-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<!--[if gt IE 8]><!--><link href="/public/stylesheets/elements-documentation.css"  rel="stylesheet" type="text/css"><!--<![endif]-->
+<!--[if IE 6]><link href="/public/stylesheets/elements-documentation-ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if IE 7]><link href="/public/stylesheets/elements-documentation-ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if IE 8]><link href="/public/stylesheets/elements-documentation-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<!--[if gt IE 8]><!--><link href="/public/stylesheets/application.css"  rel="stylesheet" type="text/css"><!--<![endif]-->
+<!--[if IE 8]><link href="/public/stylesheets/application-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<script nonce={{nonces.script}}>
+  function sendEvent(eventConfig){
+    if(typeof dataLayer != 'undefined'){
+      try{
+        if(!eventConfig.category){
+          throw "event category is required"
+        }
+        if(!eventConfig.action){
+          throw "event action is required"
+        }
+        if(!eventConfig.label){
+          eventConfig.label=null
+        }
+        if(!eventConfig.value){
+          eventConfig.value=null
+        }
+
+        r=dataLayer.push({
+         'event': 'event',
+          'category': eventConfig.category,
+          'action': eventConfig.action,
+          'label': eventConfig.label
+         });
+
+      }catch(e){
+
+        dataLayer.push({
+         'event': 'event',
+          'category': 'error',
+          'action': 'bah!'
+         });
+      }
+    } else {
+      setTimeout(function(){sendEvent(eventConfig)},1000)
+    }
+  }
+</script>

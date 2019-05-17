@@ -1,0 +1,20 @@
+{% macro gaugingStations(stations, baseUrl) %}
+
+{% if stations.length %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Gauging {{ 'station' | pluralize(stations) }}
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <ul class="govuk-list govuk-!-margin-0">
+        {% for station in stations %}
+        <li>
+          At National Grid Reference {{ station.gridReference }}
+          <br /><a href="{{ baseUrl }}/station/{{ station.stationReference }}">View data from {{ station.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </dd>
+  </div>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,6 @@
+{% macro wr22_2_5(data) %}
+No abstraction shall take place when the flow in the <b>{{ data.water_body_name.name }}</b>
+as gauged by the Agency at its flow gauging station at <b>{{ data.gauging_station.value }}</b>
+is equal to or less than <b>{{ data.max_rate }}{{ data.max_rate_unit }}</b>
+as may be notified by the Agency. The Agency’s said gauging of the flow shall be conclusive.
+{% endmacro %}

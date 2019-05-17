@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.13",
+  "type": "object",
+  "title": "14.13",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "The Licence Holder shall fit a dipping hole <<dip hole diameter>> millimetres in diameter fitted with a non-ferrous screwed plug in the capping flange located adjacent to the casing.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

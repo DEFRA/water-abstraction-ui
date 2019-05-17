@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/13.3",
+  "type": "object",
+  "title": "13.3",
+  "category": "Temporary licence provision",
+  "subcategory": "",
+  "description": "No abstraction shall take place under this licence unless the Licence Holder has notified the Agency in writing in accordance with 13.2 above.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

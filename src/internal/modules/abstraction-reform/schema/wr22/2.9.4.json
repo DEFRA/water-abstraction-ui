@@ -1,0 +1,29 @@
+{
+  "id" : "/wr22/2.9.4",
+  "type" : "object",
+  "title" : "2.9.4",
+  "description" : "Denver – New Licences Only\n\nIn this provision the ‘Combined Flow’ shall mean the sum of the flows of water in the Ely Ouse River and the Cut-Off Channel as measured by the Agency at the Denver Complex at National Grid Reference TF 58807 00990.\n\nMain River (in South Level)\n\nNo water shall be abstracted from the [location] when the Licence Holder has been notified by the Agency in writing that the combined flow is EQUAL to or LESS than 12 cubic metres per second.",
+  "category" : "Hands off flows/levels",
+  "subcategory" : "Anglian",
+  "properties" : {
+    "nald_condition" : {
+      "$ref" : "water://licences/conditions.json",
+      "label" : "NALD condition",
+      "errors" : {
+        "required" : {
+          "message" : "Select a NALD condition"
+        }
+      }
+    },
+    "location": {
+      "type": "string",
+      "label": "Location",
+      "errors": {
+        "required": {
+          "message": "Enter a location"
+        }
+      }
+    }
+  },
+  "required": ["nald_condition", "location"]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/12.5",
+  "type": "object",
+  "title": "12.5",
+  "category": "Point at which water must be returned",
+  "subcategory": "",
+  "description": "The Licence Holder shall position the <<discharge/outlet/abstraction outfall>> so that it is above the water level of the receiving water body at all times during the lifetime of the licence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

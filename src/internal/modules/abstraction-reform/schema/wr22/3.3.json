@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/3.3",
+  "type": "object",
+  "title": "3.3",
+  "category": "Augmentation and Compensation conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall manage the abstraction intake so that at least <<percentage>> of the river flow during the period <<insert dates>> inclusive shall be conveyed via the fish pass and weir.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

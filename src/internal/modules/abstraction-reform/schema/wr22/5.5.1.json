@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.5.1",
+  "type": "object",
+  "title": "5.5.1",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The Licence Holder shall position and install the <<weir, flume, etc>> and <<gaugeboard, logger, etc.>> so as to be capable of continuous measurement of the <<compensation / bypass>> flow to <<specified standard>><<or equivalent guidance>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

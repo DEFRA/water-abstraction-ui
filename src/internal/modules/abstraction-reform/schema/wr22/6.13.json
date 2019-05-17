@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.13",
+  "type": "object",
+  "title": "6.13",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "No abstraction shall take place at National Grid Reference <<NGR>> unless the Licence Holder has installed a << measuring device >> that is capable of continuous measurement of the residual flow in the <<water body name>> in accordance with British Standard 3680/ISO 1100 at National Grid Reference <<NGR>> at point “<<point reference>>” on the Licence Map and Plan(s)/Drawing(s) <<plan/drawing reference(s)>>",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

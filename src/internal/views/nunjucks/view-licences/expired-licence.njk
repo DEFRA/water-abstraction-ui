@@ -1,0 +1,53 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./tabs/macro.njk" import govukTabs %}
+{% from "badge.njk" import badge %}
+{% from "nunjucks/view-licences/macros/ended-licence-warning.njk" import endedLicenceWarning %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if not primaryUser %}
+        {{ title(licence.licenceNumber, 'Unregistered licence') }}
+      {% else %}
+        {{ title('Licence number ' + licence.licenceNumber, licence.documentName ) }}
+      {% endif %}
+    </div>
+  </div>
+
+  {{ endedLicenceWarning(licence.expiryReason, licence.expiryDate) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if primaryUser %}
+        <p>Registered to <a href="/admin/user/{{primaryUser.userId}}/status">{{primaryUser.userName}}</a></p>
+      {% endif %}
+
+      {% set returnsHtml %}
+        {% include "nunjucks/view-licences/tabs/returns.njk" %}
+      {% endset %}
+
+      {% set communicationsHtml %}
+        {% include "nunjucks/view-licences/tabs/communications.njk" %}
+      {% endset %}
+
+      <div class="govuk-tabs" data-module="tabs">
+        <h2 class="govuk-tabs__title">Contents</h2>
+        <ul class="govuk-tabs__list">
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#returns">Returns</a>
+          </li>
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#communications">Communications</a>
+          </li>
+        </ul>
+
+        <section class="govuk-tabs__panel" id="returns">
+          {% include "nunjucks/view-licences/tabs/returns.njk" %}
+        </section>
+        <section class="govuk-tabs__panel" id="communications">
+          {% include "nunjucks/view-licences/tabs/communications.njk" %}
+        </section>
+      </div>
+    </div>
+  </div>
+{% endblock %}

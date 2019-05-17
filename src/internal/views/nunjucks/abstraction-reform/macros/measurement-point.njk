@@ -1,0 +1,17 @@
+{% macro measurementPoint(data) %}
+<b>
+{% if data.measurement_point_type == 'Upstream' %}immediately upstream of the authorised point of abstraction,{% endif %}
+{% if data.measurement_point_type == 'Downstream' %}immediately downstream of the authorised point of abstraction,{% endif %}
+{% if data.measurement_point_type == 'NGR' %}
+  {% if data.measurement_point_place %}at{% endif %}
+  {{ data.measurement_point_place }}
+   at National Grid Reference {{ data.measurement_point_ngr }},{% endif %}
+{% if data.measurement_point.measurement_point_type == 'Borehole' %}in the borehole,{% endif %}
+
+{% if data.measurement_point_diagram_type == 'Map' %}marked as {{ data.measurement_point_reference }} on the map{% endif %}
+{% if data.measurement_point_diagram_type == 'Drawing' %}
+  and on drawing {{ data.measurement_point_drawing_name }}
+  dated {{ data.measurement_point_drawing_date | date }}
+{% endif %}
+</b>
+{% endmacro %}

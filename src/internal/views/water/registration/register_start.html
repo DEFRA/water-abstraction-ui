@@ -1,0 +1,49 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back" href="/signin">Back</a>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+
+      <p>You must be a licence holder to create an online account.
+Once registered you will be able to:
+</p>
+
+
+    <ul class="list-bullet">
+      <li>view your abstraction licence information</li>
+      <li>submit abstraction returns</li>
+      <li>give others access to your account and permission to submit returns</li>
+    </ul>
+
+    <p>To protect your data we have to post a security code to the registered address of the licence.</p>
+
+      <div class="panel panel-border-wide">
+        <p>
+          This can take 2 to 3 working days.
+        </p>
+      </div>
+
+      <p>Impoundment licences are not yet part of this service.</p>
+
+      <h2 class="heading-medium">Before you start</h2>
+
+      <p>You will need:</p>
+
+      <ul class="list list-bullet">
+        <li>an email address</li>
+        <li>your licence numbers</li>
+      </ul>
+
+      <a class="button button-start" href="/register" role="button">Create account</a>
+
+    </div>
+  </div>
+</main>
+
+{{> footerjs}}
+{{> debug}}

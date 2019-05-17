@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.15.2",
+  "type": "object",
+  "title": "5.15.2",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "This Agreement between the Agency and the Licence Holder shall include, but not be limited to, the <<operation of the hydropower scheme; the measurement of flow into the hydropower scheme; the supply of data to the Agency’s gauging station; the supply of data to the Agency’s lock >> at <<station / lock name><station / lock number>> at National Grid Reference <<NGR>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

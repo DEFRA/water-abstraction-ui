@@ -1,0 +1,42 @@
+{% from "./text.njk" import formTextWidget %}
+{% from "./button.njk" import formButtonWidget %}
+{% from "./date.njk" import formDateWidget %}
+{% from "./radio.njk" import formRadioWidget %}
+{% from "./dropdown.njk" import formDropdownWidget %}
+{% from "./paragraph.njk" import formParagraphWidget %}
+{% from "./checkbox.njk" import formCheckboxWidget %}
+{% from "./search.njk" import formSearchWidget %}
+{% from "./file.njk" import formFileWidget %}
+
+{% macro formWidget(field, form) %}
+
+  {% set widget = field.options.widget %}
+
+  {% if widget=='text' %}
+    {{ formTextWidget(field) }}
+  {% endif %}
+  {% if widget=='button' %}
+    {{ formButtonWidget(field) }}
+  {% endif %}
+  {% if widget=='date' %}
+    {{ formDateWidget(field) }}
+  {% endif %}
+  {% if widget=='radio' %}
+    {{ formRadioWidget(field) }}
+  {% endif %}
+  {% if widget=='paragraph' %}
+    {{ formParagraphWidget(field) }}
+  {% endif %}
+  {% if widget=='checkbox' %}
+    {{ formCheckboxWidget(field) }}
+  {% endif %}
+  {% if widget=='dropdown' %}
+    {{ formDropdownWidget(field) }}
+  {% endif %}
+  {% if widget=='search' %}
+    {{ formSearchWidget(field) }}
+  {% endif %}
+  {% if widget=='file' %}
+    {{ formFileWidget(field) }}
+  {% endif %}
+{% endmacro %}

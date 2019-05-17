@@ -10,7 +10,6 @@ module.exports = {
     'govuk_modules',
     'node_modules',
     'public',
-    'test',
-    'views'
+    'test'
   ]
 };

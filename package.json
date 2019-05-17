@@ -11,8 +11,10 @@
     "install-assets": "gulp build",
     "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
     "test": "lab",
+    "test:external": "lab ./test/external",
+    "test:internal": "lab ./test/internal",
+    "test:shared": "lab ./test/shared",
     "test-cov-html": "lab -r html -o coverage.html",
-    "docs": "jsdoc -c conf.jsdoc.json && cd ./out && serve -o -p 3011",
     "lint": "eslint .",
     "codecov": "codecov",
     "sass": "gulp sass",
@@ -36,10 +38,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
-    "gulp-run-sequence": "^0.3.2",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-standard": "^10.1.2",
     "gulp-uglify": "^3.0.2",
     "lab": "^14.3.4",
     "sinon": "^4.2.2",
@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^4.1.2",
-    "@envage/water-abstraction-helpers": "^2.4.0",
+    "@envage/water-abstraction-helpers": "^3.0.0",
     "@hapi/hapi": "^17.8.5",
     "@hapi/inert": "^5.2.0",
     "@hapi/vision": "^5.5.2",
@@ -111,12 +111,6 @@
     "uuid": "^3.3.2",
     "winston": "^2.4.3",
     "yar": "^8.1.2"
-  },
-  "standard": {
-    "ignore": [
-      "node_modules/",
-      "public/"
-    ]
   },
   "snyk": true
 }

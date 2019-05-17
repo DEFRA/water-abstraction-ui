@@ -1,0 +1,23 @@
+{
+  "id": "/wr22/5.15",
+  "type": "object",
+  "title": "5.15",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "(i) Prior to the commencement <<of abstraction>><<of the construction of the hydropower scheme>><<of power production>> the Licence Holder shall enter in to an Agreement with the Agency, pursuant to section 158 of the Water Resources Act 1991.\n \n (ii) This Agreement between the Agency and the Licence Holder shall include, but not be limited to, the <<operation of the hydropower scheme; the measurement of flow into the hydropower scheme; the supply of data to the Agency’s gauging station; the supply of data to the Agency’s lock >> at <<station / lock name><station / lock number>> at National Grid Reference <<NGR>>.\n \n (iii) During the life of the hydropower scheme authorised by this licence, the Operating Agreement referred to above must subsist and be complied with at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ],
+  "hidden": true
+}

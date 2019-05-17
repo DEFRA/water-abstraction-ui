@@ -1,0 +1,45 @@
+{{> styles}}
+
+<style nonce={{nonces.style}}>
+.tight {
+  margin-top: .5em;
+}
+</style>
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <div class="grid-row">
+      <div class="column-two-thirds">
+
+        <br />
+        <br />
+
+        <div class="govuk-box-highlight">
+          <h1 class="heading-large tight">
+            Return received
+          </h1>
+
+            <p>Purpose
+              {{#each return.metadata.purposes }}
+                  <span class="bold">{{ this.tertiary.description }}</span>
+              {{/each}}
+            </p>
+            <p>
+            Licence number <span class="bold">{{ return.licenceNumber }}</span>
+
+            </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row small-space">
+    <div class="column-two-thirds">
+      <p>
+        <a href="{{ returnsUrl }}">View returns for {{ return.licenceNumber }}</a>
+      </p>
+    </div>
+  </div>
+</main>
+
+{{> footerjs}}
+{{> debug}}

@@ -1,0 +1,64 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  {{#if index }}
+  <a class="link-back link-back--space-above" href="/select-licences">Back</a>
+  {{/if}}
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+
+      {{#if error}}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-1" tabindex="-1">
+
+        <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+          There was a problem with some of the information entered
+        </h2>
+
+        <ul class="error-summary-list">
+          {{#each error}}
+          <li><a href="#{{ this.field }}">{{ this.message}}</a></li>
+          {{/each}}
+        </ul>
+
+      </div>
+      {{/if}}
+
+      <h1 class="heading-large {{#if index}}heading-large--tight-above{{/if}}">{{ task.config.title }}</h1>
+
+      {{#if step.content }}
+      <p>{{ step.content }}</p>
+      {{/if}}
+
+      <form method="POST" action="{{ formAction }}">
+
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+
+        {{#each step.widgets }}
+        {{#equal this.widget 'dropdown' }}
+          {{>widget-dropdown this error=../error }}
+        {{/equal}}
+        {{#equal this.widget 'date' }}
+          {{>widget-date this error=../error }}
+        {{/equal}}
+        {{#equal this.widget 'textarea' }}
+{{>widget-textarea this error=../error }}
+        {{/equal}}
+        {{#equal this.widget 'text' }}
+          {{>widget-text this error=../error }}
+        {{/equal}}
+        {{/each}}
+
+        <button type="submit" class="button">Continue</button>
+
+      </form>
+    </div>
+  </div>
+</main>
+
+
+{{> footerjs}}
+{{> debug}}

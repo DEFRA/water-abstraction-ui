@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/5.3",
+  "type": "object",
+  "title": "5.3",
+  "category": "Construction and notices",
+  "subcategory": "",
+  "description": "The Licence Holder shall notify the Agency in writing << xx>> calendar days inclusive <<before the commencement of construction of the works/after the completion of the works/<<and>><<before the commencement of abstraction for the purpose of <<abs purpose>>>>>>authorised by this licence.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

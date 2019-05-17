@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/3.2",
+  "type": "object",
+  "title": "3.2",
+  "category": "Augmentation and Compensation conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall make a continuous release of compensation water of not less than <<compensation rate>> from <<source 1>> to <<source 2>> at National Grid Reference <<compensation discharge NGR>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

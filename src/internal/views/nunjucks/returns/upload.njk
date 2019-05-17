@@ -1,0 +1,7 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+  {{ formErrorSummary(form) }}
+    {{ title(pageTitle) }}
+  {{ formRender(form) }}
+{% endblock %}

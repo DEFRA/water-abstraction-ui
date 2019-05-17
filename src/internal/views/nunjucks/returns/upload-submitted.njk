@@ -1,0 +1,23 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {{ govukPanel({
+      titleText: pageTitle
+    }) }}
+
+    <p>
+      <a href="/returns">Returns overview</a>
+    </p>
+
+  </div>
+</div>
+
+
+
+{% endblock %}

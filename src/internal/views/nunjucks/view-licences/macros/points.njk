@@ -1,0 +1,28 @@
+{% from "nunjucks/macros/point.njk" import point %}
+
+{% macro points(points, link) %}
+  {% if points.length %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      {{ 'Point' | pluralize(points) }} of abstraction
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {% if points.length > 5 %}
+        You have {{ points.length }} abstraction points
+        <br />
+      {% elseif points.length > 1 %}
+      <ul class="govuk-list govuk-!-margin-0">
+        {% for abstractionPoint in points %}
+        <li>{{ point(abstractionPoint) }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        {{ point(points[0]) }}
+        <br />
+      {% endif %}
+
+      {{ link | safe }}
+    </dd>
+  </div>
+  {% endif %}
+{% endmacro %}

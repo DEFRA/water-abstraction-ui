@@ -1,0 +1,32 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "button/macro.njk" import govukButton %}
+
+
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Create an account</h2>
+      <p>Select if you have not used this service before.</p>
+
+      {{ govukButton({
+      text: "Create account",
+      href: '/start'
+    }) }}
+      <br />
+      <br />
+    </div>
+
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Sign in</h2>
+      <p>Select if you already have an account for this service.</p>
+
+      {{ govukButton({
+      text: "Sign in",
+      href: '/signin'
+    }) }}
+    </div>
+  </div>
+{% endblock %}

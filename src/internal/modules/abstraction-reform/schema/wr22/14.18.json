@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.18",
+  "type": "object",
+  "title": "14.18",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "If so requested in writing by the Agency, the Licence Holder shall provide suitable and safe facilities to enable groundwater level/quality monitoring equipment to be installed within the observation borehole.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

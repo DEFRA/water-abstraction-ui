@@ -1,6 +1,6 @@
 {
   "extends": "standard",
-   "rules": {
-        "semi": [2, "always"]
-    }
+  "rules": {
+    "semi": [2, "always"]
+  }
 }

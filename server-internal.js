@@ -1,5 +1,6 @@
 
 require('dotenv').config();
+require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
 // -------------- Require vendor code -----------------
 const Blipp = require('blipp');
@@ -25,11 +26,14 @@ const viewEngine = require('./src/internal/lib/view-engine/');
 const { logger } = require('./src/internal/logger');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 
+// Shared plugins
+const connectors = require('shared/plugins/connectors');
+
 // Configure auth plugin
 const loginHelpers = require('./src/internal/lib/login-helpers');
 const { isInternal } = require('./src/internal/lib/permissions');
 const authPlugin = {
-  plugin: require('./src/internal/modules/auth'),
+  plugin: require('shared/plugins/auth'),
   options: {
     ifAuthenticated: loginHelpers.preRedirectIfAuthenticated,
     onSignIn: async (request, h) => {
@@ -100,6 +104,9 @@ async function start () {
 
     // Set up Nunjucks view engine
     server.views(viewEngine);
+
+    // Connectors
+    await server.register({ plugin: connectors, options: { config } });
 
     // Auth plugin
     await server.register(authPlugin);

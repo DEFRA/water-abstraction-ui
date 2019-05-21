@@ -59,6 +59,7 @@ module.exports = {
   isLocal,
 
   jwt: {
+    token: process.env.JWT_TOKEN,
     key: process.env.JWT_SECRET,
     verifyOptions: { algorithms: [ 'HS256' ] }
   },

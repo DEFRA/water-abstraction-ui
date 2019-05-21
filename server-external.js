@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
 // -------------- Require vendor code -----------------
 const Blipp = require('blipp');
@@ -24,11 +25,14 @@ const viewEngine = require('./src/external/lib/view-engine/');
 const { logger } = require('./src/external/logger');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 
+// Shared plugins
+const connectors = require('shared/plugins/connectors');
+
 // Configure auth plugin
 const loginHelpers = require('./src/external/lib/login-helpers');
 const { isInternal } = require('./src/external/lib/permissions');
 const authPlugin = {
-  plugin: require('./src/external/modules/auth'),
+  plugin: require('shared/plugins/auth'),
   options: {
     ifAuthenticated: loginHelpers.preRedirectIfAuthenticated,
     onSignIn: async (request, h) => {
@@ -102,6 +106,10 @@ async function start () {
 
     // Auth plugin
     await server.register(authPlugin);
+
+    // Connectors
+    await server.register({ plugin: connectors, options: { config } });
+
     server.route(routes);
 
     await server.start();

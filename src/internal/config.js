@@ -60,7 +60,8 @@ module.exports = {
 
   jwt: {
     key: process.env.JWT_SECRET,
-    verifyOptions: { algorithms: [ 'HS256' ] }
+    verifyOptions: { algorithms: [ 'HS256' ] },
+    token: process.env.JWT_TOKEN
   },
 
   logger: {

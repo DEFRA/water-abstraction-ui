@@ -66,7 +66,7 @@ const initialiseCSV = (frequency, refDate) => {
  * @return {Array}          - a column of data to add to the CSV
  */
 const createReturnColumn = (ret, csvLines) => {
-  const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency);
+  const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency, ret.metadata.isFinal);
 
   // Iterate over all date rows in the CSV
   const lines = csvLines.map(line => {

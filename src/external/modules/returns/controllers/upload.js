@@ -15,6 +15,7 @@ const fileCheck = require('../../../lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
+const { getReturnsViewData } = require('../lib/helpers');
 
 const spinnerConfig = {
   processing: {
@@ -275,11 +276,13 @@ const postSubmit = async (request, h) => {
  * Page to render a success message
  */
 const getSubmitted = async (request, h) => {
+  const { xmlUser } = await getReturnsViewData(request);
   const { eventId } = request.params;
   logger.info(`Return upload submitted`, { eventId });
   const view = {
     ...request.view,
-    pageTitle: `Returns submitted`
+    pageTitle: `Returns submitted`,
+    xmlUser
   };
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };

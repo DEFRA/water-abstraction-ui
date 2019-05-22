@@ -3,7 +3,7 @@ const serviceRequest = require('./service-request');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
-const logger = require('../logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
 const { getInternalSearchResults } = require('./water-service/internal-search');
 
@@ -19,7 +19,8 @@ function sendNotifyMessage (messageRef, recipient, personalisation) {
       const data = response.body;
       return data;
     }).catch(response => {
-      logger.error('Error sending notify message', response.error);
+      const { error } = response;
+      logger.error('Error sending notify message', { error });
       return response;
     });
 }

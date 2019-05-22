@@ -184,15 +184,13 @@ const persistActions = async (licence, arLicence, actions = []) => {
   return loader.update(arLicence.licence_id, { actions: updatedActions, status, lastEdit }, licenceNumber);
 };
 
-module.exports = {
-  getSchema,
-  findDataItem,
-  getAddFormAction,
-  getAddFormAndSchema,
-  getEditFormAndSchema,
-  addActionFactory,
-  editActionFactory,
-  persistActions,
-  getLicenceVersion,
-  flattenData
-};
+exports.getSchema = getSchema;
+exports.findDataItem = findDataItem;
+exports.getAddFormAction = getAddFormAction;
+exports.getAddFormAndSchema = getAddFormAndSchema;
+exports.getEditFormAndSchema = getEditFormAndSchema;
+exports.addActionFactory = addActionFactory;
+exports.editActionFactory = editActionFactory;
+exports.persistActions = persistActions;
+exports.getLicenceVersion = getLicenceVersion;
+exports.flattenData = flattenData;

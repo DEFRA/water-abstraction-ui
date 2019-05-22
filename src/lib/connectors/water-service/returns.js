@@ -58,12 +58,12 @@ const patchReturn = (data) => {
  * Post to send XML return to water service
  * @param {string} fileData - file data to be sent as a string
  * @param {string} userName - userName of active user
+ * @param {String} type - the file type, supported is 'xml', 'csv'
  * @return {string} - JSON containing, eventId, filename, location, etc
  */
-const postXML = async (xmlData, userName) => {
-  const url = `${endpoint}/upload-xml`;
-
-  return serviceRequest.post(url, { body: { fileData: xmlData, userName } });
+const postUpload = (fileData, userName, type = 'xml') => {
+  const url = `${endpoint}/upload/${type.toLowerCase()}`;
+  return serviceRequest.post(url, { body: { fileData, userName } });
 };
 
 const responseHandler = response => {
@@ -106,6 +106,6 @@ const postUploadSubmit = async (eventId, qs) => {
 exports.getReturn = getReturn;
 exports.postReturn = postReturn;
 exports.patchReturn = patchReturn;
-exports.postXML = postXML;
+exports.postUpload = postUpload;
 exports.getUploadPreview = getUploadPreview;
 exports.postUploadSubmit = postUploadSubmit;

@@ -9,6 +9,9 @@ const getStartReadingInput = request => {
   return fields.text('startReading', {
     label: isInternal(request) ? 'Start reading' : 'Start reading (before you began abstracting in this period)',
     autoComplete: false,
+    attr: {
+      autofocus: true
+    },
     mapper: 'numberMapper',
     type: 'number',
     controlClass: 'input--meter-reading',

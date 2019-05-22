@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.7.1",
+  "type": "object",
+  "title": "14.7.1",
+  "category": "Groundwater conditions",
+  "subcategory": "Dip tube and monitoring apparatus",
+  "description": "A dip tube, <<with removable cap>>, of internal diameter of not less than <<dip tube diameter>> millimetres shall be installed in the borehole so that a cable dipper can be lowered so as to be capable of measuring the water level without fouling any installed equipment.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

@@ -117,5 +117,74 @@ module.exports = {
       }
     },
     handler: controller.postSendFinalReminder
+  },
+
+  getReturnsReminderStart: {
+    method: 'GET',
+    path: '/admin/returns-notifications/reminders',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns reminders'
+        }
+      }
+    },
+    handler: controller.getReturnsNotificationsStart
+  },
+
+  postReturnsReminderStart: {
+    method: 'POST',
+    path: '/admin/returns-notifications/reminders',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns reminders'
+        }
+      }
+    },
+    handler: controller.postReturnsNotificationsStart
+  },
+
+  getReturnsInvitationsStart: {
+    method: 'GET',
+    path: '/admin/returns-notifications/invitations',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns invitations'
+        }
+      }
+    },
+    handler: controller.getReturnsNotificationsStart
+  },
+
+  postReturnsInvitationsStart: {
+    method: 'POST',
+    path: '/admin/returns-notifications/invitations',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Send returns invitations'
+        }
+      }
+    },
+    handler: controller.postReturnsNotificationsStart
   }
+
 };

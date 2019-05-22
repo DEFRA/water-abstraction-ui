@@ -43,7 +43,9 @@ const getNotificationsList = (tasks, request) => {
   const notifications = tasks.map(createNotificationTypeFromTask);
 
   if (isInternalReturns(request)) {
+    notifications.push(createNotificationType('Returns: send invitations', '/admin/returns-notifications/invitations'));
     notifications.push(createNotificationType('Returns: send paper forms', '/admin/returns-notifications/forms'));
+    notifications.push(createNotificationType('Returns: send reminders', '/admin/returns-notifications/reminders'));
     notifications.push(createNotificationType('Returns: send final reminder', '/admin/returns-notifications/final-reminder'));
   }
 

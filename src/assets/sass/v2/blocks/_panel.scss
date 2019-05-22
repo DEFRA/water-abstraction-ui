@@ -1,0 +1,19 @@
+.panel {
+  @extend .govuk-panel;
+}
+
+.panel--confirmation {
+  @extend .govuk-panel--confirmation;
+}
+
+.panel__title {
+  @extend .govuk-panel__title;
+}
+
+.panel__body {
+  @extend .govuk-panel__body;
+}
+
+.panel__body--small {
+  font-size: 1.5rem;
+}

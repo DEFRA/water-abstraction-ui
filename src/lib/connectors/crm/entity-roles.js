@@ -10,7 +10,7 @@ const rp = require('request-promise-native').defaults({
   strictSSL: false
 });
 
-const logger = require('../../logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 // Create API client
 const client = new APIClient(rp, {

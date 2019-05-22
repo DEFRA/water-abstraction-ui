@@ -3,7 +3,7 @@
  * company and roles
  */
 const { get, set } = require('lodash');
-const logger = require('../logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const idmConnector = require('../connectors/idm');
 const crmConnector = require('../connectors/crm');

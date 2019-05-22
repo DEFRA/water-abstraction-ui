@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.17.2",
+  "type": "object",
+  "title": "14.17.2",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "The record shall show the date and time that each measurement has been taken, reference to the specific borehole that the data has been collected from, the datum from which the groundwater level has been measured and whether the boreholes are being pumped or are at rest.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

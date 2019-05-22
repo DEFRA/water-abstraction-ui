@@ -12,6 +12,7 @@ const {
   STATUS_IN_PROGRESS,
   STATUS_IN_REVIEW,
   STATUS_APPROVED,
+  STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
 } = require('../../../../src/modules/abstraction-reform/lib/statuses');
 
@@ -91,7 +92,7 @@ lab.experiment('Test setStatusForm for AR approver', () => {
   lab.test('The form should have the correct status options', async () => {
     const status = findStatus(form);
     const statusValues = status.options.choices.map(choice => choice.value);
-    expect(statusValues).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_LICENCE_REVIEW]);
+    expect(statusValues).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_NALD_UPDATE, STATUS_LICENCE_REVIEW]);
   });
 
   lab.test('The button text should be Save decision', async () => {
@@ -124,7 +125,7 @@ lab.experiment('Test setStatusSchema for AR approver', () => {
   });
 
   lab.test('It should only allow the correct statuses', async () => {
-    expect(schema.children.status.valids).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_LICENCE_REVIEW]);
+    expect(schema.children.status.valids).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_NALD_UPDATE, STATUS_LICENCE_REVIEW]);
   });
 });
 

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/17.1.3",
+  "type": "object",
+  "title": "17.1.3",
+  "category": "Fish and Eel passage",
+  "subcategory": "",
+  "description": "The Licence Holder shall keep records of maintenance, repair or replacement of the fish pass << and eel pass>> for 6 years and shall make them available during all reasonable hours for inspection by the Agency",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

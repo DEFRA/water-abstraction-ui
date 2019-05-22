@@ -12,11 +12,14 @@ const getErrors = message => {
   };
 };
 
-const getTextField = (fieldName, label, errorMessage) => {
+const getTextField = (fieldName, label, errorMessage, autoFocus = false) => {
   return fields.text(fieldName, {
     label,
     controlClass: 'govuk-input--width-10',
-    errors: getErrors(errorMessage)
+    errors: getErrors(errorMessage),
+    attr: {
+      autofocus: autoFocus || undefined
+    }
   });
 };
 
@@ -60,7 +63,7 @@ const form = (request, data) => {
     f.fields.push(introText);
   }
 
-  f.fields.push(getTextField('manufacturer', 'Make', 'Enter the make of your meter'));
+  f.fields.push(getTextField('manufacturer', 'Make', 'Enter the make of your meter', true));
   f.fields.push(getTextField('serialNumber', 'Serial number', 'Enter a serial number'));
 
   // Checkbox internal type is array

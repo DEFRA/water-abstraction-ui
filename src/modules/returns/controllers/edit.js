@@ -6,7 +6,7 @@
 const { get, set } = require('lodash');
 const Boom = require('boom');
 const forms = require('../../../lib/forms');
-const logger = require('../../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 
 const {
   amountsForm, methodForm, confirmForm, unitsForm,

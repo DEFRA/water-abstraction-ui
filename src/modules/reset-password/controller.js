@@ -3,8 +3,7 @@ const { UserNotFoundError } = require('./errors');
 const signIn = require('../../lib/sign-in');
 const loginHelpers = require('../../lib/login-helpers');
 const mapJoiPasswordError = require('./map-joi-password-error');
-const logger = require('../../lib/logger');
-
+const { logger } = require('@envage/water-abstraction-helpers');
 
 /**
  * Renders form for start of reset password flow

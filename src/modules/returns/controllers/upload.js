@@ -1,14 +1,19 @@
 const { get, set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
 const water = require('../../../lib/connectors/water.js');
 const files = require('../../../lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
-const logger = require('../../../lib/logger');
+const { logger } = require('@envage/water-abstraction-helpers');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
+const waterCompany = require('../../../lib/connectors/water-service/company');
+const fileCheck = require('../../../lib/file-check');
+const csvTemplates = require('../lib/csv-templates');
+
 const confirmForm = require('../forms/confirm-upload');
 
 const spinnerConfig = {
@@ -36,8 +41,9 @@ const getXmlUpload = (request, h) => {
 
   const view = {
     ...request.view,
-    pageTitle: 'Upload XML returns data',
-    form: uploadHelpers.applyFormError(f, error)
+    pageTitle: 'Upload bulk returns data',
+    form: uploadHelpers.applyFormError(f, error),
+    back: '/returns/upload-instructions'
   };
 
   return h.view('nunjucks/returns/upload.njk', view, { layout: false });
@@ -52,7 +58,7 @@ const getXmlUpload = (request, h) => {
 const getRedirectPath = (status, eventId) => {
   const paths = {
     [uploadHelpers.fileStatuses.VIRUS]: '/returns/upload?error=virus',
-    [uploadHelpers.fileStatuses.NOT_XML]: '/returns/upload?error=notxml',
+    [uploadHelpers.fileStatuses.INVALID_TYPE]: '/returns/upload?error=invalid-type',
     [uploadHelpers.fileStatuses.OK]: `/returns/processing-upload/processing/${eventId}`
   };
   return paths[status];
@@ -71,7 +77,11 @@ async function postXmlUpload (request, h) {
     // Store file locally and run checks
     await uploadHelpers.createDirectory(localPath);
     await uploadHelpers.uploadFile(request.payload.file, localPath);
-    const status = await uploadHelpers.getUploadedFileStatus(localPath);
+
+    // Detect type of uploaded file
+    const type = await fileCheck.detectFileType(localPath);
+
+    const status = await uploadHelpers.getUploadedFileStatus(localPath, type);
 
     // Upload to water service and get event ID
     if (status === uploadHelpers.fileStatuses.OK) {
@@ -79,7 +89,7 @@ async function postXmlUpload (request, h) {
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
-      const postData = await waterReturns.postXML(fileData.toString(), userName);
+      const postData = await waterReturns.postUpload(fileData.toString(), userName, type);
       eventId = get(postData, 'data.eventId');
     }
 
@@ -166,7 +176,7 @@ const getSpinnerPage = async (request, h) => {
       return h.redirect(path);
     }
 
-    return h.view('nunjucks/returns/processing-upload.njk', request.view, { layout: false });
+    return h.view('nunjucks/waiting/index.njk', request.view, { layout: false });
   } else {
     logger.error('No event found with selected event_id and issuer', { eventId });
     throw Boom.notFound(`Upload event not found`, { eventId });
@@ -274,6 +284,36 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 
+const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
+
+/**
+ * Downloads a ZIP of CSV templates
+ */
+const getCSVTemplates = async (request, h) => {
+  const { companyId, companyName } = request.auth.credentials;
+
+  // Fetch returns for current company
+  const returns = await waterCompany.getCurrentDueReturns(companyId);
+
+  // Generate CSV data and build zip
+  const data = csvTemplates.createCSVData(returns);
+  const zip = await csvTemplates.buildZip(data, companyName);
+  const fileName = getZipFilename(companyName);
+
+  return h.response(zip)
+    .header('Content-type', 'application/zip')
+    .header('Content-disposition', `attachment; filename=${fileName}`);
+};
+
+/**
+ * Provides the user with instructions on how to upload bulk returns, and
+ * a link to download their CSV templates as a ZIP file
+ */
+const getUploadInstructions = async (request, h) => {
+  const { view } = request;
+  return h.view('nunjucks/returns/upload-instructions.njk', view, { layout: false });
+};
+
 exports.getXmlUpload = getXmlUpload;
 exports.postXmlUpload = postXmlUpload;
 exports.getSpinnerPage = getSpinnerPage;
@@ -282,3 +322,5 @@ exports.getSummaryReturn = getSummaryReturn;
 exports.pageTitles = pageTitles;
 exports.postSubmit = postSubmit;
 exports.getSubmitted = getSubmitted;
+exports.getCSVTemplates = getCSVTemplates;
+exports.getUploadInstructions = getUploadInstructions;

@@ -14,7 +14,6 @@
     {% if field.options.multiline %}
       {{ govukTextarea(options) }}
     {% else %}
-
       {% if field.options.suffix %}
         {% set str %}{{ govukInput(options) }}{% endset %}
         {{ str | slice(0, -7) | safe }}

@@ -44,13 +44,21 @@ experiment('getUploadPreview', () => {
     sandbox.restore();
   });
 
-  experiment('postXML', () => {
+  experiment('postUpload', () => {
     test('calls  serviceRequest.post with url, fileData and userName', async () => {
-      await returns.postXML('fileData', 'bob.jones@gmail.com');
+      await returns.postUpload('fileData', 'bob.jones@example.com');
       const [url, options] = serviceRequest.post.lastCall.args;
-      expect(url).to.contain(['/returns/upload-xml']);
-      expect(options.body).to.include({ fileData: 'fileData', userName: 'bob.jones@gmail.com' });
+      expect(url).to.contain(['/returns/upload/xml']);
+      expect(options.body).to.include({ fileData: 'fileData', userName: 'bob.jones@example.com' });
     });
+
+    test('can upload different file types if specified in the third argument', async () => {
+      await returns.postUpload('fileData', 'bob.jones@example.com', 'csv');
+      const [url, options] = serviceRequest.post.lastCall.args;
+      expect(url).to.contain(['/returns/upload/csv']);
+      expect(options.body).to.include({ fileData: 'fileData', userName: 'bob.jones@example.com' });
+    });
+
     test('should call service request with correct params', async () => {
       await returns.getUploadPreview(eventId, qs);
       const [uri, options] = serviceRequest.get.lastCall.args;

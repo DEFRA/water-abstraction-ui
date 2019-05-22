@@ -149,8 +149,6 @@ const getEditObject = async (request, h) => {
 
   const { schema, getter } = objectConfig[type];
 
-  console.log(type, objectConfig[type]);
-
   const data = extractData(getter(finalState.licence, ...args), schema);
 
   const formAction = `/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;

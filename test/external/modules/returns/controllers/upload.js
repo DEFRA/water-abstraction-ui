@@ -12,6 +12,7 @@ const waterCompany = require('../../../../../src/external/lib/connectors/water-s
 const controller = require('../../../../../src/external/modules/returns/controllers/upload');
 const { logger } = require('../../../../../src/external/logger');
 const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
+const helpers = require('../../../../../src/external/modules/returns/lib/helpers.js');
 const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
 
 const sandbox = sinon.createSandbox();
@@ -120,6 +121,7 @@ experiment('upload controller', () => {
     sandbox.stub(csvTemplates, 'createCSVData').returns(csvData);
     sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject);
     sandbox.stub(fileCheck, 'detectFileType').resolves('xml');
+    sandbox.stub(helpers, 'getReturnsViewData').returns({ xmlUser: true });
   });
   afterEach(async () => {
     sandbox.restore();

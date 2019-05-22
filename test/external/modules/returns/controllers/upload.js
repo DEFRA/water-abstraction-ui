@@ -13,7 +13,6 @@ const controller = require('../../../../../src/external/modules/returns/controll
 const { logger } = require('../../../../../src/external/logger');
 const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
 const helpers = require('../../../../../src/external/modules/returns/lib/helpers.js');
-const documents = require('../../../../../src/external/lib/connectors/crm/documents');
 const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
 
 const sandbox = sinon.createSandbox();

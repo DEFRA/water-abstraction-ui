@@ -276,18 +276,14 @@ const postSubmit = async (request, h) => {
  * Page to render a success message
  */
 const getSubmitted = async (request, h) => {
-  console.log('inside getSubmitted function');
   const { xmlUser } = await helpers.getReturnsViewData(request);
-  console.log('got xmlUser', xmlUser);
   const { eventId } = request.params;
-  console.log('got eventId', eventId);
   logger.info(`Return upload submitted`, { eventId });
   const view = {
     ...request.view,
     pageTitle: `Returns submitted`,
     xmlUser
   };
-  console.log('got the view', view);
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 

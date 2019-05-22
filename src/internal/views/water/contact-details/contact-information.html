@@ -20,7 +20,7 @@
         </div>
       {{/if}}
 
-      <form novalidate action="/admin/contact-information" method="post" class="form">
+      <form novalidate action="/contact-information" method="post" class="form">
         <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
         {{>contact-details-name-and-role}}
 {{>contact-details-addresses}}

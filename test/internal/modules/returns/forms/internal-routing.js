@@ -23,7 +23,7 @@ experiment('internalRoutingForm', () => {
     const data = {};
     const form = internalRoutingForm(request, data);
 
-    expect(form.action).to.equal('/admin/return/internal?returnId=abc');
+    expect(form.action).to.equal('/return/internal?returnId=abc');
   });
 
   test('it should include a CSRF token', async () => {

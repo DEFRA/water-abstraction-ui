@@ -8,7 +8,7 @@ const { formFactory, fields, setValues } = require('../../../../shared/lib/forms
  * @return {Object}       form object
  */
 const form = (query) => {
-  const f = formFactory('/admin/licences', 'GET');
+  const f = formFactory('/licences', 'GET');
 
   f.fields.push(fields.text('query', {
     widget: 'search',

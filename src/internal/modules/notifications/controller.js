@@ -46,8 +46,8 @@ async function getStartFlow (request, h, task) {
 
   // Redirect if contact details not set
   if (!context.contactDetails.name) {
-    const url = encodeURIComponent(`/admin/notifications/${request.params.id}?start=1`);
-    return h.redirect(`/admin/notifications/contact?redirect=${url}`);
+    const url = encodeURIComponent(`/notifications/${request.params.id}?start=1`);
+    return h.redirect(`/notifications/contact?redirect=${url}`);
   }
   return renderStep(request, h, taskData, 0);
 }
@@ -111,7 +111,7 @@ async function renderStep (request, reply, taskData, index) {
     task,
     index,
     step,
-    formAction: `/admin/notifications/${task.task_config_id}?step=${index}`,
+    formAction: `/notifications/${task.task_config_id}?step=${index}`,
     pageTitle: task.config.title
   };
   return reply.view('water/notifications/step', view);
@@ -148,8 +148,8 @@ async function postStep (request, reply) {
 
   // Redirect to next step
   const nextAction = step < task.config.steps.length - 1
-    ? `/admin/notifications/${id}?step=${step + 1}`
-    : `/admin/notifications/${id}/refine`;
+    ? `/notifications/${id}?step=${step + 1}`
+    : `/notifications/${id}/refine`;
 
   return reply.redirect(nextAction);
 }
@@ -207,8 +207,8 @@ async function getRefine (request, reply) {
     pagination,
     results: data,
     task,
-    formAction: `/admin/notifications/${id}/refine`,
-    back: `/admin/notifications/${id}/step?step=${task.config.steps.length - 1}`,
+    formAction: `/notifications/${id}/refine`,
+    back: `/notifications/${id}/step?step=${task.config.steps.length - 1}`,
     query,
     replay,
     pageTitle: task.config.title,
@@ -247,13 +247,13 @@ async function postRefine (request, reply) {
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
-    return reply.redirect(`/admin/notifications/${id}/refine?flash=noLicencesSelected`);
+    return reply.redirect(`/notifications/${id}/refine?flash=noLicencesSelected`);
   }
 
   // Redirect to next step - either confirm or template variable entry
   const redirectUrl = task.config.variables && task.config.variables.length
-    ? `/admin/notifications/${id}/data`
-    : `/admin/notifications/${id}/preview`;
+    ? `/notifications/${id}/data`
+    : `/notifications/${id}/preview`;
 
   return reply.redirect(redirectUrl);
 }
@@ -272,9 +272,9 @@ async function renderVariableData (request, reply, taskData) {
     ...request.view,
     task,
     values: taskData.data.params,
-    formAction: `/admin/notifications/${task.task_config_id}/data`,
+    formAction: `/notifications/${task.task_config_id}/data`,
     pageTitle: task.config.title,
-    back: `/admin/notifications/${task.task_config_id}/refine`
+    back: `/notifications/${task.task_config_id}/refine`
   };
 
   return reply.view('water/notifications/data', view);
@@ -329,7 +329,7 @@ async function postVariableData (request, reply) {
     return renderVariableData(request, reply, taskData);
   } else {
     // Redirect to next step
-    return reply.redirect(`/admin/notifications/${id}/preview`);
+    return reply.redirect(`/notifications/${id}/preview`);
   }
 }
 
@@ -381,9 +381,9 @@ async function getSendViewContext (id, data, sender) {
     summary,
     error,
     data: taskData.toJson(),
-    formAction: `/admin/notifications/${id}/send`,
+    formAction: `/notifications/${id}/send`,
     pageTitle: sender ? sentTitle : previewTitle,
-    back: `/admin/notification/${id}/${task.config.variables ? 'data' : 'refine'}`
+    back: `/notification/${id}/${task.config.variables ? 'data' : 'refine'}`
   };
 }
 

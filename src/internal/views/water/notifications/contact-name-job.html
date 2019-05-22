@@ -22,7 +22,7 @@
       <p>This is the information that will be available to your public contacts.</p>
 
 
-      <form method="POST" action="/admin/notifications/contact">
+      <form method="POST" action="/notifications/contact">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
         <input type="hidden" name="redirect" value="{{ query.redirect }}" />
 {{> contact-details-name-and-role }}

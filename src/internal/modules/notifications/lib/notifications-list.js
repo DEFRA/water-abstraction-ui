@@ -27,7 +27,7 @@ const createNotificationType = (name, path, options = {}) => {
  * @return {Object} notification list object
  */
 const createNotificationTypeFromTask = (task) => {
-  const path = `/admin/notifications/${task.task_config_id}?start=1`;
+  const path = `/notifications/${task.task_config_id}?start=1`;
   const { name } = task.config;
   return createNotificationType(name, path);
 };
@@ -43,10 +43,10 @@ const getNotificationsList = (tasks, request) => {
   const notifications = tasks.map(createNotificationTypeFromTask);
 
   if (isInternalReturns(request)) {
-    notifications.push(createNotificationType('Returns: send invitations', '/admin/returns-notifications/invitations'));
-    notifications.push(createNotificationType('Returns: send paper forms', '/admin/returns-notifications/forms'));
-    notifications.push(createNotificationType('Returns: send reminders', '/admin/returns-notifications/reminders'));
-    notifications.push(createNotificationType('Returns: send final reminder', '/admin/returns-notifications/final-reminder'));
+    notifications.push(createNotificationType('Returns: send invitations', '/returns-notifications/invitations'));
+    notifications.push(createNotificationType('Returns: send paper forms', '/returns-notifications/forms'));
+    notifications.push(createNotificationType('Returns: send reminders', '/returns-notifications/reminders'));
+    notifications.push(createNotificationType('Returns: send final reminder', '/returns-notifications/final-reminder'));
   }
 
   return notifications;
@@ -59,16 +59,16 @@ const getNotificationsList = (tasks, request) => {
  */
 const getReportsList = (request) => {
   const reports = [
-    createNotificationType('Notifications report', '/admin/notifications/report'),
+    createNotificationType('Notifications report', '/notifications/report'),
     createNotificationType('View service performance (opens in a new tab)', 'https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N', { newWindow: true })
   ];
 
   if (isARApprover(request)) {
-    reports.push(createNotificationType('Abstraction reform report', '/admin/digitise/report'));
+    reports.push(createNotificationType('Abstraction reform report', '/digitise/report'));
   }
 
   if (isInternalReturns(request)) {
-    reports.push(createNotificationType('Returns overview', '/admin/returns-reports'));
+    reports.push(createNotificationType('Returns overview', '/returns-reports'));
   }
 
   return reports;

@@ -25,7 +25,7 @@ table tbody td, table tbody th {
   {{>element-phase-tag}}
   {{>element-main-nav}}
 
-  <a class="link-back" href="/admin/digitise">Back</a>
+  <a class="link-back" href="/digitise">Back</a>
 
   {{# if errors }}
   <div class="grid-row">
@@ -84,7 +84,7 @@ table tbody td, table tbody th {
       <h2 class="heading-medium" id="licence">Licence data</h2>
 
       {{#if canEdit }}
-      <a href="/admin/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
+      <a href="/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
       {{/if}}
 
       {{>ar-comparison-table data.licence }}
@@ -94,21 +94,21 @@ table tbody td, table tbody th {
 
       <h2 class="heading-medium" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Current licence version</h2>
       {{#if canEdit }}
-      <a href="/admin/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
+      <a href="/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
       {{/if}}
       {{>ar-comparison-table data.currentVersion }}
 
 
       <h2 class="heading-medium" id="party-{{ data.party.base.ID }}">Licence holder party</h2>
       {{#if canEdit }}
-      <a href="/admin/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
+      <a href="/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
       {{/if}}
       {{>ar-comparison-table data.party }}
 
 
       <h2 class="heading-medium" id="address-{{ data.address.base.ID }}">Licence holder address</h2>
       {{#if canEdit }}
-      <a href="/admin/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
+      <a href="/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
       {{/if}}
       {{>ar-comparison-table data.address }}
 
@@ -117,7 +117,7 @@ table tbody td, table tbody th {
       <h2 id="purpose-{{ purpose.base.ID }}" class="heading-medium">Purpose {{ purpose.base.ID }}</h2>
 
       {{#if ../canEdit }}
-      <a href="/admin/digitise/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
+      <a href="/digitise/licence/{{ ../documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit this purpose</a>
       {{/if}}
 
       {{>ar-comparison-table purpose }}
@@ -132,7 +132,7 @@ table tbody td, table tbody th {
       <h2 id="point-{{ point.base.ID }}" class="heading-medium">Point {{ point.base.ID }}</h2>
 
       {{#if ../canEdit }}
-      <a href="/admin/digitise/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
+      <a href="/digitise/licence/{{ ../documentId }}/edit/point/{{ point.base.ID }}">Edit this point</a>
       {{/if}}
       {{>ar-comparison-table point }}
       {{/each}}
@@ -143,7 +143,7 @@ table tbody td, table tbody th {
 
 
       {{#if ../canEdit }}
-      <a href="/admin/digitise/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
+      <a href="/digitise/licence/{{ ../documentId }}/edit/condition/{{ condition.base.ID }}">Edit this condition</a>
       {{/if}}
 
       {{>ar-comparison-table condition }}
@@ -161,7 +161,7 @@ table tbody td, table tbody th {
       <h2 class="heading-large">Workflow</h2>
 
       <!-- Submit for review -->
-      <form method="POST" action="/admin/digitise/licence/{{ documentId }}/status">
+      <form method="POST" action="/digitise/licence/{{ documentId }}/status">
         <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
         <div class="form-group">
           <label class="form-label" for="notes">
@@ -200,7 +200,7 @@ table tbody td, table tbody th {
         <h2 class="heading-large">Workflow</h2>
 
         <!-- Submit for review -->
-        <form method="POST" action="/admin/digitise/licence/{{ documentId }}/status">
+        <form method="POST" action="/digitise/licence/{{ documentId }}/status">
           <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
           <div class="form-group">
             <label class="form-label" for="notes">

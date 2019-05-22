@@ -51,7 +51,7 @@ lab.experiment('Test setStatusForm for AR user', () => {
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/status`);
+    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/status`);
   });
 
   lab.test('The form should include the CSRF token', async () => {
@@ -81,7 +81,7 @@ lab.experiment('Test setStatusForm for AR approver', () => {
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/status`);
+    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/status`);
   });
 
   lab.test('The form should include the CSRF token', async () => {

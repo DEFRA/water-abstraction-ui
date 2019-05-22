@@ -57,7 +57,7 @@
 {% endmacro %}
 
 {% macro documentLink(doc) %}
-  <a href="/admin/{{ "expired-" if not doc.isCurrent }}licences/{{ doc.documentId }}">
+  <a href="/{{ "expired-" if not doc.isCurrent }}licences/{{ doc.documentId }}">
     {{ doc.licenceNumber }}
   </a>
 {% endmacro %}
@@ -92,7 +92,7 @@
       <ul class="govuk-list">
         {% for user in users %}
         <li>
-          <a class="govuk-link" href="/admin/user/{{ user.userId }}/status">{{ user.email }}</a>
+          <a class="govuk-link" href="/user/{{ user.userId }}/status">{{ user.email }}</a>
         </li>
         {% endfor %}
       </ul>
@@ -166,7 +166,7 @@
       {% endif %}
 
       <!-- Pagination -->
-      {{ paginate(pagination, '/admin/licences', { query : form.fields[0].value }) }}
+      {{ paginate(pagination, '/licences', { query : form.fields[0].value }) }}
 
   </div>
 </div>

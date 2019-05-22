@@ -125,7 +125,7 @@ const postSendForms = async (request, h) => {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
     }
 
-    return h.redirect('/admin/returns-notifications/forms-success');
+    return h.redirect('/returns-notifications/forms-success');
   }
 
   return postPreviewRecipients(request, h);
@@ -147,7 +147,7 @@ const getRemindersStartView = (request, isFinalReminder = false) => {
   return {
     ...request.view,
     form: isFinalReminder ? sendFinalRemindersForm(request) : sendRemindersForm(request),
-    back: `/admin/notifications`
+    back: `/notifications`
   };
 };
 
@@ -227,7 +227,7 @@ const postReturnsNotificationsStart = async (request, h) => {
   // get the event id from the water service and redirect
   const { data: event } = await getNotificationsData(request);
 
-  return h.redirect(`/admin/waiting/${event.eventId}`);
+  return h.redirect(`/waiting/${event.eventId}`);
 };
 
 exports.getSendForms = getSendForms;

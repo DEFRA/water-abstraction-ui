@@ -115,7 +115,7 @@ experiment('loginHelpers', () => {
     test('it should redirect to admin licences for internal users', async () => {
       const request = getRequest(scope.internal);
       const result = await loginHelpers.getLoginRedirectPath(request);
-      expect(result).to.equal('/admin/licences');
+      expect(result).to.equal('/licences');
     });
 
     test('it should redirect to add licences if the user has no companies', async () => {

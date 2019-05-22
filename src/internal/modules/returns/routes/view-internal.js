@@ -5,7 +5,7 @@ const { scope: { internal } } = require('../../../lib/constants');
 module.exports = {
   getAdminReturnsForLicence: {
     ...getReturnsForLicence,
-    path: '/admin/licences/{documentId}/returns',
+    path: '/licences/{documentId}/returns',
     config: {
       ...getReturnsForLicence.config,
       auth: {
@@ -16,7 +16,7 @@ module.exports = {
 
   getAdminReturn: {
     ...getReturn,
-    path: '/admin/returns/return',
+    path: '/returns/return',
     config: {
       ...getReturn.config,
       validate: {

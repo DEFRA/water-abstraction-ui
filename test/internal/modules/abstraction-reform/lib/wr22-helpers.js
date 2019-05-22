@@ -97,7 +97,7 @@ lab.experiment('getAddFormAndSchema', () => {
   });
 
   lab.test('The form should have the correct action attribute', async () => {
-    expect(result.form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/add-data/${request.params.schema}`);
+    expect(result.form.action).to.equal(`/digitise/licence/${request.params.documentId}/add-data/${request.params.schema}`);
   });
 
   lab.test('It should have a CSRF token field in the form', async () => {
@@ -153,7 +153,7 @@ lab.experiment('getEditFormAndSchema', () => {
   });
 
   lab.test('The form should have the correct action attribute', async () => {
-    expect(result.form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/edit-data/${id}`);
+    expect(result.form.action).to.equal(`/digitise/licence/${request.params.documentId}/edit-data/${id}`);
   });
 
   lab.test('It should have a CSRF token field in the form', async () => {

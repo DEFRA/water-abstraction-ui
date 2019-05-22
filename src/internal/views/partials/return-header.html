@@ -66,7 +66,7 @@
   </dl>
 
   <p class="medium-space">
-    <a href="{{#if isAdmin }}/admin{{/if}}/{{#unless documentHeader.metadata.IsCurrent}}expired-{{/unless}}licences/{{ documentHeader.document_id }}">View this licence</a>
+    <a href="/{{#unless documentHeader.metadata.IsCurrent}}expired-{{/unless}}licences/{{ documentHeader.document_id }}">View this licence</a>
   </p>
 
 {{/if}}

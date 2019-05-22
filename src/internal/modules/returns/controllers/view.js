@@ -42,7 +42,7 @@ const getReturnsForLicence = async (request, h) => {
     throw Boom.notFound(`Document ${documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
   }
   view.pageTitle = `Returns for ${view.document.system_external_id}`;
-  view.paginationUrl = `${request.view.isAdmin ? '/admin' : ''}/licences/${documentId}/returns`;
+  view.paginationUrl = `/licences/${documentId}/returns`;
 
   return h.view('water/returns/licence', view);
 };

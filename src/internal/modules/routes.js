@@ -1,14 +1,10 @@
-const addLicencesRoutes = require('./add-licences/routes');
 const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
-const manageLicencesRoutes = require('./manage-licences/routes');
 const resetPasswordRoutes = require('./reset-password/routes');
 const updatePasswordRoutes = require('./update-password/routes');
-const viewLicenceRoutes = require('./view-licences/routes');
 const viewLicenceAdminRoutes = require('./view-licences/routes-admin');
 const notificationsRoutes = require('./notifications/routes');
 const reportsRoutes = require('./notifications-reports/routes');
-const registrationRoutes = require('./registration/routes');
 const serviceStatusRoutes = require('./service-status/routes');
 const contactDetailsRoutes = require('./contact-details/routes');
 const abstractionReformRoutes = require('./abstraction-reform/routes');
@@ -20,17 +16,12 @@ const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 const waiting = require('./waiting/routes');
 const batchNotifications = require('./batch-notifications/routes');
-const companySelector = require('./company-selector/routes');
 
 module.exports = [
-  ...Object.values(addLicencesRoutes),
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
-  ...Object.values(registrationRoutes),
-  ...Object.values(manageLicencesRoutes),
   ...Object.values(resetPasswordRoutes),
   ...Object.values(updatePasswordRoutes),
-  ...Object.values(viewLicenceRoutes),
   ...Object.values(viewLicenceAdminRoutes),
   ...Object.values(notificationsRoutes),
   ...Object.values(reportsRoutes),
@@ -44,6 +35,5 @@ module.exports = [
   ...Object.values(returnsReports),
   ...Object.values(internalSearch),
   ...Object.values(waiting),
-  ...Object.values(batchNotifications),
-  ...Object.values(companySelector)
+  ...Object.values(batchNotifications)
 ];

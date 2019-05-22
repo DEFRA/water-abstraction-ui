@@ -78,7 +78,7 @@ experiment('getSearchForm', () => {
     await controller.getSearchForm(request, h);
 
     const [ path ] = h.redirect.firstCall.args;
-    expect(path).to.equal(`/admin/return/internal?returnId=${returnId}`);
+    expect(path).to.equal(`/return/internal?returnId=${returnId}`);
   });
 });
 

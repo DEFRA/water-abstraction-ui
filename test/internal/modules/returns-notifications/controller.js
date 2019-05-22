@@ -147,7 +147,7 @@ experiment('getReturnsNotificationsStart', () => {
   beforeEach(async () => {
     request = {
       view: {
-        path: '/admin/returns-notifications/reminders'
+        path: '/returns-notifications/reminders'
       }
     };
 
@@ -165,14 +165,14 @@ experiment('getReturnsNotificationsStart', () => {
 
   test('view context is assigned a back link path', async () => {
     const [, view] = h.view.lastCall.args;
-    expect(view.back).to.equal('/admin/notifications');
+    expect(view.back).to.equal('/notifications');
   });
 
   experiment('Return Reminders', () => {
     beforeEach(async () => {
       request = {
         view: {
-          path: '/admin/returns-notifications/reminders'
+          path: '/returns-notifications/reminders'
         }
       };
 
@@ -185,7 +185,7 @@ experiment('getReturnsNotificationsStart', () => {
 
     test('view context is assigned a form', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.form.action).to.equal('/admin/returns-notifications/reminders');
+      expect(view.form.action).to.equal('/returns-notifications/reminders');
     });
   });
 
@@ -196,7 +196,7 @@ experiment('getReturnsNotificationsStart', () => {
     beforeEach(async () => {
       request = {
         view: {
-          path: '/admin/returns-notifications/invitations'
+          path: '/returns-notifications/invitations'
         }
       };
 
@@ -209,7 +209,7 @@ experiment('getReturnsNotificationsStart', () => {
 
     test('view context is assigned a form', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.form.action).to.equal('/admin/returns-notifications/invitations');
+      expect(view.form.action).to.equal('/returns-notifications/invitations');
     });
   });
 });
@@ -235,7 +235,7 @@ experiment('postReturnsNotificationsStart', () => {
           scope: ['internal']
         }
       },
-      path: '/admin/return-notifications/reminders',
+      path: '/return-notifications/reminders',
       payload: {
         excludeLicences: '123\n456'
       }
@@ -272,7 +272,7 @@ experiment('postReturnsNotificationsStart', () => {
   test('the user is redirected to the event waiting page', async () => {
     await controller.postReturnsNotificationsStart(request, h);
     const [url] = h.redirect.lastCall.args;
-    expect(url).to.equal('/admin/waiting/test-event-id');
+    expect(url).to.equal('/waiting/test-event-id');
   });
 
   experiment('Return Reminders', () => {
@@ -287,7 +287,7 @@ experiment('postReturnsNotificationsStart', () => {
             scope: ['internal']
           }
         },
-        path: '/admin/return-notifications/reminders',
+        path: '/return-notifications/reminders',
         payload: {
           excludeLicences: '123\n456'
         }
@@ -317,7 +317,7 @@ experiment('postReturnsNotificationsStart', () => {
             scope: ['internal']
           }
         },
-        path: '/admin/return-notifications/invitations',
+        path: '/return-notifications/invitations',
         payload: {
           excludeLicences: '123\n456'
         }

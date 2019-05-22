@@ -85,8 +85,8 @@ experiment('batch notifications controller', () => {
       expect(data.pageTitle).to.equal('Send returns reminders');
       expect(data.form).to.be.an.object();
       expect(data.ev).to.equal(ev);
-      expect(data.csvPath).to.equal('/admin/batch-notifications/csv/event_1');
-      expect(data.back).to.equal('/admin/returns-notifications/reminders');
+      expect(data.csvPath).to.equal('/batch-notifications/csv/event_1');
+      expect(data.back).to.equal('/returns-notifications/reminders');
     });
   });
 
@@ -129,7 +129,7 @@ experiment('batch notifications controller', () => {
     test('redirects to confirmation page', async () => {
       expect(h.redirect.callCount).to.equal(1);
       const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/admin/batch-notifications/confirmation/event_1');
+      expect(path).to.equal('/batch-notifications/confirmation/event_1');
     });
   });
 

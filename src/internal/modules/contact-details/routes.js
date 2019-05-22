@@ -5,7 +5,7 @@ const allAdmin = constants.scope.allAdmin;
 
 const getContactInformation = {
   method: 'GET',
-  path: '/admin/contact-information',
+  path: '/contact-information',
   handler: controller.getContactInformation,
   options: {
     auth: { scope: allAdmin },
@@ -15,7 +15,7 @@ const getContactInformation = {
 
 const postContactInformation = {
   method: 'POST',
-  path: '/admin/contact-information',
+  path: '/contact-information',
   handler: controller.postContactInformation,
   options: {
     auth: { scope: allAdmin },

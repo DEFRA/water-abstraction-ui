@@ -96,7 +96,7 @@ experiment('getWaiting', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/admin/batch-notifications/review/test-event-id');
+        expect(url).to.equal('/batch-notifications/review/test-event-id');
       });
     });
   });
@@ -136,7 +136,7 @@ experiment('getWaiting', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/admin/batch-notifications/review/test-event-id');
+        expect(url).to.equal('/batch-notifications/review/test-event-id');
       });
     });
   });

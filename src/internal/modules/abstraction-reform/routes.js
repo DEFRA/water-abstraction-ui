@@ -9,7 +9,7 @@ module.exports = {
 
   getViewLicences: {
     method: 'GET',
-    path: '/admin/digitise',
+    path: '/digitise',
     handler: controller.getViewLicences,
     options: {
       auth: { scope: allowedScopes },
@@ -31,7 +31,7 @@ module.exports = {
 
   getViewLicence: {
     method: 'GET',
-    path: '/admin/digitise/licence/{documentId}',
+    path: '/digitise/licence/{documentId}',
     handler: controller.getViewLicence,
     options: {
       auth: { scope: allowedScopes },
@@ -40,7 +40,7 @@ module.exports = {
         viewContext: {
           pageTitle: 'Review licence data',
           activeNavLink: 'ar',
-          back: '/admin/digitise'
+          back: '/digitise'
         }
       }
     }
@@ -48,7 +48,7 @@ module.exports = {
 
   getEditObject: {
     method: 'GET',
-    path: '/admin/digitise/licence/{documentId}/edit/{type}/{id?}',
+    path: '/digitise/licence/{documentId}/edit/{type}/{id?}',
     handler: controller.getEditObject,
     options: {
       auth: { scope: allowedScopes },
@@ -64,7 +64,7 @@ module.exports = {
 
   postEditObject: {
     method: 'POST',
-    path: '/admin/digitise/licence/{documentId}/edit/{type}/{id?}',
+    path: '/digitise/licence/{documentId}/edit/{type}/{id?}',
     handler: controller.postEditObject,
     options: {
       auth: { scope: allowedScopes },
@@ -74,7 +74,7 @@ module.exports = {
 
   postSetStatus: {
     method: 'POST',
-    path: '/admin/digitise/licence/{documentId}/status',
+    path: '/digitise/licence/{documentId}/status',
     handler: controller.postSetStatus,
     options: {
       auth: { scope: allowedScopes },
@@ -93,7 +93,7 @@ module.exports = {
 
   getCSVReport: {
     method: 'GET',
-    path: '/admin/digitise/report',
+    path: '/digitise/report',
     handler: reportsController.getCSVReport,
     options: {
       auth: { scope: scope.abstractionReformApprover },

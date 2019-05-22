@@ -191,7 +191,7 @@ experiment('internal returns controller', () => {
 
     test('back is set to the correct previous page', async () => {
       const [, data] = h.view.lastCall.args;
-      expect(data.back).to.equal('/admin/return/internal?returnId=test-return-id');
+      expect(data.back).to.equal('/return/internal?returnId=test-return-id');
     });
   });
 
@@ -242,7 +242,7 @@ experiment('internal returns controller', () => {
 
       test('user is redirected to the next step', async () => {
         const [redirectUrl] = h.redirect.lastCall.args;
-        expect(redirectUrl).to.equal('/admin/return?returnId=test-return-id');
+        expect(redirectUrl).to.equal('/return?returnId=test-return-id');
       });
     });
 
@@ -263,7 +263,7 @@ experiment('internal returns controller', () => {
 
       test('the back link is configured', async () => {
         const [, context] = h.view.lastCall.args;
-        expect(context.back).to.startWith('/admin/return/internal');
+        expect(context.back).to.startWith('/return/internal');
       });
     });
   });
@@ -305,7 +305,7 @@ experiment('internal returns controller', () => {
 
     test('back is set to the correct previous page', async () => {
       const [, data] = h.view.lastCall.args;
-      expect(data.back).to.equal('/admin/return?returnId=test-return-id');
+      expect(data.back).to.equal('/return?returnId=test-return-id');
     });
   });
 
@@ -354,7 +354,7 @@ experiment('internal returns controller', () => {
 
       test('user is redirected to the next step', async () => {
         const [redirectUrl] = h.redirect.lastCall.args;
-        expect(redirectUrl).to.equal('/admin/return/units?returnId=test-return-id');
+        expect(redirectUrl).to.equal('/return/units?returnId=test-return-id');
       });
     });
 
@@ -412,7 +412,7 @@ experiment('internal returns controller', () => {
 
     test('back is set to the correct previous page', async () => {
       const [, data] = h.view.lastCall.args;
-      expect(data.back).to.equal('/admin/return/units?returnId=test-return-id');
+      expect(data.back).to.equal('/return/units?returnId=test-return-id');
     });
   });
 
@@ -461,7 +461,7 @@ experiment('internal returns controller', () => {
 
       test('user is redirected to the next step', async () => {
         const [redirectUrl] = h.redirect.lastCall.args;
-        expect(redirectUrl).to.equal('/admin/return/meter/details?returnId=test-return-id');
+        expect(redirectUrl).to.equal('/return/meter/details?returnId=test-return-id');
       });
     });
 
@@ -511,7 +511,7 @@ experiment('internal returns controller', () => {
 
     test('back is set to the correct previous page', async () => {
       const [, data] = h.view.lastCall.args;
-      expect(data.back).to.equal('/admin/return/single-total?returnId=test-return-id');
+      expect(data.back).to.equal('/return/single-total?returnId=test-return-id');
     });
   });
 
@@ -568,7 +568,7 @@ experiment('internal returns controller', () => {
 
       test('user is redirected to the next step', async () => {
         const [redirectUrl] = h.redirect.lastCall.args;
-        expect(redirectUrl).to.equal('/admin/return/quantities?returnId=test-return-id');
+        expect(redirectUrl).to.equal('/return/quantities?returnId=test-return-id');
       });
     });
 
@@ -593,7 +593,7 @@ experiment('internal returns controller', () => {
 
       test('user is redirected to the next step', async () => {
         const [redirectUrl] = h.redirect.lastCall.args;
-        expect(redirectUrl).to.equal('/admin/return/quantities?returnId=test-return-id');
+        expect(redirectUrl).to.equal('/return/quantities?returnId=test-return-id');
       });
     });
 
@@ -614,7 +614,7 @@ experiment('internal returns controller', () => {
 
       test('the back link is configured', async () => {
         const [, context] = h.view.lastCall.args;
-        expect(context.back).to.startWith('/admin/return/single-total?returnId');
+        expect(context.back).to.startWith('/return/single-total?returnId');
       });
     });
   });

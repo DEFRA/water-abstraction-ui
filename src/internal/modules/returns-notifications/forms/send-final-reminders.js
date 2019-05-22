@@ -8,7 +8,7 @@ const { formFactory, fields } = require('../../../../shared/lib/forms');
 const sendFinalRemindersForm = (request) => {
   const { csrfToken } = request.view;
 
-  const action = `/admin/returns-notifications/final-reminder`;
+  const action = `/returns-notifications/final-reminder`;
 
   const f = formFactory(action);
   f.fields.push(fields.button(null, { label: 'Send reminders' }));

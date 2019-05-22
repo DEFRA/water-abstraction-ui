@@ -32,7 +32,7 @@ lab.experiment('selectSchemaForm', () => {
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/select-schema/${request.params.slug}`);
+    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/select-schema/${request.params.slug}`);
   });
 
   lab.test('The form should have a CSRF token field', async () => {

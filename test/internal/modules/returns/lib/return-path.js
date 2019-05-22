@@ -19,8 +19,8 @@ const ret = {
   end_date: '2018-10-31'
 };
 
-const internalView = `/admin/returns/return?id=${ret.return_id}`;
-const internalEdit = `/admin/return/internal?returnId=${ret.return_id}`;
+const internalView = `/returns/return?id=${ret.return_id}`;
+const internalEdit = `/return/internal?returnId=${ret.return_id}`;
 const externalView = `/returns/return?id=${ret.return_id}`;
 const externalEdit = `/return?returnId=${ret.return_id}`;
 

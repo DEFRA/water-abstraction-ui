@@ -9,7 +9,7 @@ module.exports = {
 
   getNotificationsList: {
     method: 'GET',
-    path: '/admin/notifications/report',
+    path: '/notifications/report',
     handler: controller.getNotificationsList,
     config: {
       auth: { scope: allAdmin },
@@ -31,7 +31,7 @@ module.exports = {
 
   getNotification: {
     method: 'GET',
-    path: '/admin/notifications/report/{id}',
+    path: '/notifications/report/{id}',
     handler: controller.getNotification,
     config: {
       auth: { scope: allAdmin },

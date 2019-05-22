@@ -34,7 +34,7 @@ experiment('confirmForm', () => {
   });
 
   test('it should have an internal action URL for internal users', async () => {
-    expect(internalForm.action).to.equal('/admin/return/nil-return?returnId=abc');
+    expect(internalForm.action).to.equal('/return/nil-return?returnId=abc');
   });
 
   test('it should not include under query checkbox for external users', async () => {

@@ -12,9 +12,9 @@ const createNavLink = (label, path, id) => {
 
 // Internal links
 const internalLinks = {
-  licences: createNavLink('Licences', '/admin/licences', 'view'),
-  ar: createNavLink('Digitise!', '/admin/digitise', 'ar'),
-  notifications: createNavLink('Reports and notifications', '/admin/notifications', 'notifications')
+  licences: createNavLink('Licences', '/licences', 'view'),
+  ar: createNavLink('Digitise!', '/digitise', 'ar'),
+  notifications: createNavLink('Reports and notifications', '/notifications', 'notifications')
 };
 
 const externalLinks = {

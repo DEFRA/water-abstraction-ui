@@ -71,7 +71,6 @@ const rejectResponse = (response, reject) => {
 
 // make an http request (with a body), uses promises
 function makeURIRequestWithBody (uri, method, data) {
-  console.log('makeURIRequestWithBody');
   return new Promise((resolve, reject) => {
     const options = {
       method,

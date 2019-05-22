@@ -36,7 +36,7 @@
     <dd class="govuk-summary-list__value">
       {{ licence.licenceHolderFullName }}
       <br />
-      <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/contact">
+      <a href="/licences/{{ documentId }}/contact">
         View licence contact details
       </a>
     </dd>
@@ -64,7 +64,7 @@
   {{ purposes(licence.uniquePurposeNames) }}
 
   {% set link %}
-  <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/purposes">
+  <a href="/licences/{{ documentId }}/purposes">
   View details of your
   {{ 'purpose' | pluralize(licence.uniquePurposeNames) }},
   {{ 'period' | pluralize(licence.abstractionPeriods) }}
@@ -75,7 +75,7 @@
   {{ periods(licence.abstractionPeriods, link) }}
 
   {% set link %}
-  <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/points">
+  <a href="/licences/{{ documentId }}/points">
     View details of your abstraction {{ 'point' | pluralize(licence.points) }}
   </a>
   {% endset %}
@@ -83,12 +83,12 @@
   {{ points(licence.points, link) }}
 
   {% set link %}
-  <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/conditions">
+  <a href="/licences/{{ documentId }}/conditions">
     View details of your abstraction {{ 'condition' | pluralize(licence.conditions) }}
   </a>
   {% endset %}
 
-  {% set baseUrl %}{{ '/admin' if isInternal }}/licences/{{ documentId }}{% endset %}
+  {% set baseUrl %}/licences/{{ documentId }}{% endset %}
   {{ gaugingStations(licence.gaugingStations, baseUrl) }}
   {{ conditions(licence.conditions, link) }}
   {{ amounts(licence.aggregateQuantity) }}

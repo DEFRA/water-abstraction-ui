@@ -75,7 +75,7 @@
         <div class="version clickable">
                 <p class="spaceless">
                   {{ email }}<br>
-                  <a href="{{#if ../isAdmin}}{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
+                  <a href="/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
                 </p>
               </div>
         {{/equal}}

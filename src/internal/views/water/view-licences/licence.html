@@ -63,12 +63,12 @@
       {{#if crmData.document_name }}
         {{ crmData.document_name}}
         <br />
-        <a id="showForm" href="{{#if isAdmin }}{{/if}}/licences/{{ licence_id }}/rename">Rename this licence</a>
+        <a id="showForm" href="/licences/{{ licence_id }}/rename">Rename this licence</a>
       {{/if}}
       {{^crmData.document_name }}
         No name chosen
         <br />
-        <a id="nameLicence" href="{{#if isAdmin }}{{/if}}/licences/{{ licence_id }}/rename">Name this licence</a>
+        <a id="nameLicence" href="/licences/{{ licence_id }}/rename">Name this licence</a>
       {{/crmData.document_name}}
 
     </div>

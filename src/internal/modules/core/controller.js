@@ -1,12 +1,6 @@
-const { isInternal, isExternal } = require('../../lib/permissions');
+const { isExternal } = require('../../lib/permissions');
 
-const index = async (request, h) => {
-  if (isInternal(request)) {
-    return h.redirect('/licences');
-  } else {
-    return h.redirect('/licences');
-  }
-};
+const index = async (request, h) => h.redirect('/licences');
 
 /**
  * Welcome page before routing to signin/register
@@ -28,8 +22,7 @@ const getNotFoundError = (request, h) => {
     .view('nunjucks/errors/404.njk', view, { layout: false })
     .code(404);
 };
-module.exports = {
-  index,
-  getWelcome,
-  getNotFoundError
-};
+
+exports.index = index;
+exports.getWelcome = getWelcome;
+exports.getNotFoundError = getNotFoundError;

@@ -41,7 +41,7 @@
   </p>
   {{/if}}
 
-  <form novalidate method="GET" action="{{#if isAdmin }}{{/if}}/licences" name="licenceSearch">
+  <form novalidate method="GET" action="/licences" name="licenceSearch">
 
   <!-- Licence search form -->
   <div class="grid-row">
@@ -102,7 +102,7 @@
     <ol class="pagination">
       <li class="pagination__item" {{#equal pagination.page 1}}aria-hidden="true"{{/equal}}>
         {{#greaterThan pagination.page 1}}
-          <a class="pagination__link" href="{{#if isAdmin }}{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
+          <a class="pagination__link" href="/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{subtract pagination.page 1 }}#results" aria-label="Previous page">
         {{/greaterThan}}
         	&larr; Previous page
         {{#greaterThan pagination.page 1}}
@@ -110,11 +110,11 @@
         {{/greaterThan}}
       </li>
       {{#for 0 pagination.pageCount 1 }}
-      <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="{{#if ../isAdmin }}{{/if}}/licences?{{{ queryString direction=../query.direction sort=../query.sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&amp;page={{add this 1 }}#results"><span class="sr-only">Page </span>{{add this 1 }}{{#equal (add this 1) ../pagination.page}}<span class="sr-only"> - current page</span>{{/equal}}</a></li>
+      <li class="pagination__item"><a class="pagination__link {{#equal (add this 1) ../pagination.page}}pagination__link--active{{/equal}}" href="/licences?{{{ queryString direction=../query.direction sort=../query.sort licenceNumber=../query.licenceNumber emailAddress=../query.emailAddress }}}&amp;page={{add this 1 }}#results"><span class="sr-only">Page </span>{{add this 1 }}{{#equal (add this 1) ../pagination.page}}<span class="sr-only"> - current page</span>{{/equal}}</a></li>
       {{/for}}
       <li class="pagination__item" {{#equal pagination.page pagination.pageCount}}aria-hidden="true"{{/equal}}>
         {{#lessThan pagination.page pagination.pageCount}}
-          <a class="pagination__link" href="{{#if isAdmin }}{{/if}}/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
+          <a class="pagination__link" href="/licences?{{{ queryString direction=query.direction sort=query.sort licenceNumber=query.licenceNumber emailAddress=query.emailAddress }}}&amp;page={{add pagination.page 1 }}#results" aria-label="Next page">
         {{/lessThan}}
         Next page 	&rarr;
         {{#lessThan pagination.page pagination.pageCount}}

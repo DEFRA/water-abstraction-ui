@@ -3,7 +3,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a data-no-js class="link-back link-back--space-above" href="{{#if isAdmin }}{{/if}}/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
+  <a data-no-js class="link-back link-back--space-above" href="/licences/{{ document.document_id }}">Licence number {{ document.system_external_id }}</a>
 
   {{#if document.document_name }}
   <h1 class="heading-large heading-large--tight-above">

@@ -2,7 +2,7 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-  <a class="link-back link-back--space-above" href="{{#if isAdmin }}{{/if}}/licences/{{ documentHeader.document_id }}">Licence number {{ viewData.licenceNumber }}</a>
+  <a class="link-back link-back--space-above" href="/licences/{{ documentHeader.document_id }}">Licence number {{ viewData.licenceNumber }}</a>
 
   <div class="grid-row small-space">
       <div class="column-full">
@@ -67,12 +67,12 @@
 
               {{# if showFlowLink }}
               <p>
-                <a href="{{#if isAdmin }}{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
+                <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
               </p>
               {{/if}}
               {{# if showLevelLink }}
               <p>
-                <a href="{{#if isAdmin }}{{/if}}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
+                <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
               </p>
               {{/if}}
 
@@ -131,7 +131,7 @@
   </div>
 
   <p>
-    <a href="{{#if isAdmin }}{{/if}}/licences/{{ documentHeader.document_id }}/conditions">
+    <a href="/licences/{{ documentHeader.document_id }}/conditions">
       View all conditions information held for this licence
     </a>
   </p>

@@ -38,7 +38,7 @@ const setStatusForm = (request) => {
   const { csrfToken } = request.view;
 
   const { documentId } = request.params;
-  const action = `/admin/digitise/licence/${documentId}/status`;
+  const action = `/digitise/licence/${documentId}/status`;
 
   const f = formFactory(action);
 

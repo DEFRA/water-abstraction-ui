@@ -5,7 +5,7 @@ const allowedScopes = scope.internal;
 
 module.exports = {
   getSearchForm: {
-    path: '/admin/licences',
+    path: '/licences',
     method: 'GET',
     handler: controller.getSearchForm,
     options: {
@@ -28,7 +28,7 @@ module.exports = {
 
   getUserStatus: {
     method: 'GET',
-    path: '/admin/user/{userId}/status',
+    path: '/user/{userId}/status',
     handler: controller.getUserStatus,
     config: {
       auth: { scope: allowedScopes },

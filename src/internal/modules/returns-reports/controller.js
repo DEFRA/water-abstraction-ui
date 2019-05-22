@@ -22,7 +22,7 @@ const getReturns = async (request, h) => {
     ...request.view,
     currentCycle,
     cycles: rest,
-    csvPath: `/admin/returns-reports/download/${currentCycle.endDate}`
+    csvPath: `/returns-reports/download/${currentCycle.endDate}`
   }, { layout: false });
 };
 

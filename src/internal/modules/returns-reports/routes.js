@@ -7,7 +7,7 @@ module.exports = {
 
   getNotificationsList: {
     method: 'GET',
-    path: '/admin/returns-reports',
+    path: '/returns-reports',
     handler: controller.getReturns,
     config: {
       auth: { scope: returns },
@@ -23,7 +23,7 @@ module.exports = {
 
   getDownload: {
     method: 'GET',
-    path: '/admin/returns-reports/download/{cycleEndDate}',
+    path: '/returns-reports/download/{cycleEndDate}',
     handler: controller.getDownloadReport,
     config: {
       auth: { scope: returns },

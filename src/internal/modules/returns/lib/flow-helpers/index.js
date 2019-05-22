@@ -1,11 +1,9 @@
 const { get } = require('lodash');
 const internalFlows = require('./internal');
-const externalFlows = require('./external');
-const permissions = require('../../../../lib/permissions');
 const steps = require('./steps');
 
 const getScopedPath = (request, path) => {
-  return permissions.isInternal(request) ? `/admin${path}` : path;
+  return path;
 };
 
 /**
@@ -33,7 +31,7 @@ const getPath = (path, request, data) => {
  */
 
 const getNextPath = (current, request, data, direction = 'next') => {
-  const flows = permissions.isInternal(request) ? internalFlows : externalFlows;
+  const flows = internalFlows;
   const step = flows[direction][current](data);
   return getPath(step, request, data);
 };

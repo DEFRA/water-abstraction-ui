@@ -17,7 +17,7 @@ const getLicenceAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}'
+  path: '/licences/{documentId}'
 };
 
 const getLicenceContactAdmin = {
@@ -28,7 +28,7 @@ const getLicenceContactAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}/contact'
+  path: '/licences/{documentId}/contact'
 };
 
 const getLicencePurposesAdmin = {
@@ -39,7 +39,7 @@ const getLicencePurposesAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}/purposes'
+  path: '/licences/{documentId}/purposes'
 };
 
 const getLicencePointsAdmin = {
@@ -50,7 +50,7 @@ const getLicencePointsAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}/points'
+  path: '/licences/{documentId}/points'
 };
 
 const getLicenceConditionsAdmin = {
@@ -61,7 +61,7 @@ const getLicenceConditionsAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}/conditions'
+  path: '/licences/{documentId}/conditions'
 };
 
 const getLicenceGaugingStationAdmin = {
@@ -72,12 +72,12 @@ const getLicenceGaugingStationAdmin = {
       scope: allAdmin
     }
   },
-  path: '/admin/licences/{documentId}/station/{gauging_station}'
+  path: '/licences/{documentId}/station/{gauging_station}'
 };
 
 const getLicenceCommunication = {
   method: 'GET',
-  path: '/admin/licences/{documentId}/communications/{communicationId}',
+  path: '/licences/{documentId}/communications/{communicationId}',
   handler: controller.getLicenceCommunication,
   config: {
     description: 'Look at the content of a message sent to the user regarding the licence',
@@ -100,7 +100,7 @@ const getLicenceCommunication = {
 
 const getExpiredLicence = {
   method: 'GET',
-  path: '/admin/expired-licences/{documentId}',
+  path: '/expired-licences/{documentId}',
   handler: controller.getExpiredLicence,
   config: {
     pre: [

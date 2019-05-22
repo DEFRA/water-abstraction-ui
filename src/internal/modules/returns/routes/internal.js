@@ -8,7 +8,7 @@ module.exports = {
 
   getInternalRouting: {
     method: 'GET',
-    path: '/admin/return/internal',
+    path: '/return/internal',
     handler: controller.getInternalRouting,
     options: {
       auth: {
@@ -32,7 +32,7 @@ module.exports = {
 
   postInternalRouting: {
     method: 'POST',
-    path: '/admin/return/internal',
+    path: '/return/internal',
     handler: controller.postInternalRouting,
     options: {
       auth: {
@@ -61,7 +61,7 @@ module.exports = {
 
   getLogReceipt: {
     method: 'GET',
-    path: '/admin/return/log-receipt',
+    path: '/return/log-receipt',
     handler: controller.getLogReceipt,
     options: {
       auth: {
@@ -85,7 +85,7 @@ module.exports = {
 
   postLogReceipt: {
     method: 'POST',
-    path: '/admin/return/log-receipt',
+    path: '/return/log-receipt',
     handler: controller.postLogReceipt,
     options: {
       auth: {
@@ -117,7 +117,7 @@ module.exports = {
 
   getReceiptLogged: {
     method: 'GET',
-    path: '/admin/return/receipt-logged',
+    path: '/return/receipt-logged',
     handler: controller.getReceiptLogged,
     options: {
       auth: {
@@ -141,7 +141,7 @@ module.exports = {
 
   getQueryLogged: {
     method: 'GET',
-    path: '/admin/return/query-logged',
+    path: '/return/query-logged',
     handler: controller.getQueryLogged,
     options: {
       auth: {
@@ -165,7 +165,7 @@ module.exports = {
 
   getDateReceived: {
     method: 'GET',
-    path: '/admin/return/date-received',
+    path: '/return/date-received',
     handler: controller.getDateReceived,
     options: {
       auth: {
@@ -192,7 +192,7 @@ module.exports = {
 
   postDateReceived: {
     method: 'POST',
-    path: '/admin/return/date-received',
+    path: '/return/date-received',
     handler: controller.postDateReceived,
     options: {
       auth: {
@@ -223,7 +223,7 @@ module.exports = {
 
   getInternalMethod: {
     method: 'GET',
-    path: '/admin/return/internal-method',
+    path: '/return/internal-method',
     handler: controller.getInternalMethod,
     options: {
       auth: {
@@ -248,7 +248,7 @@ module.exports = {
 
   postInternalMethod: {
     method: 'POST',
-    path: '/admin/return/internal-method',
+    path: '/return/internal-method',
     handler: controller.postInternalMethod,
     options: {
       auth: {
@@ -277,7 +277,7 @@ module.exports = {
 
   getMeterDetailsProvided: {
     method: 'GET',
-    path: '/admin/return/meter/details-provided',
+    path: '/return/meter/details-provided',
     handler: controller.getMeterDetailsProvided,
     options: {
       auth: {
@@ -302,7 +302,7 @@ module.exports = {
 
   postMeterDetailsProvided: {
     method: 'POST',
-    path: '/admin/return/meter/details-provided',
+    path: '/return/meter/details-provided',
     handler: controller.postMeterDetailsProvided,
     options: {
       auth: {
@@ -331,7 +331,7 @@ module.exports = {
 
   getSingleTotalAbstractionDates: {
     method: 'GET',
-    path: '/admin/return/single-total-dates',
+    path: '/return/single-total-dates',
     handler: controller.getSingleTotalAbstractionPeriod,
     options: {
       auth: {
@@ -356,7 +356,7 @@ module.exports = {
 
   postSingleTotalAbstractionDates: {
     method: 'POST',
-    path: '/admin/return/single-total-dates',
+    path: '/return/single-total-dates',
     handler: controller.postSingleTotalAbstractionPeriod,
     options: {
       auth: {

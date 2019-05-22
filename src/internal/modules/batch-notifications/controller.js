@@ -10,12 +10,12 @@ const getPageTitle = (ev) => {
     returnReminder: {
       pageTitle: 'Send returns reminders',
       confirmationTitle: 'Return reminders sent',
-      back: '/admin/returns-notifications/reminders'
+      back: '/returns-notifications/reminders'
     },
     returnInvitation: {
       pageTitle: 'Send returns invitations',
       confirmationTitle: 'Return invitations sent',
-      back: '/admin/returns-notifications/invitations'
+      back: '/returns-notifications/invitations'
     }
   };
   return config[name];
@@ -34,7 +34,7 @@ const getReview = async (request, h) => {
   const view = {
     ev,
     ...request.view,
-    csvPath: `/admin/batch-notifications/csv/${ev.event_id}`,
+    csvPath: `/batch-notifications/csv/${ev.event_id}`,
     form: confirmForm(request, ev.metadata.recipients),
     back,
     pageTitle
@@ -81,7 +81,7 @@ const postSendNotification = async (request, h) => {
   const { eventId } = request.params;
   const { username } = request.auth.credentials;
   await batchNotificationsConnector.sendReminders(eventId, username);
-  return h.redirect(`/admin/batch-notifications/confirmation/${eventId}`);
+  return h.redirect(`/batch-notifications/confirmation/${eventId}`);
 };
 
 /**

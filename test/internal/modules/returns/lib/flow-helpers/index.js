@@ -12,9 +12,6 @@ const { getPath, getNextPath, getPreviousPath } =
 const internal =
   require('../../../../../../src/internal/modules/returns/lib/flow-helpers/internal');
 
-const external =
-    require('../../../../../../src/internal/modules/returns/lib/flow-helpers/external');
-
 const data = require('./test-data.json');
 
 const path = '/some/path';
@@ -25,8 +22,6 @@ experiment('Returns flow helpers', () => {
   beforeEach(async () => {
     internal.next.TEST = sandbox.stub();
     internal.previous.TEST = sandbox.stub();
-    external.next.TEST = sandbox.stub();
-    external.previous.TEST = sandbox.stub();
   });
 
   afterEach(async () => {
@@ -43,29 +38,23 @@ experiment('Returns flow helpers', () => {
     test('it should return an internal path', async () => {
       const request = createRequest(true);
       const result = getPath(path, request, data.nilReturn);
-      expect(result).to.equal(`/admin/some/path?returnId=nilReturn`);
+      expect(result).to.equal(`/some/path?returnId=nilReturn`);
     });
 
     test('does not add the return param for the licences route', async () => {
       const request = createRequest(true);
       const result = getPath('/licences', request, data.nilReturn);
-      expect(result).to.equal(`/admin/licences`);
+      expect(result).to.equal(`/licences`);
     });
 
     test('does not add the return param for the returns route', async () => {
       const request = createRequest(true);
       const result = getPath('/returns', request, data.nilReturn);
-      expect(result).to.equal(`/admin/returns`);
+      expect(result).to.equal(`/returns`);
     });
   });
 
   experiment('getNextPath', () => {
-    test('it should call an external flow helper for an external user', async () => {
-      const request = createRequest(false);
-      getNextPath('TEST', request, data.nilReturn);
-      expect(external.next.TEST.callCount).to.equal(1);
-    });
-
     test('it should call an external flow helper for an internal user', async () => {
       const request = createRequest(true);
       getNextPath('TEST', request, data.nilReturn);
@@ -74,12 +63,6 @@ experiment('Returns flow helpers', () => {
   });
 
   experiment('getPreviousPath', () => {
-    test('it should call an external flow helper for an external user', async () => {
-      const request = createRequest(false);
-      getPreviousPath('TEST', request, data.nilReturn);
-      expect(external.previous.TEST.callCount).to.equal(1);
-    });
-
     test('it should call an external flow helper for an internal user', async () => {
       const request = createRequest(true);
       getPreviousPath('TEST', request, data.nilReturn);

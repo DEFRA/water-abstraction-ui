@@ -13,7 +13,7 @@ experiment('searchForm', () => {
   });
 
   test('it should have the correct action', async () => {
-    expect(form.action).to.equal('/admin/licences');
+    expect(form.action).to.equal('/licences');
   });
 
   test('it should have a single field named query', async () => {

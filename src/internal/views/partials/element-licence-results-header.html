@@ -1,13 +1,13 @@
 <nav class="license-results-header">
   <div class="license-results-header__column">
-    <a href="{{#if isAdmin }}/admin{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
+    <a href="{{#if isAdmin }}{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="licenceNumber" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
       <span class="sr-only">Sort by licence number</span>
       <span aria-hidden="true">Licence number</span>
       {{{ sortIcon  direction=query.direction sort=query.sort field="licenceNumber" }}}
     </a>
   </div>
   <div class="license-results-header__column">
-    <a href="{{#if isAdmin }}/admin{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
+    <a href="{{#if isAdmin }}{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="name" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
       <span class="sr-only">Sort by licence name</span>
       <span aria-hidden="true">Licence name</span>
       {{{ sortIcon  direction=query.direction sort=query.sort field="name" }}}
@@ -15,7 +15,7 @@
   </div>
 
   <div class="license-results-header__column">
-    <a href="{{#if isAdmin }}/admin{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="expiryDate" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
+    <a href="{{#if isAdmin }}{{/if}}/licences?{{{ sortQuery direction=query.direction sort=query.sort field="expiryDate" licenceNumber=query.licenceNumber emailAddress=query.emailAddress  page=pagination.page }}}#results">
       <span class="sr-only">Sort by licence end date</span>
       <span aria-hidden="true">End date</span>
       {{{ sortIcon  direction=query.direction sort=query.sort field="expiryDate" }}}

@@ -10,35 +10,35 @@
         <tbody>
           <tr class="clickable">
             <td class="text" scope="col">
-              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="created"}}}#results">
+              <a href="/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="created"}}}#results">
                 <span class="sr-only">Sort by date</span>
                 <span aria-hidden="true">Date</span>
                 {{{ sortIcon  direction=query.direction sort=query.sort field="created" }}}
               </a>
             </td>
             <td scope="col">
-              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="notification"}}}#results">
+              <a href="/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="notification"}}}#results">
                 <span class="sr-only">Sort by notification type</span>
                 <span aria-hidden="true">Notification</span>
                 {{{ sortIcon  direction=query.direction sort=query.sort field="notification" }}}
               </a>
             </td>
             <td class="text" scope="col">
-              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="issuer"}}}#results">
+              <a href="/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="issuer"}}}#results">
                 <span class="sr-only">Sort by sender</span>
                 <span aria-hidden="true">Sent by</span>
                 {{{ sortIcon  direction=query.direction sort=query.sort field="issuer" }}}
               </a>
             </td>
             <td class="numeric" scope="col">
-              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="recipients"}}}#results">
+              <a href="/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="recipients"}}}#results">
                 <span class="sr-only">Sort by number of recipients</span>
                 <span aria-hidden="true">Recipients</span>
                 {{{ sortIcon  direction=query.direction sort=query.sort field="recipients" }}}
               </a>
             </td>
             <td class="text text-right" scope="col">
-              <a href="/admin/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="status"}}}#results">
+              <a href="/notifications/report?{{{ sortQuery direction=query.direction sort=query.sort field="status"}}}#results">
                 <span class="sr-only">Sort by number of errors</span>
                 <span aria-hidden="true">Problems</span>
                 {{{ sortIcon  direction=query.direction sort=query.sort field="status" }}}
@@ -49,7 +49,7 @@
           {{#each events}}
           <tr class="clickable">
             <td class="text">{{ formatISODate this.created }}</td>
-            <td scope="row"><a href="/admin/notifications/report/{{ this.event_id }}">{{ this.metadata.name }}</a></td>
+            <td scope="row"><a href="/notifications/report/{{ this.event_id }}">{{ this.metadata.name }}</a></td>
             <td class="text">{{ this.issuer }}</td>
             <td class="numeric">{{ this.metadata.recipients }}</td>
             <td class="center-text">

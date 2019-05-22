@@ -22,7 +22,7 @@ experiment('confirmForm', () => {
   });
 
   test('it should have the correct action', async () => {
-    expect(form.action).to.equal('/admin/batch-notifications/send/event_1');
+    expect(form.action).to.equal('/batch-notifications/send/event_1');
   });
 
   test('it should have a hidden CSRF token field field', async () => {

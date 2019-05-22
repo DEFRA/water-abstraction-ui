@@ -5,7 +5,7 @@ const { scope } = require('../../lib/constants');
 
 exports.getWaiting = {
   method: 'GET',
-  path: '/admin/waiting/{eventId}',
+  path: '/waiting/{eventId}',
   handler: controller.getWaiting,
   config: {
     auth: {

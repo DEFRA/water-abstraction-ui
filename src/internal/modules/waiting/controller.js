@@ -31,7 +31,7 @@ const handleReturnsRemindersProcessed = (request, h, event) => {
   // Redirect to a new page showing a send button and a means
   // of acquiring a csv download of all the recipients.
   const { event_id: eventId } = event;
-  return h.redirect(`/admin/batch-notifications/review/${eventId}`);
+  return h.redirect(`/batch-notifications/review/${eventId}`);
 };
 
 const subTypeHandlers = {

@@ -34,7 +34,7 @@
   <p></p>
 
   <!-- Set licence name form -->
-  <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">
+  <form novalidate class="form--well" name="nameForm" id="nameForm" method="POST" action="{{#if isAdmin }}{{/if}}/licences/{{ licence_id }}">
 
     <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
 
@@ -61,7 +61,7 @@
     </div>
 
     <button type="submit" class="button">Save</button>
-    <p class="form-cancel"><a href="{{#if isAdmin }}/admin{{/if}}/licences/{{ licence_id }}">Cancel</a></p>
+    <p class="form-cancel"><a href="{{#if isAdmin }}{{/if}}/licences/{{ licence_id }}">Cancel</a></p>
 
   </form>
 

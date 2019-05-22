@@ -5,7 +5,7 @@ const returns = constants.scope.returns;
 module.exports = {
   getSendForms: {
     method: 'GET',
-    path: '/admin/returns-notifications/forms',
+    path: '/returns-notifications/forms',
     config: {
       auth: {
         scope: returns
@@ -21,7 +21,7 @@ module.exports = {
   },
   postPreviewRecipients: {
     method: 'POST',
-    path: '/admin/returns-notifications/forms',
+    path: '/returns-notifications/forms',
     config: {
       auth: {
         scope: returns
@@ -37,7 +37,7 @@ module.exports = {
   },
   postSendForms: {
     method: 'POST',
-    path: '/admin/returns-notifications/forms-send',
+    path: '/returns-notifications/forms-send',
     config: {
       auth: {
         scope: returns
@@ -53,7 +53,7 @@ module.exports = {
   },
   getSendFormsSuccess: {
     method: 'GET',
-    path: '/admin/returns-notifications/forms-success',
+    path: '/returns-notifications/forms-success',
     config: {
       auth: {
         scope: returns
@@ -70,7 +70,7 @@ module.exports = {
 
   getFinalReminder: {
     method: 'GET',
-    path: '/admin/returns-notifications/final-reminder',
+    path: '/returns-notifications/final-reminder',
     config: {
       auth: {
         scope: returns
@@ -87,7 +87,7 @@ module.exports = {
 
   getFinalReminderCsv: {
     method: 'GET',
-    path: '/admin/returns-notifications/final-reminder/csv',
+    path: '/returns-notifications/final-reminder/csv',
     config: {
       auth: {
         scope: returns
@@ -104,7 +104,7 @@ module.exports = {
 
   postFinalReminder: {
     method: 'POST',
-    path: '/admin/returns-notifications/final-reminder',
+    path: '/returns-notifications/final-reminder',
     config: {
       auth: {
         scope: returns
@@ -121,7 +121,7 @@ module.exports = {
 
   getReturnsReminderStart: {
     method: 'GET',
-    path: '/admin/returns-notifications/reminders',
+    path: '/returns-notifications/reminders',
     config: {
       auth: {
         scope: returns
@@ -138,7 +138,7 @@ module.exports = {
 
   postReturnsReminderStart: {
     method: 'POST',
-    path: '/admin/returns-notifications/reminders',
+    path: '/returns-notifications/reminders',
     config: {
       auth: {
         scope: returns
@@ -155,7 +155,7 @@ module.exports = {
 
   getReturnsInvitationsStart: {
     method: 'GET',
-    path: '/admin/returns-notifications/invitations',
+    path: '/returns-notifications/invitations',
     config: {
       auth: {
         scope: returns
@@ -172,7 +172,7 @@ module.exports = {
 
   postReturnsInvitationsStart: {
     method: 'POST',
-    path: '/admin/returns-notifications/invitations',
+    path: '/returns-notifications/invitations',
     config: {
       auth: {
         scope: returns

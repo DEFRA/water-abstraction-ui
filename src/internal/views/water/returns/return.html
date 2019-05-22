@@ -15,7 +15,7 @@
             </i>
             <strong class="bold-small">
               This return is not the current version<br>
-              <a href="/admin/returns/return?id={{ return.returnId }}">View the current return</a>
+              <a href="/returns/return?id={{ return.returnId }}">View the current return</a>
             </strong>
           </div>
         </div>
@@ -75,7 +75,7 @@
         <div class="version clickable">
                 <p class="spaceless">
                   {{ email }}<br>
-                  <a href="{{#if ../isAdmin}}/admin{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
+                  <a href="{{#if ../isAdmin}}{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
                 </p>
               </div>
         {{/equal}}

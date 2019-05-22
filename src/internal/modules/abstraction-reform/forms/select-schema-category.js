@@ -15,7 +15,7 @@ const selectSchemaCategoryForm = (request, categories) => {
   const { csrfToken } = request.view;
 
   const { documentId } = request.params;
-  const action = `/admin/digitise/licence/${documentId}/select-schema-category`;
+  const action = `/digitise/licence/${documentId}/select-schema-category`;
 
   const f = formFactory(action);
 

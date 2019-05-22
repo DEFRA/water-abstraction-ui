@@ -14,7 +14,7 @@ const {
   quantitiesForm, quantitiesSchema,
   meterDetailsForm, meterDetailsSchema,
   meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  meterResetForm, meterUsedForm, meterUsedSchema
+  meterUsedForm, meterUsedSchema
 } = require('../forms');
 
 const {
@@ -22,7 +22,7 @@ const {
   applyNilReturn, applyMeterDetails,
   applyMeterUnits, applyMeterReadings, applyMethodExternal,
   getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset, checkMeterDetails, applyReadingType,
+  checkMeterDetails, applyReadingType,
   applyMultiplication
 } = require('../lib/return-helpers');
 
@@ -122,12 +122,12 @@ const postConfirm = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const { data, view, isInternal } = request.returns;
+  const { data, view } = request.returns;
 
   // Clear session
   sessionHelpers.deleteSessionData(request);
 
-  const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId}`;
+  const returnUrl = `/returns/return?id=${data.returnId}`;
 
   return h.view('nunjucks/returns/submitted.njk', {
     ...view,
@@ -366,36 +366,6 @@ const postMeterUnits = async (request, h) => {
   }, { layout: false });
 };
 
-const getMeterReset = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('nunjucks/returns/meter-reset.njk', {
-    ...view,
-    form: meterResetForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
-  }, { layout: false });
-};
-
-const postMeterReset = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(meterResetForm(request, data), request);
-
-  if (form.isValid) {
-    const d = applyMeterReset(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
-  }
-
-  return h.view('nunjucks/returns/meter-reset.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
-  }, { layout: false });
-};
-
 const getMeterReadings = async (request, h) => {
   const { view, data } = request.returns;
 
@@ -493,8 +463,6 @@ module.exports = {
   postMeterDetails,
   getMeterUnits,
   postMeterUnits,
-  getMeterReset,
-  postMeterReset,
   getMeterReadings,
   postMeterReadings,
   getMeterUsed,

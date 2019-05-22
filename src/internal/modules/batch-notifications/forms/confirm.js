@@ -5,7 +5,7 @@ const confirmForm = (request, count) => {
   const { csrfToken } = request.view;
   const { eventId } = request.params;
 
-  const action = `/admin/batch-notifications/send/${eventId}`;
+  const action = `/batch-notifications/send/${eventId}`;
 
   const f = formFactory(action);
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

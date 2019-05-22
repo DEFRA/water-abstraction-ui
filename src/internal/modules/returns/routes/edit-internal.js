@@ -13,7 +13,7 @@ const createMeterRoute = (method, path, description, title) => {
   return {
     method,
     path,
-    handler: controller[getHandlerName(method, path, '/admin/return/')],
+    handler: controller[getHandlerName(method, path, '/return/')],
     options: {
       auth: { scope: returns },
       description,
@@ -35,7 +35,7 @@ module.exports = {
 
   getAmounts: {
     method: 'GET',
-    path: '/admin/return',
+    path: '/return',
     handler: controller.getAmounts,
     options: {
       auth: {
@@ -58,7 +58,7 @@ module.exports = {
   },
   postAmounts: {
     method: 'POST',
-    path: '/admin/return',
+    path: '/return',
     handler: controller.postAmounts,
     options: {
       auth: {
@@ -89,7 +89,7 @@ module.exports = {
 
   getNilReturn: {
     method: 'GET',
-    path: '/admin/return/nil-return',
+    path: '/return/nil-return',
     handler: controller.getNilReturn,
     options: {
       auth: {
@@ -109,7 +109,7 @@ module.exports = {
 
   postNilReturn: {
     method: 'POST',
-    path: '/admin/return/nil-return',
+    path: '/return/nil-return',
     handler: controller.postConfirm,
     options: {
       auth: {
@@ -128,7 +128,7 @@ module.exports = {
 
   getSubmitted: {
     method: 'GET',
-    path: '/admin/return/submitted',
+    path: '/return/submitted',
     handler: controller.getSubmitted,
     options: {
       auth: {
@@ -146,7 +146,7 @@ module.exports = {
 
   getMethod: {
     method: 'GET',
-    path: '/admin/return/method',
+    path: '/return/method',
     handler: controller.getMethod,
     options: {
       auth: {
@@ -165,7 +165,7 @@ module.exports = {
 
   postMethod: {
     method: 'POST',
-    path: '/admin/return/method',
+    path: '/return/method',
     handler: controller.postMethod,
     options: {
       auth: {
@@ -184,7 +184,7 @@ module.exports = {
 
   getUnits: {
     method: 'GET',
-    path: '/admin/return/units',
+    path: '/return/units',
     handler: controller.getUnits,
     options: {
       auth: {
@@ -203,7 +203,7 @@ module.exports = {
 
   postUnits: {
     method: 'POST',
-    path: '/admin/return/units',
+    path: '/return/units',
     handler: controller.postUnits,
     options: {
       auth: {
@@ -222,7 +222,7 @@ module.exports = {
 
   getSingleTotal: {
     method: 'GET',
-    path: '/admin/return/single-total',
+    path: '/return/single-total',
     handler: controller.getSingleTotal,
     options: {
       auth: {
@@ -241,7 +241,7 @@ module.exports = {
 
   postSingleTotal: {
     method: 'POST',
-    path: '/admin/return/single-total',
+    path: '/return/single-total',
     handler: controller.postSingleTotal,
     options: {
       auth: {
@@ -260,7 +260,7 @@ module.exports = {
 
   getQuantities: {
     method: 'GET',
-    path: '/admin/return/quantities',
+    path: '/return/quantities',
     handler: controller.getQuantities,
     options: {
       auth: {
@@ -279,7 +279,7 @@ module.exports = {
 
   postQuantities: {
     method: 'POST',
-    path: '/admin/return/quantities',
+    path: '/return/quantities',
     handler: controller.postQuantities,
     options: {
       auth: {
@@ -298,7 +298,7 @@ module.exports = {
 
   getConfirm: {
     method: 'GET',
-    path: '/admin/return/confirm',
+    path: '/return/confirm',
     handler: controller.getConfirm,
     options: {
       auth: {
@@ -318,7 +318,7 @@ module.exports = {
 
   postConfirm: {
     method: 'POST',
-    path: '/admin/return/confirm',
+    path: '/return/confirm',
     handler: controller.postConfirm,
     options: {
       auth: {
@@ -336,49 +336,49 @@ module.exports = {
   },
 
   getMeterDetails: createGetMeterRoute(
-    '/admin/return/meter/details',
+    '/return/meter/details',
     'Shows the view allowing an admin user to enter meter details',
     'Abstraction return - tell us about your meter'
   ),
 
   postMeterDetails: createPostMeterRoute(
-    '/admin/return/meter/details',
+    '/return/meter/details',
     'POST handler for meter details',
     'Abstraction return - tell us about your meter'
   ),
 
   getMeterUnits: createGetMeterRoute(
-    '/admin/return/meter/units',
+    '/return/meter/units',
     'Shows the view allowing an admin user to enter meter units',
     'Abstraction return - what is the unit of measurement?'
   ),
 
   postMeterUnits: createPostMeterRoute(
-    '/admin/return/meter/units',
+    '/return/meter/units',
     'POST handler for meter units',
     'Abstraction return - what is the unit of measurement?'
   ),
 
   getMeterReadings: createGetMeterRoute(
-    '/admin/return/meter/readings',
+    '/return/meter/readings',
     'Shows the view allowing an admin user to enter meter readings',
     'Abstraction return - enter meter readings'
   ),
 
   postMeterReadings: createPostMeterRoute(
-    '/admin/return/meter/readings',
+    '/return/meter/readings',
     'POST handler for meter readings',
     'Abstraction return - enter meter readings'
   ),
 
   getMeterUsed: createGetMeterRoute(
-    '/admin/return/meter/used',
+    '/return/meter/used',
     'View for internal user to specify whether a meter was used',
     'Abstraction return - was a meter or meters used?'
   ),
 
   postMeterUsed: createPostMeterRoute(
-    '/admin/return/meter/used',
+    '/return/meter/used',
     'POST handler for meter used',
     'Abstraction return - was a meter or meters used?'
   )

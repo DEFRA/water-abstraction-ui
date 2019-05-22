@@ -138,7 +138,7 @@ experiment('returns plugin', () => {
         await expect(func()).to.reject();
         expect(h.redirect.callCount).to.equal(1);
         const [ path ] = h.redirect.lastCall.args;
-        expect(path).to.equal('/admin/returns/return?id=return_1');
+        expect(path).to.equal('/returns/return?id=return_1');
       });
     });
   });

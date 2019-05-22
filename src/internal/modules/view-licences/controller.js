@@ -157,7 +157,7 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
     documentId,
     ...returnsData,
     pageTitle: getPageTitle(documentName, licenceNumber),
-    back: `/admin/licences?query=${licenceNumber}`,
+    back: `/licences?query=${licenceNumber}`,
     isInternal: isInternalUser
   };
 };
@@ -263,7 +263,7 @@ const getExpiredLicence = async (request, h) => {
       licence.documentName,
       request
     ),
-    back: `/admin/licences?query=${licence.licenceNumber}`
+    back: `/licences?query=${licence.licenceNumber}`
   };
 
   return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });

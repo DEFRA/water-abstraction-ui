@@ -7,7 +7,7 @@ const allAdmin = constants.scope.allAdmin;
 module.exports = {
   getNameAndJob: {
     method: 'GET',
-    path: '/admin/notifications/contact',
+    path: '/notifications/contact',
     handler: contactController.getNameAndJob,
     config: {
       auth: { scope: allAdmin },
@@ -28,7 +28,7 @@ module.exports = {
 
   postNameAndJob: {
     method: 'POST',
-    path: '/admin/notifications/contact',
+    path: '/notifications/contact',
     handler: contactController.postNameAndJob,
     config: {
       auth: { scope: allAdmin },
@@ -63,7 +63,7 @@ module.exports = {
 
   getDetails: {
     method: 'GET',
-    path: '/admin/notifications/contact-details',
+    path: '/notifications/contact-details',
     handler: contactController.getDetails,
     config: {
       auth: { scope: allAdmin },
@@ -79,7 +79,7 @@ module.exports = {
 
   postDetails: {
     method: 'POST',
-    path: '/admin/notifications/contact-details',
+    path: '/notifications/contact-details',
     handler: contactController.postDetails,
     config: {
       auth: { scope: allAdmin },

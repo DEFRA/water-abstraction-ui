@@ -26,7 +26,7 @@ lab.experiment('delete WR22 condition form', () => {
   });
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/admin/digitise/licence/${request.params.documentId}/delete/${request.params.id}`);
+    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/delete/${request.params.id}`);
   });
 
   lab.test('The form should have a CSRF token field', async () => {

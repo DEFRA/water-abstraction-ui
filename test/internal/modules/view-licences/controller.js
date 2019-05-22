@@ -274,7 +274,7 @@ experiment('getExpiredLicence', () => {
     test('the link back to the search including the licence number', async () => {
       await controller.getExpiredLicence(request, h);
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/admin/licences?query=test-licence-ref');
+      expect(view.back).to.equal('/licences?query=test-licence-ref');
     });
 
     test('the isInternal value set to true', async () => {

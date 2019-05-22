@@ -36,7 +36,7 @@ const selectCompany = (request, company) => {
  */
 const getLoginRedirectPath = async (request) => {
   if (isInternal(request)) {
-    return '/admin/licences';
+    return '/licences';
   }
 
   const userId = getUserID(request);

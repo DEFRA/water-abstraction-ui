@@ -18,7 +18,7 @@ experiment('sendFinalRemindersForm', () => {
   });
 
   test('it should post to the correct URL', async () => {
-    expect(f.action).to.equal('/admin/returns-notifications/final-reminder');
+    expect(f.action).to.equal('/returns-notifications/final-reminder');
     expect(f.method).to.equal('POST');
   });
 

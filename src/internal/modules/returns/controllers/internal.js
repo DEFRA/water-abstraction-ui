@@ -169,8 +169,8 @@ const getSubmittedViewData = async (request) => {
 
   const document = documentResponse.data[0];
   const returnsUrl = document.metadata.IsCurrent
-    ? `/admin/licences/${document.document_id}/returns`
-    : `/admin/expired-licences/${document.document_id}`;
+    ? `/licences/${document.document_id}/returns`
+    : `/expired-licences/${document.document_id}`;
 
   return { ...view, return: data, returnsUrl };
 };

@@ -7,7 +7,7 @@ module.exports = {
 
   getReview: {
     method: 'GET',
-    path: '/admin/batch-notifications/review/{eventId}',
+    path: '/batch-notifications/review/{eventId}',
     config: {
       auth: {
         scope: returns
@@ -28,7 +28,7 @@ module.exports = {
 
   getRecipientsCSV: {
     method: 'GET',
-    path: '/admin/batch-notifications/csv/{eventId}',
+    path: '/batch-notifications/csv/{eventId}',
     config: {
       auth: {
         scope: returns
@@ -44,7 +44,7 @@ module.exports = {
 
   postSendNotification: {
     method: 'POST',
-    path: '/admin/batch-notifications/send/{eventId}',
+    path: '/batch-notifications/send/{eventId}',
     config: {
       auth: {
         scope: returns
@@ -63,7 +63,7 @@ module.exports = {
 
   getConfirmation: {
     method: 'GET',
-    path: '/admin/batch-notifications/confirmation/{eventId}',
+    path: '/batch-notifications/confirmation/{eventId}',
     config: {
       auth: {
         scope: returns

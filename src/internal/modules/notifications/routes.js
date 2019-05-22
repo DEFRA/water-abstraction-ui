@@ -7,7 +7,7 @@ const allAdmin = constants.scope.allAdmin;
 
 const getStep = {
   method: 'GET',
-  path: '/admin/notifications/{id}',
+  path: '/notifications/{id}',
   config: {
     auth: {
       scope: allAdmin
@@ -36,7 +36,7 @@ const getStep = {
 const routes = {
   getResetPassword: {
     method: 'GET',
-    path: '/admin/notifications',
+    path: '/notifications',
     config: {
       auth: {
         scope: allAdmin
@@ -53,7 +53,7 @@ const routes = {
   },
   getStep,
   postStep: {
-    path: '/admin/notifications/{id}',
+    path: '/notifications/{id}',
     method: 'POST',
     handler: controller.postStep,
     config: {
@@ -70,7 +70,7 @@ const routes = {
   },
   getRefine: {
     method: 'GET',
-    path: '/admin/notifications/{id}/refine',
+    path: '/notifications/{id}/refine',
     config: {
       auth: {
         scope: allAdmin
@@ -92,7 +92,7 @@ const routes = {
   },
   postRefine: {
     method: 'POST',
-    path: '/admin/notifications/{id}/refine',
+    path: '/notifications/{id}/refine',
     config: {
       auth: {
         scope: allAdmin
@@ -114,7 +114,7 @@ const routes = {
   },
   getVariableData: {
     method: 'GET',
-    path: '/admin/notifications/{id}/data',
+    path: '/notifications/{id}/data',
     config: {
       auth: {
         scope: allAdmin
@@ -136,7 +136,7 @@ const routes = {
   },
   postVariableData: {
     method: 'POST',
-    path: '/admin/notifications/{id}/data',
+    path: '/notifications/{id}/data',
     config: {
       auth: {
         scope: allAdmin
@@ -159,7 +159,7 @@ const routes = {
 
   getPreview: {
     method: 'GET',
-    path: '/admin/notifications/{id}/preview',
+    path: '/notifications/{id}/preview',
     config: {
       auth: {
         scope: allAdmin
@@ -182,7 +182,7 @@ const routes = {
 
   postSend: {
     method: 'POST',
-    path: '/admin/notifications/{id}/send',
+    path: '/notifications/{id}/send',
     config: {
       auth: {
         scope: allAdmin

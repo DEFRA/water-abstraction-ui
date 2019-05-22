@@ -88,7 +88,7 @@ const postNameAndJob = async (request, h) => {
   set(userData, 'contactDetails.jobTitle', contactDetails.jobTitle);
   await setUserData(request.auth.credentials.user_id, userData);
 
-  return h.redirect('/admin/notifications/contact-details');
+  return h.redirect('/notifications/contact-details');
 };
 
 /**

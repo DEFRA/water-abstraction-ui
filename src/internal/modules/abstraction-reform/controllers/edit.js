@@ -13,7 +13,7 @@ const {
   getVersion,
   getParty,
   getAddress
-} = require('../../../../shared/lib/licence-helpers');
+} = require('../lib/licence-helpers');
 const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('../lib/action-creators');
 const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');
@@ -144,14 +144,16 @@ const getEditObject = async (request, h) => {
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
   if (!canEdit) {
-    return h.redirect(`/admin/digitise/licence/${documentId}?flash=locked`);
+    return h.redirect(`/digitise/licence/${documentId}?flash=locked`);
   }
 
   const { schema, getter } = objectConfig[type];
 
+  console.log(type, objectConfig[type]);
+
   const data = extractData(getter(finalState.licence, ...args), schema);
 
-  const formAction = `/admin/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
+  const formAction = `/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
 
   const view = {
     ...request.view,
@@ -183,7 +185,7 @@ const postEditObject = async (request, h) => {
   // Check permissions
   const { canEdit } = getPermissions(request, finalState);
   if (!canEdit) {
-    return h.redirect(`/admin/digitise/licence/${documentId}?flash=locked`);
+    return h.redirect(`/digitise/licence/${documentId}?flash=locked`);
   }
 
   const { schema, getter, actionCreator } = objectConfig[type];
@@ -208,7 +210,7 @@ const postEditObject = async (request, h) => {
     await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
   }
 
-  let path = `/admin/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
+  let path = `/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
   return h.redirect(path);
 };
 
@@ -244,7 +246,7 @@ const postSetStatus = async (request, h) => {
     // Save action list to permit repo
     await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
 
-    return h.redirect(`/admin/digitise`);
+    return h.redirect(`/digitise`);
   } else {
     // Re-render licence page
     request.form = form;

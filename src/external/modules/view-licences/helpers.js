@@ -49,14 +49,15 @@ function mapFilter (companyId, query) {
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
   const titles = {
-    purposes: `Abstraction details for ${customName || licenceNumber}`,
-    points: `Abstraction points for ${customName || licenceNumber}`,
+    purposes: customName ? `Licence number ${licenceNumber}` : `Abstraction details for for licence number ${licenceNumber}`,
+    points: customName ? `Licence number ${licenceNumber}` : `Abstraction points for licence number ${licenceNumber}`,
     conditions: `Conditions held for ${customName || licenceNumber}`,
-    contact: 'Your licence contact details',
+    contact: customName ? `Licence number ${licenceNumber}` : `Contact details for licence number ${licenceNumber}`,
     'gauging-station': `Gauging station for ${customName || licenceNumber}`
   };
 
-  const key = view.split('/').pop();
+  let key = view.split('/').pop();
+  if (key.slice(-4) === '.njk') key = key.slice(0, -4);
 
   if (key in titles) {
     return titles[key];

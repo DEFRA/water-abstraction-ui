@@ -61,10 +61,11 @@ async function getLicenceDetail (request, reply) {
       licence_id: documentId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
+      back: `/admin/licences/${documentId}`,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
       crmData: documentHeader,
       primaryUser
-    });
+    }, { layout: false });
   } catch (error) {
     throw errorMapper(error);
   }

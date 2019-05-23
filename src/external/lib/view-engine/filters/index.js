@@ -7,6 +7,7 @@ module.exports = {
   ...require('./markdown'),
   ...require('./merge'),
   ...require('./most-significant-entity-role'),
+  ...require('./ngr-points'),
   ...require('./number'),
   ...require('./pluralize'),
   ...require('./query-string'),

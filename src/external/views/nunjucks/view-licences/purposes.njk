@@ -1,0 +1,112 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% block content %}
+
+  {% if crmData.document_name%}
+    {% set licenceName %} Abstraction points for {{crmData.document_name}}{% endset %}
+    {{ title(licenceName, pageTitle) }}
+  {% else %}
+    {{ title(pageTitle) }}
+  {% endif %}
+
+  {% for purpose in licenceData.purposes %}
+    <h3 class="govuk-heading-m">{{ purpose.name }}</h3>
+    <hr class="govuk-section-break govuk-section-break--visible">
+
+    <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        {{ 'Abstraction point' | pluralize(purpose.points) }}
+      </dt>
+
+        {% if purpose.points.length == 1 %}
+        <dd class="govuk-summary-list__value">
+          {{ purpose.points[0] | ngrPoints() }}
+        {% elif purpose.points.length < 6 %}
+        <dd class="summary-list__value--nested-list">
+          <dl class="summary-list--nested-list">
+            {% for point in purpose.points %}
+                <div class="govuk-summary-list__row">
+                  <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
+                    {{ point | ngrPoints() }}
+                  </dd>
+                </div>
+            {% endfor %}
+          </dl>
+        {% else %}
+        <dd class="summary-list__value--nested-list">
+          <details>
+            <summary>View your {{ purpose.points.length }} abstraction points for {{ purpose.name | lower }}</summary>
+            <dl class="govuk-summary-list summary-list--nested-list">
+              {% for point in purpose.points %}
+                  <div class="govuk-summary-list__row">
+                    <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
+                      {{ point | ngrPoints() }}
+                    </dd>
+                  </div>
+              {% endfor %}
+            </dl>
+          </details>
+        {% endif %}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        Period of abstraction
+      </dt>
+      <dd class="govuk-summary-list__value">
+        From {{ purpose.periodStart | abstractionPeriod() }}
+        to {{ purpose.periodEnd | abstractionPeriod() }}
+      </dd>
+    </div>
+
+    {% if purpose.annualQty%}
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        Abstraction amount
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{ purpose.annualQty | fixed(2) }} cubic metres per year
+      </dd>
+    </div>
+    {% endif %}
+
+    {% if purpose.dailyQty%}
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        Abstraction amount
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{ purpose.dailyQty | fixed(2) }} cubic metres per day
+      </dd>
+    </div>
+    {% endif %}
+
+    {% if purpose.hourlyQty%}
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        Abstraction amount
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{ purpose.hourlyQty | fixed(2) }} cubic metres per hour
+      </dd>
+    </div>
+    {% endif %}
+
+    {% if purpose.instantaneousQty%}
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-font-weight-regular">
+        Abstraction amount
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{ purpose.instantaneousQty | fixed(2) }} cubic metres (Instantaneous Quantity)
+      </dd>
+    </div>
+    {% endif %}
+
+
+    </dl>
+  {% endfor %}
+
+{% endblock %}

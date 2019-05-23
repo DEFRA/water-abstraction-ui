@@ -1,151 +1,137 @@
 'use strict';
 
 const { expect } = require('code');
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const {
+  experiment,
+  test,
+  beforeEach,
+  afterEach
+} = exports.lab = require('lab').script();
 const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
 
 const idm = require('../../../../src/internal/lib/connectors/idm');
 const controller = require('../../../../src/internal/modules/contact-details/controller');
 
-const stubFindOne = idm => {
-  sinon.stub(idm.usersClient, 'findOne').resolves({
-    data: {
-      user_id: 'test-id',
-      user_data: {
-        contactDetails: {
-          name: 'test-name',
-          jobTitle: 'test-job-title',
-          email: 'test-email',
-          tel: 'test-tel',
-          address: 'test-address'
-        }
-      }
-    }
-  });
-};
+experiment('getContactInformation', () => {
+  let h;
 
-lab.experiment('getContactInformation', () => {
-  let responseToolkit;
-
-  lab.beforeEach(async () => {
-    stubFindOne(idm);
-    responseToolkit = { view: sinon.spy() };
+  beforeEach(async () => {
+    h = { view: sandbox.spy() };
   });
 
-  lab.afterEach(async () => {
-    idm.usersClient.findOne.restore();
+  afterEach(async () => {
+    sandbox.restore();
   });
 
-  lab.test('adds the user to the payload', async () => {
+  test('renders the form view', async () => {
     const request = {
-      auth: {
-        credentials: {
-          user_id: 'test'
+      defra: {
+        user: {
+          user_data: {
+            contactDetails: {
+              name: 'test-name'
+            }
+          }
         }
       },
       view: {}
     };
 
-    await controller.getContactInformation(request, responseToolkit);
-    const viewContext = responseToolkit.view.lastCall.args[1];
-    expect(viewContext.contactDetails).to.equal({
-      name: 'test-name',
-      jobTitle: 'test-job-title',
-      email: 'test-email',
-      tel: 'test-tel',
-      address: 'test-address'
-    });
+    await controller.getContactInformation(request, h);
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/form.njk');
   });
 });
 
-lab.experiment('postContactInformation', () => {
-  let responseToolkit;
+experiment('postContactInformation', () => {
+  let h;
 
-  lab.beforeEach(async () => {
-    sinon.stub(idm.usersClient, 'updateOne').resolves({});
-    stubFindOne(idm);
-    responseToolkit = {
-      view: sinon.spy(),
-      redirect: sinon.spy()
+  beforeEach(async () => {
+    sandbox.stub(idm.usersClient, 'updateOne').resolves({});
+
+    h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
     };
   });
 
-  lab.afterEach(async () => {
-    idm.usersClient.updateOne.restore();
-    idm.usersClient.findOne.restore();
+  afterEach(async () => {
+    sandbox.restore();
   });
 
-  lab.test('adds the error to the payload when there is an error', async () => {
+  test('updates the user details', async () => {
     const request = {
-      auth: {
-        credentials: {
-          user_id: 'test'
+      payload: {
+        name: 'test-new-name',
+        jobTitle: 'test-job-title',
+        tel: 'test-tel',
+        email: 'test-email@example.com',
+        address: 'test-address',
+        csrf_token: '00000000-0000-0000-0000-000000000000'
+      },
+      defra: {
+        user: {
+          user_id: 'test-user-id',
+          user_data: {
+            contactDetails: {
+              name: 'test-name',
+              jobTitle: 'test-job-title',
+              tel: 'test-tel',
+              email: 'test-email@example.com',
+              address: 'test-address'
+            }
+          }
         }
       },
-      payload: {},
-      formError: true,
-      view: {
-        errors: {
-          'contact-email_email': 'error-value'
-        }
-      }
+      view: {}
     };
 
-    await controller.postContactInformation(request, responseToolkit);
+    await controller.postContactInformation(request, h);
 
-    const viewContext = responseToolkit.view.lastCall.args[1];
-    expect(viewContext.error).to.equal({
-      contactEmail: 'error-value'
+    const [userId, user] = idm.usersClient.updateOne.lastCall.args;
+
+    expect(userId).to.equal('test-user-id');
+    expect(user.user_data.contactDetails).to.equal({
+      name: 'test-new-name',
+      jobTitle: 'test-job-title',
+      tel: 'test-tel',
+      email: 'test-email@example.com',
+      address: 'test-address'
     });
   });
 
-  lab.test('does not redirect if there is an error', async () => {
+  test('re-renders the form for invalid input', async () => {
     const request = {
-      auth: {
-        credentials: { user_id: 'test' }
+      payload: {
+        name: 'test-new-name',
+        jobTitle: 'test-job-title',
+        tel: 'test-tel',
+        email: 'NOT A VALID EMAIL ADDRESS',
+        address: 'test-address',
+        csrf_token: '00000000-0000-0000-0000-000000000000'
       },
-      payload: {},
-      view: {
-        errors: {}
+      defra: {
+        user: {
+          user_id: 'test-user-id',
+          user_data: {
+            contactDetails: {
+              name: 'test-name',
+              jobTitle: 'test-job-title',
+              tel: 'test-tel',
+              email: 'test-email@example.com',
+              address: 'test-address'
+            }
+          }
+        }
       },
-      formError: { errorKey: 'error-value' }
+      view: {}
     };
 
-    await controller.postContactInformation(request, responseToolkit);
-    expect(responseToolkit.redirect.callCount).to.equal(0);
-  });
+    await controller.postContactInformation(request, h);
 
-  lab.test('updates the user when there is no errors', async () => {
-    const request = {
-      auth: {
-        credentials: { user_id: 'test-id' }
-      },
-      view: {
-        payload: {
-          'contact-name': 'update-name',
-          'contact-job-title': 'update-job-title',
-          'contact-tel': 'update-tel',
-          'contact-email': 'update-email',
-          'contact-address': 'update-address'
-        }
-      }
-    };
-
-    await controller.postContactInformation(request, responseToolkit);
-
-    const updateOneArgs = idm.usersClient.updateOne.lastCall.args;
-    expect(updateOneArgs[0]).to.equal('test-id');
-    expect(updateOneArgs[1]).to.equal({
-      user_data: {
-        contactDetails: {
-          name: 'update-name',
-          jobTitle: 'update-job-title',
-          tel: 'update-tel',
-          email: 'update-email',
-          address: 'update-address'
-        }
-      }
-    });
+    expect(idm.usersClient.updateOne.callCount).to.equal(0);
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/form.njk');
   });
 });

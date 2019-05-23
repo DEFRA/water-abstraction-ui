@@ -1,54 +1,41 @@
 'use strict';
 
-const { getUserData, setUserData } = require('../../lib/user-data');
-
-const VIEW_CONTACT_INFO = 'water/contact-details/contact-information';
-const PAGE_TITLE = 'Contact information';
-
-const getUserId = request => request.auth.credentials.user_id;
+const { handleRequest } = require('../../../shared/lib/forms');
+const { setUserData } = require('../../lib/user-data');
+const { contactDetailsForm, contactDetailsSchema } = require('./contact-details-form');
 
 const payloadToContactDetails = payload => {
-  return {
-    name: payload['contact-name'],
-    jobTitle: payload['contact-job-title'],
-    tel: payload['contact-tel'],
-    email: payload['contact-email'],
-    address: payload['contact-address']
-  };
+  const { name, jobTitle, tel, email, address } = payload;
+  return { name, jobTitle, tel, email, address };
 };
 
-const mapFormErrors = errors => ({
-  contactEmail: errors['contact-email_email']
-});
+const getContactFormView = (h, viewContext, form) => {
+  return h.view('nunjucks/form.njk', {
+    ...viewContext,
+    form
+  }, { layout: false });
+};
 
 const getContactInformation = async (request, h) => {
-  const viewContext = request.view;
-  const userData = await getUserData(getUserId(request));
-  viewContext.contactDetails = userData.contactDetails;
-  viewContext.pageTitle = PAGE_TITLE;
-  return h.view(VIEW_CONTACT_INFO, viewContext);
+  const { contactDetails } = request.defra.user.user_data;
+  const { view } = request;
+  return getContactFormView(h, view, contactDetailsForm(request, contactDetails));
 };
 
 const postContactInformation = async (request, h) => {
-  if (request.formError) {
-    const contactDetails = payloadToContactDetails(request.payload);
-    const viewContext = {
-      ...request.view,
-      error: mapFormErrors(request.view.errors),
-      pageTitle: PAGE_TITLE,
-      contactDetails
-    };
-    return h.view(VIEW_CONTACT_INFO, viewContext);
+  const { view, payload } = request;
+  const form = handleRequest(contactDetailsForm(request, payload), request, contactDetailsSchema);
+
+  if (form.isValid) {
+    const { user_id: userId, user_data: userData } = request.defra.user;
+    userData.contactDetails = payloadToContactDetails(payload);
+
+    await setUserData(userId, userData);
+    return h.redirect('/');
   }
 
-  const userData = await getUserData(getUserId(request));
-  userData.contactDetails = payloadToContactDetails(request.view.payload);
-
-  await setUserData(getUserId(request), userData);
-  return h.redirect('/');
+  return getContactFormView(h, view, form);
 };
 
-module.exports = {
-  getContactInformation,
-  postContactInformation
-};
+exports.getContactInformation = getContactInformation;
+exports.postContactInformation = postContactInformation;

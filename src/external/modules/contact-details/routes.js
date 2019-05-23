@@ -1,7 +1,8 @@
+'use strict';
+
 const controller = require('./controller');
-const Joi = require('joi');
 const constants = require('../../lib/constants');
-const allAdmin = constants.scope.allAdmin;
+const { allAdmin } = constants.scope;
 
 const getContactInformation = {
   method: 'GET',
@@ -9,7 +10,13 @@ const getContactInformation = {
   handler: controller.getContactInformation,
   options: {
     auth: { scope: allAdmin },
-    description: 'Displays the user\'s contact information'
+    description: 'Displays the user\'s contact information',
+    plugins: {
+      viewContext: {
+        pageTitle: 'Contact information',
+        back: '/'
+      }
+    }
   }
 };
 
@@ -20,32 +27,14 @@ const postContactInformation = {
   options: {
     auth: { scope: allAdmin },
     description: 'Updates the user\'s contact information if valid',
-    validate: {
-      payload: {
-        csrf_token: Joi.string().guid().required(),
-        'contact-name': Joi.string().allow('').max(254),
-        'contact-job-title': Joi.string().allow('').max(254),
-        'contact-email': Joi.string().allow('').max(254),
-        'contact-tel': Joi.string().max(254).allow(''),
-        'contact-address': Joi.string().max(254).allow('')
-      }
-    },
     plugins: {
-      formValidator: {
-        payload: {
-          csrf_token: Joi.string().uuid().required(),
-          'contact-name': Joi.string().allow(''),
-          'contact-job-title': Joi.string().allow(''),
-          'contact-email': Joi.string().email().allow(''),
-          'contact-tel': Joi.string().allow(''),
-          'contact-address': Joi.string().allow('')
-        }
+      viewContext: {
+        pageTitle: 'Contact information',
+        back: '/'
       }
     }
   }
 };
 
-module.exports = {
-  getContactInformation,
-  postContactInformation
-};
+exports.getContactInformation = getContactInformation;
+exports.postContactInformation = postContactInformation;

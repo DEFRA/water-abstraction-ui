@@ -1,4 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/macros/point.njk" import point %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
@@ -10,13 +11,13 @@
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for point in licenceData.points %}
+  {% for abstractionPoint in licenceData.points %}
 
-  {% set gridReference %} {{ point | ngrPoints(point) }} {% endset %}
+  {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
 
-  {% set meansOfAbstraction %} {{ point.meansOfAbstraction }} {% endset %}
+  {% set meansOfAbstraction %} {{ abstractionPoint.meansOfAbstraction }} {% endset %}
 
-    <h3 class="govuk-heading-m">{{ point.name }}</h3>
+    <h3 class="govuk-heading-m">{{ abstractionPoint.name }}</h3>
 
     <hr class="govuk-section-break govuk-section-break--visible">
     {{ govukSummaryList({

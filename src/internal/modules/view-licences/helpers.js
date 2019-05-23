@@ -48,11 +48,13 @@ function mapFilter (companyId, query) {
  * @return {String} page title
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
+  if (customName) return `Licence number ${licenceNumber}`;
+
   const titles = {
-    purposes: customName ? `Licence number ${licenceNumber}` : `Abstraction details for for licence number ${licenceNumber}`,
-    points: customName ? `Licence number ${licenceNumber}` : `Abstraction points for licence number ${licenceNumber}`,
+    purposes: `Abstraction details for for licence number ${licenceNumber}`,
+    points: `Abstraction points for licence number ${licenceNumber}`,
     conditions: `Conditions held for ${customName || licenceNumber}`,
-    contact: customName ? `Licence number ${licenceNumber}` : `Contact details for licence number ${licenceNumber}`,
+    contact: `Contact details for licence number ${licenceNumber}`,
     'gauging-station': `Gauging station for ${customName || licenceNumber}`
   };
 

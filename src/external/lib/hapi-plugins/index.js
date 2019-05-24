@@ -1,5 +1,6 @@
 module.exports = {
-  config: require('./config'),
+  config: require('../../../shared/lib/plugins/config'),
+
   csrf: require('./csrf'),
   adminFirewall: require('./admin-firewall'),
   metaRedirect: require('./meta-redirect'),

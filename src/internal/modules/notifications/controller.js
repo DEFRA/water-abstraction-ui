@@ -42,7 +42,7 @@ async function getStartFlow (request, h, task) {
   const context = await getContext(request.auth.credentials.user_id);
   const state = null;
   const taskData = new TaskData(task, state, context);
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // Redirect if contact details not set
   if (!context.contactDetails.name) {
@@ -138,7 +138,7 @@ async function postStep (request, reply) {
   const { error } = taskData.processRequest(request.payload, step);
 
   // Update
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // If validation error, re-render current step
   if (error) {
@@ -243,7 +243,7 @@ async function postRefine (request, reply) {
   taskData.setLicenceNumbers(licenceNumbers);
 
   // Update session
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
@@ -321,7 +321,7 @@ async function postVariableData (request, reply) {
   const { error } = taskData.processParameterRequest(request.payload);
 
   // Save to session
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // Re-render variable screen
   if (error) {

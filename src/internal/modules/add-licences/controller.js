@@ -114,7 +114,7 @@ async function postLicenceAdd (request, reply) {
     const documentIds = res.data.map(item => item.document_id);
 
     // Store document IDs in session
-    request.sessionStore.set('addLicenceFlow', { documentIds });
+    request.yar.set('addLicenceFlow', { documentIds });
 
     return reply.redirect('/select-licences');
   } catch (err) {
@@ -223,7 +223,7 @@ async function postLicenceSelect (request, reply) {
     }
 
     // Create new token
-    request.sessionStore.set('addLicenceFlow', { documentIds, selectedIds });
+    request.yar.set('addLicenceFlow', { documentIds, selectedIds });
 
     return reply.redirect('/select-address');
   } catch (err) {
@@ -340,7 +340,7 @@ async function postAddressSelect (request, h) {
     // add selected address to addLicenceFlow in sessionStore
     const flowData = request.yar.get('addLicenceFlow');
     flowData.selectedAddressId = selectedAddressId;
-    request.sessionStore.set('addLicenceFlow', flowData);
+    request.yar.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
   }

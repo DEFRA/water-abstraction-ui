@@ -35,12 +35,7 @@ function getSignin (request, h, form) {
  * @param {Object} h - the HAPI response toolkit
  */
 async function getSignout (request, h) {
-  try {
-    await h.realm.pluginOptions.signOut(request);
-  } catch (error) {
-    request.log('error', 'Sign out error', { error });
-  }
-  return h.realm.pluginOptions.onSignOut(request, h);
+  return request.logOut();
 }
 
 /**
@@ -86,8 +81,7 @@ const postSignin = async (request, h) => {
 
   // Auth success
   if (user.user_id) {
-    await h.realm.pluginOptions.signIn(request, user);
-    return h.realm.pluginOptions.onSignIn(request, h, user);
+    return request.logIn(user);
   }
 
   return getSignin(request, h, signInApplyErrorState(form));

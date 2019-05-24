@@ -15,10 +15,10 @@ const getTestRequest = (returnId, isInternal) => {
     query: {
       returnId
     },
-    sessionStore: {
+    yar: {
       get: sinon.stub().returns(),
       set: sinon.spy(),
-      delete: sinon.spy()
+      clear: sinon.spy()
     }
   };
 };
@@ -29,10 +29,10 @@ experiment('getSessionData', () => {
     const savedData = { returnId };
     const request = getTestRequest(returnId, true);
 
-    request.sessionStore.get.returns(savedData);
+    request.yar.get.returns(savedData);
 
     const data = sessionHelpers.getSessionData(request);
-    const passedKey = request.sessionStore.get.args[0][0];
+    const passedKey = request.yar.get.args[0][0];
 
     expect(passedKey).to.equal('internalReturnFlow:123');
     expect(data).to.equal(savedData);
@@ -43,10 +43,10 @@ experiment('getSessionData', () => {
     const savedData = { returnId };
     const request = getTestRequest(returnId, false);
 
-    request.sessionStore.get.returns(savedData);
+    request.yar.get.returns(savedData);
 
     const data = sessionHelpers.getSessionData(request);
-    const passedKey = request.sessionStore.get.args[0][0];
+    const passedKey = request.yar.get.args[0][0];
 
     expect(passedKey).to.equal('externalReturnFlow:987');
     expect(data).to.equal(savedData);
@@ -70,7 +70,7 @@ experiment('saveSessionData', () => {
 
     sessionHelpers.saveSessionData(request, data);
 
-    const passedKey = request.sessionStore.set.args[0][0];
+    const passedKey = request.yar.set.args[0][0];
     expect(passedKey).to.equal('internalReturnFlow:123');
   });
 
@@ -81,7 +81,7 @@ experiment('saveSessionData', () => {
 
     sessionHelpers.saveSessionData(request, data);
 
-    const passedKey = request.sessionStore.set.args[0][0];
+    const passedKey = request.yar.set.args[0][0];
     expect(passedKey).to.equal('externalReturnFlow:987');
   });
 });
@@ -93,7 +93,7 @@ experiment('deleteSessionData', () => {
 
     sessionHelpers.deleteSessionData(request);
 
-    const passedKey = request.sessionStore.delete.args[0][0];
+    const passedKey = request.yar.clear.args[0][0];
     expect(passedKey).to.equal('internalReturnFlow:123');
   });
 
@@ -103,7 +103,7 @@ experiment('deleteSessionData', () => {
 
     sessionHelpers.deleteSessionData(request);
 
-    const passedKey = request.sessionStore.delete.args[0][0];
+    const passedKey = request.yar.clear.args[0][0];
     expect(passedKey).to.equal('externalReturnFlow:123');
   });
 });

@@ -31,43 +31,43 @@ function validatePayload (payload) {
   }
 }
 
+const validateReferer = request => {
+  if (request.headers.referer) {
+    const currentHost = new URL(`${request.info.protocol}://${request.info.host}`);
+    const refererUrl = new URL(request.headers.referer);
+
+    if (currentHost.hostname !== refererUrl.hostname) {
+      throw Boom.badRequest('CSRF protection: invalid HTTP referer header', { isCsrfError: true });
+    }
+  }
+};
+
+const validateCsrfToken = request => {
+  const token = request.sessionStore.get('csrf_token');
+  if (token !== get(request, 'payload.csrf_token')) {
+    throw Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true });
+  }
+};
+
+const onPreHandler = async (request, reply) => {
+  // Ignore GET requests and unauthenticated requests
+  if (request.method === 'get' || !request.auth.isAuthenticated) {
+    return reply.continue;
+  }
+
+  validateReferer(request);
+  validatePayload(request.payload);
+  validateCsrfToken(request);
+
+  // Continue processing request
+  return reply.continue;
+};
+
 const csrfPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
-      method: async (request, reply) => {
-        // Ignore GET requests
-        if (request.method === 'get') {
-          return reply.continue;
-        }
-
-        // Ignore unauthenticated routes
-        if (!request.auth.isAuthenticated) {
-          return reply.continue;
-        }
-
-        // Check referrer if header is set
-        if (request.headers.referer) {
-          const currentHost = new URL(`${request.info.protocol}://${request.info.host}`);
-          const refererUrl = new URL(request.headers.referer);
-
-          if (currentHost.hostname !== refererUrl.hostname) {
-            throw Boom.badRequest('CSRF protection: invalid HTTP referer header', { isCsrfError: true });
-          }
-        }
-
-        // Validate payload
-        validatePayload(request.payload);
-
-        // Check CSRF token
-        const token = request.yar.get('csrfToken');
-        if (token !== get(request, 'payload.csrf_token')) {
-          throw Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true });
-        }
-
-        // Continue processing request
-        return reply.continue;
-      }
+      method: onPreHandler
     });
   },
 

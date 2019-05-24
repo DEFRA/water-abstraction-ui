@@ -13,7 +13,7 @@ const getRoute = () => ({
 const request = {
   method: 'GET',
   url: '/'
-}
+};
 
 experiment('config plugin', () => {
   test('adds an empty config object to the request if no settings passed', async () => {

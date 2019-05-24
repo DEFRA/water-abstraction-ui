@@ -2,7 +2,7 @@ module.exports = {
   config: require('../../../shared/lib/plugins/config'),
   csrf: require('../../../shared/lib/plugins/csrf'),
   adminFirewall: require('./admin-firewall'),
-  metaRedirect: require('./meta-redirect'),
+  metaRedirect: require('../../../shared/lib/plugins/meta-redirect'),
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),
 

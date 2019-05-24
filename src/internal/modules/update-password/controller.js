@@ -56,7 +56,7 @@ async function postSetPassword (request, reply) {
     }
     // Check auth token
     const { authtoken, password } = request.payload;
-    if (authtoken !== request.sessionStore.get('authToken')) {
+    if (authtoken !== request.yar.get('authToken')) {
       throw new AuthTokenError();
     }
     // Change password

@@ -1,6 +1,6 @@
 const destroySession = async (request) => {
   try {
-    await request.sessionStore.destroy();
+    await request.yar.destroy();
   } catch (err) {
     if (err.name !== 'NotFoundError' && err.name !== 'NoSessionCookieError') {
       throw err;

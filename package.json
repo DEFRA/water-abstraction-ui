@@ -53,6 +53,7 @@
     "@hapi/hapi": "^17.8.5",
     "@hapi/inert": "^5.2.0",
     "@hapi/vision": "^5.5.2",
+    "@hapi/yar": "^9.2.0",
     "accessible-autocomplete": "^1.6.2",
     "ajv": "^6.10.0",
     "app-module-path": "^2.2.0",
@@ -110,8 +111,7 @@
     "title-case": "^2.1.1",
     "url-join": "^4.0.0",
     "uuid": "^3.3.2",
-    "winston": "^2.4.3",
-    "yar": "^8.1.2"
+    "winston": "^2.4.3"
   },
   "snyk": true
 }

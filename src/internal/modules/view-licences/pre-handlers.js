@@ -9,7 +9,7 @@ const checkAccess = (request, documentHeader) => {
   if (permissions.isInternal(request)) {
     return;
   }
-  const companyId = get(request, 'auth.credentials.companyId');
+  const { companyId } = request.defra;
   if (documentHeader.company_entity_id !== companyId) {
     const params = { documentHeader, credentials: request.auth.credentials };
     throw Boom.unauthorized(`Access denied to document`, params);

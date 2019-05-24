@@ -145,7 +145,7 @@ async function getLicenceSelect (request, reply) {
   }
 
   try {
-    const { documentIds } = request.sessionStore.get('addLicenceFlow');
+    const { documentIds } = request.yar.get('addLicenceFlow');
 
     // Get unverified licences from DB
     const { data, error } = await CRM.documents.getUnregisteredLicencesByIds(documentIds);
@@ -179,7 +179,7 @@ async function postLicenceSelect (request, reply) {
   const { entity_id: entityId } = request.auth.credentials;
 
   try {
-    const { documentIds } = request.sessionStore.get('addLicenceFlow');
+    const { documentIds } = request.yar.get('addLicenceFlow');
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
 
@@ -271,7 +271,7 @@ async function getAddressSelect (request, reply) {
   const { view } = request;
 
   // Load from session
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
   return reply.view('nunjucks/form.njk', {
@@ -331,14 +331,14 @@ const getLicence = async documentId => {
  */
 async function postAddressSelect (request, h) {
   const { selectedAddressId } = request.payload;
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
 
   const uniqueAddresses = await getUniqueAddresses(selectedIds);
   const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
 
   if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
-    const flowData = request.sessionStore.get('addLicenceFlow');
+    const flowData = request.yar.get('addLicenceFlow');
     flowData.selectedAddressId = selectedAddressId;
     request.sessionStore.set('addLicenceFlow', flowData);
 
@@ -380,7 +380,7 @@ async function postFAO (request, h) {
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
 
   const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
 

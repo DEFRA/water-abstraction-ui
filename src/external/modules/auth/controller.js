@@ -39,7 +39,7 @@ function getSignin (request, h, form) {
  */
 async function getSignout (request, h) {
   try {
-    await request.sessionStore.destroy();
+    await request.yar.destroy();
     request.cookieAuth.clear();
   } catch (error) {
     logger.error('Sign out error', error);

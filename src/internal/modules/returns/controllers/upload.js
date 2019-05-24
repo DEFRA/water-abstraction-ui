@@ -290,7 +290,7 @@ const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
  * Downloads a ZIP of CSV templates
  */
 const getCSVTemplates = async (request, h) => {
-  const { companyId, companyName } = request.auth.credentials;
+  const { companyId, companyName } = request.defra;
 
   // Fetch returns for current company
   const returns = await waterCompany.getCurrentDueReturns(companyId);

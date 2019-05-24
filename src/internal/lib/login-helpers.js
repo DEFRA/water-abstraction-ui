@@ -24,8 +24,8 @@ const loadUserData = async userId => {
  * @param  {Object} company - company details from water service endpoint
  */
 const selectCompany = (request, company) => {
-  request.cookieAuth.set('companyId', company.entityId);
-  request.cookieAuth.set('companyName', company.name);
+  request.yar.set('companyId', company.entityId);
+  request.yar.set('companyName', company.name);
 };
 
 /**

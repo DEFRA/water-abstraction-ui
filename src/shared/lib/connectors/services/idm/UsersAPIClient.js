@@ -5,13 +5,13 @@ class UsersAPIClient extends APIClient {
   /**
    * Authenticates a user with the IDM for the application specified in
    * the config object
-   * Resolves with an object with the structure:
-   * { success : false, resetRequired : true, resetGuid : 'xxx' }
+   * Resolves with a user record from IDM
    * @param  {String}  email    - user email address
    * @param  {String}  password - user password
+   * @param  {String}  application - the application to use for authentication
    * @return {Promise<Object>} resolves with object including success flag
    */
-  async authenticate (email, password) {
+  async authenticate (email, password, application) {
     try {
       const uri = `${this.config.endpoint}/login`;
 
@@ -19,19 +19,15 @@ class UsersAPIClient extends APIClient {
         body: {
           user_name: email,
           password,
-          application: this.config.application
+          application
         }
       });
 
-      return {
-        success: !!response.user_id,
-        resetRequired: response.reset_required,
-        resetGuid: response.reset_guid
-      };
+      return response;
     } catch (error) {
       // Unauthorized
       if (error.statusCode === 401) {
-        return { success: false };
+        return { user_id: null };
       }
       // Throw other errors
       throw error;
@@ -44,10 +40,10 @@ class UsersAPIClient extends APIClient {
    * @param  {String}  email    - user email address
    * @return {Promise}       resolves with user object from IDM
    */
-  async findOneByEmail (email) {
+  async findOneByEmail (email, application) {
     const { error, data: [ user ] } = await this.findMany({
       user_name: email,
-      application: this.config.application
+      application
     });
     throwIfError(error);
     return user;

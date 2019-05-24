@@ -42,7 +42,7 @@ async function getStartFlow (request, h, task) {
   const context = await getContext(request.auth.credentials.user_id);
   const state = null;
   const taskData = new TaskData(task, state, context);
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // Redirect if contact details not set
   if (!context.contactDetails.name) {
@@ -75,7 +75,7 @@ async function getStep (request, reply) {
   }
 
   const context = await getContext(request.auth.credentials.user_id);
-  const state = request.sessionStore.get('notificationsFlow');
+  const state = request.yar.get('notificationsFlow');
 
   const taskData = new TaskData(task, state, context);
   return renderStep(request, reply, taskData, step);
@@ -133,12 +133,12 @@ async function postStep (request, reply) {
   }
 
   // Update task data
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
   // taskData.fromJson(data);
   const { error } = taskData.processRequest(request.payload, step);
 
   // Update
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // If validation error, re-render current step
   if (error) {
@@ -170,7 +170,7 @@ async function getRefine (request, reply) {
   }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
 
   // Build CRM query filter
   const filter = taskData.getFilter();
@@ -236,14 +236,14 @@ async function postRefine (request, reply) {
   }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
 
   // Set selected licences
   const licenceNumbers = forceArray(request.payload.system_external_id);
   taskData.setLicenceNumbers(licenceNumbers);
 
   // Update session
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
@@ -296,7 +296,7 @@ async function getVariableData (request, reply) {
   }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
 
   return renderVariableData(request, reply, taskData);
 }
@@ -317,11 +317,11 @@ async function postVariableData (request, reply) {
   }
 
   // Load data from previous step(s)
-  const taskData = new TaskData(task, request.sessionStore.get('notificationsFlow'));
+  const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
   const { error } = taskData.processParameterRequest(request.payload);
 
   // Save to session
-  request.sessionStore.set('notificationsFlow', taskData.getData());
+  request.yar.set('notificationsFlow', taskData.getData());
 
   // Re-render variable screen
   if (error) {
@@ -399,7 +399,7 @@ async function getPreview (request, reply) {
 
   const view = {
     ...request.view,
-    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'))
+    ...await getSendViewContext(id, request.yar.get('notificationsFlow'))
   };
   return reply.view('water/notifications/preview', view);
 }
@@ -419,11 +419,11 @@ async function postSend (request, reply) {
 
   const view = {
     ...request.view,
-    ...await getSendViewContext(id, request.sessionStore.get('notificationsFlow'), username)
+    ...await getSendViewContext(id, request.yar.get('notificationsFlow'), username)
   };
 
   // Flow is completed - delete state in session store
-  request.sessionStore.delete('notificationsFlow');
+  request.yar.delete('notificationsFlow');
 
   return reply.view('water/notifications/sent', view);
 }

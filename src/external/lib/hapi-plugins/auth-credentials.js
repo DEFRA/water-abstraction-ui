@@ -2,7 +2,7 @@
  * A module to dynamically calculate the user's scopes based on their
  * company and roles
  */
-const { get, set } = require('lodash');
+const { get } = require('lodash');
 const { logger } = require('../../logger');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const idmConnector = require('../connectors/idm');
@@ -10,19 +10,13 @@ const crmConnector = require('../connectors/crm');
 
 /**
  * Loads user data from IDM
- * @param {String} emailAddress
+ * @param {String} userId
  * @return {Promise} resolves with row of IDM user data
  */
-const loadIDMUser = async (email) => {
-  const { data: [user], error } = await idmConnector.getUserByEmail(email);
-
-  throwIfError(error);
-
-  if (!user) {
-    throw new Error(`IDM user with email address ${email} not found`);
-  }
-
-  return user;
+const loadIDMUser = async (userId) => {
+  const response = await idmConnector.findOne(userId);
+  throwIfError(response.error);
+  return response.data;
 };
 
 const loadCRMEntityRoles = entityId => {
@@ -67,21 +61,27 @@ const assignExternalProperties = async (data, request) => {
   }
 };
 
-const augmentAuthenticatedRequest = async request => {
+const augmentAuthenticatedRequest = async (request, userId) => {
   try {
-    const { username, companyId } = request.auth.credentials;
+    const companyId = request.yar.get('companyId');
+
     const data = request.defra || {};
 
-    data.user = await loadIDMUser(username);
+    data.user = await loadIDMUser(userId);
     data.userScopes = getUserScopes(data.user);
     data.companyId = companyId;
 
     if (isExternalUser(data.user)) {
       await assignExternalProperties(data, request);
     }
-    set(request, 'auth.credentials.scope', data.userScopes);
 
     request.defra = data;
+
+    return {
+      userId,
+      companyId,
+      scopes: data.userScopes
+    };
   } catch (error) {
     logger.error('Failed to load entity scopes', error, get(request, 'auth.credentials'));
     throw error;
@@ -113,3 +113,4 @@ const plugin = {
 
 module.exports = plugin;
 module.exports._handler = handler;
+module.exports.augmentAuthenticatedRequest = augmentAuthenticatedRequest;

@@ -4,13 +4,10 @@
  */
 const { get } = require('lodash');
 
-// const IDM = require('shared/lib/connectors/idm');
-// const { logger } = require('../../logger');
-
-const helpers = require('./helpers');
 const { signInForm, signInSchema, signInApplyErrorState } = require('./forms');
 const { handleRequest, setValues } = require('../../../shared/lib/forms');
-const isAuthenticated = request => !!get(request, 'state.sid');
+
+const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
 /**
  * View signin page
@@ -39,7 +36,7 @@ function getSignin (request, h, form) {
  */
 async function getSignout (request, h) {
   try {
-    await request.logOut();
+    await h.realm.pluginOptions.signOut(request);
   } catch (error) {
     request.log('error', 'Sign out error', { error });
   }
@@ -58,6 +55,8 @@ async function getSignedOut (request, h) {
   return h.view('nunjucks/auth/signed-out.njk', request.view, { layout: false });
 }
 
+const resetIsRequired = user => !!parseInt(user.reset_required);
+
 /**
  * Process login form request
  * @param {Object} request - the HAPI HTTP request
@@ -66,31 +65,29 @@ async function getSignedOut (request, h) {
  * @param {Object} h - the Hapi Response Toolkit
  */
 const postSignin = async (request, h) => {
-  const idmConnector = request.server.methods.getConnector('idm');
-
   const form = handleRequest(signInForm(), request, signInSchema);
+
+  // Destroy existing session
+  h.realm.pluginOptions.signOut(request);
 
   // Perform basic validation
   if (!form.isValid) {
     return getSignin(request, h, signInApplyErrorState(form));
   }
 
-  // Destroy existing session
-  await helpers.destroySession(request);
-
   const { email, password } = request.payload;
 
-  const { success, resetRequired, resetGuid } = await idmConnector.users.authenticate(email, password);
-
-  // Auth success
-  if (success) {
-    await request.logIn(email);
-    return h.realm.pluginOptions.onSignIn(request, h);
-  }
+  const user = await h.realm.pluginOptions.authenticate(email, password);
 
   // Forced reset
-  if (resetRequired) {
-    return h.redirect(`/reset_password_change_password?resetGuid=${resetGuid}&forced=1`);
+  if (resetIsRequired(user)) {
+    return h.redirect(`/reset_password_change_password?resetGuid=${user.reset_guid}&forced=1`);
+  }
+
+  // Auth success
+  if (user.user_id) {
+    await h.realm.pluginOptions.signIn(request, user);
+    return h.realm.pluginOptions.onSignIn(request, h, user);
   }
 
   return getSignin(request, h, signInApplyErrorState(form));

@@ -26,7 +26,7 @@ async function postConfirmPassword (request, reply) {
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();
-    request.sessionStore.set('authToken', authtoken);
+    request.yar.set('authToken', authtoken);
 
     return reply.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });
   } catch (error) {

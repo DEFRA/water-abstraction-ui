@@ -1,6 +1,5 @@
 const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
-const authConfig = require('../../lib/auth-config');
 const mapJoiPasswordError = require('./map-joi-password-error');
 const { logger } = require('../../logger');
 
@@ -91,8 +90,7 @@ async function postChangePassword (request, reply) {
     }
 
     // Log user in
-    await authConfig.signIn(request, user);
-    return authConfig.onSignIn(request, reply, user);
+    return request.logIn(user);
   } catch (error) {
     return reply.redirect('/reset_password?flash=resetLinkExpired');
   }

@@ -95,5 +95,17 @@ module.exports = {
     returns: process.env.RETURNS_URI || 'http://127.0.0.1:8006/returns/1.0'
   },
 
-  testMode
+  testMode,
+
+  yar: {
+    maxCookieSize: 0,
+    cookieOptions: {
+      password: process.env.COOKIE_SECRET,
+      isSecure: !isLocal,
+      isSameSite: 'Lax',
+      ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
+      isHttpOnly: true
+    }
+
+  }
 };

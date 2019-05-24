@@ -10,6 +10,7 @@ const { URL } = require('url');
 const Boom = require('boom');
 const Joi = require('joi');
 const { get } = require('lodash');
+const permissions = require('../permissions');
 
 /**
  * Validates request payload to ensure that supplied csrf_token is
@@ -42,7 +43,7 @@ const csrfPlugin = {
         }
 
         // Ignore unauthenticated routes
-        if (!request.auth.isAuthenticated) {
+        if (!permissions.isAuthenticated(request)) {
           return reply.continue;
         }
 
@@ -60,7 +61,7 @@ const csrfPlugin = {
         validatePayload(request.payload);
 
         // Check CSRF token
-        const token = request.yar.get('csrf_token');
+        const token = request.yar.get('csrfToken');
         if (token !== get(request, 'payload.csrf_token')) {
           throw Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true });
         }

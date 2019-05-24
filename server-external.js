@@ -26,7 +26,9 @@ const { logger } = require('./src/external/logger');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 
 // Configure auth plugin
-const authConfig = require('./src/external/lib/auth-config');
+const AuthConfig = require('./src/external/lib/AuthConfig');
+const connectors = require('./src/external/lib/connectors/services');
+const authConfig = new AuthConfig(config, connectors);
 const authPlugin = {
   plugin: require('shared/plugins/auth'),
   options: authConfig
@@ -83,7 +85,7 @@ async function start () {
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie,
-      validateFunc: authConfig.validateFunc
+      validateFunc: (request, data) => authConfig.validateFunc(request, data)
     });
     server.auth.default('standard');
 

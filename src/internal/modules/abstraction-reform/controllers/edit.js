@@ -13,7 +13,7 @@ const {
   getVersion,
   getParty,
   getAddress
-} = require('../../../../shared/lib/licence-helpers');
+} = require('../lib/licence-helpers');
 const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('../lib/action-creators');
 const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');

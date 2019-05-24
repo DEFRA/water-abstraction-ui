@@ -11,7 +11,7 @@ const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
 const HapiAuthJWT2 = require('hapi-auth-jwt2');
 const Blankie = require('blankie');
-const Scooter = require('scooter');
+const Scooter = require('@hapi/scooter');
 
 // -------------- Require project code -----------------
 const config = require('./src/external/config');

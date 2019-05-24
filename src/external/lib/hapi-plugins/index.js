@@ -16,5 +16,7 @@ module.exports = {
   anonGoogleAnalytics: require('./anon-google-analytics'),
   authCredentials: require('./auth-credentials'),
   companySelection: require('./company-selection'),
-  error: require('./error')
+  error: require('./error'),
+  noRobots: require('../../../shared/lib/plugins/no-robots'),
+  staticAssets: require('../../../shared/lib/plugins/static-assets')
 };

@@ -23,13 +23,13 @@
 
         {% if purpose.points.length == 1 %}
         <dd class="govuk-summary-list__value">
-          {{ purpose.points[0] | ngrPoints() }}
+          {{ point(purpose.points[0]) }}
         {% elif purpose.points.length < 6 %}
         <dd class="summary-list__value--nested-list">
           <dl class="summary-list--nested-list">
             {% for abstractionPoint in purpose.points %}
                 <div class="govuk-summary-list__row">
-                  <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
+                  <dd class="{% if loop.last %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
                     {{ point(abstractionPoint) }}
                   </dd>
                 </div>
@@ -42,7 +42,7 @@
             <dl class="govuk-summary-list summary-list--nested-list">
               {% for abstractionPoint in purpose.points %}
                   <div class="govuk-summary-list__row">
-                    <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
+                    <dd class="{% if loop.last %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
                       {{ point(abstractionPoint) }}
                     </dd>
                   </div>
@@ -57,8 +57,8 @@
         Period of abstraction
       </dt>
       <dd class="govuk-summary-list__value">
-        From {{ purpose.periodStart | abstractionPeriod() }}
-        to {{ purpose.periodEnd | abstractionPeriod() }}
+        From {{ purpose.periodStart | abstractionPeriod }}
+        to {{ purpose.periodEnd | abstractionPeriod }}
       </dd>
     </div>
 

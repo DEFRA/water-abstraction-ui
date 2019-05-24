@@ -4,7 +4,18 @@ module.exports = {
   metaRedirect: require('./meta-redirect'),
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),
-  viewContext: require('./view-context'),
+
+  // licence details should be loaded before the view context is
+  // updated with the main navigation.
+  licenceLoader: require('./licence-loader'),
+
+  viewContext: {
+    plugin: require('../../../shared/lib/plugins/view-context'),
+    options: {
+      getContextDefaults: require('../view').contextDefaults
+    }
+  },
+
   formValidator: require('./form-validator'),
   error: require('./error'),
   noRobots: require('../../../shared/lib/plugins/no-robots'),

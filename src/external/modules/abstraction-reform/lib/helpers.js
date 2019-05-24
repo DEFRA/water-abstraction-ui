@@ -7,7 +7,7 @@ const {
   getCurrentVersion,
   getCurrentVersionParty,
   getCurrentVersionAddress
-} = require('../../../../shared/lib/licence-helpers');
+} = require('./licence-helpers');
 const { getWR22 } = require('./schema');
 const { parseNaldDataURI } = require('../../../lib/nald-uri-parser');
 

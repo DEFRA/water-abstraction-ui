@@ -2,8 +2,8 @@ module.exports = {
   config: require('../../../shared/lib/plugins/config'),
   csrf: require('../../../shared/lib/plugins/csrf'),
   metaRedirect: require('../../../shared/lib/plugins/meta-redirect'),
-  redirect: require('./redirect'),
-  secureHeaders: require('./secure-headers'),
+  redirect: require('../../../shared/lib/plugins/redirect'),
+  secureHeaders: require('../../../shared/lib/plugins/secure-headers'),
 
   // licence details should be loaded before the view context is
   // updated with the main navigation.

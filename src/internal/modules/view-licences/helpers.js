@@ -51,17 +51,10 @@ function getLicencePageTitle (view, licenceNumber, customName) {
   if (customName) return `Licence number ${licenceNumber}`;
 
   const titles = {
-<<<<<<< HEAD
-    purposes: customName ? `Licence number ${licenceNumber}` : `Abstraction details for for licence number ${licenceNumber}`,
-    points: customName ? `Licence number ${licenceNumber}` : `Abstraction points for licence number ${licenceNumber}`,
-    conditions: `Conditions held for ${customName || licenceNumber}`,
-    contact: customName ? `Licence number ${licenceNumber}` : `Contact details for licence number ${licenceNumber}`,
-=======
     purposes: `Abstraction details for for licence number ${licenceNumber}`,
     points: `Abstraction points for licence number ${licenceNumber}`,
     conditions: `Conditions held for ${customName || licenceNumber}`,
     contact: `Contact details for licence number ${licenceNumber}`,
->>>>>>> 1f2c8d865fc845b137cffe587d5417e2c86cd158
     'gauging-station': `Gauging station for ${customName || licenceNumber}`
   };
 

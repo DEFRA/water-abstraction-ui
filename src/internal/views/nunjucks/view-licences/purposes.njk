@@ -1,8 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-<<<<<<< HEAD
-=======
 {% from "nunjucks/macros/point.njk" import point %}
->>>>>>> 1f2c8d865fc845b137cffe587d5417e2c86cd158
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
@@ -24,17 +21,6 @@
         {{ 'Abstraction point' | pluralize(purpose.points) }}
       </dt>
 
-<<<<<<< HEAD
-      <dd class="summary-list__value--nested-list">
-        {% if purpose.points.length == 1 %}
-          {{ purpose.points[0] | ngrPoints() }}
-        {% elif purpose.points.length < 6 %}
-          <dl class="summary-list--nested-list">
-            {% for point in purpose.points %}
-                <div class="govuk-summary-list__row">
-                  <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
-                    {{ point | ngrPoints() }}
-=======
         {% if purpose.points.length == 1 %}
         <dd class="govuk-summary-list__value">
           {{ purpose.points[0] | ngrPoints() }}
@@ -45,21 +31,11 @@
                 <div class="govuk-summary-list__row">
                   <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
                     {{ point(abstractionPoint) }}
->>>>>>> 1f2c8d865fc845b137cffe587d5417e2c86cd158
                   </dd>
                 </div>
             {% endfor %}
           </dl>
         {% else %}
-<<<<<<< HEAD
-          <details>
-            <summary>View your {{ purpose.points.length }} abstraction points for {{ purpose.name | lower }}</summary>
-            <dl class="govuk-summary-list summary-list--nested-list">
-              {% for point in purpose.points %}
-                  <div class="govuk-summary-list__row">
-                    <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
-                      {{ point | ngrPoints() }}
-=======
         <dd class="summary-list__value--nested-list">
           <details>
             <summary>View your {{ purpose.points.length }} abstraction points for {{ purpose.name | lower }}</summary>
@@ -68,7 +44,6 @@
                   <div class="govuk-summary-list__row">
                     <dd class="{% if loop.index == purpose.points.length %} summary-list__value--no-bottom-border {%else%} govuk-summary-list__value  {%endif%}">
                       {{ point(abstractionPoint) }}
->>>>>>> 1f2c8d865fc845b137cffe587d5417e2c86cd158
                     </dd>
                   </div>
               {% endfor %}

@@ -1,6 +1,6 @@
 module.exports = {
   config: require('../../../shared/lib/plugins/config'),
-  csrf: require('./csrf'),
+  csrf: require('../../../shared/lib/plugins/csrf'),
   metaRedirect: require('./meta-redirect'),
   redirect: require('./redirect'),
   secureHeaders: require('./secure-headers'),

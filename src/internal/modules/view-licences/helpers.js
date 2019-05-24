@@ -59,11 +59,7 @@ function getLicencePageTitle (view, licenceNumber, customName) {
   let key = view.split('/').pop();
   if (key.slice(-4) === '.njk') key = key.slice(0, -4);
 
-  if (key in titles) {
-    return titles[key];
-  }
-
-  return customName ? `Licence name ${customName}` : `Licence number ${licenceNumber}`;
+  return titles[key] || `Licence number ${licenceNumber}`;
 }
 
 /**

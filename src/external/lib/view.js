@@ -65,9 +65,7 @@ function viewContextDefaults (request) {
   viewContext.afterHeader = null;
   viewContext.path = request.path;
 
-  if (request.sessionStore) {
-    viewContext.csrfToken = request.sessionStore.get('csrf_token');
-  }
+  viewContext.csrfToken = request.yar.get('csrfToken');
 
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
@@ -92,7 +90,7 @@ function viewContextDefaults (request) {
   );
 
   viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
-  viewContext.companyName = get(request, 'auth.credentials.companyName');
+  viewContext.companyName = get(request, 'defra.companyName');
 
   return viewContext;
 }

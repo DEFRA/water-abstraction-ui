@@ -23,7 +23,7 @@ const getSessionKey = (request) => {
  */
 const getSessionData = (request) => {
   const sessionKey = getSessionKey(request);
-  const data = request.sessionStore.get(sessionKey);
+  const data = request.yar.get(sessionKey);
 
   if (!data) {
     throw Boom.badImplementation(`Return not found in session`);

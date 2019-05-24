@@ -1,6 +1,7 @@
-const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
+const BaseEntitiesAPIClient = require('shared/lib/connectors/services/crm/EntitiesAPIClient');
+const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-class EntitiesAPIClient extends APIClient {
+class EntitiesAPIClient extends BaseEntitiesAPIClient {
   /**
    * Gets or creates an individual CRM entity identified by the specified email
    * address
@@ -22,7 +23,7 @@ class EntitiesAPIClient extends APIClient {
     }
 
     if (data.length === 1) {
-      return data[0].entity_id;
+      return data[0];
     }
 
     // Create new entity

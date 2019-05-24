@@ -114,7 +114,7 @@ async function postLicenceAdd (request, reply) {
     const documentIds = res.data.map(item => item.document_id);
 
     // Store document IDs in session
-    request.yar.set('addLicenceFlow', { documentIds });
+    request.sessionStore.set('addLicenceFlow', { documentIds });
 
     return reply.redirect('/select-licences');
   } catch (err) {
@@ -176,7 +176,7 @@ async function getLicenceSelect (request, reply) {
  */
 async function postLicenceSelect (request, reply) {
   const { licences } = request.payload;
-  const { entityId } = request.defra;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
     const { documentIds } = request.yar.get('addLicenceFlow');
@@ -223,7 +223,7 @@ async function postLicenceSelect (request, reply) {
     }
 
     // Create new token
-    request.yar.set('addLicenceFlow', { documentIds, selectedIds });
+    request.sessionStore.set('addLicenceFlow', { documentIds, selectedIds });
 
     return reply.redirect('/select-address');
   } catch (err) {
@@ -281,7 +281,7 @@ async function getAddressSelect (request, reply) {
   }, { layout: false });
 }
 
-const getEntityIdFromRequest = request => request.defra.entityId;
+const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
 
 const getAddressSelectViewContext = async (request, verification, licence, fao) => {
   const entityId = getEntityIdFromRequest(request);
@@ -340,7 +340,7 @@ async function postAddressSelect (request, h) {
     // add selected address to addLicenceFlow in sessionStore
     const flowData = request.yar.get('addLicenceFlow');
     flowData.selectedAddressId = selectedAddressId;
-    request.yar.set('addLicenceFlow', flowData);
+    request.sessionStore.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
   }
@@ -402,7 +402,7 @@ async function postFAO (request, h) {
     await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
 
     // Delete data in session
-    request.yar.clear('addLicenceFlow');
+    request.sessionStore.delete('addLicenceFlow');
 
     // add the company id to the cookie to configure company switcher correctly
     loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
@@ -468,7 +468,7 @@ async function postSecurityCode (request, reply) {
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
-  const { entityId } = request.defra;
+  const { entity_id: entityId } = request.auth.credentials;
 
   try {
     // Validate HTTP POST payload

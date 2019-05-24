@@ -66,7 +66,7 @@ function viewContextDefaults (request) {
   viewContext.path = request.path;
 
   if (request.sessionStore) {
-    viewContext.csrfToken = request.sessionStore.get('csrf_token');
+    viewContext.csrfToken = request.yar.get('csrf_token');
   }
 
   viewContext.labels = {};

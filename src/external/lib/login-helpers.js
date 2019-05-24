@@ -1,10 +1,11 @@
-const { get } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const { get } = require('lodash');
 const { logger } = require('../logger');
 
 const waterUser = require('./connectors/water-service/user');
-const getUserID = request => get(request, 'auth.credentials.user_id');
-const { isInternal, isAuthenticated } = require('./permissions');
+const getUserID = request => request.cookieAuth.get('userId');
+const { isAuthenticated } = require('./permissions');
+const { scope } = require('./constants');
 
 /**
  * Asynchronously loads user data from the water service, including their list
@@ -24,22 +25,24 @@ const loadUserData = async userId => {
  * @param  {Object} company - company details from water service endpoint
  */
 const selectCompany = (request, company) => {
-  request.cookieAuth.set('companyId', company.entityId);
-  request.cookieAuth.set('companyName', company.name);
+  request.yar.set('companyId', company.entityId);
+  request.yar.set('companyName', company.name);
+};
+
+const userHasInternalScope = user => {
+  return get(user, 'role.scopes', []).includes(scope.internal);
 };
 
 /**
  * Gets the path the user should be redirected to upon successful login
  * This depends on internal/external scope, and how many companies they manage
- * @param  {[type]}  request [description]
- * @return {Promise}         [description]
  */
-const getLoginRedirectPath = async (request) => {
-  if (isInternal(request)) {
+const getLoginRedirectPath = async (request, user) => {
+  const { user_id: userId } = user;
+
+  if (userHasInternalScope(user)) {
     return '/admin/licences';
   }
-
-  const userId = getUserID(request);
 
   // Load companies to see how many they can access
   const data = await loadUserData(userId);
@@ -64,7 +67,7 @@ const getLoginRedirectPath = async (request) => {
  */
 const preRedirectIfAuthenticated = async (request, h) => {
   if (isAuthenticated(request)) {
-    const path = await getLoginRedirectPath(request);
+    const path = await getLoginRedirectPath(request, request.defra.user);
     if (path) {
       logger.info('Redirecting authenticated user', { from: request.path, path });
       return h.redirect(path).takeover();

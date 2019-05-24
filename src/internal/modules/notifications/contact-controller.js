@@ -122,7 +122,7 @@ const postDetails = async (request, h) => {
   await setUserData(request.auth.credentials.user_id, userData);
 
   // Redirect to notifications flow
-  return h.redirect(request.sessionStore.get('redirect'));
+  return h.redirect(request.yar.get('redirect'));
 };
 
 module.exports = {

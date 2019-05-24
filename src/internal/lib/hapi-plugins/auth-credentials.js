@@ -53,7 +53,7 @@ const mapRolesToScopes = roles => roles.map(role => role.role);
 const getCompanyPredicate = companyId => (role) => role.company_entity_id === companyId;
 
 const assignExternalProperties = async (data, request) => {
-  const { entity_id: entityId, companyId } = request.auth.credentials;
+  const { entityId, companyId } = request.defra;
 
   data.entityRoles = await loadCRMEntityRoles(entityId);
   data.companyIds = getUniqueCompanyIds(data.entityRoles);

@@ -1,4 +1,4 @@
-const { get, set } = require('lodash');
+const { set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const CRM = require('../../lib/connectors/crm');
@@ -9,6 +9,7 @@ const checkAccess = (request, documentHeader) => {
   if (permissions.isInternal(request)) {
     return;
   }
+
   const { companyId } = request.defra;
   if (documentHeader.company_entity_id !== companyId) {
     const params = { documentHeader, credentials: request.auth.credentials };

@@ -27,6 +27,9 @@ const createRequest = () => ({
     credentials: {
       scope: 'internal'
     }
+  },
+  defra: {
+    userScopes: []
   }
 });
 

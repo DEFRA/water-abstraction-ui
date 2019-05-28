@@ -60,7 +60,8 @@ experiment('postChangePassword', () => {
       payload: {
         resetGuid: 'test-id',
         password: 'test-password'
-      }
+      },
+      logIn: sandbox.stub()
     };
 
     sandbox.stub(idmConnector, 'getUserByResetGuid').resolves({
@@ -110,15 +111,8 @@ experiment('postChangePassword', () => {
   experiment('on success', () => {
     test('the user is signed in', async () => {
       await controller.postChangePassword(request, h);
-      const [, userName] = signIn.auto.lastCall.args;
-      expect(userName).to.equal('test-user-name');
-    });
-
-    test('redirects to the return values from the login helper', async () => {
-      await controller.postChangePassword(request, h);
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(loginHelpers.getLoginRedirectPath.calledWith(request)).to.be.true();
-      expect(redirectPath).to.equal('test-path');
+      const [user] = request.logIn.lastCall.args;
+      expect(user.user_name).to.equal('test-user-name');
     });
   });
 });

@@ -50,7 +50,7 @@ const hasMultipleCompanies = request => get(request, 'defra.companyCount', 0) > 
 function viewContextDefaults (request) {
   const viewContext = request.view || {};
 
-  viewContext.isAuthenticated = !!get(request, 'state.sid');
+  viewContext.isAuthenticated = !!get(request, 'auth.credentials.userId');
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;

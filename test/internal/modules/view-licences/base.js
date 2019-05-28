@@ -28,7 +28,8 @@ experiment('view-licences/base', () => {
     beforeEach(async () => {
       request = {
         view: {},
-        formError: { email: true }
+        formError: { email: true },
+        defra: {}
       };
       baseController.getLicences(request, h);
     });
@@ -53,12 +54,15 @@ experiment('view-licences/base', () => {
       request = {
         auth: {
           credentials: {
-            entity_id: '123'
+
           }
         },
         view: {},
         query: {
           emailAddress: 'test@example.com'
+        },
+        defra: {
+          entityId: '123'
         }
       };
 
@@ -88,11 +92,13 @@ experiment('view-licences/base', () => {
       request = {
         auth: {
           credentials: {
-            entity_id: '123'
           }
         },
         view: {},
-        query: { page: 1 }
+        query: { page: 1 },
+        defra: {
+          entityId: '123'
+        }
       };
 
       CRM.documents.findMany.resolves({

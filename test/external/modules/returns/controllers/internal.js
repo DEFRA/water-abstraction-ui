@@ -27,7 +27,8 @@ const createRequest = () => ({
     credentials: {
       scope: 'internal'
     }
-  }
+  },
+  defra: {}
 });
 
 const createPostLogReceiptRequest = (isUnderQuery) => {

@@ -73,8 +73,6 @@ experiment('postChangePassword', () => {
       error: null
     });
 
-    sandbox.stub(loginHelpers, 'getLoginRedirectPath').resolves('test-path');
-
     sandbox.stub(signIn, 'auto').resolves();
   });
 

@@ -3,6 +3,7 @@ const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const anonGoogleAnalyticsPlugin = require('../../../../src/internal/lib/hapi-plugins/anon-google-analytics');
 const viewContextPlugin = require('../../../../src/internal/lib/hapi-plugins/view-context');
+const yar = require('@hapi/yar');
 
 const getTestRoute = (path, pageTitle) => ({
   method: 'GET',
@@ -21,7 +22,8 @@ const getServer = async (pluginOptions = {}, pageTitle = '') => {
   const server = Hapi.server();
   await server.register([
     { plugin: viewContextPlugin },
-    { plugin: anonGoogleAnalyticsPlugin }
+    { plugin: anonGoogleAnalyticsPlugin },
+    { plugin: yar, options: { cookieOptions: { password: 'some-secret-dfjksdfjskfjdkfsjfkjfdskjfdskjfsdk' } } }
   ]);
 
   server.route(getTestRoute('/', pageTitle));

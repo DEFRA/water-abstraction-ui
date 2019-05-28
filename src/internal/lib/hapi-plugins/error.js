@@ -35,9 +35,7 @@ const _handler = async (request, h) => {
   // Destroy session for CSRF error
   if (isCsrfError(request)) {
     logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-    await request.yar.reset();
-    request.cookieAuth.clear();
-    return h.redirect('/signout');
+    return request.logOut();
   }
 
   // Unauthorised - redirect to welcome

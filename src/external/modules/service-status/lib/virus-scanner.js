@@ -5,11 +5,9 @@ const fileCheck = require('../../../lib/file-check');
  * @return {Promise} Resolves with boolean true if OK
  */
 const getVirusScannerStatus = async () => {
-  const clean = await fileCheck.virusCheck('./test/lib/test-files/test-file.txt');
-  const infected = await fileCheck.virusCheck('./test/lib/test-files/eicar-test.txt');
+  const clean = await fileCheck.virusCheck('./test/external/lib/test-files/test-file.txt');
+  const infected = await fileCheck.virusCheck('./test/external/lib/test-files/eicar-test.txt');
   return clean && !infected;
 };
 
-module.exports = {
-  getVirusScannerStatus
-};
+exports.getVirusScannerStatus = getVirusScannerStatus;

@@ -21,9 +21,11 @@ const createRequest = (isInternal, isLoadOption) => ({
   query: {
     returnId
   },
+  defra: {
+    companyId
+  },
   auth: {
     credentials: {
-      companyId,
       scope: isInternal ? ['internal', 'returns'] : ['external', 'primary_user']
     }
   },

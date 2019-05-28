@@ -16,13 +16,15 @@ const { scope } = require('../../../../src/external/lib/constants');
 const controller = require('../../../../src/external/modules/add-licences/controller');
 const notifyConnector = require('../../../../src/external/lib/connectors/notify');
 const forms = require('../../../../src/shared/lib/forms');
+const yar = require('@hapi/yar');
 
 const { set } = require('lodash');
 
 const getRequestSetupForAuthenticatedUser = request => {
   set(request, 'auth.isAuthenticated', true);
-  set(request, 'auth.credentials.entity_id', '123');
-  set(request, 'auth.credentials.companyId', '456');
+  set(request, 'auth.credentials.userId', 'test-user');
+  set(request, 'auth.defra.entityId', '123');
+  set(request, 'auth.defra.companyId', '456');
   set(request, 'state.sid', 'something');
   set(request, 'auth.credentials.scope', [
     scope.licenceHolder
@@ -37,6 +39,10 @@ const getServer = async () => {
   const server = Hapi.server();
   server.decorate('toolkit', 'view', sandbox.stub().resolves('testing'));
   await server.register([
+    {
+      plugin: yar,
+      options: { cookieOptions: { password: 'kdjaskdjdfjsdfjsdoifjsdoijfidsjfdsoijdiidosf' } }
+    },
     {
       plugin: requestStubPlugin,
       options: { onPostAuth: getRequestSetupForAuthenticatedUser }
@@ -89,14 +95,14 @@ experiment('postAddressSelect', () => {
 
   beforeEach(async () => {
     request = {
-      sessionStore: {
+      yar: {
         get: () => ({
           selectedIds: [1, 2]
         }),
         set: () => ({
           selectedAddressId: 1
         }),
-        delete: sinon.spy(),
+        clear: sinon.spy(),
         data: {
           addLicenceFlow: {
             selectedIds: [1, 2],
@@ -106,8 +112,10 @@ experiment('postAddressSelect', () => {
       },
       auth: {
         credentials: {
-          entity_id: 'test-entity-id'
         }
+      },
+      defra: {
+        entityId: 'test-entity-id'
       },
       payload: {
         selectedAddressId: 1
@@ -185,7 +193,7 @@ experiment('postFAO', () => {
 
   beforeEach(async () => {
     request = {
-      sessionStore: {
+      yar: {
         get: () => ({
           selectedIds: [1, 2]
         }),
@@ -194,12 +202,11 @@ experiment('postFAO', () => {
             selectedAddressId: 1
           }
         },
-        delete: sinon.spy()
+        set: sinon.spy(),
+        clear: sinon.spy()
       },
-      auth: {
-        credentials: {
-          entity_id: 'test-entity-id'
-        }
+      defra: {
+        entityId: 'test-entity-id'
       },
       payload: {
         selectedAddressId: 1,
@@ -281,7 +288,7 @@ experiment('postFAO', () => {
 
   test('delete the licence flow and address data from session', async () => {
     await controller.postFAO(request, h);
-    expect(request.sessionStore.delete.calledWith('addLicenceFlow')).to.be.true();
+    expect(request.yar.clear.calledWith('addLicenceFlow')).to.be.true();
   });
 
   test('renders the expected view', async () => {
@@ -303,10 +310,10 @@ experiment('postFAO', () => {
   test('adds the company id to the cookie', async () => {
     await controller.postFAO(request, h);
 
-    expect(request.cookieAuth.set.calledWith('companyId', 'test-company-entity-id'))
+    expect(request.yar.set.calledWith('companyId', 'test-company-entity-id'))
       .to.be.true();
 
-    expect(request.cookieAuth.set.calledWith('companyName', 'test-company-name'))
+    expect(request.yar.set.calledWith('companyName', 'test-company-name'))
       .to.be.true();
   });
 });

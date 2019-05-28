@@ -9,7 +9,6 @@ const checkAccess = (request, documentHeader) => {
   if (permissions.isInternal(request)) {
     return;
   }
-
   const { companyId } = request.defra;
   if (documentHeader.company_entity_id !== companyId) {
     const params = { documentHeader, credentials: request.auth.credentials };

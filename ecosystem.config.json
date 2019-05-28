@@ -18,6 +18,25 @@
         "instances" : "max",
         "exec_mode" : "cluster"
       }
+    },
+    {
+      "name": "ui-internal",
+      "ignore_watch": [
+        "coverage",
+        "data",
+        "node_modules",
+        "src/external",
+        "test"
+      ],
+      "script": "server-internal.js",
+      "env": {
+        "watch": true
+      },
+      "env_production": {
+        "watch": false,
+        "instances" : "max",
+        "exec_mode" : "cluster"
+      }
     }
   ]
 }

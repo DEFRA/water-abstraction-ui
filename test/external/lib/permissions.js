@@ -13,6 +13,7 @@ const createRequest = (scope) => ({
   },
   auth: {
     credentials: {
+      userId: 'user_123',
       scope
     }
   }
@@ -32,14 +33,14 @@ experiment('permissions', () => {
   });
 
   experiment('isAuthenticated', () => {
-    test('it should return true if a session ID is present', async () => {
+    test('it should return true if a user ID is present', async () => {
       const request = createRequest();
       expect(permissions.isAuthenticated(request)).to.equal(true);
     });
 
-    test('it should return true if a session ID is absent', async () => {
+    test('it should return true if a user ID is absent', async () => {
       const request = createRequest();
-      delete request.state.sid;
+      delete request.auth.credentials.userId;
       expect(permissions.isAuthenticated(request)).to.equal(false);
     });
   });

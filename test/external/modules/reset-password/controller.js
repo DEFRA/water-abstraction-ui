@@ -114,12 +114,5 @@ experiment('postChangePassword', () => {
       const [user] = request.logIn.lastCall.args;
       expect(user.user_name).to.equal('test-user-name');
     });
-
-    test('redirects to the return values from the login helper', async () => {
-      await controller.postChangePassword(request, h);
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(loginHelpers.getLoginRedirectPath.calledWith(request)).to.be.true();
-      expect(redirectPath).to.equal('test-path');
-    });
   });
 });

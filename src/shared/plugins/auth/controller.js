@@ -50,7 +50,7 @@ async function getSignedOut (request, h) {
   return h.view('nunjucks/auth/signed-out.njk', request.view, { layout: false });
 }
 
-const resetIsRequired = user => !!parseInt(user.reset_required);
+const resetIsRequired = user => !!parseInt(get(user, 'reset_required', false));
 
 /**
  * Process login form request
@@ -80,7 +80,7 @@ const postSignin = async (request, h) => {
   }
 
   // Auth success
-  if (user.user_id) {
+  if (user) {
     return request.logIn(user);
   }
 

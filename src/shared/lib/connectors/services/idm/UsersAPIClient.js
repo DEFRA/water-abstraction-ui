@@ -1,5 +1,5 @@
 const { throwIfError, APIClient } = require('@envage/hapi-pg-rest-api');
-const serviceRequest = require('shared/lib/connectors/service-request');
+const serviceRequest = require('../../service-request');
 
 class UsersAPIClient extends APIClient {
   /**
@@ -27,7 +27,7 @@ class UsersAPIClient extends APIClient {
     } catch (error) {
       // Unauthorized
       if (error.statusCode === 401) {
-        return { user_id: null };
+        return;
       }
       // Throw other errors
       throw error;

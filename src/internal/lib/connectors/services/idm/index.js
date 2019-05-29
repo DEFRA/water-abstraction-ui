@@ -1,4 +1,4 @@
-const UsersAPIClient = require('./UsersAPIClient');
+const UsersAPIClient = require('shared/lib/connectors/services/idm/UsersAPIClient');
 const http = require('shared/lib/connectors/http');
 
 module.exports = config => ({

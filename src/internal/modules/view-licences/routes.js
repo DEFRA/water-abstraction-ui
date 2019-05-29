@@ -112,7 +112,7 @@ const getLicenceContact = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/contact'
+        view: 'nunjucks/view-licences/contact.njk'
       },
       viewContext: {
         activeNavLink: 'view'
@@ -138,7 +138,7 @@ const getLicencePurposes = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/purposes'
+        view: 'nunjucks/view-licences/purposes.njk'
       },
       viewContext: {
         activeNavLink: 'view'
@@ -164,7 +164,7 @@ const getLicencePoints = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/points'
+        view: 'nunjucks/view-licences/points.njk'
       },
       viewContext: {
         activeNavLink: 'view'

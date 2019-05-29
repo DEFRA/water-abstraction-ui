@@ -1,0 +1,17 @@
+.summary-list__value--no-bottom-border {
+  @extend .govuk-summary-list__value;
+
+  border-bottom: none;
+}
+
+.summary-list__value--nested-list {
+  @extend .govuk-summary-list__value;
+
+  padding: 0px;
+}
+
+.summary-list--nested-list {
+  @extend .govuk-summary-list;
+
+  margin-bottom: 0px;
+}

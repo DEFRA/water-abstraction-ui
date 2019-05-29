@@ -1,0 +1,46 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/macros/point.njk" import point %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% block content %}
+
+  {% if crmData.document_name%}
+    {% set licenceName %} Abstraction points for {{crmData.document_name}}{% endset %}
+    {{ title(licenceName, pageTitle) }}
+  {% else %}
+    {{ title(pageTitle) }}
+  {% endif %}
+
+  {% for abstractionPoint in licenceData.points %}
+
+  {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
+
+  {% set meansOfAbstraction %} {{ abstractionPoint.meansOfAbstraction }} {% endset %}
+
+    <h3 class="govuk-heading-m">{{ abstractionPoint.name }}</h3>
+
+    <hr class="govuk-section-break govuk-section-break--visible">
+    {{ govukSummaryList({
+      rows: [{
+          key: {
+            text: "Grid reference",
+            classes:"govuk-!-font-weight-regular"
+          },
+          value: {
+            text: gridReference
+          }
+        },
+        {
+          key: {
+            text: "Means of abstraction",
+            classes:"govuk-!-font-weight-regular"
+          },
+          value: {
+            html: meansOfAbstraction
+          }
+        }]
+    }) }}
+
+  {% endfor %}
+
+{% endblock %}

@@ -11,7 +11,6 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const loginHelpers = require('../../../../src/internal/lib/login-helpers');
 const idmConnector = require('../../../../src/internal/lib/connectors/idm');
 const signIn = require('../../../../src/internal/lib/sign-in');
 const controller = require('../../../../src/internal/modules/reset-password/controller');

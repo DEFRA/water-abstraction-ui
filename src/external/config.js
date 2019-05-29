@@ -106,7 +106,8 @@ module.exports = {
       isSameSite: 'Lax',
       ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
       isHttpOnly: true
-    }
+    },
+    storeBlank: false
 
   }
 };

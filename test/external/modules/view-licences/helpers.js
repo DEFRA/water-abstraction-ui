@@ -6,7 +6,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter } = require('../../../../src/external/modules/view-licences/helpers');
+const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle } = require('../../../../src/external/modules/view-licences/helpers');
 const waterConnector = require('../../../../src/external/lib/connectors/water');
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
@@ -191,5 +191,22 @@ experiment('mapFilter', () => {
 
     filter = mapFilter('1234', { emailAddress: 'right@example.com  ' });
     expect(filter.email).to.equal('right@example.com');
+  });
+
+  experiment('getLicencePageTitle', () => {
+    test('if licence has custom name, return "Licence number 1234"', async () => {
+      const pageTitle = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234', 'customName');
+      expect(pageTitle).to.equal('Licence number 1234');
+    });
+
+    test('if licence does not have custom name, return title for key', async () => {
+      const pageTitle = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234');
+      expect(pageTitle).to.equal('Contact details for licence number 1234');
+    });
+
+    test('if licence does not have custom name and unexpected key, return default response', async () => {
+      const pageTitle = getLicencePageTitle('nunjucks/view-licences/test', '1234');
+      expect(pageTitle).to.equal('Licence number 1234');
+    });
   });
 });

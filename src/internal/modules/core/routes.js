@@ -43,5 +43,11 @@ module.exports = {
         }
       }
     }
+  },
+
+  status: {
+    method: 'GET',
+    path: '/status',
+    handler: () => 'OK'
   }
 };

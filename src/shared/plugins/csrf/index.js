@@ -43,7 +43,7 @@ const validateReferer = request => {
 };
 
 const validateCsrfToken = request => {
-  const token = request.sessionStore.get('csrf_token');
+  const token = request.yar.get('csrfToken');
   if (token !== get(request, 'payload.csrf_token')) {
     throw Boom.badRequest('CSRF protection: missing/invalid CSRF token', { isCsrfError: true });
   }

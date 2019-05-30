@@ -48,6 +48,12 @@ module.exports = {
   status: {
     method: 'GET',
     path: '/status',
-    handler: () => 'OK'
+    handler: () => 'OK',
+    config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      }
+    }
   }
 };

@@ -1,16 +1,12 @@
 module.exports = {
-  config: require('../../../shared/lib/plugins/config'),
-  csrf: require('../../../shared/lib/plugins/csrf'),
-  metaRedirect: require('../../../shared/lib/plugins/meta-redirect'),
-  redirect: require('../../../shared/lib/plugins/redirect'),
-  secureHeaders: require('../../../shared/lib/plugins/secure-headers'),
-
-  // licence details should be loaded before the view context is
-  // updated with the main navigation.
-  licenceLoader: require('./licence-loader'),
+  config: require('../../../shared/plugins/config'),
+  csrf: require('../../../shared/plugins/csrf'),
+  metaRedirect: require('../../../shared/plugins/meta-redirect'),
+  redirect: require('../../../shared/plugins/redirect'),
+  secureHeaders: require('../../../shared/plugins/secure-headers'),
 
   viewContext: {
-    plugin: require('../../../shared/lib/plugins/view-context'),
+    plugin: require('../../../shared/plugins/view-context'),
     options: {
       getContextDefaults: require('../view').contextDefaults
     }
@@ -18,9 +14,7 @@ module.exports = {
 
   formValidator: require('./form-validator'),
   error: require('./error'),
-  noRobots: require('../../../shared/lib/plugins/no-robots'),
-  staticAssets: require('../../../shared/lib/plugins/static-assets'),
-  anonGoogleAnalytics: require('../../../shared/lib/plugins/anon-google-analytics'),
-  authCredentials: require('./auth-credentials'),
-  companySelection: require('./company-selection')
+  noRobots: require('../../../shared/plugins/no-robots'),
+  staticAssets: require('../../../shared/plugins/static-assets'),
+  anonGoogleAnalytics: require('../../../shared/plugins/anon-google-analytics')
 };

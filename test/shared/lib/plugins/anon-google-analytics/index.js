@@ -1,9 +1,9 @@
 const Hapi = require('@hapi/hapi');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const anonGoogleAnalyticsPlugin = require('../../../../src/external/lib/hapi-plugins/anon-google-analytics');
-const viewContextPlugin = require('../../../../src/external/lib/hapi-plugins/view-context');
-const yar = require('@hapi/yar');
+const anonGoogleAnalyticsPlugin = require('../../../../../src/shared/plugins/anon-google-analytics');
+
+const viewContextPlugin = require('../../../../../src/shared/plugins/view-context');
 
 const getTestRoute = (path, pageTitle) => ({
   method: 'GET',
@@ -21,8 +21,12 @@ const getTestRoute = (path, pageTitle) => ({
 const getServer = async (pluginOptions = {}, pageTitle = '') => {
   const server = Hapi.server();
   await server.register([
-    { plugin: yar, options: { cookieOptions: { password: 'dfdfdfdfdfdfdfdfdfdfddfdfdfdfdfdfdfdf' } } },
-    { plugin: viewContextPlugin },
+    {
+      plugin: viewContextPlugin,
+      options: {
+        getContextDefaults: request => request.view
+      }
+    },
     { plugin: anonGoogleAnalyticsPlugin }
   ]);
 

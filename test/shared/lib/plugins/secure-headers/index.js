@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { beforeEach, experiment, test } = exports.lab = require('lab').script();
 
-const plugin = require('../../../../src/external/lib/hapi-plugins/secure-headers');
+const plugin = require('../../../../../src/shared/plugins/secure-headers');
 
 experiment('secure-headers', () => {
   let request;

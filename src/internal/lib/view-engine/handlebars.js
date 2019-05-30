@@ -7,10 +7,7 @@ const qs = require('querystring');
 const sentenceCase = require('sentence-case');
 const titleCase = require('title-case');
 const marked = require('marked');
-const uuid = require('uuid/v4');
 const { isString } = require('lodash');
-
-const DynamicView = require('../dynamicview');
 
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
@@ -332,19 +329,6 @@ handlebars.registerHelper('encode', function (value) {
   return encodeURIComponent(value.hash.value);
 });
 
-handlebars.registerHelper('dynamicView', function () {
-  /**
-  The dynamicView helper loads javascript renderers from the views/partials/jsPartials directory
-  **/
-  var args = Array.prototype.slice.call(arguments, 0).pop();
-  var requestedFunction = args.hash.viewType;
-  if (DynamicView[requestedFunction]) {
-    return `${DynamicView[requestedFunction].getContent(args)}`;
-  } else {
-    return `Error: Unknown component: ${requestedFunction}`;
-  }
-});
-
 handlebars.registerHelper('toLowerCase', function (str) {
   return str.toLowerCase();
 });
@@ -362,24 +346,6 @@ handlebars.registerHelper('parse', function (variable) {
   }
 
   return arg;
-});
-handlebars.registerHelper('showhide', function () {
-  var arg = Array.prototype.slice.call(arguments, 0);
-  arg.pop();
-  var htmlContent = '';
-  htmlContent += '';
-  htmlContent += '<details>';
-  htmlContent += '<summary><span class="summary" tabindex="0">' + arg[0] + '</span></summary>';
-  htmlContent += '<div class="panel panel-border-narrow">';
-  htmlContent += '<h3 class="heading-small">' + arg[1] + '</h3>';
-  htmlContent += arg[2];
-  htmlContent += '</div>';
-  htmlContent += '</details>';
-  return htmlContent;
-});
-
-handlebars.registerHelper('guid', function () {
-  return uuid();
 });
 
 const getDatePartFromString = (date, part) => {
@@ -489,18 +455,6 @@ handlebars.registerHelper('formatPeriod', function (inputStart = '', inputEnd = 
   return 'From ' + periodStart.format('D MMMM') + ' until ' + periodEnd.format('D MMMM');
 });
 
-handlebars.registerHelper('formatAddress', function (address) {
-  var formattedAddress = address.addressLine1 + '<br/>';
-  formattedAddress += address.addressLine2 ? address.addressLine2 + '<br/>' : '';
-  formattedAddress += address.addressLine3 ? address.addressLine3 + '<br/>' : '';
-  formattedAddress += address.addressLine4 ? address.addressLine4 + '<br/>' : '';
-  formattedAddress += address.town ? address.town + '<br/>' : '';
-  formattedAddress += address.county ? address.county + '<br/>' : '';
-  formattedAddress += address.country ? address.country + '<br/>' : '';
-  formattedAddress += address.postCode;
-  return formattedAddress;
-});
-
 handlebars.registerHelper('formatNotifyAddress', function (address) {
   const addressParts = pick(address, [
     'address_line_1', 'address_line_2', 'address_line_3',
@@ -558,16 +512,8 @@ handlebars.registerHelper('ngrPoint', function (points) {
   return response;
 });
 
-handlebars.registerHelper('maxQuantities', function (quantities) {
-  return Number(quantities.maxDailyQuantity).toFixed(2) + ' cubic metres per day <br/>' + Number(quantities.maxAnnualQuantity).toFixed(2) + ' cubic metres per year';
-});
-
 handlebars.registerHelper('precision', function (value, dp) {
   return Number(value).toFixed(dp);
-});
-
-handlebars.registerHelper('abstractionConditions', function (quantities) {
-  return 'Abstraction conditions TODO:';
 });
 
 handlebars.registerHelper('yesIfTruthy', value => value ? 'Yes' : '');

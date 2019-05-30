@@ -4,17 +4,21 @@
  *
  * @module lib/hapi-config-plugin
  */
-const { contextDefaults } = require('../view');
-
 const viewContextPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreHandler',
       method: async (request, h) => {
+        const getContextDefaults = options.getContextDefaults;
+
+        if (!getContextDefaults) {
+          throw new Error('viewContext plugin requires the options.getContextDefaults function');
+        }
+
         const currentView = request.view || {};
         const routeContext = request.route.settings.plugins.viewContext || {};
         request.view = Object.assign(currentView, routeContext);
-        request.view = contextDefaults(request);
+        request.view = getContextDefaults(request);
 
         // Continue processing request
         return h.continue;

@@ -1,13 +1,20 @@
 module.exports = {
-  config: require('./config'),
-  csrf: require('./csrf'),
-  metaRedirect: require('./meta-redirect'),
-  redirect: require('./redirect'),
-  secureHeaders: require('./secure-headers'),
-  viewContext: require('./view-context'),
+  config: require('../../../shared/plugins/config'),
+  csrf: require('../../../shared/plugins/csrf'),
+  metaRedirect: require('../../../shared/plugins/meta-redirect'),
+  redirect: require('../../../shared/plugins/redirect'),
+  secureHeaders: require('../../../shared/plugins/secure-headers'),
+
+  viewContext: {
+    plugin: require('../../../shared/plugins/view-context'),
+    options: {
+      getContextDefaults: require('../view').contextDefaults
+    }
+  },
+
   formValidator: require('./form-validator'),
-  anonGoogleAnalytics: require('./anon-google-analytics'),
   error: require('./error'),
-  noRobots: require('../../../shared/lib/plugins/no-robots'),
-  staticAssets: require('../../../shared/lib/plugins/static-assets')
+  noRobots: require('../../../shared/plugins/no-robots'),
+  staticAssets: require('../../../shared/plugins/static-assets'),
+  anonGoogleAnalytics: require('../../../shared/plugins/anon-google-analytics')
 };

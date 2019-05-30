@@ -2,7 +2,8 @@ const { expect } = require('code');
 const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const metaRedirectPlugin = require('../../../../src/internal/lib/hapi-plugins/meta-redirect');
+const metaRedirectPlugin = require('../../../../../src/shared/plugins/meta-redirect');
+
 const { set } = require('lodash');
 
 experiment('meta redirect plugin', () => {

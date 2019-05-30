@@ -32,7 +32,7 @@ const renderForm = (request, h, form) => {
  * Displays a page where the user can select the company they wish to manage
  */
 const getSelectCompany = async (request, h) => {
-  const userId = loginHelpers.getUserID(request);
+  const { userId } = request.defra;
   const data = await loginHelpers.loadUserData(userId);
   const form = selectCompanyForm(request, data);
   return renderForm(request, h, form);
@@ -43,7 +43,7 @@ const getSelectCompany = async (request, h) => {
  * @param {String} request.payload.company - the index of the company to select
  */
 const postSelectCompany = async (request, h) => {
-  const userId = loginHelpers.getUserID(request);
+  const { userId } = request.defra;
   const data = await loginHelpers.loadUserData(userId);
   const form = handleRequest(selectCompanyForm(request, data), request);
 

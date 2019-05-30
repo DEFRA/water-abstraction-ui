@@ -53,11 +53,10 @@ const getReturnsForLicence = async (request, h) => {
  */
 const getReturn = async (request, h) => {
   const { id, version } = request.query;
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   // Load return data
   const data = await returns.getReturn(id, version);
-
   const lines = getLinesWithReadings(data);
 
   // Load CRM data to check access

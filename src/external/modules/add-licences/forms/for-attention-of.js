@@ -8,7 +8,7 @@ const Joi = require('joi');
  */
 const faoForm = (request) => {
   const { csrfToken } = request.view;
-  const { selectedAddressId } = request.sessionStore.data.addLicenceFlow;
+  const { selectedAddressId } = request.yar.get('addLicenceFlow');
 
   const action = `/add-addressee`;
 

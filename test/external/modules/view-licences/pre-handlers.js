@@ -15,7 +15,11 @@ const createRequest = () => {
   return {
     auth: {
       credentials: {
+        scope: [scope.external]
       }
+    },
+    defra: {
+      companyId
     },
     params: {
       documentId

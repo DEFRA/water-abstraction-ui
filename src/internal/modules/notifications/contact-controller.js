@@ -54,12 +54,12 @@ const getErrorViewContext = (request) => {
 const getNameAndJob = async (request, h) => {
   // WHere to redirect after flow complete
   const { redirect } = request.query;
-  request.sessionStore.set('redirect', redirect);
+  request.yar.set('redirect', redirect);
 
   // Load user data from IDM
   const { contactDetails = {} } = await getUserData(request.auth.credentials.user_id);
 
-  request.sessionStore.set('notificationContactDetails', {
+  request.yar.set('notificationContactDetails', {
     contactDetails,
     redirect
   });
@@ -122,7 +122,7 @@ const postDetails = async (request, h) => {
   await setUserData(request.auth.credentials.user_id, userData);
 
   // Redirect to notifications flow
-  return h.redirect(request.sessionStore.get('redirect'));
+  return h.redirect(request.yar.get('redirect'));
 };
 
 module.exports = {

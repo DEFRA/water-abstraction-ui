@@ -163,14 +163,14 @@ const applyQuantities = (data, formValues) => {
  * @param {Object} credentials - request.auth.credentials for current user
  * @return {Object} returns model with user data added
  */
-const applyUserDetails = (data, credentials) => {
+const applyUserDetails = (data, request) => {
   const d = cloneDeep(data);
-  const { username, scope, entity_id: entityId } = credentials;
+  const { userName, userScopes, entityId } = request.defra;
   return {
     ...d,
     user: {
-      email: username,
-      type: scope.includes('internal') ? 'internal' : 'external',
+      email: userName,
+      type: userScopes.includes('internal') ? 'internal' : 'external',
       entityId
     }
   };

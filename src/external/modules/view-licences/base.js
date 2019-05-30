@@ -20,7 +20,7 @@ async function getLicences (request, h) {
     return h.view(viewName, request.view);
   }
 
-  const { companyId } = request.auth.credentials;
+  const companyId = request.yar.get('companyId');
   const { page, emailAddress } = request.query;
   const sort = mapSort(request.query);
   const filter = mapFilter(companyId, request.query);

@@ -1,5 +1,5 @@
-
 require('dotenv').config();
+require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
 // -------------- Require vendor code -----------------
 const Blipp = require('blipp');
@@ -10,9 +10,9 @@ const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiSanitizePayload = require('hapi-sanitize-payload');
 const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
-const HapiAuthJWT2 = require('hapi-auth-jwt2');
 const Blankie = require('blankie');
 const Scooter = require('@hapi/scooter');
+const Yar = require('@hapi/yar');
 
 // -------------- Require project code -----------------
 const config = require('./src/internal/config');
@@ -26,25 +26,21 @@ const { logger } = require('./src/internal/logger');
 const goodWinstonStream = new GoodWinston({ winston: logger });
 
 // Configure auth plugin
-const loginHelpers = require('./src/internal/lib/login-helpers');
-const { isInternal } = require('./src/internal/lib/permissions');
+const AuthConfig = require('./src/internal/lib/AuthConfig');
+const connectors = require('./src/internal/lib/connectors/services');
+const authConfig = new AuthConfig(config, connectors);
 const authPlugin = {
-  plugin: require('./src/internal/modules/auth'),
-  options: {
-    ifAuthenticated: loginHelpers.preRedirectIfAuthenticated,
-    onSignIn: async (request, h) => {
-      // Redirect user
-      const path = await loginHelpers.getLoginRedirectPath(request);
-      return h.metaRedirect(path);
-    },
-    onSignOut: (request, h) => {
-      const params = `?u=${isInternal(request) ? 'i' : 'e'}`;
-      return h.metaRedirect(`/signed-out${params}`);
-    }
-  } };
+  plugin: require('shared/plugins/auth'),
+  options: authConfig
+};
 
-// Define server
-const server = Hapi.server(config.server);
+// Define server with REST API cache mechanism
+// @TODO replace with redis
+const server = Hapi.server({
+  ...config.server,
+  cache: {
+    engine: require('./src/shared/lib/catbox-rest-api')
+  } });
 
 /**
  * Async function to start HAPI server
@@ -70,6 +66,10 @@ async function start () {
       options: config.blipp
     });
     await server.register({
+      plugin: Yar,
+      options: config.yar
+    });
+    await server.register({
       plugin: HapiAuthCookie
     });
 
@@ -84,18 +84,9 @@ async function start () {
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {
-      ...config.hapiAuthCookie
+      ...config.hapiAuthCookie,
+      validateFunc: (request, data) => authConfig.validateFunc(request, data)
     });
-    if (config.testMode) {
-      await server.register({
-        plugin: HapiAuthJWT2
-      });
-      server.auth.strategy('jwt', 'jwt', {
-        ...config.jwt,
-        validate: async (decoded) => ({ isValid: !!decoded.id })
-      });
-    }
-
     server.auth.default('standard');
 
     // Set up Nunjucks view engine

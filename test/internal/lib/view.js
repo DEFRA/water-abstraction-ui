@@ -13,7 +13,7 @@ const { scope } = require('../../../src/internal/lib/constants');
 const getBaseRequest = () => ({
   state: {},
   connection: {},
-  sessionStore: {
+  yar: {
     get: (key) => key
   },
   url: {},

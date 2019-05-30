@@ -19,6 +19,7 @@ const getAuthenticatedRequest = (isInternal = false) => {
     },
     auth: {
       credentials: {
+        userId: 'user_123',
         scope: isInternal ? scope.internal : scope.external
       }
     }

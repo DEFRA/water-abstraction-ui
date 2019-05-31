@@ -1,18 +1,10 @@
 require('dotenv').config();
 require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
+const { createPlugins } = require('./server-common');
+
 // -------------- Require vendor code -----------------
-const Blipp = require('blipp');
-const Good = require('good');
-const GoodWinston = require('good-winston');
 const Hapi = require('@hapi/hapi');
-const HapiAuthCookie = require('hapi-auth-cookie');
-const HapiSanitizePayload = require('hapi-sanitize-payload');
-const Inert = require('@hapi/inert');
-const Vision = require('@hapi/vision');
-const Blankie = require('blankie');
-const Scooter = require('@hapi/scooter');
-const Yar = require('@hapi/yar');
 
 // -------------- Require project code -----------------
 const config = require('./src/internal/config');
@@ -23,22 +15,17 @@ const viewEngine = require('./src/internal/lib/view-engine/');
 
 // Initialise logger
 const { logger } = require('./src/internal/logger');
-const goodWinstonStream = new GoodWinston({ winston: logger });
+// const goodWinstonStream = new GoodWinston({ winston: logger });
+//
+const connectors = require('./src/internal/lib/connectors/services');
+const common = createPlugins(config, logger, connectors);
 
 // Configure auth plugin
 const AuthConfig = require('./src/internal/lib/AuthConfig');
-const connectors = require('./src/internal/lib/connectors/services');
 const authConfig = new AuthConfig(config, connectors);
 const authPlugin = {
   plugin: require('shared/plugins/auth'),
   options: authConfig
-};
-
-// Configure password reset plugin
-const ResetConfig = require('./src/shared/lib/ResetConfig');
-const resetPlugin = {
-  plugin: require('shared/plugins/reset-password'),
-  options: new ResetConfig(config, connectors)
 };
 
 // Define server with REST API cache mechanism
@@ -54,42 +41,10 @@ const server = Hapi.server({
  */
 async function start () {
   try {
-    // Third-party plugins
-    await server.register([Scooter, {
-      plugin: Blankie,
-      options: config.blankie
-    }]);
-
-    await server.register({
-      plugin: Good,
-      options: { ...config.good,
-        reporters: {
-          winston: [goodWinstonStream]
-        }
-      }
-    });
-    await server.register({
-      plugin: Blipp,
-      options: config.blipp
-    });
-    await server.register({
-      plugin: Yar,
-      options: config.yar
-    });
-    await server.register({
-      plugin: HapiAuthCookie
-    });
-
-    await server.register({
-      plugin: HapiSanitizePayload,
-      options: config.sanitize
-    });
-
-    await server.register([Inert, Vision]);
+    await server.register(common);
     await server.register(Object.values(plugins));
     await server.register({ plugin: returnsPlugin });
 
-    // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie,
       validateFunc: (request, data) => authConfig.validateFunc(request, data)
@@ -101,7 +56,6 @@ async function start () {
 
     // Auth plugin
     await server.register(authPlugin);
-    await server.register(resetPlugin);
 
     server.route(routes);
 

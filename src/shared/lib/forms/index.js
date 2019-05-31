@@ -104,7 +104,7 @@ const getPayload = (form, request) => form.method === 'POST'
  * @param {Object} form - form config object
  * @param {Object} request - HAPI HTTP request
  */
-const handleRequest = (form, request, validationSchema) => {
+const handleRequest = (form, request, validationSchema, options) => {
   const adapter = validationAdapterFactory.load(form.validationType);
   let f = cloneDeep(form);
   f.isSubmitted = true;
@@ -113,7 +113,7 @@ const handleRequest = (form, request, validationSchema) => {
 
   const schema = validationSchema || adapter.createSchemaFromForm(form);
 
-  const { error, value } = adapter.validate(requestData, schema);
+  const { error, value } = adapter.validate(requestData, schema, options);
 
   const customErrors = getCustomErrors(form);
   const formattedErrors = adapter.formatErrors(error, customErrors);

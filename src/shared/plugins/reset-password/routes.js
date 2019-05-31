@@ -2,8 +2,8 @@ const controller = require('./controller');
 const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
 const Joi = require('joi');
 
-module.exports = {
-  getResetPassword: {
+module.exports = [
+  {
     method: 'GET',
     path: '/reset_password',
     config: {
@@ -15,27 +15,29 @@ module.exports = {
       },
       plugins: {
         viewContext: {
+          back: '/signin',
           pageTitle: 'Reset your password'
         },
         config: {
-          view: 'water/reset-password/reset_password'
+          view: 'nunjucks/reset-password/reset-password.njk'
         }
       }
     },
     handler: controller.getResetPassword
   },
-  postResetPassword: {
+  {
     method: 'POST',
     path: '/reset_password',
     config: {
       auth: false,
       validate: {
         payload: {
-          email_address: Joi.string().allow('').max(254)
+          email: Joi.string().allow('').max(254)
         }
       },
       plugins: {
         viewContext: {
+          back: '/signin',
           pageTitle: 'Reset your password'
         },
         formValidator: {
@@ -44,58 +46,61 @@ module.exports = {
           }
         },
         config: {
-          view: 'water/reset-password/reset_password',
+          view: 'nunjucks/reset-password/reset-password.njk',
           redirect: '/reset_password_check_email'
         }
       }
     },
     handler: controller.postResetPassword
   },
-  getResetPasswordCheckEmail: {
+  {
     method: 'GET',
     path: '/reset_password_check_email',
     config: {
       auth: false,
       plugins: {
         viewContext: {
-          pageTitle: 'Check your email'
+          pageTitle: 'Check your email',
+          back: '/signin'
         },
         config: {
-          view: 'water/reset-password/reset_password_check_email'
+          view: 'nunjucks/reset-password/reset-password-sent.njk'
         }
       }
     },
     handler: controller.getResetSuccess
   },
-  getResetPasswordResend: {
+  {
     method: 'GET',
     path: '/reset_password_resend_email',
     config: {
       auth: false,
       plugins: {
         viewContext: {
-          pageTitle: 'Ask for another email'
+          pageTitle: 'Ask for another email',
+          back: '/reset_password_check_email'
         },
         config: {
-          view: 'water/reset-password/reset_password_resend_email'
+          view: 'nunjucks/reset-password/reset-password-resend.njk'
         }
       }
     },
     handler: controller.getResetPassword
   },
-  postResetPasswordResend: {
+  {
     method: 'POST',
     path: '/reset_password_resend_email',
     config: {
       auth: false,
       validate: {
         payload: {
-          email_address: Joi.string().allow('').max(254)
+          email: Joi.string().allow('').max(254)
         }
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Ask for another email'
+          pageTitle: 'Ask for another email',
+          back: '/reset_password_check_email'
         },
         formValidator: {
           payload: {
@@ -103,14 +108,14 @@ module.exports = {
           }
         },
         config: {
-          view: 'water/reset-password/reset_password_resend_email',
+          view: 'nunjucks/reset-password/reset-password-resend.njk',
           redirect: '/reset_password_resent_email'
         }
       }
     },
     handler: controller.postResetPassword
   },
-  getResetPasswordResentEmail: {
+  {
     method: 'GET',
     path: '/reset_password_resent_email',
     config: {
@@ -120,13 +125,13 @@ module.exports = {
           pageTitle: 'Check your email'
         },
         config: {
-          view: 'water/reset-password/reset_password_resent_email'
+          view: 'nunjucks/reset-password/reset-password-resent.njk'
         }
       }
     },
     handler: controller.getResetSuccess
   },
-  getChangePassword: {
+  {
     method: 'GET',
     path: '/reset_password_change_password',
     config: {
@@ -146,7 +151,7 @@ module.exports = {
     handler: controller.getChangePassword
   },
 
-  postChangePassword: {
+  {
     method: 'POST',
     path: '/reset_password_change_password',
     config: {
@@ -180,7 +185,7 @@ module.exports = {
     handler: controller.postChangePassword
   },
 
-  getCreatePassword: {
+  {
     method: 'GET',
     path: '/create-password',
     handler: controller.getChangePassword,
@@ -201,7 +206,7 @@ module.exports = {
     }
   },
 
-  postCreatePassword: {
+  {
     method: 'POST',
     path: '/create-password',
     config: { auth: false,
@@ -231,4 +236,4 @@ module.exports = {
     },
     handler: controller.postChangePassword
   }
-};
+];

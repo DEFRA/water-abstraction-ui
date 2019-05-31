@@ -37,7 +37,7 @@ const createSchemaFromForm = form => {
   return schema;
 };
 
-const validate = (requestData, schema) => Joi.validate(requestData, schema, { abortEarly: false });
+const validate = (requestData, schema, options = { abortEarly: false }) => Joi.validate(requestData, schema, options);
 
 /**
  * Formats error object from Joi into an easy format, and includes

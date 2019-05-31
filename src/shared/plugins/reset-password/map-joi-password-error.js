@@ -1,4 +1,4 @@
-const { formatViewError } = require('../../lib/helpers');
+const formatViewError = require('../../lib/format-view-error');
 
 /**
  * Map new-style error object to existing handlebars template

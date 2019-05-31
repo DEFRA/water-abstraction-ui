@@ -6,14 +6,14 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const ResetConfig = require('../../../src/shared/lib/ResetConfig');
+const ResetPasswordConfig = require('../../../src/shared/lib/ResetPasswordConfig');
 
 const RESET_RESPONSE = 'resetPassword';
 const GET_RESPONSE = 'getUserByResetGuid';
 const UPDATE_RESPONSE = 'updatePasswordWithGuid';
 
 experiment('ResetConfig class', () => {
-  let connectors, config, resetConfig;
+  let connectors, config, resetPasswordConfig;
 
   beforeEach(async () => {
     connectors = {
@@ -31,7 +31,7 @@ experiment('ResetConfig class', () => {
       }
     };
 
-    resetConfig = new ResetConfig(config, connectors);
+    resetPasswordConfig = new ResetPasswordConfig(config, connectors);
   });
 
   afterEach(async () => {
@@ -41,7 +41,7 @@ experiment('ResetConfig class', () => {
   experiment('resetPassword method', () => {
     let response;
     beforeEach(async () => {
-      response = await resetConfig.resetPassword('foo', 'bar');
+      response = await resetPasswordConfig.resetPassword('foo', 'bar');
     });
 
     test('calls IDM method with application as first argument', async () => {
@@ -56,7 +56,7 @@ experiment('ResetConfig class', () => {
   experiment('getUserByResetGuid method', () => {
     let response;
     beforeEach(async () => {
-      response = await resetConfig.getUserByResetGuid('foo', 'bar');
+      response = await resetPasswordConfig.getUserByResetGuid('foo', 'bar');
     });
 
     test('calls IDM method with application as first argument', async () => {
@@ -71,7 +71,7 @@ experiment('ResetConfig class', () => {
   experiment('updatePasswordWithGuid method', () => {
     let response;
     beforeEach(async () => {
-      response = await resetConfig.updatePasswordWithGuid('foo', 'bar');
+      response = await resetPasswordConfig.updatePasswordWithGuid('foo', 'bar');
     });
 
     test('calls IDM method with application as first argument', async () => {

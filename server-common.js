@@ -1,5 +1,5 @@
 const GoodWinston = require('good-winston');
-const ResetConfig = require('./src/shared/lib/ResetConfig');
+const ResetPasswordConfig = require('./src/shared/lib/ResetPasswordConfig');
 
 const createPlugins = (config, logger, connectors) => ([
   require('@hapi/scooter'),
@@ -30,7 +30,7 @@ const createPlugins = (config, logger, connectors) => ([
     options: config.yar
   }, {
     plugin: require('shared/plugins/reset-password'),
-    options: new ResetConfig(config, connectors)
+    options: new ResetPasswordConfig(config, connectors)
   }
 ]);
 

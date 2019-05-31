@@ -2,7 +2,7 @@
  * A class for providing options to the reset password HAPI plugin
  */
 
-class ResetConfig {
+class ResetPasswordConfig {
   constructor (config, connectors) {
     this.connectors = connectors;
     this.config = config;
@@ -13,17 +13,17 @@ class ResetConfig {
     return this.connectors.idm.users[method](application, ...args);
   }
 
-  resetPassword () {
-    return this._callIDMMethod('resetPassword', arguments);
+  resetPassword (...args) {
+    return this._callIDMMethod('resetPassword', args);
   }
 
-  getUserByResetGuid () {
-    return this._callIDMMethod('getUserByResetGuid', arguments);
+  getUserByResetGuid (...args) {
+    return this._callIDMMethod('getUserByResetGuid', args);
   }
 
-  updatePasswordWithGuid () {
-    return this._callIDMMethod('updatePasswordWithGuid', arguments);
+  updatePasswordWithGuid (...args) {
+    return this._callIDMMethod('updatePasswordWithGuid', args);
   }
 }
 
-module.exports = ResetConfig;
+module.exports = ResetPasswordConfig;

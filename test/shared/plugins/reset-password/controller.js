@@ -15,37 +15,7 @@ const { set } = require('lodash');
 const loginHelpers = require('../../../../src/external/lib/login-helpers');
 const controller = require('../../../../src/shared/plugins/reset-password/controller');
 
-/**
- * Note current version test of 'code' can't test for async function
- * @see {@link https://github.com/hapijs/code/issues/103}
- */
-function isAsync (fn) {
-  return fn.constructor.name === 'AsyncFunction';
-}
-
 experiment('reset password controller', () => {
-  experiment('Check methods on reset password controller', () => {
-    test('getResetPassword function exists', async () => {
-      expect(isAsync(controller.getResetPassword)).to.equal(true);
-    });
-
-    test('postResetPassword function exists', async () => {
-      expect(isAsync(controller.postResetPassword)).to.equal(true);
-    });
-
-    test('getResetSuccess function exists', async () => {
-      expect(isAsync(controller.getResetSuccess)).to.equal(true);
-    });
-
-    test('getChangePassword function exists', async () => {
-      expect(isAsync(controller.getChangePassword)).to.equal(true);
-    });
-
-    test('postChangePassword function exists', async () => {
-      expect(isAsync(controller.postChangePassword)).to.equal(true);
-    });
-  });
-
   let h;
   let request;
 

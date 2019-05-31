@@ -12,12 +12,9 @@ const plugins = require('./src/internal/lib/hapi-plugins');
 const routes = require('./src/internal/modules/routes');
 const returnsPlugin = require('./src/internal/modules/returns/plugin');
 const viewEngine = require('./src/internal/lib/view-engine/');
-
-// Initialise logger
 const { logger } = require('./src/internal/logger');
-// const goodWinstonStream = new GoodWinston({ winston: logger });
-//
 const connectors = require('./src/internal/lib/connectors/services');
+
 const common = createPlugins(config, logger, connectors);
 
 // Configure auth plugin
@@ -41,9 +38,7 @@ const server = Hapi.server({
  */
 async function start () {
   try {
-    await server.register(common);
-    await server.register(Object.values(plugins));
-    await server.register({ plugin: returnsPlugin });
+    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
 
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie,

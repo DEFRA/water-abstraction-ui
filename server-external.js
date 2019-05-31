@@ -38,9 +38,7 @@ const server = Hapi.server({
  */
 async function start () {
   try {
-    await server.register(common);
-    await server.register(Object.values(plugins));
-    await server.register({ plugin: returnsPlugin });
+    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {

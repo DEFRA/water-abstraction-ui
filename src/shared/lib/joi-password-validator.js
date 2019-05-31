@@ -1,4 +1,15 @@
 'use strict';
+
+const createRegexRule = (name, regex, key) => ({
+  name,
+  validate (params, value, state, options) {
+    if (!regex.test(value)) {
+      return this.createError(key, {}, state, options);
+    }
+    return value;
+  }
+});
+
 module.exports = (joi) => ({
 
   name: 'string',
@@ -12,24 +23,8 @@ module.exports = (joi) => ({
   },
 
   rules: [
-    {
-      name: 'requireUppercase',
-      validate (params, value, state, options) {
-        if (!/[A-Z]/.test(value)) {
-          return this.createError('string.uppercase', {}, state, options);
-        }
-        return value;
-      }
-    },
-    {
-      name: 'requireSymbol',
-      validate (params, value, state, options) {
-        if (!/[^a-zA-Z\d\s]/.test(value)) {
-          return this.createError('string.symbol', {}, state, options);
-        }
-        return value;
-      }
-    }
+    createRegexRule('requireUppercase', /[A-Z]/, 'string.uppercase'),
+    createRegexRule('requireSymbol', /[^a-zA-Z\d\s]/, 'string.symbol')
   ]
 
 });

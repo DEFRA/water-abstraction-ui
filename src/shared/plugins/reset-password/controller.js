@@ -1,62 +1,61 @@
-const IDM = require('../../lib/connectors/idm');
+// const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
-const mapJoiPasswordError = require('./map-joi-password-error');
-const { logger } = require('../../logger');
+const mapJoiPasswordError = require('./map-joi-password-error.js');
 
 /**
  * Renders form for start of reset password flow
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP h interface
  */
-async function getResetPassword (request, reply) {
-  return reply.view(request.config.view, request.view);
+async function getResetPassword (request, h) {
+  return h.view(request.config.view, request.view);
 }
 
 /**
  * Post handler for reset password flow
  * @param {Object} request - HAPI HTTP request
  * @param {String} request.payload.email_address - email address for IDM account
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP h interface
  */
-async function postResetPassword (request, reply) {
+async function postResetPassword (request, h) {
   if (request.formError) {
-    return reply.view(request.config.view, { ...request.view, error: request.formError });
+    return h.view(request.config.view, { ...request.view, error: request.formError });
   }
   try {
-    await IDM.resetPassword(request.payload.email_address);
+    await h.realm.pluginOptions.resetPassword(request.payload.email_address);
   } catch (error) {
-    logger.error('Reset password error', error);
+    request.log('error', 'Reset password error', { error });
     // Note: we don't do anything differently as we don't wish to reveal if
     // account exists
   }
-  return reply.redirect(request.config.redirect);
+  return h.redirect(request.config.redirect);
 }
 
 /**
  * Success page for reset password flow
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP h interface
  */
-async function getResetSuccess (request, reply) {
-  return reply.view(request.config.view, request.view);
+async function getResetSuccess (request, h) {
+  return h.view(request.config.view, request.view);
 }
 
 /**
  * Reset password form - requires valid GUID
  * @param {Object} request - HAPI HTTP request
  * @param {String} request.query.resetGuid - reset GUID sent via email
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP h interface
  */
-async function getChangePassword (request, reply) {
+async function getChangePassword (request, h) {
   try {
     // Check for valid reset GUID
-    const user = await IDM.getUserByResetGuid(request.query.resetGuid);
+    const user = await h.realm.pluginOptions.getUserByResetGuid(request.query.resetGuid);
     if (!user) {
       throw new UserNotFoundError();
     }
-    return reply.view('water/reset-password/reset_password_change_password', request.view);
+    return h.view('water/reset-password/reset_password_change_password', request.view);
   } catch (error) {
-    return reply.redirect('/reset_password?flash=resetLinkExpired');
+    return h.redirect('/reset_password?flash=resetLinkExpired');
   }
 }
 
@@ -67,12 +66,12 @@ async function getChangePassword (request, reply) {
  * @param {String} [request.payload.resetGuid] - reset GUID sent via email - if resubmitting
  * @param {String} request.query.password - new password
  * @param {String} request.query.confirmPassword - new password again
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP h interface
  */
-async function postChangePassword (request, reply) {
+async function postChangePassword (request, h) {
   try {
     // Check for valid reset GUID
-    const user = await IDM.getUserByResetGuid(request.payload.resetGuid);
+    const user = await h.realm.pluginOptions.getUserByResetGuid(request.payload.resetGuid);
     if (!user) {
       throw new UserNotFoundError();
     }
@@ -80,11 +79,11 @@ async function postChangePassword (request, reply) {
     // Check for form errors
     if (request.formError) {
       const errors = mapJoiPasswordError(request.formError);
-      return reply.view('water/reset-password/reset_password_change_password', { ...request.view, errors });
+      return h.view('water/reset-password/reset_password_change_password', { ...request.view, errors });
     }
 
     // Validation OK - update password in IDM
-    const { error } = await IDM.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
+    const { error } = await h.realm.pluginOptions.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
     if (error) {
       throw error;
     }
@@ -92,7 +91,7 @@ async function postChangePassword (request, reply) {
     // Log user in
     return request.logIn(user);
   } catch (error) {
-    return reply.redirect('/reset_password?flash=resetLinkExpired');
+    return h.redirect('/reset_password?flash=resetLinkExpired');
   }
 }
 

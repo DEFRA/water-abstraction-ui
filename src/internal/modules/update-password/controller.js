@@ -1,6 +1,6 @@
 const IDM = require('../../lib/connectors/idm');
 const uuid = require('uuid/v4');
-const mapJoiPasswordError = require('../reset-password/map-joi-password-error');
+const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error');
 const { AuthTokenError } = require('./errors');
 /**
  * Update password step 1 - enter current password

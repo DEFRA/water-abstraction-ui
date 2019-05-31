@@ -11,9 +11,8 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const idmConnector = require('../../../../src/internal/lib/connectors/idm');
-const signIn = require('../../../../src/internal/lib/sign-in');
-const controller = require('../../../../src/internal/modules/reset-password/controller');
+const loginHelpers = require('../../../../src/external/lib/login-helpers');
+const controller = require('../../../../src/shared/plugins/reset-password/controller');
 
 /**
  * Note current version test of 'code' can't test for async function
@@ -52,7 +51,18 @@ experiment('postChangePassword', () => {
   beforeEach(async () => {
     h = {
       redirect: sandbox.spy(),
-      view: sandbox.spy()
+      view: sandbox.spy(),
+      realm: {
+        pluginOptions: {
+          getUserByResetGuid: sandbox.stub().resolves({
+            user_name: 'test-user-name',
+            error: null
+          }),
+          updatePasswordWithGuid: sandbox.stub().resolves({
+            error: null
+          })
+        }
+      }
     };
 
     request = {
@@ -60,19 +70,12 @@ experiment('postChangePassword', () => {
         resetGuid: 'test-id',
         password: 'test-password'
       },
-      logIn: sandbox.stub()
+      logIn: sandbox.stub().resolves()
     };
 
-    sandbox.stub(idmConnector, 'getUserByResetGuid').resolves({
-      user_name: 'test-user-name',
-      error: null
-    });
+    sandbox.stub(loginHelpers, 'getLoginRedirectPath').resolves('test-path');
 
-    sandbox.stub(idmConnector, 'updatePasswordWithGuid').resolves({
-      error: null
-    });
-
-    sandbox.stub(signIn, 'auto').resolves();
+    // sandbox.stub(signIn, 'auto').resolves();
   });
 
   afterEach(async () => {
@@ -80,7 +83,7 @@ experiment('postChangePassword', () => {
   });
 
   test('redirects to reset expired if user not found', async () => {
-    idmConnector.getUserByResetGuid.resolves(null);
+    h.realm.pluginOptions.getUserByResetGuid.resolves(null);
     await controller.postChangePassword(request, h);
 
     const [redirectPath] = h.redirect.lastCall.args;
@@ -96,7 +99,7 @@ experiment('postChangePassword', () => {
   });
 
   test('redirects to reset expired if password not updated', async () => {
-    idmConnector.updatePasswordWithGuid.resolves({
+    h.realm.pluginOptions.updatePasswordWithGuid.resolves({
       error: 'bad'
     });
     await controller.postChangePassword(request, h);

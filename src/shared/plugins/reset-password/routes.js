@@ -2,8 +2,8 @@ const controller = require('./controller');
 const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
 const Joi = require('joi');
 
-module.exports = {
-  getResetPassword: {
+module.exports = [
+  {
     method: 'GET',
     path: '/reset_password',
     config: {
@@ -24,7 +24,7 @@ module.exports = {
     },
     handler: controller.getResetPassword
   },
-  postResetPassword: {
+  {
     method: 'POST',
     path: '/reset_password',
     config: {
@@ -51,7 +51,7 @@ module.exports = {
     },
     handler: controller.postResetPassword
   },
-  getResetPasswordCheckEmail: {
+  {
     method: 'GET',
     path: '/reset_password_check_email',
     config: {
@@ -67,7 +67,7 @@ module.exports = {
     },
     handler: controller.getResetSuccess
   },
-  getResetPasswordResend: {
+  {
     method: 'GET',
     path: '/reset_password_resend_email',
     config: {
@@ -83,7 +83,7 @@ module.exports = {
     },
     handler: controller.getResetPassword
   },
-  postResetPasswordResend: {
+  {
     method: 'POST',
     path: '/reset_password_resend_email',
     config: {
@@ -110,7 +110,7 @@ module.exports = {
     },
     handler: controller.postResetPassword
   },
-  getResetPasswordResentEmail: {
+  {
     method: 'GET',
     path: '/reset_password_resent_email',
     config: {
@@ -126,7 +126,7 @@ module.exports = {
     },
     handler: controller.getResetSuccess
   },
-  getChangePassword: {
+  {
     method: 'GET',
     path: '/reset_password_change_password',
     config: {
@@ -146,7 +146,7 @@ module.exports = {
     handler: controller.getChangePassword
   },
 
-  postChangePassword: {
+  {
     method: 'POST',
     path: '/reset_password_change_password',
     config: {
@@ -180,7 +180,7 @@ module.exports = {
     handler: controller.postChangePassword
   },
 
-  getCreatePassword: {
+  {
     method: 'GET',
     path: '/create-password',
     handler: controller.getChangePassword,
@@ -201,7 +201,7 @@ module.exports = {
     }
   },
 
-  postCreatePassword: {
+  {
     method: 'POST',
     path: '/create-password',
     config: { auth: false,
@@ -231,4 +231,4 @@ module.exports = {
     },
     handler: controller.postChangePassword
   }
-};
+];

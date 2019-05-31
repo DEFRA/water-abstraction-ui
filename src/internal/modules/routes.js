@@ -1,6 +1,5 @@
 const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
-const resetPasswordRoutes = require('./reset-password/routes');
 const updatePasswordRoutes = require('./update-password/routes');
 const viewLicenceAdminRoutes = require('./view-licences/routes-admin');
 const notificationsRoutes = require('./notifications/routes');
@@ -20,7 +19,6 @@ const batchNotifications = require('./batch-notifications/routes');
 module.exports = [
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
-  ...Object.values(resetPasswordRoutes),
   ...Object.values(updatePasswordRoutes),
   ...Object.values(viewLicenceAdminRoutes),
   ...Object.values(notificationsRoutes),

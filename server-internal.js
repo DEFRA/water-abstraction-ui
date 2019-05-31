@@ -34,6 +34,13 @@ const authPlugin = {
   options: authConfig
 };
 
+// Configure password reset plugin
+const ResetConfig = require('./src/shared/lib/ResetConfig');
+const resetPlugin = {
+  plugin: require('shared/plugins/reset-password'),
+  options: new ResetConfig(config, connectors)
+};
+
 // Define server with REST API cache mechanism
 // @TODO replace with redis
 const server = Hapi.server({
@@ -94,6 +101,8 @@ async function start () {
 
     // Auth plugin
     await server.register(authPlugin);
+    await server.register(resetPlugin);
+
     server.route(routes);
 
     await server.start();

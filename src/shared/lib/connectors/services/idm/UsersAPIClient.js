@@ -61,6 +61,61 @@ class UsersAPIClient extends APIClient {
     }
     return this.updateOne(user.user_id, { external_id: externalId });
   };
+
+  /**
+     * Reset user's password in IDM
+     * Triggers notify message
+     * @param {String} application - the application for the user account
+     * @param {String} email - user's email address
+     * @param {String} mode - can be reset|new|existing
+     * @param {Object} [params] - additional optional query string params
+     * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
+     */
+  resetPassword (application, email, mode = 'reset', params = {}) {
+    const endpoint = this.config.endpoint.replace('/user', '');
+    const uri = `${endpoint}/reset/${application}/${email}`;
+    return serviceRequest.patch(uri, {
+      qs: {
+        mode,
+        ...params
+      }
+    });
+  }
+
+  /**
+   * Check reset guid
+   * @param {String} application - the application for the user
+   * @param {String} resetGuid - the password reset GUID issued by email
+   * @return {Promise} resolves with user record if found or null otherwise
+   */
+  async getUserByResetGuid (application, resetGuid) {
+    const filter = {
+      application,
+      reset_guid: resetGuid
+    };
+    const { error, data: [user] } = await this.findMany(filter);
+    throwIfError(error);
+    return user;
+  }
+
+  /**
+   * Update password in IDM
+   * @param {String} resetGuid - the reset GUID issues during reset password
+   * @param {String} password - new password
+   * @return {Promise} resolves when user updated
+   */
+  updatePasswordWithGuid (application, resetGuid, password) {
+    const filter = {
+      application,
+      reset_guid: resetGuid
+    };
+    return this.updateMany(filter, {
+      password,
+      reset_required: 0,
+      bad_logins: 0,
+      reset_guid: null
+    });
+  }
 }
 
 module.exports = UsersAPIClient;

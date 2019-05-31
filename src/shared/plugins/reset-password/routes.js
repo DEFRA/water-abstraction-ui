@@ -15,10 +15,11 @@ module.exports = [
       },
       plugins: {
         viewContext: {
+          back: '/signin',
           pageTitle: 'Reset your password'
         },
         config: {
-          view: 'water/reset-password/reset_password'
+          view: 'nunjucks/reset-password/reset-password.njk'
         }
       }
     },
@@ -31,11 +32,12 @@ module.exports = [
       auth: false,
       validate: {
         payload: {
-          email_address: Joi.string().allow('').max(254)
+          email: Joi.string().allow('').max(254)
         }
       },
       plugins: {
         viewContext: {
+          back: '/signin',
           pageTitle: 'Reset your password'
         },
         formValidator: {
@@ -44,7 +46,7 @@ module.exports = [
           }
         },
         config: {
-          view: 'water/reset-password/reset_password',
+          view: 'nunjucks/reset-password/reset-password.njk',
           redirect: '/reset_password_check_email'
         }
       }
@@ -58,10 +60,11 @@ module.exports = [
       auth: false,
       plugins: {
         viewContext: {
-          pageTitle: 'Check your email'
+          pageTitle: 'Check your email',
+          back: '/signin'
         },
         config: {
-          view: 'water/reset-password/reset_password_check_email'
+          view: 'nunjucks/reset-password/reset-password-sent.njk'
         }
       }
     },
@@ -74,10 +77,11 @@ module.exports = [
       auth: false,
       plugins: {
         viewContext: {
-          pageTitle: 'Ask for another email'
+          pageTitle: 'Ask for another email',
+          back: '/reset_password_check_email'
         },
         config: {
-          view: 'water/reset-password/reset_password_resend_email'
+          view: 'nunjucks/reset-password/reset-password-resend.njk'
         }
       }
     },
@@ -90,12 +94,13 @@ module.exports = [
       auth: false,
       validate: {
         payload: {
-          email_address: Joi.string().allow('').max(254)
+          email: Joi.string().allow('').max(254)
         }
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Ask for another email'
+          pageTitle: 'Ask for another email',
+          back: '/reset_password_check_email'
         },
         formValidator: {
           payload: {
@@ -103,7 +108,7 @@ module.exports = [
           }
         },
         config: {
-          view: 'water/reset-password/reset_password_resend_email',
+          view: 'nunjucks/reset-password/reset-password-resend.njk',
           redirect: '/reset_password_resent_email'
         }
       }
@@ -120,7 +125,7 @@ module.exports = [
           pageTitle: 'Check your email'
         },
         config: {
-          view: 'water/reset-password/reset_password_resent_email'
+          view: 'nunjucks/reset-password/reset-password-resent.njk'
         }
       }
     },

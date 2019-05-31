@@ -1,14 +1,20 @@
 // const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
 const mapJoiPasswordError = require('./map-joi-password-error.js');
+const { handleRequest } = require('../../../shared/lib/forms');
+const { resetForm, resetSchema } = require('./forms/reset');
 
 /**
  * Renders form for start of reset password flow
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP h interface
  */
-async function getResetPassword (request, h) {
-  return h.view(request.config.view, request.view);
+async function getResetPassword (request, h, form) {
+  const view = {
+    ...request.view,
+    form: form || resetForm(request.path)
+  };
+  return h.view(request.config.view, view, { layout: false });
 }
 
 /**
@@ -18,15 +24,18 @@ async function getResetPassword (request, h) {
  * @param {Object} h - HAPI HTTP h interface
  */
 async function postResetPassword (request, h) {
-  if (request.formError) {
-    return h.view(request.config.view, { ...request.view, error: request.formError });
+  const form = handleRequest(resetForm(request.path), request, resetSchema, { abortEarly: true });
+
+  if (!form.isValid) {
+    return getResetPassword(request, h, form);
   }
+
   try {
-    await h.realm.pluginOptions.resetPassword(request.payload.email_address);
+    await h.realm.pluginOptions.resetPassword(request.payload.email);
   } catch (error) {
-    request.log('error', 'Reset password error', { error });
     // Note: we don't do anything differently as we don't wish to reveal if
     // account exists
+    request.log('error', 'Reset password error', { error });
   }
   return h.redirect(request.config.redirect);
 }
@@ -37,7 +46,7 @@ async function postResetPassword (request, h) {
  * @param {Object} h - HAPI HTTP h interface
  */
 async function getResetSuccess (request, h) {
-  return h.view(request.config.view, request.view);
+  return h.view(request.config.view, request.view, { layout: false });
 }
 
 /**

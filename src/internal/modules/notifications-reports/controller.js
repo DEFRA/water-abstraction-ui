@@ -27,11 +27,11 @@ async function getNotificationsList (request, reply) {
     return reply(error);
   }
 
-  return reply.view('water/notifications-report/index', {
+  return reply.view('nunjucks/notifications-reports/list.njk', {
     ...request.view,
     pagination,
     events: data
-  });
+  }, { layout: false });
 }
 
 /**
@@ -62,15 +62,14 @@ async function getNotification (request, reply) {
     return reply(notificationError);
   }
 
-  return reply.view('water/notifications-report/view', {
+  return reply.view('nunjucks/notifications-reports/report.njk', {
     ...request.view,
     event,
     task,
-    messages
-  });
+    messages,
+    back: '/notifications/report'
+  }, { layout: false });
 }
 
-module.exports = {
-  getNotificationsList,
-  getNotification
-};
+exports.getNotificationsList = getNotificationsList;
+exports.getNotification = getNotification;

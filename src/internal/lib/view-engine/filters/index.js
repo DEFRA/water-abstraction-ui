@@ -11,6 +11,8 @@ module.exports = {
   ...require('./pluralize'),
   ...require('./query-string'),
   ...require('./slice'),
+  ...require('./sort-new-direction'),
+  ...require('./sort-query'),
   ...require('./title-case'),
   ...require('./unit-conversion'),
   ...require('./units')

@@ -27,17 +27,13 @@ async function getNotificationsList (request, reply) {
     return reply(error);
   }
 
-  return reply.view('water/notifications-report/index', {
+  return reply.view('nunjucks/notifications-reports/list.njk', {
     ...request.view,
     pagination,
     events: data
-  });
+  }, { layout: false });
 }
 
-/**
- * View messages for a single event (batch of messages)
- * @param {request.params.id} the event ID
- */
 async function getNotification (request, reply) {
   const { id } = request.params;
 
@@ -62,15 +58,14 @@ async function getNotification (request, reply) {
     return reply(notificationError);
   }
 
-  return reply.view('water/notifications-report/view', {
+  return reply.view('nunjucks/notifications-reports/report.njk', {
     ...request.view,
     event,
     task,
-    messages
-  });
+    messages,
+    back: '/admin/notifications/report'
+  }, { layout: false });
 }
 
-module.exports = {
-  getNotificationsList,
-  getNotification
-};
+exports.getNotificationsList = getNotificationsList;
+exports.getNotification = getNotification;

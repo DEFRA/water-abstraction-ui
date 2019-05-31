@@ -12,7 +12,8 @@ const { resetForm, resetSchema } = require('./forms/reset');
 async function getResetPassword (request, h, form) {
   const view = {
     ...request.view,
-    form: form || resetForm(request.path)
+    form: form || resetForm(request.path),
+    linkExpired: request.query.flash === 'resetLinkExpired'
   };
   return h.view(request.config.view, view, { layout: false });
 }

@@ -2,7 +2,7 @@ const Joi = require('joi');
 const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
-const { VALID_GUID } = require('../../../lib/validators');
+const { VALID_GUID } = require('shared/lib/validators');
 
 module.exports = {
 

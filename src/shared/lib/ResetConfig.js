@@ -10,7 +10,6 @@ class ResetConfig {
 
   _callIDMMethod (method, args) {
     const { application } = this.config.idm;
-    console.log('call', method, application, args);
     return this.connectors.idm.users[method](application, ...args);
   }
 

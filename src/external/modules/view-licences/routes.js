@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
+const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('shared/lib/validators');
 const { preLoadDocument } = require('./pre-handlers');
 
 const { scope } = require('../../lib/constants');

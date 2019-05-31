@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const contactController = require('./contact-controller');
-const { VALID_EMAIL } = require('../../lib/validators');
+const { VALID_EMAIL } = require('../../../shared/lib/validators');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
 

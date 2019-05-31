@@ -1,4 +1,4 @@
-const { VALID_UTM } = require('../../lib/validators');
+const { VALID_UTM } = require('shared/lib/validators');
 const controller = require('./controller');
 const loginHelpers = require('../../lib/login-helpers');
 

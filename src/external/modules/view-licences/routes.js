@@ -190,7 +190,7 @@ const getLicenceConditions = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/conditions'
+        view: 'nunjucks/view-licences/conditions.njk'
       },
       viewContext: {
         activeNavLink: 'view'

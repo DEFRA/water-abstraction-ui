@@ -1,16 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "survey.njk" import feedbackSurveyItem %}
 
-{% block mainNav %}
-{% endblock %}
-
 {% block content %}
 
-  {{ title('You are signed out') }}
-
-  <p>
-    <a href="/signin">Sign in</a>
-  </p>
+  {{ title('Tell us what you think about this service') }}
 
   {% if surveyType == 'internal' %}
     {{ feedbackSurveyItem(nonces, '419108', '1CCYT') }}

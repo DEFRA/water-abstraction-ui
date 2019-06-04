@@ -1,15 +1,13 @@
-{{> styles}}
-<main id="content" tabindex="-1">
-  {{>element-phase-tag}}{{>element-main-nav}}
+{% extends "./nunjucks/layout.njk" %}
 
-  <a class="link-back" href="/licences">Back</a>
+{% block content %}
 
-  <h1 class="heading-large">{{ pageTitle }}</h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+      {{ title(pageTitle) }}
 
-      <h2 class="heading-medium">Service accessibility statement</h2>
+      <h2 class="govuk-heading-m">Service accessibility statement</h2>
       <p>
         We aim to make the Manage your water abstraction or impoundment licence
         service as accessible and easy to use as possible. All of our web pages
@@ -17,7 +15,7 @@
         to level AA.
       </p>
 
-      <h2 class="heading-medium">How to contact us</h2>
+      <h2 class="govuk-heading-m">How to contact us</h2>
       <p>
         If you want to give feedback about this service or have any questions about
         accessibility, please email us at <a href="mailTo:water_abstractiondigital@environment-agency.gov.uk">water_abstractiondigital@environment-agency.gov.uk</a>.
@@ -25,5 +23,4 @@
       </p>
     </div>
   </div>
-</main>
-{{> footerjs}}
+{% endblock %}

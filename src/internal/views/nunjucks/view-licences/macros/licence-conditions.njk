@@ -96,7 +96,7 @@
       </dl>
     </div>
   </div>
-  {% if loop.index != loop.last %}<br>{% endif %}
+  {% if not loop.last %}<br>{% endif %}
   {% endfor %}
 
 {% endmacro %}

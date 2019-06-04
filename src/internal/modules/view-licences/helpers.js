@@ -53,7 +53,7 @@ function getLicencePageTitle (view, licenceNumber, customName) {
   const titles = {
     purposes: `Abstraction details for for licence number ${licenceNumber}`,
     points: `Abstraction points for licence number ${licenceNumber}`,
-    conditions: `Conditions held for ${customName || licenceNumber}`,
+    conditions: `Conditions held for licence number ${licenceNumber}`,
     contact: `Contact details for licence number ${licenceNumber}`,
     'gauging-station': `Gauging station for ${customName || licenceNumber}`
   };

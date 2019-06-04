@@ -1,6 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "nunjucks/macros/notify-status-badge.njk" import notifyStatusBadge %}
-
+{% from "badge.njk" import badge %}
 
 {% macro notifyAddress(personalisation) %}
   {% for item in ['address_line_1', 'address_line_2', 'address_line_3',
@@ -49,11 +48,7 @@
             {{ message.message_type | capitalize }}
           </td>
           <td class="govuk-table__cell align-top" scope="row">
-            {% if message.status === 'error' %}
-              {{ notifyStatusBadge('permanent-failure') }}
-            {% else %}
-              {{ notifyStatusBadge(message.notify_status) }}
-            {% endif %}
+            {{ badge(message.badgeStatus.text, message.badgeStatus.status) }}
           </td>
         </tr>
       {% endfor %}

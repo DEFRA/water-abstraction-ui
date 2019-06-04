@@ -1,4 +1,5 @@
 const { events, taskConfig, notifications } = require('../../lib/connectors/water');
+const { notifyToBadge } = require('./badge-status');
 
 /**
  * View list of notifications sent
@@ -66,7 +67,9 @@ async function getNotification (request, reply) {
     ...request.view,
     event,
     task,
-    messages,
+    messages: messages.map(message => Object.assign(message, {
+      badgeStatus: notifyToBadge(message.status)
+    })),
     back: '/notifications/report'
   }, { layout: false });
 }

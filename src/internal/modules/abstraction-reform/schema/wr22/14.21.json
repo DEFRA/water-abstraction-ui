@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/14.21",
+  "type": "object",
+  "title": "14.21",
+  "category": "Groundwater conditions",
+  "subcategory": "Monitoring, Data Collection and Submission to the Agency",
+  "description": "The Licence Holder shall, using a method that is capable of measuring accurately to a minimum of <<measurement e.g. 0.02metres>>, manually dip, and record in writing, the standing water level<<s>> in the <<abstraction/discharge/observation>> borehole<<s>> at National Grid Reference <<abstraction NGR>> marked ‘<<abs ref point>>’ on the <<site map/maps>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

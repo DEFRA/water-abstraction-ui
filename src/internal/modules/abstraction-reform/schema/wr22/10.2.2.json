@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/10.2.2",
+  "type": "object",
+  "title": "10.2.2",
+  "category": "Chemical conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall have the samples analysed by a laboratory approved by the Agency, and submit the results in writing to the Agency at <<WQ return frequency>> intervals or as may be requested by the Agency in writing.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

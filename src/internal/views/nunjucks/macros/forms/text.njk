@@ -1,0 +1,28 @@
+{# {% from "input/macro.njk" import govukInput %} #}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "input/macro.njk" import govukInput %}
+
+
+{% macro formTextWidget(field) %}
+
+  {% if field.options.type == 'hidden' %}
+    <input type="hidden" name="{{ field.name }}" value="{{ field.value }}" />
+  {% else %}
+
+    {% set options = field | mapFormField %}
+
+    {% if field.options.multiline %}
+      {{ govukTextarea(options) }}
+    {% else %}
+      {% if field.options.suffix %}
+        {% set str %}{{ govukInput(options) }}{% endset %}
+        {{ str | slice(0, -7) | safe }}
+        <span class="govuk-body">{{ field.options.suffix }}</span>
+        </div>
+      {% else %}
+        {{ govukInput(options) }}
+      {% endif %}
+    {% endif %}
+
+  {% endif %}
+{% endmacro %}

@@ -1,0 +1,23 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "nunjucks/auth/macros/survey.njk" import feedbackSurveyItem %}
+
+{% block mainNav %}
+{% endblock %}
+
+{% block content %}
+
+  {{ title('You are signed out') }}
+
+  <p>
+    <a href="/signin">Sign in</a>
+  </p>
+
+  {% if surveyType == 'internal' %}
+    {{ feedbackSurveyItem(nonces, '419108', '1CCYT') }}
+  {% elseif surveyType == 'external' %}
+    {{ feedbackSurveyItem(nonces, '416960', 'FYWJN') }}
+  {% else %}
+    {{ feedbackSurveyItem(nonces, '517384', 'AEIMT') }}
+  {% endif %}
+
+{% endblock %}

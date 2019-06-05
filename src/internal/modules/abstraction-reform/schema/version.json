@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "APP_NO": {
+      "type": "string"
+    },
+    "STATUS": {
+      "type": "string"
+    },
+    "VOL_CONV": {
+      "type": "string"
+    },
+    "WRT_CODE": {
+      "type": "string"
+    },
+    "AABV_TYPE": {
+      "type": "string"
+    },
+    "ACCL_CODE": {
+      "type": "string"
+    },
+    "ALTY_CODE": {
+      "type": "string"
+    },
+    "ASRC_CODE": {
+      "type": "string"
+    },
+    "CHARGEABLE": {
+      "type": "string"
+    },
+    "DEREG_CODE": {
+      "type": "string"
+    },
+    "EFF_ST_DATE": {
+      "type": "string"
+    },
+    "MULTIPLE_LH": {
+      "type": "string"
+    },
+    "RETURNS_REQ": {
+      "type": "string"
+    },
+    "SOURCE_CODE": {
+      "type": "string"
+    },
+    "ACON_AADD_ID": {
+      "type": "string"
+    },
+    "ACON_APAR_ID": {
+      "type": "string"
+    },
+    "EFF_END_DATE": {
+      "type": "string"
+    },
+    "EXPIRY_DATE1": {
+      "type": "string"
+    },
+    "LIC_DOC_FLAG": {
+      "type": "string"
+    },
+    "LIC_SIG_DATE": {
+      "type": "string"
+    },
+    "WA_ALTY_CODE": {
+      "type": "string"
+    }
+  }
+}

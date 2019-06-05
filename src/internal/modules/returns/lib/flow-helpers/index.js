@@ -1,0 +1,54 @@
+const { get } = require('lodash');
+const internalFlows = require('./internal');
+const steps = require('./steps');
+
+const getScopedPath = (request, path) => {
+  return path;
+};
+
+/**
+ * Gets path with return ID query param and admin/ if required depending on scopes
+ * @param {String} base path
+ * @param {Object} request - HAPI request instance
+ * @param {Object} data - return model data
+ * @return {String} path
+ */
+const getPath = (path, request, data) => {
+  const returnId = get(data, 'returnId', request.query.returnId);
+  const scopedPath = getScopedPath(request, path);
+
+  return (['/returns', '/licences'].includes(path))
+    ? scopedPath
+    : `${scopedPath}?returnId=${returnId}`;
+};
+
+/**
+ * Gets the next step in the flow based on the current step and variables
+ * @param {String} current - current step in flow
+ * @param {Object} request - HAPI request instance
+ * @param {Object} data - the return model data
+ * @param {String} direction - next|previous
+ */
+
+const getNextPath = (current, request, data, direction = 'next') => {
+  const flows = internalFlows;
+  const step = flows[direction][current](data);
+  return getPath(step, request, data);
+};
+
+/**
+ * Gets the previous step in the flow based on the current step and variables
+ * @param {String} current - current step in flow
+ * @param {Object} request - HAPI request instance
+ * @param {Object} data - the return model data
+ */
+const getPreviousPath = (current, request, data) => {
+  return getNextPath(current, request, data, 'previous');
+};
+
+module.exports = {
+  ...steps,
+  getPath,
+  getNextPath,
+  getPreviousPath
+};

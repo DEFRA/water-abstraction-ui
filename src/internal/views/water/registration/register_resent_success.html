@@ -1,0 +1,22 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      {{>element-heading-large content=pageTitle}}
+      <p>We have sent you a link.</p>
+
+      <details class="closeOnOpen">
+        <summary><span class="summary">Still not received the email?</span></summary>
+        <div>
+          {{> contact-details }}
+        </div>
+      </details>
+
+    </div>
+  </div>
+</main>
+
+{{> footerjs}}
+{{> debug}}

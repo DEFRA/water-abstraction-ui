@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/17.1.2",
+  "type": "object",
+  "title": "17.1.2",
+  "category": "Fish and Eel passage",
+  "subcategory": "",
+  "description": "The Licence Holder shall maintain, repair or replace the fish <<pass>> <<and eel passes>> and ensure that <<it/they>> remain free of obstruction in order that <<it is/they are>> effective at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

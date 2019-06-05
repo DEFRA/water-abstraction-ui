@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/20.2",
+  "type": "object",
+  "title": "20.2",
+  "category": "Obstructing or impeding the flow of an inland water",
+  "subcategory": "By-pass flow condition",
+  "description": "At all times during the life of the impounding works, <<a minimum/maximum>> flow of <<instantaneous rate or percentage>> / the total flow of the <<water body name>> immediately upstream of the <<lake/pond/reservoir>> created by the works, shall bypass the <<lake/pond/reservoir>>. The water  shall be returned to the <<water body name/NGR/ immediately downstream of the impounding works / within <<distance>> metres downstream of>> the impounding works by means of a <<structure>> constructed in accordance with drawing number <<drawing no.>> <<and method statement number <<no.>>, <<dated <<date>> attached to this licence>>. This flow shall be known as the By-pass Flow.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

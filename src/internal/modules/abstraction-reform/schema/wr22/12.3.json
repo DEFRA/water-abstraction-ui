@@ -1,0 +1,23 @@
+{
+  "id": "/wr22/12.3",
+  "type": "object",
+  "title": "12.3",
+  "category": "Point at which water must be returned",
+  "subcategory": "",
+  "description": "(i) The Licence Holder shall ensure that <<discharge volume/ all>> water abstracted in pursuance of this licence shall be returned to the source of supply specified in condition <<condition no.>>.\n(ii) The Licence Holder shall return water via a borehole at National Grid Reference <<discharge NGR>> on the map <<reference>> marked <<discharge point ref>>.\n(iii) The Licence Holder shall return water <<on the same day that /within 24 hours of>> abstraction takes place.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ],
+  "hidden": true
+}

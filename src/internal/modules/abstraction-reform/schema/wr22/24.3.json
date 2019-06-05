@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/24.3",
+  "type": "object",
+  "title": "24.3",
+  "category": "Control on abstraction",
+  "subcategory": "",
+  "description": "Abstraction may only take place from one of the boreholes specified in condition <<xx and xx>> at any one time.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

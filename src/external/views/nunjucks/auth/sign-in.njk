@@ -1,0 +1,30 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block mainNav %}
+{% endblock %}
+
+{% block content %}
+
+  {% if showResetMessage %}
+  <div class="govuk-inset-text">
+    <h2 class="govuk-heading-medium">
+      Your password has been reset
+    </h2>
+    <p>Sign in to your account using your new password</p>
+  </div>
+  {% endif %}
+
+  {{ formErrorSummary(form) }}
+
+  {{ title(pageTitle) }}
+
+  {{ formRender(form)}}
+
+  <p>
+    <a href="/reset_password">Forgotten your password?</a>
+    <br />
+    <br />
+    <a href="/start">Create an account to use this service</a>
+  </p>
+
+{% endblock %}

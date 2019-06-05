@@ -1,0 +1,12 @@
+{% from "./measurement-point.njk" import measurementPoint %}
+
+{% macro wr22_2_1(data) %}
+
+No abstraction shall take place unless the level of water in the <b>{{ data.water_body_name.name }}</b>
+as measured
+
+  {{ measurementPoint(data.measurement_point) }}
+
+  is equal to or greater than <b>{{ data.hol_rate_level }}{{ data.unit }}</b> and the abstraction shall not cause the level at the said
+  <b>{{ data.point | lower }}</b> to fall below that level.
+{% endmacro %}

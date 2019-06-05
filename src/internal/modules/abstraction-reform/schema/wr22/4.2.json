@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/4.2",
+  "type": "object",
+  "title": "4.2",
+  "category": "Flow/level measurement devices",
+  "subcategory": "HOF",
+  "description": "No abstraction shall take place unless the Licence Holder has installed a <<specified standard>>  <<flow monitoring device>> that is capable of continuous measurement of <<the residual flow/abstraction rate/compensation flow>> in the <<water body name>> at <<FMD location >> at National Grid Reference <<FMD NGR>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

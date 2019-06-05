@@ -1,0 +1,5 @@
+# node_modules are ignored by default
+coverage
+data
+govuk_modules
+public

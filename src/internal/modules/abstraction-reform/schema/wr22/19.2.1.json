@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/19.2.1",
+  "type": "object",
+  "title": "19.2.1",
+  "category": "Impounding conditions",
+  "subcategory": "",
+  "description": "The <<dam/weir/etc>> shall not impound more than <<quantity>> cubic metres of water above ground level.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

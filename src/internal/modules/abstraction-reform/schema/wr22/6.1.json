@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.1",
+  "type": "object",
+  "title": "6.1",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOL - groundwater",
+  "description": "The Licence Holder shall use a <<level measuring device>> to measure the level of water in the <<aquifer name>> at National Grid Reference <<level NGR>> shown on the map marked <<level ref>>.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

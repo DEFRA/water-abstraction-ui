@@ -1,0 +1,9 @@
+<div class="form-group {{#if errors }}form-group-error{{/if}}">
+
+  {{# each options.choices }}
+  <div class="multiple-choice">
+    <input id="{{../name}}-{{@index}}" name="{{../name}}" type="checkbox" value="{{value}}" {{#includes ../value value=value }}checked{{/includes}} />
+    <label for="{{../name}}-{{@index}}">{{label}}</label>
+  </div>
+  {{/each}}
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Redirecting - GOV.UK</title>
+
+<!-- For users without JS -->
+<meta http-equiv="refresh" content="10; url={{{ redirectUrl }}}">
+
+{{> styles }}
+
+</head>
+
+<body>
+
+{{> footerjs }}
+
+<script nonce="{{nonces.script}}">
+var ev = {
+  event : 'redirect',
+  redirectUrl : '{{{ redirectUrl }}}',
+  eventCallback : function() {
+    window.location.href = '{{{ redirectUrl }}}';
+  }
+}
+window.dataLayer.push(ev);
+</script>
+
+</body>
+
+</html>

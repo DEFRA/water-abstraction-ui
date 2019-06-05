@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/6.8.1",
+  "type": "object",
+  "title": "6.8.1",
+  "category": "Ongoing measurement and maintenance",
+  "subcategory": "HOF",
+  "description": "The Licence Holder shall measure the flow through the <<compensation orifice / compensation notch>> specified in condition << condition number>> within <<duration>> calendar days inclusive of construction and at intervals as requested by the Agency thereafter.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

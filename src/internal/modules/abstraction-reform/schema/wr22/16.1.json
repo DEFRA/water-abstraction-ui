@@ -1,0 +1,23 @@
+{
+  "id": "/wr22/16.1",
+  "type": "object",
+  "title": "16.1",
+  "category": "Screening",
+  "subcategory": "",
+  "description": "(i)No <<abstraction/power production>> shall take place unless the Licence Holder has installed a <<screen type/basket strainer and aperture size>> <<and by wash>> to prevent the entrapment, entrainment or impingement of <<details of species of fish/eel species, life stage of size>> at <<the point of abstraction / discharge/description of outfall/intake>>.\n\n(ii) The Licence Holder shall maintain, repair or replace the <<screen type e.g. fish/mesh>> screen <<and any associated bywash >> <<in accordance with the manufacturer’s specifications OR to ensure that it remains effective at all times>> and keep records of such maintenance.\n\n(iii) The Licence Holder shall keep records of such maintenance for 6 years and shall make them available during all reasonable hours for inspection by the Agency.\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ],
+  "hidden": true
+}

@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/18.3",
+  "type": "object",
+  "title": "18.3",
+  "category": "Hydropower",
+  "subcategory": "",
+  "description": "For the purpose of this licence references to “hydropower scheme” shall mean all works that include <<XXX/3-bladed Archimedean turbine, associated intake works, intake sluice gate and intake bar screen>> and associated ancillary civil works.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

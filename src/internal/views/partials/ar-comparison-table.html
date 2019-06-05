@@ -1,0 +1,30 @@
+<br />
+<br />
+
+<table>
+  <thead>
+    <tr>
+      <th>NALD field</th>
+      <th>NALD data</th>
+      <th>New value</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each this.base }}
+  <tr>
+    <th>{{ @key }}</th>
+    <td class="td td--nald">{{ this }}</td>
+    <td class="td td--ar">
+      {{#notEqual this (lookup ../reform @key )}}
+        {{lookup ../reform @key }}
+      {{/notEqual}}
+    </td>
+  </tr>
+  {{/each}}
+  </tbody>
+</table>
+
+<br />
+<br />
+<br />
+<br />

@@ -1,7 +1,6 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
-const standard = require('gulp-standard');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const del = require('del');
@@ -50,18 +49,18 @@ gulp.task('copy-frontend-toolkit-assets', () => {
     .pipe(gulp.dest(paths.public));
 });
 
-gulp.task('copy-template-view', () => {
-  return gulp
-    .src('node_modules/govuk_template_mustache/views/**/*.*')
-    .pipe(gulp.dest('views/govuk_template_mustache'));
-});
-
 gulp.task('install-govuk-files', gulp.series(
   'copy-template-assets',
-  'copy-template-view',
   'copy-frontend-toolkit-assets',
   done => done()
 ));
+
+const combineMinifyJs = (files, destination) => {
+  return gulp.src(files)
+    .pipe(concat(destination))
+    .pipe(uglify({ ie8: true }))
+    .pipe(gulp.dest('./public/javascripts'));
+};
 
 gulp.task('combine-minify-js', () => {
   // All JS files that are required by front end in order
@@ -69,21 +68,27 @@ gulp.task('combine-minify-js', () => {
     './public/javascripts/vendor/polyfills/bind.js',
     './public/javascripts/govuk/shim-links-with-button-role.js',
     './public/javascripts/govuk/show-hide-content.js',
-    './src/public/javascripts/govuk/details.polyfill.js',
-    './src/public/javascripts/application.js',
+    './src/shared/public/javascripts/govuk/details.polyfill.js',
+    './src/shared/public/javascripts/application.js',
     './node_modules/iframe-resizer/js/iframeResizer.min.js'
   ];
 
-  return gulp.src(files)
-    .pipe(concat('application.all.min.js'))
-    .pipe(uglify({ ie8: true }))
-    .pipe(gulp.dest('./public/javascripts'));
+  return combineMinifyJs(files, 'application.all.min.js');
+});
+
+gulp.task('combine-minify-js-nunjucks', () => {
+  // All JS files that are required by front end in order
+  const files = [
+    './node_modules/iframe-resizer/js/iframeResizer.min.js'
+  ];
+
+  return combineMinifyJs(files, 'application-v2.all.min.js');
 });
 
 gulp.task('copy-static-assets-orig', () => {
   // copy images and javascript to public
   return gulp
-    .src('src/public/{images/**/*.*,javascripts/**/*.*,stylesheets/**/*.*,data/**/*.*}')
+    .src('src/shared/public/{images/**/*.*,javascripts/**/*.*,stylesheets/**/*.*,data/**/*.*}')
     .pipe(gulp.dest(paths.public));
 });
 
@@ -120,6 +125,7 @@ gulp.task('copy-static-styles', () => {
 gulp.task('copy-static-assets', gulp.series(
   'copy-static-assets-orig',
   'combine-minify-js',
+  'combine-minify-js-nunjucks',
   'copy-static-javascript',
   'copy-static-styles',
   done => done()
@@ -127,7 +133,7 @@ gulp.task('copy-static-assets', gulp.series(
 
 // Build the sass-proto
 gulp.task('sass', () => {
-  return gulp.src('src/assets/sass/**/*.scss')
+  return gulp.src('src/shared/assets/sass/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass({
       outputStyle: 'expanded',
@@ -145,17 +151,7 @@ gulp.task('sass', () => {
 });
 
 gulp.task('sass:watch', () => {
-  return gulp.watch('src/assets/sass/**/*.scss', gulp.series('sass'));
-});
-
-// Run StardardJS checks
-gulp.task('standard', () => {
-  return gulp.src(['src/**/*.js'])
-    .pipe(standard())
-    .pipe(standard.reporter('default', {
-      breakOnError: true,
-      quiet: true
-    }));
+  return gulp.watch('src/shared/assets/sass/**/*.scss', gulp.series('sass'));
 });
 
 // Build task

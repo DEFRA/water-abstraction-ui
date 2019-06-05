@@ -1,0 +1,23 @@
+{
+  "id": "/wr22/18.2",
+  "type": "object",
+  "title": "18.2",
+  "category": "Hydropower",
+  "subcategory": "",
+  "description": "(i) Before abstraction commences the Licence Holder shall program the hydropower scheme’s automated control system to ensure compliance with the conditions of this licence.\n\n(ii) In the event that the automated control system fails the Licence Holder shall cease operation immediately and notify the Agency of this fact.\n\n(iii) No abstraction shall recommence unless the automated control system is fully operational and the Agency has been notified of this fact\n",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ],
+  "hidden": true
+}

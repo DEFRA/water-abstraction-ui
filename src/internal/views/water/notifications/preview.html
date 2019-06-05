@@ -1,0 +1,53 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+    <a href="{{ back }}" class="link-back link-back--space-above">Back</a>
+
+
+    <!-- page title -->
+    <div class="grid-row">
+      <div class="column-two-thirds">
+        <h1 class="heading-large tight">
+          Check and confirm your {{ toLowerCase task.config.name }}
+        </h1>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="column-two-thirds">
+
+        <div class="medium-space">
+          <p>
+            <!-- todo: who and why section -->
+            You are about to send this notification to
+            <span class="bold-small">{{ summary.messageCount }} recipient{{#greaterThan summary.messageCount 1}}s{{/greaterThan}}</span>
+            regarding
+            <span class="bold-small">{{ summary.licenceCount }} licence{{#greaterThan summary.licenceCount 1}}s{{/greaterThan}}</span>.
+          </p>
+        </div>
+
+
+        <div class="medium-space">
+          <div class="notification-preview">
+
+
+            {{{ markdown summary.sampleMessage }}}
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="column-one-third">
+        <form method="POST" action="{{ formAction }}">
+          <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+          <input type="hidden" name="data" value="{{ data }}" />
+          <button type="submit" class="button">Send notification</button>
+        </form>
+      </div>
+    </div>
+  </main>
+{{> footerjs}}
+{{> debug}}

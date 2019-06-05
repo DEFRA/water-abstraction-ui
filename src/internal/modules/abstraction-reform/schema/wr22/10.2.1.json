@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/10.2.1",
+  "type": "object",
+  "title": "10.2.1",
+  "category": "Chemical conditions",
+  "subcategory": "",
+  "description": "The Licence Holder shall take samples of water abstracted at <<WQ sampling frequency>> intervals to gauge the <<chemical>> ion concentration in the water.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

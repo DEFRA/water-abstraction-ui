@@ -1,0 +1,6 @@
+{% macro formHeader(method, action, encType) %}
+
+<form method="{{ method }}" action="{{ action }}" novalidate
+{% if encType %}enctype={{ encType }}{% endif %} >
+
+{% endmacro %}

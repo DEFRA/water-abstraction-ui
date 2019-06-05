@@ -1,0 +1,7 @@
+{% from "./widget.njk" import formWidget %}
+
+{% macro formWidgets(form) %}
+  {% for field in form.fields %}
+    {{ formWidget(field, form) }}
+  {% endfor %}
+{% endmacro %}

@@ -3,11 +3,32 @@
     {
       "name": "ui",
       "ignore_watch": [
-        "node_modules",
+        "coverage",
         "data",
+        "node_modules",
+        "src/internal",
         "test"
       ],
-      "script": "index.js",
+      "script": "server-external.js",
+      "env": {
+        "watch": true
+      },
+      "env_production": {
+        "watch": false,
+        "instances" : "max",
+        "exec_mode" : "cluster"
+      }
+    },
+    {
+      "name": "ui-internal",
+      "ignore_watch": [
+        "coverage",
+        "data",
+        "node_modules",
+        "src/external",
+        "test"
+      ],
+      "script": "server-internal.js",
       "env": {
         "watch": true
       },

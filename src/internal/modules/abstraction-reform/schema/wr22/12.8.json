@@ -1,0 +1,22 @@
+{
+  "id": "/wr22/12.8",
+  "type": "object",
+  "title": "12.8",
+  "category": "Point at which water must be returned",
+  "subcategory": "",
+  "description": "The Licence Holder shall return simultaneously a flow of not less than <<rate or percent>> of the volume of water abstracted to the <<water body name>> at National Grid Reference <<return point NGR>> at all times.",
+  "properties": {
+    "nald_condition": {
+      "$ref": "water://licences/conditions.json",
+      "label": "NALD condition",
+      "errors": {
+        "required": {
+          "message": "Select a NALD condition"
+        }
+      }
+    }
+  },
+  "required": [
+    "nald_condition"
+  ]
+}

@@ -1,0 +1,43 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <a class="link-back link-back--space-above" href="/licences">Licence number {{ licenceData.licenceNumber }}</a>
+
+
+  {{#if crmData.document_name }}
+  <h1 class="heading-large heading-large--tight-above">
+    <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
+    Conditions held for {{ crmData.document_name }}
+  </h1>
+  {{else}}
+  <h1 class="heading-large heading-large--tight-above">Conditions held for licence number {{ licenceData.licenceNumber }}</h1>
+  {{/if}}
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="notice">
+          <i class="icon icon-important">
+            <span class="visually-hidden">Warning</span>
+          </i>
+          <strong class="bold-small">
+            We may not be able to show a full list of your conditions, because we do not hold all of your licence information on our system yet. You must refer to the paper copy of your licence to view and comply with all of your conditions.
+        </strong>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+  {{#equal licenceData.conditions.length 0}}
+  <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
+  <p>Please check the paper copy of your licence for this information.</p>
+  {{/equal}}
+
+  {{#each licenceData.conditions }}
+    {{>licence-condition this}}
+  {{/each}}
+
+</main>
+{{> footerjs}}
+{{> debug}}

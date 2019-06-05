@@ -1,0 +1,83 @@
+{{> styles}}
+<main id="content" tabindex="-1">
+  {{>element-phase-tag}}{{>element-main-nav}}
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      {{#if error}}
+      <script nonce="{{nonces.script}}">
+        sendEvent({category:'error', action:'security_code_not_entered'})
+      </script>
+
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading-example-2" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-2">
+        There is a problem
+      </h2>
+      <ul class="error-summary-list">
+        <li><a href="#verification_code">Check the number you have entered is correct</a></li>
+      </ul>
+    </div>
+      {{/if}}
+
+
+      <h1 class="heading-large">{{ pageTitle }}</h1>
+
+      <form novalidate method="POST" action="/security-code">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        <!-- licence number field -->
+        <div class="form-group {{#if error }}form-group-error{{/if}}">
+          <label for="verification_code">
+
+            <span class="sr-only">Security code</span>
+
+            <span class="form-hint">
+              We sent this by post to the registered address
+            </span>
+
+            {{#if error}}
+                <span id="enterPassword" class="error-message">Check the number you have entered is correct.</span>
+            {{/if}}
+
+          </label>
+
+          <input maxlength="5" value="{{ payload.verification_code }}" autocomplete="off" type="password" class="form-control" name="verification_code" id="verification_code" required="">
+        </div>
+
+        <input type="submit" value="Continue" class="button" role="button"/>
+    </form>
+
+
+    <br />
+
+    <details>
+      <summary><span class="summary">Not received your code?</span></summary>
+      <div>
+        <p>
+          Allow up to 2-3 working days to receive your code by post.
+        </p>
+        <p>
+          If it has not arrived after that time, contact us to request a new code.
+        </p>
+        {{> contact-details }}
+      </div>
+    </details>
+
+
+  </div>
+</div>
+
+    <br />
+
+
+
+
+
+
+
+
+</main>
+{{> footerjs}}
+{{> debug}}

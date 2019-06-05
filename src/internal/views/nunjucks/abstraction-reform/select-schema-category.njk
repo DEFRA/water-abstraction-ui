@@ -1,0 +1,22 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "forms/index.njk" import formRender %}
+
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+
+  {{ title(pageTitle) }}
+
+  <!-- Warning for ar_user if no permission to edit this document -->
+  {% if flash == 'locked' %}
+  {{ govukInsetText({
+    text: "You do not have permission to edit this licence."
+  }) }}
+  {% endif %}
+
+  {{ formRender(form) }}
+
+
+{% endblock %}

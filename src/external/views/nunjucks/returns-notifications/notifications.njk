@@ -1,8 +1,0 @@
-{% from "button/macro.njk" import govukButton %}
-{% extends "./nunjucks/layout.njk" %}
-{% from "forms/index.njk" import formRender %}
-
-{% block content %}
-  {{ title(pageTitle) }}
-  {{ formRender(form) }}
-{% endblock %}

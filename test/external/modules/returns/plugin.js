@@ -120,28 +120,4 @@ experiment('returns plugin', () => {
       });
     });
   });
-
-  experiment('for internal users', () => {
-    experiment('when load config option is set', () => {
-      let request;
-
-      beforeEach(async () => {
-        request = createRequest(true, true);
-      });
-
-      test('does not check CRM', async () => {
-        await plugin._handler(request, h);
-        expect(crmConnector.documents.findMany.callCount).to.equal(0);
-      });
-
-      test('throws error and redirects if no returns permission', async () => {
-        set(request, 'auth.credentials.scope', ['internal']);
-        const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
-        expect(h.redirect.callCount).to.equal(1);
-        const [ path ] = h.redirect.lastCall.args;
-        expect(path).to.equal('/admin/returns/return?id=return_1');
-      });
-    });
-  });
 });

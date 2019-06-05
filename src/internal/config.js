@@ -54,7 +54,7 @@ module.exports = {
   },
 
   idm: {
-    application: 'water_vml'
+    application: 'water_admin'
   },
 
   isLocal,

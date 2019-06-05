@@ -40,13 +40,6 @@ lab.experiment('getPropositionLinks', () => {
     expect(ids).to.equal(['change-password', 'signout']);
   });
 
-  lab.test('It should display contact details, change password, signout links for internal users', async () => {
-    const request = getAuthenticatedRequest(true);
-    const links = getPropositionLinks(request);
-    const ids = links.map(link => link.id);
-    expect(ids).to.equal(['contact-information', 'change-password', 'signout']);
-  });
-
   lab.test('It should set the active nav link flag', async () => {
     const request = getAuthenticatedRequest(true);
     const links = getPropositionLinks(request);
@@ -65,6 +58,6 @@ lab.experiment('getPropositionLinks', () => {
     const request = getAuthenticatedRequest(true);
     const links = getPropositionLinks(request);
     const idAttributes = links.map(link => link.attributes.id);
-    expect(idAttributes).to.equal(['contact-information', 'change-password', 'signout']);
+    expect(idAttributes).to.equal(['change-password', 'signout']);
   });
 });

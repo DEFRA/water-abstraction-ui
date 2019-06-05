@@ -125,18 +125,6 @@ experiment('loginHelpers', () => {
       sandbox.stub(loginHelpers, 'loadUserData').resolves(responses.user);
     });
 
-    test('it should redirect to admin licences for internal users', async () => {
-      const internalUser = {
-        user_id: userId,
-        role: {
-          scopes: [scope.internal]
-        }
-      };
-      const request = getRequest(scope.internal);
-      const result = await loginHelpers.getLoginRedirectPath(request, internalUser);
-      expect(result).to.equal('/admin/licences');
-    });
-
     test('it should redirect to add licences if the user has no companies', async () => {
       const request = getRequest(scope.external);
       waterUser.getUserStatus.resolves(responses.userWithNoCompanies);

@@ -3,7 +3,7 @@
     {{ message.notificationType }}
     <span class="govuk-visually-hidden"> sent {{ message.data | date }} via {{ message.messageType }}</span>
   {% else %}
-    <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/communications/{{ message.notificationId }}">
+    <a href="/licences/{{ documentId }}/communications/{{ message.notificationId }}">
       {{ message.notificationType }}
       <span class="govuk-visually-hidden"> sent {{ message.data | date }} via {{ message.messageType }}</span>
     </a>

@@ -61,7 +61,7 @@ async function getLicenceDetail (request, reply) {
       licence_id: documentId,
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
-      back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
+      back: `/licences/${documentId}`,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
       crmData: documentHeader,
       primaryUser
@@ -226,7 +226,7 @@ const getLicenceCommunication = async (request, h) => {
     messageType: response.data.evt.name,
     sentDate: response.data.evt.createdDate,
     messageContent: response.data.notification.plainText,
-    back: `${isInternalUser ? '/admin' : ''}/licences/${documentId}#communications`,
+    back: `/licences/${documentId}#communications`,
     recipientAddressParts: getAddressParts(response.data.notification),
     isInternal: isInternalUser
   };

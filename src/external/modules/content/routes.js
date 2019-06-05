@@ -13,10 +13,11 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Accessibility'
+          pageTitle: 'Accessibility',
+          back: '/licences'
         },
         config: {
-          view: 'water/content/accessibility'
+          view: 'nunjucks/content/accessibility.njk'
         }
       }
     },
@@ -34,10 +35,11 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Cookies'
+          pageTitle: 'Cookies',
+          back: '/licences'
         },
         config: {
-          view: 'water/content/cookies'
+          view: 'nunjucks/content/cookies.njk'
         }
       }
     },
@@ -54,17 +56,18 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Tell us what you think about this service'
+          pageTitle: 'Tell us what you think about this service',
+          back: '/licences'
         },
         config: {
-          view: 'water/content/feedback'
+          view: 'nunjucks/content/feedback.njk'
         }
       }
     },
     handler: controller.staticPage
   },
 
-  privacy: {
+  privacyNext: {
     method: 'GET',
     path: '/privacy-policy',
     config: {
@@ -74,10 +77,11 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Privacy: how we use your personal information'
+          pageTitle: 'Privacy: how we use your personal information',
+          back: '/licences'
         },
         config: {
-          view: 'water/content/privacy_policy'
+          view: 'nunjucks/content/privacy-policy.njk'
         }
       }
     },

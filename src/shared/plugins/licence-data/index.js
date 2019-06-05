@@ -1,6 +1,5 @@
 const Boom = require('boom');
 const Joi = require('Joi');
-const { set } = require('lodash');
 const camelCase = require('camelcase');
 const bluebird = require('bluebird');
 
@@ -71,8 +70,6 @@ const onPreHandler = async (request, h) => {
 
 module.exports = {
   register: (server, options) => {
-    // Joi.assert(options, pluginOptionsSchema, 'Invalid licenceData plugin options');
-
     server.ext({
       type: 'onPreHandler',
       method: onPreHandler

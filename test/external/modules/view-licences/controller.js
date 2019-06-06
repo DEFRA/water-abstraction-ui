@@ -9,8 +9,6 @@ const communicationResponses = require('../../responses/water-service/communicat
 
 const controller = require('../../../../src/external/modules/view-licences/controller');
 const { scope } = require('../../../../src/external/lib/constants');
-const returnsConnector = require('../../../../src/external/lib/connectors/returns');
-const licenceConnector = require('../../../../src/external/lib/connectors/water-service/licences');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {

@@ -9,9 +9,9 @@
       {{ verificationsAlert(verifications) }}
 
       {% if isInternal and not primaryUser %}
-        {{ title(licence.licenceNumber, 'Unregistered licence') }}
+        {{ title(summary.licenceNumber, 'Unregistered licence') }}
       {% else %}
-        {{ title('Licence number ' + licence.licenceNumber, licence.documentName ) }}
+        {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
       {% endif %}
 
       {% if isInternal and primaryUser %}

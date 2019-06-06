@@ -47,25 +47,38 @@ async function getLicenceDetail (request, reply) {
   const { documentId } = request.params;
 
   try {
-    const { documentHeader, viewData, gaugingStations } = await loadLicenceData(request, documentId);
+    // console.log(request.licence);
+    // const { documentHeader, viewData, gaugingStations } = await loadLicenceData(request, documentId);
 
-    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-    documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
+    // const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
+    // documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
 
-    const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
+    // const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
+    //
+    //
+    const { licenceNumber, documentName } = request.licence.summary;
 
-    return reply.view(request.config.view, {
+    const view = {
       ...request.view,
-      canViewReturns: true,
-      gaugingStations,
-      licence_id: documentId,
-      name: 'name' in request.view ? request.view.name : customName,
-      licenceData: viewData,
-      back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
-      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
-      crmData: documentHeader,
-      primaryUser
-    }, { layout: false });
+      ...request.licence.summary,
+      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, documentName),
+      back: `/licences/${documentId}`
+    };
+
+    return reply.view(request.config.view, view, { layout: false });
+
+    // return reply.view(request.config.view, {
+    //   ...request.view,
+    //   canViewReturns: true,
+    //   gaugingStations,
+    //   licence_id: documentId,
+    //   name: 'name' in request.view ? request.view.name : customName,
+    //   licenceData: viewData,
+    //   back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
+    //   pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
+    //   crmData: documentHeader,
+    //   primaryUser
+    // }, { layout: false });
   } catch (error) {
     throw errorMapper(error);
   }
@@ -173,17 +186,16 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
 const getLicence = async (request, h) => {
   const { documentId } = request.params;
 
+  const returnsData = await getLicenceReturnsForViewContext(request, request.licence.summary.licenceNumber);
+
   const view = {
+    documentId,
     ...request.view,
-    licence: request.licence.summary,
-    messages: request.licence.communications,
-    ...await getCommonLicenceViewContext(
-      request.licence.summary.licenceNumber,
-      documentId,
-      request.licence.summary.documentName,
-      request
-    )
+    ...request.licence,
+    ...returnsData,
+    back: `/licences`
   };
+
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
 };
 

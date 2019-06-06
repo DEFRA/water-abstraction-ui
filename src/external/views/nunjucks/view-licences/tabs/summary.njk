@@ -19,12 +19,12 @@
       Licence name
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ licence.documentName or 'No name chosen' }}
+      {{ summary.documentName or 'No name chosen' }}
 
       {% if not isInternal %}
       <br />
       <a href="/licences/{{ documentId }}/rename">
-        {{ 'Rename' if licence.documentName else 'Name' }} this licence
+        {{ 'Rename' if summary.documentName else 'Name' }} this licence
       </a>
       {% endif %}
     </dd>
@@ -34,7 +34,7 @@
       Licence holder
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ licence.licenceHolderFullName }}
+      {{ summary.licenceHolderFullName }}
       <br />
       <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/contact">
         View licence contact details
@@ -46,7 +46,7 @@
       Effective from
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ licence.effectiveDate | date }}
+      {{ summary.effectiveDate | date }}
     </dd>
   </div>
   {% if licenceNumber.expiryDate %}
@@ -55,43 +55,43 @@
       End date
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ licence.expiryDate | date }}
+      {{ summary.expiryDate | date }}
     </dd>
   </div>
   {% endif %}
 
-  {{ sourcesOfSupply(licence.sourcesOfSupply) }}
-  {{ purposes(licence.uniquePurposeNames) }}
+  {{ sourcesOfSupply(summary.sourcesOfSupply) }}
+  {{ purposes(summary.uniquePurposeNames) }}
 
   {% set link %}
   <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/purposes">
   View details of your
-  {{ 'purpose' | pluralize(licence.uniquePurposeNames) }},
-  {{ 'period' | pluralize(licence.abstractionPeriods) }}
+  {{ 'purpose' | pluralize(summary.uniquePurposeNames) }},
+  {{ 'period' | pluralize(summary.abstractionPeriods) }}
   and amounts
   </a>
   {% endset %}
 
-  {{ periods(licence.abstractionPeriods, link) }}
+  {{ periods(summary.abstractionPeriods, link) }}
 
   {% set link %}
   <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/points">
-    View details of your abstraction {{ 'point' | pluralize(licence.points) }}
+    View details of your abstraction {{ 'point' | pluralize(summary.points) }}
   </a>
   {% endset %}
 
-  {{ points(licence.points, link) }}
+  {{ points(summary.points, link) }}
 
   {% set link %}
   <a href="{{ '/admin' if isInternal }}/licences/{{ documentId }}/conditions">
-    View details of your abstraction {{ 'condition' | pluralize(licence.conditions) }}
+    View details of your abstraction {{ 'condition' | pluralize(summary.conditions) }}
   </a>
   {% endset %}
 
   {% set baseUrl %}{{ '/admin' if isInternal }}/licences/{{ documentId }}{% endset %}
-  {{ gaugingStations(licence.gaugingStations, baseUrl) }}
-  {{ conditions(licence.conditions, link) }}
-  {{ amounts(licence.aggregateQuantity) }}
+  {{ gaugingStations(summary.gaugingStations, baseUrl) }}
+  {{ conditions(summary.conditions, link) }}
+  {{ amounts(summary.aggregateQuantity) }}
 </dl>
 
 <div class="govuk-grid-row">

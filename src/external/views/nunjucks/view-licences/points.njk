@@ -4,14 +4,14 @@
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Abstraction points for {{crmData.document_name}}{% endset %}
+  {% if documentName %}
+    {% set licenceName %} Abstraction points for {{ documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for abstractionPoint in licenceData.points %}
+  {% for abstractionPoint in points %}
 
   {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
 

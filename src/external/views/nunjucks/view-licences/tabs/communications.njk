@@ -49,9 +49,9 @@
 
 <h2 class="govuk-heading-m">Communications</h2>
 
-{% if messages.length %}
+{% if communications.length %}
 
-  {% for message in messages %}
+  {% for message in communications %}
     {{ messageRowMobile(message, isInternal) }}
   {% endfor %}
 
@@ -67,7 +67,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      {% for message in messages %}
+      {% for message in communications %}
         {{ messageRow(message, isInternal) }}
       {% endfor %}
     </tbody>

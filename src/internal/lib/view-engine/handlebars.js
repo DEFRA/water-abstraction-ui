@@ -15,7 +15,7 @@ const Joi = require('joi');
 
 const commaNumber = require('comma-number');
 const { convertToCubicMetres } = require('../unit-conversion');
-const { maxPrecision } = require('../number-formatter');
+const { maxPrecision } = require('../../../shared/lib/number-formatter');
 const { splitString } = require('../string-formatter');
 
 /**

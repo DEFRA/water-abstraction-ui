@@ -1,4 +1,3 @@
-
 /**
  * Reduces the supplied number to fixed precision, given the number
  * of decimal places.
@@ -20,6 +19,4 @@ const maxPrecision = (number, decimalPlaces) => {
   return number.toFixed(decimalPlaces);
 };
 
-module.exports = {
-  maxPrecision
-};
+exports.maxPrecision = maxPrecision;

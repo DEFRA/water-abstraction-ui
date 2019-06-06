@@ -1,10 +1,6 @@
 const commaNumber = require('comma-number');
-const { maxPrecision } = require('../../number-formatter');
+const { maxPrecision } = require('../../../../shared/lib/number-formatter');
 
-const number = (value) => {
-  return commaNumber(maxPrecision(value, 3));
-};
+const number = value => commaNumber(maxPrecision(value, 3));
 
-module.exports = {
-  number
-};
+exports.number = number;

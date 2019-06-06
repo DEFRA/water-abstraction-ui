@@ -100,5 +100,17 @@ module.exports = {
         }
       }
     }
+  },
+
+  status: {
+    method: 'GET',
+    path: '/status',
+    handler: () => 'OK',
+    config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      }
+    }
   }
 };

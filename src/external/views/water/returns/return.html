@@ -72,12 +72,12 @@
               </p>
             </div>
         {{else}}
-        <div class="version clickable">
-                <p class="spaceless">
-                  {{ email }}<br>
-                  <a href="{{#if ../isAdmin}}/admin{{/if}}/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
-                </p>
-              </div>
+          <div class="version clickable">
+            <p class="spaceless">
+              {{ email }}<br>
+              <a href="/returns/return?id={{ ../return.returnId }}&amp;version={{ versionNumber }}">{{ formatISODate createdAt }}</a><br>
+            </p>
+          </div>
         {{/equal}}
       {{/eachReverse}}
     {{/if}}

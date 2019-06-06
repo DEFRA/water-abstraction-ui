@@ -1,11 +1,9 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const { get } = require('lodash');
 const { logger } = require('../logger');
 
 const waterUser = require('./connectors/water-service/user');
 const getUserID = request => request.cookieAuth.get('userId');
 const { isAuthenticated } = require('./permissions');
-const { scope } = require('./constants');
 
 /**
  * Asynchronously loads user data from the water service, including their list
@@ -29,10 +27,6 @@ const selectCompany = (request, company) => {
   request.yar.set('companyName', company.name);
 };
 
-const userHasInternalScope = user => {
-  return get(user, 'role.scopes', []).includes(scope.internal);
-};
-
 /**
  * Gets the path the user should be redirected to upon successful login
  * This depends on internal/external scope, and how many companies they manage
@@ -40,17 +34,15 @@ const userHasInternalScope = user => {
 const getLoginRedirectPath = async (request, user) => {
   const { user_id: userId } = user;
 
-  if (userHasInternalScope(user)) {
-    return '/admin/licences';
-  }
-
   // Load companies to see how many they can access
   const data = await loadUserData(userId);
 
   // No companies - add licences
   if (data.companies.length > 1) {
     return '/select-company';
-  } else if (data.companies.length === 1) {
+  }
+
+  if (data.companies.length === 1) {
     // 1 Company, select company and direct to licences
     selectCompany(request, data.companies[0]);
     return '/licences';

@@ -303,14 +303,6 @@ const getReturnsViewData = async (request) => {
 };
 
 /**
- * Redirects to admin path if internal user
- * @param {Object} request - HAPI request instance
- * @param {String} path - the path to redirect to without '/admin'
- * @return {String} path with /admin if internal user
- */
-const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path}` : path;
-
-/**
  * Get common view data used by many controllers
  * @param {Object} HAPI request instance
  * @param {Object} data - the return model
@@ -403,7 +395,6 @@ exports.getLatestVersion = getLatestVersion;
 exports.hasGallons = hasGallons;
 exports.getReturnsViewData = getReturnsViewData;
 exports.getReturnTotal = getReturnTotal;
-exports.getScopedPath = getScopedPath;
 exports.getViewData = getViewData;
 exports.isReturnPastDueDate = isReturnPastDueDate;
 exports.getRedirectPath = getRedirectPath;

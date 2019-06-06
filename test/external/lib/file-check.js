@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
-const helpers = require('../../../src/external/lib/helpers');
+const childProcessHelpers = require('../../../src/shared/lib/child-process-helpers');
 const { logger } = require('../../../src/external/logger');
 
 const fileCheck = require('../../../src/external/lib/file-check');
@@ -25,7 +25,7 @@ experiment('throwIfFileDoesNotExist', () => {
 
 experiment('clamScan', () => {
   beforeEach(async () => {
-    sandbox.stub(helpers, 'exec').resolves('OK');
+    sandbox.stub(childProcessHelpers, 'exec').resolves('OK');
   });
 
   afterEach(async () => {
@@ -34,13 +34,13 @@ experiment('clamScan', () => {
 
   test('It should call exec with the correct command', async () => {
     await fileCheck.clamScan('test.txt');
-    expect(helpers.exec.firstCall.args).to.equal(['clamdscan test.txt']);
+    expect(childProcessHelpers.exec.firstCall.args).to.equal(['clamdscan test.txt']);
   });
 });
 
 experiment('virusCheck', () => {
   beforeEach(async () => {
-    sandbox.stub(helpers, 'exec');
+    sandbox.stub(childProcessHelpers, 'exec');
   });
 
   afterEach(async () => {
@@ -48,7 +48,7 @@ experiment('virusCheck', () => {
   });
 
   test('It should throw an error if the file does not exist', async () => {
-    helpers.exec.rejects();
+    childProcessHelpers.exec.rejects();
     const func = () => {
       return fileCheck.virusCheck('test/external/lib/test-files/no-file-here.txt');
     };
@@ -56,7 +56,7 @@ experiment('virusCheck', () => {
   });
 
   test('It should resolve to true if a file does not contain a virus', async () => {
-    helpers.exec.resolves();
+    childProcessHelpers.exec.resolves();
     const result = await fileCheck.virusCheck('test/external/lib/test-files/test-file.txt');
     expect(result).to.equal(true);
   });
@@ -64,7 +64,7 @@ experiment('virusCheck', () => {
   test('It should resolve to false if a file contains a virus', async () => {
     const err = new Error();
     err.code = 1;
-    helpers.exec.rejects(err);
+    childProcessHelpers.exec.rejects(err);
     const result = await fileCheck.virusCheck('test/external/lib/test-files/eicar-test.txt');
     expect(result).to.equal(false);
   });

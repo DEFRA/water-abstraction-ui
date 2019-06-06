@@ -5,7 +5,7 @@ const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
 const water = require('../../../lib/connectors/water');
-const files = require('../../../lib/files');
+const files = require('../../../../shared/lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');

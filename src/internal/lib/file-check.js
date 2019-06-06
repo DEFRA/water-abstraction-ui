@@ -4,9 +4,9 @@ const fileType = require('file-type');
 const readChunk = require('read-chunk');
 const util = require('util');
 const parseCsv = util.promisify(require('csv-parse'));
-const helpers = require('./helpers');
+const childProcessHelpers = require('../../shared/lib/child-process-helpers');
 const { logger } = require('../logger');
-const readFile = util.promisify(fs.readFile);
+const files = require('../../shared/lib/files');
 
 /**
  * Throws an error if the specified file does not exist
@@ -36,7 +36,7 @@ const createLoggerError = (err) => {
  */
 const clamScan = async (file) => {
   try {
-    await helpers.exec(`clamdscan ${file}`);
+    await childProcessHelpers.exec(`clamdscan ${file}`);
     return true;
   } catch (err) {
     if (isInfectedFile(err)) {
@@ -65,7 +65,7 @@ const virusCheck = async (file) => {
  */
 const isCsv = async file => {
   try {
-    const str = await readFile(file);
+    const str = await files.readFile(file);
     await parseCsv(str);
     return true;
   } catch (err) {

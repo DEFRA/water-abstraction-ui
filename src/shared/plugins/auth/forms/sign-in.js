@@ -1,13 +1,8 @@
 const Joi = require('joi');
 const { formFactory, fields, applyErrors } = require('../../../../shared/lib/forms');
 
-/**
- * @return {Object} - form object
- */
-const form = () => {
-  const f = formFactory('/signin');
-
-  f.fields.push(fields.text('email', {
+const createEmailField = () => {
+  return fields.text('email', {
     label: 'Email address',
     type: 'email',
     controlClass: 'govuk-!-width-one-half',
@@ -19,9 +14,11 @@ const form = () => {
         message: 'Enter an email address in the correct format, like name@example.com'
       }
     }
-  }));
+  });
+};
 
-  f.fields.push(fields.text('password', {
+const createPasswordField = () => {
+  return fields.text('password', {
     label: 'Password',
     type: 'password',
     controlClass: 'govuk-!-width-one-half',
@@ -33,8 +30,17 @@ const form = () => {
     attr: {
       autocomplete: 'off'
     }
-  }));
+  });
+};
 
+/**
+ * @return {Object} - form object
+ */
+const form = () => {
+  const f = formFactory('/signin');
+
+  f.fields.push(createEmailField());
+  f.fields.push(createPasswordField());
   f.fields.push(fields.button(null, { label: 'Sign in',
     controlClass: 'govuk-button govuk-button--start'
   }));

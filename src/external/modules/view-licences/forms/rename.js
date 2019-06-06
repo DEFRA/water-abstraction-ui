@@ -1,13 +1,8 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('../../../../shared/lib/forms');
 
-const renameLicenceForm = (request, name) => {
-  const { csrfToken } = request.view;
-  const { documentId } = request.params;
-
-  const f = formFactory(`/licences/${documentId}`);
-
-  f.fields.push(fields.text('name', {
+const createNameField = (name) => {
+  return fields.text('name', {
     label: 'Name this licence',
     hint: 'You can give this licence a name to help you search for it more easily.',
     attr: {
@@ -26,8 +21,16 @@ const renameLicenceForm = (request, name) => {
       }
     },
     controlClass: 'govuk-input--width-20'
-  }, name));
+  }, name);
+};
 
+const renameLicenceForm = (request, name) => {
+  const { csrfToken } = request.view;
+  const { documentId } = request.params;
+
+  const f = formFactory(`/licences/${documentId}`);
+
+  f.fields.push(createNameField(name));
   f.fields.push(fields.button(null, { label: 'Save', controlClass: 'govuk-!-margin-0' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 

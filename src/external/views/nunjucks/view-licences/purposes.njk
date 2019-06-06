@@ -4,14 +4,14 @@
 
 {% block content %}
 
-  {% if documentName %}
-    {% set licenceName %} Abstraction details for {{ documentName }}{% endset %}
+  {% if summary.documentName %}
+    {% set licenceName %} Abstraction details for {{ summary.documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for purpose in purposes %}
+  {% for purpose in summary.purposes %}
     <h3 class="govuk-heading-m">{{ purpose.name }}</h3>
     <hr class="govuk-section-break govuk-section-break--visible">
 

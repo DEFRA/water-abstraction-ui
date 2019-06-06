@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('shared/lib/validators');
-const { preLoadDocument } = require('./pre-handlers');
+// const { preLoadDocument } = require('./pre-handlers');
 
 const { scope } = require('../../lib/constants');
 
@@ -15,7 +15,7 @@ const getLicence = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View a single licence',
     validate: {
       params: {
@@ -42,12 +42,12 @@ const getLicence = {
 const getLicenceRename = {
   method: 'GET',
   path: '/licences/{documentId}/rename',
-  handler: controller.getLicenceDetail,
+  handler: controller.getLicenceRename,
   config: {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'Set user-defined name for licence',
     validate: {
       params: {
@@ -79,7 +79,7 @@ const postLicenceRename = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     validate: {
       params: {
         documentId: VALID_GUID
@@ -96,10 +96,9 @@ const postLicenceRename = {
       viewContext: {
         activeNavLink: 'view'
       },
-      formValidator: {
-        payload: {
-          name: VALID_LICENCE_NAME,
-          csrf_token: VALID_GUID
+      licenceData: {
+        load: {
+          summary: true
         }
       }
     }
@@ -114,7 +113,7 @@ const getLicenceContact = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View contact info for licence',
     validate: {
       params: {
@@ -145,7 +144,7 @@ const getLicencePurposes = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View abstraction purposes for licence',
     validate: {
       params: {
@@ -176,7 +175,7 @@ const getLicencePoints = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View abstraction points for licence',
     validate: {
       params: {
@@ -207,7 +206,7 @@ const getLicenceConditions = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
@@ -238,7 +237,7 @@ const getLicenceGaugingStation = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
@@ -268,7 +267,7 @@ const getLicenceCommunication = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
+    // pre: [{ method: preLoadDocument }],
     description: 'Look at the content of a message sent to the user regarding the licence',
     validate: {
       params: {

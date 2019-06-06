@@ -4,8 +4,8 @@
 
 {% block content %}
 
-  {% if documentName %}
-    {% set licenceName %} Conditions held for {{ documentName }}{% endset %}
+  {% if summary.documentName %}
+    {% set licenceName %} Conditions held for {{ summary.documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
@@ -20,7 +20,7 @@
         iconFallbackText: "Warning"
       }) }}
 
-      {% if conditions.length == 0%}
+      {% if summary.conditions.length == 0%}
       <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
       <p>Please check the paper copy of your licence for this information.</p>
       {% endif %}
@@ -29,6 +29,6 @@
 
   </div>
 
-    {{ licenceConditions(conditions) }}
+    {{ licenceConditions(summary.conditions) }}
 
 {% endblock %}

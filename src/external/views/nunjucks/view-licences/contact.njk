@@ -3,14 +3,14 @@
 
 {% block content %}
 
-  {% if documentName %}
-    {% set licenceName %} Licence contact details: {{ documentName }}{% endset %}
+  {% if summary.documentName %}
+    {% set licenceName %} Licence contact details: {{ summary.documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for contact in contacts %}
+  {% for contact in summary.contacts %}
 
   {% set addressData %}
     {% if contact.addressLine1 %}{{ contact.addressLine1 }}<br />{% endif %}

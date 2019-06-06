@@ -4,14 +4,14 @@
 
 {% block content %}
 
-  {% if documentName %}
-    {% set licenceName %} Abstraction points for {{ documentName }}{% endset %}
+  {% if summary.documentName %}
+    {% set licenceName %} Abstraction points for {{ summary.documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for abstractionPoint in points %}
+  {% for abstractionPoint in summary.points %}
 
   {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
 

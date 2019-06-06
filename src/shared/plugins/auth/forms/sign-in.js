@@ -9,21 +9,27 @@ const form = () => {
 
   f.fields.push(fields.text('email', {
     label: 'Email address',
-    hint: 'This is the email address used to create your account.',
     type: 'email',
     controlClass: 'govuk-!-width-one-half',
     errors: {
       'any.empty': {
-        message: 'Enter your email address'
+        message: 'Enter an email address'
+      },
+      'string.email': {
+        message: 'Enter an email address in the correct format, like name@example.com'
       }
     }
   }));
 
   f.fields.push(fields.text('password', {
     label: 'Password',
-    hint: 'Enter the password you created.',
     type: 'password',
     controlClass: 'govuk-!-width-one-half',
+    errors: {
+      'any.empty': {
+        message: 'Enter your password'
+      }
+    },
     attr: {
       autocomplete: 'off'
     }
@@ -41,14 +47,20 @@ const schema = {
   password: Joi.string().required()
 };
 
+// Enter if empty, Check your if it's wrong
 const applyErrorState = form => {
+  if (form.errors.length) {
+    return form;
+  }
+
+  // return form;
   return applyErrors(form, [{
     name: 'email',
-    message: 'Re-enter your email address',
+    message: 'Check your email address',
     summary: 'Yo'
   }, {
     name: 'password',
-    message: 'Re-enter your password'
+    message: 'Check your password'
   }]);
 };
 

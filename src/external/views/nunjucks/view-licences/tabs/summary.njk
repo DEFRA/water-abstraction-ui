@@ -2,97 +2,11 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% from "nunjucks/macros/contact-details.njk" import contactDetails %}
-
-{% from "nunjucks/view-licences/macros/amounts.njk" import amounts %}
-{% from "nunjucks/view-licences/macros/conditions.njk" import conditions %}
-{% from "nunjucks/view-licences/macros/periods.njk" import periods %}
-{% from "nunjucks/view-licences/macros/points.njk" import points %}
-{% from "nunjucks/view-licences/macros/purposes.njk" import purposes %}
-{% from "nunjucks/view-licences/macros/sources-of-supply.njk" import sourcesOfSupply %}
-{% from "nunjucks/view-licences/macros/gauging-stations.njk" import gaugingStations %}
+{% from "nunjucks/view-licences/macros/licence-summary.njk" import licenceSummary %}
 
 <h2 class="govuk-heading-m">Summary</h2>
 
-<dl class="govuk-summary-list">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Licence name
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ summary.documentName or 'No name chosen' }}
-
-      {% if not isInternal %}
-      <br />
-      <a href="/licences/{{ documentId }}/rename">
-        {{ 'Rename' if summary.documentName else 'Name' }} this licence
-      </a>
-      {% endif %}
-    </dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Licence holder
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ summary.licenceHolderFullName }}
-      <br />
-      <a href="/licences/{{ documentId }}/contact">
-        View licence contact details
-      </a>
-    </dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Effective from
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ summary.effectiveDate | date }}
-    </dd>
-  </div>
-  {% if licenceNumber.expiryDate %}
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      End date
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ summary.expiryDate | date }}
-    </dd>
-  </div>
-  {% endif %}
-
-  {{ sourcesOfSupply(summary.sourcesOfSupply) }}
-  {{ purposes(summary.uniquePurposeNames) }}
-
-  {% set link %}
-  <a href="/licences/{{ documentId }}/purposes">
-  View details of your
-  {{ 'purpose' | pluralize(summary.uniquePurposeNames) }},
-  {{ 'period' | pluralize(summary.abstractionPeriods) }}
-  and amounts
-  </a>
-  {% endset %}
-
-  {{ periods(summary.abstractionPeriods, link) }}
-
-  {% set link %}
-  <a href="/licences/{{ documentId }}/points">
-    View details of your abstraction {{ 'point' | pluralize(summary.points) }}
-  </a>
-  {% endset %}
-
-  {{ points(summary.points, link) }}
-
-  {% set link %}
-  <a href="/licences/{{ documentId }}/conditions">
-    View details of your abstraction {{ 'condition' | pluralize(summary.conditions) }}
-  </a>
-  {% endset %}
-
-  {% set baseUrl %}/licences/{{ documentId }}{% endset %}
-  {{ gaugingStations(summary.gaugingStations, baseUrl) }}
-  {{ conditions(summary.conditions, link) }}
-  {{ amounts(summary.aggregateQuantity) }}
-</dl>
+{{ licenceSummary(documentId, summary) }}
 
 <div class="govuk-grid-row">
 

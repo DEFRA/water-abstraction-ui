@@ -11,7 +11,7 @@ const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
 const waterCompany = require('../../../lib/connectors/water-service/company');
-const fileCheck = require('../../../lib/file-check');
+const fileCheck = require('../../../../shared/lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');

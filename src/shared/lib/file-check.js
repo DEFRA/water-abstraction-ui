@@ -4,9 +4,8 @@ const fileType = require('file-type');
 const readChunk = require('read-chunk');
 const util = require('util');
 const parseCsv = util.promisify(require('csv-parse'));
-const childProcessHelpers = require('../../shared/lib/child-process-helpers');
-const { logger } = require('../logger');
-const files = require('../../shared/lib/files');
+const childProcessHelpers = require('./child-process-helpers');
+const files = require('./files');
 
 /**
  * Throws an error if the specified file does not exist
@@ -37,11 +36,10 @@ const createLoggerError = (err) => {
 const clamScan = async (file) => {
   try {
     await childProcessHelpers.exec(`clamdscan ${file}`);
-    return true;
+    return { isClean: true };
   } catch (err) {
     if (isInfectedFile(err)) {
-      logger.error(createLoggerError(err));
-      return false;
+      return { isClean: false, err: createLoggerError(err) };
     }
     throw err;
   }
@@ -69,7 +67,6 @@ const isCsv = async file => {
     await parseCsv(str);
     return true;
   } catch (err) {
-    logger.info('invalid CSV', err);
     return false;
   }
 };

@@ -120,18 +120,6 @@ function verifyCredentials (userName, password) {
   return Helpers.makeURIRequestWithBody(uri, method, data);
 }
 
-function getPasswordResetLink (emailAddress) {
-  return new Promise((resolve, reject) => {
-    var uri = process.env.IDM_URI + '/resetPassword' + '?token=' + process.env.JWT_TOKEN + '&emailAddress=' + emailAddress;
-    Helpers.makeURIRequest(uri)
-      .then((response) => {
-        resolve(response.body);
-      }).catch((response) => {
-        reject(response);
-      });
-  });
-}
-
 /**
  * Updates user password
  * @param {number} user id - user's ID
@@ -180,7 +168,6 @@ const usersClient = new APIClient(rp, {
 module.exports = {
   login,
   resetPassword,
-  getPasswordResetLink,
   updatePassword,
   updatePasswordWithGuid,
   createUserWithoutPassword,

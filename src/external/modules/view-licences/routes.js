@@ -60,6 +60,11 @@ const getLicenceRename = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -122,6 +127,11 @@ const getLicenceContact = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -148,6 +158,11 @@ const getLicencePurposes = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -174,6 +189,11 @@ const getLicencePoints = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -200,6 +220,11 @@ const getLicenceConditions = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }

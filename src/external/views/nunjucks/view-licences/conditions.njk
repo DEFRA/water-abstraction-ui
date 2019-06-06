@@ -4,8 +4,8 @@
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Conditions held for {{crmData.document_name}}{% endset %}
+  {% if documentName %}
+    {% set licenceName %} Conditions held for {{ documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
@@ -19,14 +19,16 @@
           to the paper copy of your licence to view and comply with all of your conditions.",
         iconFallbackText: "Warning"
       }) }}
+
+      {% if conditions.length == 0%}
+      <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
+      <p>Please check the paper copy of your licence for this information.</p>
+      {% endif %}
     </div>
 
-    {% if licenceData.conditions.length == 0%}
-    <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
-    <p>Please check the paper copy of your licence for this information.</p>
-    {% endif %}
+
   </div>
 
-    {{ licenceConditions(licenceData.conditions) }}
+    {{ licenceConditions(conditions) }}
 
 {% endblock %}

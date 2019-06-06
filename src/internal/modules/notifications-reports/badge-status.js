@@ -11,7 +11,8 @@ const textMap = {
   'temporary-failure': 'Error',
   'technical-failure': 'Error',
   delivered: 'Sent',
-  received: 'Sent'
+  received: 'Sent',
+  accepted: 'Sent'
 };
 
 const getBadgeStatus = notifyStatus => {

@@ -1,6 +1,5 @@
 module.exports = {
   ...require('./abstraction-period'),
-  ...require('./abstraction-reform'),
   ...require('./date'),
   ...require('./fixed'),
   ...require('./form'),

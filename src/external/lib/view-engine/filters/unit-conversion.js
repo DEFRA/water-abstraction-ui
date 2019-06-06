@@ -1,9 +1,5 @@
-const { convertToCubicMetres } = require('../../unit-conversion');
+const { convertToCubicMetres } = require('../../../../shared/lib/unit-conversion');
 
-const unitConversion = (value, unit) => {
-  return convertToCubicMetres(value, unit);
-};
+const unitConversion = (value, unit) => convertToCubicMetres(value, unit);
 
-module.exports = {
-  unitConversion
-};
+exports.unitConversion = unitConversion;

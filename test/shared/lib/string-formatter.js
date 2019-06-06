@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { splitString } = require('../../../src/internal/lib/string-formatter');
+const { splitString } = require('../../../src/shared/lib/string-formatter');
 
 experiment('splitString', () => {
   test('splits string by commas and return first element by default', async () => {

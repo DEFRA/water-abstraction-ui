@@ -1,0 +1,58 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
+
+{% macro notifyAddress(personalisation) %}
+  {% for item in ['address_line_1', 'address_line_2', 'address_line_3',
+    'address_line_4', 'address_line_5', 'address_line_6', 'postcode'] %}
+    {% if personalisation[item] %}
+      {{ personalisation[item] }}</br>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% block content %}
+
+  <h1 class="govuk-caption-xl">{{ pageTitle }}</h1>
+  <span class="govuk-heading-xl govuk-!-margin-bottom-0">{{ event.metadata.name }}</span>
+  <h2 class="govuk-caption-m govuk-!-margin-top-1 govuk-!-font-weight-bold">{{ event.reference_code }}</h2>
+  <h2 class="govuk-heading-s govuk-!-font-weight-bold">
+    {{ event.created | date('D MMMM YYYY, hh:mma') }}
+  </h2>
+
+  <table class="govuk-table">
+    <thead>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Sent to</th>
+        <th class="govuk-table__header" scope="col">Licence number</th>
+        <th class="govuk-table__header" scope="col">Method</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for message in messages %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell" scope="row">
+
+            {% if message.message_type === 'email ' %}
+              {{ message.recipient }}
+            {% endif %}
+
+            {% if message.message_type === 'letter' %}
+              {{ notifyAddress(message.personalisation) }}
+            {% endif %}
+          </td>
+          <td class="govuk-table__cell align-top" scope="row">
+            {{ message.licences | join(', ') }}
+          </td>
+          <td class="govuk-table__cell align-top" scope="row">
+            {{ message.message_type | capitalize }}
+          </td>
+          <td class="govuk-table__cell align-top" scope="row">
+            {{ badge(message.badgeStatus.text, message.badgeStatus.status) }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

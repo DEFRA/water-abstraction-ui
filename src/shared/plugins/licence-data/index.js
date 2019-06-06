@@ -1,5 +1,5 @@
 const Boom = require('boom');
-const Joi = require('Joi');
+const Joi = require('joi');
 const camelCase = require('camelcase');
 const bluebird = require('bluebird');
 

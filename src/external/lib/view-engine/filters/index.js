@@ -2,7 +2,7 @@ module.exports = {
   ...require('../../../../shared/view/nunjucks/filters/abstraction-period'),
   ...require('../../../../shared/view/nunjucks/filters/date'),
   ...require('../../../../shared/view/nunjucks/filters/fixed'),
-  ...require('./form'),
+  ...require('../../../../shared/view/nunjucks/filters/form'),
   ...require('./markdown'),
   ...require('./merge'),
   ...require('./most-significant-entity-role'),

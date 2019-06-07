@@ -4,13 +4,17 @@
 
 {% block content %}
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
   {% if summary.documentName %}
     {% set licenceName %} Abstraction details for {{ summary.documentName }}{% endset %}
-    {{ title(licenceName, pageTitle) }}
+    {{ title(licenceName, pageHeading) }}
   {% else %}
-    {{ title(pageTitle) }}
+    {{ title(pageHeading) }}
   {% endif %}
+  </div>
 
+  <div class="govuk-grid-column-full">
   {% for purpose in summary.purposes %}
     <h3 class="govuk-heading-m">{{ purpose.name }}</h3>
     <hr class="govuk-section-break govuk-section-break--visible">
@@ -109,5 +113,8 @@
 
     </dl>
   {% endfor %}
+  </div>
+</div>
+
 
 {% endblock %}

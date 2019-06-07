@@ -4,17 +4,20 @@
 
 {% block content %}
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
   {% if summary.documentName %}
     {% set licenceName %} Abstraction points for {{ summary.documentName }}{% endset %}
-    {{ title(licenceName, pageTitle) }}
+    {{ title(licenceName, pageHeading) }}
   {% else %}
-    {{ title(pageTitle) }}
+    {{ title(pageHeading) }}
   {% endif %}
+  </div>
 
+  <div class="govuk-grid-column-full">
   {% for abstractionPoint in summary.points %}
 
   {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
-
   {% set meansOfAbstraction %} {{ abstractionPoint.meansOfAbstraction }} {% endset %}
 
     <h3 class="govuk-heading-m">{{ abstractionPoint.name }}</h3>
@@ -42,5 +45,7 @@
     }) }}
 
   {% endfor %}
+  </div>
+</div>
 
 {% endblock %}

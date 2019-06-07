@@ -241,7 +241,7 @@ const getLicenceGaugingStation = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/gauging-station'
+        view: 'nunjucks/view-licences/gauging-station.njk'
       },
       viewContext: {
         activeNavLink: 'view'

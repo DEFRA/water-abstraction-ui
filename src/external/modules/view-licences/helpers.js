@@ -1,7 +1,7 @@
 const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
-const { find, has } = require('lodash');
+const { cloneDeep, find, has, set } = require('lodash');
 const Boom = require('boom');
 
 /**
@@ -48,20 +48,28 @@ function mapFilter (companyId, query) {
  * @return {String} page title
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
-  if (customName) return `Licence number ${licenceNumber}`;
-
   const titles = {
-    purposes: `Abstraction details for for licence number ${licenceNumber}`,
-    points: `Abstraction points for licence number ${licenceNumber}`,
-    conditions: `Conditions held for licence number ${licenceNumber}`,
-    contact: `Contact details for licence number ${licenceNumber}`,
-    'gauging-station': `Gauging station for ${customName || licenceNumber}`
+    purposes: `Abstraction details`,
+    points: `Abstraction points`,
+    conditions: `Conditions held`,
+    contact: `Contact details`,
+    'gauging-station': `Gauging station`
   };
 
   let key = view.split('/').pop();
   if (key.slice(-4) === '.njk') key = key.slice(0, -4);
 
-  return titles[key] || `Licence number ${licenceNumber}`;
+  if (!titles[key]) {
+    return {
+      pageTitle: `Licence number ${licenceNumber}`,
+      pageHeading: `Licence number ${licenceNumber}`
+    };
+  }
+
+  return {
+    pageTitle: `${titles[key]} for ${customName || licenceNumber}`,
+    pageHeading: `${customName ? 'Licence' : titles[key] + ' for licence'} number ${licenceNumber}`
+  };
 }
 
 /**
@@ -262,6 +270,26 @@ function errorMapper (error) {
   return error;
 }
 
+/**
+ * Create isHof flag in condition object
+ * @param {Object} licenceData licenceData to be updated
+ */
+const setConditionHofFlags = (licenceData) => {
+  const updated = cloneDeep(licenceData);
+
+  const conditions = updated.viewData.conditions;
+
+  const updatedConditions = conditions.map(condition => {
+    return {
+      ...condition,
+      isHof: (condition.code === 'CES' && (condition.subCode === 'FLOW' || condition.subCode === 'LEV'))
+    };
+  });
+  set(updated.viewData, 'conditions', updatedConditions);
+
+  return updated;
+};
+
 exports.mapSort = mapSort;
 exports.mapFilter = mapFilter;
 exports.getLicencePageTitle = getLicencePageTitle;
@@ -270,4 +298,5 @@ exports.loadRiverLevelData = loadRiverLevelData;
 exports.selectRiverLevelMeasure = selectRiverLevelMeasure;
 exports.validateStationReference = validateStationReference;
 exports.riverLevelFlags = riverLevelFlags;
+exports.setConditionHofFlags = setConditionHofFlags;
 exports.errorMapper = errorMapper;

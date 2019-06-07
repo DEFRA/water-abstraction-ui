@@ -70,10 +70,13 @@ async function getLicenceDetail (request, reply) {
   try {
     const { licenceNumber, documentName } = request.licence.summary;
 
+    const { pageTitle, pageHeading } = helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName);
+
     const view = {
       ...getCommonViewContext(request),
       ...getCommonBackLink(request),
-      pageTitle: helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName)
+      pageTitle,
+      pageHeading
     };
 
     return reply.view(request.config.view, view, { layout: false });
@@ -125,6 +128,7 @@ async function postLicenceRename (request, h) {
  * for the selected licence
  */
 async function getLicenceGaugingStation (request, reply) {
+  const { documentId } = request.params;
   const { measure: mode } = request.query;
   const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
@@ -142,17 +146,22 @@ async function getLicenceGaugingStation (request, reply) {
 
   const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
+  const { pageTitle } = helpers.getLicencePageTitle(request.config.view, licenceNumber, customName);
+
+  const updatedLicenceData = await helpers.setConditionHofFlags(licenceData);
+
   const viewContext = {
     ...request.view,
-    ...licenceData,
+    ...updatedLicenceData,
     riverLevel,
     measure,
     ...helpers.riverLevelFlags(riverLevel, measure, hofTypes),
     stationReference: gaugingStation,
-    pageTitle: `Gauging station for ${customName || licenceNumber}`
+    back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
+    pageTitle
   };
 
-  return reply.view('water/view-licences/gauging-station', viewContext);
+  return reply.view('nunjucks/view-licences/gauging-station.njk', viewContext, { layout: false });
 };
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;

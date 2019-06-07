@@ -3,7 +3,7 @@ module.exports = {
   ...require('../../../../shared/view/nunjucks/filters/date'),
   ...require('../../../../shared/view/nunjucks/filters/fixed'),
   ...require('../../../../shared/view/nunjucks/filters/form'),
-  ...require('./markdown'),
+  ...require('../../../../shared/view/nunjucks/filters/markdown'),
   ...require('./merge'),
   ...require('./most-significant-entity-role'),
   ...require('./number'),

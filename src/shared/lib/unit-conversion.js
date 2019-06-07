@@ -60,8 +60,6 @@ const convertToUserUnit = (value, unit) => {
   return converter(value, unit, multipliers);
 };
 
-module.exports = {
-  convertToCubicMetres,
-  convertToUserUnit,
-  InvalidUnitError
-};
+exports.convertToCubicMetres = convertToCubicMetres;
+exports.convertToUserUnit = convertToUserUnit;
+exports.InvalidUnitError = InvalidUnitError;

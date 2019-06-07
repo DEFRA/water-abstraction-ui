@@ -3,7 +3,7 @@
 {% from "badge.njk" import badge %}
 
 {% macro headerLink(query, field, text, srText) %}
-  <a href="/admin/notifications/report?{{ query | sortQuery(field) }}">
+  <a href="/notifications/report?{{ query | sortQuery(field) }}">
     <span class="govuk-visually-hidden">Sort by {{ srText }}</span>
     <span aria-hidden="true">{{ text }}</span>
     {{ sortIcon(query, field) }}

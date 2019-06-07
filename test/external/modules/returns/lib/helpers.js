@@ -42,7 +42,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'completed'
     };
-    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/returns/return?id=${returnId}`);
+    expect(helpers.getRedirectPath(completed)).to.equal(`/returns/return?id=${returnId}`);
   });
 
   test('redirects to edit return when status is not completed', async () => {
@@ -50,7 +50,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'due'
     };
-    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/return/internal?returnId=${returnId}`);
+    expect(helpers.getRedirectPath(completed)).to.equal(`/return/internal?returnId=${returnId}`);
   });
 
   test('redirects to select licence when there is more than 1 matched return', async () => {
@@ -58,7 +58,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'received'
     };
-    expect(helpers.getRedirectPath(completed, true)).to.equal(`/admin/returns/select-licence?formatId=${formatId}`);
+    expect(helpers.getRedirectPath(completed, true)).to.equal(`/returns/select-licence?formatId=${formatId}`);
   });
 });
 

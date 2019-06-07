@@ -3,7 +3,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { sortNewDirection } = require('../../../../../src/internal/lib/view-engine/filters/sort-new-direction');
+const { sortNewDirection } = require('../../../../../src/shared/view/nunjucks/filters/sort-new-direction');
 
 experiment('Nunjucks filters: sortNewDirection', () => {
   test('sets the new direction to -1 if the field is currently being sorted', async () => {

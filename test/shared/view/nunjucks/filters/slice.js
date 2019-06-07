@@ -1,12 +1,11 @@
 'use strict';
 
-const Lab = require('lab');
-const { experiment, test } = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
 const {
   slice
-} = require('../../../../../src/internal/lib/view-engine/filters/slice');
+} = require('../../../../../src/shared/view/nunjucks/filters/slice');
 
 experiment('slice Nunjucks filter', () => {
   const str = 'The quick brown fox jumps over the lazy dog.';

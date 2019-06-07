@@ -1,7 +1,7 @@
 module.exports = {
-  ...require('./abstraction-period'),
-  ...require('./date'),
-  ...require('./fixed'),
+  ...require('../../../../shared/view/nunjucks/filters/abstraction-period'),
+  ...require('../../../../shared/view/nunjucks/filters/date'),
+  ...require('../../../../shared/view/nunjucks/filters/fixed'),
   ...require('./form'),
   ...require('./markdown'),
   ...require('./merge'),

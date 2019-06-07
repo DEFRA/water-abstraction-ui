@@ -17,6 +17,4 @@ const abstractionPeriod = (str) => {
   return m.format('D MMMM');
 };
 
-module.exports = {
-  abstractionPeriod
-};
+exports.abstractionPeriod = abstractionPeriod;

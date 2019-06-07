@@ -11,6 +11,4 @@ const date = (value, format = 'D MMMM YYYY') => {
   return m.isValid() ? m.format(format) : null;
 };
 
-module.exports = {
-  date
-};
+exports.date = date;

@@ -8,6 +8,4 @@ const fixed = (value, precision) => {
   return parseFloat(value).toFixed(precision);
 };
 
-module.exports = {
-  fixed
-};
+exports.fixed = fixed;

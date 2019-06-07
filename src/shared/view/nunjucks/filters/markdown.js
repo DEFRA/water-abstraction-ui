@@ -11,6 +11,4 @@ const markdown = (input = '') => {
   });
 };
 
-module.exports = {
-  markdown
-};
+exports.markdown = markdown;

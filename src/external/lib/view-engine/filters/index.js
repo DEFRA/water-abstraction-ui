@@ -5,7 +5,7 @@ module.exports = {
   ...require('../../../../shared/view/nunjucks/filters/form'),
   ...require('../../../../shared/view/nunjucks/filters/markdown'),
   ...require('../../../../shared/view/nunjucks/filters/merge'),
-  ...require('./number'),
+  ...require('../../../../shared/view/nunjucks/filters/number'),
   ...require('./pluralize'),
   ...require('./query-string'),
   ...require('./slice'),

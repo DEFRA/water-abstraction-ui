@@ -20,10 +20,10 @@ experiment('notifyToBadge', () => {
     });
   });
 
-  test('returns Pending/completed when status is "accepted"', async () => {
+  test('returns Sent/completed when status is "accepted"', async () => {
     const result = notifyToBadge('accepted');
     expect(result).to.equal({
-      text: 'Pending',
+      text: 'Sent',
       status: 'completed'
     });
   });

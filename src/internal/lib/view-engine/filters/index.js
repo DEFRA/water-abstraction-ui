@@ -5,7 +5,7 @@ module.exports = {
   ...require('../../../../shared/view/nunjucks/filters/fixed'),
   ...require('../../../../shared/view/nunjucks/filters/form'),
   ...require('../../../../shared/view/nunjucks/filters/markdown'),
-  ...require('./merge'),
+  ...require('../../../../shared/view/nunjucks/filters/merge'),
   ...require('./most-significant-entity-role'),
   ...require('./number'),
   ...require('./pluralize'),

@@ -21,8 +21,6 @@ const incrementDateCount = (date, dateCounts) => {
   return dateCounts;
 };
 
-module.exports = {
-  canLog,
-  incrementDateCount,
-  postReport
-};
+exports.canLog = canLog;
+exports.incrementDateCount = incrementDateCount;
+exports.postReport = postReport;

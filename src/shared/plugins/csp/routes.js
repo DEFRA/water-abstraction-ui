@@ -1,7 +1,7 @@
 const controller = require('./controller');
 
-module.exports = {
-  csp: {
+module.exports = [
+  {
     method: 'POST',
     path: '/csp/report',
     handler: controller.postReport,
@@ -18,4 +18,4 @@ module.exports = {
       }
     }
   }
-};
+];

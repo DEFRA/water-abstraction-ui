@@ -176,7 +176,7 @@ async function getLicenceSelect (request, reply) {
  */
 async function postLicenceSelect (request, reply) {
   const { licences } = request.payload;
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   try {
     const { documentIds } = request.yar.get('addLicenceFlow');
@@ -281,10 +281,8 @@ async function getAddressSelect (request, reply) {
   }, { layout: false });
 }
 
-const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
-
 const getAddressSelectViewContext = async (request, verification, licence, fao) => {
-  const entityId = getEntityIdFromRequest(request);
+  const { entityId } = request.defra;
   const userLicences = await getAllUserEntityLicences(entityId);
 
   const context = request.view;
@@ -468,7 +466,7 @@ async function postSecurityCode (request, reply) {
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   try {
     // Validate HTTP POST payload

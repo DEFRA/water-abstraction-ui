@@ -195,7 +195,7 @@ const postEditObject = async (request, h) => {
 
   if (diff.updated.length) {
     // Add the new action to the list of actions
-    const action = actionCreator(pick(payload, diff.updated), request.auth.credentials, ...args);
+    const action = actionCreator(pick(payload, diff.updated), request.defra, ...args);
     const { actions } = arLicence.licence_data_value;
     actions.push(action);
 
@@ -232,7 +232,7 @@ const postSetStatus = async (request, h) => {
     const { licence_ref: licenceNumber } = licence;
 
     // Add new action to list
-    const action = createSetStatus(status, notes, request.auth.credentials);
+    const action = createSetStatus(status, notes, request.defra);
     const { actions } = arLicence.licence_data_value;
     actions.push(action);
 

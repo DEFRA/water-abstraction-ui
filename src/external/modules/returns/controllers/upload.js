@@ -86,7 +86,7 @@ async function postXmlUpload (request, h) {
 
     // Upload to water service and get event ID
     if (status === uploadHelpers.fileStatuses.OK) {
-      const userName = get(request, 'auth.credentials.username');
+      const { userName } = request.defra;
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
@@ -162,7 +162,7 @@ const getSpinnerPage = async (request, h) => {
   // Get data from request
   const { eventId, status } = request.params;
   const config = spinnerConfig[status];
-  const userName = get(request, 'auth.credentials.username');
+  const { userName } = request.defra;
 
   // Set page title
   set(request, 'view.pageTitle', config.pageTitle);
@@ -293,7 +293,7 @@ const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
  * Downloads a ZIP of CSV templates
  */
 const getCSVTemplates = async (request, h) => {
-  const { companyId, companyName } = request.auth.credentials;
+  const { companyId, companyName } = request.defra;
 
   // Fetch returns for current company
   const returns = await waterCompany.getCurrentDueReturns(companyId);

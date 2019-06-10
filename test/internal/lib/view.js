@@ -63,13 +63,11 @@ experiment('lib/view.contextDefaults', () => {
 });
 
 experiment('lib/view.getTracking', () => {
-  const internal = {
-    scope: ['internal'],
+  const existingUser = {
     lastLogin: '2018-10-24'
   };
 
-  const external = {
-    scope: [],
+  const newUser = {
     lastLogin: null
   };
 
@@ -81,8 +79,8 @@ experiment('lib/view.getTracking', () => {
     expect(tracking.isLoggedIn).to.be.false();
   });
 
-  test('Existing internal user', async () => {
-    const tracking = view.getTracking(internal);
+  test('Existing user', async () => {
+    const tracking = view.getTracking(existingUser);
     expect(tracking.userType).to.equal('internal');
     expect(tracking.lastLogin).to.equal('2018-10-24');
     expect(tracking.newUser).to.equal(false);
@@ -91,9 +89,9 @@ experiment('lib/view.getTracking', () => {
     expect(tracking.isLoggedIn).to.be.true();
   });
 
-  test('New external user', async () => {
-    const tracking = view.getTracking(external);
-    expect(tracking.userType).to.equal('external');
+  test('New user', async () => {
+    const tracking = view.getTracking(newUser);
+    expect(tracking.userType).to.equal('internal');
     expect(tracking.lastLogin).to.equal(null);
     expect(tracking.newUser).to.equal(true);
     expect(tracking.debug).to.exist();

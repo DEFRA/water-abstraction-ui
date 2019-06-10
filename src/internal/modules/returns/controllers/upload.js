@@ -85,7 +85,7 @@ async function postXmlUpload (request, h) {
 
     // Upload to water service and get event ID
     if (status === uploadHelpers.fileStatuses.OK) {
-      const userName = get(request, 'auth.credentials.username');
+      const { userName } = request.defra;
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
@@ -161,7 +161,7 @@ const getSpinnerPage = async (request, h) => {
   // Get data from request
   const { eventId, status } = request.params;
   const config = spinnerConfig[status];
-  const userName = get(request, 'auth.credentials.username');
+  const { userName } = request.defra;
 
   // Set page title
   set(request, 'view.pageTitle', config.pageTitle);

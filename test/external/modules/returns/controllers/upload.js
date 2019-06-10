@@ -37,13 +37,11 @@ const createRequest = () => {
     payload: {
       file: '<xml>'
     },
-    auth: {
-      credentials: {
-        username: userName,
-        entity_id: entityId,
-        companyId,
-        companyName
-      }
+    defra: {
+      userName,
+      entityId,
+      companyId,
+      companyName
     }
   };
 };

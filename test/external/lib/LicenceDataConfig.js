@@ -1,6 +1,5 @@
 'use strict';
 
-const Lab = require('lab');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();

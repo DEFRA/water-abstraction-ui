@@ -9,19 +9,19 @@ class LicenceDataConfig {
     return { companyId: request.defra.companyId };
   }
 
-  async _callWaterMethod (method, request, documentId) {
+  async _callWaterMethod (method, documentId, request) {
     const options = this._getOptions(request);
     const { error, data } = await this.connectors.water.licences[method](documentId, options);
     throwIfError(error);
     return data;
   }
 
-  getSummaryByDocumentId (request, documentId) {
-    return this._callWaterMethod('getSummaryByDocumentId', request, documentId);
+  getSummaryByDocumentId (documentId, request) {
+    return this._callWaterMethod('getSummaryByDocumentId', documentId, request);
   }
 
-  getCommunicationsByDocumentId (request, documentId) {
-    return this._callWaterMethod('getCommunicationsByDocumentId', request, documentId);
+  getCommunicationsByDocumentId (documentId, request) {
+    return this._callWaterMethod('getCommunicationsByDocumentId', documentId, request);
   }
 }
 

@@ -2,7 +2,7 @@ const { last } = require('lodash');
 const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers');
 
 const config = require('../../../config');
-const serviceRequest = require('../../../../shared/lib/connectors/service-request');
+const serviceRequest = require('shared/lib/connectors/service-request');
 
 /**
  * Gets due returns in the current returns cycle for the specified company

@@ -5,11 +5,11 @@ const sandbox = sinon.createSandbox();
 
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const controller = require('../../../../src/internal/modules/batch-notifications/controller');
-const helpers = require('../../../../src/internal/modules/batch-notifications/lib/helpers');
-const csv = require('../../../../src/internal/lib/csv-download');
+const controller = require('internal/modules/batch-notifications/controller');
+const helpers = require('internal/modules/batch-notifications/lib/helpers');
+const csv = require('internal/lib/csv-download');
 const batchNotificationsConnector =
-  require('../../../../src/internal/lib/connectors/water-service/batch-notifications');
+  require('internal/lib/connectors/water-service/batch-notifications');
 
 experiment('batch notifications controller', () => {
   let h;

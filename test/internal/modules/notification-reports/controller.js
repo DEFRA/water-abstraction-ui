@@ -3,8 +3,8 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../src/internal/modules/notifications-reports/controller');
-const { events, taskConfig, notifications } = require('../../../../src/internal/lib/connectors/water');
+const controller = require('internal/modules/notifications-reports/controller');
+const { events, taskConfig, notifications } = require('internal/lib/connectors/water');
 
 experiment('getNotification', () => {
   let request;

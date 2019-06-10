@@ -2,8 +2,8 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
-const waterConnector = require('../../../../src/external/lib/connectors/water');
-const notifyConnector = require('../../../../src/external/lib/connectors/notify');
+const waterConnector = require('external/lib/connectors/water');
+const notifyConnector = require('external/lib/connectors/notify');
 
 experiment('sendSecurityCode', () => {
   experiment('Address Length <=6', () => {

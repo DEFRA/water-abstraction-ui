@@ -1,8 +1,8 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const confirmForm = require('../../../../../src/internal/modules/returns/forms/confirm');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const confirmForm = require('internal/modules/returns/forms/confirm');
+const { scope } = require('internal/lib/constants');
 
 experiment('confirmForm', () => {
   const getRequest = (isInternal) => {

@@ -5,10 +5,9 @@ const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
-const { documents } = require('../../../lib/connectors/crm');
 const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../config');
-const crmConnector = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('./return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -30,13 +29,15 @@ const getCurrentCycle = (date) => {
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
 const getLicenceNumbers = (request, filter = {}) => {
-  const f = documents.createFilter(request, filter);
+  const f = Object.assign({}, filter, {
+    regime_entity_id: config.crm.regimes.water.entityId,
+    includeExpired: true
+  });
+
   const sort = {};
   const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
-  if (isInternalUser(request)) {
-    f.includeExpired = true;
-  }
-  return documents.findAll(f, sort, columns);
+
+  return services.crm.documents.findAll(f, sort, columns);
 };
 
 /**
@@ -318,7 +319,7 @@ const getScopedPath = (request, path) => path;
  */
 const getViewData = async (request, data) => {
   const isInternal = isInternalUser(request);
-  const documentHeader = await crmConnector.documents.getWaterLicence(data.licenceNumber, isInternal);
+  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, isInternal);
   return {
     ...request.view,
     documentHeader,

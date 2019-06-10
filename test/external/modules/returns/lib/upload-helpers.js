@@ -4,13 +4,13 @@ const sinon = require('sinon');
 const fs = require('fs');
 const EventEmitter = require('events');
 
-const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
-const { errorMessages } = require('../../../../../src/external/modules/returns/controllers/upload');
-const fileCheck = require('../../../../../src/shared/lib/file-check');
+const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
+const { errorMessages } = require('external/modules/returns/controllers/upload');
+const fileCheck = require('shared/lib/file-check');
 
 const csrfToken = '4a0b2424-6c02-45a5-9935-70a4c41538d2';
 
-const { logger } = require('../../../../../src/external/logger');
+const { logger } = require('external/logger');
 
 const form = {
   file: {

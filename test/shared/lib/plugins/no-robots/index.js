@@ -1,6 +1,6 @@
 const Hapi = require('@hapi/hapi');
 
-const plugin = require('../../../../../src/shared/plugins/no-robots');
+const plugin = require('shared/plugins/no-robots');
 
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();

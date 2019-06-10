@@ -10,11 +10,11 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const uuid = require('uuid/v4');
 
-const waterConnector = require('../../../../../src/internal/lib/connectors/water');
-const helpers = require('../../../../../src/internal/modules/returns/lib/helpers');
+const waterConnector = require('internal/lib/connectors/water');
+const helpers = require('internal/modules/returns/lib/helpers');
 
-const controller = require('../../../../../src/internal/modules/returns/controllers/internal');
-const sessionHelpers = require('../../../../../src/internal/modules/returns/lib/session-helpers');
+const controller = require('internal/modules/returns/controllers/internal');
+const sessionHelpers = require('internal/modules/returns/lib/session-helpers');
 
 const createRequest = () => ({
   query: {

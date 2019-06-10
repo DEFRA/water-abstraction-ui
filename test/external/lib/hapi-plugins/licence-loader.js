@@ -5,11 +5,10 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { set, get } = require('lodash');
 
-const licenceLoaderPlugin = require('../../../../src/external/lib/hapi-plugins/licence-loader');
+const licenceLoaderPlugin = require('external/lib/hapi-plugins/licence-loader');
 
-const crmDocumentConnector = require('../../../../src/external/lib/connectors/crm/documents');
-const crmVerifcationConnector = require('../../../../src/external/lib/connectors/crm/verification');
 const requestStubPlugin = require('./request-stub-plugin');
+const services = require('external/lib/connectors/services');
 
 const addEntityIdToRequest = request => {
   set(request, 'auth.isAuthenticated', true);
@@ -42,8 +41,8 @@ const getServer = async (licenceLoaderSettings) => {
 
 experiment('loadUserLicenceCount', () => {
   beforeEach(async () => {
-    sandbox.stub(crmDocumentConnector, 'getLicenceCount');
-    sandbox.stub(crmVerifcationConnector, 'getOutstandingVerifications');
+    sandbox.stub(services.crm.documents, 'getLicenceCount');
+    sandbox.stub(services.crm.verifications, 'getOutstandingVerifications');
   });
 
   afterEach(async () => {
@@ -51,7 +50,7 @@ experiment('loadUserLicenceCount', () => {
   });
 
   test('when loadUserLicenceCount is true the data is added to the request', async () => {
-    crmDocumentConnector.getLicenceCount.resolves(2);
+    services.crm.documents.getLicenceCount.resolves(2);
     const loaderSettings = { loadUserLicenceCount: true };
     const server = await getServer(loaderSettings);
     const request = { url: '/' };
@@ -73,7 +72,7 @@ experiment('loadUserLicenceCount', () => {
   });
 
   test('when loadOutstandingVerifications is true the data is added to the request', async () => {
-    crmVerifcationConnector.getOutstandingVerifications.resolves({
+    services.crm.verifications.getOutstandingVerifications.resolves({
       data: [{ id: 1 }]
     });
     const loaderSettings = { loadOutstandingVerifications: true };
@@ -97,10 +96,10 @@ experiment('loadUserLicenceCount', () => {
   });
 
   test('all requested data is loaded for multilpe keys', async () => {
-    crmVerifcationConnector.getOutstandingVerifications.resolves({
+    services.crm.verifications.getOutstandingVerifications.resolves({
       data: [{ id: 1 }]
     });
-    crmDocumentConnector.getLicenceCount.resolves(2);
+    services.crm.documents.getLicenceCount.resolves(2);
 
     const loaderSettings = {
       loadUserLicenceCount: true,

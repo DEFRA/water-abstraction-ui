@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { searchForm } = require('../../../../../src/internal/modules/internal-search/forms/search-form');
+const { searchForm } = require('internal/modules/internal-search/forms/search-form');
 
 experiment('searchForm', () => {
   let form;

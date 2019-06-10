@@ -1,5 +1,5 @@
 var pluralize = require('pluralize');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 
 const confirmForm = (request, count) => {
   const { csrfToken } = request.view;

@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { getReportRequestOptions } = require('../../../../src/external/lib/connectors/returns-reports');
+const { getReportRequestOptions } = require('external/lib/connectors/returns-reports');
 
 experiment('getReportRequestOptions', () => {
   test('It should create options for a user details report request', async () => {

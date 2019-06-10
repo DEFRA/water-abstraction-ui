@@ -1,8 +1,8 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const IDM = require('../../../lib/connectors/idm');
-const CRM = require('../../../lib/connectors/crm');
 const permits = require('../../../lib/connectors/permit');
 const water = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 
 const firstPage = {
   perPage: 1
@@ -46,7 +46,7 @@ const getIDMKPIData = async () => {
  * @return {Promise} resolves with number of CRM docs
  */
 const getCRMDocumentCount = async () => {
-  return getCount(CRM.documents);
+  return getCount(services.crm.documents);
 };
 
 /**
@@ -54,7 +54,7 @@ const getCRMDocumentCount = async () => {
  * @return {Promise} resolves wtih array of CRM KPIs
  */
 const getCRMKPIData = async () => {
-  return getKPIData(CRM.kpi);
+  return getKPIData(services.crm.kpi);
 };
 
 /**
@@ -62,7 +62,7 @@ const getCRMKPIData = async () => {
  * @return {Promise} resolves with number of CRM verifications
  */
 const getCRMVerificationCount = async () => {
-  return getCount(CRM.verification);
+  return getCount(services.crm.verifications);
 };
 
 /**

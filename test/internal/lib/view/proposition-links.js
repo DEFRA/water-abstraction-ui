@@ -6,8 +6,8 @@ const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const { getPropositionLinks } = require('../../../../src/internal/lib/view/proposition-links');
-const { scope } = require('../../../../src/internal/lib/constants');
+const { getPropositionLinks } = require('internal/lib/view/proposition-links');
+const { scope } = require('internal/lib/constants');
 
 const getAuthenticatedRequest = () => {
   return {

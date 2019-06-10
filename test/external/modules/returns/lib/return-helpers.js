@@ -30,7 +30,7 @@ const {
   applyUserDetails,
   applyMultiplication,
   applyCleanup
-} = require('../../../../../src/external/modules/returns/lib/return-helpers');
+} = require('external/modules/returns/lib/return-helpers');
 
 const sameYear = {
   periodStartDay: 5,

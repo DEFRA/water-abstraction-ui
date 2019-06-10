@@ -1,6 +1,28 @@
 const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
+const urlJoin = require('url-join');
+const { http } = require('@envage/water-abstraction-helpers');
 
-class EntitiesAPIClient extends APIClient {
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/entity');
+
+class EntitiesApiClient extends APIClient {
+  /**
+   * Create a new instance of a EntitiesApiClient
+   * @param {Object} config Object containing the services.crm url and the jwt.token value
+   * @param {Object} logger The system logger object
+   */
+  constructor (config, logger) {
+    const serviceUrl = config.services.crm;
+
+    super(http.request, {
+      serviceUrl,
+      endpoint: getEndpoint(serviceUrl),
+      logger,
+      headers: {
+        Authorization: config.jwt.token
+      }
+    });
+  }
+
   /**
    * Gets or creates an individual CRM entity identified by the specified email
    * address
@@ -33,4 +55,4 @@ class EntitiesAPIClient extends APIClient {
   };
 }
 
-module.exports = EntitiesAPIClient;
+module.exports = EntitiesApiClient;

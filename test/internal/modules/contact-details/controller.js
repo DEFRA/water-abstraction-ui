@@ -10,8 +10,8 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const idm = require('../../../../src/internal/lib/connectors/idm');
-const controller = require('../../../../src/internal/modules/contact-details/controller');
+const idm = require('internal/lib/connectors/idm');
+const controller = require('internal/modules/contact-details/controller');
 
 experiment('getContactInformation', () => {
   let h;

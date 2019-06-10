@@ -1,6 +1,6 @@
 const { get } = require('lodash');
-const { applyErrors } = require('../../../../shared/lib/forms');
-const fileCheck = require('../../../../shared/lib/file-check');
+const fileCheck = require('shared/lib/file-check');
+const { applyErrors } = require('shared/lib/forms');
 const fs = require('fs');
 const path = require('path');
 const uuidv4 = require('uuid/v4');

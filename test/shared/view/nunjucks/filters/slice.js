@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   slice
-} = require('../../../../../src/shared/view/nunjucks/filters/slice');
+} = require('shared/view/nunjucks/filters/slice');
 
 experiment('slice Nunjucks filter', () => {
   const str = 'The quick brown fox jumps over the lazy dog.';

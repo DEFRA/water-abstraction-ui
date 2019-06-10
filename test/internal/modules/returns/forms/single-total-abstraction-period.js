@@ -10,7 +10,7 @@ const {
 const {
   singleTotalAbstractionPeriodForm,
   singleTotalAbstractionPeriodSchema
-} = require('../../../../../src/internal/modules/returns/forms/single-total-abstraction-period');
+} = require('internal/modules/returns/forms/single-total-abstraction-period');
 
 experiment('single-total-abstraction-period form', () => {
   let request;

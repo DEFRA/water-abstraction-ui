@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('lab').script();
 
-const { returnReceivedForm } = require('../../../../../src/internal/modules/returns/forms/return-received');
+const { returnReceivedForm } = require('internal/modules/returns/forms/return-received');
 
 experiment('returnReceivedForm', () => {
   let request;

@@ -2,7 +2,7 @@
 const Lab = require('lab');
 const sinon = require('sinon');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
-const mappers = require('../../../../../src/external/modules/service-status/lib/mappers');
+const mappers = require('external/modules/service-status/lib/mappers');
 const { expect } = require('code');
 
 const kpiData = require('./kpi-data.json');

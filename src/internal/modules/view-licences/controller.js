@@ -3,7 +3,8 @@ const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-const CRM = require('../../lib/connectors/crm');
+const crmConnector = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const { getLicences: baseGetLicences } = require('./base');
 const helpers = require('./helpers');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
@@ -50,7 +51,7 @@ async function getLicenceDetail (request, reply) {
     const { documentHeader, viewData, gaugingStations } = await helpers.loadLicenceData(request, documentId);
 
     const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-    documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
+    documentHeader.verifications = await crmConnector.getDocumentVerifications(documentId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
 
@@ -87,7 +88,7 @@ async function postLicenceRename (request, reply) {
   const { documentId } = request.params;
 
   // Rename licence
-  const { error } = await CRM.documents.setLicenceName(documentId, name);
+  const { error } = await services.crm.documents.setLicenceName(documentId, name);
   throwIfError(error);
 
   return reply.redirect(`/licences/${documentId}`);

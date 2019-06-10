@@ -3,7 +3,7 @@ const {
   experiment,
   test
 } = exports.lab = require('lab').script();
-const { meterDetailsForm } = require('../../../../../src/external/modules/returns/forms/meter-details');
+const { meterDetailsForm } = require('external/modules/returns/forms/meter-details');
 
 const createRequest = (isInternal = true) => {
   return {

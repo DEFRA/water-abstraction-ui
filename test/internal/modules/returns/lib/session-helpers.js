@@ -2,8 +2,8 @@ const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 
-const sessionHelpers = require('../../../../../src/internal/modules/returns/lib/session-helpers');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const sessionHelpers = require('internal/modules/returns/lib/session-helpers');
+const { scope } = require('internal/lib/constants');
 
 const getTestRequest = (returnId, isInternal) => {
   return {

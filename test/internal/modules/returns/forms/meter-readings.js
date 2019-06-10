@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const { find } = require('lodash');
-const { meterReadingsSchema, meterReadingsForm } = require('../../../../../src/internal/modules/returns/forms/meter-readings');
+const { meterReadingsSchema, meterReadingsForm } = require('internal/modules/returns/forms/meter-readings');
 
 const data = {
   meters: [{

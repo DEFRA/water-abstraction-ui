@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   queryString
-} = require('../../../../../src/shared/view/nunjucks/filters/query-string');
+} = require('shared/view/nunjucks/filters/query-string');
 
 experiment('queryString Nunjucks filter', () => {
   const obj = { foo: 'bar', bar: 'foo' };

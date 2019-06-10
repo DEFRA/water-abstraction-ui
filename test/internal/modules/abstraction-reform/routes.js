@@ -4,13 +4,13 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const constants = require('../../../../src/internal/lib/constants');
+const constants = require('internal/lib/constants');
 const scopes = [
   constants.scope.abstractionReformUser,
   constants.scope.abstractionReformApprover
 ];
 
-const routes = require('../../../../src/internal/modules/abstraction-reform/routes');
+const routes = require('internal/modules/abstraction-reform/routes');
 
 lab.experiment('abstraction-reform - admin routes', () => {
   lab.test('getViewLicences has admin auth scopes', async () => {

@@ -4,8 +4,8 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
-const communicationsConnector = require('../../../../../src/internal/lib/connectors/water-service/communications');
+const serviceRequest = require('shared/lib/connectors/service-request');
+const communicationsConnector = require('internal/lib/connectors/water-service/communications');
 
 experiment('getCommunication', () => {
   beforeEach(async () => {

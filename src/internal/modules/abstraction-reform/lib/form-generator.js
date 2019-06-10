@@ -3,7 +3,7 @@ const RefParser = require('json-schema-ref-parser');
 const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 const licencesConnector = require('../../../lib/connectors/water-service/licences');
 
 const { mapConditionText } = require('./map-condition');

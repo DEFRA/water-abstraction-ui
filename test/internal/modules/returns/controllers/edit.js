@@ -1,15 +1,15 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const controller = require('../../../../../src/internal/modules/returns/controllers/edit');
-const { returns } = require('../../../../../src/internal/lib/connectors/water');
-const helpers = require('../../../../../src/internal/modules/returns/lib/helpers');
-const { scope: { internal, external } } = require('../../../../../src/internal/lib/constants');
-const returnPath = require('../../../../../src/internal/modules/returns/lib/return-path');
-const permissions = require('../../../../../src/internal/lib/permissions');
-const sessionHelpers = require('../../../../../src/internal/modules/returns/lib/session-helpers');
-const forms = require('../../../../../src/shared/lib/forms');
-const flowHelpers = require('../../../../../src/internal/modules/returns/lib/flow-helpers');
+const controller = require('internal/modules/returns/controllers/edit');
+const { returns } = require('internal/lib/connectors/water');
+const helpers = require('internal/modules/returns/lib/helpers');
+const { scope: { internal, external } } = require('internal/lib/constants');
+const returnPath = require('internal/modules/returns/lib/return-path');
+const permissions = require('internal/lib/permissions');
+const sessionHelpers = require('internal/modules/returns/lib/session-helpers');
+const forms = require('shared/lib/forms');
+const flowHelpers = require('internal/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();
 

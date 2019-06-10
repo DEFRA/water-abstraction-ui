@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const schema = require('../../../../../src/internal/modules/abstraction-reform/lib/schema');
+const schema = require('internal/modules/abstraction-reform/lib/schema');
 
 /*
  * When the json ref parser dereferences data the original schema object was mutated.

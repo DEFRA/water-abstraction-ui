@@ -1,7 +1,7 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { selectCompanyForm } = require('../../../../../src/external/modules/company-selector/forms/select-company');
+const { selectCompanyForm } = require('external/modules/company-selector/forms/select-company');
 
 const getRequest = () => {
   return {

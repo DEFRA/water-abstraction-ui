@@ -3,8 +3,8 @@
 const { Promise } = require('bluebird');
 const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
-const documents = require('../../lib/connectors/crm/documents');
-const { forceArray } = require('../../../shared/lib/array-helpers');
+const { forceArray } = require('shared/lib/array-helpers');
+const services = require('../../lib/connectors/services');
 const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
 const { getNotificationsList, getReportsList } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
@@ -178,7 +178,7 @@ async function getRefine (request, reply) {
   const filter = taskData.getFilter();
 
   // Get documents data from CRM
-  const { error, data, pagination } = await documents.findMany(filter, {
+  const { error, data, pagination } = await services.crm.documents.findMany(filter, {
     system_external_id: +1
   }, {
     page: 1,

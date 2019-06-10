@@ -4,10 +4,10 @@ const { cloneDeep, set } = require('lodash');
 const sinon = require('sinon');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const controller = require('../../../../src/internal/modules/internal-search/controller');
-const water = require('../../../../src/internal/lib/connectors/water');
-const waterServiceUserConnector = require('../../../../src/internal/lib/connectors/water-service/user');
-const { scope } = require('../../../../src/internal/lib/constants');
+const controller = require('internal/modules/internal-search/controller');
+const water = require('internal/lib/connectors/water');
+const waterServiceUserConnector = require('internal/lib/connectors/water-service/user');
+const { scope } = require('internal/lib/constants');
 
 const getUserStatusResponses = require('../../responses/water-service/user/_userId_/status');
 

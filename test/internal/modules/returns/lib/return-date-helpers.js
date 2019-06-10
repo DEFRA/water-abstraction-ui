@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const returnDateHelpers = require('../../../../../src/internal/modules/returns/lib/return-date-helpers');
+const returnDateHelpers = require('internal/modules/returns/lib/return-date-helpers');
 
 experiment('getPeriodStartEnd', () => {
   experiment('when the default period is used', () => {

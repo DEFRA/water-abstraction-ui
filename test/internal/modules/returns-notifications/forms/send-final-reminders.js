@@ -1,7 +1,7 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { sendFinalRemindersForm } = require('../../../../../src/internal/modules/returns-notifications/forms/send-final-reminders');
+const { sendFinalRemindersForm } = require('internal/modules/returns-notifications/forms/send-final-reminders');
 
 const request = {
   view: {

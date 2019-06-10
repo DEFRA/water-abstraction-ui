@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const {
   mapConditionText
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/map-condition');
+} = require('internal/modules/abstraction-reform/lib/map-condition');
 const { expect } = require('code');
 
 const { experiment, test } = exports.lab = require('lab').script();

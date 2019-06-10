@@ -1,13 +1,13 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
-const EntitiesAPIClient = require('../../../../../../src/shared/lib/connectors/services/crm/EntitiesAPIClient');
-const rp = sandbox.stub();
-const client = new EntitiesAPIClient(rp, {
-  endpoint: 'http://test-endpoint'
-});
+const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient');
 
-experiment('Shared EntitiesAPIClient', () => {
+experiment('Shared EntitiesApiClient', () => {
+  let logger;
+  let config;
+  let client;
+
   const userName = ' BOB@example.com ';
   const entity = {
     entity_id: 'entity_1',
@@ -16,10 +16,23 @@ experiment('Shared EntitiesAPIClient', () => {
   };
 
   beforeEach(async () => {
+    logger = {};
+    config = {
+      jwt: {
+        token: 'test-jwt-token'
+      },
+      services: {
+        crm: 'https://example.com/crm'
+      }
+    };
+
+    client = new EntitiesApiClient(config, logger);
+
     sandbox.stub(client, 'findMany').resolves({
       error: null,
       data: [ entity ]
     });
+
     sandbox.stub(client, 'create').resolves({
       error: null,
       data: entity
@@ -28,6 +41,20 @@ experiment('Shared EntitiesAPIClient', () => {
 
   afterEach(async () => {
     sandbox.restore();
+  });
+
+  experiment('construction', () => {
+    test('creates the expected endpoint URL', async () => {
+      expect(client.getUrl()).to.equal('https://example.com/crm/entity');
+    });
+
+    test('sets the JWT in the client headers', async () => {
+      expect(client.config.headers.Authorization).to.equal('test-jwt-token');
+    });
+
+    test('adds the base service URL to the config', async () => {
+      expect(client.config.serviceUrl).to.equal('https://example.com/crm');
+    });
   });
 
   experiment('getOrCreateIndividual', () => {

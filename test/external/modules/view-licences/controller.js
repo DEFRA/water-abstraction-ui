@@ -3,12 +3,12 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const communicationsConnector = require('../../../../src/external/lib/connectors/water-service/communications');
+const communicationsConnector = require('external/lib/connectors/water-service/communications');
 
 const communicationResponses = require('../../responses/water-service/communications/_documentId_');
 
-const controller = require('../../../../src/external/modules/view-licences/controller');
-const { scope } = require('../../../../src/external/lib/constants');
+const controller = require('external/modules/view-licences/controller');
+const { scope } = require('external/lib/constants');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {

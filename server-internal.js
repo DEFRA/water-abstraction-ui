@@ -18,7 +18,7 @@ const connectors = require('./src/internal/lib/connectors/services');
 const common = createPlugins(config, logger, connectors);
 
 // Configure auth plugin
-const AuthConfig = require('./src/internal/lib/AuthConfig');
+const AuthConfig = require('internal/lib/AuthConfig');
 const authConfig = new AuthConfig(config, connectors);
 const authPlugin = {
   plugin: require('shared/plugins/auth'),
@@ -30,7 +30,7 @@ const authPlugin = {
 const server = Hapi.server({
   ...config.server,
   cache: {
-    engine: require('./src/shared/lib/catbox-rest-api')
+    engine: require('shared/lib/catbox-rest-api')
   } });
 
 /**

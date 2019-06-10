@@ -1,7 +1,28 @@
 const { throwIfError, APIClient } = require('@envage/hapi-pg-rest-api');
-const serviceRequest = require('../../service-request');
+const urlJoin = require('url-join');
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
 
-class UsersAPIClient extends APIClient {
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'user');
+
+class UsersApiClient extends APIClient {
+  /**
+   * Create a new instance of a UsersApiClient
+   * @param {Object} config Object containing the services.crm url and the jwt.token value
+   * @param {Object} logger The system logger object
+   */
+  constructor (config, logger) {
+    const serviceUrl = config.services.idm;
+
+    super(http.request, {
+      serviceUrl,
+      endpoint: getEndpoint(serviceUrl),
+      logger,
+      headers: {
+        Authorization: config.jwt.token
+      }
+    });
+  }
+
   /**
    * Authenticates a user with the IDM for the application specified in
    * the config object
@@ -13,7 +34,7 @@ class UsersAPIClient extends APIClient {
    */
   async authenticate (email, password, application) {
     try {
-      const uri = `${this.config.endpoint}/login`;
+      const uri = urlJoin(this.config.endpoint, 'login');
 
       const response = await serviceRequest.post(uri, {
         body: {
@@ -72,8 +93,7 @@ class UsersAPIClient extends APIClient {
      * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
      */
   resetPassword (application, email, mode = 'reset', params = {}) {
-    const endpoint = this.config.endpoint.replace('/user', '');
-    const uri = `${endpoint}/reset/${application}/${email}`;
+    const uri = urlJoin(this.config.serviceUrl, 'reset', application, email);
     return serviceRequest.patch(uri, {
       qs: {
         mode,
@@ -118,4 +138,4 @@ class UsersAPIClient extends APIClient {
   }
 }
 
-module.exports = UsersAPIClient;
+module.exports = UsersApiClient;

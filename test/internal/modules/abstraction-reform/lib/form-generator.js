@@ -1,16 +1,16 @@
 require('dotenv').config();
 const sandbox = require('sinon').createSandbox();
 
-const apiHelpers = require('../../../../../src/internal/modules/abstraction-reform/lib/api-helpers');
+const apiHelpers = require('internal/modules/abstraction-reform/lib/api-helpers');
 const {
   dereference,
   picklistSchemaFactory,
   schemaToForm, guessLabel,
   addAttribute,
   createEnumField
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/form-generator');
+} = require('internal/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('code');
-const licencesConnector = require('../../../../../src/internal/lib/connectors/water-service/licences');
+const licencesConnector = require('internal/lib/connectors/water-service/licences');
 
 const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
 

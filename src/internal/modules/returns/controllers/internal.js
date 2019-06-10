@@ -1,12 +1,12 @@
 const Boom = require('boom');
 const { returns } = require('../../../lib/connectors/water');
-const { documents } = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 const { isInternal: isInternalUser } = require('../../../lib/permissions');
 
 const helpers = require('../lib/helpers');
 const sessionHelpers = require('../lib/session-helpers');
 
-const { handleRequest, getValues } = require('../../../../shared/lib/forms');
+const { handleRequest, getValues } = require('shared/lib/forms');
 
 const {
   applyStatus,
@@ -158,7 +158,7 @@ const getSubmittedViewData = async (request) => {
   const view = await helpers.getViewData(request, data);
 
   // Redirect path is returns page for this licence
-  const documentResponse = await documents.findMany({
+  const documentResponse = await services.crm.findMany({
     system_external_id: data.licenceNumber,
     includeExpired: isInternalUser(request)
   });

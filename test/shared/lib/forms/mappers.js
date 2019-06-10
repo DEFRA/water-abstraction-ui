@@ -13,7 +13,7 @@ const {
   defaultMapper,
   dateMapper,
   arrayMapper
-} = require('../../../../src/shared/lib/forms/mappers');
+} = require('shared/lib/forms/mappers');
 
 experiment('defaultMapper', () => {
   const payload = {

@@ -2,8 +2,8 @@
 const Lab = require('lab');
 const sinon = require('sinon');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
-const virusScanner = require('../../../../../src/external/modules/service-status/lib/virus-scanner');
-const fileCheck = require('../../../../../src/shared/lib/file-check');
+const virusScanner = require('external/modules/service-status/lib/virus-scanner');
+const fileCheck = require('shared/lib/file-check');
 const { expect } = require('code');
 
 experiment('getVirusScannerStatus', () => {

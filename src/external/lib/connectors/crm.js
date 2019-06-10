@@ -5,12 +5,7 @@
 const moment = require('moment');
 const find = require('lodash/find');
 
-const crmVerification = require('./crm/verification');
-const crmEntities = require('./crm/entities');
-const crmKPI = require('./crm/kpi');
-const crmDocuments = require('./crm/documents');
-const crmEntityRoles = require('./crm/entity-roles');
-const crmDocumentVerification = require('./crm/document-verification');
+const services = require('./services');
 
 /**
  * Gets a list of licences relating to outstanding verification
@@ -20,7 +15,7 @@ const crmDocumentVerification = require('./crm/document-verification');
  */
 async function getOutstandingLicenceRequests (entityId) {
   // Get outstanding verifications for current user
-  const res = await crmVerification.findMany({
+  const res = await services.crm.verifications.findMany({
     entity_id: entityId,
     date_verified: null
   });
@@ -32,7 +27,7 @@ async function getOutstandingLicenceRequests (entityId) {
   const verificationId = res.data.map(row => row.verification_id);
 
   // Find licences with this ID
-  const { error, data } = await crmDocuments.findMany({
+  const { error, data } = await services.crm.documents.findMany({
     verification_id: verificationId
   });
   if (error) {
@@ -57,7 +52,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
     method: 'post'
   };
 
-  const res = await crmVerification.create(verificationData);
+  const res = await services.crm.verifications.create(verificationData);
 
   if (res.error) {
     throw res.error;
@@ -65,7 +60,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
 
   const { verification_id: verificationId } = res.data;
 
-  const res2 = await crmVerification.addDocuments(verificationId, documentIds);
+  const res2 = await services.crm.verifications.addDocuments(verificationId, documentIds);
 
   if (res2.error) {
     throw res2.error;
@@ -81,7 +76,7 @@ async function createVerification (entityId, companyEntityId, documentIds) {
  * @return {Promise} resolves with company entity ID found
  */
 async function getPrimaryCompany (entityId) {
-  const res = await crmEntityRoles.setParams({ entityId }).findMany({
+  const res = await services.crm.entityRoles.setParams({ entityId }).findMany({
     role: 'primary_user'
   });
 
@@ -108,14 +103,14 @@ async function getOrCreateCompanyEntity (entityId, companyName) {
   }
 
   // No role found, create new entity
-  const { data, error } = await crmEntities.create({ entity_nm: companyName, entity_type: 'company' });
+  const { data, error } = await services.crm.entities.create({ entity_nm: companyName, entity_type: 'company' });
 
   if (error) {
     throw error;
   }
 
   // Create entity role
-  const { error: roleError } = await crmEntityRoles.setParams({ entityId }).create({
+  const { error: roleError } = await services.crm.entityRoles.setParams({ entityId }).create({
     company_entity_id: data.entity_id,
     role: 'primary_user'
   });
@@ -162,7 +157,7 @@ async function verify (entityId, verificationCode) {
   }
 
   // Verify with code
-  const res = await crmVerification.findMany({
+  const res = await services.crm.verifications.findMany({
     entity_id: entityId,
     company_entity_id: companyEntityId,
     verification_code: verificationCode,
@@ -178,14 +173,14 @@ async function verify (entityId, verificationCode) {
   const { verification_id: verificationId } = res.data[0];
 
   // Get list of documents for this verification
-  const res2 = await crmVerification.getDocuments(verificationId);
+  const res2 = await services.crm.verifications.getDocuments(verificationId);
   if (res2.error) {
     throw res2.error;
   }
   const documentIds = res2.data.map(row => row.document_id);
 
   // Update document headers
-  const res3 = await crmDocuments.updateMany(
+  const res3 = await services.crm.documents.updateMany(
     { document_id: { $in: documentIds }, company_entity_id: null },
     { verification_id: verificationId, company_entity_id: companyEntityId }
   );
@@ -194,7 +189,7 @@ async function verify (entityId, verificationCode) {
   }
 
   // Update verification record
-  const res4 = await crmVerification.updateOne(verificationId, { date_verified: moment().format() });
+  const res4 = await services.crm.verifications.updateOne(verificationId, { date_verified: moment().format() });
   if (res4.error) {
     throw res4.error;
   }
@@ -209,7 +204,7 @@ async function verify (entityId, verificationCode) {
  */
 async function getDocumentVerifications (documentId) {
   // Get verifications for document
-  const { error, data } = await crmDocumentVerification.getDocumentVerifications(documentId);
+  const { error, data } = await services.crm.documentVerification.getDocumentVerifications(documentId);
 
   // Sort by date
   data.sort(function (a, b) {
@@ -247,16 +242,9 @@ function removeDuplicates (arr, key) {
   });
 }
 
-module.exports = {
-  verification: crmVerification,
-  documents: crmDocuments,
-  entities: crmEntities,
-  kpi: crmKPI,
-  entityRoles: crmEntityRoles,
-  getOutstandingLicenceRequests,
-  createVerification,
-  getOrCreateCompanyEntity,
-  getPrimaryCompany,
-  verify,
-  getDocumentVerifications
-};
+exports.getOutstandingLicenceRequests = getOutstandingLicenceRequests;
+exports.createVerification = createVerification;
+exports.getOrCreateCompanyEntity = getOrCreateCompanyEntity;
+exports.getPrimaryCompany = getPrimaryCompany;
+exports.verify = verify;
+exports.getDocumentVerifications = getDocumentVerifications;

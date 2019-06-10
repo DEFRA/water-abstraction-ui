@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields, applyErrors } = require('../../../../shared/lib/forms');
+const { formFactory, fields, applyErrors } = require('shared/lib/forms');
 
 const createEmailField = () => {
   return fields.text('email', {

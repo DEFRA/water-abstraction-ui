@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields, setValues } = require('../../../../shared/lib/forms');
+const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 /**
  * Creates a form object for internal users to search by name, return, licence

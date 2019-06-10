@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const routes = require('../../../../src/external/modules/view-licences/routes');
+const routes = require('external/modules/view-licences/routes');
 
 experiment('getLicences', () => {
   test('adds config to load the user licence count', async () => {

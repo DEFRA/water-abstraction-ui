@@ -1,5 +1,5 @@
 const Boom = require('boom');
-const { documents } = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 const { licences } = require('../../../lib/connectors/permit');
 const { arRefreshLicenceWebhook } = require('../../../lib/connectors/water');
 
@@ -55,7 +55,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
  */
 const loadLicence = async (documentId) => {
   // Load abstraction licence
-  const { error, data: { system_internal_id: licenceId } } = await documents.findOne(documentId);
+  const { error, data: { system_internal_id: licenceId } } = await services.crm.findOne(documentId);
 
   if (error) {
     throw Boom.badImplementation('CRM error', error);

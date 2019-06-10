@@ -1,5 +1,5 @@
-const waterConnector = require('../../../../src/internal/lib/connectors/water');
-const controller = require('../../../../src/internal/modules/waiting/controller');
+const waterConnector = require('internal/lib/connectors/water');
+const controller = require('internal/modules/waiting/controller');
 
 const { expect } = require('code');
 const {

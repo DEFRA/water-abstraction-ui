@@ -1,9 +1,9 @@
 const sinon = require('sinon');
 const { expect } = require('code');
-const { logger } = require('../../../src/internal/logger');
+const { logger } = require('internal/logger');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
-const loginHelpers = require('../../../src/internal/lib/login-helpers');
-const { scope } = require('../../../src/internal/lib/constants');
+const loginHelpers = require('internal/lib/login-helpers');
+const { scope } = require('internal/lib/constants');
 
 const sandbox = sinon.createSandbox();
 

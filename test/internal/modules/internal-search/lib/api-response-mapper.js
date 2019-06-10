@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { mapResponseToView } = require('../../../../../src/internal/modules/internal-search/lib/api-response-mapper');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { mapResponseToView } = require('internal/modules/internal-search/lib/api-response-mapper');
+const { scope } = require('internal/lib/constants');
 
 experiment('mapResponseToView', () => {
   const request = {

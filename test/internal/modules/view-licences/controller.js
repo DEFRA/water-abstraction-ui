@@ -3,14 +3,14 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const communicationsConnector = require('../../../../src/internal/lib/connectors/water-service/communications');
+const communicationsConnector = require('internal/lib/connectors/water-service/communications');
 
 const communicationResponses = require('../../responses/water-service/communications/_documentId_');
 
-const controller = require('../../../../src/internal/modules/view-licences/controller');
-const { scope } = require('../../../../src/internal/lib/constants');
-const returnsConnector = require('../../../../src/internal/lib/connectors/returns');
-const licenceConnector = require('../../../../src/internal/lib/connectors/water-service/licences');
+const controller = require('internal/modules/view-licences/controller');
+const { scope } = require('internal/lib/constants');
+const returnsConnector = require('internal/lib/connectors/returns');
+const licenceConnector = require('internal/lib/connectors/water-service/licences');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {

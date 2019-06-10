@@ -2,7 +2,7 @@ const Lab = require('lab');
 const lab = Lab.script();
 const { expect } = require('code');
 
-const { parseNaldDataURI } = require('../../../src/internal/lib/nald-uri-parser');
+const { parseNaldDataURI } = require('internal/lib/nald-uri-parser');
 
 lab.experiment('parseNaldDataURI', () => {
   lab.test('It should parse a valid NALD data URI', async () => {

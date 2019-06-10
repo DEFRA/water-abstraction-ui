@@ -1,5 +1,5 @@
 const { get } = require('lodash');
-const { setValues, formFactory, fields } = require('../../../../shared/lib/forms');
+const { setValues, formFactory, fields } = require('shared/lib/forms');
 const { STEP_UNITS, STEP_METER_UNITS, getPath } = require('../lib/flow-helpers');
 const { isInternal } = require('../../../lib/permissions');
 

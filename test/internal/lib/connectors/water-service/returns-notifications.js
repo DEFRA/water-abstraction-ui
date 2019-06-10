@@ -14,7 +14,7 @@ const {
   getPaperFormFilter,
   buildRequest,
   getFinalReminderRequestOptions
-} = require('../../../../../src/internal/lib/connectors/water-service/returns-notifications');
+} = require('internal/lib/connectors/water-service/returns-notifications');
 
 const licenceNumbers = ['01/123', '02/456'];
 

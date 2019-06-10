@@ -1,4 +1,4 @@
-const { scope } = require('../../../../../../src/internal/lib/constants');
+const { scope } = require('internal/lib/constants');
 const returnId = 'v1:123:456';
 
 const createRequest = (isInternal = false) => {

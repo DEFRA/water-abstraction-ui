@@ -6,8 +6,8 @@ const Boom = require('boom');
 
 const sandbox = sinon.createSandbox();
 
-const plugin = require('../../../../src/internal/lib/hapi-plugins/error');
-const { logger } = require('../../../../src/internal/logger');
+const plugin = require('internal/lib/hapi-plugins/error');
+const { logger } = require('internal/logger');
 
 const createRequest = (error = {}) => {
   return {

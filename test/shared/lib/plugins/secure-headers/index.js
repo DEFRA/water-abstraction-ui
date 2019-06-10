@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { beforeEach, experiment, test } = exports.lab = require('lab').script();
 
-const plugin = require('../../../../../src/shared/plugins/secure-headers');
+const plugin = require('shared/plugins/secure-headers');
 
 experiment('secure-headers', () => {
   let request;

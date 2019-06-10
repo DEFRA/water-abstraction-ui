@@ -1,4 +1,4 @@
-const CRM = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const IDM = require('../../lib/connectors/idm');
 const { mapSort, mapFilter } = require('./helpers');
 
@@ -32,7 +32,7 @@ async function getLicences (request, h) {
   }
 
   // Get licences from CRM
-  const { data, error, pagination } = await CRM.documents.findMany(filter, sort, {
+  const { data, error, pagination } = await services.crm.documents.findMany(filter, sort, {
     page,
     perPage: 50
   });

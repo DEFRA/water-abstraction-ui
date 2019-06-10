@@ -8,9 +8,9 @@ const {
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const waterConnector = require('../../../../src/internal/lib/connectors/water');
-const serviceRequest = require('../../../../src/shared/lib/connectors/service-request');
-const config = require('../../../../src/internal/config');
+const waterConnector = require('internal/lib/connectors/water');
+const serviceRequest = require('shared/lib/connectors/service-request');
+const config = require('internal/config');
 
 beforeEach(async () => {
   sandbox.stub(serviceRequest, 'get').resolves();

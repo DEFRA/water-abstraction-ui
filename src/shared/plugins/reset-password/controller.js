@@ -1,7 +1,7 @@
 // const IDM = require('../../lib/connectors/idm');
 const { UserNotFoundError } = require('./errors');
 const mapJoiPasswordError = require('./map-joi-password-error.js');
-const { handleRequest } = require('shared/lib/forms');
+const { handleRequest } = require('../../lib/forms');
 const { resetForm, resetSchema } = require('./forms/reset');
 
 /**

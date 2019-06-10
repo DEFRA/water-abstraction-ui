@@ -1,4 +1,4 @@
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 const { STEP_INTERNAL_ROUTING, getPath } = require('../lib/flow-helpers');
 
 const isReceived = data => data.receivedDate !== null;

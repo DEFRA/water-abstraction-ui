@@ -1,14 +1,10 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
-const serviceRequest = require('../../../../../../src/shared/lib/connectors/service-request');
-const UsersAPIClient = require('../../../../../../src/shared/lib/connectors/services/idm/UsersAPIClient');
-const rp = sandbox.stub();
-const client = new UsersAPIClient(rp, {
-  endpoint: 'http://test-endpoint'
-});
+const { serviceRequest } = require('@envage/water-abstraction-helpers');
+const UsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient');
 
-experiment('Shared UsersAPIClient', () => {
+experiment('Shared UsersApiClient', () => {
   const userId = 'user_1';
   const application = 'test_app';
   const password = 'top-secret';
@@ -20,7 +16,22 @@ experiment('Shared UsersAPIClient', () => {
   };
   const entityId = 'entity_1';
 
+  let logger;
+  let config;
+  let client;
+
   beforeEach(async () => {
+    logger = {};
+    config = {
+      services: {
+        idm: 'https://example.com/idm'
+      },
+      jwt: {
+        token: 'test-jwt-token'
+      }
+    };
+    client = new UsersApiClient(config, logger);
+
     sandbox.stub(serviceRequest, 'post').resolves(userResponse);
     sandbox.stub(client, 'findMany').resolves({ error: null,
       data: [{
@@ -36,12 +47,26 @@ experiment('Shared UsersAPIClient', () => {
     sandbox.restore();
   });
 
+  experiment('construction', () => {
+    test('creates the expected endpoint URL', async () => {
+      expect(client.getUrl()).to.equal('https://example.com/idm/user');
+    });
+
+    test('sets the JWT in the client headers', async () => {
+      expect(client.config.headers.Authorization).to.equal('test-jwt-token');
+    });
+
+    test('adds the base service URL to the config', async () => {
+      expect(client.config.serviceUrl).to.equal('https://example.com/idm');
+    });
+  });
+
   experiment('authenticate', () => {
     experiment('when IDM post resolves', () => {
       test('calls IDM /login with correct params', async () => {
         await client.authenticate(userName, password, application);
         const [uri, options] = serviceRequest.post.lastCall.args;
-        expect(uri).to.equal('http://test-endpoint/login');
+        expect(uri).to.equal('https://example.com/idm/user/login');
         expect(options).to.equal({
           body: {
             user_name: userName,

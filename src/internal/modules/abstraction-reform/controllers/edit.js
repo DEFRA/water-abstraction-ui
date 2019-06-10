@@ -1,7 +1,7 @@
 const { pick } = require('lodash');
 const shallowDiff = require('shallow-diff');
 
-const { handleRequest, getValues } = require('../../../../shared/lib/forms');
+const { handleRequest, getValues } = require('shared/lib/forms');
 const { load, update } = require('../lib/loader');
 const { extractData, transformNulls, prepareData } = require('../lib/helpers');
 const { getPermissions } = require('../lib/permissions');

@@ -1,7 +1,7 @@
 const { find, get } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const confirmForm = require('../../../../../src/internal/modules/returns/forms/confirm-upload');
+const confirmForm = require('internal/modules/returns/forms/confirm-upload');
 
 const findButton = field => get(field, 'options.widget') === 'button';
 const findCsrf = field => field.name === 'csrf_token';

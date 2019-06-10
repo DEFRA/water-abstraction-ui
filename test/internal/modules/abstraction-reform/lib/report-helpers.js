@@ -2,12 +2,12 @@ const Lab = require('lab');
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const water = require('../../../../../src/internal/lib/connectors/water');
+const water = require('internal/lib/connectors/water');
 
 const {
   getCSVData,
   getReportFilename
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/report-helpers');
+} = require('internal/modules/abstraction-reform/lib/report-helpers');
 
 const lab = exports.lab = Lab.script();
 

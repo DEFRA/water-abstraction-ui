@@ -1,10 +1,10 @@
 const sinon = require('sinon');
 const { expect } = require('code');
-const { logger } = require('../../../src/external/logger');
+const { logger } = require('external/logger');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
-const loginHelpers = require('../../../src/external/lib/login-helpers');
-const waterUser = require('../../../src/external/lib/connectors/water-service/user');
-const { scope } = require('../../../src/external/lib/constants');
+const loginHelpers = require('external/lib/login-helpers');
+const waterUser = require('external/lib/connectors/water-service/user');
+const { scope } = require('external/lib/constants');
 
 const sandbox = sinon.createSandbox();
 

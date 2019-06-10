@@ -3,8 +3,8 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 
-const steps = require('../../../../../../src/internal/modules/returns/lib/flow-helpers/steps');
-const internal = require('../../../../../../src/internal/modules/returns/lib/flow-helpers/internal');
+const steps = require('internal/modules/returns/lib/flow-helpers/steps');
+const internal = require('internal/modules/returns/lib/flow-helpers/internal');
 const data = require('./test-data.json');
 
 experiment('internal returns flow: ', () => {

@@ -3,7 +3,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { fixed } = require('../../../../../src/shared/view/nunjucks/filters/fixed');
+const { fixed } = require('shared/view/nunjucks/filters/fixed');
 
 experiment('fixed Nunjucks filter', () => {
   test('It should accept an integer argument and format to fixed precision', async () => {

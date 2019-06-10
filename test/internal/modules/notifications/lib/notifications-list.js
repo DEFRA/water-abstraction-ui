@@ -4,8 +4,8 @@ const { experiment, test } = exports.lab = require('lab').script();
 
 const { expect } = require('code');
 
-const { getNotificationsList, getReportsList } = require('../../../../../src/internal/modules/notifications/lib/notifications-list');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { getNotificationsList, getReportsList } = require('internal/modules/notifications/lib/notifications-list');
+const { scope } = require('internal/lib/constants');
 
 const createRequest = (scopes) => {
   return {

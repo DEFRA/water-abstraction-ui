@@ -2,18 +2,18 @@ const { expect } = require('code');
 const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const water = require('../../../../../src/external/lib/connectors/water');
-const forms = require('../../../../../src/shared/lib/forms/index');
-const files = require('../../../../../src/shared/lib/files');
-const fileCheck = require('../../../../../src/shared/lib/file-check');
-const waterReturns = require('../../../../../src/external/lib/connectors/water-service/returns');
-const waterCompany = require('../../../../../src/external/lib/connectors/water-service/company');
+const water = require('external/lib/connectors/water');
+const forms = require('shared/lib/forms/index');
+const files = require('shared/lib/files');
+const fileCheck = require('shared/lib/file-check');
+const waterReturns = require('external/lib/connectors/water-service/returns');
+const waterCompany = require('external/lib/connectors/water-service/company');
 
-const controller = require('../../../../../src/external/modules/returns/controllers/upload');
-const { logger } = require('../../../../../src/external/logger');
-const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
-const helpers = require('../../../../../src/external/modules/returns/lib/helpers.js');
-const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
+const controller = require('external/modules/returns/controllers/upload');
+const { logger } = require('external/logger');
+const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
+const helpers = require('external/modules/returns/lib/helpers.js');
+const csvTemplates = require('external/modules/returns/lib/csv-templates');
 
 const sandbox = sinon.createSandbox();
 

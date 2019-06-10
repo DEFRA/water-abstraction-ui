@@ -4,9 +4,9 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const config = require('../../../../../src/internal/config');
-const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
-const licencesConnector = require('../../../../../src/internal/lib/connectors/water-service/licences');
+const config = require('internal/config');
+const serviceRequest = require('shared/lib/connectors/service-request');
+const licencesConnector = require('internal/lib/connectors/water-service/licences');
 
 const userResponses = require('../../../responses/water-service/documents/_documentId_/licence/users');
 

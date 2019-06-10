@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { maxPrecision } = require('../../../src/shared/lib/number-formatter');
+const { maxPrecision } = require('shared/lib/number-formatter');
 
 experiment('Test number formatter helpers', () => {
   test('maxPrecision should reduce precision of number to fixed decimal places', async () => {

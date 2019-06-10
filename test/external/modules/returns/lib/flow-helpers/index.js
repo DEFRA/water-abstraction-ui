@@ -7,10 +7,10 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { createRequest } = require('./test-helpers');
 
 const { getPath, getNextPath, getPreviousPath } =
-  require('../../../../../../src/external/modules/returns/lib/flow-helpers');
+  require('external/modules/returns/lib/flow-helpers');
 
 const external =
-    require('../../../../../../src/external/modules/returns/lib/flow-helpers/external');
+    require('external/modules/returns/lib/flow-helpers/external');
 
 const data = require('./test-data.json');
 

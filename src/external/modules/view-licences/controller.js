@@ -2,7 +2,7 @@ const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-const CRM = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const { getLicences: baseGetLicences } = require('./base');
 const helpers = require('./helpers');
 const { getLicenceReturns } = require('../returns/lib/helpers');
@@ -114,7 +114,7 @@ async function postLicenceRename (request, h) {
 
   // Rename licence
   const { name } = getValues(form);
-  const { error } = await CRM.documents.setLicenceName(documentId, name);
+  const { error } = await services.crm.documents.setLicenceName(documentId, name);
   throwIfError(error);
 
   return h.redirect(`/licences/${documentId}`);

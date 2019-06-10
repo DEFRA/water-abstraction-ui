@@ -23,7 +23,7 @@ const loadLicenceData = async (keys, request, documentId, h) => {
   const data = {};
   await bluebird.map(keys, async key => {
     const getter = camelCase(`get_${key}_ByDocumentId`);
-    data[key] = await h.realm.pluginOptions[getter](request, documentId);
+    data[key] = await h.realm.pluginOptions[getter](documentId, request);
   });
   return data;
 };
@@ -60,7 +60,7 @@ const onPreHandler = async (request, h) => {
     request.licence = await loadLicenceData(keys, request, documentId, h);
   } catch (err) {
     const { credentials } = request.auth;
-    request.log('info', 'Error getting licence data', { load: request.load, documentId, credentials });
+    request.log('error', 'Error getting licence data', { load: request.load, documentId, credentials });
     Boom.boomify(err, { statusCode: err.statusCode });
     throw err;
   }
@@ -69,7 +69,7 @@ const onPreHandler = async (request, h) => {
 };
 
 module.exports = {
-  register: (server, options) => {
+  register: (server) => {
     server.ext({
       type: 'onPreHandler',
       method: onPreHandler
@@ -78,5 +78,6 @@ module.exports = {
   pkg: {
     name: 'licenceDataPlugin',
     version: '1.0.0'
-  }
+  },
+  _onPreHandler: onPreHandler
 };

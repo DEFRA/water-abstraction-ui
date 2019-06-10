@@ -1,5 +1,4 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const permissions = require('./permissions');
 
 class LicenceDataConfig {
   constructor (config, connectors) {
@@ -7,9 +6,6 @@ class LicenceDataConfig {
   }
 
   _getOptions (request) {
-    if (permissions.isInternal(request)) {
-      return { includeExpired: true };
-    }
     return { companyId: request.defra.companyId };
   }
 

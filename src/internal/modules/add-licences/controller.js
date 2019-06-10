@@ -375,7 +375,7 @@ function getFAO (request, h) {
  */
 async function postFAO (request, h) {
   const { selectedAddressId, fao } = request.payload;
-  const entityId = getEntityIdFromRequest(request);
+  const { entityId } = request.defra;
 
   // Load session data
   const { selectedIds } = request.yar.get('addLicenceFlow');

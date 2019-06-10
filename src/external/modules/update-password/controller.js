@@ -21,8 +21,8 @@ async function postConfirmPassword (request, reply) {
       throw request.formError;
     }
     const { password } = request.payload;
-    const { username } = request.auth.credentials;
-    await IDM.verifyCredentials(username, password);
+    const { userName } = request.defra;
+    await IDM.verifyCredentials(userName, password);
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();
@@ -60,7 +60,7 @@ async function postSetPassword (request, reply) {
       throw new AuthTokenError();
     }
     // Change password
-    const { user_id: userId } = request.auth.credentials;
+    const { userId } = request.defra;
     const { error } = IDM.updatePassword(userId, password);
     if (error) {
       throw error;

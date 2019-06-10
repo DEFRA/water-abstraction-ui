@@ -55,7 +55,8 @@ class AuthConfig extends AuthConfigBase {
       entityRoles,
       companyIds,
       companyCount: companyIds.length,
-      userScopes
+      userScopes,
+      lastLogin: get(user, 'last_login')
     };
   };
 }

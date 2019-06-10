@@ -64,8 +64,8 @@ lab.experiment('Test abstraction reform reducer', () => {
 
   lab.test('Test setting status', async () => {
     const action = createSetStatus('In review', 'My notes', {
-      username: 'mail@example.com',
-      user_id: 123
+      userName: 'mail@example.com',
+      userId: 123
     });
 
     const nextState = reducer({ licence, notes: [] }, action);

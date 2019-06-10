@@ -1,4 +1,4 @@
-const { uniq, last, get } = require('lodash');
+const { uniq, last } = require('lodash');
 const helpers = require('@envage/water-abstraction-helpers');
 
 const getUniqueLicenceNumbers = (returns) => {
@@ -21,7 +21,7 @@ const getCurrentCycleEndDate = (date) => {
  * @return {Object}         - contains email and endDate params
  */
 const getFinalReminderConfig = (request) => {
-  const email = get(request, 'auth.credentials.username');
+  const { userName: email } = request.defra;
   const endDate = getCurrentCycleEndDate();
   return {
     email,

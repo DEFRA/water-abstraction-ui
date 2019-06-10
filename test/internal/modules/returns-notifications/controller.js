@@ -38,10 +38,8 @@ experiment('postPreviewRecipients', () => {
       },
       view: {},
       log: sandbox.spy(),
-      auth: {
-        credentials: {
-          username: 'test-user@example.com'
-        }
+      defra: {
+        userName: 'test-user@example.com'
       }
     };
 
@@ -231,9 +229,11 @@ experiment('postReturnsNotificationsStart', () => {
       },
       auth: {
         credentials: {
-          username,
           scope: ['internal']
         }
+      },
+      defra: {
+        userName: username
       },
       path: '/return-notifications/reminders',
       payload: {
@@ -283,9 +283,11 @@ experiment('postReturnsNotificationsStart', () => {
         },
         auth: {
           credentials: {
-            username,
             scope: ['internal']
           }
+        },
+        defra: {
+          userName: username
         },
         path: '/return-notifications/reminders',
         payload: {
@@ -313,9 +315,11 @@ experiment('postReturnsNotificationsStart', () => {
         },
         auth: {
           credentials: {
-            username,
             scope: ['internal']
           }
+        },
+        defra: {
+          userName: username
         },
         path: '/return-notifications/invitations',
         payload: {

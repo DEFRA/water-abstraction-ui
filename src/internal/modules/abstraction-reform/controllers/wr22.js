@@ -294,7 +294,7 @@ const getDeleteData = async (request, h) => {
 const postDeleteData = async (request, h) => {
   const { id, documentId } = request.params;
 
-  const action = createDeleteData(request.auth.credentials, id);
+  const action = createDeleteData(request.defra, id);
   await wr22Helpers.persistActions(request.licence, request.arLicence, [action]);
   return h.redirect(`/digitise/licence/${documentId}#further-conditions`);
 };

@@ -62,6 +62,7 @@ async function getLicenceDetail (request, reply) {
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
+      backText: `Licence number ${licenceNumber}`,
       pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
       crmData: documentHeader,
       primaryUser

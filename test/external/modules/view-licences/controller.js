@@ -8,11 +8,9 @@ const communicationsConnector = require('../../../../src/external/lib/connectors
 const communicationResponses = require('../../responses/water-service/communications/_documentId_');
 
 const controller = require('../../../../src/external/modules/view-licences/controller');
-const helpers = require('../../../../src/external/modules/view-licences/helpers');
 const { scope } = require('../../../../src/external/lib/constants');
 const returnsConnector = require('../../../../src/external/lib/connectors/returns');
 const licenceConnector = require('../../../../src/external/lib/connectors/water-service/licences');
-const CRM = require('../../../../src/external/lib/connectors/crm');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -283,76 +281,6 @@ experiment('getExpiredLicence', () => {
       await controller.getExpiredLicence(request, h);
       const [, view] = h.view.lastCall.args;
       expect(view.isInternal).to.be.true();
-    });
-  });
-});
-
-experiment('getLicenceDetail', () => {
-  let request;
-  let h;
-
-  beforeEach(async () => {
-    h = {
-      view: sandbox.spy()
-    };
-
-    sandbox.stub(helpers, 'loadLicenceData').resolves({
-      documentHeader: {
-        system_external_id: 1234,
-        document_name: 'customName'
-      },
-      viewData: { view: 'data' },
-      gaugingStations: [{ ref: 'abc' }]
-    });
-
-    sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId').resolves({});
-
-    sandbox.stub(CRM, 'getDocumentVerifications').resolves({});
-
-    request = {
-      params: { documentId: 'test-doc-id' },
-      view: {
-        primaryUser: false,
-        verifications: []
-      },
-      config: {
-        view: 'nunjucks/template'
-      },
-      auth: {
-        credentials: {
-          scope: ['internal']
-        }
-      }
-    };
-  });
-
-  afterEach(async () => {
-    sandbox.restore();
-  });
-
-  experiment('the view context contains', () => {
-    test('the document id', async () => {
-      await controller.getLicenceDetail(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.licence_id).to.equal('test-doc-id');
-    });
-
-    test('the page title including the document name when present', async () => {
-      await controller.getLicenceDetail(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('Licence number 1234');
-    });
-
-    test('the link back to the licence summary includes the documentId', async () => {
-      await controller.getLicenceDetail(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal(`/licences/${request.params.documentId}`);
-    });
-
-    test('the back link text includes the licence number', async () => {
-      await controller.getLicenceDetail(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.backText).to.equal('Licence number 1234');
     });
   });
 });

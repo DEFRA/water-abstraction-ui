@@ -1,8 +1,7 @@
-const { last, find, groupBy } = require('lodash');
+const { last, find, groupBy, lowerCase } = require('lodash');
 const helpers = require('@envage/water-abstraction-helpers');
 const { getLineLabel } = require('./return-helpers');
 const moment = require('moment');
-const snakeCase = require('snake-case');
 const util = require('util');
 const csvStringify = util.promisify(require('csv-stringify'));
 const archiver = require('archiver');
@@ -140,14 +139,16 @@ const createCSVData = returns => {
  * @param  {String} frequency   - the return frequency
  * @return {String}             filename, e.g. my-company-daily.csv
  */
-const getCSVFilename = (companyName, frequency) => {
+const getCSVFilename = (companyName, frequency, isMultipleReturns) => {
   const map = {
     day: 'daily',
     week: 'weekly',
     month: 'monthly'
   };
-  return snakeCase(`${companyName} ${map[frequency]}`) + '.csv';
+  return lowerCase(`${companyName} ${map[frequency]}`) + ` ${isMultipleReturns ? 'returns' : 'return'}.csv`;
 };
+
+const isMultipleReturns = (data, key) => data[key][0].length > 2;
 
 /**
  * Adds
@@ -158,7 +159,7 @@ const getCSVFilename = (companyName, frequency) => {
  */
 const addCSVToArchive = async (archive, companyName, data, key) => {
   const str = await csvStringify(data[key]);
-  const name = getCSVFilename(companyName, key);
+  const name = getCSVFilename(companyName, key, isMultipleReturns(data, key));
   return archive.append(str, { name });
 };
 
@@ -169,7 +170,7 @@ const addCSVToArchive = async (archive, companyName, data, key) => {
  */
 const addReadmeToArchive = async (archive) => {
   const str = await readFile(path.join(__dirname, './csv-readme.txt'));
-  const name = 'readme.txt';
+  const name = 'How to do bulk returns.txt';
   return archive.append(str, { name });
 };
 

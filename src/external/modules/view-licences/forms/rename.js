@@ -28,7 +28,7 @@ const renameLicenceForm = (request, name) => {
   const { csrfToken } = request.view;
   const { documentId } = request.params;
 
-  const f = formFactory(`/licences/${documentId}`);
+  const f = formFactory(`/licences/${documentId}/rename`);
 
   f.fields.push(createNameField(name));
   f.fields.push(fields.button(null, { label: 'Save', controlClass: 'govuk-!-margin-0' }));

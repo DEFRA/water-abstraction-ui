@@ -69,7 +69,7 @@ const getLicenceRename = {
 
 const postLicenceRename = {
   method: 'POST',
-  path: '/licences/{documentId}',
+  path: '/licences/{documentId}/rename',
   handler: controller.postLicenceRename,
   config: {
     description: 'Update the user-defined licence name',

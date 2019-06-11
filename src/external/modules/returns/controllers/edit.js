@@ -122,12 +122,12 @@ const postConfirm = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const { data, view, isInternal } = request.returns;
+  const { data, view } = request.returns;
 
   // Clear session
   sessionHelpers.deleteSessionData(request);
 
-  const returnUrl = `${isInternal ? '/admin' : ''}/returns/return?id=${data.returnId}`;
+  const returnUrl = `/returns/return?id=${data.returnId}`;
 
   return h.view('nunjucks/returns/submitted.njk', {
     ...view,

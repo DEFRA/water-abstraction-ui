@@ -32,24 +32,6 @@ const getPrimaryUserRequest = () => {
   return request;
 };
 
-const getARUserRequest = () => {
-  const request = getAuthenticatedRequest(true);
-  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformUser]);
-  return request;
-};
-
-const getARApproverRequest = () => {
-  const request = getARUserRequest(true);
-  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformApprover]);
-  return request;
-};
-
-const getReturnsRequest = () => {
-  const request = getAuthenticatedRequest(true);
-  set(request, 'auth.credentials.scope', [scope.internal, scope.returns]);
-  return request;
-};
-
 const getIds = links => links.map(link => link.id);
 
 experiment('getMainNav', () => {
@@ -83,30 +65,6 @@ experiment('getMainNav', () => {
     const request = getPrimaryUserRequest();
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'returns', 'manage']);
-  });
-
-  test('It should display correct links for internal user', async () => {
-    const request = getAuthenticatedRequest(true);
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'notifications']);
-  });
-
-  test('It should display correct links for AR user', async () => {
-    const request = getARUserRequest();
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'ar', 'notifications']);
-  });
-
-  test('It should display correct links for AR approver', async () => {
-    const request = getARApproverRequest();
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'ar', 'notifications']);
-  });
-
-  test('It should display correct links for WIRS/returns user', async () => {
-    const request = getReturnsRequest();
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'notifications']);
   });
 
   test('for a request with licence.userLicenceCount of 0, only view is added', async () => {

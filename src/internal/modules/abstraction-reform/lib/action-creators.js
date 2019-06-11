@@ -6,25 +6,25 @@ const {
   ADD_DATA, EDIT_DATA, DELETE_DATA
 } = require('./action-types');
 
-const formatUser = (user) => {
-  const { user_id: id, username: email } = user;
+const formatUser = (defra) => {
+  const { userId: id, userName: email } = defra;
   return { id, email };
 };
 
 /**
  * Edits the purpose of a licence
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the purpose ID
  * @return {Object} action to edit purpose
  */
-const createEditPurpose = (data, user, id) => {
+const createEditPurpose = (data, defra, id) => {
   return {
     type: EDIT_PURPOSE,
     payload: {
       purposeId: parseInt(id),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -33,15 +33,15 @@ const createEditPurpose = (data, user, id) => {
 /**
  * Edits the base licence data
  * @param {Object} data - key/value pairs of data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @return {Object} action to edit licence base data
  */
-const createEditLicence = (data, user) => {
+const createEditLicence = (data, defra) => {
   return {
     type: EDIT_LICENCE,
     payload: {
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -50,17 +50,17 @@ const createEditLicence = (data, user) => {
 /**
  * Edits the point of a licence
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the point ID
  * @return {Object} action to edit point
  */
-const createEditPoint = (data, user, id) => {
+const createEditPoint = (data, defra, id) => {
   return {
     type: EDIT_POINT,
     payload: {
       pointId: parseInt(id),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -69,17 +69,17 @@ const createEditPoint = (data, user, id) => {
 /**
  * Edits the condition of a licence
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the condition ID
  * @return {Object} action to edit condition
  */
-const createEditCondition = (data, user, id) => {
+const createEditCondition = (data, defra, id) => {
   return {
     type: EDIT_CONDITION,
     payload: {
       conditionId: parseInt(id),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -92,7 +92,7 @@ const createEditCondition = (data, user, id) => {
  * @param {Object} user - the current user of the application
  * @return {Object} action to edit condition
  */
-const createSetStatus = (status, notes, user) => {
+const createSetStatus = (status, notes, defra) => {
   if (!Object.values(statuses).includes(status)) {
     throw new Error(`Invalid AR status ${status}`);
   }
@@ -102,7 +102,7 @@ const createSetStatus = (status, notes, user) => {
     payload: {
       status,
       notes: notes.trim() || null,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -111,18 +111,18 @@ const createSetStatus = (status, notes, user) => {
 /**
  * Edits a licence version
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the condition ID
  * @return {Object} action to edit condition
  */
-const createEditVersion = (data, user, issueNumber, incrementNumber) => {
+const createEditVersion = (data, defra, issueNumber, incrementNumber) => {
   return {
     type: EDIT_VERSION,
     payload: {
       issueNumber: parseInt(issueNumber),
       incrementNumber: parseInt(incrementNumber),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -131,17 +131,17 @@ const createEditVersion = (data, user, issueNumber, incrementNumber) => {
 /**
  * Edits a licence party
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the party ID
  * @return {Object} action to edit condition
  */
-const createEditParty = (data, user, id) => {
+const createEditParty = (data, defra, id) => {
   return {
     type: EDIT_PARTY,
     payload: {
       partyId: parseInt(id),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -150,17 +150,17 @@ const createEditParty = (data, user, id) => {
 /**
  * Edits a licence address
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} user - the current user of the application
+ * @param {Object} defra - the current user of the application
  * @param {Number} id - the address ID
  * @return {Object} action to edit condition
  */
-const createEditAddress = (data, user, id) => {
+const createEditAddress = (data, defra, id) => {
   return {
     type: EDIT_ADDRESS,
     payload: {
       addressId: parseInt(id),
       data,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };
@@ -174,13 +174,13 @@ const createEditAddress = (data, user, id) => {
  * @param {String|Number} incrementNumber schema - the NALD licence increment number
  * @param
  */
-const createAddData = (schema, user, issueNumber, incrementNumber) => {
+const createAddData = (schema, defra, issueNumber, incrementNumber) => {
   return {
     type: ADD_DATA,
     payload: {
       id: uuidv4(),
       schema,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now(),
       issueNumber: parseInt(issueNumber),
       incrementNumber: parseInt(incrementNumber)
@@ -195,12 +195,12 @@ const createAddData = (schema, user, issueNumber, incrementNumber) => {
  * @param {String} id - GUID of data point
  * @param
  */
-const createEditData = (data, user, id) => {
+const createEditData = (data, defra, id) => {
   return {
     type: EDIT_DATA,
     payload: {
       id,
-      user: formatUser(user),
+      user: formatUser(defra),
       data,
       timestamp: Date.now()
     }
@@ -213,12 +213,12 @@ const createEditData = (data, user, id) => {
  * @param {String} id - GUID of data point to delete
  * @param
  */
-const createDeleteData = (user, id) => {
+const createDeleteData = (defra, id) => {
   return {
     type: DELETE_DATA,
     payload: {
       id,
-      user: formatUser(user),
+      user: formatUser(defra),
       timestamp: Date.now()
     }
   };

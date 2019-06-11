@@ -160,7 +160,7 @@ const applyQuantities = (data, formValues) => {
 /**
  * Applies user details to the return
  * @param {Object} data - returns model
- * @param {Object} credentials - request.auth.credentials for current user
+ * @param {Object} request - hapi request
  * @return {Object} returns model with user data added
  */
 const applyUserDetails = (data, request) => {

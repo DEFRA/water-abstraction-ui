@@ -14,8 +14,7 @@ const permissions = require('../../lib/permissions');
  */
 const redirectToReturn = (request, h) => {
   const { returnId } = request.query;
-  const isInternalUser = permissions.isInternal(request);
-  const path = `${isInternalUser ? '/admin' : ''}/returns/return?id=${returnId}`;
+  const path = `/returns/return?id=${returnId}`;
   return h.redirect(path).takeover();
 };
 

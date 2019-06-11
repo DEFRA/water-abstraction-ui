@@ -4,10 +4,6 @@ const externalFlows = require('./external');
 const permissions = require('../../../../lib/permissions');
 const steps = require('./steps');
 
-const getScopedPath = (request, path) => {
-  return permissions.isInternal(request) ? `/admin${path}` : path;
-};
-
 /**
  * Gets path with return ID query param and admin/ if required depending on scopes
  * @param {String} base path
@@ -17,11 +13,10 @@ const getScopedPath = (request, path) => {
  */
 const getPath = (path, request, data) => {
   const returnId = get(data, 'returnId', request.query.returnId);
-  const scopedPath = getScopedPath(request, path);
 
   return (['/returns', '/licences'].includes(path))
-    ? scopedPath
-    : `${scopedPath}?returnId=${returnId}`;
+    ? path
+    : `${path}?returnId=${returnId}`;
 };
 
 /**

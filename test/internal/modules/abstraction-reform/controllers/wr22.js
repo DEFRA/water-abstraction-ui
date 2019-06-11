@@ -11,11 +11,9 @@ const id = 'bfecf668-b4ec-4046-85f5-d787d1b1d973';
 const csrfToken = '4a0b2424-6c02-45a5-9935-70a4c41538d2';
 
 const request = {
-  auth: {
-    credentials: {
-      user_id: 123,
-      username: 'mail@example.com'
-    }
+  defra: {
+    userName: 'mail@example.com',
+    userId: 123
   },
   view: {
     csrfToken

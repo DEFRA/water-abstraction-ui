@@ -5,9 +5,11 @@
       "ignore_watch": [
         "coverage",
         "data",
+        "govuk_modules",
         "node_modules",
         "src/internal",
-        "test"
+        "test",
+        ".git"
       ],
       "script": "server-external.js",
       "env": {
@@ -24,9 +26,11 @@
       "ignore_watch": [
         "coverage",
         "data",
+        "govuk_modules",
         "node_modules",
         "src/external",
-        "test"
+        "test",
+        ".git"
       ],
       "script": "server-internal.js",
       "env": {

@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "nunjucks/macros/sort-icon.njk" import sortIcon %}
-{% from "nunjucks/macros/badge.njk" import badge %}
+{% from "sort-icon.njk" import sortIcon %}
+{% from "badge.njk" import badge %}
 
 {% macro headerLink(query, field, text, srText) %}
   <a href="/admin/notifications/report?{{ query | sortQuery(field) }}">

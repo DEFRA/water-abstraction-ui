@@ -264,7 +264,6 @@ const mapReturns = (returns, request) => {
  * This can be either all returns for a particular CRM entity,
  * or additionally can be filtered e.g. by document ID
  * @param {Object} request
- * @param {String} request.auth.credentials.entity_id - CRM entity ID of the current user
  * @param {Number} request.query.page - page number, for paginated results
  * @param {String} request.params.documentId - a single document ID to retrieve (otherwise gets all)
  * @return {Promise} resolves with list view data

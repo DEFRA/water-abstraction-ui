@@ -37,13 +37,11 @@ const createRequest = () => {
     payload: {
       file: '<xml>'
     },
-    auth: {
-      credentials: {
-        username: userName,
-        entity_id: entityId,
-        companyId,
-        companyName
-      }
+    defra: {
+      userName,
+      entityId,
+      companyId,
+      companyName
     }
   };
 };
@@ -287,6 +285,12 @@ experiment('upload controller', () => {
             companyId
           }
         });
+      });
+
+      test('redirects to upload form if upload contains no data', async () => {
+        waterReturns.getUploadPreview.resolves([]);
+        await controller.getSummary(request, h);
+        expect(h.redirect.calledWith(`/returns/upload?error=empty`)).to.equal(true);
       });
     });
 

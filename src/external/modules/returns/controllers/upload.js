@@ -1,4 +1,4 @@
-const { get, set } = require('lodash');
+const { get, set, isEmpty } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const snakeCase = require('snake-case');
@@ -202,6 +202,11 @@ const getSummary = async (request, h) => {
     const returns = await waterReturns.getUploadPreview(eventId, options);
 
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
+
+    if (isEmpty(grouped)) {
+      return h.redirect(`/returns/upload?error=empty`);
+    }
+
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
 
     const view = {

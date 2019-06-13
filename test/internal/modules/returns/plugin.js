@@ -23,9 +23,11 @@ const createRequest = (isInternal, isLoadOption) => ({
   },
   auth: {
     credentials: {
-      companyId,
       scope: isInternal ? ['internal', 'returns'] : ['external', 'primary_user']
     }
+  },
+  defra: {
+    companyId
   },
   route: {
     settings: {
@@ -53,7 +55,9 @@ experiment('returns plugin', () => {
     sandbox.stub(helpers, 'getViewData').resolves({ foo: 'bar' });
     h = {
       view: sandbox.stub(),
-      redirect: sandbox.stub(),
+      redirect: sandbox.stub().returns({
+        takeover: sandbox.stub()
+      }),
       continue: 'continue'
     };
   });
@@ -87,10 +91,9 @@ experiment('returns plugin', () => {
         expect(request.returns.isInternal).to.equal(false);
       });
 
-      test('throws error and redirects if CRM document not found', async () => {
+      test('redirects if CRM document not found', async () => {
         crmConnector.documents.findMany.resolves({ data: [] });
-        const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
+        await plugin._handler(request, h);
         expect(h.redirect.callCount).to.equal(1);
         const [ path ] = h.redirect.lastCall.args;
         expect(path).to.equal('/returns/return?id=return_1');
@@ -98,8 +101,7 @@ experiment('returns plugin', () => {
 
       test('throws error and redirects if no returns permission', async () => {
         set(request, 'auth.credentials.scope', ['external', 'user']);
-        const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
+        await plugin._handler(request, h);
         expect(h.redirect.callCount).to.equal(1);
         const [ path ] = h.redirect.lastCall.args;
         expect(path).to.equal('/returns/return?id=return_1');
@@ -134,8 +136,7 @@ experiment('returns plugin', () => {
 
       test('throws error and redirects if no returns permission', async () => {
         set(request, 'auth.credentials.scope', ['internal']);
-        const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
+        await plugin._handler(request, h);
         expect(h.redirect.callCount).to.equal(1);
         const [ path ] = h.redirect.lastCall.args;
         expect(path).to.equal('/returns/return?id=return_1');

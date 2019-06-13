@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('../../lib/validators');
+const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('shared/lib/validators');
 const { preLoadDocument } = require('./pre-handlers');
 
 const { scope } = require('../../lib/constants');
@@ -112,7 +112,7 @@ const getLicenceContact = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/contact'
+        view: 'nunjucks/view-licences/contact.njk'
       },
       viewContext: {
         activeNavLink: 'view'
@@ -138,7 +138,7 @@ const getLicencePurposes = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/purposes'
+        view: 'nunjucks/view-licences/purposes.njk'
       },
       viewContext: {
         activeNavLink: 'view'
@@ -164,7 +164,7 @@ const getLicencePoints = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/points'
+        view: 'nunjucks/view-licences/points.njk'
       },
       viewContext: {
         activeNavLink: 'view'
@@ -190,7 +190,7 @@ const getLicenceConditions = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/conditions'
+        view: 'nunjucks/view-licences/conditions.njk'
       },
       viewContext: {
         activeNavLink: 'view'

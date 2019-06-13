@@ -1,10 +1,10 @@
-{% from "../../macros/title.njk" import title %}
+{% from "title.njk" import title %}
 
 {% macro returnHeader(return, documentHeader, showMeta, isAdmin) %}
   {% if documentHeader.document_name %}
-    {{ title(documentHeader.document_name, 'Abstraction return for ' + documentHeader.system_external_id) }}
+    {{ title(documentHeader.document_name, 'Abstraction return for licence number ' + documentHeader.system_external_id) }}
   {% else %}
-    {{ title('Abstraction return for ' + documentHeader.system_external_id) }}
+    {{ title('Abstraction return', 'Licence number ' + documentHeader.system_external_id) }}
   {% endif %}
 
   {%if showMeta %}
@@ -78,7 +78,7 @@
     </dl>
 
     <p class="medium-space">
-      <a href="{%if isAdmin %}/admin{%endif%}/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
+      <a href="/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
     </p>
 
   {%endif%}

@@ -1,0 +1,16 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "survey.njk" import feedbackSurveyItem %}
+
+{% block content %}
+
+  {{ title('Tell us what you think about this service') }}
+
+  {% if surveyType == 'internal' %}
+    {{ feedbackSurveyItem(nonces, '419108', '1CCYT') }}
+  {% elseif surveyType == 'external' %}
+    {{ feedbackSurveyItem(nonces, '416960', 'FYWJN') }}
+  {% else %}
+    {{ feedbackSurveyItem(nonces, '517384', 'AEIMT') }}
+  {% endif %}
+
+{% endblock %}

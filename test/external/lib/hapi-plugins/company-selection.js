@@ -42,8 +42,8 @@ experiment('plugin', async () => {
     expect(plugin.pkg.version).to.equal('2.0.0');
   });
 
-  test('defines a dependency on authCredentials', async () => {
-    expect(plugin.dependencies).to.contain('authCredentials');
+  test('defines a dependency on authPlugin', async () => {
+    expect(plugin.dependencies).to.contain('authPlugin');
   });
 
   test('registers an onPreResponse handler', async () => {

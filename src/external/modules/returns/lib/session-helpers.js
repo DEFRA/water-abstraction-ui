@@ -23,7 +23,7 @@ const getSessionKey = (request) => {
  */
 const getSessionData = (request) => {
   const sessionKey = getSessionKey(request);
-  const data = request.sessionStore.get(sessionKey);
+  const data = request.yar.get(sessionKey);
 
   if (!data) {
     throw Boom.badImplementation(`Return not found in session`);
@@ -38,7 +38,7 @@ const getSessionData = (request) => {
  */
 const saveSessionData = (request, data) => {
   const sessionKey = getSessionKey(request);
-  request.sessionStore.set(sessionKey, data);
+  request.yar.set(sessionKey, data);
 };
 
 /**
@@ -47,7 +47,7 @@ const saveSessionData = (request, data) => {
  */
 const deleteSessionData = (request) => {
   const sessionKey = getSessionKey(request);
-  request.sessionStore.delete(sessionKey);
+  request.yar.clear(sessionKey);
 };
 
 /**
@@ -58,7 +58,7 @@ const deleteSessionData = (request) => {
  * @return {Promise} resolve when data posted to water service
  */
 const submitReturnData = (data, request) => {
-  const dataWithUser = applyUserDetails(data, request.auth.credentials);
+  const dataWithUser = applyUserDetails(data, request);
   const dataToSubmit = applyCleanup(dataWithUser, request);
 
   // Post return

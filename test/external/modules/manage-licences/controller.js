@@ -93,10 +93,8 @@ experiment('postChangeAccess', () => {
 
   const getBaseRequest = () => {
     return {
-      auth: {
-        credentials: {
-          entity_id: 'test-entity-id'
-        }
+      defra: {
+        entityId: 'test-entity-id'
       },
       payload: {
         returns: true,

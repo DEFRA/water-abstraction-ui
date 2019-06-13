@@ -14,10 +14,10 @@ const getSurveyType = (isAuthenticated, isDefraAdmin) => {
 
 /**
  * Get GA tracking details given user credentials
- * @param {Object} credentials
+ * @param {Object} defra
  * @return {Object} tracking
  */
-const getTracking = (credentials) => {
+const getTracking = (defra) => {
   const base = {
     userType: 'not_logged_in',
     propertyId: config.googleAnalytics.propertyId,
@@ -25,11 +25,11 @@ const getTracking = (credentials) => {
     isLoggedIn: false
   };
 
-  if (credentials) {
-    const { lastLogin, scope = [] } = credentials;
+  if (defra) {
+    const { lastLogin } = defra;
 
     return Object.assign(base, {
-      userType: scope.includes('internal') ? 'internal' : 'external',
+      userType: 'external',
       isLoggedIn: true,
       newUser: lastLogin === null,
       lastLogin
@@ -50,7 +50,7 @@ const hasMultipleCompanies = request => get(request, 'defra.companyCount', 0) > 
 function viewContextDefaults (request) {
   const viewContext = request.view || {};
 
-  viewContext.isAuthenticated = !!get(request, 'state.sid');
+  viewContext.isAuthenticated = !!get(request, 'auth.credentials.userId');
   viewContext.query = request.query;
   viewContext.payload = request.payload;
   viewContext.session = request.session;
@@ -65,15 +65,13 @@ function viewContextDefaults (request) {
   viewContext.afterHeader = null;
   viewContext.path = request.path;
 
-  if (request.sessionStore) {
-    viewContext.csrfToken = request.sessionStore.get('csrf_token');
-  }
+  viewContext.csrfToken = request.yar.get('csrfToken');
 
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
 
-  // Are we in admin view?  Add a flag for templates
-  viewContext.isAdmin = /^\/admin\//.test(request.url.path);
+  // TODO: Remove this as part of UI split
+  viewContext.isAdmin = false;
   viewContext.isTestMode = process.env.TEST_MODE;
 
   // Set navigation links
@@ -82,7 +80,7 @@ function viewContextDefaults (request) {
 
   viewContext.user = request.auth.credentials;
 
-  viewContext.tracking = getTracking(request.auth.credentials);
+  viewContext.tracking = getTracking(request.defra);
 
   viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
@@ -92,7 +90,7 @@ function viewContextDefaults (request) {
   );
 
   viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
-  viewContext.companyName = get(request, 'auth.credentials.companyName');
+  viewContext.companyName = get(request, 'defra.companyName');
 
   return viewContext;
 }

@@ -146,9 +146,8 @@ const getLicenceVersion = (licence) => {
  */
 const addActionFactory = (request, licence) => {
   const { schema: schemaName } = request.params;
-  const { credentials: user } = request.auth;
   const { issueNumber, incrementNumber } = getLicenceVersion(licence);
-  return createAddData(schemaName, user, issueNumber, incrementNumber);
+  return createAddData(schemaName, request.defra, issueNumber, incrementNumber);
 };
 
 /**
@@ -159,8 +158,7 @@ const addActionFactory = (request, licence) => {
  * @return {Object} action
  */
 const editActionFactory = (request, data, id) => {
-  const { credentials: user } = request.auth;
-  return createEditData(omit(data, ['csrf_token']), user, id);
+  return createEditData(omit(data, ['csrf_token']), request.defra, id);
 };
 
 /**

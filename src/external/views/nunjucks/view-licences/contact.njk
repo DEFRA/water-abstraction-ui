@@ -3,17 +3,15 @@
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Licence contact details: {{crmData.document_name}}{% endset %}
+  {% if summary.documentName %}
+    {% set licenceName %} Licence contact details: {{ summary.documentName }}{% endset %}
     {{ title(licenceName, pageTitle) }}
   {% else %}
     {{ title(pageTitle) }}
   {% endif %}
 
-  {% for contact in licenceData.contacts %}
+  {% for contact in summary.contacts %}
 
-  {% set contactName %} {{ contact.name }}{% endset %}
-  
   {% set addressData %}
     {% if contact.addressLine1 %}{{ contact.addressLine1 }}<br />{% endif %}
     {% if contact.addressLine2 %}{{ contact.addressLine2 }}<br />{% endif %}
@@ -25,7 +23,7 @@
     {{ contact.country }}
   {% endset %}
 
-    <h3 class="govuk-heading-m">{{ contact.type }}</h3>
+    <h3 class="govuk-heading-m">{{ contact.role }}</h3>
     <hr class="govuk-section-break govuk-section-break--visible">
     {{ govukSummaryList({
       rows: [{
@@ -34,7 +32,7 @@
             classes:"govuk-!-font-weight-regular"
           },
           value: {
-            text: contactName
+            text: contact.fullName
           }
         },
         {

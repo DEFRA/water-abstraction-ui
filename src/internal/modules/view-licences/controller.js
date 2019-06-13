@@ -173,22 +173,15 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
  */
 const getLicence = async (request, h) => {
   const { documentId } = request.params;
-  const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
-
-  if (!licence) {
-    throw Boom.notFound(`Document ${documentId} not found`);
-  }
-
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {
     ...request.view,
-    licence,
-    messages,
+    licence: request.licence.summary,
+    messages: request.licence.communications,
     ...await getCommonLicenceViewContext(
-      licence.licenceNumber,
+      request.licence.summary.licenceNumber,
       documentId,
-      licence.documentName,
+      request.licence.summary.documentName,
       request
     )
   };

@@ -60,7 +60,7 @@ const resetIsRequired = user => !!parseInt(get(user, 'reset_required', false));
  * @param {Object} h - the Hapi Response Toolkit
  */
 const postSignin = async (request, h) => {
-  const form = handleRequest(signInForm(), request, signInSchema);
+  const form = handleRequest(signInForm(), request, signInSchema, { abortEarly: true });
 
   // Destroy existing session
   h.realm.pluginOptions.signOut(request);

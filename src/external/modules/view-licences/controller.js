@@ -1,4 +1,3 @@
-const moment = require('moment');
 const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -6,12 +5,36 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
 const helpers = require('./helpers');
-const licenceConnector = require('../../lib/connectors/water-service/licences');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
-const { isInternal } = require('../../lib/permissions');
 const communicationsConnector = require('../../lib/connectors/water-service/communications');
+const { handleRequest, getValues } = require('shared/lib/forms');
+const { renameLicenceForm, renameLicenceSchema } = require('./forms/rename');
+
+/**
+ * Formats data commonly used in views, assuming that licence data has been
+ * loaded by the licenceData plugin
+ * @param  {Object} request - hapi request
+ * @return {Object}           view data
+ */
+const getCommonViewContext = request => {
+  const { documentId } = request.params;
+  return {
+    ...request.view,
+    ...request.licence,
+    documentId
+  };
+};
+
+const getCommonBackLink = request => {
+  const { documentId } = request.params;
+  const { licenceNumber } = request.licence.summary;
+  return {
+    back: `/licences/${documentId}`,
+    backText: `Licence number ${licenceNumber}`
+  };
+};
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -44,32 +67,33 @@ async function getLicences (request, reply) {
 }
 
 async function getLicenceDetail (request, reply) {
-  const { documentId } = request.params;
-
   try {
-    const { documentHeader, viewData, gaugingStations } = await helpers.loadLicenceData(request, documentId);
+    const { licenceNumber, documentName } = request.licence.summary;
 
-    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-    documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
+    const view = {
+      ...getCommonViewContext(request),
+      ...getCommonBackLink(request),
+      pageTitle: helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName)
+    };
 
-    const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
-
-    return reply.view(request.config.view, {
-      ...request.view,
-      canViewReturns: true,
-      gaugingStations,
-      licence_id: documentId,
-      name: 'name' in request.view ? request.view.name : customName,
-      licenceData: viewData,
-      back: `/licences/${documentId}`,
-      backText: `Licence number ${licenceNumber}`,
-      pageTitle: helpers.getLicencePageTitle(request.config.view, licenceNumber, customName),
-      crmData: documentHeader,
-      primaryUser
-    }, { layout: false });
+    return reply.view(request.config.view, view, { layout: false });
   } catch (error) {
     throw helpers.errorMapper(error);
   }
+};
+
+/**
+ * Renders a page for the user to set/update licence name
+ */
+const getLicenceRename = (request, h, form) => {
+  const { documentName } = request.licence.summary;
+  const view = {
+    ...getCommonViewContext(request),
+    ...getCommonBackLink(request),
+    form: form || renameLicenceForm(request, documentName),
+    pageTitle: `Name licence ${request.licence.summary.licenceNumber}`
+  };
+  return h.view('nunjucks/view-licences/rename.njk', view, { layout: false });
 };
 
 /**
@@ -78,19 +102,22 @@ async function getLicenceDetail (request, reply) {
  * @param {String} request.payload.name - the new name for the licence
  * @param {Object} reply - the HAPI HTTP response
  */
-async function postLicenceRename (request, reply) {
-  if (request.formError) {
-    return getLicenceDetail(request, reply);
+async function postLicenceRename (request, h) {
+  const { documentId } = request.params;
+  const { documentName } = request.licence.summary;
+  const form = handleRequest(renameLicenceForm(request, documentName), request, renameLicenceSchema, { abortEarly: true });
+
+  // Validation error - redisplay form
+  if (!form.isValid) {
+    return getLicenceRename(request, h, form);
   }
 
-  const { name } = request.formValue;
-  const { documentId } = request.params;
-
   // Rename licence
+  const { name } = getValues(form);
   const { error } = await CRM.documents.setLicenceName(documentId, name);
   throwIfError(error);
 
-  return reply.redirect(`/licences/${documentId}`);
+  return h.redirect(`/licences/${documentId}`);
 }
 
 /**
@@ -130,39 +157,6 @@ async function getLicenceGaugingStation (request, reply) {
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
-const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
-  const isInternalUser = isInternal(request);
-  const pagination = { page: 1, perPage: 10 };
-  const returns = await getLicenceReturns([licenceNumber], pagination, isInternalUser);
-
-  return {
-    returns: mapReturns(returns.data, request),
-    hasMoreReturns: hasMultiplePages(returns.pagination)
-  };
-};
-
-/**
- * Prepares a common object of values ready to assign to the view context
- * for licence responses
- *
- * @param {string} licenceNumber The licence number/ref e.g 12/12/ab/123
- * @param {string/uuid} documentId Document ID
- * @param {string} documentName A name that the user may have assigned to the document
- * @param {object} request The HAPI request
- * @returns {object} An object of values that can be spread into the view context
- */
-const getCommonLicenceViewContext = async (licenceNumber, documentId, documentName, request) => {
-  const returnsData = await getLicenceReturnsForViewContext(request, licenceNumber);
-
-  return {
-    documentId,
-    ...returnsData,
-    pageTitle: getPageTitle(documentName, licenceNumber),
-    back: `/licences`,
-    isInternal: false
-  };
-};
-
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -171,26 +165,19 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
  * @param {Object} reply - HAPI reply interface
  */
 const getLicence = async (request, h) => {
-  const { documentId } = request.params;
-  const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
+  const { licenceNumber } = request.licence.summary;
 
-  if (!licence) {
-    throw Boom.notFound(`Document ${documentId} not found`);
-  }
-
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
+  const pagination = { page: 1, perPage: 10 };
+  const returns = await getLicenceReturns([licenceNumber], pagination, false);
 
   const view = {
-    ...request.view,
-    licence,
-    messages,
-    ...await getCommonLicenceViewContext(
-      licence.licenceNumber,
-      documentId,
-      licence.documentName,
-      request
-    )
+    ...getCommonViewContext(request),
+    pageTitle: `Licence number ${licenceNumber}`,
+    returns: mapReturns(returns.data, request),
+    hasMoreReturns: hasMultiplePages(returns.pagination),
+    back: '/licences'
   };
+
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
 };
 
@@ -217,8 +204,6 @@ const getLicenceCommunication = async (request, h) => {
     throw Boom.notFound('Document not associated with communication');
   }
 
-  const isInternalUser = isInternal(request);
-
   const viewContext = {
     ...request.view,
     ...{ pageTitle: (licence.documentName || licence.licenceRef) + ', message review' },
@@ -228,46 +213,10 @@ const getLicenceCommunication = async (request, h) => {
     messageContent: response.data.notification.plainText,
     back: `/licences/${documentId}#communications`,
     recipientAddressParts: getAddressParts(response.data.notification),
-    isInternal: isInternalUser
+    isInternal: false
   };
 
   return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });
-};
-
-const getPageTitle = (documentName, licenceNumber) => {
-  return 'Licence ' + (documentName ? `name ${documentName}` : `number ${licenceNumber}`);
-};
-
-const getExpiredLicence = async (request, h) => {
-  const { documentId } = request.params;
-  const { data: licenceData } = await licenceConnector.getLicenceByDocumentId(documentId, true);
-  const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId, true);
-
-  // create the licence data that will be displayed in the view
-  const licence = {
-    primaryUser,
-    licenceNumber: licenceData.licence_ref,
-    documentName: licenceData.document.name,
-    expiryDate: moment(licenceData.earliestEndDate).format('D MMMM YYYY'),
-    expiryReason: licenceData.earliestEndDateReason
-  };
-
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId, true);
-
-  const view = {
-    ...request.view,
-    licence,
-    messages,
-    ...await getCommonLicenceViewContext(
-      licence.licenceNumber,
-      documentId,
-      licence.documentName,
-      request
-    ),
-    back: `/licences?query=${licence.licenceNumber}`
-  };
-
-  return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });
 };
 
 exports.getLicences = getLicences;
@@ -276,4 +225,4 @@ exports.postLicenceRename = postLicenceRename;
 exports.getLicenceGaugingStation = getLicenceGaugingStation;
 exports.getLicence = getLicence;
 exports.getLicenceCommunication = getLicenceCommunication;
-exports.getExpiredLicence = getExpiredLicence;
+exports.getLicenceRename = getLicenceRename;

@@ -14,9 +14,9 @@ const { pick, reduce } = require('lodash');
 const Joi = require('joi');
 
 const commaNumber = require('comma-number');
-const { convertToCubicMetres } = require('../unit-conversion');
-const { maxPrecision } = require('../number-formatter');
-const { splitString } = require('../string-formatter');
+const { convertToCubicMetres } = require('../../../shared/lib/unit-conversion');
+const { maxPrecision } = require('../../../shared/lib/number-formatter');
+const { splitString } = require('../../../shared/lib/string-formatter');
 
 /**
  * Formats numbers with commas to separate thousands, eg. 1,000

@@ -7,7 +7,6 @@ const viewLicenceRoutes = require('./view-licences/routes');
 const registrationRoutes = require('./registration/routes');
 const serviceStatusRoutes = require('./service-status/routes');
 const returnsRoutes = require('./returns/routes');
-const cspRoutes = require('./csp/routes');
 const companySelector = require('./company-selector/routes');
 
 module.exports = [
@@ -20,6 +19,5 @@ module.exports = [
   ...Object.values(viewLicenceRoutes),
   ...Object.values(serviceStatusRoutes),
   ...Object.values(returnsRoutes),
-  ...Object.values(cspRoutes),
   ...Object.values(companySelector)
 ];

@@ -4,8 +4,6 @@ const serviceRequest = require('../../../shared/lib/connectors/service-request')
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');
 const { logger } = require('../../logger');
-const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
-const { getInternalSearchResults } = require('./water-service/internal-search');
 
 const config = require('../../config');
 const waterUri = config.services.water;
@@ -85,6 +83,3 @@ exports.gaugingStations = gaugingStations;
 exports.returns = returns;
 exports.picklists = picklists;
 exports.picklistItems = picklistItems;
-exports.arLicenceAnalyis = arLicenceAnalyis;
-exports.arRefreshLicenceWebhook = arRefreshLicenceWebhook;
-exports.getInternalSearchResults = getInternalSearchResults;

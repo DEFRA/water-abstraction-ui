@@ -1,5 +1,7 @@
-const { set } = require('lodash');
-const { getUserData, setUserData } = require('../../lib/user-data');
+const { set, get } = require('lodash');
+const { setUserData } = require('../../lib/user-data');
+
+const getUserData = request => get(request, 'defra.user.user_data', {});
 
 /**
  * Maps form validator plugin errors to those required by the contact
@@ -57,8 +59,7 @@ const getNameAndJob = async (request, h) => {
   request.yar.set('redirect', redirect);
 
   // Load user data from IDM
-  const { userId } = request.defra;
-  const { contactDetails = {} } = await getUserData(userId);
+  const { contactDetails = {} } = getUserData(request);
 
   request.yar.set('notificationContactDetails', {
     contactDetails,
@@ -85,7 +86,7 @@ const postNameAndJob = async (request, h) => {
 
   // Merge updated fields to user_data
   const { userId } = request.defra;
-  let userData = await getUserData(userId);
+  let userData = getUserData(request);
   set(userData, 'contactDetails.name', contactDetails.name);
   set(userData, 'contactDetails.jobTitle', contactDetails.jobTitle);
   await setUserData(userId, userData);
@@ -98,8 +99,7 @@ const postNameAndJob = async (request, h) => {
  */
 const getDetails = async (request, h) => {
   // Load user data from IDM
-  const { userId } = request.defra;
-  const { contactDetails = {} } = await getUserData(userId);
+  const { contactDetails = {} } = getUserData(request);
 
   return h.view('water/notifications/contact-details', {
     ...request.view,
@@ -119,7 +119,7 @@ const postDetails = async (request, h) => {
 
   // Merge updated fields to user_data
   const { userId } = request.defra;
-  let userData = await getUserData(userId);
+  let userData = getUserData(request);
   set(userData, 'contactDetails.email', contactDetails.email);
   set(userData, 'contactDetails.tel', contactDetails.tel);
   set(userData, 'contactDetails.address', contactDetails.address);

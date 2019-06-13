@@ -1,7 +1,6 @@
-const { get, set, isEmpty } = require('lodash');
+const { get, set, isEmpty, lowerCase } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
 const water = require('../../../lib/connectors/water');
@@ -292,7 +291,7 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 
-const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
+const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates ${year}.zip`;
 
 /**
  * Downloads a ZIP of CSV templates
@@ -302,11 +301,12 @@ const getCSVTemplates = async (request, h) => {
 
   // Fetch returns for current company
   const returns = await waterCompany.getCurrentDueReturns(companyId);
+  const endDate = returns[0].endDate;
 
   // Generate CSV data and build zip
   const data = csvTemplates.createCSVData(returns);
   const zip = await csvTemplates.buildZip(data, companyName);
-  const fileName = getZipFilename(companyName);
+  const fileName = getZipFilename(companyName, endDate.substring(0, 4));
 
   return h.response(zip)
     .header('Content-type', 'application/zip')

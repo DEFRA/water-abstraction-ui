@@ -426,7 +426,7 @@ experiment('upload controller', () => {
       test('sets the correct content disposition in the response', async () => {
         const [key, value] = header.secondCall.args;
         expect(key).to.equal('Content-disposition');
-        expect(value).to.equal('attachment; filename=test_co_ltd.zip');
+        expect(value).to.equal('attachment; filename=test co ltd return templates 2019.zip');
       });
     });
   });

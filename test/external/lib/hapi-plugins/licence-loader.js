@@ -13,7 +13,7 @@ const requestStubPlugin = require('./request-stub-plugin');
 
 const addEntityIdToRequest = request => {
   set(request, 'auth.isAuthenticated', true);
-  set(request, 'auth.credentials.entity_id', 'test-entity-id');
+  set(request, 'defra.entityId', 'test-entity-id');
 };
 
 const getServer = async (licenceLoaderSettings) => {

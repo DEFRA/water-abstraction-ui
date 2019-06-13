@@ -1,11 +1,12 @@
 const { get } = require('lodash');
 const { applyErrors } = require('../../../../shared/lib/forms');
-const fileCheck = require('../../../lib/file-check');
+const fileCheck = require('../../../../shared/lib/file-check');
 const fs = require('fs');
 const path = require('path');
 const uuidv4 = require('uuid/v4');
 const util = require('util');
 const mkdirp = util.promisify(require('mkdirp'));
+const { logger } = require('../../../logger');
 
 /**
  * Get path to temp folder & assign uuid filename
@@ -19,7 +20,8 @@ const getErrorMessage = (key) => {
   const errorMessages = {
     'invalid-xml': 'The selected file must use the template',
     notxml: 'The selected file must be a CSV or XML file',
-    virus: 'The selected file contains a virus'
+    virus: 'The selected file contains a virus',
+    empty: 'The selected file has no returns data'
   };
   const defaultMessage = 'The selected file could not be uploaded – try again';
   return get(errorMessages, key, defaultMessage);
@@ -78,9 +80,10 @@ const fileStatuses = {
  */
 const getUploadedFileStatus = async (file, type) => {
   // Run virus check on temp file
-  const isClean = await fileCheck.virusCheck(file);
+  const checkResult = await fileCheck.virusCheck(file);
   // Set redirectUrl if virusCheck failed
-  if (!isClean) {
+  if (!checkResult.isClean) {
+    logger.error(checkResult.err);
     return fileStatuses.VIRUS;
   }
 

@@ -1,5 +1,5 @@
 const controller = require('./controller');
-const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
+const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('shared/lib/validators');
 const Joi = require('joi');
 
 module.exports = {
@@ -13,9 +13,6 @@ module.exports = {
         viewContext: {
           pageTitle: 'Enter your current password',
           activeNavLink: 'change-password'
-        },
-        licenceLoader: {
-          loadUserLicenceCount: true
         }
       }
     }
@@ -42,9 +39,6 @@ module.exports = {
             password: VALID_PASSWORD,
             csrf_token: VALID_GUID
           }
-        },
-        licenceLoader: {
-          loadUserLicenceCount: true
         }
       }
     },
@@ -79,9 +73,6 @@ module.exports = {
           options: {
             abortEarly: false
           }
-        },
-        licenceLoader: {
-          loadUserLicenceCount: true
         }
       }
     },

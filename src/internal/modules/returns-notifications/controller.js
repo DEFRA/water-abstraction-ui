@@ -74,7 +74,7 @@ const postPreviewRecipients = async (request, h) => {
 
   if (form.isValid) {
     const { licenceNumbers } = getValues(form);
-    const { username: emailAddress } = request.auth.credentials;
+    const { userName: emailAddress } = request.defra;
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
@@ -115,7 +115,7 @@ const postSendForms = async (request, h) => {
 
   if (form.isValid) {
     const { licenceNumbers } = getValues(form);
-    const { username: emailAddress } = request.auth.credentials;
+    const { userName: emailAddress } = request.defra;
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
@@ -213,7 +213,7 @@ const getNotificationsData = async request => {
   const form = handleRequest(sendRemindersForm(request), request, sendRemindersSchema);
 
   const { excludeLicences } = getValues(form);
-  const { username: issuer } = request.auth.credentials;
+  const { userName: issuer } = request.defra;
 
   const connector = getBatchNotificationsConnector(request.path);
 

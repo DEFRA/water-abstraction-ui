@@ -37,7 +37,7 @@ const isInternalEdit = (ret, request) => {
 const getEditButtonPath = (ret, request) => {
   if (isInternalEdit(ret, request)) {
     const returnId = getReturnId(ret);
-    return `/admin/return/internal?returnId=${returnId}`;
+    return `/return/internal?returnId=${returnId}`;
   };
 };
 
@@ -51,11 +51,11 @@ const getInternalPath = (ret, request) => {
   const returnId = getReturnId(ret);
   // Link to completed/void return
   if (isCompleted(ret) || isVoid(ret)) {
-    return { path: `/admin/returns/return?id=${returnId}`, isEdit: false };
+    return { path: `/returns/return?id=${returnId}`, isEdit: false };
   }
   // Link to editable return
   if (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request)) {
-    return { path: `/admin/return/internal?returnId=${returnId}`, isEdit: true };
+    return { path: `/return/internal?returnId=${returnId}`, isEdit: true };
   }
 };
 

@@ -19,6 +19,9 @@ const createRequest = () => {
     },
     params: {
       documentId
+    },
+    defra: {
+
     }
   };
 };
@@ -31,7 +34,7 @@ const createInternalRequest = () => {
 const createExternalRequest = () => {
   const request = createRequest();
   set(request, 'auth.credentials.scope', [scope.external, scope.licenceHolder]);
-  set(request, 'auth.credentials.companyId', companyId);
+  set(request, 'defra.companyId', companyId);
   return request;
 };
 

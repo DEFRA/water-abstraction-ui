@@ -1,4 +1,3 @@
-const Helpers = require('../helpers');
 const uuid = require('uuid/v4');
 const rp = require('request-promise-native').defaults({
   proxy: null,
@@ -6,8 +5,8 @@ const rp = require('request-promise-native').defaults({
 });
 const { APIClient } = require('@envage/hapi-pg-rest-api');
 
-const client = new APIClient(rp, {
-  endpoint: process.env.IDM_URI + '/user',
+const usersClient = new APIClient(rp, {
+  endpoint: `${process.env.IDM_URI}/user`,
   headers: {
     Authorization: process.env.JWT_TOKEN
   }
@@ -49,7 +48,7 @@ async function getUserByResetGuid (resetGuid) {
   const {
     error,
     data
-  } = await client.findMany({
+  } = await usersClient.findMany({
     reset_guid: resetGuid
   });
   if (error) {
@@ -66,7 +65,7 @@ async function getUserByResetGuid (resetGuid) {
  * @return {Promise} - resolves if user account created
  */
 function createUserWithoutPassword (emailAddress) {
-  return client.create({
+  return usersClient.create({
     user_name: emailAddress.toLowerCase(),
     password: uuid(),
     reset_guid: uuid(),
@@ -84,7 +83,7 @@ function createUserWithoutPassword (emailAddress) {
  * @param {Number} numeric ID
  * @return {Promise} resolves with user if found
  */
-const getUser = userId => client.findOne(userId);
+const getUser = userId => usersClient.findOne(userId);
 
 /**
  * Gets the user for the current VML application who has the
@@ -95,40 +94,9 @@ const getUser = userId => client.findOne(userId);
  * only ever have zero or one users.
  */
 function getUserByEmail (email) {
-  return client.findMany({
+  return usersClient.findMany({
     user_name: email.toLowerCase().trim(),
     application: config.idm.application
-  });
-}
-
-function login (userName, password) {
-  return verifyCredentials(userName, password)
-    .then((response) => {
-      response.body.sessionGUID = uuid();
-      return response;
-    });
-}
-
-function verifyCredentials (userName, password) {
-  const data = {
-    user_name: userName,
-    password: password,
-    application: config.idm.application
-  };
-  const uri = `${process.env.IDM_URI}/user/login?token=${process.env.JWT_TOKEN}`;
-  const method = 'post';
-  return Helpers.makeURIRequestWithBody(uri, method, data);
-}
-
-function getPasswordResetLink (emailAddress) {
-  return new Promise((resolve, reject) => {
-    var uri = process.env.IDM_URI + '/resetPassword' + '?token=' + process.env.JWT_TOKEN + '&emailAddress=' + emailAddress;
-    Helpers.makeURIRequest(uri)
-      .then((response) => {
-        resolve(response.body);
-      }).catch((response) => {
-        reject(response);
-      });
   });
 }
 
@@ -138,7 +106,7 @@ function getPasswordResetLink (emailAddress) {
  * @param {String} password - new password
  */
 function updatePassword (userId, password) {
-  return client.updateOne(userId, { password });
+  return usersClient.updateOne(userId, { password });
 }
 
 /**
@@ -148,7 +116,7 @@ function updatePassword (userId, password) {
  * @return {Promise} resolves when user updated
  */
 function updatePasswordWithGuid (resetGuid, password) {
-  return client.updateMany({
+  return usersClient.updateMany({
     reset_guid: resetGuid
   }, {
     password,
@@ -167,27 +135,17 @@ const updateExternalId = (user, externalId) => {
   if (user.external_id) {
     return Promise.resolve();
   }
-  return client.updateOne(user.user_id, { external_id: externalId });
+  return usersClient.updateOne(user.user_id, { external_id: externalId });
 };
 
-const usersClient = new APIClient(rp, {
-  endpoint: `${process.env.IDM_URI}/user`,
-  headers: {
-    Authorization: process.env.JWT_TOKEN
-  }
-});
-
 module.exports = {
-  login,
   resetPassword,
-  getPasswordResetLink,
   updatePassword,
   updatePasswordWithGuid,
   createUserWithoutPassword,
   getUser,
   getUserByEmail,
   getUserByResetGuid,
-  verifyCredentials,
   usersClient,
   kpi: idmKPI,
   updateExternalId

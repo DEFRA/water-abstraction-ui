@@ -4,7 +4,7 @@ const { Promise } = require('bluebird');
 const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const documents = require('../../lib/connectors/crm/documents');
-const { forceArray } = require('../../lib/helpers');
+const { forceArray } = require('../../../shared/lib/array-helpers');
 const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
 const { getNotificationsList, getReportsList } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
@@ -39,7 +39,8 @@ async function getIndex (request, reply) {
   * @param {Object} task - task config data from water service
   */
 async function getStartFlow (request, h, task) {
-  const context = await getContext(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  const context = await getContext(userId);
   const state = null;
   const taskData = new TaskData(task, state, context);
   request.yar.set('notificationsFlow', taskData.getData());
@@ -74,7 +75,8 @@ async function getStep (request, reply) {
     return getStartFlow(request, reply, task);
   }
 
-  const context = await getContext(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  const context = await getContext(userId);
   const state = request.yar.get('notificationsFlow');
 
   const taskData = new TaskData(task, state, context);
@@ -415,11 +417,11 @@ async function postSend (request, reply) {
   const { id } = request.params;
 
   // Get email address of current user
-  const { username } = request.auth.credentials;
+  const { userName } = request.defra;
 
   const view = {
     ...request.view,
-    ...await getSendViewContext(id, request.yar.get('notificationsFlow'), username)
+    ...await getSendViewContext(id, request.yar.get('notificationsFlow'), userName)
   };
 
   // Flow is completed - delete state in session store

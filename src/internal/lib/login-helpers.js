@@ -1,7 +1,5 @@
-const { get } = require('lodash');
 const { logger } = require('../logger');
 
-const getUserID = request => get(request, 'auth.credentials.user_id');
 const { isAuthenticated } = require('./permissions');
 
 /**
@@ -18,5 +16,4 @@ const preRedirectIfAuthenticated = async (request, h) => {
   return h.continue;
 };
 
-exports.getUserID = getUserID;
 exports.preRedirectIfAuthenticated = preRedirectIfAuthenticated;

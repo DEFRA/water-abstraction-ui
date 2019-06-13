@@ -213,9 +213,9 @@ const getLicenceData = (issueNumber, incrementNumber) => {
   };
 };
 
-const credentials = {
-  user_id: 'b643ae0d-29dd-4d57-a475-98152dedbd42',
-  username: 'mail@example.com'
+const defra = {
+  userId: 'b643ae0d-29dd-4d57-a475-98152dedbd42',
+  userName: 'mail@example.com'
 };
 
 lab.experiment('addActionFactory', () => {
@@ -223,9 +223,7 @@ lab.experiment('addActionFactory', () => {
     params: {
       schema: 'xyz'
     },
-    auth: {
-      credentials
-    }
+    defra
   };
 
   lab.test('It should create an add data action', async () => {
@@ -240,9 +238,7 @@ lab.experiment('editActionFactory', () => {
     params: {
       id: 'xyz'
     },
-    auth: {
-      credentials
-    }
+    defra
   };
 
   lab.test('It should create an edit data action', async () => {

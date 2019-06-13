@@ -3,7 +3,7 @@ const Lab = require('lab');
 const sinon = require('sinon');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const virusScanner = require('../../../../../src/external/modules/service-status/lib/virus-scanner');
-const fileCheck = require('../../../../../src/external/lib/file-check');
+const fileCheck = require('../../../../../src/shared/lib/file-check');
 const { expect } = require('code');
 
 experiment('getVirusScannerStatus', () => {
@@ -13,8 +13,8 @@ experiment('getVirusScannerStatus', () => {
 
   beforeEach(async () => {
     stub = sandbox.stub(fileCheck, 'virusCheck');
-    stub.onCall(0).resolves(true);
-    stub.onCall(1).resolves(false);
+    stub.onCall(0).resolves({ isClean: true });
+    stub.onCall(1).resolves({ isClean: false });
   });
 
   afterEach(async () => {
@@ -27,20 +27,20 @@ experiment('getVirusScannerStatus', () => {
   });
 
   test('it should return false if clean file fails', async () => {
-    stub.onCall(0).resolves(false);
+    stub.onCall(0).resolves({ isClean: false });
     const result = await virusScanner.getVirusScannerStatus();
     expect(result).to.equal(false);
   });
 
   test('it should return false if infected file succeeds', async () => {
-    stub.onCall(1).resolves(true);
+    stub.onCall(1).resolves({ isClean: true });
     const result = await virusScanner.getVirusScannerStatus();
     expect(result).to.equal(false);
   });
 
   test('it should return false if clean file fails and infected file succeeds', async () => {
-    stub.onCall(0).resolves(false);
-    stub.onCall(1).resolves(true);
+    stub.onCall(0).resolves({ isClean: false });
+    stub.onCall(1).resolves({ isClean: true });
     const result = await virusScanner.getVirusScannerStatus();
     expect(result).to.equal(false);
   });

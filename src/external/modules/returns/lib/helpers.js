@@ -264,7 +264,6 @@ const mapReturns = (returns, request) => {
  * This can be either all returns for a particular CRM entity,
  * or additionally can be filtered e.g. by document ID
  * @param {Object} request
- * @param {String} request.auth.credentials.entity_id - CRM entity ID of the current user
  * @param {Number} request.query.page - page number, for paginated results
  * @param {String} request.params.documentId - a single document ID to retrieve (otherwise gets all)
  * @return {Promise} resolves with list view data
@@ -328,9 +327,9 @@ const getViewData = async (request, data) => {
 const getRedirectPath = (ret, isMultiple = false) => {
   const { return_id: returnId, status, return_requirement: formatId } = ret;
   if (isMultiple) {
-    return `/admin/returns/select-licence?formatId=${formatId}`;
+    return `/returns/select-licence?formatId=${formatId}`;
   }
-  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+  return status === 'completed' ? `/returns/return?id=${returnId}` : `/return/internal?returnId=${returnId}`;
 };
 
 /**

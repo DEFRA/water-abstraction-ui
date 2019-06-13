@@ -23,10 +23,8 @@ experiment('batch notifications controller', () => {
     view: {
       csrfToken: 'token'
     },
-    auth: {
-      credentials: {
-        username
-      }
+    defra: {
+      userName: username
     }
   };
 

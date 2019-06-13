@@ -68,7 +68,7 @@ async function getNotification (request, reply) {
     event,
     task,
     messages: messages.map(message => Object.assign(message, {
-      badgeStatus: notifyToBadge(message.status)
+      badgeStatus: notifyToBadge(message.notify_status)
     })),
     back: '/notifications/report'
   }, { layout: false });

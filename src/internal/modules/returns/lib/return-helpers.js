@@ -1,7 +1,7 @@
 const Boom = require('boom');
 const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
-const { maxPrecision } = require('../../../lib/number-formatter');
+const { maxPrecision } = require('../../../../shared/lib/number-formatter');
 const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
 const permissions = require('../../../lib/permissions');
 
@@ -160,7 +160,7 @@ const applyQuantities = (data, formValues) => {
 /**
  * Applies user details to the return
  * @param {Object} data - returns model
- * @param {Object} credentials - request.auth.credentials for current user
+ * @param {Object} request - hapi request
  * @return {Object} returns model with user data added
  */
 const applyUserDetails = (data, request) => {

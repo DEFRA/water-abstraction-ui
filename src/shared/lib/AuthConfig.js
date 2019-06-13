@@ -55,7 +55,8 @@ class AuthConfig {
       userName: user.user_name,
       user,
       entityId,
-      userScopes
+      userScopes,
+      lastLogin: get(user, 'last_login')
     };
   };
 

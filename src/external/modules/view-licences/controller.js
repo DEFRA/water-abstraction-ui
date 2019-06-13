@@ -147,39 +147,6 @@ async function getLicenceGaugingStation (request, reply) {
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
-const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
-  const isInternalUser = isInternal(request);
-  const pagination = { page: 1, perPage: 10 };
-  const returns = await getLicenceReturns([licenceNumber], pagination, isInternalUser);
-
-  return {
-    returns: mapReturns(returns.data, request),
-    hasMoreReturns: hasMultiplePages(returns.pagination)
-  };
-};
-
-/**
- * Prepares a common object of values ready to assign to the view context
- * for licence responses
- *
- * @param {string} licenceNumber The licence number/ref e.g 12/12/ab/123
- * @param {string/uuid} documentId Document ID
- * @param {string} documentName A name that the user may have assigned to the document
- * @param {object} request The HAPI request
- * @returns {object} An object of values that can be spread into the view context
- */
-const getCommonLicenceViewContext = async (licenceNumber, documentId, documentName, request) => {
-  const returnsData = await getLicenceReturnsForViewContext(request, licenceNumber);
-
-  return {
-    documentId,
-    ...returnsData,
-    pageTitle: getPageTitle(documentName, licenceNumber),
-    back: `/licences`,
-    isInternal: false
-  };
-};
-
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request

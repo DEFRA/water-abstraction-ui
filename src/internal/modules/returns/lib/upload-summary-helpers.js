@@ -8,9 +8,9 @@ const { get, groupBy, mapValues } = require('lodash');
  * @return {Object} qs options for postUploadPreview
  */
 const mapRequestOptions = request => ({
-  userName: get(request, 'auth.credentials.username'),
-  companyId: get(request, 'auth.credentials.companyId'),
-  entityId: get(request, 'auth.credentials.entity_id')
+  userName: get(request, 'defra.user.user_name'),
+  companyId: get(request, 'defra.companyId'),
+  entityId: get(request, 'defra.entityId')
 });
 
 const getReturnRequirmentFromId = returnId => returnId.split(':')[3];

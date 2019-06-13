@@ -54,12 +54,13 @@ const getErrorViewContext = (request) => {
 const getNameAndJob = async (request, h) => {
   // WHere to redirect after flow complete
   const { redirect } = request.query;
-  request.sessionStore.set('redirect', redirect);
+  request.yar.set('redirect', redirect);
 
   // Load user data from IDM
-  const { contactDetails = {} } = await getUserData(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  const { contactDetails = {} } = await getUserData(userId);
 
-  request.sessionStore.set('notificationContactDetails', {
+  request.yar.set('notificationContactDetails', {
     contactDetails,
     redirect
   });
@@ -83,10 +84,11 @@ const postNameAndJob = async (request, h) => {
   }
 
   // Merge updated fields to user_data
-  let userData = await getUserData(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  let userData = await getUserData(userId);
   set(userData, 'contactDetails.name', contactDetails.name);
   set(userData, 'contactDetails.jobTitle', contactDetails.jobTitle);
-  await setUserData(request.auth.credentials.user_id, userData);
+  await setUserData(userId, userData);
 
   return h.redirect('/notifications/contact-details');
 };
@@ -96,7 +98,8 @@ const postNameAndJob = async (request, h) => {
  */
 const getDetails = async (request, h) => {
   // Load user data from IDM
-  const { contactDetails = {} } = await getUserData(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  const { contactDetails = {} } = await getUserData(userId);
 
   return h.view('water/notifications/contact-details', {
     ...request.view,
@@ -115,14 +118,15 @@ const postDetails = async (request, h) => {
   }
 
   // Merge updated fields to user_data
-  let userData = await getUserData(request.auth.credentials.user_id);
+  const { userId } = request.defra;
+  let userData = await getUserData(userId);
   set(userData, 'contactDetails.email', contactDetails.email);
   set(userData, 'contactDetails.tel', contactDetails.tel);
   set(userData, 'contactDetails.address', contactDetails.address);
-  await setUserData(request.auth.credentials.user_id, userData);
+  await setUserData(userId, userData);
 
   // Redirect to notifications flow
-  return h.redirect(request.sessionStore.get('redirect'));
+  return h.redirect(request.yar.get('redirect'));
 };
 
 module.exports = {

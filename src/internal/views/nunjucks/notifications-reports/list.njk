@@ -1,0 +1,61 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "sort-icon.njk" import sortIcon %}
+{% from "badge.njk" import badge %}
+
+{% macro headerLink(query, field, text, srText) %}
+  <a href="/notifications/report?{{ query | sortQuery(field) }}">
+    <span class="govuk-visually-hidden">Sort by {{ srText }}</span>
+    <span aria-hidden="true">{{ text }}</span>
+    {{ sortIcon(query, field) }}
+  </a>
+{% endmacro %}
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">
+              {{ headerLink(query, 'created', 'Date', 'date') }}
+            </th>
+            <th class="govuk-table__header" scope="col">
+              {{ headerLink(query, 'notification', 'Notification', 'notification type') }}
+            </th>
+            <th class="govuk-table__header" scope="col">
+              {{ headerLink(query, 'issuer', 'Sent by', 'sender') }}
+            </th>
+            <th class="govuk-table__header" scope="col">
+              {{ headerLink(query, 'recipients', 'Recipients', 'number of recipients') }}
+            </th>
+            <th class="govuk-table__header" scope="col">
+              {{ headerLink(query, 'status', 'Problems', 'number of errors') }}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for event in events %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ event.created | date}}</td>
+              <td class="govuk-table__cell">
+                <a href="/notifications/report/{{ event.event_id }}">
+                  {{ event.metadata.name }}
+                </a>
+              </td>
+              <td class="govuk-table__cell">{{ event.issuer }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ event.metadata.recipients }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {% if event.metadata.error %}
+                  {{ badge(event.metadata.error, 'error') }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+

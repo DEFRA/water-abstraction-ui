@@ -350,14 +350,7 @@ experiment('edit controller', () => {
 
       expect(view.returnUrl).to.equal(`/returns/return?id=${returnId}`);
     });
-    test('returnUrl should be admin/returns/return?id=returnId page for internal users', async () => {
-      const request = createRequest(true);
 
-      await controller.getSubmitted(request, h);
-      const [, view] = h.view.lastCall.args;
-
-      expect(view.returnUrl).to.equal(`/admin/returns/return?id=${returnId}`);
-    });
     test('pageTitle should be "Abstraction return - nil submitted" if isNil is true', async () => {
       const request = createRequest(false, true);
 
@@ -772,14 +765,14 @@ experiment('edit controller', () => {
     });
 
     test('it should use correct template', async () => {
-      const request = createRequest(true);
+      const request = createRequest(false);
       await controller.getMeterUsed(request, h);
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('water/returns/internal/form');
     });
 
     test('is should provide data to view', async () => {
-      const request = createRequest(true);
+      const request = createRequest(false);
       await controller.getMeterUsed(request, h);
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.be.a.string();
@@ -795,17 +788,17 @@ experiment('edit controller', () => {
 
     test('it should re-render page if form not valid', async () => {
       forms.handleRequest.returns({ isValid: false });
-      const request = createRequest(true);
+      const request = createRequest(false);
       await controller.postMeterUsed(request, h);
       const [template, view] = h.view.lastCall.args;
       expect(template).to.equal('water/returns/internal/form');
-      expect(view.back).to.startWith('/admin/return/meter/details-provided?returnId=');
+      expect(view.back).to.startWith('/return/meter/details-provided?returnId=');
     });
 
     test('it should call getNextPath with STEP_METER_USED, request', async () => {
       forms.handleRequest.returns({ isValid: true });
       forms.getValues.returns({ meterUsed: true });
-      const request = createRequest(true);
+      const request = createRequest(false);
       await controller.postMeterUsed(request, h);
       const getNextPathCalled = flowHelpers.getNextPath.calledWith(flowHelpers.STEP_METER_USED, request);
 

@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const { VALID_GUID } = require('../../lib/validators');
+const { VALID_GUID } = require('shared/lib/validators');
 
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;

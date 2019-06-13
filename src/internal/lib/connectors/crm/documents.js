@@ -133,7 +133,7 @@ client.createFilter = (request, filter = {}) => {
     regime_entity_id: waterRegimeEntityId
   };
   if (isExternal(request)) {
-    const companyId = get(request, 'auth.credentials.companyId');
+    const { companyId } = request.defra;
     defaults.company_entity_id = companyId;
   }
   return Object.assign({}, defaults, filter);

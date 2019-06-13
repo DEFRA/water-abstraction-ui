@@ -1,7 +1,7 @@
 const Boom = require('boom');
 const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
-const { maxPrecision } = require('../../../lib/number-formatter');
+const { maxPrecision } = require('../../../../shared/lib/number-formatter');
 const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
 const permissions = require('../../../lib/permissions');
 
@@ -160,17 +160,17 @@ const applyQuantities = (data, formValues) => {
 /**
  * Applies user details to the return
  * @param {Object} data - returns model
- * @param {Object} credentials - request.auth.credentials for current user
+ * @param {Object} request
  * @return {Object} returns model with user data added
  */
-const applyUserDetails = (data, credentials) => {
+const applyUserDetails = (data, request) => {
   const d = cloneDeep(data);
-  const { username, scope, entity_id: entityId } = credentials;
+  const { entityId, userName } = request.defra;
   return {
     ...d,
     user: {
-      email: username,
-      type: scope.includes('internal') ? 'internal' : 'external',
+      email: userName,
+      type: permissions.isInternal(request) ? 'internal' : 'external',
       entityId
     }
   };

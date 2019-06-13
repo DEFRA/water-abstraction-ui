@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.22.0",
+  "version": "1.23.2",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -30,11 +30,11 @@
     "code": "^5.2.4",
     "codecov": "^3.5.0",
     "del": "^3.0.0",
-    "eslint": "^5.1.0",
+    "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
@@ -43,8 +43,7 @@
     "gulp-uglify": "^3.0.2",
     "lab": "^14.3.4",
     "sinon": "^4.2.2",
-    "snyk": "^1.167.0",
-    "standard": "^10.0.3",
+    "snyk": "^1.172.0",
     "xmldom": "^0.1.27"
   },
   "dependencies": {
@@ -54,8 +53,10 @@
     "@hapi/inert": "^5.2.0",
     "@hapi/scooter": "^5.1.0",
     "@hapi/vision": "^5.5.2",
+    "@hapi/yar": "^9.2.0",
     "accessible-autocomplete": "^1.6.2",
     "ajv": "^6.10.0",
+    "app-module-path": "^2.2.0",
     "archiver": "^3.0.0",
     "blankie": "^4.1.1",
     "blipp": "^3.1.3",
@@ -109,8 +110,7 @@
     "title-case": "^2.1.1",
     "url-join": "^4.0.0",
     "uuid": "^3.3.2",
-    "winston": "^2.4.3",
-    "yar": "^8.1.2"
+    "winston": "^2.4.3"
   },
   "snyk": true
 }

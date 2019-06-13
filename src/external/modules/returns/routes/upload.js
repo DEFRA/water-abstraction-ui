@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { scope } = require('../../../lib/constants');
 const controller = require('../controllers/upload');
 
-const validators = require('../../../lib/validators');
+const validators = require('shared/lib/validators');
 
 const allowedScopes = [scope.licenceHolder, scope.colleagueWithReturns];
 

@@ -182,9 +182,11 @@ experiment('Return reducers', () => {
 
   test('applyUserDetails should set user details on the return object', async () => {
     const data = applyUserDetails(testReturn, {
-      username: 'test@example.com',
-      scope: ['internal', 'returns'],
-      entity_id: '01234'
+      defra: {
+        userName: 'test@example.com',
+        userScopes: ['internal', 'returns'],
+        entityId: '01234'
+      }
     });
 
     expect(data.user.email).to.equal('test@example.com');

@@ -1,11 +1,7 @@
-const { isInternal, isExternal } = require('../../lib/permissions');
+const { isExternal } = require('../../lib/permissions');
 
 const index = async (request, h) => {
-  if (isInternal(request)) {
-    return h.redirect('/admin/licences');
-  } else {
-    return h.redirect('/licences');
-  }
+  return h.redirect('/licences');
 };
 
 /**

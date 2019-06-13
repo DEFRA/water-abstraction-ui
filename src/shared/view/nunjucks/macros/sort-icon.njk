@@ -1,0 +1,14 @@
+{% macro sortIcon(query, field) %}
+  {% if query.sort === field %}
+    {% set direction = query | sortNewDirection(field) %}
+    {% set icon = '&#x25B2;' %}
+    {% set text = 'descending' %}
+    {% if direction === -1 %}
+      {% set icon = '&#x25BC;' %}
+      {% set text = 'ascending' %}
+    {% endif %}
+
+    <span class="sort-icon" aria-hidden="true">{{ icon | safe }}</span>
+    <span class="govuk-visually-hidden">{{ text }}</span>
+  {% endif %}
+{% endmacro %}

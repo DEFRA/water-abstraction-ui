@@ -22,9 +22,12 @@ experiment('companys selector controller', () => {
     },
     auth: {
       credentials: {
-        user_id: userId,
+        userId,
         scope: ['external']
       }
+    },
+    defra: {
+      userId
     },
     payload: {
       csrf_token: 'token'
@@ -49,10 +52,6 @@ experiment('companys selector controller', () => {
   experiment('getSelectCompany', () => {
     beforeEach(async () => {
       await controller.getSelectCompany(request, h);
-    });
-
-    test('passes the request to loginHelpers.getUserID', async () => {
-      expect(loginHelpers.getUserID.lastCall.args).to.equal([request]);
     });
 
     test('loads user details using the user ID', async () => {
@@ -85,10 +84,6 @@ experiment('companys selector controller', () => {
   experiment('postSelectCompany', () => {
     beforeEach(async () => {
       await controller.postSelectCompany(request, h);
-    });
-
-    test('passes the request to loginHelpers.getUserID', async () => {
-      expect(loginHelpers.getUserID.lastCall.args).to.equal([request]);
     });
 
     test('loads user details using the user ID', async () => {

@@ -80,7 +80,7 @@ const postInternalRouting = async (request, h) => {
     if (isQueryOption) {
       data = applyUnderQuery(data, { isUnderQuery });
       data = applyStatus(data, 'received');
-      data = applyUserDetails(data, request.auth.credentials);
+      data = applyUserDetails(data, request);
       await returns.patchReturn(data);
     }
 
@@ -130,7 +130,7 @@ const postLogReceipt = async (request, h) => {
 
     let d = applyStatus(data, 'received', formValues.date_received);
     d = applyUnderQuery(d, formValues);
-    d = applyUserDetails(d, request.auth.credentials);
+    d = applyUserDetails(d, request);
 
     // Patch returns service via water service
     await returns.patchReturn(d);

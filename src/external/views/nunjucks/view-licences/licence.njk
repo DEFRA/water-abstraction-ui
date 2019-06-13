@@ -15,7 +15,7 @@
       {% endif %}
 
       {% if isInternal and primaryUser %}
-        <p>Registered to <a href="/admin/user/{{primaryUser.userId}}/status">{{primaryUser.userName}}</a></p>
+        <p>Registered to <a href="/user/{{primaryUser.userId}}/status">{{primaryUser.userName}}</a></p>
       {% endif %}
 
       {% set summaryHtml %}

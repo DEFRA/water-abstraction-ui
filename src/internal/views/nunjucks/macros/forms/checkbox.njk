@@ -1,7 +1,0 @@
-{% from "checkboxes/macro.njk" import govukCheckboxes %}
-{% from "./text.njk" import formTextWidget %}
-
-{% macro formCheckboxWidget(field, form) %}
-  {% set options = field | mapFormCheckbox %}
-  {{ govukCheckboxes(options) }}
-{% endmacro %}

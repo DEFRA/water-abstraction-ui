@@ -1,17 +1,17 @@
-const { get, set } = require('lodash');
+const { get, set, isEmpty } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
 const water = require('../../../lib/connectors/water');
-const files = require('../../../lib/files');
+const files = require('../../../../shared/lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');
 const waterReturns = require('../../../lib/connectors/water-service/returns');
 const waterCompany = require('../../../lib/connectors/water-service/company');
-const fileCheck = require('../../../lib/file-check');
+const fileCheck = require('../../../../shared/lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
@@ -202,6 +202,11 @@ const getSummary = async (request, h) => {
     const returns = await waterReturns.getUploadPreview(eventId, options);
 
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
+
+    if (isEmpty(grouped)) {
+      return h.redirect(`/returns/upload?error=empty`);
+    }
+
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
 
     const view = {

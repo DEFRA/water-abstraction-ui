@@ -219,7 +219,7 @@ const getLicenceCommunication = async (request, h) => {
     messageType: response.data.evt.name,
     sentDate: response.data.evt.createdDate,
     messageContent: response.data.notification.plainText,
-    back: `${isInternalUser ? '/admin' : ''}/licences/${documentId}#communications`,
+    back: `/licences/${documentId}#communications`,
     recipientAddressParts: getAddressParts(response.data.notification),
     isInternal: isInternalUser
   };

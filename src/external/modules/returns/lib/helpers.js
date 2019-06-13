@@ -327,9 +327,9 @@ const getViewData = async (request, data) => {
 const getRedirectPath = (ret, isMultiple = false) => {
   const { return_id: returnId, status, return_requirement: formatId } = ret;
   if (isMultiple) {
-    return `/admin/returns/select-licence?formatId=${formatId}`;
+    return `/returns/select-licence?formatId=${formatId}`;
   }
-  return status === 'completed' ? `/admin/returns/return?id=${returnId}` : `/admin/return/internal?returnId=${returnId}`;
+  return status === 'completed' ? `/returns/return?id=${returnId}` : `/return/internal?returnId=${returnId}`;
 };
 
 /**

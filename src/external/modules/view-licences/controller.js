@@ -4,7 +4,7 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const CRM = require('../../lib/connectors/crm');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
+const helpers = require('./helpers');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
@@ -23,8 +23,16 @@ const getCommonViewContext = request => {
   return {
     ...request.view,
     ...request.licence,
-    documentId,
-    back: `/licences/${documentId}`
+    documentId
+  };
+};
+
+const getCommonBackLink = request => {
+  const { documentId } = request.params;
+  const { licenceNumber } = request.licence.summary;
+  return {
+    back: `/licences/${documentId}`,
+    backText: `Licence number ${licenceNumber}`
   };
 };
 
@@ -64,12 +72,13 @@ async function getLicenceDetail (request, reply) {
 
     const view = {
       ...getCommonViewContext(request),
-      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, documentName)
+      ...getCommonBackLink(request),
+      pageTitle: helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName)
     };
 
     return reply.view(request.config.view, view, { layout: false });
   } catch (error) {
-    throw errorMapper(error);
+    throw helpers.errorMapper(error);
   }
 };
 
@@ -80,6 +89,7 @@ const getLicenceRename = (request, h, form) => {
   const { documentName } = request.licence.summary;
   const view = {
     ...getCommonViewContext(request),
+    ...getCommonBackLink(request),
     form: form || renameLicenceForm(request, documentName),
     pageTitle: `Name licence ${request.licence.summary.licenceNumber}`
   };
@@ -119,16 +129,16 @@ async function getLicenceGaugingStation (request, reply) {
   const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
   // Load licence data
-  const licenceData = await loadLicenceData(request, documentHeaderId);
+  const licenceData = await helpers.loadLicenceData(request, documentHeaderId);
 
   // Validate - check that the requested station reference is in licence metadata
-  if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
+  if (!helpers.validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
     throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
   }
 
   // Load river level data
   const { hofTypes } = licenceData.viewData;
-  const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+  const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes, mode);
 
   const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
@@ -137,7 +147,7 @@ async function getLicenceGaugingStation (request, reply) {
     ...licenceData,
     riverLevel,
     measure,
-    ...riverLevelFlags(riverLevel, measure, hofTypes),
+    ...helpers.riverLevelFlags(riverLevel, measure, hofTypes),
     stationReference: gaugingStation,
     pageTitle: `Gauging station for ${customName || licenceNumber}`
   };
@@ -164,7 +174,8 @@ const getLicence = async (request, h) => {
     ...getCommonViewContext(request),
     pageTitle: `Licence number ${licenceNumber}`,
     returns: mapReturns(returns.data, request),
-    hasMoreReturns: hasMultiplePages(returns.pagination)
+    hasMoreReturns: hasMultiplePages(returns.pagination),
+    back: '/licences'
   };
 
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });

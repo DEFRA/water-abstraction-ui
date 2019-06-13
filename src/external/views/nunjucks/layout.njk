@@ -81,10 +81,14 @@
   {% endblock %}
 
   {% if back %}
+
+  {% set backLinkText %} {{ backText | default('Back') }} {% endset %}
+
   {{ govukBackLink({
     href: back,
-    text: "Back"
+    text: backLinkText
   }) }}
+
   {% endif %}
 {% endblock %}
 

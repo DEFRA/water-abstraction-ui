@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "*": [ "*" ],
+      "shared/*": ["src/shared/*"],
+      "external/*": ["src/external/*"],
+      "internal/*": ["src/internal/*"]
+    }
+  },
+  "exclude": ["node_modules", "coverage", "public", "data"]
+}

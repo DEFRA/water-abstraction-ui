@@ -6,7 +6,7 @@ const util = require('util');
 const csvStringify = util.promisify(require('csv-stringify'));
 const archiver = require('archiver');
 const { logger } = require('../../../logger');
-const readFile = util.promisify(require('fs').readFile);
+const files = require('../../../../shared/lib/files');
 const path = require('path');
 
 /**
@@ -169,7 +169,7 @@ const addCSVToArchive = async (archive, companyName, data, key) => {
  * @return {Promise}         resolves when added
  */
 const addReadmeToArchive = async (archive) => {
-  const str = await readFile(path.join(__dirname, './csv-readme.txt'));
+  const str = await files.readFile(path.join(__dirname, './csv-readme.txt'));
   const name = 'How to do bulk returns.txt';
   return archive.append(str, { name });
 };

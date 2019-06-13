@@ -4,8 +4,8 @@ const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require(
 const sinon = require('sinon');
 const water = require('../../../../../src/external/lib/connectors/water');
 const forms = require('../../../../../src/shared/lib/forms/index');
-const files = require('../../../../../src/external/lib/files');
-const fileCheck = require('../../../../../src/external/lib/file-check');
+const files = require('../../../../../src/shared/lib/files');
+const fileCheck = require('../../../../../src/shared/lib/file-check');
 const waterReturns = require('../../../../../src/external/lib/connectors/water-service/returns');
 const waterCompany = require('../../../../../src/external/lib/connectors/water-service/company');
 

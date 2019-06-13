@@ -1,5 +1,6 @@
 module.exports = {
   config: require('../../../shared/plugins/config'),
+  csp: require('../../../shared/plugins/csp'),
   csrf: require('../../../shared/plugins/csrf'),
   metaRedirect: require('../../../shared/plugins/meta-redirect'),
   redirect: require('../../../shared/plugins/redirect'),

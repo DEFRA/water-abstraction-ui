@@ -1,6 +1,5 @@
-const fs = require('fs');
 const Promise = require('bluebird');
-const readFile = Promise.promisify(fs.readFile);
+const files = require('./files');
 const csvParse = Promise.promisify(require('csv-parse'));
 
 /**
@@ -26,7 +25,7 @@ class LicenceTitleLoader {
     }
 
     // Read condition titles from CSV
-    const str = await readFile('./data/condition_titles.csv');
+    const str = await files.readFile('./data/condition_titles.csv');
     const data = await csvParse(str, { columns: true });
 
     // Sentence case all titles

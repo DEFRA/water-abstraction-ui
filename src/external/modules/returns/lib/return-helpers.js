@@ -1,7 +1,7 @@
 const Boom = require('boom');
 const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
-const { maxPrecision } = require('../../../lib/number-formatter');
+const { maxPrecision } = require('../../../../shared/lib/number-formatter');
 const { getPeriodStartEnd, isDateWithinAbstractionPeriod } = require('./return-date-helpers');
 const permissions = require('../../../lib/permissions');
 

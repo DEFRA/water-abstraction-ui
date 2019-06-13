@@ -10,7 +10,6 @@ const abstractionReformRoutes = require('./abstraction-reform/routes');
 const wr22Routes = require('./abstraction-reform/wr22-routes');
 const returnsRoutes = require('./returns/routes');
 const returnNotificationRoutes = require('./returns-notifications/routes');
-const cspRoutes = require('./csp/routes');
 const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 const waiting = require('./waiting/routes');
@@ -29,7 +28,6 @@ module.exports = [
   ...Object.values(wr22Routes),
   ...Object.values(returnsRoutes),
   ...Object.values(returnNotificationRoutes),
-  ...Object.values(cspRoutes),
   ...Object.values(returnsReports),
   ...Object.values(internalSearch),
   ...Object.values(waiting),

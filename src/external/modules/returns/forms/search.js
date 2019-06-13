@@ -2,7 +2,7 @@ const { cloneDeep } = require('lodash');
 const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const form = (request, data) => {
-  const f = formFactory('/admin/returns', 'GET');
+  const f = formFactory('/returns', 'GET');
 
   f.fields.push(fields.text('query', {
     label: 'Enter a return reference',

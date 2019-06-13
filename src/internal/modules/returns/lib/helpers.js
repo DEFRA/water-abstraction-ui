@@ -308,7 +308,7 @@ const getReturnsViewData = async (request) => {
  * @param {String} path - the path to redirect to without '/admin'
  * @return {String} path with /admin if internal user
  */
-const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path}` : path;
+const getScopedPath = (request, path) => path;
 
 /**
  * Get common view data used by many controllers

@@ -1,4 +1,4 @@
-{% from "../../macros/title.njk" import title %}
+{% from "title.njk" import title %}
 
 {% macro returnHeader(return, documentHeader, showMeta, isAdmin) %}
   {% if documentHeader.document_name %}
@@ -78,7 +78,7 @@
     </dl>
 
     <p class="medium-space">
-      <a href="{%if isAdmin %}/admin{%endif%}/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
+      <a href="/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
     </p>
 
   {%endif%}

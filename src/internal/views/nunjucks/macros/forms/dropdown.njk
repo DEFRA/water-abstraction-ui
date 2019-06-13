@@ -1,9 +1,0 @@
-{% from "select/macro.njk" import govukSelect %}
-
-{% macro formDropdownWidget(field, form) %}
-
-  {% set options = field | mapFormDropdownField %}
-
-  {{ govukSelect(options) }}
-
-{% endmacro %}

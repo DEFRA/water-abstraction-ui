@@ -1,9 +1,0 @@
-{% from "file-upload/macro.njk" import govukFileUpload %}
-
-{% macro formFileWidget(field) %}
-
-    {% set options = field | mapFormField %}
-
-    {{ govukFileUpload(options) }}
-
-{% endmacro %}

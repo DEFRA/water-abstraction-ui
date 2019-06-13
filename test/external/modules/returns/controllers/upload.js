@@ -4,8 +4,8 @@ const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require(
 const sinon = require('sinon');
 const water = require('../../../../../src/external/lib/connectors/water');
 const forms = require('../../../../../src/shared/lib/forms/index');
-const files = require('../../../../../src/external/lib/files');
-const fileCheck = require('../../../../../src/external/lib/file-check');
+const files = require('../../../../../src/shared/lib/files');
+const fileCheck = require('../../../../../src/shared/lib/file-check');
 const waterReturns = require('../../../../../src/external/lib/connectors/water-service/returns');
 const waterCompany = require('../../../../../src/external/lib/connectors/water-service/company');
 
@@ -286,6 +286,12 @@ experiment('upload controller', () => {
           }
         });
       });
+
+      test('redirects to upload form if upload contains no data', async () => {
+        waterReturns.getUploadPreview.resolves([]);
+        await controller.getSummary(request, h);
+        expect(h.redirect.calledWith(`/returns/upload?error=empty`)).to.equal(true);
+      });
     });
 
     experiment('getSummaryReturn', () => {
@@ -420,7 +426,7 @@ experiment('upload controller', () => {
       test('sets the correct content disposition in the response', async () => {
         const [key, value] = header.secondCall.args;
         expect(key).to.equal('Content-disposition');
-        expect(value).to.equal('attachment; filename=test_co_ltd.zip');
+        expect(value).to.equal('attachment; filename=test co ltd return templates 2019.zip');
       });
     });
   });

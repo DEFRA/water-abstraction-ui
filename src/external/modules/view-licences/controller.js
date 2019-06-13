@@ -152,15 +152,14 @@ const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
  * @returns {object} An object of values that can be spread into the view context
  */
 const getCommonLicenceViewContext = async (licenceNumber, documentId, documentName, request) => {
-  const isInternalUser = isInternal(request);
   const returnsData = await getLicenceReturnsForViewContext(request, licenceNumber);
 
   return {
     documentId,
     ...returnsData,
     pageTitle: getPageTitle(documentName, licenceNumber),
-    back: `/admin/licences?query=${licenceNumber}`,
-    isInternal: isInternalUser
+    back: `/licences`,
+    isInternal: false
   };
 };
 
@@ -265,7 +264,7 @@ const getExpiredLicence = async (request, h) => {
       licence.documentName,
       request
     ),
-    back: `/admin/licences?query=${licence.licenceNumber}`
+    back: `/licences?query=${licence.licenceNumber}`
   };
 
   return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });

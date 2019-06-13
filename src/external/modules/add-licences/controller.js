@@ -8,7 +8,7 @@ const Joi = require('joi');
 const { difference } = require('lodash');
 const CRM = require('../../lib/connectors/crm');
 const Notify = require('../../lib/connectors/notify');
-const { forceArray } = require('../../lib/helpers');
+const { forceArray } = require('../../../shared/lib/array-helpers');
 const { logger } = require('../../logger');
 const loginHelpers = require('../../lib/login-helpers');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -114,7 +114,7 @@ async function postLicenceAdd (request, reply) {
     const documentIds = res.data.map(item => item.document_id);
 
     // Store document IDs in session
-    request.sessionStore.set('addLicenceFlow', { documentIds });
+    request.yar.set('addLicenceFlow', { documentIds });
 
     return reply.redirect('/select-licences');
   } catch (err) {
@@ -145,7 +145,7 @@ async function getLicenceSelect (request, reply) {
   }
 
   try {
-    const { documentIds } = request.sessionStore.get('addLicenceFlow');
+    const { documentIds } = request.yar.get('addLicenceFlow');
 
     // Get unverified licences from DB
     const { data, error } = await CRM.documents.getUnregisteredLicencesByIds(documentIds);
@@ -176,10 +176,10 @@ async function getLicenceSelect (request, reply) {
  */
 async function postLicenceSelect (request, reply) {
   const { licences } = request.payload;
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   try {
-    const { documentIds } = request.sessionStore.get('addLicenceFlow');
+    const { documentIds } = request.yar.get('addLicenceFlow');
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
 
@@ -223,7 +223,7 @@ async function postLicenceSelect (request, reply) {
     }
 
     // Create new token
-    request.sessionStore.set('addLicenceFlow', { documentIds, selectedIds });
+    request.yar.set('addLicenceFlow', { documentIds, selectedIds });
 
     return reply.redirect('/select-address');
   } catch (err) {
@@ -271,7 +271,7 @@ async function getAddressSelect (request, reply) {
   const { view } = request;
 
   // Load from session
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
   return reply.view('nunjucks/form.njk', {
@@ -281,7 +281,7 @@ async function getAddressSelect (request, reply) {
   }, { layout: false });
 }
 
-const getEntityIdFromRequest = request => request.auth.credentials.entity_id;
+const getEntityIdFromRequest = request => request.defra.entityId;
 
 const getAddressSelectViewContext = async (request, verification, licence, fao) => {
   const entityId = getEntityIdFromRequest(request);
@@ -331,16 +331,16 @@ const getLicence = async documentId => {
  */
 async function postAddressSelect (request, h) {
   const { selectedAddressId } = request.payload;
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
 
   const uniqueAddresses = await getUniqueAddresses(selectedIds);
   const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
 
   if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
-    const flowData = request.sessionStore.get('addLicenceFlow');
+    const flowData = request.yar.get('addLicenceFlow');
     flowData.selectedAddressId = selectedAddressId;
-    request.sessionStore.set('addLicenceFlow', flowData);
+    request.yar.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
   }
@@ -380,7 +380,7 @@ async function postFAO (request, h) {
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
-  const { selectedIds } = request.sessionStore.get('addLicenceFlow');
+  const { selectedIds } = request.yar.get('addLicenceFlow');
 
   const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
 
@@ -402,7 +402,7 @@ async function postFAO (request, h) {
     await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
 
     // Delete data in session
-    request.sessionStore.delete('addLicenceFlow');
+    request.yar.clear('addLicenceFlow');
 
     // add the company id to the cookie to configure company switcher correctly
     loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
@@ -468,7 +468,7 @@ async function postSecurityCode (request, reply) {
   viewContext.pageTitle = 'Enter your security code';
   viewContext.activeNavLink = 'manage';
 
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   try {
     // Validate HTTP POST payload

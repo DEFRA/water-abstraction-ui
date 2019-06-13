@@ -1,11 +1,11 @@
 const { scope } = require('../../../../../../src/external/lib/constants');
 const returnId = 'v1:123:456';
 
-const createRequest = (isInternal = false) => {
+const createRequest = () => {
   return {
     auth: {
       credentials: {
-        scope: [isInternal ? scope.internal : scope.external]
+        scope: [scope.external]
       }
     },
     query: {

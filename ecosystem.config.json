@@ -5,11 +5,34 @@
       "ignore_watch": [
         "coverage",
         "data",
+        "govuk_modules",
         "node_modules",
         "src/internal",
-        "test"
+        "test",
+        ".git"
       ],
       "script": "server-external.js",
+      "env": {
+        "watch": true
+      },
+      "env_production": {
+        "watch": false,
+        "instances" : "max",
+        "exec_mode" : "cluster"
+      }
+    },
+    {
+      "name": "ui-internal",
+      "ignore_watch": [
+        "coverage",
+        "data",
+        "govuk_modules",
+        "node_modules",
+        "src/external",
+        "test",
+        ".git"
+      ],
+      "script": "server-internal.js",
       "env": {
         "watch": true
       },

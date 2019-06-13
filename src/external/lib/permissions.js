@@ -15,7 +15,7 @@ const hasScope = (request, scope) => {
   return scopes.includes(scope);
 };
 
-const isAuthenticated = request => !!get(request, 'state.sid');
+const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
 // Internal / external
 const isInternal = request => hasScope(request, scope.internal);

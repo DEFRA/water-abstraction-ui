@@ -1,5 +1,5 @@
 const controller = require('./controller');
-const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
+const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('shared/lib/validators');
 const Joi = require('joi');
 
 module.exports = {

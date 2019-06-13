@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { get, groupBy, mapValues } = require('lodash');
+const { get, groupBy, mapValues, pick } = require('lodash');
 
 /**
  * Maps data from current request to the body expected in the postUploadPreview
@@ -7,11 +7,7 @@ const { get, groupBy, mapValues } = require('lodash');
  * @param  {Object} request - current HAPI request
  * @return {Object} qs options for postUploadPreview
  */
-const mapRequestOptions = request => ({
-  userName: get(request, 'auth.credentials.username'),
-  companyId: get(request, 'auth.credentials.companyId'),
-  entityId: get(request, 'auth.credentials.entity_id')
-});
+const mapRequestOptions = request => pick(request.defra, ['userName', 'entityId', 'companyId']);
 
 const getReturnRequirmentFromId = returnId => returnId.split(':')[3];
 

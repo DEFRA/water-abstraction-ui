@@ -19,10 +19,8 @@ experiment('batch notification helpers', () => {
       params: {
         eventId
       },
-      auth: {
-        credentials: {
-          username: 'mail@example.com'
-        }
+      defra: {
+        userName: 'mail@example.com'
       }
     };
 

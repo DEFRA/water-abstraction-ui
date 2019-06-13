@@ -52,11 +52,11 @@ lab.experiment('getCurrentCycleEndDate', () => {
 
 lab.experiment('getFinalReminderConfig', () => {
   const request = {};
-  set(request, 'auth.credentials.userame', 'mail@example.com');
+  set(request, 'defra.userName', 'mail@example.com');
 
   lab.test('It should return a cycle date and the current user email address', async () => {
     const result = helpers.getFinalReminderConfig(request);
-    expect(result.email).to.equal(request.auth.credentials.username);
+    expect(result.email).to.equal(request.defra.userName);
     expect(result.endDate).to.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
   });
 });

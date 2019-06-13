@@ -15,9 +15,9 @@ const loadEvent = async (request) => {
   throwIfError(error);
 
   // Check access
-  const { username } = request.auth.credentials;
-  if (ev.issuer !== username) {
-    throw Boom.unauthorized(`User ${username} is not the issuer of event ${eventId}`);
+  const { userName } = request.defra;
+  if (ev.issuer !== userName) {
+    throw Boom.unauthorized(`User ${userName} is not the issuer of event ${eventId}`);
   }
 
   // Check type is "notification"

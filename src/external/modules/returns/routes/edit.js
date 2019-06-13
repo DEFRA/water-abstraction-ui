@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
-const { VALID_GUID } = require('../../../lib/validators');
+const { VALID_GUID } = require('shared/lib/validators');
 
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
 

@@ -2,21 +2,22 @@ const { expect } = require('code');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
 const { faoForm } = require('../../../../../src/external/modules/add-licences/forms/for-attention-of');
+const sandbox = require('sinon').createSandbox();
 
 experiment('faoForm', () => {
   let form, request;
+
+  const addLicenceFlow = {
+    selectedAddressId: '1234'
+  };
 
   beforeEach(async () => {
     request = {
       view: {
         csrfToken: 'xyz'
       },
-      sessionStore: {
-        data: {
-          addLicenceFlow: {
-            selectedAddressId: '1234'
-          }
-        }
+      yar: {
+        get: sandbox.stub().returns(addLicenceFlow)
       }
     };
 
@@ -35,7 +36,7 @@ experiment('faoForm', () => {
 
   test('should include the address from the request', async () => {
     const address = find(form.fields, { name: 'selectedAddressId' });
-    expect(address.value).to.equal(request.sessionStore.data.addLicenceFlow.selectedAddressId);
+    expect(address.value).to.equal(addLicenceFlow.selectedAddressId);
   });
 
   test('has a continue button', async () => {

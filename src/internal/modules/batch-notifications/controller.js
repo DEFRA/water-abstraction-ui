@@ -79,8 +79,8 @@ const getRecipientsCSV = async (request, h) => {
  */
 const postSendNotification = async (request, h) => {
   const { eventId } = request.params;
-  const { username } = request.auth.credentials;
-  await batchNotificationsConnector.sendReminders(eventId, username);
+  const { userName } = request.defra;
+  await batchNotificationsConnector.sendReminders(eventId, userName);
   return h.redirect(`/batch-notifications/confirmation/${eventId}`);
 };
 

@@ -20,7 +20,7 @@ const createRequest = (error = {}) => {
       path: '/some/path'
     },
     response: error,
-    sessionStore: {
+    yar: {
       get: sandbox.stub(),
       destroy: sandbox.stub()
     },
@@ -110,7 +110,7 @@ experiment('errors plugin', () => {
       expect(logger.info.callCount).to.equal(1);
       const [ path ] = h.redirect.lastCall.args;
       expect(path).to.equal('/signout');
-      expect(request.sessionStore.destroy.callCount).to.equal(1);
+      expect(request.yar.destroy.callCount).to.equal(1);
       expect(request.cookieAuth.clear.callCount).to.equal(1);
     });
 

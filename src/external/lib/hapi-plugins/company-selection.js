@@ -46,7 +46,7 @@ const plugin = {
     name: 'companySelection',
     version: '2.0.0'
   },
-  dependencies: ['authCredentials']
+  dependencies: ['hapi-auth-cookie', 'authPlugin']
 };
 
 module.exports = plugin;

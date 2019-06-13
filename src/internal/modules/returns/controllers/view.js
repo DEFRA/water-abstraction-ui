@@ -39,7 +39,7 @@ const getReturnsForLicence = async (request, h) => {
   const { documentId } = request.params;
 
   if (!view.document) {
-    throw Boom.notFound(`Document ${documentId} not found - entity ${request.auth.credentials.entity_id} may not have the correct roles`);
+    throw Boom.notFound(`Document ${documentId} not found - entity ${request.defra.entityId} may not have the correct roles`);
   }
   view.pageTitle = `Returns for ${view.document.system_external_id}`;
   view.paginationUrl = `/licences/${documentId}/returns`;
@@ -53,7 +53,7 @@ const getReturnsForLicence = async (request, h) => {
  */
 const getReturn = async (request, h) => {
   const { id, version } = request.query;
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
 
   // Load return data
   const data = await returns.getReturn(id, version);

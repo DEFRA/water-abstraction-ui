@@ -2,21 +2,22 @@ const { expect } = require('code');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
 const { selectAddressForm } = require('../../../../../src/external/modules/add-licences/forms/select-address');
+const sandbox = require('sinon').createSandbox();
 
 experiment('selectAddressForm', () => {
   let form, request, licences;
+
+  const addLicenceFlow = {
+    selectedAddressId: '1234'
+  };
 
   beforeEach(async () => {
     request = {
       view: {
         csrfToken: 'xyz'
       },
-      sessionStore: {
-        data: {
-          addLicenceFlow: {
-            selectedAddressId: '1234'
-          }
-        }
+      yar: {
+        get: sandbox.stub().returns(addLicenceFlow)
       }
     };
 

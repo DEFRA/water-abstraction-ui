@@ -217,7 +217,6 @@ experiment('isXmlUpload', () => {
       });
 
       test('are in the current return cycle', async () => {
-        console.log(filter);
         expect(filter['metadata->>isSummer']).to.equal('true');
         expect(filter.start_date).to.equal({
           $gte: '2018-11-01'

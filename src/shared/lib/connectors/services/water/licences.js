@@ -8,40 +8,41 @@ const schema = Joi.object({
   companyId: Joi.string().guid()
 });
 
+/**
+ * Performs a GET request to the water service to get licence data relating
+ * to the supplied CRM document ID
+ * @param {String} endpoint      - base endpoint for water documents API call
+ * @param  {String} documentId   - CRM document ID
+ * @param  {String} tail         - URL tail appended to base URL
+ * @param  {Object} [options={}] - options
+ * @param {Boolean} options.includeExpired - whether to view expired licences
+ * @param {String} options.companyId - if supplied, must match CRM company ID
+ * @return {Promise}              resolves with HTTP response body
+ */
+const getRequest = (endpoint, documentId, tail, options = {}) => {
+  Joi.assert(options, schema, `Invalid LicencesAPIClient options`);
+
+  // Build URI
+  const uri = urlJoin(endpoint, `/${documentId}/licence`, tail);
+
+  // Build query params
+  const qs = pick(options, ['includeExpired', 'companyId']);
+
+  // Perform GET
+  return serviceRequest.get(uri, { qs });
+};
+
 class LicencesAPIClient {
   constructor (request, config) {
     this.config = config;
   }
 
-  /**
-   * Performs a GET request to the water service to get licence data relating
-   * to the supplied CRM document ID
-   * @param  {String} documentId   - CRM document ID
-   * @param  {String} tail         - URL tail appended to base URL
-   * @param  {Object} [options={}] - options
-   * @param {Boolean} options.includeExpired - whether to view expired licences
-   * @param {String} options.companyId - if supplied, must match CRM company ID
-   * @return {Promise}              resolves with HTTP response body
-   */
-  _get (documentId, tail, options = {}) {
-    Joi.assert(options, schema, `Invalid LicencesAPIClient options`);
-
-    // Build URI
-    const uri = urlJoin(this.config.endpoint, `/${documentId}/licence`, tail);
-
-    // Build query params
-    const qs = pick(options, ['includeExpired', 'companyId']);
-
-    // Perform GET
-    return serviceRequest.get(uri, { qs });
-  };
-
   getSummaryByDocumentId (documentId, options = {}) {
-    return this._get(documentId, '/summary', options);
+    return getRequest(this.config.endpoint, documentId, '/summary', options);
   }
 
   getCommunicationsByDocumentId (documentId, options = {}) {
-    return this._get(documentId, '/communications', options);
+    return getRequest(this.config.endpoint, documentId, '/communications', options);
   }
 }
 

@@ -83,7 +83,6 @@ const getLicenceRename = (request, h, form) => {
     form: form || renameLicenceForm(request, documentName),
     pageTitle: `Name licence ${request.licence.summary.licenceNumber}`
   };
-  console.log(view);
   return h.view('nunjucks/view-licences/rename.njk', view, { layout: false });
 };
 

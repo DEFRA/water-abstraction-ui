@@ -38,10 +38,10 @@ const _handler = async (request, h) => {
     return request.logOut();
   }
 
-  // Unauthorised - redirect to welcome
+  // Unauthorised - redirect to sign in
   if (isUnauthorized(request)) {
     logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-    return h.redirect('/welcome');
+    return h.redirect('/signin');
   }
 
   logger.error(pick(res, ['error', 'message', 'statusCode', 'stack']));

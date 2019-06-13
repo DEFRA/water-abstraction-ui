@@ -3,13 +3,6 @@ const { isExternal } = require('../../lib/permissions');
 const index = async (request, h) => h.redirect('/licences');
 
 /**
- * Welcome page before routing to signin/register
- */
-function getWelcome (request, h) {
-  return h.view('nunjucks/core/welcome.njk', request.view, { layout: false });
-}
-
-/**
  * 404 page
  */
 const getNotFoundError = (request, h) => {
@@ -24,5 +17,4 @@ const getNotFoundError = (request, h) => {
 };
 
 exports.index = index;
-exports.getWelcome = getWelcome;
 exports.getNotFoundError = getNotFoundError;

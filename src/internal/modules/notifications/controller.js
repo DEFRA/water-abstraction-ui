@@ -425,7 +425,7 @@ async function postSend (request, reply) {
   };
 
   // Flow is completed - delete state in session store
-  request.sessionStore.delete('notificationsFlow');
+  request.yar.clear('notificationsFlow');
 
   return reply.view('water/notifications/sent', view);
 }

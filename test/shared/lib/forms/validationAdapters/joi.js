@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { beforeEach, experiment, test } = exports.lab = require('lab').script();
-const adapter = require('../../../../../src/shared/lib/forms/validationAdapters/joi');
+const adapter = require('shared/lib/forms/validationAdapters/joi');
 
 experiment('formatErrors', () => {
   let error;

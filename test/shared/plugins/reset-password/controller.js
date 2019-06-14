@@ -12,7 +12,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { set } = require('lodash');
 
-const loginHelpers = require('../../../../src/external/lib/login-helpers');
+const loginHelpers = require('external/lib/login-helpers');
 const controller = require('../../../../src/shared/plugins/reset-password/controller');
 
 experiment('reset password controller', () => {

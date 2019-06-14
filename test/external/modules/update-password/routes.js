@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const routes = require('../../../../src/external/modules/update-password/routes');
+const routes = require('external/modules/update-password/routes');
 
 experiment('getCurrentPassword', () => {
   test('is configured to load user licence count', async () => {

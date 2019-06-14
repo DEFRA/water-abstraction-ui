@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { forceArray } = require('../../../src/shared/lib/array-helpers');
+const { forceArray } = require('shared/lib/array-helpers');
 
 experiment('lib/array-helpers', () => {
   experiment('forceArray', () => {

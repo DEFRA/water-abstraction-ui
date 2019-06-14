@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields, setValues } = require('../../../shared/lib/forms');
+const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 const getTextField = (name, label, multiline = false) =>
   fields.text(name, { label, multiline, controlClass: 'govuk-!-width-one-half' });

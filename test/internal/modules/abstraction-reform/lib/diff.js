@@ -2,7 +2,7 @@ require('dotenv').config();
 const Lab = require('lab');
 const { expect } = require('code');
 
-const { diff } = require('../../../../../src/internal/modules/abstraction-reform/lib/diff');
+const { diff } = require('internal/modules/abstraction-reform/lib/diff');
 
 const { experiment, test } = exports.lab = Lab.script();
 

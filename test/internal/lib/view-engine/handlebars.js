@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('lab').script();
 
-const handlebars = require('../../../../src/internal/lib/view-engine/handlebars');
+const handlebars = require('internal/lib/view-engine/handlebars');
 
 experiment('getDatePart', () => {
   experiment('for a string value', () => {

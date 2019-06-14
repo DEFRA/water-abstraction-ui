@@ -4,9 +4,9 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
-const { logger } = require('../../../../../src/external/logger');
+const { logger } = require('external/logger');
 
-const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
+const csvTemplates = require('external/modules/returns/lib/csv-templates');
 
 experiment('csv templates', () => {
   let archive;

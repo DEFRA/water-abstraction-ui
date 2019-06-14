@@ -1,4 +1,4 @@
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 
 const mapChoices = userData => {
   return userData.companies.map((company, index) => ({

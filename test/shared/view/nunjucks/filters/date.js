@@ -3,7 +3,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { date } = require('../../../../../src/shared/view/nunjucks/filters/date');
+const { date } = require('shared/view/nunjucks/filters/date');
 
 experiment('date Nunjucks filter', () => {
   test('The default date format should be the GDS standard', async () => {

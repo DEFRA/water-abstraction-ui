@@ -1,6 +1,6 @@
 const GoodWinston = require('good-winston');
-const ResetPasswordConfig = require('./src/shared/lib/ResetPasswordConfig');
-const LicenceDataConfig = require('./src/external/lib/LicenceDataConfig');
+const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
+const LicenceDataConfig = require('external/lib/LicenceDataConfig');
 
 const createPlugins = (config, logger, connectors) => ([
   require('@hapi/scooter'),

@@ -3,14 +3,14 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const { find } = require('lodash');
 
-const loader = require('../../../../../src/internal/modules/abstraction-reform/lib/loader');
-const formGenerator = require('../../../../../src/internal/modules/abstraction-reform/lib/form-generator');
+const loader = require('internal/modules/abstraction-reform/lib/loader');
+const formGenerator = require('internal/modules/abstraction-reform/lib/form-generator');
 
 const {
   getSchema, findDataItem, getAddFormAndSchema, getEditFormAndSchema,
   getLicenceVersion, addActionFactory, editActionFactory, persistActions,
   flattenData
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/wr22-helpers');
+} = require('internal/modules/abstraction-reform/lib/wr22-helpers');
 
 const lab = exports.lab = Lab.script();
 

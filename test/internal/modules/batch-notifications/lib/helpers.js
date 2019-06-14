@@ -4,8 +4,8 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 
-const waterConnector = require('../../../../../src/internal/lib/connectors/water');
-const helpers = require('../../../../../src/internal/modules/batch-notifications/lib/helpers');
+const waterConnector = require('internal/lib/connectors/water');
+const helpers = require('internal/modules/batch-notifications/lib/helpers');
 
 experiment('batch notification helpers', () => {
   const eventId = 'event_1';

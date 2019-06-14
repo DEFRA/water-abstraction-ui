@@ -1,6 +1,6 @@
 'use strict';
 
-const { handleRequest } = require('../../../shared/lib/forms');
+const { handleRequest } = require('shared/lib/forms');
 const { setUserData } = require('../../lib/user-data');
 const { contactDetailsForm, contactDetailsSchema } = require('./contact-details-form');
 

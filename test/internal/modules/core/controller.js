@@ -4,7 +4,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../src/internal/modules/core/controller');
+const controller = require('internal/modules/core/controller');
 
 const createRequest = () => {
   return {

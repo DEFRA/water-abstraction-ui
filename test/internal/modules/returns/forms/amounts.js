@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 const { find } = require('lodash');
-const amountsForm = require('../../../../../src/internal/modules/returns/forms/amounts');
+const amountsForm = require('internal/modules/returns/forms/amounts');
 
 const createRequest = (isInternal = true) => {
   return {

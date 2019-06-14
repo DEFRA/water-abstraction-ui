@@ -1,5 +1,5 @@
-const apiClientFactory = require('../../../shared/lib/connectors/api-client-factory');
-const serviceRequest = require('../../../shared/lib/connectors/service-request');
+const apiClientFactory = require('shared/lib/connectors/api-client-factory');
+const serviceRequest = require('shared/lib/connectors/service-request');
 
 const notifications = require('./water-service/notifications');
 const returns = require('./water-service/returns');

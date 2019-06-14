@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { notifyToBadge } = require('../../../../src/internal/modules/notifications-reports/badge-status');
+const { notifyToBadge } = require('internal/modules/notifications-reports/badge-status');
 
 experiment('notifyToBadge', () => {
   test('returns Pending/completed when status is falsey', async () => {

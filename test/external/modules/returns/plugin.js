@@ -5,11 +5,11 @@ const Lab = require('lab');
 const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
-const plugin = require('../../../../src/external/modules/returns/plugin');
-const waterConnector = require('../../../../src/external/lib/connectors/water');
-const crmConnector = require('../../../../src/external/lib/connectors/crm');
-const sessionHelpers = require('../../../../src/external/modules/returns/lib/session-helpers');
-const helpers = require('../../../../src/external/modules/returns/lib/helpers');
+const plugin = require('external/modules/returns/plugin');
+const waterConnector = require('external/lib/connectors/water');
+const services = require('external/lib/connectors/services');
+const sessionHelpers = require('external/modules/returns/lib/session-helpers');
+const helpers = require('external/modules/returns/lib/helpers');
 
 const sandbox = sinon.createSandbox();
 
@@ -48,7 +48,7 @@ experiment('returns plugin', () => {
       returnId,
       licenceNumber
     });
-    sandbox.stub(crmConnector.documents, 'findMany').resolves({
+    sandbox.stub(services.crm.documents, 'findMany').resolves({
       error: null,
       data: [{ document_id: 'abc' }]
     });
@@ -74,9 +74,9 @@ experiment('returns plugin', () => {
 
       test('loads document from CRM to check access', async () => {
         await plugin._handler(request, h);
-        expect(crmConnector.documents.findMany.callCount).to.equal(1);
+        expect(services.crm.documents.findMany.callCount).to.equal(1);
 
-        const [ filter ] = crmConnector.documents.findMany.lastCall.args;
+        const [ filter ] = services.crm.documents.findMany.lastCall.args;
         expect(filter.company_entity_id).to.equal(companyId);
         expect(filter.system_external_id).to.equal(licenceNumber);
         expect(filter.regime_entity_id).to.be.a.string();
@@ -90,7 +90,7 @@ experiment('returns plugin', () => {
       });
 
       test('throws error and redirects if CRM document not found', async () => {
-        crmConnector.documents.findMany.resolves({ data: [] });
+        services.crm.documents.findMany.resolves({ data: [] });
         const func = () => plugin._handler(request, h);
         await expect(func()).to.reject();
         expect(h.redirect.callCount).to.equal(1);
@@ -115,7 +115,7 @@ experiment('returns plugin', () => {
 
       test('loads data from session', async () => {
         await plugin._handler(request, h);
-        expect(crmConnector.documents.findMany.callCount).to.equal(0);
+        expect(services.crm.documents.findMany.callCount).to.equal(0);
         expect(sessionHelpers.getSessionData.callCount).to.equal(1);
       });
     });

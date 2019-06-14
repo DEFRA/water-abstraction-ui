@@ -3,7 +3,7 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 
-const helpers = require('../../../../../../src/external/modules/returns/lib/flow-helpers/helpers');
+const helpers = require('external/modules/returns/lib/flow-helpers/helpers');
 const data = require('./test-data.json');
 
 experiment('Returns flow helpers', () => {

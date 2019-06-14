@@ -1,6 +1,6 @@
 const returnsService = require('../../../lib/connectors/returns');
 const ExtendableError = require('es6-error');
-const crm = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 const { isReturnId } = require('./helpers');
 
 class CRMDocumentsAPIError extends ExtendableError {};
@@ -92,7 +92,7 @@ const filterReturnsByCRMDocument = async (returns) => {
       $in: licenceNumbers
     }
   };
-  const { data, error } = await crm.documents.findMany(filter, null, null, ['system_external_id']);
+  const { data, error } = await services.crm.documents.findMany(filter, null, null, ['system_external_id']);
 
   if (error) {
     throw new CRMDocumentsAPIError(`Error loading CRM document headers`, error);

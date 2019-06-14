@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { renameLicenceForm, renameLicenceSchema } = require('../../../../../src/external/modules/view-licences/forms/rename');
+const { renameLicenceForm, renameLicenceSchema } = require('external/modules/view-licences/forms/rename');
 const Joi = require('joi');
 
 const createRequest = (isInternal = true) => {

@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   number
-} = require('../../../../../src/shared/view/nunjucks/filters/number');
+} = require('shared/view/nunjucks/filters/number');
 
 experiment('number Nunjucks filter', () => {
   test('should truncate numbers to 3 dp', async () => {

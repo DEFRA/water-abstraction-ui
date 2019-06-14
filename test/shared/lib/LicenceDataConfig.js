@@ -3,7 +3,7 @@
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
-const LicenceDataConfig = require('../../../src/external/lib/LicenceDataConfig');
+const LicenceDataConfig = require('external/lib/LicenceDataConfig');
 
 const documentId = 'document_1';
 const request = {

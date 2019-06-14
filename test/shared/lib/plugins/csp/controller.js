@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const { canLog, incrementDateCount } = require('../../../../../src/shared/plugins/csp/controller');
+const { canLog, incrementDateCount } = require('shared/plugins/csp/controller');
 
 experiment('canLog', () => {
   test('returns true if there are less than 100 logs for the date', async () => {

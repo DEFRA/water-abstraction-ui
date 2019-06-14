@@ -7,7 +7,7 @@ const DOMParser = require('xmldom').DOMParser;
 
 const { expect } = require('code');
 const server = require('../../../../server-external');
-const { formFactory, fields } = require('../../../../src/shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 
 const simple = ['Red', 'Green', 'Blue'];
 

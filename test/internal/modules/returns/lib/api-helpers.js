@@ -9,12 +9,10 @@ const {
   getRecentReturns,
   filterReturn,
   filterReturnsByCRMDocument
-} = require('../../../../../src/internal/modules/returns/lib/api-helpers');
+} = require('internal/modules/returns/lib/api-helpers');
 
-const returnsService = require('../../../../../src/internal/lib/connectors/returns');
-const documents = require('../../../../../src/internal/lib/connectors/crm/documents');
-
-// const helpers = require('../../../../../src/internal/modules/returns/lib/helpers');
+const returnsService = require('internal/lib/connectors/returns');
+const services = require('internal/lib/connectors/services');
 
 experiment('findLatestReturn', () => {
   const result = findLatestReturn('12345678', 5);
@@ -134,7 +132,7 @@ experiment('filterReturnsByCRMDocument', async () => {
   });
 
   test('It should throw an error if an API error occurs', async () => {
-    crmStub = sinon.stub(documents, 'findMany').resolves({ data: null, error: 'SomeError' });
+    crmStub = sinon.stub(services.crm.documents, 'findMany').resolves({ data: null, error: 'SomeError' });
     const rejects = () => {
       return filterReturnsByCRMDocument(returns);
     };
@@ -143,7 +141,7 @@ experiment('filterReturnsByCRMDocument', async () => {
   });
 
   test('It should filter out any returns for which a CRM document cannot be found', async () => {
-    crmStub = sinon.stub(documents, 'findMany').resolves({ data: [{ system_external_id: returns[0].licence_ref }], error: null });
+    crmStub = sinon.stub(services.crm.documents, 'findMany').resolves({ data: [{ system_external_id: returns[0].licence_ref }], error: null });
     const result = await filterReturnsByCRMDocument(returns);
     await expect(result).to.equal([returns[0]]);
     crmStub.restore();

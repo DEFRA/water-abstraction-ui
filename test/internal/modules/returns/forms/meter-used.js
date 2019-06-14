@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('lab').script();
 const { find, set } = require('lodash');
-const { meterUsedForm } = require('../../../../../src/internal/modules/returns/forms/meter-used');
+const { meterUsedForm } = require('internal/modules/returns/forms/meter-used');
 
 experiment('meterUsedForm', () => {
   let request;

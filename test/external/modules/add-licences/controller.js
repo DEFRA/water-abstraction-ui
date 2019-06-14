@@ -4,10 +4,11 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const crmConnector = require('../../../../src/external/lib/connectors/crm');
-const controller = require('../../../../src/external/modules/add-licences/controller');
-const notifyConnector = require('../../../../src/external/lib/connectors/notify');
-const forms = require('../../../../src/shared/lib/forms');
+const crmConnector = require('external/lib/connectors/crm');
+const services = require('external/lib/connectors/services');
+const controller = require('external/modules/add-licences/controller');
+const notifyConnector = require('external/lib/connectors/notify');
+const forms = require('shared/lib/forms');
 
 experiment('postAddressSelect', () => {
   let request;
@@ -51,12 +52,12 @@ experiment('postAddressSelect', () => {
       view: sinon.spy()
     };
 
-    sandbox.stub(crmConnector.documents, 'findMany').resolves({
+    sandbox.stub(services.crm.documents, 'findMany').resolves({
       error: null,
       data: [{ document_id: '789', metadata: { Name: 'test-company-name' } }]
     });
 
-    sandbox.stub(crmConnector.documents, 'findOne').resolves({
+    sandbox.stub(services.crm.documents, 'findOne').resolves({
       error: null,
       data: { licence_ref: 'test-licence-id' }
     });
@@ -98,7 +99,7 @@ experiment('postAddressSelect', () => {
   });
 
   test('throws if the crm licences cannot be read', async () => {
-    crmConnector.documents.findMany.resolves({
+    services.crm.documents.findMany.resolves({
       error: 'bad news',
       data: null
     });
@@ -143,12 +144,12 @@ experiment('postFAO', () => {
       view: sinon.spy()
     };
 
-    sandbox.stub(crmConnector.documents, 'findMany').resolves({
+    sandbox.stub(services.crm.documents, 'findMany').resolves({
       error: null,
       data: [{ document_id: '789', metadata: { Name: 'test-company-name' } }]
     });
 
-    sandbox.stub(crmConnector.documents, 'findOne').resolves({
+    sandbox.stub(services.crm.documents, 'findOne').resolves({
       error: null,
       data: { licence_ref: 'test-licence-id' }
     });
@@ -198,7 +199,7 @@ experiment('postFAO', () => {
   });
 
   test('throws if the licences cannot be read', async () => {
-    crmConnector.documents.findMany.onSecondCall().resolves({
+    services.crm.documents.findMany.onSecondCall().resolves({
       error: 'bang',
       data: null
     });

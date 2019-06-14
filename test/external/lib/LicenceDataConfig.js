@@ -2,7 +2,7 @@
 
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
-const LicenceDataConfig = require('../../../src/external/lib/LicenceDataConfig');
+const LicenceDataConfig = require('external/lib/LicenceDataConfig');
 
 experiment('external LicenceDataConfig', () => {
   test('mapRequestToOptions', async () => {

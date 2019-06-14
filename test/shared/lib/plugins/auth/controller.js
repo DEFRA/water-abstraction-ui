@@ -2,7 +2,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const { expect } = require('code');
 const { set } = require('lodash');
 const sandbox = require('sinon').createSandbox();
-const controller = require('../../../../../src/shared/plugins/auth/controller');
+const controller = require('shared/plugins/auth/controller');
 
 const createRequest = (isAuthenticated) => {
   return {

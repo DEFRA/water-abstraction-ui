@@ -5,8 +5,8 @@ const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const controller = require('../../../../src/internal/modules/returns-reports/controller');
-const { returns } = require('../../../../src/internal/lib/connectors/returns');
+const controller = require('internal/modules/returns-reports/controller');
+const { returns } = require('internal/lib/connectors/returns');
 
 const request = {
   params: {

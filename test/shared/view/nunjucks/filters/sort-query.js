@@ -4,7 +4,7 @@ const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const querystring = require('querystring');
 
-const { sortQuery } = require('../../../../../src/shared/view/nunjucks/filters/sort-query');
+const { sortQuery } = require('shared/view/nunjucks/filters/sort-query');
 
 experiment('Nunjucks filters: sortQuery', () => {
   test('add the expected params if the field is currently being sorted', async () => {

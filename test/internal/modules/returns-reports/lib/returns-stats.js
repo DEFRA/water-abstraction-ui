@@ -5,8 +5,8 @@ const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const { returns } = require('../../../../../src/internal/lib/connectors/returns');
-const { getKeyAndValue, isGrouped, isSingleValue, mapReportResponse, getReturnStats } = require('../../../../../src/internal/modules/returns-reports/lib/returns-stats');
+const { returns } = require('internal/lib/connectors/returns');
+const { getKeyAndValue, isGrouped, isSingleValue, mapReportResponse, getReturnStats } = require('internal/modules/returns-reports/lib/returns-stats');
 
 const data = {
   singleValue: [{

@@ -11,9 +11,8 @@ const {
   test
 } = exports.lab = require('lab').script();
 
-const CRM = require('../../../../src/external/lib/connectors/crm');
-
-const controller = require('../../../../src/external/modules/manage-licences/controller');
+const services = require('external/lib/connectors/services');
+const controller = require('external/modules/manage-licences/controller');
 
 const editableRolesResponse = [
   {
@@ -79,8 +78,8 @@ experiment('postChangeAccess', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(CRM.entityRoles, 'addColleagueRole').resolves({});
-    sandbox.stub(CRM.entityRoles, 'deleteColleagueRole').resolves({});
+    sandbox.stub(services.crm.entityRoles, 'addColleagueRole').resolves({});
+    sandbox.stub(services.crm.entityRoles, 'deleteColleagueRole').resolves({});
 
     h = {
       redirect: sinon.spy()
@@ -110,8 +109,8 @@ experiment('postChangeAccess', () => {
 
       await controller.postChangeAccess(request, h);
 
-      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
-      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.addColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.deleteColleagueRole.called).to.be.false();
       expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
     });
 
@@ -122,10 +121,10 @@ experiment('postChangeAccess', () => {
 
       await controller.postChangeAccess(request, h);
 
-      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.addColleagueRole.called).to.be.false();
       expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
 
-      const [entityId, returnsEntityRoleId] = CRM.entityRoles.deleteColleagueRole.lastCall.args;
+      const [entityId, returnsEntityRoleId] = services.crm.entityRoles.deleteColleagueRole.lastCall.args;
       expect(entityId).to.equal('test-entity-id');
       expect(returnsEntityRoleId).to.equal('test-returns-entity-id');
     });
@@ -138,8 +137,8 @@ experiment('postChangeAccess', () => {
 
       await controller.postChangeAccess(request, h);
 
-      expect(CRM.entityRoles.addColleagueRole.called).to.be.false();
-      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.addColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.deleteColleagueRole.called).to.be.false();
       expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
     });
 
@@ -149,10 +148,10 @@ experiment('postChangeAccess', () => {
 
       await controller.postChangeAccess(request, h);
 
-      expect(CRM.entityRoles.deleteColleagueRole.called).to.be.false();
+      expect(services.crm.entityRoles.deleteColleagueRole.called).to.be.false();
       expect(h.redirect.calledWith('/manage_licences/access')).to.be.true();
 
-      const [entityId, colleagueEntityId, role] = CRM.entityRoles.addColleagueRole.lastCall.args;
+      const [entityId, colleagueEntityId, role] = services.crm.entityRoles.addColleagueRole.lastCall.args;
       expect(entityId).to.equal('test-entity-id');
       expect(colleagueEntityId).to.equal('test-colleague-id');
       expect(role).to.equal('user_returns');

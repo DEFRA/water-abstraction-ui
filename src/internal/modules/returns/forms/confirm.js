@@ -1,4 +1,4 @@
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 const { getPath } = require('../lib/flow-helpers');
 const { isInternal } = require('../../../lib/permissions');
 

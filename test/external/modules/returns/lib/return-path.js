@@ -6,9 +6,9 @@ const { expect } = require('code');
 
 const {
   getReturnPath
-} = require('../../../../../src/external/modules/returns/lib/return-path');
+} = require('external/modules/returns/lib/return-path');
 
-const { scope } = require('../../../../../src/external/lib/constants');
+const { scope } = require('external/lib/constants');
 
 const ret = {
   return_id: 'v1:123:456',

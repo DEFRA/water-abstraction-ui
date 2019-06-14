@@ -2,12 +2,12 @@ const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
 
-const reducer = require('../../../../../src/internal/modules/abstraction-reform/lib/reducer');
+const reducer = require('internal/modules/abstraction-reform/lib/reducer');
 const {
   createEditLicence, createEditPurpose, createEditPoint, createEditCondition,
   createSetStatus, createEditVersion, createEditParty, createEditAddress,
   createAddData, createEditData, createDeleteData
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/action-creators');
+} = require('internal/modules/abstraction-reform/lib/action-creators');
 const licence = require('../dummy-licence.json');
 
 const lab = exports.lab = Lab.script();

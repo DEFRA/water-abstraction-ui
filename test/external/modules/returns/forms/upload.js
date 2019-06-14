@@ -1,8 +1,8 @@
 const { expect } = require('code');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { uploadForm } = require('../../../../../src/external/modules/returns/forms/upload');
-const { scope } = require('../../../../../src/external/lib/constants');
+const { uploadForm } = require('external/modules/returns/forms/upload');
+const { scope } = require('external/lib/constants');
 
 experiment('uploadForm', () => {
   let form, request;

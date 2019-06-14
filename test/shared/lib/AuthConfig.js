@@ -2,7 +2,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
 
-const AuthConfig = require('../../../src/shared/lib/AuthConfig');
+const AuthConfig = require('shared/lib/AuthConfig');
 
 experiment('AuthConfig base class', () => {
   let authConfig, connectors;

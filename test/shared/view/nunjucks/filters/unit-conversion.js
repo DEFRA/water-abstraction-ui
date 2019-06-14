@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   unitConversion
-} = require('../../../../../src/shared/view/nunjucks/filters/unit-conversion');
+} = require('shared/view/nunjucks/filters/unit-conversion');
 
 experiment('Test unit conversion helpers', () => {
   test('unitConversion should convert known units', async () => {

@@ -6,7 +6,8 @@
  */
 const Joi = require('joi');
 const { difference } = require('lodash');
-const CRM = require('../../lib/connectors/crm');
+const crmConnector = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../../shared/lib/array-helpers');
 const { logger } = require('../../logger');
@@ -17,8 +18,8 @@ const {
   checkNewLicenceSimilarity,
   extractLicenceNumbers,
   uniqueAddresses
-} = require('../../../shared/lib/licence-helpers');
-const forms = require('../../../shared/lib/forms');
+} = require('shared/lib/licence-helpers');
+const forms = require('shared/lib/forms');
 const { faoForm, faoSchema } = require('./forms/for-attention-of');
 const { selectAddressForm, selectAddressSchema } = require('./forms/select-address');
 
@@ -78,7 +79,7 @@ async function postLicenceAdd (request, reply) {
       throw new LicenceNotFoundError();
     }
 
-    const res = await CRM.documents.getUnregisteredLicences(licenceNumbers);
+    const res = await services.crm.documents.getUnregisteredLicences(licenceNumbers);
 
     if (res.error) {
       throw res.error;
@@ -148,7 +149,7 @@ async function getLicenceSelect (request, reply) {
     const { documentIds } = request.yar.get('addLicenceFlow');
 
     // Get unverified licences from DB
-    const { data, error } = await CRM.documents.getUnregisteredLicencesByIds(documentIds);
+    const { data, error } = await services.crm.documents.getUnregisteredLicencesByIds(documentIds);
 
     if (error) {
       throw error;
@@ -186,18 +187,18 @@ async function postLicenceSelect (request, reply) {
     // Is there affinity between the selected licences and licences already attached
     // to this user's company where the user is the primary_user role?
     // If so, add the licences to the account directly skipping address verification
-    const companyEntityId = await CRM.getPrimaryCompany(entityId);
+    const companyEntityId = await crmConnector.getPrimaryCompany(entityId);
 
     if (companyEntityId) {
       // Licences already in account
-      const { data: existingLicences, error } = await CRM.documents.findMany({
+      const { data: existingLicences, error } = await services.crm.findMany({
         company_entity_id: companyEntityId
       });
       if (error) {
         throw error;
       }
       // Licences being added now
-      const { data: selectedLicences, error: error2 } = await CRM.documents.findMany({
+      const { data: selectedLicences, error: error2 } = await services.crm.findMany({
         document_id: { $or: documentIds },
         company_entity_id: null
       });
@@ -209,7 +210,7 @@ async function postLicenceSelect (request, reply) {
       if (existingLicences.length > 0) {
         const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
-          const { error: error3 } = await CRM.documents.updateMany({ document_id: { $or: documentIds } }, {
+          const { error: error3 } = await services.crm.updateMany({ document_id: { $or: documentIds } }, {
             company_entity_id: companyEntityId
           });
 
@@ -252,7 +253,7 @@ function getLicenceSelectError (request, reply) {
 const getUniqueAddresses = async selectedIds => {
   try {
   // Find licences in CRM for selected documents
-    const { data } = await CRM.documents.findMany({ document_id: { $or: selectedIds } });
+    const { data } = await services.crm.documents.findMany({ document_id: { $or: selectedIds } });
 
     return uniqueAddresses(data);
   } catch (err) {
@@ -297,7 +298,7 @@ const getAddressSelectViewContext = async (request, verification, licence, fao) 
 };
 
 const getLicences = async selectedIds => {
-  const { error, data } = await CRM.documents.findMany({
+  const { error, data } = await services.crm.documents.findMany({
     document_id: { $or: selectedIds }
   });
 
@@ -306,7 +307,7 @@ const getLicences = async selectedIds => {
 };
 
 const getAllUserEntityLicences = async entityId => {
-  const { error, data } = await CRM.documents.findMany({
+  const { error, data } = await services.crm.documents.findMany({
     company_entity_id: { $ne: null },
     entity_id: entityId
   });
@@ -316,7 +317,7 @@ const getAllUserEntityLicences = async entityId => {
 };
 
 const getLicence = async documentId => {
-  const { error, data } = await CRM.documents.findOne(documentId);
+  const { error, data } = await services.crm.documents.findOne(documentId);
   throwIfError(error);
   return data;
 };
@@ -390,10 +391,10 @@ async function postFAO (request, h) {
 
     // Get company entity ID for current user
     const companyName = licenceData[0].metadata.Name;
-    const companyEntityId = await CRM.getOrCreateCompanyEntity(entityId, companyName);
+    const companyEntityId = await crmConnector.getOrCreateCompanyEntity(entityId, companyName);
 
     // Create verification
-    const verification = await CRM.createVerification(entityId, companyEntityId, selectedIds);
+    const verification = await crmConnector.createVerification(entityId, companyEntityId, selectedIds);
 
     // Get the licence containing the selected verification address
     const addressLicence = await getLicence(selectedAddressId);
@@ -483,14 +484,14 @@ async function postSecurityCode (request, reply) {
     }
 
     // Verify
-    await CRM.verify(entityId, request.payload.verification_code);
+    await crmConnector.verify(entityId, request.payload.verification_code);
 
     // Licences have been verified if no error thrown
     return reply.redirect('/licences');
   } catch (error) {
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
-      viewContext.licences = await CRM.getOutstandingLicenceRequests(entityId);
+      viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
       return reply.view('water/licences-add/security-code', viewContext);
     }

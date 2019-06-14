@@ -1,11 +1,6 @@
-const UsersAPIClient = require('shared/lib/connectors/services/idm/UsersAPIClient');
-const http = require('shared/lib/connectors/http');
+const UsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient');
+const logger = require('../../../../logger');
 
 module.exports = config => ({
-  users: new UsersAPIClient(http.request, {
-    endpoint: `${config.services.idm}/user`,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    }
-  })
+  users: new UsersApiClient(config, logger)
 });

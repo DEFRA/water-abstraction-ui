@@ -6,7 +6,7 @@
 const Boom = require('boom');
 const { find, get } = require('lodash');
 
-const { documents } = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 const { licences } = require('../../../lib/connectors/permit');
 
 const perPage = 50;
@@ -92,7 +92,7 @@ const search = async (q) => {
   };
 
   // Get licences from CRM
-  const { data, error, pagination } = await documents.findMany(filter, sort, {
+  const { data, error, pagination } = await services.crm.findMany(filter, sort, {
     page,
     perPage
   });
@@ -135,7 +135,7 @@ const recent = async (page) => {
     }
   };
 
-  const { data: crmData, error: crmError } = await documents.findMany(crmFilter, null, null, ['document_id', 'system_external_id']);
+  const { data: crmData, error: crmError } = await services.crm.findMany(crmFilter, null, null, ['document_id', 'system_external_id']);
 
   if (crmError) {
     throw crmError;

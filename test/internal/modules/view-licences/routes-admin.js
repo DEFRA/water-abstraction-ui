@@ -4,10 +4,10 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const constants = require('../../../../src/internal/lib/constants');
+const constants = require('internal/lib/constants');
 const allAdmin = constants.scope.allAdmin;
 
-const adminRoutes = require('../../../../src/internal/modules/view-licences/routes-admin');
+const adminRoutes = require('internal/modules/view-licences/routes-admin');
 
 lab.experiment('view-licences - admin routes', () => {
   lab.test('getLicenceAdmin has admin auth scopes', async () => {

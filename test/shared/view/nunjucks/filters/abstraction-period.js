@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   abstractionPeriod
-} = require('../../../../../src/shared/view/nunjucks/filters/abstraction-period');
+} = require('shared/view/nunjucks/filters/abstraction-period');
 
 experiment('abstractionPeriod Nunjucks filter', () => {
   test('It should format a date and month in the form D/M to D MMMM', async () => {

@@ -1,6 +1,6 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { confirmForm } = require('../../../../../src/internal/modules/batch-notifications/forms/confirm');
+const { confirmForm } = require('internal/modules/batch-notifications/forms/confirm');
 const { find } = require('lodash');
 
 experiment('confirmForm', () => {

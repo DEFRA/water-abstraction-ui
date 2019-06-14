@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const { markdown } = require('../../../../../src/shared/view/nunjucks/filters/markdown');
+const { markdown } = require('shared/view/nunjucks/filters/markdown');
 
 experiment('markdown', () => {
   test('converts the markdown to the expected html markup', async () => {

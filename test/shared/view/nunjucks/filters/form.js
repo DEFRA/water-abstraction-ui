@@ -3,7 +3,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { handleRequest } = require('../../../../../src/shared/lib/forms');
+const { handleRequest } = require('shared/lib/forms');
 
 const {
   mapFormField,
@@ -13,7 +13,7 @@ const {
   setConditionalRadioField,
   mapFormCheckbox,
   mapFormDropdownField
-} = require('../../../../../src/shared/view/nunjucks/filters/form');
+} = require('shared/view/nunjucks/filters/form');
 
 const {
   textField,

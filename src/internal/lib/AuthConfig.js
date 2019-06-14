@@ -1,4 +1,4 @@
-const AuthConfigBase = require('../../shared/lib/AuthConfig');
+const AuthConfigBase = require('shared/lib/AuthConfig');
 
 class AuthConfig extends AuthConfigBase {
   ifAuthenticated (request, h) {

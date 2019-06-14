@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   titleCase
-} = require('../../../../../src/shared/view/nunjucks/filters/title-case');
+} = require('shared/view/nunjucks/filters/title-case');
 
 experiment('titleCase Nunjucks filter', () => {
   test('should format lowercase text to title case', async () => {

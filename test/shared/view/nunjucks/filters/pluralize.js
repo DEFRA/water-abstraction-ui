@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   pluralize
-} = require('../../../../../src/shared/view/nunjucks/filters/pluralize');
+} = require('shared/view/nunjucks/filters/pluralize');
 
 experiment('pluralize Nunjucks filter', () => {
   test('It should pluralize word if given boolean true as second argument', async () => {

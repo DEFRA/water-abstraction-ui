@@ -10,9 +10,9 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../src/internal/modules/returns-notifications/controller');
-const notificationsConnector = require('../../../../src/internal/lib/connectors/water-service/returns-notifications');
-var batchNotificationsConnector = require('../../../../src/internal/lib/connectors/water-service/batch-notifications');
+const controller = require('internal/modules/returns-notifications/controller');
+const notificationsConnector = require('internal/lib/connectors/water-service/returns-notifications');
+var batchNotificationsConnector = require('internal/lib/connectors/water-service/batch-notifications');
 
 const createLicence = (id, overrides = {}) => {
   return {

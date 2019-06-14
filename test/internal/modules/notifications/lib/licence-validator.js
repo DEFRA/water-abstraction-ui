@@ -5,7 +5,7 @@ const { experiment, test } = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const { isMany, mapErrors, licenceValidator } = require('../../../../../src/internal/modules/notifications/lib/licence-validator');
+const { isMany, mapErrors, licenceValidator } = require('internal/modules/notifications/lib/licence-validator');
 
 // Data returned from CRM
 const data = [{

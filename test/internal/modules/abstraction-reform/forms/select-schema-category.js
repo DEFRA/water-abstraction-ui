@@ -2,8 +2,8 @@ require('dotenv').config();
 const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
-const { selectSchemaCategoryForm } = require('../../../../../src/internal/modules/abstraction-reform/forms/select-schema-category');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { selectSchemaCategoryForm } = require('internal/modules/abstraction-reform/forms/select-schema-category');
+const { scope } = require('internal/lib/constants');
 
 const lab = exports.lab = Lab.script();
 

@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { faoForm } = require('../../../../../src/external/modules/add-licences/forms/for-attention-of');
+const { faoForm } = require('external/modules/add-licences/forms/for-attention-of');
 const sandbox = require('sinon').createSandbox();
 
 experiment('faoForm', () => {

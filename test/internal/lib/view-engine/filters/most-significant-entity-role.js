@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const { mostSignificantEntityRole } = require('../../../../../src/internal/lib/view-engine/filters/most-significant-entity-role');
+const { mostSignificantEntityRole } = require('internal/lib/view-engine/filters/most-significant-entity-role');
 
 experiment('mostSignificantEntityRole', () => {
   test('returns undefined for an undefined array of roles', async () => {

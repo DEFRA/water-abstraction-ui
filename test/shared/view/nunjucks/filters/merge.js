@@ -3,7 +3,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { merge } = require('../../../../../src/shared/view/nunjucks/filters/merge');
+const { merge } = require('shared/view/nunjucks/filters/merge');
 
 experiment('merge Nunjucks filter', () => {
   const obj1 = { foo: 'bar' };

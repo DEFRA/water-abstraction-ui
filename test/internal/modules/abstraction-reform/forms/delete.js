@@ -2,8 +2,8 @@ require('dotenv').config();
 const Lab = require('lab');
 const { expect } = require('code');
 const { find } = require('lodash');
-const { deleteForm } = require('../../../../../src/internal/modules/abstraction-reform/forms/delete');
-const { getWR22 } = require('../../../../../src/internal/modules/abstraction-reform/lib/schema');
+const { deleteForm } = require('internal/modules/abstraction-reform/forms/delete');
+const { getWR22 } = require('internal/modules/abstraction-reform/lib/schema');
 
 const lab = exports.lab = Lab.script();
 

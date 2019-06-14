@@ -1,9 +1,9 @@
 const { expect } = require('code');
 const { it, experiment, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const IDM = require('../../../../src/internal/lib/connectors/idm');
-const CRM = require('../../../../src/internal/lib/connectors/crm');
-const baseController = require('../../../../src/internal/modules/view-licences/base');
+const IDM = require('internal/lib/connectors/idm');
+const services = require('internal/lib/connectors/services');
+const baseController = require('internal/modules/view-licences/base');
 
 experiment('view-licences/base', () => {
   const viewName = 'water/view-licences/licences';
@@ -11,7 +11,7 @@ experiment('view-licences/base', () => {
 
   beforeEach(async () => {
     sinon.stub(IDM, 'getUserByEmail');
-    sinon.stub(CRM.documents, 'findMany');
+    sinon.stub(services.crm.documents, 'findMany');
     h = {
       view: sinon.spy()
     };
@@ -19,7 +19,7 @@ experiment('view-licences/base', () => {
 
   afterEach(async () => {
     IDM.getUserByEmail.restore();
-    CRM.documents.findMany.restore();
+    services.crm.documents.findMany.restore();
   });
 
   experiment('when the form is invalid', () => {
@@ -43,7 +43,7 @@ experiment('view-licences/base', () => {
     });
 
     it('the controller does not get the licences', async () => {
-      expect(CRM.documents.findMany.notCalled).to.be.true();
+      expect(services.crm.documents.findMany.notCalled).to.be.true();
     });
   });
 
@@ -67,7 +67,7 @@ experiment('view-licences/base', () => {
       };
 
       IDM.getUserByEmail.resolves({ data: [] });
-      CRM.documents.findMany.resolves({
+      services.crm.documents.findMany.resolves({
         data: [],
         error: null,
         pagination: {}
@@ -101,7 +101,7 @@ experiment('view-licences/base', () => {
         }
       };
 
-      CRM.documents.findMany.resolves({
+      services.crm.documents.findMany.resolves({
         data: [{ id: 1 }],
         error: null,
         pagination: { page: 1 }

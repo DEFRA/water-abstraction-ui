@@ -1,18 +1,19 @@
-const crmDocumentConnector = require('../connectors/crm/documents');
-const crmVerifcationConnector = require('../connectors/crm/verification');
+const services = require('../connectors/services');
+const documentsService = services.crm.documents;
+
 const { set, get } = require('lodash');
 
 const addToRequest = (request, key, value) => set(request, `licence.${key}`, value);
 
 const loadUserLicenceCount = async request => {
   const { companyId } = request.defra;
-  const licenceCount = await crmDocumentConnector.getLicenceCount(companyId);
+  const licenceCount = await documentsService.getLicenceCount(companyId);
   addToRequest(request, 'userLicenceCount', licenceCount);
 };
 
 const loadOutstandingVerifications = async request => {
   const { entityId } = request.defra;
-  const { data: verifications } = await crmVerifcationConnector.getOutstandingVerifications(entityId);
+  const { data: verifications } = await services.crm.verifications.getOutstandingVerifications(entityId);
   addToRequest(request, 'outstandingVerifications', verifications);
 };
 

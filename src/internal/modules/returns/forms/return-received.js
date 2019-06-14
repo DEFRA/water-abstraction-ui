@@ -1,4 +1,4 @@
-const { formFactory, fields, setValues } = require('../../../../shared/lib/forms');
+const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { getPath } = require('../lib/flow-helpers');
 const { STEP_DATE_RECEIVED } = require('../lib/flow-helpers/steps');
 

@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('lab').script();
 
-const { meterDetailsProvidedForm } = require('../../../../../src/external/modules/returns/forms/meter-details-provided');
+const { meterDetailsProvidedForm } = require('external/modules/returns/forms/meter-details-provided');
 
 experiment('meter-details-provided', () => {
   let request;

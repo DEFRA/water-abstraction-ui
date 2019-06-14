@@ -1,9 +1,9 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const returns = require('../../../../../src/internal/lib/connectors/water-service/returns');
-const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
-const config = require('../../../../../src/internal/config');
+const returns = require('internal/lib/connectors/water-service/returns');
+const serviceRequest = require('shared/lib/connectors/service-request');
+const config = require('internal/config');
 
 const sandbox = sinon.createSandbox();
 

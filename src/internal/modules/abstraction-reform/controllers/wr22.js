@@ -1,6 +1,6 @@
 const { find } = require('lodash');
-const { handleRequest, getValues } = require('../../../../shared/lib/forms');
-const { mapRequestData } = require('../../../../shared/lib/forms/validationAdapters/json-schema');
+const { handleRequest, getValues } = require('shared/lib/forms');
+const { mapRequestData } = require('shared/lib/forms/validationAdapters/json-schema');
 const { mapARItem } = require('../lib/helpers');
 const { getSchemaCategories, getSchemaCategory } = require('../lib/schema-helpers');
 const { selectSchemaCategoryForm } = require('../forms/select-schema-category');

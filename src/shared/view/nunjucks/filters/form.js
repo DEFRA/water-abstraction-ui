@@ -1,5 +1,5 @@
 const { cloneDeep, get, set, isObject, isEqual } = require('lodash');
-const { mapFields } = require('../../../../shared/lib/forms/mapFields');
+const { mapFields } = require('shared/lib/forms/mapFields');
 
 /**
  * Applies error message to most form field types

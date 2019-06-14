@@ -6,7 +6,7 @@ const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 const { set } = require('lodash');
 
-const helpers = require('../../../../../src/internal/modules/returns-notifications/lib/helpers');
+const helpers = require('internal/modules/returns-notifications/lib/helpers');
 
 lab.experiment('getUniqueLicenceNumbers', () => {
   lab.test('It should return unique licence numbers from return list', async () => {

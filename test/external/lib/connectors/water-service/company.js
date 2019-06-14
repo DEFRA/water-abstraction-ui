@@ -4,8 +4,8 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const serviceRequest = require('../../../../../src/shared/lib/connectors/service-request');
-const companyConnector = require('../../../../../src/external/lib/connectors/water-service/company');
+const serviceRequest = require('shared/lib/connectors/service-request');
+const companyConnector = require('external/lib/connectors/water-service/company');
 
 const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers');
 const { last } = require('lodash');

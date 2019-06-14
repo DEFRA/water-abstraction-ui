@@ -4,9 +4,9 @@ const { expect } = require('code');
 const { find } = require('lodash');
 const Joi = require('joi');
 
-const { setStatusForm, setStatusSchema } = require('../../../../../src/internal/modules/abstraction-reform/forms/set-status');
+const { setStatusForm, setStatusSchema } = require('internal/modules/abstraction-reform/forms/set-status');
 
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { scope } = require('internal/lib/constants');
 
 const {
   STATUS_IN_PROGRESS,
@@ -14,7 +14,7 @@ const {
   STATUS_APPROVED,
   STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/statuses');
+} = require('internal/modules/abstraction-reform/lib/statuses');
 
 const lab = exports.lab = Lab.script();
 

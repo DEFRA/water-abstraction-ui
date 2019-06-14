@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { get } = require('lodash');
-const { formFactory, fields, setValues } = require('../../../../shared/lib/forms');
+const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { getMeter } = require('../lib/return-helpers');
 const { STEP_METER_DETAILS, getPath } = require('../lib/flow-helpers');
 const { isInternal } = require('../../../lib/permissions');

@@ -6,8 +6,8 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle } = require('../../../../src/internal/modules/view-licences/helpers');
-const waterConnector = require('../../../../src/internal/lib/connectors/water');
+const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle } = require('internal/modules/view-licences/helpers');
+const waterConnector = require('internal/lib/connectors/water');
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
   const latestReading = hasLatestReading

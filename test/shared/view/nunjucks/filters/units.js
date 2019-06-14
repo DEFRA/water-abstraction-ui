@@ -5,7 +5,7 @@ const { expect } = require('code');
 
 const {
   units
-} = require('../../../../../src/shared/view/nunjucks/filters/units');
+} = require('shared/view/nunjucks/filters/units');
 
 experiment('units Nunjucks filter', () => {
   test('converts m³ to Cubic metres', async () => {

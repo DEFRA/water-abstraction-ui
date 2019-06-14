@@ -3,10 +3,11 @@ const { set } = require('lodash');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const preHandlers = require('../../../../src/internal/modules/view-licences/pre-handlers');
-const CRM = require('../../../../src/internal/lib/connectors/crm');
-const licenceConnector = require('../../../../src/internal/lib/connectors/water-service/licences');
-const { scope } = require('../../../../src/internal/lib/constants');
+const preHandlers = require('internal/modules/view-licences/pre-handlers');
+const crmConnector = require('internal/lib/connectors/crm');
+const services = require('internal/lib/connectors/services');
+const licenceConnector = require('internal/lib/connectors/water-service/licences');
+const { scope } = require('internal/lib/constants');
 
 const documentId = 'document_1';
 const companyId = 'company_1';
@@ -14,15 +15,12 @@ const companyId = 'company_1';
 const createRequest = () => {
   return {
     auth: {
-      credentials: {
-      }
+      credentials: {}
     },
     params: {
       documentId
     },
-    defra: {
-
-    }
+    defra: {}
   };
 };
 
@@ -63,7 +61,7 @@ experiment('preLoadDocument', () => {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(async () => {
-    sandbox.stub(CRM.documents, 'findMany');
+    sandbox.stub(services.crm.documents, 'findMany');
   });
 
   afterEach(async () => {
@@ -75,12 +73,12 @@ experiment('preLoadDocument', () => {
 
     beforeEach(async () => {
       request = createInternalRequest();
-      CRM.documents.findMany.resolves(responses.found);
+      services.crm.documents.findMany.resolves(responses.found);
     });
 
     test('calls CRM with correct document filter', async () => {
       await preHandlers.preLoadDocument(request, h);
-      const [filter] = CRM.documents.findMany.firstCall.args;
+      const [filter] = services.crm.documents.findMany.firstCall.args;
       expect(filter).to.equal({ document_id: documentId });
     });
 
@@ -90,7 +88,7 @@ experiment('preLoadDocument', () => {
     });
 
     test('if document not found, throw not found error', async () => {
-      CRM.documents.findMany.resolves(responses.notFound);
+      services.crm.documents.findMany.resolves(responses.notFound);
 
       try {
         await preHandlers.preLoadDocument(request, h);
@@ -101,7 +99,7 @@ experiment('preLoadDocument', () => {
     });
 
     test('if CRM error, throw error', async () => {
-      CRM.documents.findMany.resolves(responses.error);
+      services.crm.documents.findMany.resolves(responses.error);
       const func = () => preHandlers.preLoadDocument(request, h);
       expect(func()).to.reject();
     });
@@ -112,12 +110,12 @@ experiment('preLoadDocument', () => {
 
     beforeEach(async () => {
       request = createExternalRequest();
-      CRM.documents.findMany.resolves(responses.found);
+      services.crm.documents.findMany.resolves(responses.found);
     });
 
     test('calls CRM with correct document filter', async () => {
       await preHandlers.preLoadDocument(request, h);
-      const [filter] = CRM.documents.findMany.firstCall.args;
+      const [filter] = services.crm.documents.findMany.firstCall.args;
       expect(filter).to.equal({ document_id: documentId });
     });
 
@@ -127,7 +125,7 @@ experiment('preLoadDocument', () => {
     });
 
     test('if document not found, throw not found error', async () => {
-      CRM.documents.findMany.resolves(responses.notFound);
+      services.crm.documents.findMany.resolves(responses.notFound);
 
       try {
         await preHandlers.preLoadDocument(request, h);
@@ -138,7 +136,7 @@ experiment('preLoadDocument', () => {
     });
 
     test('if document had wrong company, throws 401 error', async () => {
-      CRM.documents.findMany.resolves(responses.wrongCompany);
+      services.crm.documents.findMany.resolves(responses.wrongCompany);
 
       try {
         await preHandlers.preLoadDocument(request, h);
@@ -149,7 +147,7 @@ experiment('preLoadDocument', () => {
     });
 
     test('if CRM error, throw error', async () => {
-      CRM.documents.findMany.resolves(responses.error);
+      services.crm.documents.findMany.resolves(responses.error);
       const func = () => preHandlers.preLoadDocument(request, h);
       expect(func()).to.reject();
     });
@@ -162,7 +160,7 @@ experiment('preInternalView', () => {
 
   beforeEach(async () => {
     request = createInternalRequest();
-    sandbox.stub(CRM, 'getDocumentVerifications');
+    sandbox.stub(crmConnector, 'getDocumentVerifications');
     sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId');
   });
 
@@ -172,7 +170,7 @@ experiment('preInternalView', () => {
 
   test('it should call the CRM getDocumentVerifications connector with correct arguments', async () => {
     await preHandlers.preInternalView(request, h);
-    const { args } = CRM.getDocumentVerifications.firstCall;
+    const { args } = crmConnector.getDocumentVerifications.firstCall;
     expect(args).to.equal([documentId]);
   });
 
@@ -185,7 +183,7 @@ experiment('preInternalView', () => {
   test('it should set the correct data in the view', async () => {
     const verifications = { foo: 'bar' };
     const primary = { bar: 'foo' };
-    CRM.getDocumentVerifications.resolves(verifications);
+    crmConnector.getDocumentVerifications.resolves(verifications);
     licenceConnector.getLicencePrimaryUserByDocumentId.resolves(primary);
 
     await preHandlers.preInternalView(request, h);

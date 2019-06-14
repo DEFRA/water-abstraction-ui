@@ -1,9 +1,9 @@
 const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
-const childProcessHelpers = require('../../../src/shared/lib/child-process-helpers');
+const childProcessHelpers = require('shared/lib/child-process-helpers');
 
-const fileCheck = require('../../../src/shared/lib/file-check');
+const fileCheck = require('shared/lib/file-check');
 const { experiment, test, afterEach, beforeEach } = exports.lab = Lab.script();
 
 const sandbox = sinon.createSandbox();

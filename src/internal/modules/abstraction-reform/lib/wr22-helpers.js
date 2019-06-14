@@ -1,6 +1,6 @@
 const { find, omit, get, mapValues, isObject } = require('lodash');
 
-const { setValues } = require('../../../../shared/lib/forms');
+const { setValues } = require('shared/lib/forms');
 const loader = require('./loader');
 const { getWR22 } = require('./schema');
 const formGenerator = require('./form-generator');

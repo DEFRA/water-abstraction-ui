@@ -2,8 +2,8 @@ require('dotenv').config();
 const Lab = require('lab');
 const { expect } = require('code');
 
-const { ADD_DATA, EDIT_DATA, DELETE_DATA } = require('../../../../../src/internal/modules/abstraction-reform/lib/action-types');
-const { createAddData, createEditData, createDeleteData } = require('../../../../../src/internal/modules/abstraction-reform/lib/action-creators');
+const { ADD_DATA, EDIT_DATA, DELETE_DATA } = require('internal/modules/abstraction-reform/lib/action-types');
+const { createAddData, createEditData, createDeleteData } = require('internal/modules/abstraction-reform/lib/action-creators');
 
 const lab = exports.lab = Lab.script();
 

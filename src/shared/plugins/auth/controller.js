@@ -5,7 +5,7 @@
 const { get } = require('lodash');
 
 const { signInForm, signInSchema, signInApplyErrorState } = require('./forms');
-const { handleRequest, setValues } = require('../../../shared/lib/forms');
+const { handleRequest, setValues } = require('shared/lib/forms');
 
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 

@@ -136,6 +136,15 @@ class UsersApiClient extends APIClient {
       reset_guid: null
     });
   }
+
+  /**
+   * Updates user password
+   * @param {number} user id - user's ID
+   * @param {String} password - new password
+   */
+  updatePassword (userId, password) {
+    return this.updateOne(userId, { password });
+  }
 }
 
 module.exports = UsersApiClient;

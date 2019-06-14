@@ -3,7 +3,6 @@ const Lab = require('lab');
 const sinon = require('sinon');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const connectors = require('internal/modules/service-status/lib/connectors');
-const IDM = require('internal/lib/connectors/idm');
 const water = require('internal/lib/connectors/water');
 const permits = require('internal/lib/connectors/permit');
 const services = require('internal/lib/connectors/services');
@@ -99,13 +98,13 @@ experiment('Connectors call correct APIs', () => {
     sandbox = sinon.sandbox.create();
 
     // IDM
-    sandbox.stub(IDM.usersClient, 'findMany').resolves(response);
-    sandbox.stub(IDM.kpi, 'findMany').resolves(response);
+    sandbox.stub(services.idm.users, 'findMany').resolves(response);
+    sandbox.stub(services.idm.kpis, 'findMany').resolves(response);
 
     // CRM
     sandbox.stub(services.crm.documents, 'findMany').resolves(response);
     sandbox.stub(services.crm.verifications, 'findMany').resolves(response);
-    sandbox.stub(services.crm.kpi, 'findMany').resolves(response);
+    sandbox.stub(services.crm.kpis, 'findMany').resolves(response);
 
     // Water
     sandbox.stub(water.pendingImport, 'findMany').resolves(response);
@@ -120,12 +119,12 @@ experiment('Connectors call correct APIs', () => {
 
   test('getIDMUserCount calls IDM users endpoint', async () => {
     await connectors.getIDMUserCount();
-    expect(IDM.usersClient.findMany.callCount).to.equal(1);
+    expect(services.idm.users.findMany.callCount).to.equal(1);
   });
 
   test('getIDMKPIData calls IDM KPI endpoint', async () => {
     await connectors.getIDMKPIData();
-    expect(IDM.kpi.findMany.callCount).to.equal(1);
+    expect(services.idm.kpis.findMany.callCount).to.equal(1);
   });
 
   test('getCRMDocumentCount calls CRM documents endpoint', async () => {
@@ -135,7 +134,7 @@ experiment('Connectors call correct APIs', () => {
 
   test('getCRMKPIData calls CRM KPI endpoint', async () => {
     await connectors.getCRMKPIData();
-    expect(services.crm.kpi.findMany.callCount).to.equal(1);
+    expect(services.crm.kpis.findMany.callCount).to.equal(1);
   });
 
   test('getCRMVerificationCount calls CRM verification endpoint', async () => {

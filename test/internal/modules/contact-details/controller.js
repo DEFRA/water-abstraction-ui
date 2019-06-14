@@ -10,7 +10,7 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const idm = require('internal/lib/connectors/idm');
+const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/contact-details/controller');
 
 experiment('getContactInformation', () => {
@@ -48,7 +48,7 @@ experiment('postContactInformation', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(idm.usersClient, 'updateOne').resolves({});
+    sandbox.stub(services.idm.users, 'updateOne').resolves({});
 
     h = {
       view: sandbox.spy(),
@@ -89,7 +89,7 @@ experiment('postContactInformation', () => {
 
     await controller.postContactInformation(request, h);
 
-    const [userId, user] = idm.usersClient.updateOne.lastCall.args;
+    const [userId, user] = services.idm.users.updateOne.lastCall.args;
 
     expect(userId).to.equal('test-user-id');
     expect(user.user_data.contactDetails).to.equal({
@@ -130,7 +130,7 @@ experiment('postContactInformation', () => {
 
     await controller.postContactInformation(request, h);
 
-    expect(idm.usersClient.updateOne.callCount).to.equal(0);
+    expect(services.idm.users.updateOne.callCount).to.equal(0);
     const [templateName] = h.view.lastCall.args;
     expect(templateName).to.equal('nunjucks/form.njk');
   });

@@ -1,10 +1,10 @@
 const Joi = require('joi');
 const Notify = require('../../lib/connectors/notify');
-const IDM = require('../../lib/connectors/idm');
 const Boom = require('boom');
 const { find } = require('lodash');
 const { logger } = require('../../logger');
 const services = require('../../lib/connectors/services');
+const config = require('../../config');
 
 /**
  * Index page for manage licences
@@ -124,8 +124,9 @@ async function postAddAccess (request, reply, context = {}) {
     // Notification details
     const { userName: sender } = request.defra;
     const { email, returns: allowReturns } = value;
+    const { application } = config.idm;
 
-    const { error: createUserError } = await IDM.createUserWithoutPassword(email);
+    const { error: createUserError } = await services.idm.users.createUserWithoutPassword(application, email);
 
     // User exists
     if (createUserError) {
@@ -135,7 +136,7 @@ async function postAddAccess (request, reply, context = {}) {
       }
     } else {
       // New user - reset password
-      const { error: resetError } = await IDM.resetPassword(request.payload.email, 'sharing', { sender });
+      const { error: resetError } = await services.idm.users.resetPassword(application, request.payload.email, 'sharing', { sender });
       if (resetError) {
         throw resetError;
       }
@@ -160,8 +161,8 @@ async function postAddAccess (request, reply, context = {}) {
     }
 
     // Update the idm.user with the crm.entity id
-    const { data: user } = await IDM.getUserByEmail(email);
-    await IDM.updateExternalId(user, crmEntityId);
+    const user = await services.idm.users.findOneByEmail(email, config.idm.application);
+    await services.idm.users.updateExternalId(user, crmEntityId);
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {

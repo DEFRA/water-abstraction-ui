@@ -1,7 +1,8 @@
-const IDM = require('../../lib/connectors/idm');
+const services = require('../../lib/connectors/services');
 const uuid = require('uuid/v4');
 const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error');
 const { AuthTokenError } = require('./errors');
+const config = require('../../config');
 /**
  * Update password step 1 - enter current password
  */
@@ -22,7 +23,7 @@ async function postConfirmPassword (request, reply) {
     }
     const { password } = request.payload;
     const { userName } = request.defra;
-    await IDM.verifyCredentials(userName, password);
+    await services.idm.users.authenticate(config.idm.application, userName, password);
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();
@@ -61,7 +62,7 @@ async function postSetPassword (request, reply) {
     }
     // Change password
     const { userId } = request.defra;
-    const { error } = IDM.updatePassword(userId, password);
+    const { error } = services.idm.users.updatePassword(userId, password);
     if (error) {
       throw error;
     }

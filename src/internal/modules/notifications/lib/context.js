@@ -1,4 +1,4 @@
-const { usersClient } = require('../../../lib/connectors/idm');
+const services = require('../../../lib/connectors/services');
 
 /**
  * Gets user data
@@ -7,7 +7,11 @@ const { usersClient } = require('../../../lib/connectors/idm');
  */
 async function getUser (userId) {
   // Load context data for default parameter values
-  const { data: user, error: idmError } = await usersClient.findOne(userId);
+  const {
+    data: user,
+    error: idmError
+  } = await services.idm.users.findOne(userId);
+
   if (idmError) {
     throw new Error(idmError);
   }

@@ -33,14 +33,18 @@ experiment('Shared UsersApiClient', () => {
     client = new UsersApiClient(config, logger);
 
     sandbox.stub(serviceRequest, 'post').resolves(userResponse);
-    sandbox.stub(client, 'findMany').resolves({ error: null,
+    sandbox.stub(client, 'findMany').resolves({
+      error: null,
       data: [{
         user_name: 'bob@example.com'
-      }] });
-    sandbox.stub(client, 'updateOne').resolves({ error: null,
+      }]
+    });
+    sandbox.stub(client, 'updateOne').resolves({
+      error: null,
       data: [{
         user_name: 'bob@example.com'
-      }] });
+      }]
+    });
   });
 
   afterEach(async () => {
@@ -132,6 +136,22 @@ experiment('Shared UsersApiClient', () => {
     test('does not call client.updateOne if external ID is already set', async () => {
       await client.updateExternalId({ user_id: userId, externalId: entityId }, entityId);
       expect(client.updateOne.callCount).to.equal(1);
+    });
+  });
+
+  experiment('updatePassword', () => {
+    beforeEach(async () => {
+      await client.updatePassword('test-id', 'new-password');
+    });
+
+    test('the expected user id is passed to updateOne', async () => {
+      const [userId] = client.updateOne.lastCall.args;
+      expect(userId).to.equal('test-id');
+    });
+
+    test('the expected password is passed to updateOne', async () => {
+      const [, updates] = client.updateOne.lastCall.args;
+      expect(updates).to.equal({ password: 'new-password' });
     });
   });
 });

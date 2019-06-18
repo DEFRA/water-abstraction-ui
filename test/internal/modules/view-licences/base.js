@@ -1,7 +1,8 @@
 const { expect } = require('code');
 const { it, experiment, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const IDM = require('internal/lib/connectors/idm');
+const sandbox = sinon.createSandbox();
+
 const services = require('internal/lib/connectors/services');
 const baseController = require('internal/modules/view-licences/base');
 
@@ -10,16 +11,15 @@ experiment('view-licences/base', () => {
   let h;
 
   beforeEach(async () => {
-    sinon.stub(IDM, 'getUserByEmail');
-    sinon.stub(services.crm.documents, 'findMany');
+    sandbox.stub(services.idm.users, 'findOneByEmail');
+    sandbox.stub(services.crm.documents, 'findMany');
     h = {
-      view: sinon.spy()
+      view: sandbox.spy()
     };
   });
 
   afterEach(async () => {
-    IDM.getUserByEmail.restore();
-    services.crm.documents.findMany.restore();
+    sandbox.restore();
   });
 
   experiment('when the form is invalid', () => {
@@ -39,7 +39,7 @@ experiment('view-licences/base', () => {
     });
 
     it('the controller does not get the user', async () => {
-      expect(IDM.getUserByEmail.notCalled).to.be.true();
+      expect(services.idm.users.findOneByEmail.notCalled).to.be.true();
     });
 
     it('the controller does not get the licences', async () => {
@@ -66,7 +66,7 @@ experiment('view-licences/base', () => {
         }
       };
 
-      IDM.getUserByEmail.resolves({ data: [] });
+      services.idm.users.findOneByEmail.resolves();
       services.crm.documents.findMany.resolves({
         data: [],
         error: null,
@@ -77,7 +77,7 @@ experiment('view-licences/base', () => {
     });
 
     it('an attempt is made to get the user by email', async () => {
-      expect(IDM.getUserByEmail.calledWith('test@example.com')).to.be.true();
+      expect(services.idm.users.findOneByEmail.calledWith('test@example.com')).to.be.true();
     });
 
     it('an error is added to the view', async () => {

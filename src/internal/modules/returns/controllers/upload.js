@@ -8,8 +8,7 @@ const files = require('../../../../shared/lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');
-const waterReturns = require('../../../lib/connectors/water-service/returns');
-const waterCompany = require('../../../lib/connectors/water-service/company');
+const services = require('../../../lib/connectors/services');
 const fileCheck = require('../../../../shared/lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
@@ -88,7 +87,7 @@ async function postXmlUpload (request, h) {
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
-      const postData = await waterReturns.postUpload(fileData.toString(), userName, type);
+      const postData = await services.water.returns.postUpload(fileData.toString(), userName, type);
       eventId = get(postData, 'data.eventId');
     }
 
@@ -197,7 +196,7 @@ const getSummary = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    const returns = await waterReturns.getUploadPreview(eventId, options);
+    const returns = await services.water.returns.getUploadPreview(eventId, options);
 
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
@@ -228,7 +227,7 @@ const getSummaryReturn = async (request, h) => {
   const { eventId, returnId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    const ret = await waterReturns.getUploadPreview(eventId, options, returnId);
+    const ret = await services.water.returns.getUploadPreview(eventId, options, returnId);
 
     const returnData = uploadSummaryHelpers.mapReturn(ret, eventId);
 
@@ -259,7 +258,7 @@ const postSubmit = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    await waterReturns.postUploadSubmit(eventId, options);
+    await services.water.returns.postUploadSubmit(eventId, options);
 
     // Redirect to spinner page while event resolves
     return h.redirect(`/returns/processing-upload/submitting/${eventId}`);
@@ -292,7 +291,7 @@ const getCSVTemplates = async (request, h) => {
   const { companyId, companyName } = request.defra;
 
   // Fetch returns for current company
-  const returns = await waterCompany.getCurrentDueReturns(companyId);
+  const returns = await services.water.companies.getCurrentDueReturns(companyId);
   const endDate = returns[0].endDate;
 
   // Generate CSV data and build zip

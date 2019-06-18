@@ -4,7 +4,8 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/notifications-reports/controller');
-const { events, taskConfig, notifications } = require('internal/lib/connectors/water');
+const { events, taskConfig } = require('internal/lib/connectors/water');
+const services = require('internal/lib/connectors/services');
 
 experiment('getNotification', () => {
   let request;
@@ -26,7 +27,7 @@ experiment('getNotification', () => {
       }
     });
 
-    sandbox.stub(notifications, 'findMany').resolves({
+    sandbox.stub(services.water.notifications, 'findMany').resolves({
       data: [
         { status: 'delivered' }
       ]
@@ -73,7 +74,7 @@ experiment('getNotification', () => {
   });
 
   test('gets the notitications using the event id', async () => {
-    expect(notifications.findMany.calledWith({
+    expect(services.water.notifications.findMany.calledWith({
       event_id: 'test-event-id'
     })).to.be.true();
   });

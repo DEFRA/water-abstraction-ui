@@ -10,7 +10,7 @@ const {
   createEnumField
 } = require('internal/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('code');
-const licencesConnector = require('internal/lib/connectors/water-service/licences');
+const services = require('internal/lib/connectors/services');
 
 const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
 
@@ -148,7 +148,7 @@ experiment('dereference can resolve licence conditions', () => {
   let populated;
 
   beforeEach(async () => {
-    sandbox.stub(licencesConnector, 'getLicenceConditionsByDocumentId').resolves(conditionsResponse);
+    sandbox.stub(services.water.licences, 'getConditionsByDocumentId').resolves(conditionsResponse);
 
     schema = {
       type: 'object',
@@ -166,7 +166,7 @@ experiment('dereference can resolve licence conditions', () => {
   });
 
   test('the document id is used to make the call to get the conditions', async () => {
-    const arg = licencesConnector.getLicenceConditionsByDocumentId.getCall(0).args[0];
+    const arg = services.water.licences.getConditionsByDocumentId.getCall(0).args[0];
     expect(arg).to.equal('test-id');
   });
 
@@ -192,7 +192,7 @@ experiment('dereference can resolve licence points', () => {
   let populated;
 
   beforeEach(async () => {
-    sandbox.stub(licencesConnector, 'getLicencePointsByDocumentId').resolves(pointsResponse);
+    sandbox.stub(services.water.licences, 'getPointsByDocumentId').resolves(pointsResponse);
 
     schema = {
       type: 'object',
@@ -210,7 +210,7 @@ experiment('dereference can resolve licence points', () => {
   });
 
   test('the document id is used to make the call to get the points', async () => {
-    const arg = licencesConnector.getLicencePointsByDocumentId.getCall(0).args[0];
+    const arg = services.water.licences.getPointsByDocumentId.getCall(0).args[0];
     expect(arg).to.equal('test-id');
   });
 

@@ -3,9 +3,9 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const communicationsConnector = require('external/lib/connectors/water-service/communications');
+const services = require('external/lib/connectors/services');
 
-const communicationResponses = require('../../responses/water-service/communications/_documentId_');
+const communicationResponses = require('../../../shared/responses/water-service/communications/_documentId_');
 
 const controller = require('external/modules/view-licences/controller');
 const { scope } = require('external/lib/constants');
@@ -49,7 +49,7 @@ experiment('getLicenceCommunication', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(communicationsConnector, 'getCommunication').resolves(communicationResponses.getCommunication());
+    sandbox.stub(services.water.communications, 'getCommunication').resolves(communicationResponses.getCommunication());
 
     h = {
       view: (...args) => args
@@ -84,7 +84,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has a name, it is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = 'named document';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('named document, message review');
@@ -93,7 +93,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has no name, the licence ref is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = null;
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('lic-1, message review');
@@ -123,7 +123,7 @@ experiment('getLicenceCommunication', () => {
     const response = communicationResponses.getCommunication();
     response.data.notification.address.addressLine2 = '    ';
     response.data.notification.address.addressLine4 = '';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 3', 'Add 5', 'AB1 2CD']);
@@ -134,7 +134,7 @@ experiment('getLicenceCommunication', () => {
     response.data.notification.address.addressLine1 = ' Add 1 ';
     response.data.notification.address.addressLine2 = ' Add 2';
     response.data.notification.address.addressLine3 = 'Add 3 ';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 2', 'Add 3', 'Add 4', 'Add 5', 'AB1 2CD']);

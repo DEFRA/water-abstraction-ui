@@ -7,7 +7,7 @@ const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const controller = require('external/modules/company-selector/controller');
 const loginHelpers = require('external/lib/login-helpers');
-const { externalUserWithLicences } = require('../../responses/water-service/user/_userId_/status');
+const { externalUserWithLicences } = require('../../../shared/responses/water-service/user/_userId_/status');
 
 const userId = 'user_1';
 

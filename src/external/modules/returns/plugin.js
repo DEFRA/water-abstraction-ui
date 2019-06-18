@@ -4,7 +4,6 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const sessionHelpers = require('./lib/session-helpers');
 const helpers = require('./lib/helpers');
-const waterConnector = require('../../lib/connectors/water');
 const services = require('../../lib/connectors/services');
 const returnPath = require('./lib/return-path');
 const permissions = require('../../lib/permissions');
@@ -74,7 +73,7 @@ const getReturnData = async (request) => {
   // Load fresh data from water service if flag set in route config
   const isLoadRoute = get(request, 'route.settings.plugins.returns.load', false);
   if (isLoadRoute) {
-    const data = await waterConnector.returns.getReturn(returnId);
+    const data = await services.water.returns.getReturn(returnId);
     const canAccess = await checkAccess(request, data);
     if (!canAccess) {
       throw Boom.unauthorized(`Permission denied to submit/edit return`, data);

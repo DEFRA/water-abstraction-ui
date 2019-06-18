@@ -17,7 +17,7 @@ const {
 
 const { getEditButtonPath } = require('../lib/return-path');
 
-const { returns } = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 
 /**
  * Gets and displays a list of returns for the current user,
@@ -56,7 +56,7 @@ const getReturn = async (request, h) => {
   const { entityId } = request.defra;
 
   // Load return data
-  const data = await returns.getReturn(id, version);
+  const data = await services.water.returns.getReturn(id, version);
   const lines = getLinesWithReadings(data);
 
   // Load CRM data to check access

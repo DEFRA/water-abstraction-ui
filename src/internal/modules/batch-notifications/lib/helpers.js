@@ -1,6 +1,7 @@
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const waterConnector = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 
 /**
  * Loads the notification event from the water service
@@ -37,7 +38,7 @@ const loadMessages = ev => {
   const filter = {
     event_id: ev.event_id
   };
-  return waterConnector.notifications.findAll(filter);
+  return services.water.notifications.findAll(filter);
 };
 
 module.exports = {

@@ -6,7 +6,6 @@ const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const plugin = require('external/modules/returns/plugin');
-const waterConnector = require('external/lib/connectors/water');
 const services = require('external/lib/connectors/services');
 const sessionHelpers = require('external/modules/returns/lib/session-helpers');
 const helpers = require('external/modules/returns/lib/helpers');
@@ -44,7 +43,7 @@ experiment('returns plugin', () => {
   beforeEach(async () => {
     sandbox.stub(sessionHelpers, 'getSessionData').returns({ returnId });
     sandbox.stub(sessionHelpers, 'saveSessionData');
-    sandbox.stub(waterConnector.returns, 'getReturn').resolves({
+    sandbox.stub(services.water.returns, 'getReturn').resolves({
       returnId,
       licenceNumber
     });

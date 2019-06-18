@@ -1,8 +1,6 @@
 const apiClientFactory = require('shared/lib/connectors/api-client-factory');
 const serviceRequest = require('shared/lib/connectors/service-request');
 
-const notifications = require('./water-service/notifications');
-const returns = require('./water-service/returns');
 const { logger } = require('../../logger');
 
 const config = require('../../config');
@@ -77,9 +75,7 @@ exports.lookup = lookup;
 exports.taskConfig = taskConfig;
 exports.sendNotification = sendNotification;
 exports.events = events;
-exports.notifications = notifications;
 exports.getRiverLevel = getRiverLevel;
 exports.gaugingStations = gaugingStations;
-exports.returns = returns;
 exports.picklists = picklists;
 exports.picklistItems = picklistItems;

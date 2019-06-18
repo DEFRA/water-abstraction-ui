@@ -1,4 +1,5 @@
-const { events, taskConfig, notifications } = require('../../lib/connectors/water');
+const { events, taskConfig } = require('../../lib/connectors/water');
+const services = require('../../lib/connectors/services');
 const { notifyToBadge } = require('./badge-status');
 
 /**
@@ -58,7 +59,7 @@ async function getNotification (request, reply) {
   }
 
   // Load scheduled notifications
-  const { error: notificationError, data: messages } = await notifications.findMany({ event_id: event.event_id });
+  const { error: notificationError, data: messages } = await services.water.notifications.findMany({ event_id: event.event_id });
   if (notificationError) {
     return reply(notificationError);
   }

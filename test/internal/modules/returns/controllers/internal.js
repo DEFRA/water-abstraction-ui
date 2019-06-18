@@ -10,7 +10,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const uuid = require('uuid/v4');
 
-const waterConnector = require('internal/lib/connectors/water');
+const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/returns/lib/helpers');
 
 const controller = require('internal/modules/returns/controllers/internal');
@@ -60,9 +60,9 @@ experiment('internal returns controller', () => {
     let h, request;
 
     beforeEach(async () => {
-      sandbox.stub(waterConnector.returns, 'getReturn').resolves({ bar: 'foo' });
+      sandbox.stub(services.water.returns, 'getReturn').resolves({ bar: 'foo' });
       sandbox.stub(helpers, 'getViewData').resolves({ foo: 'bar' });
-      sandbox.stub(waterConnector.returns, 'patchReturn').resolves({ error: null });
+      sandbox.stub(services.water.returns, 'patchReturn').resolves({ error: null });
       h = {
         view: sandbox.stub(),
         redirect: sandbox.stub()
@@ -80,7 +80,7 @@ experiment('internal returns controller', () => {
 
       test('should get the return with the ID specified in the query', async () => {
         await controller.getLogReceipt(request, h);
-        const [ returnId ] = waterConnector.returns.getReturn.lastCall.args;
+        const [ returnId ] = services.water.returns.getReturn.lastCall.args;
         expect(returnId).to.equal(request.query.returnId);
       });
 
@@ -114,7 +114,7 @@ experiment('internal returns controller', () => {
 
       test('should get the return with the ID specified in the query', async () => {
         await controller.postLogReceipt(request, h);
-        const [ returnId ] = waterConnector.returns.getReturn.lastCall.args;
+        const [ returnId ] = services.water.returns.getReturn.lastCall.args;
         expect(returnId).to.equal(request.query.returnId);
       });
 
@@ -134,7 +134,7 @@ experiment('internal returns controller', () => {
 
       test('should patch the return with the correct details when not under query', async () => {
         await controller.postLogReceipt(request, h);
-        const [ data ] = waterConnector.returns.patchReturn.lastCall.args;
+        const [ data ] = services.water.returns.patchReturn.lastCall.args;
 
         expect(data.receivedDate).to.equal('2019-03-27');
         expect(data.isUnderQuery).to.equal(false);
@@ -144,7 +144,7 @@ experiment('internal returns controller', () => {
       test('should patch the return with the correct details when under query', async () => {
         request = createPostLogReceiptRequest(true);
         await controller.postLogReceipt(request, h);
-        const [ data ] = waterConnector.returns.patchReturn.lastCall.args;
+        const [ data ] = services.water.returns.patchReturn.lastCall.args;
         expect(data.receivedDate).to.equal('2019-03-27');
         expect(data.isUnderQuery).to.equal(true);
         expect(data.status).to.equal('received');

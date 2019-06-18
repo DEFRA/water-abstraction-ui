@@ -4,7 +4,7 @@ const { get, flatMap } = require('lodash');
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const water = require('../../lib/connectors/water');
-const waterServiceUserConnector = require('../../lib/connectors/water-service/user');
+const services = require('../../lib/connectors/services');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 const { isReturnId } = require('../returns/lib/helpers');
 const { redirectToReturn } = require('./lib/redirect-to-return');
@@ -61,7 +61,7 @@ const getOutstandingVerificationLicenceCount = companies => {
 
 const getUserStatus = async (request, h) => {
   const { view } = request;
-  const response = await waterServiceUserConnector.getUserStatus(request.params.userId);
+  const response = await services.water.users.getUserStatus(request.params.userId);
 
   const userStatus = response.data;
   userStatus.unverifiedLicenceCount = getOutstandingVerificationLicenceCount(userStatus.companies);
@@ -73,7 +73,5 @@ const getUserStatus = async (request, h) => {
   return h.view('nunjucks/internal-search/user-status.njk', viewContext, { layout: false });
 };
 
-module.exports = {
-  getSearchForm,
-  getUserStatus
-};
+exports.getSearchForm = getSearchForm;
+exports.getUserStatus = getUserStatus;

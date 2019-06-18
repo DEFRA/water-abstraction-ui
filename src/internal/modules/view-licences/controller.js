@@ -6,12 +6,10 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const services = require('../../lib/connectors/services');
 const { getLicences: baseGetLicences } = require('./base');
 const helpers = require('./helpers');
-const licenceConnector = require('../../lib/connectors/water-service/licences');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
 const { isInternal } = require('../../lib/permissions');
-const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -49,7 +47,7 @@ async function getLicenceDetail (request, reply) {
   try {
     const { documentHeader, viewData, gaugingStations } = await helpers.loadLicenceData(request, documentId);
 
-    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
+    const primaryUser = await services.water.licences.getPrimaryUserByDocumentId(documentId);
     documentHeader.verifications = await services.crm.documentVerifications.getUniqueDocumentVerifications(documentId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
@@ -204,7 +202,7 @@ const getAddressParts = notification => {
 
 const getLicenceCommunication = async (request, h) => {
   const { communicationId, documentId } = request.params;
-  const response = await communicationsConnector.getCommunication(communicationId);
+  const response = await services.water.communications.getCommunication(communicationId);
 
   const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
   if (!licence) {
@@ -234,8 +232,8 @@ const getPageTitle = (documentName, licenceNumber) => {
 
 const getExpiredLicence = async (request, h) => {
   const { documentId } = request.params;
-  const { data: licenceData } = await licenceConnector.getLicenceByDocumentId(documentId, true);
-  const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId, true);
+  const { data: licenceData } = await services.water.licences.getByDocumentId(documentId, { includeExpired: true });
+  const primaryUser = await services.water.licences.getPrimaryUserByDocumentId(documentId, { includeExpired: true });
 
   // create the licence data that will be displayed in the view
   const licence = {
@@ -246,7 +244,7 @@ const getExpiredLicence = async (request, h) => {
     expiryReason: licenceData.earliestEndDateReason
   };
 
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId, true);
+  const { data: messages } = await services.water.licences.getCommunicationsByDocumentId(documentId, { includeExpired: true });
 
   const view = {
     ...request.view,

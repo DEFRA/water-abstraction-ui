@@ -5,7 +5,6 @@ const sinon = require('sinon');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const controller = require('internal/modules/internal-search/controller');
-const water = require('internal/lib/connectors/water');
 const services = require('internal/lib/connectors/services');
 const { scope } = require('internal/lib/constants');
 
@@ -28,7 +27,7 @@ experiment('getSearchForm', () => {
   beforeEach(async () => {
     h.view = sinon.stub();
     h.redirect = sinon.stub();
-    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       users: [{ user_id: 123 }]
     });
   });
@@ -68,7 +67,7 @@ experiment('getSearchForm', () => {
   test('It should redirect if user searches for exact return ID', async () => {
     const returnId = 'v1:1:01/123:123456:2017-10-31:2018-10-31';
     apiStub.restore();
-    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       returns: [{
         return_id: returnId
       }]

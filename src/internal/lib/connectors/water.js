@@ -2,7 +2,6 @@ const apiClientFactory = require('shared/lib/connectors/api-client-factory');
 const serviceRequest = require('shared/lib/connectors/service-request');
 
 const { logger } = require('../../logger');
-const { getInternalSearchResults } = require('./water-service/internal-search');
 
 const config = require('../../config');
 const waterUri = config.services.water;
@@ -80,4 +79,3 @@ exports.getRiverLevel = getRiverLevel;
 exports.gaugingStations = gaugingStations;
 exports.picklists = picklists;
 exports.picklistItems = picklistItems;
-exports.getInternalSearchResults = getInternalSearchResults;

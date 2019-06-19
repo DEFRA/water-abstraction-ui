@@ -7,6 +7,8 @@ const UsersService = require('shared/lib/connectors/services/water/UsersService'
 // Internal services (possibly unique, or overriding shared)
 const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
+const ReturnsNotificationsService = require('./ReturnsNotificationsService');
+const InternalSearchService = require('./InternalSearchService');
 
 // API Clients
 const NotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
@@ -24,6 +26,8 @@ module.exports = config => ({
   // Internal services
   returns: new ReturnsService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
+  returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
+  internalSearch: new InternalSearchService(config.services.water, logger),
 
   // API Clients
   notifications: new NotificationsApiClient(config, logger),

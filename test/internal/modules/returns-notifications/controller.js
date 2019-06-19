@@ -11,7 +11,6 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/returns-notifications/controller');
-const notificationsConnector = require('internal/lib/connectors/water-service/returns-notifications');
 const services = require('internal/lib/connectors/services');
 
 const createLicence = (id, overrides = {}) => {
@@ -43,7 +42,7 @@ experiment('postPreviewRecipients', () => {
       }
     };
 
-    sandbox.stub(notificationsConnector, 'previewPaperForms').resolves({
+    sandbox.stub(services.water.returnsNotifications, 'previewPaperForms').resolves({
       error: null,
       data: [
         createLicence(1),
@@ -68,7 +67,7 @@ experiment('postPreviewRecipients', () => {
 
   experiment('when there is an error previewing the forms', () => {
     test('a boom error is thrown', async () => {
-      notificationsConnector.previewPaperForms.resolves({
+      services.water.returnsNotifications.previewPaperForms.resolves({
         error: {
           name: 'test-error',
           message: 'test-error-message'
@@ -119,7 +118,7 @@ experiment('postPreviewRecipients', () => {
     test('licence objects with future end dates do not have endedReasons', async () => {
       const futureDate = moment().add(1, 'year').format('YYYYMMDD');
 
-      notificationsConnector.previewPaperForms.resolves({
+      services.water.returnsNotifications.previewPaperForms.resolves({
         error: null,
         data: [
           createLicence(1, { dateRevoked: futureDate }),

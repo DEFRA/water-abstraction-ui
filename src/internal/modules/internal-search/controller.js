@@ -3,7 +3,6 @@
 const { get, flatMap } = require('lodash');
 const { searchForm, searchFormSchema } = require('./forms/search-form');
 const { handleRequest, getValues } = require('shared/lib/forms');
-const water = require('../../lib/connectors/water');
 const services = require('../../lib/connectors/services');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 const { isReturnId } = require('../returns/lib/helpers');
@@ -29,7 +28,7 @@ const getSearchForm = async (request, h) => {
     if (form.isValid) {
       const { page } = request.query;
 
-      const response = await water.getInternalSearchResults(query, page);
+      const response = await services.water.internalSearch.getInternalSearchResults(query, page);
 
       Object.assign(view, mapResponseToView(response, request), { query });
 

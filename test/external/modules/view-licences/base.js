@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const IDM = require('../../../../src/external/lib/connectors/idm');
 const CRM = require('../../../../src/external/lib/connectors/crm');
 const baseController = require('../../../../src/external/modules/view-licences/base');
+const sandbox = sinon.createSandbox();
 
 experiment('view-licences/base', () => {
   const viewName = 'water/view-licences/licences';
@@ -53,12 +54,18 @@ experiment('view-licences/base', () => {
       request = {
         auth: {
           credentials: {
-            entity_id: '123'
+            userId: 'user_1'
           }
+        },
+        defra: {
+          entityId: '123'
         },
         view: {},
         query: {
           emailAddress: 'test@example.com'
+        },
+        yar: {
+          get: sandbox.stub().returns('company_1')
         }
       };
 
@@ -69,7 +76,7 @@ experiment('view-licences/base', () => {
         pagination: {}
       });
 
-      baseController.getLicences(request, h);
+      await baseController.getLicences(request, h);
     });
 
     it('an attempt is made to get the user by email', async () => {
@@ -88,11 +95,17 @@ experiment('view-licences/base', () => {
       request = {
         auth: {
           credentials: {
-            entity_id: '123'
+            userId: 'user_1'
           }
         },
+        defra: {
+          entityId: '123'
+        },
         view: {},
-        query: { page: 1 }
+        query: { page: 1 },
+        yar: {
+          get: sandbox.stub().returns('company_1')
+        }
       };
 
       CRM.documents.findMany.resolves({

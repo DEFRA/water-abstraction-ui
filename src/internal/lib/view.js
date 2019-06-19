@@ -14,10 +14,10 @@ const getSurveyType = (isAuthenticated, isDefraAdmin) => {
 
 /**
  * Get GA tracking details given user credentials
- * @param {Object} credentials
+ * @param {Object} defra
  * @return {Object} tracking
  */
-const getTracking = (credentials) => {
+const getTracking = (defra) => {
   const base = {
     userType: 'not_logged_in',
     propertyId: config.googleAnalytics.propertyId,
@@ -25,11 +25,11 @@ const getTracking = (credentials) => {
     isLoggedIn: false
   };
 
-  if (credentials) {
-    const { lastLogin, scope = [] } = credentials;
+  if (defra) {
+    const { lastLogin } = defra;
 
     return Object.assign(base, {
-      userType: scope.includes('internal') ? 'internal' : 'external',
+      userType: 'internal',
       isLoggedIn: true,
       newUser: lastLogin === null,
       lastLogin
@@ -45,7 +45,6 @@ const getTracking = (credentials) => {
  * @param  {Object}  request - current request
  * @return {Boolean}         true if user can access > 1 company
  */
-const hasMultipleCompanies = request => get(request, 'defra.companyCount', 0) > 1;
 
 function viewContextDefaults (request) {
   const viewContext = request.view || {};
@@ -65,9 +64,7 @@ function viewContextDefaults (request) {
   viewContext.afterHeader = null;
   viewContext.path = request.path;
 
-  if (request.sessionStore) {
-    viewContext.csrfToken = request.sessionStore.get('csrf_token');
-  }
+  viewContext.csrfToken = request.yar.get('csrfToken');
 
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
@@ -82,7 +79,7 @@ function viewContextDefaults (request) {
 
   viewContext.user = request.auth.credentials;
 
-  viewContext.tracking = getTracking(request.auth.credentials);
+  viewContext.tracking = getTracking(request.defra);
 
   viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
@@ -90,9 +87,6 @@ function viewContextDefaults (request) {
     viewContext.isAuthenticated,
     isInternal(request)
   );
-
-  viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
-  viewContext.companyName = get(request, 'auth.credentials.companyName');
 
   return viewContext;
 }

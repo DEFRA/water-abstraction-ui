@@ -16,11 +16,14 @@ const createRequest = () => {
     params: {
       eventId
     },
+    defra: {
+      entityId,
+      userName,
+      companyId
+    },
     auth: {
       credentials: {
-        entity_id: entityId,
-        username: userName,
-        companyId
+        userId: 'user_1'
       }
     }
   };

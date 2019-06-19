@@ -20,13 +20,14 @@ const createRequest = (error = {}) => {
       path: '/some/path'
     },
     response: error,
-    sessionStore: {
+    yar: {
       get: sandbox.stub(),
-      destroy: sandbox.stub()
+      reset: sandbox.stub()
     },
     cookieAuth: {
       clear: sandbox.stub()
-    }
+    },
+    logOut: sandbox.stub()
   };
 };
 
@@ -87,31 +88,28 @@ experiment('errors plugin', () => {
       expect(result).to.equal(h.continue);
     });
 
-    test('logs and redirects to welcome for 401 unauthorized', async () => {
+    test('logs and redirects to signin for 401 unauthorized', async () => {
       const request = createRequest(Boom.unauthorized());
       await plugin._handler(request, h);
       expect(logger.info.callCount).to.equal(1);
       const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/welcome');
+      expect(path).to.equal('/signin');
     });
 
-    test('logs redirects to welcome for 403 forbidden', async () => {
+    test('logs redirects to signin for 403 forbidden', async () => {
       const request = createRequest(Boom.forbidden());
       await plugin._handler(request, h);
       expect(logger.info.callCount).to.equal(1);
       const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/welcome');
+      expect(path).to.equal('/signin');
     });
 
-    test('redirects to /signout for CSRF error and destroys cookie/session', async () => {
+    test('calls request.logOut() for CSRF error', async () => {
       const request = createRequest(Boom.forbidden());
       set(request, 'response.data.isCsrfError', true);
       await plugin._handler(request, h);
+      expect(request.logOut.callCount).to.equal(1);
       expect(logger.info.callCount).to.equal(1);
-      const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/signout');
-      expect(request.sessionStore.destroy.callCount).to.equal(1);
-      expect(request.cookieAuth.clear.callCount).to.equal(1);
     });
 
     test('logs error and renders error page for other error types', async () => {

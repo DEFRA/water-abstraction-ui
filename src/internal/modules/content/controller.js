@@ -1,7 +1,5 @@
 const staticPage = async (request, h) => {
-  return h.view(request.config.view, request.view);
+  return h.view(request.config.view, request.view, { layout: false });
 };
 
-module.exports = {
-  staticPage
-};
+exports.staticPage = staticPage;

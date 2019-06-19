@@ -264,7 +264,6 @@ const mapReturns = (returns, request) => {
  * This can be either all returns for a particular CRM entity,
  * or additionally can be filtered e.g. by document ID
  * @param {Object} request
- * @param {String} request.auth.credentials.entity_id - CRM entity ID of the current user
  * @param {Number} request.query.page - page number, for paginated results
  * @param {String} request.params.documentId - a single document ID to retrieve (otherwise gets all)
  * @return {Promise} resolves with list view data
@@ -301,14 +300,6 @@ const getReturnsViewData = async (request) => {
 
   return view;
 };
-
-/**
- * Redirects to admin path if internal user
- * @param {Object} request - HAPI request instance
- * @param {String} path - the path to redirect to without '/admin'
- * @return {String} path with /admin if internal user
- */
-const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path}` : path;
 
 /**
  * Get common view data used by many controllers
@@ -403,7 +394,6 @@ exports.getLatestVersion = getLatestVersion;
 exports.hasGallons = hasGallons;
 exports.getReturnsViewData = getReturnsViewData;
 exports.getReturnTotal = getReturnTotal;
-exports.getScopedPath = getScopedPath;
 exports.getViewData = getViewData;
 exports.isReturnPastDueDate = isReturnPastDueDate;
 exports.getRedirectPath = getRedirectPath;

@@ -1,6 +1,5 @@
-const { VALID_UTM } = require('../../lib/validators');
+const { VALID_UTM } = require('shared/lib/validators');
 const controller = require('./controller');
-const loginHelpers = require('../../lib/login-helpers');
 
 module.exports = {
 
@@ -15,63 +14,6 @@ module.exports = {
     }
   },
 
-  staticAssets: {
-    method: 'GET',
-    path: '/public/{param*}',
-    config: {
-      auth: false,
-      cache: {
-        expiresIn: 30 * 1000
-      }
-    },
-    handler: {
-      directory: {
-        path: 'public/',
-        listing: false
-      }
-    }
-  },
-
-  govUkFrontendAssets: {
-    method: 'GET',
-    path: '/assets/{param*}',
-    config: {
-      description: 'Serve static assets for GOV.UK frontend',
-      auth: false,
-      cache: {
-        expiresIn: 30 * 1000
-      }
-    },
-    handler: {
-      directory: {
-        path: 'node_modules/govuk-frontend/assets/',
-        listing: false
-      }
-    }
-  },
-
-  govUkFrontendJS: {
-    method: 'GET',
-    path: '/assets/js/all.js',
-    config: {
-      description: 'Serve static assets for GOV.UK frontend',
-      auth: false,
-      cache: {
-        expiresIn: 30 * 1000
-      }
-    },
-    handler: {
-      file: 'node_modules/govuk-frontend/all.js'
-    }
-  },
-
-  robots: {
-    method: 'GET',
-    path: '/robots.txt',
-    handler: () => 'User-agent: * Disallow: /',
-    config: { auth: false, description: 'Ooh. Robots' }
-  },
-
   404: {
     method: 'GET',
     path: '/{all*}',
@@ -84,20 +26,14 @@ module.exports = {
     }
   },
 
-  getWelcome: {
+  status: {
     method: 'GET',
-    path: '/welcome',
-    handler: controller.getWelcome,
+    path: '/status',
+    handler: () => 'OK',
     config: {
       auth: {
         strategy: 'standard',
         mode: 'try'
-      },
-      pre: [{ method: loginHelpers.preRedirectIfAuthenticated }],
-      plugins: {
-        viewContext: {
-          pageTitle: 'Sign in or create an account'
-        }
       }
     }
   },

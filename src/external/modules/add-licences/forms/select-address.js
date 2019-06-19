@@ -25,7 +25,7 @@ const getLines = licences => {
  */
 const selectAddressForm = (request, licences) => {
   const { csrfToken } = request.view;
-  const { selectedAddressId } = request.sessionStore.data.addLicenceFlow;
+  const { selectedAddressId } = request.yar.get('addLicenceFlow');
 
   const action = '/select-address';
 

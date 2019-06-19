@@ -1,3 +1,4 @@
+require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
@@ -48,19 +49,20 @@ module.exports = {
     isSecure: !isLocal,
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-    redirectTo: '/welcome',
+    redirectTo: '/signin',
     isHttpOnly: true
   },
 
   idm: {
-    application: 'water_vml'
+    application: 'water_admin'
   },
 
   isLocal,
 
   jwt: {
     key: process.env.JWT_SECRET,
-    verifyOptions: { algorithms: [ 'HS256' ] }
+    verifyOptions: { algorithms: [ 'HS256' ] },
+    token: process.env.JWT_TOKEN
   },
 
   logger: {
@@ -94,5 +96,18 @@ module.exports = {
     returns: process.env.RETURNS_URI || 'http://127.0.0.1:8006/returns/1.0'
   },
 
-  testMode
+  testMode,
+
+  yar: {
+    maxCookieSize: 0,
+    cookieOptions: {
+      password: process.env.COOKIE_SECRET,
+      isSecure: !isLocal,
+      isSameSite: 'Lax',
+      ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
+      isHttpOnly: true
+    },
+    storeBlank: false
+
+  }
 };

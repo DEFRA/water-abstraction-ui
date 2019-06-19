@@ -13,7 +13,7 @@ const { scope } = require('../../../src/external/lib/constants');
 const getBaseRequest = () => ({
   state: {},
   connection: {},
-  sessionStore: {
+  yar: {
     get: (key) => key
   },
   url: {},
@@ -24,15 +24,15 @@ const getBaseRequest = () => ({
 });
 
 experiment('lib/view.contextDefaults', () => {
-  test('isAuthenticated is false when no sid in state', async () => {
+  test('isAuthenticated is false when no userId in credentials', async () => {
     const request = getBaseRequest();
     const viewContext = view.contextDefaults(request);
     expect(viewContext.isAuthenticated).to.be.false();
   });
 
-  test('isAuthenticated is true when the sid is in state', async () => {
+  test('isAuthenticated is true when the userId is in credentials', async () => {
     const request = getBaseRequest();
-    request.state.sid = { sid: 'test-sid' };
+    set(request, 'auth.credentials.userId', 'user_123');
     const viewContext = view.contextDefaults(request);
     expect(viewContext.isAuthenticated).to.be.true();
   });
@@ -45,7 +45,7 @@ experiment('lib/view.contextDefaults', () => {
 
   test('surveyType is external for a logged in vml user', async () => {
     const request = getBaseRequest();
-    request.state.sid = { sid: 'test-sid' };
+    set(request, 'auth.credentials.userId', 'user_123');
     set(request, 'auth.credentials.scope', [scope.external]);
 
     const viewContext = view.contextDefaults(request);
@@ -54,7 +54,7 @@ experiment('lib/view.contextDefaults', () => {
 
   test('surveyType is internal for a logged in admin user', async () => {
     const request = getBaseRequest();
-    request.state.sid = { sid: 'test-sid' };
+    set(request, 'auth.credentials.userId', 'user_123');
     set(request, 'auth.credentials.scope', [scope.internal]);
 
     const viewContext = view.contextDefaults(request);
@@ -63,13 +63,11 @@ experiment('lib/view.contextDefaults', () => {
 });
 
 experiment('lib/view.getTracking', () => {
-  const internal = {
-    scope: ['internal'],
+  const existingUser = {
     lastLogin: '2018-10-24'
   };
 
-  const external = {
-    scope: [],
+  const newUser = {
     lastLogin: null
   };
 
@@ -81,9 +79,9 @@ experiment('lib/view.getTracking', () => {
     expect(tracking.isLoggedIn).to.be.false();
   });
 
-  test('Existing internal user', async () => {
-    const tracking = view.getTracking(internal);
-    expect(tracking.userType).to.equal('internal');
+  test('Existing user', async () => {
+    const tracking = view.getTracking(existingUser);
+    expect(tracking.userType).to.equal('external');
     expect(tracking.lastLogin).to.equal('2018-10-24');
     expect(tracking.newUser).to.equal(false);
     expect(tracking.debug).to.exist();
@@ -91,8 +89,8 @@ experiment('lib/view.getTracking', () => {
     expect(tracking.isLoggedIn).to.be.true();
   });
 
-  test('New external user', async () => {
-    const tracking = view.getTracking(external);
+  test('New user', async () => {
+    const tracking = view.getTracking(newUser);
     expect(tracking.userType).to.equal('external');
     expect(tracking.lastLogin).to.equal(null);
     expect(tracking.newUser).to.equal(true);

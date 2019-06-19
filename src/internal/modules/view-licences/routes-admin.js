@@ -3,7 +3,7 @@ const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
 const { preLoadDocument, preInternalView } = require('./pre-handlers');
 const controller = require('./controller');
-const { VALID_GUID } = require('../../lib/validators');
+const { VALID_GUID } = require('shared/lib/validators');
 
 const getLicenceAdmin = {
   ...externalRoutes.getLicence,

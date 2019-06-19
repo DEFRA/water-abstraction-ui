@@ -60,7 +60,7 @@ const getLicenceAccessListViewModel = async userEntityID => {
  */
 
 async function getAccessList (request, h, context = {}) {
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
   const viewContext = Object.assign(request.view, context);
   viewContext.entity_id = entityId;
   viewContext.licenceAccess = await getLicenceAccessListViewModel(entityId);
@@ -92,7 +92,7 @@ function getAddAccess (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 async function postAddAccess (request, reply, context = {}) {
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
   const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Manage access to your licences';
@@ -122,7 +122,7 @@ async function postAddAccess (request, reply, context = {}) {
     }
 
     // Notification details
-    const { username: sender } = request.auth.credentials;
+    const { userName: sender } = request.defra;
     const { email, returns: allowReturns } = value;
 
     const { error: createUserError } = await IDM.createUserWithoutPassword(email);
@@ -177,14 +177,14 @@ async function postAddAccess (request, reply, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 async function getRemoveAccess (request, reply, context = {}) {
-  const { entity_id: entityID } = request.auth.credentials;
+  const { entityId } = request.defra;
   const { colleagueEntityID } = request.params;
 
   try {
     const { data: colleagueEntity, error } = await CRM.entities.findOne(colleagueEntityID);
 
     if (!colleagueEntity) {
-      throw Boom.notFound(`Colleague ${colleagueEntityID} not found for ${entityID}`);
+      throw Boom.notFound(`Colleague ${colleagueEntityID} not found for ${entityId}`);
     }
     if (error) {
       throw Boom.badImplementation(`CRM error finding entity ${colleagueEntityID}`, error);
@@ -192,7 +192,7 @@ async function getRemoveAccess (request, reply, context = {}) {
 
     const viewContext = Object.assign(request.view, context);
     viewContext.activeNavLink = 'manage';
-    viewContext.entityID = entityID;
+    viewContext.entityID = entityId;
     viewContext.colleagueName = colleagueEntity.entity_nm;
     viewContext.colleagueEntityID = colleagueEntityID;
     viewContext.pageTitle = 'You are about to remove access';
@@ -234,7 +234,7 @@ const removeColleague = async (regimeId, companyId, entityId, colleagueId) => {
  * @param {String} request.payload.colleagueEntityID - the entity ID of the colleague to remove
  */
 async function postRemoveAccess (request, h) {
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
   const { colleagueEntityID } = request.payload;
 
   // Need to find all roles that the colleage has for the company
@@ -263,7 +263,7 @@ async function postRemoveAccess (request, h) {
  * @param {Object} reply - the HAPI HTTP response
  */
 async function getAddLicences (request, reply, context = {}) {
-  const { entity_id: entityId } = request.auth.credentials;
+  const { entityId } = request.defra;
   const viewContext = Object.assign(request.view, context);
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Manage your licences';
@@ -283,12 +283,12 @@ async function getAddLicences (request, reply, context = {}) {
 }
 
 async function getChangeAccess (request, h) {
-  const { entity_id: entityID } = request.auth.credentials;
+  const { entityId } = request.defra;
   const viewContext = request.view;
   viewContext.activeNavLink = 'manage';
   viewContext.pageTitle = 'Change access to your licences';
 
-  const allAccessEntities = await getLicenceAccessListViewModel(entityID);
+  const allAccessEntities = await getLicenceAccessListViewModel(entityId);
   const colleagueEntityRole = allAccessEntities.find(entity => entity.colleagueEntityID === request.params.colleagueEntityID);
   viewContext.colleagueEntityRole = colleagueEntityRole;
 
@@ -296,15 +296,15 @@ async function getChangeAccess (request, h) {
 };
 
 async function postChangeAccess (request, h) {
-  const { entity_id: entityID } = request.auth.credentials;
+  const { entityId } = request.defra;
   const { returns, colleagueEntityID, returnsEntityRoleID } = request.payload;
 
   if (returns && !returnsEntityRoleID) {
-    await CRM.entityRoles.addColleagueRole(entityID, colleagueEntityID, 'user_returns');
+    await CRM.entityRoles.addColleagueRole(entityId, colleagueEntityID, 'user_returns');
   }
 
   if (!returns && returnsEntityRoleID) {
-    await CRM.entityRoles.deleteColleagueRole(entityID, returnsEntityRoleID);
+    await CRM.entityRoles.deleteColleagueRole(entityId, returnsEntityRoleID);
   }
 
   return h.redirect('/manage_licences/access');

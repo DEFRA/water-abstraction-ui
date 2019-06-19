@@ -11,7 +11,7 @@ const { sendFinalRemindersForm } = require('./forms/send-final-reminders');
 const { sendRemindersForm, sendRemindersSchema } = require('./forms/send-reminders');
 
 const notificationsConnector = require('../../lib/connectors/water-service/returns-notifications');
-const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
+const services = require('../../lib/connectors/services');
 
 const { getFinalReminderConfig } = require('./lib/helpers');
 
@@ -200,8 +200,8 @@ const getReturnsNotificationsStart = async (request, h) => {
 const getBatchNotificationsConnector = path => {
   const messageType = last(path.split('/'));
   const connectors = {
-    reminders: batchNotificationsConnector.prepareReturnsReminders,
-    invitations: batchNotificationsConnector.prepareReturnsInvitations
+    reminders: services.water.batchNotifications.prepareReturnsReminders,
+    invitations: services.water.batchNotifications.prepareReturnsInvitations
   };
   return connectors[messageType];
 };

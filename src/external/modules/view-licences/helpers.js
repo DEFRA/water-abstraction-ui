@@ -274,10 +274,10 @@ function errorMapper (error) {
  * Create isHof flag in condition object
  * @param {Object} licenceData licenceData to be updated
  */
-const setConditionHofFlags = (licenceData) => {
-  const updated = cloneDeep(licenceData);
+const setConditionHofFlags = (viewContext) => {
+  const updated = cloneDeep(viewContext);
 
-  const conditions = updated.viewData.conditions;
+  const conditions = updated.summary.conditions;
 
   const updatedConditions = conditions.map(condition => {
     return {
@@ -285,7 +285,7 @@ const setConditionHofFlags = (licenceData) => {
       isHof: (condition.code === 'CES' && (condition.subCode === 'FLOW' || condition.subCode === 'LEV'))
     };
   });
-  set(updated.viewData, 'conditions', updatedConditions);
+  set(updated.summary, 'conditions', updatedConditions);
 
   return updated;
 };

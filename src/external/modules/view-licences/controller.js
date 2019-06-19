@@ -124,44 +124,58 @@ async function postLicenceRename (request, h) {
 }
 
 /**
+ * Throws a 404 error if the gauging station requested is not attached to the
+ * licence referred to in the document ID param
+ * @param  {Object} request - HAPI request
+ */
+const validateGaugingStation = request => {
+  const { gaugingStation } = request.params;
+  const station = request.licence.summary.gaugingStations.find(station => (
+    station.stationReference === gaugingStation
+  ));
+  if (!station) {
+    throw Boom.notFound(`Gauging station ${gaugingStation} not found`);
+  }
+};
+
+const isLevelCondition = condition =>
+  (condition.code === 'CES' && condition.subCode === 'LEV');
+
+const isFlowCondition = condition =>
+  (condition.code === 'CES' && condition.subCode === 'FLOW');
+
+const getHoFTypes = (conditions = []) => ({
+  cesFlow: conditions.filter(isFlowCondition).length > 0,
+  cesLev: conditions.filter(isLevelCondition).length > 0
+});
+
+/**
  * Displays a gauging station flow/level data, along with HoF conditions
  * for the selected licence
  */
-async function getLicenceGaugingStation (request, reply) {
-  const { documentId } = request.params;
-  const { measure: mode } = request.query;
-  const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
+const getLicenceGaugingStation = async (request, h) => {
+  // Validate that gauging station is associated with this licence
+  validateGaugingStation(request);
 
-  // Load licence data
-  const licenceData = await helpers.loadLicenceData(request, documentHeaderId);
+  // Get gauging station data
+  const { gaugingStation } = request.params;
+  const hofTypes = getHoFTypes(request.licence.summary.conditions);
+  const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes);
+  const { licenceNumber, documentName } = request.licence.summary;
+  const { pageTitle } = helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName);
+  const viewContext = helpers.setConditionHofFlags(getCommonViewContext(request));
 
-  // Validate - check that the requested station reference is in licence metadata
-  if (!helpers.validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
-    throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
-  }
-
-  // Load river level data
-  const { hofTypes } = licenceData.viewData;
-  const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes, mode);
-
-  const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
-
-  const { pageTitle } = helpers.getLicencePageTitle(request.config.view, licenceNumber, customName);
-
-  const updatedLicenceData = await helpers.setConditionHofFlags(licenceData);
-
-  const viewContext = {
-    ...request.view,
-    ...updatedLicenceData,
+  const view = {
+    ...viewContext,
+    ...getCommonBackLink(request),
+    pageTitle,
     riverLevel,
     measure,
-    ...helpers.riverLevelFlags(riverLevel, measure, hofTypes),
-    stationReference: gaugingStation,
-    back: isInternal(request) ? `/admin/licences/${documentId}` : `/licences/${documentId}`,
-    pageTitle
+    gaugingStation,
+    hasGaugingStationMeasurement: riverLevel && riverLevel.active && measure
   };
 
-  return reply.view('nunjucks/view-licences/gauging-station.njk', viewContext, { layout: false });
+  return h.view('nunjucks/view-licences/gauging-station.njk', view, { layout: false });
 };
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;

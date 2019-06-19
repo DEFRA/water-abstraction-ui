@@ -4,7 +4,7 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const { flowConverter } = require('../../../../../src/external/lib/view-engine/filters/flow-converter');
+const { flowConverter } = require('shared/view/nunjucks/filters/flow-converter');
 
 lab.experiment('Invalid parameter', () => {
   lab.test('Throws error if invalid unit is given', async () => {

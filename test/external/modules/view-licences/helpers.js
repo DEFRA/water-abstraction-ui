@@ -22,19 +22,20 @@ const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
 };
 
 const getLicenceData = (code1, subCode1, code2, subCode2) => {
-  return { viewData: {
-    conditions: [{
-      code: code1,
-      subCode: subCode1,
-      otherData: 'should remain',
-      test: 1234
-    }, {
-      code: code2,
-      subCode: subCode2,
-      otherData: 'should also remain',
-      test: 9876
-    }]
-  } };
+  return { pageTitle: 'test',
+    summary: {
+      conditions: [{
+        code: code1,
+        subCode: subCode1,
+        otherData: 'should remain',
+        test: 1234
+      }, {
+        code: code2,
+        subCode: subCode2,
+        otherData: 'should also remain',
+        test: 9876
+      }]
+    } };
 };
 
 experiment('selectRiverLevelMeasure', () => {
@@ -239,42 +240,42 @@ experiment('getLicencePageTitle', () => {
 experiment('setConditionHofFlags', () => {
   test('creates isHof flag for each condition', async () => {
     const result = setConditionHofFlags(getLicenceData('CES', 'LEV', 'CES', 'FLOW'));
-    expect(result.viewData.conditions[0]).to.include('isHof');
-    expect(result.viewData.conditions[1]).to.include('isHof');
+    expect(result.summary.conditions[0]).to.include('isHof');
+    expect(result.summary.conditions[1]).to.include('isHof');
   });
 
   test('retains existing condition data', async () => {
     const existingConditionData = ['code', 'subCode', 'otherData', 'test'];
     const result = setConditionHofFlags(getLicenceData('CES', 'LEV', 'CES', 'FLOW'));
-    expect(result.viewData.conditions[0]).to.include(existingConditionData);
-    expect(result.viewData.conditions[1]).to.include(existingConditionData);
+    expect(result.summary.conditions[0]).to.include(existingConditionData);
+    expect(result.summary.conditions[1]).to.include(existingConditionData);
   });
 
   experiment('isHof value', () => {
     test('flags are set independently from each other', async () => {
       const result = setConditionHofFlags(getLicenceData('OTHER', 'LEV', 'CES', 'FLOW'));
-      expect(result.viewData.conditions[0].isHof).to.be.false();
-      expect(result.viewData.conditions[1].isHof).to.be.true();
+      expect(result.summary.conditions[0].isHof).to.be.false();
+      expect(result.summary.conditions[1].isHof).to.be.true();
     });
 
     test('is set to false when code !== "CES"', async () => {
       const result = setConditionHofFlags(getLicenceData('OTHER', 'LEV'));
-      expect(result.viewData.conditions[0].isHof).to.be.false();
+      expect(result.summary.conditions[0].isHof).to.be.false();
     });
 
     test('is set to false when subCode !== "FLOW" or "LEV"', async () => {
       const result = setConditionHofFlags(getLicenceData('CES', 'OTHER'));
-      expect(result.viewData.conditions[0].isHof).to.be.false();
+      expect(result.summary.conditions[0].isHof).to.be.false();
     });
 
     test('is set to true when code !== "CES" subCode !== "FLOW"', async () => {
       const result = setConditionHofFlags(getLicenceData('CES', 'FLOW'));
-      expect(result.viewData.conditions[0].isHof).to.be.true();
+      expect(result.summary.conditions[0].isHof).to.be.true();
     });
 
     test('is set to true when code !== "CES" subCode !== "LEV"', async () => {
       const result = setConditionHofFlags(getLicenceData('CES', 'LEV'));
-      expect(result.viewData.conditions[0].isHof).to.be.true();
+      expect(result.summary.conditions[0].isHof).to.be.true();
     });
   });
 });

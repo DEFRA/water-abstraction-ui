@@ -45,7 +45,7 @@
           <p>Please check the paper copy of your licence for this information.</p>
         {% else %}
           <div class="govuk-inset-text">
-            {% for condition in viewData.conditions %}
+            {% for condition in summary.conditions %}
               {% if condition.isHof %}
                 {{ licenceCondition(condition)}}
               {% endif %}

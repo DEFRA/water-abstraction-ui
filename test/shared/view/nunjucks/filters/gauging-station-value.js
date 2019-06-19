@@ -4,7 +4,7 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const { gaugingStationValue } = require('../../../../../src/external/lib/view-engine/filters/gauging-station-value');
+const { gaugingStationValue } = require('shared/view/nunjucks/filters/gauging-station-value');
 
 lab.experiment('unitName === "m3/s"', () => {
   lab.test('Returns the correct value if convertTo === "m3/day"', async () => {

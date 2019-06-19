@@ -223,7 +223,7 @@ const getLicenceConditions = {
 
 const getLicenceGaugingStation = {
   method: 'GET',
-  path: '/licences/{documentId}/station/{gauging_station}',
+  path: '/licences/{documentId}/station/{gaugingStation}',
   handler: controller.getLicenceGaugingStation,
   config: {
     auth: {
@@ -233,7 +233,7 @@ const getLicenceGaugingStation = {
     validate: {
       params: {
         documentId: VALID_GUID,
-        gauging_station: VALID_GAUGING_STATION
+        gaugingStation: VALID_GAUGING_STATION
       },
       query: {
         measure: Joi.string().allow('level', 'flow', 'auto').default('auto')
@@ -245,6 +245,11 @@ const getLicenceGaugingStation = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }

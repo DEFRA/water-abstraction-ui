@@ -29,6 +29,17 @@ const choices = [
   }
 ];
 
+const agentChoices = [
+  {
+    value: STATUS_IN_REVIEW,
+    label: 'Review'
+  },
+  {
+    value: STATUS_NALD_UPDATE,
+    label: 'NALD update'
+  }
+];
+
 /**
  * Get form object to set AR document status (and optionally leave notes)
  * @param {Object} request - HAPI request instance
@@ -57,10 +68,18 @@ const setStatusForm = (request) => {
       }
     }));
   } else {
-    f.fields.push(fields.hidden('status', { }, STATUS_IN_REVIEW));
+    f.fields.push(fields.radio('status', {
+      label: 'Submit for',
+      choices: agentChoices,
+      errors: {
+        'any.required': {
+          message: 'Select a status'
+        }
+      }
+    }));
   }
 
-  const buttonText = isApprover ? 'Save decision' : 'Submit for approval';
+  const buttonText = isApprover ? 'Save decision' : 'Submit';
 
   f.fields.push(fields.button(null, { label: buttonText }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
@@ -78,7 +97,7 @@ const setStatusSchema = (request) => {
   const validStatus = isApprover ? [STATUS_IN_PROGRESS,
     STATUS_APPROVED,
     STATUS_NALD_UPDATE,
-    STATUS_LICENCE_REVIEW] : STATUS_IN_REVIEW;
+    STATUS_LICENCE_REVIEW] : [STATUS_IN_REVIEW, STATUS_NALD_UPDATE];
   return {
     csrf_token: Joi.string().guid().required(),
     notes: Joi.string().allow(''),

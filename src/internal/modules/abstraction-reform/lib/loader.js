@@ -55,7 +55,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
  */
 const loadLicence = async (documentId) => {
   // Load abstraction licence
-  const { error, data: { system_internal_id: licenceId } } = await services.crm.findOne(documentId);
+  const { error, data: { system_internal_id: licenceId } } = await services.crm.documents.findOne(documentId);
 
   if (error) {
     throw Boom.badImplementation('CRM error', error);

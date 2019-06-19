@@ -65,7 +65,7 @@ experiment('postAddressSelect', () => {
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true, fields: [{ name: 'selectedAddressId', errors: [] }] });
 
     sandbox.stub(crmConnector, 'getOrCreateCompanyEntity').resolves('test-company-entity-id');
-    sandbox.stub(crmConnector, 'createVerification').resolves({
+    sandbox.stub(services.crm.verifications, 'createVerification').resolves({
       verification_code: 'test-verification-code'
     });
 
@@ -155,7 +155,7 @@ experiment('postFAO', () => {
     });
 
     sandbox.stub(crmConnector, 'getOrCreateCompanyEntity').resolves('test-company-entity-id');
-    sandbox.stub(crmConnector, 'createVerification').resolves({
+    sandbox.stub(services.crm.verifications, 'createVerification').resolves({
       verification_code: 'test-verification-code'
     });
 
@@ -191,7 +191,7 @@ experiment('postFAO', () => {
 
   test('uses the company id to create the verification', async () => {
     await controller.postFAO(request, h);
-    const [entityId, companyEntityId, selectedIds] = crmConnector.createVerification.lastCall.args;
+    const [entityId, companyEntityId, selectedIds] = services.crm.verifications.createVerification.lastCall.args;
 
     expect(entityId).to.equal('test-entity-id');
     expect(companyEntityId).to.equal('test-company-entity-id');

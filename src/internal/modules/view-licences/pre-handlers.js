@@ -1,7 +1,6 @@
 const { set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const crmConnector = require('../../lib/connectors/crm');
 const services = require('../../lib/connectors/services');
 const licenceConnector = require('../../lib/connectors/water-service/licences');
 const permissions = require('../../lib/permissions');
@@ -56,7 +55,7 @@ const preLoadDocument = async (request, h) => {
 const preInternalView = async (request, h) => {
   const { documentId } = request.params;
   const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-  const verifications = await crmConnector.getDocumentVerifications(documentId);
+  const verifications = await services.crm.documentVerifications.getUniqueDocumentVerifications(documentId);
   set(request, 'view.primaryUser', primaryUser);
   set(request, 'view.verifications', verifications);
   return h.continue;

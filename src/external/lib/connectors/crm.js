@@ -3,7 +3,6 @@
  * @module lib/connectors/crm
  */
 const moment = require('moment');
-const find = require('lodash/find');
 
 const services = require('./services');
 
@@ -13,6 +12,7 @@ const services = require('./services');
  * @param {String} entity_id - the individual entity ID
  * @return {Promise} resolves with array of licence document_header data
  */
+// TODO: Move this to the water service because it crosses services
 async function getOutstandingLicenceRequests (entityId) {
   // Get outstanding verifications for current user
   const res = await services.crm.verifications.findMany({
@@ -38,65 +38,15 @@ async function getOutstandingLicenceRequests (entityId) {
 }
 
 /**
- * Creates a new verification for the supplied combination of
- * individual, company, and a list of document header IDs
- * @param {String} entityId - the individual entity ID
- * @param {String} companyEntityId - the company entity ID
- * @param {Array} documentIds - a list of document IDs to create the verification for
- * @return {Promise} resolves with {verification_id, verification_code}
- */
-async function createVerification (entityId, companyEntityId, documentIds) {
-  const verificationData = {
-    entity_id: entityId,
-    company_entity_id: companyEntityId,
-    method: 'post'
-  };
-
-  const res = await services.crm.verifications.create(verificationData);
-
-  if (res.error) {
-    throw res.error;
-  }
-
-  const { verification_id: verificationId } = res.data;
-
-  const res2 = await services.crm.verifications.addDocuments(verificationId, documentIds);
-
-  if (res2.error) {
-    throw res2.error;
-  }
-
-  return res.data;
-}
-
-/**
- * Gets primary company for current user
- * @TODO assumes on only 1 company per user - may not be the case
- * @param {String} entityId - the individual entity ID
- * @return {Promise} resolves with company entity ID found
- */
-async function getPrimaryCompany (entityId) {
-  const res = await services.crm.entityRoles.setParams({ entityId }).findMany({
-    role: 'primary_user'
-  });
-
-  // Find role in list
-  const role = find(res.data, (role) => {
-    return role.company_entity_id;
-  });
-
-  return role ? role.company_entity_id : null;
-}
-
-/**
  * Gets or creates a company entity for the supplied individual entity ID
  * where the user is the primary user
  * @param {String} entityId - the individual entity ID
  * @param {String} companyName - the name of the company entity
  * @return {Promise} resolves with company entity ID found/created
  */
+// TODO: Move this to the water service because it crosses services
 async function getOrCreateCompanyEntity (entityId, companyName) {
-  const companyId = await getPrimaryCompany(entityId);
+  const companyId = await services.crm.entityRoles.getPrimaryCompany(entityId);
 
   if (companyId) {
     return companyId;
@@ -149,9 +99,10 @@ class VerificationNotFoundError extends Error {
  * @param {String} verificationCode - the code supplied by post
  * @return {Promise} resolves if verification successful
  */
+// TODO: Move this to the water service because it crosses services
 async function verify (entityId, verificationCode) {
   // Get company ID for entity
-  const companyEntityId = await getPrimaryCompany(entityId);
+  const companyEntityId = await services.crm.entityRoles.getPrimaryCompany(entityId);
   if (!companyEntityId) {
     throw new NoCompanyError();
   }
@@ -197,54 +148,6 @@ async function verify (entityId, verificationCode) {
   return { error: null, data: { verification_id: verificationId } };
 }
 
-/**
- * Gets a list of verification codes and entity_nm values relating to documents
- * @param {String} document_id - the document header ID
- * @return {Promise} resolves with array of verification data
- */
-async function getDocumentVerifications (documentId) {
-  // Get verifications for document
-  const { error, data } = await services.crm.documentVerification.getDocumentVerifications(documentId);
-
-  // Sort by date
-  data.sort(function (a, b) {
-    return new Date(b.date_created) - new Date(a.date_created);
-  });
-
-  // Kludge a unique key on entity_id and document
-  data.map((verification) => {
-    verification.key = verification.entity_id + '.' + verification.document_id;
-    return verification;
-  });
-
-  // Dedupe on key
-  const deduped = removeDuplicates(data, 'key');
-
-  if (error) {
-    throw error;
-  }
-
-  return deduped;
-}
-
-function removeDuplicates (arr, key) {
-  if (!(arr instanceof Array) || (key && typeof key !== 'string')) {
-    return false;
-  }
-
-  if (key && typeof key === 'string') {
-    return arr.filter((obj, index, arr) => {
-      return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
-    });
-  }
-  return arr.filter(function (item, index, arr) {
-    return arr.indexOf(item) === index;
-  });
-}
-
 exports.getOutstandingLicenceRequests = getOutstandingLicenceRequests;
-exports.createVerification = createVerification;
 exports.getOrCreateCompanyEntity = getOrCreateCompanyEntity;
-exports.getPrimaryCompany = getPrimaryCompany;
 exports.verify = verify;
-exports.getDocumentVerifications = getDocumentVerifications;

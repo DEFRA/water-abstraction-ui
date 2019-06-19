@@ -158,7 +158,7 @@ const getSubmittedViewData = async (request) => {
   const view = await helpers.getViewData(request, data);
 
   // Redirect path is returns page for this licence
-  const documentResponse = await services.crm.findMany({
+  const documentResponse = await services.crm.documents.findMany({
     system_external_id: data.licenceNumber,
     includeExpired: isInternalUser(request)
   });

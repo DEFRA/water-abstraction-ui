@@ -4,7 +4,6 @@ const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab')
 const { expect } = require('code');
 
 const preHandlers = require('internal/modules/view-licences/pre-handlers');
-const crmConnector = require('internal/lib/connectors/crm');
 const services = require('internal/lib/connectors/services');
 const licenceConnector = require('internal/lib/connectors/water-service/licences');
 const { scope } = require('internal/lib/constants');
@@ -160,7 +159,7 @@ experiment('preInternalView', () => {
 
   beforeEach(async () => {
     request = createInternalRequest();
-    sandbox.stub(crmConnector, 'getDocumentVerifications');
+    sandbox.stub(services.crm.documentVerifications, 'getUniqueDocumentVerifications');
     sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId');
   });
 
@@ -168,9 +167,9 @@ experiment('preInternalView', () => {
     sandbox.restore();
   });
 
-  test('it should call the CRM getDocumentVerifications connector with correct arguments', async () => {
+  test('calls the CRM service getUniqueDocumentVerifications with correct arguments', async () => {
     await preHandlers.preInternalView(request, h);
-    const { args } = crmConnector.getDocumentVerifications.firstCall;
+    const { args } = services.crm.documentVerifications.getUniqueDocumentVerifications.firstCall;
     expect(args).to.equal([documentId]);
   });
 
@@ -183,7 +182,7 @@ experiment('preInternalView', () => {
   test('it should set the correct data in the view', async () => {
     const verifications = { foo: 'bar' };
     const primary = { bar: 'foo' };
-    crmConnector.getDocumentVerifications.resolves(verifications);
+    services.crm.documentVerifications.getUniqueDocumentVerifications.resolves(verifications);
     licenceConnector.getLicencePrimaryUserByDocumentId.resolves(primary);
 
     await preHandlers.preInternalView(request, h);

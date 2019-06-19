@@ -2,7 +2,6 @@ const apiClientFactory = require('shared/lib/connectors/api-client-factory');
 const serviceRequest = require('shared/lib/connectors/service-request');
 
 const { logger } = require('../../logger');
-const { arLicenceAnalyis, arRefreshLicenceWebhook } = require('./water-service/ar-analysis');
 const { getInternalSearchResults } = require('./water-service/internal-search');
 
 const config = require('../../config');
@@ -81,6 +80,4 @@ exports.getRiverLevel = getRiverLevel;
 exports.gaugingStations = gaugingStations;
 exports.picklists = picklists;
 exports.picklistItems = picklistItems;
-exports.arLicenceAnalyis = arLicenceAnalyis;
-exports.arRefreshLicenceWebhook = arRefreshLicenceWebhook;
 exports.getInternalSearchResults = getInternalSearchResults;

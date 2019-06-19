@@ -5,6 +5,7 @@ const ReturnsService = require('./ReturnsService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 
 const NotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
+const AbstractionReformAnalysisApiClient = require('internal/lib/connectors/services/water/AbstractionReformAnalysisApiClient');
 
 const { logger } = require('../../../../logger');
 
@@ -15,5 +16,6 @@ module.exports = config => ({
   returns: new ReturnsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
 
-  notifications: new NotificationsApiClient(config, logger)
+  notifications: new NotificationsApiClient(config, logger),
+  abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger)
 });

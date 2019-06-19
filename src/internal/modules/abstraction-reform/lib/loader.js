@@ -1,8 +1,6 @@
 const Boom = require('boom');
 const services = require('../../../lib/connectors/services');
 const { licences } = require('../../../lib/connectors/permit');
-const { arRefreshLicenceWebhook } = require('../../../lib/connectors/water');
-
 const { stateManager, getInitialState } = require('./state-manager');
 const { transformNulls } = require('./helpers');
 
@@ -117,7 +115,7 @@ const update = async (licenceId, data, licenceNumber) => {
     licence_data_value: JSON.stringify(data)
   };
   const result = await licences.updateOne(licenceId, payload);
-  await arRefreshLicenceWebhook(licenceNumber);
+  await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber);
   return result;
 };
 

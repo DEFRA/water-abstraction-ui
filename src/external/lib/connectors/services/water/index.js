@@ -4,7 +4,7 @@ const CompaniesService = require('shared/lib/connectors/services/water/Companies
 const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 
-const NotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
+const NotificationsApiClient = require('./NotificationsApiClient');
 
 const { logger } = require('../../../../logger');
 

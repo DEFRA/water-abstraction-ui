@@ -11,7 +11,7 @@ const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
 
 // API Clients
-const NotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
+const NotificationsApiClient = require('./NotificationsApiClient');
 const AbstractionReformAnalysisApiClient = require('internal/lib/connectors/services/water/AbstractionReformAnalysisApiClient');
 
 const { logger } = require('../../../../logger');

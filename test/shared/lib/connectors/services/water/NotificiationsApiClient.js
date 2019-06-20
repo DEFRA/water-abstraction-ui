@@ -2,6 +2,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
 
+const { serviceRequest } = require('@envage/water-abstraction-helpers');
 const NotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
 
 experiment('shared/services/water/NotificationsApiClient', () => {
@@ -10,7 +11,9 @@ experiment('shared/services/water/NotificationsApiClient', () => {
   let client;
 
   beforeEach(async () => {
-    logger = {};
+    logger = {
+      error: () => {}
+    };
     config = {
       services: {
         water: 'https://example.com/water'
@@ -22,6 +25,7 @@ experiment('shared/services/water/NotificationsApiClient', () => {
     client = new NotificationsApiClient(config, logger);
 
     sandbox.stub(client, 'findMany').resolves();
+    sandbox.stub(serviceRequest, 'post').resolves();
   });
 
   afterEach(async () => {
@@ -62,6 +66,57 @@ experiment('shared/services/water/NotificationsApiClient', () => {
       await client.getLatestEmailByAddress('user@example.com');
       const [, , pagination] = client.findMany.lastCall.args;
       expect(pagination).to.equal({ page: 1, perPage: 1 });
+    });
+  });
+
+  experiment('sendNotifyMessage', () => {
+    let recipient;
+    let personalisation;
+
+    beforeEach(async () => {
+      recipient = { to: 'test@example.com' };
+      personalisation = { address: 'test-address' };
+    });
+
+    test('uses the expected url', async () => {
+      await client.sendNotifyMessage('test-ref', recipient, personalisation);
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal(`${config.services.water}/notify/test-ref`);
+    });
+
+    test('passes the expected body', async () => {
+      await client.sendNotifyMessage('test-ref', recipient, personalisation);
+      const [, body] = serviceRequest.post.lastCall.args;
+      expect(body).to.equal({
+        body: {
+          recipient: {
+            to: 'test@example.com'
+          },
+          personalisation: {
+            address: 'test-address'
+          }
+        }
+      });
+    });
+
+    test('returns the response body on success', async () => {
+      serviceRequest.post.resolves({
+        body: 'body-content'
+      });
+
+      const data = await client.sendNotifyMessage('test-ref', recipient, personalisation);
+
+      expect(data).to.equal('body-content');
+    });
+
+    test('returns the response body on failure', async () => {
+      serviceRequest.post.rejects({
+        error: 'bad news'
+      });
+
+      const response = await client.sendNotifyMessage('test-ref', recipient, personalisation);
+
+      expect(response).to.equal({ error: 'bad news' });
     });
   });
 });

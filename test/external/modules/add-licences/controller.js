@@ -7,7 +7,6 @@ const sandbox = sinon.createSandbox();
 const crmConnector = require('external/lib/connectors/crm');
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/add-licences/controller');
-const notifyConnector = require('external/lib/connectors/notify');
 const forms = require('shared/lib/forms');
 
 experiment('postAddressSelect', () => {
@@ -69,7 +68,7 @@ experiment('postAddressSelect', () => {
       verification_code: 'test-verification-code'
     });
 
-    sandbox.stub(notifyConnector, 'sendSecurityCode').resolves();
+    sandbox.stub(services.water.notifications, 'sendSecurityCode').resolves();
   });
 
   afterEach(async () => {
@@ -159,7 +158,7 @@ experiment('postFAO', () => {
       verification_code: 'test-verification-code'
     });
 
-    sandbox.stub(notifyConnector, 'sendSecurityCode').resolves();
+    sandbox.stub(services.water.notifications, 'sendSecurityCode').resolves();
 
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true, fields: [{ name: 'selectedAddressId', errors: [] }] });
   });

@@ -9,6 +9,7 @@ $govuk-global-styles: true;
 @import "blocks/badge";
 @import "blocks/company-switcher";
 @import "blocks/data-row";
+@import "blocks/flex";
 @import "blocks/input";
 @import "blocks/link";
 @import "blocks/message-preview";
@@ -23,6 +24,7 @@ $govuk-global-styles: true;
 @import "blocks/summary-list";
 @import "blocks/survey-frame";
 @import "blocks/text";
+@import "blocks/unit-selector";
 @import "blocks/warning";
 @import "blocks/well";
 

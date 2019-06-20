@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const { convertToCubicMetres, convertToUserUnit, InvalidUnitError } = require('../../../src/shared/lib/unit-conversion');
+const { convertToCubicMetres, convertToUserUnit, InvalidUnitError } = require('shared/lib/unit-conversion');
 
 experiment('Test unit conversion helpers', () => {
   test('convertToCubicMetres should convert known units', async () => {

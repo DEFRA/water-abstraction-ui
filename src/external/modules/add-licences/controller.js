@@ -187,18 +187,18 @@ async function postLicenceSelect (request, reply) {
     // Is there affinity between the selected licences and licences already attached
     // to this user's company where the user is the primary_user role?
     // If so, add the licences to the account directly skipping address verification
-    const companyEntityId = await crmConnector.getPrimaryCompany(entityId);
+    const companyEntityId = await services.crm.entityRoles.getPrimaryCompany(entityId);
 
     if (companyEntityId) {
       // Licences already in account
-      const { data: existingLicences, error } = await services.crm.findMany({
+      const { data: existingLicences, error } = await services.crm.documents.findMany({
         company_entity_id: companyEntityId
       });
       if (error) {
         throw error;
       }
       // Licences being added now
-      const { data: selectedLicences, error: error2 } = await services.crm.findMany({
+      const { data: selectedLicences, error: error2 } = await services.crm.documents.findMany({
         document_id: { $or: documentIds },
         company_entity_id: null
       });
@@ -210,7 +210,7 @@ async function postLicenceSelect (request, reply) {
       if (existingLicences.length > 0) {
         const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
         if (similar) {
-          const { error: error3 } = await services.crm.updateMany({ document_id: { $or: documentIds } }, {
+          const { error: error3 } = await services.crm.documents.updateMany({ document_id: { $or: documentIds } }, {
             company_entity_id: companyEntityId
           });
 
@@ -394,7 +394,7 @@ async function postFAO (request, h) {
     const companyEntityId = await crmConnector.getOrCreateCompanyEntity(entityId, companyName);
 
     // Create verification
-    const verification = await crmConnector.createVerification(entityId, companyEntityId, selectedIds);
+    const verification = await services.crm.verifications.createVerification(entityId, companyEntityId, selectedIds);
 
     // Get the licence containing the selected verification address
     const addressLicence = await getLicence(selectedAddressId);

@@ -1,7 +1,7 @@
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
-const plugin = require('../../../../src/shared/plugins/licence-data');
+const plugin = require('shared/plugins/licence-data');
 const { set } = require('lodash');
 
 experiment('Licence data plugin', () => {

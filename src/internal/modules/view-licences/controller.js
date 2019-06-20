@@ -3,7 +3,6 @@ const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-const crmConnector = require('../../lib/connectors/crm');
 const services = require('../../lib/connectors/services');
 const { getLicences: baseGetLicences } = require('./base');
 const helpers = require('./helpers');
@@ -51,7 +50,7 @@ async function getLicenceDetail (request, reply) {
     const { documentHeader, viewData, gaugingStations } = await helpers.loadLicenceData(request, documentId);
 
     const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-    documentHeader.verifications = await crmConnector.getDocumentVerifications(documentId);
+    documentHeader.verifications = await services.crm.documentVerifications.getUniqueDocumentVerifications(documentId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
 

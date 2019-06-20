@@ -21,7 +21,7 @@ const getErrorMessage = (key) => {
     'invalid-xml': 'The selected file must use the template',
     notxml: 'The selected file must be a CSV or XML file',
     virus: 'The selected file contains a virus',
-    empty: 'The selected file has no returns data'
+    empty: 'The selected file has no returns data in it'
   };
   const defaultMessage = 'The selected file could not be uploaded – try again';
   return get(errorMessages, key, defaultMessage);

@@ -2,7 +2,7 @@ const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const controller = require('external/modules/returns/controllers/edit');
-const { returns } = require('external/lib/connectors/water');
+const services = require('external/lib/connectors/services');
 const helpers = require('external/modules/returns/lib/helpers');
 const { scope: { internal, external } } = require('external/lib/constants');
 const returnPath = require('external/modules/returns/lib/return-path');
@@ -191,7 +191,7 @@ experiment('edit controller', () => {
       view: sandbox.stub(),
       redirect: sandbox.stub()
     };
-    sandbox.stub(returns, 'getReturn').returns(createReturn());
+    sandbox.stub(services.water.returns, 'getReturn').returns(createReturn());
     sandbox.stub(helpers, 'getLicenceNumbers').returns(documentHeaders);
     sandbox.stub(returnPath, 'isInternalEdit');
     sandbox.stub(permissions, 'isInternal');

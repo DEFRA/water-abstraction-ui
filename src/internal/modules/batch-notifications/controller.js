@@ -2,7 +2,7 @@ const { get } = require('lodash');
 const { confirmForm } = require('./forms/confirm');
 const helpers = require('./lib/helpers');
 const csv = require('../../lib/csv-download');
-const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
+const services = require('../../lib/connectors/services');
 
 const getPageTitle = (ev) => {
   const name = get(ev, 'subtype');
@@ -80,7 +80,7 @@ const getRecipientsCSV = async (request, h) => {
 const postSendNotification = async (request, h) => {
   const { eventId } = request.params;
   const { userName } = request.defra;
-  await batchNotificationsConnector.sendReminders(eventId, userName);
+  await services.water.batchNotifications.sendReminders(eventId, userName);
   return h.redirect(`/batch-notifications/confirmation/${eventId}`);
 };
 

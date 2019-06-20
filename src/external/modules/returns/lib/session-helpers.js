@@ -1,5 +1,5 @@
 const Boom = require('boom');
-const { returns } = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 const { applyUserDetails, applyCleanup } = require('./return-helpers');
 const { logger } = require('../../../logger');
 const { isInternal } = require('../../../lib/permissions');
@@ -64,7 +64,7 @@ const submitReturnData = (data, request) => {
   // Post return
   try {
     request.log(`Posting return`, { data: dataToSubmit });
-    return returns.postReturn(dataToSubmit);
+    return services.water.returns.postReturn(dataToSubmit);
   } catch (err) {
     logger.error('Submit return data error', { data: dataToSubmit });
     throw err;

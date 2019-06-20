@@ -1,5 +1,5 @@
 const moment = require('moment');
-const water = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 
 /**
  * Gets CSV data from API in water service using findAll method which
@@ -10,7 +10,7 @@ const water = require('../../../lib/connectors/water');
 const getCSVData = async () => {
   const sort = { start_date: 1 };
   const filter = {};
-  return water.arLicenceAnalyis.findAll(filter, sort);
+  return services.water.abstractionReformAnalysis.findAll(filter, sort);
 };
 
 /**

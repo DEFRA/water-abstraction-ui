@@ -1,5 +1,4 @@
 const Boom = require('boom');
-const { returns } = require('../../../lib/connectors/water');
 const services = require('../../../lib/connectors/services');
 const { isInternal: isInternalUser } = require('../../../lib/permissions');
 
@@ -49,7 +48,7 @@ const {
 const getInternalRouting = async (request, h) => {
   const { returnId } = request.query;
 
-  const data = await returns.getReturn(returnId);
+  const data = await services.water.returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
   const form = internalRoutingForm(request, data);
 
@@ -67,7 +66,7 @@ const getInternalRouting = async (request, h) => {
 const postInternalRouting = async (request, h) => {
   const { returnId } = request.query;
 
-  let data = await returns.getReturn(returnId);
+  let data = await services.water.returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
 
   const form = handleRequest(internalRoutingForm(request, data), request);
@@ -81,7 +80,7 @@ const postInternalRouting = async (request, h) => {
       data = applyUnderQuery(data, { isUnderQuery });
       data = applyStatus(data, 'received');
       data = applyUserDetails(data, request);
-      await returns.patchReturn(data);
+      await services.water.returns.patchReturn(data);
     }
 
     sessionHelpers.saveSessionData(request, data);
@@ -103,7 +102,7 @@ const postInternalRouting = async (request, h) => {
 const getLogReceipt = async (request, h) => {
   const { returnId } = request.query;
 
-  const data = await returns.getReturn(returnId);
+  const data = await services.water.returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
 
   return h.view('water/returns/internal/form', {
@@ -120,7 +119,7 @@ const getLogReceipt = async (request, h) => {
 const postLogReceipt = async (request, h) => {
   const { returnId } = request.query;
 
-  const data = await returns.getReturn(returnId);
+  const data = await services.water.returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
 
   const form = handleRequest(logReceiptForm(request, data), request, logReceiptSchema());
@@ -133,7 +132,7 @@ const postLogReceipt = async (request, h) => {
     d = applyUserDetails(d, request);
 
     // Patch returns service via water service
-    await returns.patchReturn(d);
+    await services.water.returns.patchReturn(d);
 
     return h.redirect(getNextPath(STEP_LOG_RECEIPT, request, data));
   }
@@ -154,7 +153,7 @@ const postLogReceipt = async (request, h) => {
 const getSubmittedViewData = async (request) => {
   const { returnId } = request.query;
 
-  const data = await returns.getReturn(returnId);
+  const data = await services.water.returns.getReturn(returnId);
   const view = await helpers.getViewData(request, data);
 
   // Redirect path is returns page for this licence

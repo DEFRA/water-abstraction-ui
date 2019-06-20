@@ -8,7 +8,6 @@ const helpers = require('./helpers');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
-const communicationsConnector = require('../../lib/connectors/water-service/communications');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { renameLicenceForm, renameLicenceSchema } = require('./forms/rename');
 
@@ -220,7 +219,7 @@ const getAddressParts = notification => {
 
 const getLicenceCommunication = async (request, h) => {
   const { communicationId, documentId } = request.params;
-  const response = await communicationsConnector.getCommunication(communicationId);
+  const response = await services.water.communications.getCommunication(communicationId);
 
   const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
   if (!licence) {

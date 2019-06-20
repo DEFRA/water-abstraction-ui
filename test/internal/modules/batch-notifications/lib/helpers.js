@@ -5,6 +5,7 @@ const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 
 const waterConnector = require('internal/lib/connectors/water');
+const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/batch-notifications/lib/helpers');
 
 experiment('batch notification helpers', () => {
@@ -71,15 +72,15 @@ experiment('batch notification helpers', () => {
   });
   experiment('loadMessages', () => {
     beforeEach(async () => {
-      sandbox.stub(waterConnector.notifications, 'findAll').resolves([{
+      sandbox.stub(services.water.notifications, 'findAll').resolves([{
         id: 'message_1'
       }]);
     });
 
     test('loads messages from water service matching event ID', async () => {
       await helpers.loadMessages({ event_id: eventId });
-      expect(waterConnector.notifications.findAll.callCount).to.equal(1);
-      const [filter] = waterConnector.notifications.findAll.lastCall.args;
+      expect(services.water.notifications.findAll.callCount).to.equal(1);
+      const [filter] = services.water.notifications.findAll.lastCall.args;
       expect(filter).to.equal({ event_id: eventId });
     });
 

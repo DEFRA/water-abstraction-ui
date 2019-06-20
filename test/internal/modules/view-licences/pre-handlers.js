@@ -5,7 +5,6 @@ const { expect } = require('code');
 
 const preHandlers = require('internal/modules/view-licences/pre-handlers');
 const services = require('internal/lib/connectors/services');
-const licenceConnector = require('internal/lib/connectors/water-service/licences');
 const { scope } = require('internal/lib/constants');
 
 const documentId = 'document_1';
@@ -160,7 +159,7 @@ experiment('preInternalView', () => {
   beforeEach(async () => {
     request = createInternalRequest();
     sandbox.stub(services.crm.documentVerifications, 'getUniqueDocumentVerifications');
-    sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId');
+    sandbox.stub(services.water.licences, 'getPrimaryUserByDocumentId');
   });
 
   afterEach(async () => {
@@ -173,9 +172,9 @@ experiment('preInternalView', () => {
     expect(args).to.equal([documentId]);
   });
 
-  test('it should call the getLicencePrimaryUserByDocumentId connector with correct arguments', async () => {
+  test('it should call the getPrimaryUserByDocumentId connector with correct arguments', async () => {
     await preHandlers.preInternalView(request, h);
-    const { args } = licenceConnector.getLicencePrimaryUserByDocumentId.firstCall;
+    const { args } = services.water.licences.getPrimaryUserByDocumentId.firstCall;
     expect(args).to.equal([documentId]);
   });
 
@@ -183,7 +182,7 @@ experiment('preInternalView', () => {
     const verifications = { foo: 'bar' };
     const primary = { bar: 'foo' };
     services.crm.documentVerifications.getUniqueDocumentVerifications.resolves(verifications);
-    licenceConnector.getLicencePrimaryUserByDocumentId.resolves(primary);
+    services.water.licences.getPrimaryUserByDocumentId.resolves(primary);
 
     await preHandlers.preInternalView(request, h);
 

@@ -1,4 +1,4 @@
-const notificationClient = require('../../lib/connectors/water-service/notifications');
+const services = require('../../lib/connectors/services');
 const Boom = require('boom');
 
 /**
@@ -14,7 +14,7 @@ const Boom = require('boom');
  */
 async function findLastEmail (request, reply) {
   const { email } = request.query;
-  const data = await notificationClient.getLatestEmailByAddress(email);
+  const data = await services.water.notifications.getLatestEmailByAddress(email);
 
   if (data.data.length === 0) {
     throw Boom.notFound(`No email found for ${email}`);
@@ -23,6 +23,4 @@ async function findLastEmail (request, reply) {
   return reply.response(data);
 };
 
-module.exports = {
-  findLastEmail
-};
+exports.findLastEmail = findLastEmail;

@@ -1,7 +1,7 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { logger } = require('../logger');
 
-const waterUser = require('./connectors/water-service/user');
+const services = require('./connectors/services');
 const getUserID = request => request.cookieAuth.get('userId');
 const { isAuthenticated } = require('./permissions');
 
@@ -12,7 +12,7 @@ const { isAuthenticated } = require('./permissions');
  * @return {Promise}         [description]
  */
 const loadUserData = async userId => {
-  const { data, error } = await waterUser.getUserStatus(userId);
+  const { data, error } = await services.water.users.getUserStatus(userId);
   throwIfError(error);
   return data;
 };

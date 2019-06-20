@@ -4,7 +4,7 @@ const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const apiHelpers = require('./api-helpers');
 const { formFactory, fields } = require('shared/lib/forms');
-const licencesConnector = require('../../../lib/connectors/water-service/licences');
+const services = require('../../../lib/connectors/services');
 
 const { mapConditionText } = require('./map-condition');
 
@@ -52,12 +52,12 @@ const resolveLicenceData = async (context, connectorFn, mapFn) => {
 };
 
 const resolveLicenceConditions = async context => {
-  const connector = licencesConnector.getLicenceConditionsByDocumentId;
+  const connector = services.water.licences.getConditionsByDocumentId;
   return resolveLicenceData(context, connector, mapCondition);
 };
 
 const resolveLicencePoints = async context => {
-  const connector = licencesConnector.getLicencePointsByDocumentId;
+  const connector = services.water.licences.getPointsByDocumentId;
   return resolveLicenceData(context, connector, mapPoint);
 };
 

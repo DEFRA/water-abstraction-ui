@@ -5,11 +5,10 @@ const sinon = require('sinon');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const controller = require('internal/modules/internal-search/controller');
-const water = require('internal/lib/connectors/water');
-const waterServiceUserConnector = require('internal/lib/connectors/water-service/user');
+const services = require('internal/lib/connectors/services');
 const { scope } = require('internal/lib/constants');
 
-const getUserStatusResponses = require('../../responses/water-service/user/_userId_/status');
+const getUserStatusResponses = require('../../../shared/responses/water-service/user/_userId_/status');
 
 experiment('getSearchForm', () => {
   const h = {};
@@ -28,7 +27,7 @@ experiment('getSearchForm', () => {
   beforeEach(async () => {
     h.view = sinon.stub();
     h.redirect = sinon.stub();
-    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       users: [{ user_id: 123 }]
     });
   });
@@ -68,7 +67,7 @@ experiment('getSearchForm', () => {
   test('It should redirect if user searches for exact return ID', async () => {
     const returnId = 'v1:1:01/123:123456:2017-10-31:2018-10-31';
     apiStub.restore();
-    apiStub = sinon.stub(water, 'getInternalSearchResults').resolves({
+    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       returns: [{
         return_id: returnId
       }]
@@ -88,7 +87,7 @@ experiment('getUserStatus', () => {
 
   beforeEach(async () => {
     sinon
-      .stub(waterServiceUserConnector, 'getUserStatus')
+      .stub(services.water.users, 'getUserStatus')
       .resolves(getUserStatusResponses.externalUserWithLicences());
 
     request = { params: { userId: 1234 }, view: {} };
@@ -99,11 +98,11 @@ experiment('getUserStatus', () => {
   });
 
   afterEach(async () => {
-    waterServiceUserConnector.getUserStatus.restore();
+    services.water.users.getUserStatus.restore();
   });
 
   test('passes the user id from the request to the water service', async () => {
-    const [userId] = waterServiceUserConnector.getUserStatus.firstCall.args;
+    const [userId] = services.water.users.getUserStatus.firstCall.args;
     expect(userId).to.equal(request.params.userId);
   });
 
@@ -124,7 +123,7 @@ experiment('getUserStatus', () => {
   });
 
   test('licences is zero when there are none', async () => {
-    waterServiceUserConnector.getUserStatus.resolves(
+    services.water.users.getUserStatus.resolves(
       getUserStatusResponses.externalUserWithoutLicences()
     );
 

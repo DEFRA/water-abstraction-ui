@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const Notify = require('../../lib/connectors/notify');
 const Boom = require('boom');
 const { find } = require('lodash');
 const { logger } = require('../../logger');
@@ -130,7 +129,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     // User exists
     if (createUserError) {
-      const { error: notifyError } = Notify.sendAccessNotification({ newUser: false, email, sender });
+      const { error: notifyError } = services.water.notifications.sendAccessNotification({ newUser: false, email, sender });
       if (notifyError) {
         throw notifyError;
       }

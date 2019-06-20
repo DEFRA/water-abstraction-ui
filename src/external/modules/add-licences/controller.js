@@ -8,7 +8,6 @@ const Joi = require('joi');
 const { difference } = require('lodash');
 const crmConnector = require('../../lib/connectors/crm');
 const services = require('../../lib/connectors/services');
-const Notify = require('../../lib/connectors/notify');
 const { forceArray } = require('../../../shared/lib/array-helpers');
 const { logger } = require('../../logger');
 const loginHelpers = require('../../lib/login-helpers');
@@ -400,7 +399,7 @@ async function postFAO (request, h) {
     const addressLicence = await getLicence(selectedAddressId);
 
     // Post letter
-    await Notify.sendSecurityCode(addressLicence, fao, verification.verification_code);
+    await services.water.notifications.sendSecurityCode(addressLicence, fao, verification.verification_code);
 
     // Delete data in session
     request.yar.clear('addLicenceFlow');

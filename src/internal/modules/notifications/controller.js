@@ -5,7 +5,7 @@ const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const { forceArray } = require('shared/lib/array-helpers');
 const services = require('../../lib/connectors/services');
-const { sendNotification, lookup, taskConfig } = require('../../lib/connectors/water');
+const { lookup, taskConfig } = require('../../lib/connectors/water');
 const { getNotificationsList, getReportsList } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
 
@@ -366,7 +366,7 @@ async function getSendViewContext (id, data, sender) {
   // Generate preview
   const licenceNumbers = taskData.getLicenceNumbers();
   const params = taskData.getParameters();
-  const { error, data: previewData } = await sendNotification(id, licenceNumbers, params, sender);
+  const { error, data: previewData } = await services.water.notifications.sendNotification(id, licenceNumbers, params, sender);
 
   // Get summary data
   const summary = {

@@ -6,7 +6,7 @@ const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const ResetPasswordConfig = require('../../../src/shared/lib/ResetPasswordConfig');
+const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
 
 const RESET_RESPONSE = 'resetPassword';
 const GET_RESPONSE = 'getUserByResetGuid';

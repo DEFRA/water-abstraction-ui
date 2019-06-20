@@ -157,3 +157,110 @@ experiment('getLicenceCommunication', () => {
     expect(view.back).to.equal('/licences/doc-id-1#communications');
   });
 });
+
+experiment('validateGaugingStation', () => {
+  test('throws an error if requested gauging station is not attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
+      },
+      licence: {
+        summary: {
+          gaugingStations: []
+        }
+      }
+    };
+
+    try {
+      await controller.validateGaugingStation(request);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(404);
+    }
+  });
+  test('does not throw an error if requested gauging station is attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
+      },
+      licence: {
+        summary: {
+          gaugingStations: [{
+            stationReference: 'testStation'
+          }]
+        }
+      }
+    };
+
+    const error = () => controller.validateGaugingStation(request);
+    expect(error).not.to.throw();
+  });
+});
+
+experiment('getHoFTypes', () => {
+  test('returns false if code !== "CES"', async () => {
+    const conditions = [{
+      code: 'notCES',
+      subCode: 'FLOW'
+    }, {
+      code: 'notCES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns false if the code === "CES", but subCode !== "LEV" || "FLOW"', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns true if the conditions are flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
+  });
+
+  test('returns true if at least 1 condition is a flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
+  });
+});

@@ -282,7 +282,7 @@ const setConditionHofFlags = (viewContext) => {
   const updatedConditions = conditions.map(condition => {
     return {
       ...condition,
-      isHof: (condition.code === 'CES' && (condition.subCode === 'FLOW' || condition.subCode === 'LEV'))
+      isHof: (condition.code === 'CES' && (['FLOW', 'LEV'].includes(condition.subCode)))
     };
   });
   set(updated.summary, 'conditions', updatedConditions);

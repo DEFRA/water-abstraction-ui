@@ -1,4 +1,3 @@
-const LicenceTransformer = require('../../lib/licence-transformer/');
 const services = require('../../lib/connectors/services');
 const { cloneDeep, find, has, set } = require('lodash');
 const Boom = require('boom');
@@ -68,64 +67,6 @@ function getLicencePageTitle (view, licenceNumber, customName) {
   return {
     pageTitle: `${titles[key]} for ${customName || licenceNumber}`,
     pageHeading: `${customName ? 'Licence' : titles[key] + ' for licence'} number ${licenceNumber}`
-  };
-}
-
-/**
- * Loads a list of gauging stations from the water service based on the
- * station references that are stored in the permit repo metadata
- * @param {Object} metadata - from permit repo licence record
- * @return {Promise} resolves with list of gauging stations
- */
-function loadGaugingStations (metadata) {
-  if (!(metadata && metadata.gaugingStations)) {
-    return [];
-  }
-  // Load gauging station data
-  const filter = {
-    station_reference: {
-      $in: (metadata.gaugingStations || []).map(row => row.stationReference)
-    }
-  };
-  return services.water.gaugingStations.findMany(filter);
-}
-
-/**
- * Loads licence data for detail view from CRM and permit repo
- * @param {Object} request - the current request
- * @param {String} documentId - GUID for the CRM document ID
- * @return {Promise} - resolves with CRM, permit repo and transformed licence data
- */
-async function loadLicenceData (request, documentId) {
-  const { documentHeader } = request;
-
-  // Get permit repo data
-  const {
-    error: permitError,
-    data: permitData
-  } = await services.permits.licences.findOne(documentHeader.system_internal_id);
-  if (permitError) {
-    throw permitError;
-  }
-
-  // Get gauging station data
-  const {
-    error: gaugingStationError,
-    data: gaugingStations
-  } = await loadGaugingStations(permitData.metadata);
-  if (gaugingStationError) {
-    throw gaugingStationError;
-  }
-
-  // Transform data using NALD data transformer
-  const transformer = new LicenceTransformer();
-  await transformer.load(permitData.licence_data_value);
-
-  return {
-    documentHeader,
-    permitData,
-    viewData: transformer.export(),
-    gaugingStations
   };
 }
 
@@ -292,7 +233,7 @@ const setConditionHofFlags = (viewContext) => {
 exports.mapSort = mapSort;
 exports.mapFilter = mapFilter;
 exports.getLicencePageTitle = getLicencePageTitle;
-exports.loadLicenceData = loadLicenceData;
+// exports.loadLicenceData = loadLicenceData;
 exports.loadRiverLevelData = loadRiverLevelData;
 exports.selectRiverLevelMeasure = selectRiverLevelMeasure;
 exports.validateStationReference = validateStationReference;

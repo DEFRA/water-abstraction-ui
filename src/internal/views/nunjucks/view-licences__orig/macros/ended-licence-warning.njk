@@ -1,0 +1,20 @@
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% macro endedLicenceWarning(reason, endDate) %}
+  
+  {% set reasonText = reason %}
+  {% if reason === 'revoked' %}
+    {% set reasonText = 'was revoked' %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-8">
+      <div class="warning">
+        {{ govukWarningText({
+          text: 'This licence ' + reasonText + ' on ' + endDate + '.',
+          iconFallbackText: 'Warning'
+        }) }}
+      </div>
+    </div>
+  </div>
+{% endmacro %}

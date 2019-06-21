@@ -1,32 +1,40 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "nunjucks/view-licences/macros/licence-conditions.njk" import licenceConditions %}
+{% from "nunjucks/view-licences/macros/licence-condition.njk" import licenceCondition %}
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Conditions held for {{crmData.document_name}}{% endset %}
-    {{ title(licenceName, pageTitle) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+  {% if summary.documentName %}
+    {% set licenceName %} Conditions held for {{ summary.documentName }}{% endset %}
+    {{ title(licenceName, pageHeading) }}
   {% else %}
-    {{ title(pageTitle) }}
+    {{ title(pageHeading) }}
   {% endif %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
       {{ govukWarningText({
         text: "We may not be able to show a full list of your conditions, because we do
           not hold all of your licence information on our system yet. You must refer
           to the paper copy of your licence to view and comply with all of your conditions.",
         iconFallbackText: "Warning"
       }) }}
-    </div>
 
-    {% if licenceData.conditions.length == 0%}
-    <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
-    <p>Please check the paper copy of your licence for this information.</p>
+      {% if summary.conditions.length == 0%}
+      <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
+      <p>Please check the paper copy of your licence for this information.</p>
+      {% endif %}
+    </div>
+    
+    {% if summary.conditions.length == 0%}
+      <div class="govuk-grid-column-full">
+        <p>Sorry, we do not hold any information about your conditions on our system yet.</p>
+        <p>Please check the paper copy of your licence for this information.</p>
+      </div>
     {% endif %}
   </div>
-
-    {{ licenceConditions(licenceData.conditions) }}
+  {% for condition in summary.conditions %}
+    {{ licenceCondition(condition)}}
+  {% endfor %}
 
 {% endblock %}

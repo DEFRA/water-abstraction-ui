@@ -1,0 +1,21 @@
+{% macro sourcesOfSupply(sources) %}
+  {% if sources.length %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      {{ 'Source' | pluralize(sources) }} of supply
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {% if sources.length > 5 %}
+        You have {{ sources.length }} sources of supply
+      {% elseif sources.length > 1 %}
+      <ul class="govuk-list govuk-!-margin-0">
+        {% for source in sources %}
+        <li>{{ source.name }}</li>
+        {% endfor %}
+      {% else %}
+        {{ sources[0].name }}
+      {% endif %}
+    </dd>
+  </div>
+  {% endif %}
+{% endmacro %}

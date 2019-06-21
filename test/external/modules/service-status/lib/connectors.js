@@ -10,7 +10,6 @@ const {
   afterEach
 } = exports.lab = require('lab').script();
 const connectors = require('external/modules/service-status/lib/connectors');
-const permits = require('external/lib/connectors/permit');
 const services = require('external/lib/connectors/services');
 
 const { expect } = require('code');
@@ -112,7 +111,7 @@ experiment('Connectors call correct APIs', () => {
     sandbox.stub(services.water.pendingImports, 'findMany').resolves(response);
 
     // Permits
-    sandbox.stub(permits.licences, 'findMany').resolves(response);
+    sandbox.stub(services.permits.licences, 'findMany').resolves(response);
   });
 
   afterEach(async () => {
@@ -146,8 +145,8 @@ experiment('Connectors call correct APIs', () => {
 
   test('getPermitCount calls permit repo licences endpoint', async () => {
     await connectors.getPermitCount();
-    expect(permits.licences.findMany.callCount).to.equal(1);
-    const [filter] = permits.licences.findMany.firstCall.args;
+    expect(services.permits.licences.findMany.callCount).to.equal(1);
+    const [filter] = services.permits.licences.findMany.firstCall.args;
     expect(filter.licence_regime_id).to.equal(1);
     expect(filter.licence_type_id).to.equal(8);
   });

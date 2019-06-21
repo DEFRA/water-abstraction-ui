@@ -9,7 +9,6 @@ const communicationResponses = require('../../../shared/responses/water-service/
 
 const controller = require('internal/modules/view-licences/controller');
 const { scope } = require('internal/lib/constants');
-const returnsConnector = require('internal/lib/connectors/returns');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -179,7 +178,7 @@ experiment('getExpiredLicence', () => {
       }
     });
 
-    sandbox.stub(returnsConnector.returns, 'findMany').resolves({
+    sandbox.stub(services.returns.returns, 'findMany').resolves({
       data: [{ return_id: 'test-return' }],
       pagination: { pageCount: 1 }
     });

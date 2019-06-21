@@ -11,7 +11,6 @@ const {
   filterReturnsByCRMDocument
 } = require('external/modules/returns/lib/api-helpers');
 
-const returnsService = require('external/lib/connectors/returns');
 const services = require('external/lib/connectors/services');
 
 // const helpers = require('external/modules/returns/lib/helpers');
@@ -92,8 +91,8 @@ experiment('getRecentReturns', async () => {
   };
 
   before(async () => {
-    findManyStub = sinon.stub(returnsService.returns, 'findMany').resolves({ data: [returnData] });
-    findOneStub = sinon.stub(returnsService.returns, 'findOne').resolves({ data: returnData });
+    findManyStub = sinon.stub(services.returns.returns, 'findMany').resolves({ data: [returnData] });
+    findOneStub = sinon.stub(services.returns.returns, 'findOne').resolves({ data: returnData });
   });
 
   after(async () => {

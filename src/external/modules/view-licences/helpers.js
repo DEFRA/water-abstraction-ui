@@ -1,4 +1,3 @@
-const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
 const services = require('../../lib/connectors/services');
 const { cloneDeep, find, has, set } = require('lodash');
@@ -104,7 +103,7 @@ async function loadLicenceData (request, documentId) {
   const {
     error: permitError,
     data: permitData
-  } = await Permit.licences.findOne(documentHeader.system_internal_id);
+  } = await services.permits.licences.findOne(documentHeader.system_internal_id);
   if (permitError) {
     throw permitError;
   }

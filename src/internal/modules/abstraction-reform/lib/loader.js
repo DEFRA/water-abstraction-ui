@@ -1,6 +1,5 @@
 const Boom = require('boom');
 const services = require('../../../lib/connectors/services');
-const { licences } = require('../../../lib/connectors/permit');
 const { stateManager, getInitialState } = require('./state-manager');
 const { transformNulls } = require('./helpers');
 
@@ -16,7 +15,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
     licence_ref: licenceRef
   };
 
-  const { error, data } = await licences.findMany(filter);
+  const { error, data } = await services.permits.licences.findMany(filter);
 
   if (error) {
     throw Boom.badImplementation('Permit error', error);
@@ -31,7 +30,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
       actions: []
     };
 
-    const { error: createError, data: createData } = await licences.create({
+    const { error: createError, data: createData } = await services.permits.licences.create({
       ...filter,
       licence_data_value: JSON.stringify(licenceData),
       metadata: '{}'
@@ -60,7 +59,7 @@ const loadLicence = async (documentId) => {
   }
 
   // Load permit repo licence
-  const { error: permitError, data: permitData } = await licences.findOne(licenceId);
+  const { error: permitError, data: permitData } = await services.permits.licences.findOne(licenceId);
 
   if (permitError) {
     throw Boom.badImplementation('Permit error', permitError);
@@ -114,12 +113,10 @@ const update = async (licenceId, data, licenceNumber) => {
   const payload = {
     licence_data_value: JSON.stringify(data)
   };
-  const result = await licences.updateOne(licenceId, payload);
+  const result = await services.permits.licences.updateOne(licenceId, payload);
   await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber);
   return result;
 };
 
-module.exports = {
-  load,
-  update
-};
+exports.load = load;
+exports.update = update;

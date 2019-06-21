@@ -7,7 +7,6 @@ const Boom = require('boom');
 const { find, get } = require('lodash');
 
 const services = require('../../../lib/connectors/services');
-const { licences } = require('../../../lib/connectors/permit');
 
 const perPage = 50;
 
@@ -68,7 +67,7 @@ const loadAbstractionReformLicences = async (crmLicences) => {
   };
 
   // Load documents
-  const { data, error } = await licences.findMany(arFilter);
+  const { data, error } = await services.permits.licences.findMany(arFilter);
 
   if (error) {
     throw Boom.badImplementation(error);
@@ -122,7 +121,7 @@ const recent = async (page) => {
     page,
     perPage
   };
-  const { data, pagination, error } = await licences.findMany(filter, sort, requestPagination);
+  const { data, pagination, error } = await services.permits.licences.findMany(filter, sort, requestPagination);
 
   if (error) {
     throw error;

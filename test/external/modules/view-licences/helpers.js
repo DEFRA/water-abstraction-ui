@@ -7,7 +7,7 @@ const { expect } = require('code');
 const sinon = require('sinon');
 
 const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle, setConditionHofFlags } = require('../../../../src/external/modules/view-licences/helpers');
-const waterConnector = require('../../../../src/external/lib/connectors/water');
+const services = require('external/lib/connectors/services');
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
   const latestReading = hasLatestReading
@@ -108,11 +108,11 @@ experiment('loadRiverLevelData', () => {
   const hofTypes = { cesLevel: true, cesFlow: false };
 
   beforeEach(async () => {
-    sinon.stub(waterConnector, 'getRiverLevel');
+    sinon.stub(services.water.riverLevels, 'getRiverLevel');
   });
 
   afterEach(async () => {
-    waterConnector.getRiverLevel.restore();
+    services.water.riverLevels.getRiverLevel.restore();
   });
 
   test('returns null riverLevel and measure when no station reference', async () => {
@@ -129,7 +129,7 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: true, cesLev: false };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.an.object();
     expect(riverLevelData.riverLevel).to.be.an.object();
@@ -144,7 +144,7 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: false, cesLev: true };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.undefined();
     expect(riverLevelData.riverLevel).to.be.an.object();
@@ -159,14 +159,14 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: true, cesLev: false };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.undefined();
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 
   test('returns null riverLevel and measure when no station is found', async () => {
-    waterConnector.getRiverLevel.rejects({ statusCode: 404 });
+    services.water.riverLevels.getRiverLevel.rejects({ statusCode: 404 });
     const riverLevelData = await loadRiverLevelData(null, hofTypes);
     expect(riverLevelData).to.equal({ riverLevel: null, measure: null });
   });

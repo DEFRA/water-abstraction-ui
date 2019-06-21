@@ -1,7 +1,6 @@
 require('dotenv').config();
 const sandbox = require('sinon').createSandbox();
 
-const apiHelpers = require('internal/modules/abstraction-reform/lib/api-helpers');
 const {
   dereference,
   picklistSchemaFactory,
@@ -73,8 +72,8 @@ experiment('Test picklistSchemaFactory', () => {
 
 experiment('Test dereference', () => {
   beforeEach(async () => {
-    sandbox.stub(apiHelpers, 'getPicklist').resolves(data.noId.picklist);
-    sandbox.stub(apiHelpers, 'getPicklistItems').resolves(data.noId.items);
+    sandbox.stub(services.water.picklists, 'getPicklist').resolves(data.noId.picklist);
+    sandbox.stub(services.water.picklistItems, 'getPicklistItems').resolves(data.noId.items);
   });
 
   afterEach(async () => {

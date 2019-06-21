@@ -2,7 +2,8 @@ const { expect } = require('code');
 const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const water = require('external/lib/connectors/water');
+const sandbox = sinon.createSandbox();
+
 const forms = require('shared/lib/forms/index');
 const files = require('shared/lib/files');
 const fileCheck = require('shared/lib/file-check');
@@ -13,8 +14,6 @@ const { logger } = require('external/logger');
 const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
 const helpers = require('external/modules/returns/lib/helpers.js');
 const csvTemplates = require('external/modules/returns/lib/csv-templates');
-
-const sandbox = sinon.createSandbox();
 
 const eventId = 'event_1';
 const userName = 'user_1';
@@ -105,7 +104,7 @@ experiment('upload controller', () => {
         header
       })
     };
-    sandbox.stub(water.events, 'findMany');
+    sandbox.stub(services.water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
@@ -169,7 +168,7 @@ experiment('upload controller', () => {
   experiment('getSpinnerPage', () => {
     test('throws an error if there is an error response from the events API', async () => {
       const response = createErrorResponse();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       const func = () => controller.getSpinnerPage(createSpinnerRequest(), h);
       expect(func()).to.reject();
     });
@@ -177,7 +176,7 @@ experiment('upload controller', () => {
     test('it should redirect to the summary page if status is validated', async () => {
       const response = createResponse('validated');
       const request = createSpinnerRequest();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
       expect(h.redirect.callCount).to.equal(1);
@@ -188,7 +187,7 @@ experiment('upload controller', () => {
     test('it should load the waiting page', async () => {
       const response = createResponse();
       const request = createSpinnerRequest();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
       const [path] = h.view.lastCall.args;
@@ -196,7 +195,7 @@ experiment('upload controller', () => {
     });
 
     test('throws a Boom 404 error if the event is not found', async () => {
-      water.events.findMany.resolves({ error: null, data: [] });
+      services.water.events.findMany.resolves({ error: null, data: [] });
       try {
         await controller.getSpinnerPage(createSpinnerRequest(), h);
         fail();
@@ -208,7 +207,7 @@ experiment('upload controller', () => {
 
     test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
       const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(createSpinnerRequest(), h);
 
       expect(h.redirect.callCount).to.equal(1);

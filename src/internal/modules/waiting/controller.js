@@ -1,4 +1,4 @@
-const water = require('../../lib/connectors/water');
+const services = require('../../lib/connectors/services');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { get } = require('lodash');
 const { logger } = require('../../logger');
@@ -53,7 +53,7 @@ const getEventHandler = event => {
 
 const getWaiting = async (request, h) => {
   const { eventId } = request.params;
-  const { data: event, error } = await water.events.findOne(eventId);
+  const { data: event, error } = await services.water.events.findOne(eventId);
 
   throwIfError(error);
 

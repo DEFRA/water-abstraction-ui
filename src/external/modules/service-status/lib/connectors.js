@@ -1,6 +1,5 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const permits = require('../../../lib/connectors/permit');
-const water = require('../../../lib/connectors/water');
 const services = require('../../../lib/connectors/services');
 
 const firstPage = {
@@ -83,7 +82,7 @@ const getPermitCount = async () => {
  */
 const getWaterImportStatus = async (status) => {
   const filter = { status };
-  return getCount(water.pendingImport, filter);
+  return getCount(services.water.pendingImports, filter);
 };
 
 /**

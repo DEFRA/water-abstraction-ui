@@ -5,7 +5,6 @@ const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const { forceArray } = require('shared/lib/array-helpers');
 const services = require('../../lib/connectors/services');
-const { lookup, taskConfig } = require('../../lib/connectors/water');
 const { getNotificationsList, getReportsList } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
 
@@ -18,7 +17,7 @@ async function getIndex (request, reply) {
   const filter = {
     type: 'notification'
   };
-  const { data: tasks, error } = await taskConfig.findMany(filter);
+  const { data: tasks, error } = await services.water.taskConfigs.findMany(filter);
 
   const notifications = getNotificationsList(tasks, request);
   const reports = getReportsList(request);
@@ -66,7 +65,7 @@ async function getStep (request, reply) {
   const step = parseInt(request.query.step, 10);
   const start = parseInt(request.query.start, 10);
 
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     throw new Error(taskConfigError);
   }
@@ -99,7 +98,7 @@ async function renderStep (request, reply, taskData, index) {
   // Populate lookup data
   step.widgets = await Promise.map(step.widgets, async (widget) => {
     if (widget.lookup) {
-      const { data, error } = await lookup.findMany(widget.lookup.filter);
+      const { data, error } = await services.water.lookups.findMany(widget.lookup.filter);
       if (error) {
         throw error;
       }
@@ -129,7 +128,7 @@ async function postStep (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
   const step = parseInt(request.query.step, 10);
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     return reply(taskConfigError);
   }
@@ -166,7 +165,7 @@ async function postStep (request, reply) {
 async function getRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     return reply(taskConfigError);
   }
@@ -232,7 +231,7 @@ async function getRefine (request, reply) {
 async function postRefine (request, reply) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     return reply(taskConfigError);
   }
@@ -292,7 +291,7 @@ async function getVariableData (request, reply) {
   const { id } = request.params;
 
   // Find the requested task
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     return reply(taskConfigError);
   }
@@ -313,7 +312,7 @@ async function postVariableData (request, reply) {
   const id = parseInt(request.params.id, 10);
 
   // Find the requested task
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     return reply(taskConfigError);
   }
@@ -355,7 +354,7 @@ function countPreviewLicences (previewData) {
  */
 async function getSendViewContext (id, data, sender) {
   // Find the requested task
-  const { data: task, error: taskConfigError } = await taskConfig.findOne(id);
+  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
   if (taskConfigError) {
     throw taskConfigError;
   }

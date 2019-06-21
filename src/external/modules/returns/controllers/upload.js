@@ -3,7 +3,6 @@ const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const { uploadForm } = require('../forms/upload');
-const water = require('../../../lib/connectors/water');
 const files = require('../../../../shared/lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
@@ -144,7 +143,7 @@ const getUploadEvent = async (eventId, userName) => {
   };
 
   // Get data from event database
-  const { data: [ evt ], error } = await water.events.findMany(filter);
+  const { data: [ evt ], error } = await services.water.events.findMany(filter);
   throwIfError(error);
   return evt;
 };

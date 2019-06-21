@@ -1,5 +1,5 @@
 const Permit = require('../../lib/connectors/permit');
-const LicenceTransformer = require('../../lib/licence-transformer/');
+const LicenceTransformer = require('shared/lib/licence-transformer/');
 const waterConnector = require('../../lib/connectors/water');
 const { find, has } = require('lodash');
 const Boom = require('boom');

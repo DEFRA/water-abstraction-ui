@@ -1,4 +1,4 @@
-const { find, has } = require('lodash');
+const { find, has, get } = require('lodash');
 
 const isLevelMeasure = measure => measure.parameter === 'level';
 const isFlowMeasure = measure => measure.parameter === 'flow';
@@ -30,11 +30,13 @@ function autoSelectRiverLevelMeasure (flow, level, hofTypes) {
  * @return {Object} measure the selected measure - level/flow
  */
 function selectRiverLevelMeasure (riverLevel, hofTypes, mode = 'auto') {
-  const flow = find(riverLevel.measures, measure => {
+  const measures = get(riverLevel, 'measures', []);
+
+  const flow = find(measures, measure => {
     return isFlowMeasure(measure) && hasLatestReading(measure);
   });
 
-  const level = find(riverLevel.measures, measure => {
+  const level = find(measures, measure => {
     return isLevelMeasure(measure) && hasLatestReading(measure);
   });
 

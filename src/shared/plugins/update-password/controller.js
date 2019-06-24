@@ -1,38 +1,40 @@
 const uuid = require('uuid/v4');
 const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error');
 const { AuthTokenError } = require('./errors');
-const services = require('../../lib/connectors/services');
-const config = require('../../config');
 
 /**
  * Update password step 1 - enter current password
  */
-async function getConfirmPassword (request, reply) {
-  return reply.view('water/update-password/update_password', request.view);
+async function getConfirmPassword (request, h) {
+  return h.view('water/update-password/update_password', request.view);
 }
 
 /**
  * Update password step 1 POST handler - enter current password
  * @param {Object} request - HAPI HTTP request
  * @param {String} request.payload.password - user's current password in IDM
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP reply interface
  */
-async function postConfirmPassword (request, reply) {
+async function postConfirmPassword (request, h) {
   try {
     if (request.formError) {
       throw request.formError;
     }
     const { password } = request.payload;
     const { userName } = request.defra;
+<<<<<<< HEAD:src/external/modules/update-password/controller.js
     await services.idm.users.authenticate(userName, password, config.idm.application);
+=======
+    await h.realm.pluginOptions.authenticate(userName, password);
+>>>>>>> Create update-password plugin:src/shared/plugins/update-password/controller.js
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();
     request.yar.set('authToken', authtoken);
 
-    return reply.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });
+    return h.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });
   } catch (error) {
-    return reply.view('water/update-password/update_password', { error, ...request.view });
+    return h.view('water/update-password/update_password', { error, ...request.view });
   }
 }
 
@@ -43,12 +45,12 @@ async function postConfirmPassword (request, reply) {
  * @param {String} request.payload.confirmPassword - password again
  * @param {String} request.payload.authtoken - token to ensure user verified identity in previous step in flow
  */
-async function postSetPassword (request, reply) {
+async function postSetPassword (request, h) {
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
     const { authtoken } = request.payload;
-    return reply.view('water/update-password/update_password_verified_password', { ...request.view, errors, authtoken });
+    return h.view('water/update-password/update_password_verified_password', { ...request.view, errors, authtoken });
   }
 
   try {
@@ -63,28 +65,28 @@ async function postSetPassword (request, reply) {
     }
     // Change password
     const { userId } = request.defra;
-    const { error } = services.idm.users.updatePassword(userId, password);
+    const { error } = h.realm.pluginOptions.updatePassword(userId, password);
     if (error) {
       throw error;
     }
 
     // All OK
-    return reply.redirect('/password_updated');
+    return h.redirect('/password_updated');
   } catch (error) {
     if (error.name === 'AuthTokenError') {
-      return reply.redirect('water/update-password/update_password');
+      return h.redirect('water/update-password/update_password');
     }
-    reply(error);
+    h(error);
   }
 }
 
 /**
  * Reset successful
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI HTTP reply interface
  */
-async function getPasswordUpdated (request, reply) {
-  return reply.view('water/update-password/updated_password', request.view);
+async function getPasswordUpdated (request, h) {
+  return h.view('water/update-password/updated_password', request.view);
 }
 
 module.exports = {

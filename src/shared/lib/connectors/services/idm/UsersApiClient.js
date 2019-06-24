@@ -32,7 +32,7 @@ class UsersApiClient extends APIClient {
    * @param  {String}  application - the application to use for authentication
    * @return {Promise<Object>} resolves with object including success flag
    */
-  async authenticate (email, password, application) {
+  async authenticate (application, email, password) {
     try {
       const uri = urlJoin(this.config.endpoint, 'login');
 

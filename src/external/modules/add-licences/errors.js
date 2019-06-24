@@ -40,11 +40,9 @@ class LicenceFlowError extends Error {
   }
 }
 
-module.exports = {
-  LicenceNotFoundError,
-  LicenceMissingError,
-  LicenceSimilarityError,
-  InvalidAddressError,
-  NoLicencesSelectedError,
-  LicenceFlowError
-};
+exports.LicenceNotFoundError = LicenceNotFoundError;
+exports.LicenceMissingError = LicenceMissingError;
+exports.LicenceSimilarityError = LicenceSimilarityError;
+exports.InvalidAddressError = InvalidAddressError;
+exports.NoLicencesSelectedError = NoLicencesSelectedError;
+exports.LicenceFlowError = LicenceFlowError;

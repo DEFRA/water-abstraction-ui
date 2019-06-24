@@ -1,39 +1,13 @@
-const Boom = require('boom');
-const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const services = require('../../lib/connectors/services');
-const { getLicences: baseGetLicences } = require('./base');
-const helpers = require('./helpers');
-const { getLicenceReturns } = require('../returns/lib/helpers');
 
-const { mapReturns } = require('../returns/lib/helpers');
+const config = require('external/config');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { renameLicenceForm, renameLicenceSchema } = require('./forms/rename');
 
-/**
- * Formats data commonly used in views, assuming that licence data has been
- * loaded by the licenceData plugin
- * @param  {Object} request - hapi request
- * @return {Object}           view data
- */
-const getCommonViewContext = request => {
-  const { documentId } = request.params;
-  return {
-    ...request.view,
-    ...request.licence,
-    documentId
-  };
-};
-
-const getCommonBackLink = request => {
-  const { documentId } = request.params;
-  const { licenceNumber } = request.licence.summary;
-  return {
-    back: `/licences/${documentId}`,
-    backText: `Licence number ${licenceNumber}`
-  };
-};
+const { getCommonViewContext, getCommonBackLink } = require('shared/lib/view-licence-helpers');
+const { mapSort, mapFilter } = require('./helpers');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -46,7 +20,7 @@ const getCommonBackLink = request => {
  * @param {Number} [request.query.direction] - sort direction +1 : asc, -1 : desc
  * @param {Object} reply - the HAPI HTTP response
  */
-async function getLicences (request, reply) {
+async function getLicences (request, h) {
   const { view } = request;
 
   const verifications = request.licence.outstandingVerifications;
@@ -54,35 +28,45 @@ async function getLicences (request, reply) {
 
   if (licenceCount === 0) {
     return verifications.length === 0
-      ? reply.redirect('/add-licences')
-      : reply.redirect('/security-code');
+      ? h.redirect('/add-licences')
+      : h.redirect('/security-code');
   }
 
   // Set view flags
   view.showVerificationAlert = verifications.length > 0;
   view.enableSearch = licenceCount > 5;
 
-  return baseGetLicences(request, reply);
-}
-
-async function getLicenceDetail (request, reply) {
-  try {
-    const { licenceNumber, documentName } = request.licence.summary;
-
-    const { pageTitle, pageHeading } = helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName);
-
-    const view = {
-      ...getCommonViewContext(request),
-      ...getCommonBackLink(request),
-      pageTitle,
-      pageHeading
-    };
-
-    return reply.view(request.config.view, view, { layout: false });
-  } catch (error) {
-    throw helpers.errorMapper(error);
+  if (request.formError) {
+    return h.view('water/view-licences/licences', request.view);
   }
-};
+
+  const companyId = request.yar.get('companyId');
+  const { page, emailAddress } = request.query;
+  const sort = mapSort(request.query);
+  const filter = mapFilter(companyId, request.query);
+
+  // Check if user exists
+  if (emailAddress) {
+    const user = await services.idm.users.findOneByEmail(emailAddress, config.idm.application);
+    request.view.error = !user;
+  }
+
+  // Get licences from CRM
+  const { data, error, pagination } = await services.crm.documents.findMany(filter, sort, {
+    page,
+    perPage: 50
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return h.view('water/view-licences/licences', {
+    ...request.view,
+    licenceData: data,
+    pagination
+  });
+}
 
 /**
  * Renders a page for the user to set/update licence name
@@ -122,131 +106,6 @@ async function postLicenceRename (request, h) {
   return h.redirect(`/licences/${documentId}`);
 }
 
-/**
- * Throws a 404 error if the gauging station requested is not attached to the
- * licence referred to in the document ID param
- * @param  {Object} request - HAPI request
- */
-const validateGaugingStation = request => {
-  const { gaugingStation } = request.params;
-  const station = request.licence.summary.gaugingStations.find(station => (
-    station.stationReference === gaugingStation
-  ));
-  if (!station) {
-    throw Boom.notFound(`Gauging station ${gaugingStation} not found`);
-  }
-};
-
-const isLevelCondition = condition =>
-  (condition.code === 'CES' && condition.subCode === 'LEV');
-
-const isFlowCondition = condition =>
-  (condition.code === 'CES' && condition.subCode === 'FLOW');
-
-const getHoFTypes = (conditions = []) => ({
-  cesFlow: conditions.filter(isFlowCondition).length > 0,
-  cesLev: conditions.filter(isLevelCondition).length > 0
-});
-
-/**
- * Displays a gauging station flow/level data, along with HoF conditions
- * for the selected licence
- */
-const getLicenceGaugingStation = async (request, h) => {
-  // Validate that gauging station is associated with this licence
-  validateGaugingStation(request);
-
-  // Get gauging station data
-  const { gaugingStation } = request.params;
-  const hofTypes = getHoFTypes(request.licence.summary.conditions);
-  const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes);
-  const { licenceNumber, documentName } = request.licence.summary;
-  const { pageTitle } = helpers.getLicencePageTitle(request.config.view, licenceNumber, documentName);
-  const viewContext = helpers.setConditionHofFlags(getCommonViewContext(request));
-
-  const view = {
-    ...viewContext,
-    ...getCommonBackLink(request),
-    pageTitle,
-    riverLevel,
-    measure,
-    gaugingStation,
-    hasGaugingStationMeasurement: riverLevel && riverLevel.active && measure
-  };
-
-  return h.view('nunjucks/view-licences/gauging-station.njk', view, { layout: false });
-};
-
-const hasMultiplePages = pagination => pagination.pageCount > 1;
-
-/**
- * Tabbed view details for a single licence
- * @param {Object} request - the HAPI HTTP request
- * @param {String} request.params.licence_id - CRM document header GUID
- * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
- * @param {Object} reply - HAPI reply interface
- */
-const getLicence = async (request, h) => {
-  const { licenceNumber } = request.licence.summary;
-
-  const pagination = { page: 1, perPage: 10 };
-  const returns = await getLicenceReturns([licenceNumber], pagination, false);
-
-  const view = {
-    ...getCommonViewContext(request),
-    pageTitle: `Licence number ${licenceNumber}`,
-    returns: mapReturns(returns.data, request),
-    hasMoreReturns: hasMultiplePages(returns.pagination),
-    back: '/licences'
-  };
-
-  return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
-};
-
-const getAddressParts = notification => {
-  return [
-    'addressLine1',
-    'addressLine2',
-    'addressLine3',
-    'addressLine4',
-    'addressLine5',
-    'postcode'
-  ].reduce((acc, part) => {
-    const addressPart = trim(notification.address[part]);
-    return addressPart ? [...acc, addressPart] : acc;
-  }, []);
-};
-
-const getLicenceCommunication = async (request, h) => {
-  const { communicationId, documentId } = request.params;
-  const response = await services.water.communications.getCommunication(communicationId);
-
-  const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
-  if (!licence) {
-    throw Boom.notFound('Document not associated with communication');
-  }
-
-  const viewContext = {
-    ...request.view,
-    ...{ pageTitle: (licence.documentName || licence.licenceRef) + ', message review' },
-    licence,
-    messageType: response.data.evt.name,
-    sentDate: response.data.evt.createdDate,
-    messageContent: response.data.notification.plainText,
-    back: `/licences/${documentId}#communications`,
-    recipientAddressParts: getAddressParts(response.data.notification),
-    isInternal: false
-  };
-
-  return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });
-};
-
 exports.getLicences = getLicences;
-exports.getLicenceDetail = getLicenceDetail;
 exports.postLicenceRename = postLicenceRename;
-exports.getLicenceGaugingStation = getLicenceGaugingStation;
-exports.validateGaugingStation = validateGaugingStation;
-exports.getHoFTypes = getHoFTypes;
-exports.getLicence = getLicence;
-exports.getLicenceCommunication = getLicenceCommunication;
 exports.getLicenceRename = getLicenceRename;

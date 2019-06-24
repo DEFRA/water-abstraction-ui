@@ -73,6 +73,7 @@ const postSignin = async (request, h) => {
   const { email, password } = request.payload;
 
   const user = await h.realm.pluginOptions.authenticate(email, password);
+  console.log('post sign in', user);
 
   // Forced reset
   if (resetIsRequired(user)) {

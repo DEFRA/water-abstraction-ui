@@ -1,6 +1,7 @@
 const LinesApiClient = require('shared/lib/connectors/services/returns/LinesApiClient');
-const ReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient');
 const VersionsApiClient = require('shared/lib/connectors/services/returns/VersionsApiClient');
+
+const ReturnsApiClient = require('./ReturnsApiClient');
 
 const { logger } = require('../../../../logger');
 

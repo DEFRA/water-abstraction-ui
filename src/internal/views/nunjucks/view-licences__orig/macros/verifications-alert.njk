@@ -1,0 +1,26 @@
+{% from "inset-text/macro.njk" import govukInsetText %}
+
+{% macro verificationsAlert(verifications) %}
+
+  {% if verifications.length %}
+  <div class="grid-row">
+    <div class="grid-row-column-two-thirds">
+
+      <div class="alert">
+        <p>We have sent {{ verifications.length }} security
+          {{ 'code' | pluralize(verifications) }}  by post.
+        </p>
+        <ul class="govuk-list">
+          {% for verification in verifications %}
+            <li>{{ verification.entity_nm }} -
+              <strong class="bold-small">{{ verification.verification_code }}</strong>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+  </div>
+  {% endif %}
+
+{% endmacro %}

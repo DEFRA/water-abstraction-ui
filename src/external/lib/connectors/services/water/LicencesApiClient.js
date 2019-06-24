@@ -1,6 +1,6 @@
-const SharedLicencesAPIClient = require('shared/lib/connectors/services/water/licences');
+const SharedLicencesApiClient = require('shared/lib/connectors/services/water/licences');
 
-class LicencesAPIClient extends SharedLicencesAPIClient {
+class LicencesApiClient extends SharedLicencesApiClient {
   getSummaryByDocumentId (documentId, companyId) {
     return super.getSummaryByDocumentId(documentId, { companyId });
   }
@@ -18,4 +18,4 @@ class LicencesAPIClient extends SharedLicencesAPIClient {
   }
 }
 
-module.exports = LicencesAPIClient;
+module.exports = LicencesApiClient;

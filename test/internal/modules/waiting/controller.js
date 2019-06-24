@@ -1,4 +1,4 @@
-const waterConnector = require('internal/lib/connectors/water');
+const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/waiting/controller');
 
 const { expect } = require('code');
@@ -28,7 +28,7 @@ experiment('getWaiting', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(waterConnector.events, 'findOne').resolves(getTestEventResponse());
+    sandbox.stub(services.water.events, 'findOne').resolves(getTestEventResponse());
 
     h = {
       view: sandbox.spy(),
@@ -48,13 +48,13 @@ experiment('getWaiting', () => {
 
   test('uses the event id from the params to get the event', async () => {
     await controller.getWaiting(request, h);
-    const [eventId] = waterConnector.events.findOne.lastCall.args;
+    const [eventId] = services.water.events.findOne.lastCall.args;
     expect(eventId).to.equal(request.params.eventId);
   });
 
   experiment('for an event sub type of returnReminder', () => {
     test('throws an error if there is an error getting the event', async () => {
-      waterConnector.events.findOne.resolves({
+      services.water.events.findOne.resolves({
         error: 'bah',
         data: null
       });
@@ -64,7 +64,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is processing', () => {
       test('the waiting page is rendered', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processing'));
+        services.water.events.findOne.resolves(getTestEventResponse('processing'));
         await controller.getWaiting(request, h);
 
         const [template] = h.view.lastCall.args;
@@ -72,7 +72,7 @@ experiment('getWaiting', () => {
       });
 
       test('sets the correct page title', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processing'));
+        services.water.events.findOne.resolves(getTestEventResponse('processing'));
         await controller.getWaiting(request, h);
 
         const [, context] = h.view.lastCall.args;
@@ -82,7 +82,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is error', () => {
       test('an error is thrown', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('error'));
+        services.water.events.findOne.resolves(getTestEventResponse('error'));
         const err = await expect(controller.getWaiting(request, h)).to.reject();
 
         expect(err.isBoom).to.be.true();
@@ -92,7 +92,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is processed', () => {
       test('the user is redirected to the review page', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processed'));
+        services.water.events.findOne.resolves(getTestEventResponse('processed'));
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
@@ -104,7 +104,7 @@ experiment('getWaiting', () => {
   experiment('for an event sub type of returnInvitation', () => {
     experiment('when the event status is processing', () => {
       test('the waiting page is rendered', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
+        services.water.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
         await controller.getWaiting(request, h);
 
         const [template] = h.view.lastCall.args;
@@ -112,7 +112,7 @@ experiment('getWaiting', () => {
       });
 
       test('sets the correct page title', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
+        services.water.events.findOne.resolves(getTestEventResponse('processing', 'returnInvitation'));
         await controller.getWaiting(request, h);
 
         const [, context] = h.view.lastCall.args;
@@ -122,7 +122,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is error', () => {
       test('an error is thrown', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('error', 'returnInvitation'));
+        services.water.events.findOne.resolves(getTestEventResponse('error', 'returnInvitation'));
         const err = await expect(controller.getWaiting(request, h)).to.reject();
 
         expect(err.isBoom).to.be.true();
@@ -132,7 +132,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is processed', () => {
       test('the user is redirected to the review page', async () => {
-        waterConnector.events.findOne.resolves(getTestEventResponse('processed', 'returnInvitation'));
+        services.water.events.findOne.resolves(getTestEventResponse('processed', 'returnInvitation'));
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;

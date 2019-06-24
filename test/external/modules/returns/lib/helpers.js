@@ -8,7 +8,6 @@ const sandbox = sinon.createSandbox();
 const { get } = require('lodash');
 
 const services = require('external/lib/connectors/services');
-const returnsConnector = require('external/lib/connectors/returns').returns;
 const helpers = require('external/modules/returns/lib/helpers');
 
 experiment('isReturnPastDueDate', () => {
@@ -76,7 +75,7 @@ experiment('isReturnId', () => {
 
 experiment('getLicenceReturns', () => {
   beforeEach(async () => {
-    sandbox.stub(returnsConnector, 'findMany').resolves({
+    sandbox.stub(services.returns.returns, 'findMany').resolves({
       data: {},
       error: null,
       pagination: {}
@@ -89,13 +88,13 @@ experiment('getLicenceReturns', () => {
 
   test('does not filter void returns for internal users', async () => {
     await helpers.getLicenceReturns([], 1, true);
-    const filter = returnsConnector.findMany.args[0][0];
+    const filter = services.returns.returns.findMany.args[0][0];
     expect(get(filter, 'status.$ne')).to.be.undefined();
   });
 
   test('omits void returns for external users', async () => {
     await helpers.getLicenceReturns([], 1, false);
-    const filter = returnsConnector.findMany.args[0][0];
+    const filter = services.returns.returns.findMany.args[0][0];
     expect(get(filter, 'status.$ne')).to.equal('void');
   });
 });
@@ -151,7 +150,7 @@ experiment('isXmlUpload', () => {
 
   experiment('pagination.totalRows > 0', () => {
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {
@@ -170,7 +169,7 @@ experiment('isXmlUpload', () => {
     let filter;
 
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {
@@ -178,7 +177,7 @@ experiment('isXmlUpload', () => {
         }
       });
       await helpers.isXmlUpload(['01/123', '04/567'], '2019-05-05');
-      filter = returnsConnector.findMany.lastCall.args[0];
+      filter = services.returns.returns.findMany.lastCall.args[0];
     });
 
     test('have the GOR upload flag set', async () => {
@@ -213,7 +212,7 @@ experiment('isXmlUpload', () => {
     experiment('for a summer return cycle', () => {
       beforeEach(async () => {
         await helpers.isXmlUpload(['01/123', '04/567'], '2019-11-01');
-        filter = returnsConnector.findMany.lastCall.args[0];
+        filter = services.returns.returns.findMany.lastCall.args[0];
       });
 
       test('are in the current return cycle', async () => {
@@ -231,7 +230,7 @@ experiment('isXmlUpload', () => {
 
   experiment('pagination.totalRows === 0', () => {
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {

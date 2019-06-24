@@ -4,7 +4,6 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 
-const waterConnector = require('internal/lib/connectors/water');
 const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/batch-notifications/lib/helpers');
 
@@ -26,16 +25,16 @@ experiment('batch notification helpers', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(waterConnector.events, 'findOne');
+      sandbox.stub(services.water.events, 'findOne');
     });
 
     test('rejects if the API returns an error response', async () => {
-      waterConnector.events.findOne.resolves({ error: 'oh no!' });
+      services.water.events.findOne.resolves({ error: 'oh no!' });
       expect(helpers.loadEvent()).to.reject();
     });
 
     test('rejects with Boom unauthorized if event issuer does not match current user', async () => {
-      waterConnector.events.findOne.resolves({ data: { issuer: 'bob@example.com' } });
+      services.water.events.findOne.resolves({ data: { issuer: 'bob@example.com' } });
       try {
         await helpers.loadEvent(request);
         fail();
@@ -46,7 +45,7 @@ experiment('batch notification helpers', () => {
     });
 
     test('rejects with Boom bad request if event is not a notification', async () => {
-      waterConnector.events.findOne.resolves({ data: {
+      services.water.events.findOne.resolves({ data: {
         issuer: 'mail@example.com',
         type: 'notANotification'
       } });
@@ -60,7 +59,7 @@ experiment('batch notification helpers', () => {
     });
 
     test('resolves with event data if notification and issuer matches current user', async () => {
-      waterConnector.events.findOne.resolves({ data: {
+      services.water.events.findOne.resolves({ data: {
         eventId,
         issuer: 'mail@example.com',
         type: 'notification'

@@ -1,5 +1,5 @@
 const { difference } = require('lodash');
-const { returns } = require('../../../lib/connectors/returns');
+const services = require('../../../lib/connectors/services');
 
 /**
  * In a row, one column will be 'count' while the other will
@@ -80,7 +80,7 @@ const getReturnStats = async (endDate) => {
   const filter = { end_date: endDate };
   const data = {};
   for (let reportType of ['statuses', 'licenceCount', 'frequencies']) {
-    const response = await returns.getReport(reportType, filter);
+    const response = await services.returns.returns.getReport(reportType, filter);
     data[reportType] = mapReportResponse(response);
   }
   return data;

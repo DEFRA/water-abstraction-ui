@@ -5,7 +5,6 @@ const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
-const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
@@ -101,7 +100,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     perPage: 50
   };
 
-  const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
+  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
     throw Boom.badImplementation('Returns error', error);
   }
@@ -134,7 +133,7 @@ const isXmlUpload = async (licenceNumbers, refDate) => {
   const requestPagination = { 'page': 1, 'perPage': 1 };
   const columns = ['return_id'];
 
-  const { error, pagination } = await returns.findMany(filter, {}, requestPagination, columns);
+  const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns);
   throwIfError(error);
 
   return pagination.totalRows > 0;
@@ -195,7 +194,7 @@ const getLatestVersion = async (returnId) => {
   const sort = {
     version_number: -1
   };
-  const { error, data: [version] } = await versions.findMany(filter, sort);
+  const { error, data: [version] } = await services.returns.versions.findMany(filter, sort);
   if (error) {
     throw Boom.badImplementation(error);
   }

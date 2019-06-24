@@ -1,7 +1,7 @@
 const csv = require('util').promisify(require('csv-stringify'));
 const helpers = require('@envage/water-abstraction-helpers');
 
-const { returns } = require('../../lib/connectors/returns');
+const services = require('../../lib/connectors/services');
 const { getReturnStats } = require('./lib/returns-stats');
 
 const getCycleStats = async cycle => {
@@ -36,7 +36,7 @@ const getDownloadReport = async (request, h) => {
     status: 'completed'
   };
 
-  const { error, data } = await returns.getReport('userDetails', filter);
+  const { error, data } = await services.returns.returns.getReport('userDetails', filter);
 
   if (error) {
     const err = new Error(`Returns report error`);

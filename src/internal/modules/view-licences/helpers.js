@@ -1,6 +1,5 @@
-const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
-const waterConnector = require('../../lib/connectors/water');
+const services = require('../../lib/connectors/services');
 const { find, has } = require('lodash');
 const Boom = require('boom');
 
@@ -80,7 +79,7 @@ function loadGaugingStations (metadata) {
       $in: (metadata.gaugingStations || []).map(row => row.stationReference)
     }
   };
-  return waterConnector.gaugingStations.findMany(filter);
+  return services.water.gaugingStations.findMany(filter);
 }
 
 /**
@@ -96,7 +95,7 @@ async function loadLicenceData (request, documentId) {
   const {
     error: permitError,
     data: permitData
-  } = await Permit.licences.findOne(documentHeader.system_internal_id);
+  } = await services.permits.licences.findOne(documentHeader.system_internal_id);
   if (permitError) {
     throw permitError;
   }
@@ -215,7 +214,7 @@ async function loadRiverLevelData (stationReference, hofTypes, mode) {
   }
 
   try {
-    riverLevel = await waterConnector.getRiverLevel(stationReference);
+    riverLevel = await services.water.riverLevels.getRiverLevel(stationReference);
   } catch (err) {
     // Don't throw error for 404.  A valid station ID may return 404
     // because it is disabled

@@ -1,8 +1,10 @@
 'use strict';
 const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+
 const { expect } = require('code');
 const Lab = require('lab');
-const { experiment, test, before, after } = exports.lab = Lab.script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const {
   findLatestReturn,
@@ -11,7 +13,6 @@ const {
   filterReturnsByCRMDocument
 } = require('internal/modules/returns/lib/api-helpers');
 
-const returnsService = require('internal/lib/connectors/returns');
 const services = require('internal/lib/connectors/services');
 
 experiment('findLatestReturn', () => {
@@ -80,23 +81,19 @@ experiment('filterReturn', async () => {
 });
 
 experiment('getRecentReturns', async () => {
-  let findManyStub;
-  let findOneStub;
-
   const returnData = {
     return_id: '123:456:789',
     licence_ref: '123/456/789',
     status: 'completed'
   };
 
-  before(async () => {
-    findManyStub = sinon.stub(returnsService.returns, 'findMany').resolves({ data: [returnData] });
-    findOneStub = sinon.stub(returnsService.returns, 'findOne').resolves({ data: returnData });
+  beforeEach(async () => {
+    sandbox.stub(services.returns.returns, 'findMany').resolves({ data: [returnData] });
+    sandbox.stub(services.returns.returns, 'findOne').resolves({ data: returnData });
   });
 
-  after(async () => {
-    findManyStub.restore();
-    findOneStub.restore();
+  afterEach(async () => {
+    sandbox.restore();
   });
 
   test('for a format ID, it should return an array of returns, 1 for each NALD region', async () => {
@@ -112,8 +109,6 @@ experiment('getRecentReturns', async () => {
 });
 
 experiment('filterReturnsByCRMDocument', async () => {
-  let crmStub;
-
   const returns = [
     {
       return_id: 'v1:123',
@@ -127,23 +122,25 @@ experiment('filterReturnsByCRMDocument', async () => {
     }
   ];
 
-  after(async () => {
-    crmStub.restore();
+  beforeEach(async () => {
+    sandbox.stub(services.crm.documents, 'findMany');
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
   });
 
   test('It should throw an error if an API error occurs', async () => {
-    crmStub = sinon.stub(services.crm.documents, 'findMany').resolves({ data: null, error: 'SomeError' });
+    services.crm.documents.findMany.resolves({ data: null, error: 'SomeError' });
     const rejects = () => {
       return filterReturnsByCRMDocument(returns);
     };
     await expect(rejects()).to.reject();
-    crmStub.restore();
   });
 
   test('It should filter out any returns for which a CRM document cannot be found', async () => {
-    crmStub = sinon.stub(services.crm.documents, 'findMany').resolves({ data: [{ system_external_id: returns[0].licence_ref }], error: null });
+    services.crm.documents.findMany.resolves({ data: [{ system_external_id: returns[0].licence_ref }], error: null });
     const result = await filterReturnsByCRMDocument(returns);
     await expect(result).to.equal([returns[0]]);
-    crmStub.restore();
   });
 });

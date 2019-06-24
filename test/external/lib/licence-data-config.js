@@ -32,6 +32,6 @@ experiment('external LicenceDataConfig', () => {
 
     const [documentId, options] = services.water.licences.getSummaryByDocumentId.lastCall.args;
     expect(documentId).to.equal('licence_1');
-    expect(options).to.equal('company_1');
+    expect(options).to.equal({ companyId: 'company_1' });
   });
 });

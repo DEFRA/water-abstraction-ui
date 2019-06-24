@@ -17,7 +17,7 @@ const schema = Joi.object({
  * @return {Promise}              resolves with HTTP response body
  */
 const getRequest = (serviceRequest, url, options = {}) => {
-  Joi.assert(options, schema, `Invalid LicencesAPIClient options`);
+  Joi.assert(options, schema, `Invalid LicencesApiClient options`);
 
   // Build query params
   const qs = pick(options, ['includeExpired', 'companyId']);

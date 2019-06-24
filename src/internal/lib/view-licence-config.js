@@ -1,7 +1,5 @@
 const { internal } = require('./constants').scope;
 const { getReturnPath } = require('./return-path');
-const communicationsConnector = require('./connectors/water-service/communications');
-const waterConnector = require('./connectors/water');
 
 const services = require('./connectors/services');
 
@@ -15,5 +13,5 @@ const getLicenceSummaryReturns = licenceNumber => {
 exports.allowedScopes = [internal];
 exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
-exports.getCommunication = communicationsConnector.getCommunication;
-exports.getRiverLevel = waterConnector.getRiverLevel;
+exports.getCommunication = services.water.communications.getCommunication;
+exports.getRiverLevel = services.water.riverLevels.getRiverLevel;

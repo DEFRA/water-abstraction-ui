@@ -7,10 +7,6 @@ module.exports = [{
   path: '/update_password',
   handler: controller.getConfirmPassword,
   config: {
-    auth: {
-      strategy: 'standard',
-      mode: 'try'
-    },
     description: 'Update password: enter current password',
     plugins: {
       viewContext: {
@@ -28,7 +24,6 @@ module.exports = [{
   method: 'POST',
   path: '/update_password_verify_password',
   config: {
-    auth: false,
     description: 'Update password: verify current password',
     validate: {
       payload: {
@@ -59,7 +54,6 @@ module.exports = [{
   method: 'POST',
   path: '/update_password_verified_password',
   config: {
-    auth: false,
     description: 'Update password: set new password',
     validate: {
       payload: {
@@ -97,7 +91,6 @@ module.exports = [{
   method: 'GET',
   path: '/password_updated',
   config: {
-    auth: false,
     description: 'Update password: success',
     plugins: {
       viewContext: {

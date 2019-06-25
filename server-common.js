@@ -1,6 +1,5 @@
 const GoodWinston = require('good-winston');
 const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
-const LicenceDataConfig = require('external/lib/LicenceDataConfig');
 const UpdatePasswordConfig = require('shared/lib/UpdatePasswordConfig');
 
 const createPlugins = (config, logger, connectors) => ([
@@ -32,9 +31,6 @@ const createPlugins = (config, logger, connectors) => ([
   }, {
     plugin: require('shared/plugins/reset-password'),
     options: new ResetPasswordConfig(config, connectors)
-  }, {
-    plugin: require('shared/plugins/licence-data'),
-    options: new LicenceDataConfig(config, connectors)
   }, {
     plugin: require('shared/plugins/update-password'),
     options: new UpdatePasswordConfig(config, connectors)

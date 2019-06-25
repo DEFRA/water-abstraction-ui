@@ -22,11 +22,7 @@ async function postConfirmPassword (request, h) {
     }
     const { password } = request.payload;
     const { userName } = request.defra;
-<<<<<<< HEAD:src/external/modules/update-password/controller.js
-    await services.idm.users.authenticate(userName, password, config.idm.application);
-=======
     await h.realm.pluginOptions.authenticate(userName, password);
->>>>>>> Create update-password plugin:src/shared/plugins/update-password/controller.js
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();

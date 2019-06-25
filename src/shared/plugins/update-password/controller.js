@@ -50,10 +50,6 @@ async function postSetPassword (request, h) {
   }
 
   try {
-    // Check for form errors
-    if (request.formError) {
-      throw request.formError;
-    }
     // Check auth token
     const { authtoken, password } = request.payload;
     if (authtoken !== request.yar.get('authToken')) {
@@ -61,7 +57,7 @@ async function postSetPassword (request, h) {
     }
     // Change password
     const { userId } = request.defra;
-    const { error } = h.realm.pluginOptions.updatePassword(userId, password);
+    const { error } = await h.realm.pluginOptions.updatePassword(userId, password);
     if (error) {
       throw error;
     }
@@ -69,12 +65,20 @@ async function postSetPassword (request, h) {
     // All OK
     return h.redirect('/password_updated');
   } catch (error) {
-    if (error.name === 'AuthTokenError') {
-      return h.redirect('water/update-password/update_password');
-    }
-    h(error);
+    return handlePostSetPasswordError(error, h);
   }
 }
+/**
+ * Handle error thrown by postSetPassword method
+ * @param  {Object} error
+ * @param  {Object} h     HAPI HTTP reply interface
+ */
+const handlePostSetPasswordError = (error, h) => {
+  if (error.name === 'AuthTokenError') {
+    return h.redirect('water/update-password/update_password');
+  }
+  return h(error);
+};
 
 /**
  * Reset successful

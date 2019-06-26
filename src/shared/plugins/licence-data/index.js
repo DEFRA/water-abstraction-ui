@@ -2,15 +2,12 @@ const Boom = require('boom');
 const Joi = require('joi');
 const camelCase = require('camelcase');
 const bluebird = require('bluebird');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const routeConfigSchema = Joi.object().keys({
   param: Joi.string().default('documentId'),
   load: Joi.object({
     summary: Joi.boolean().valid(true),
-    communications: Joi.boolean().valid(true),
-    users: Joi.boolean().valid(true),
-    primaryUser: Joi.boolean().valid(true)
+    communications: Joi.boolean().valid(true)
   })
 });
 
@@ -23,13 +20,10 @@ const routeConfigSchema = Joi.object().keys({
  * @return {Promise<Object>}
  */
 const loadLicenceData = async (keys, request, documentId, h) => {
-  const { getLicenceData } = h.realm.pluginOptions;
   const data = {};
   await bluebird.map(keys, async key => {
-    const method = camelCase(`get_${key}_ByDocumentId`);
-    const { error, data: licenceData } = await getLicenceData(method, documentId, request);
-    throwIfError(error);
-    data[key] = licenceData;
+    const getter = camelCase(`get_${key}_ByDocumentId`);
+    data[key] = await h.realm.pluginOptions[getter](documentId, request);
   });
   return data;
 };

@@ -1,5 +1,4 @@
 const { APIClient } = require('@envage/hapi-pg-rest-api');
-const { get } = require('lodash');
 const urlJoin = require('url-join');
 const { http } = require('@envage/water-abstraction-helpers');
 
@@ -22,8 +21,6 @@ class ReturnsApiClient extends APIClient {
         Authorization: config.jwt.token
       }
     });
-
-    this.showFutureReturns = get(config, 'returns.showFutureReturns', false);
   }
 }
 

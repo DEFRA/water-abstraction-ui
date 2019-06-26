@@ -2,7 +2,7 @@ const { APIClient } = require('@envage/hapi-pg-rest-api');
 const urlJoin = require('url-join');
 const { http } = require('@envage/water-abstraction-helpers');
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/licence');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/licences');
 
 class LicencesApiClient extends APIClient {
   /**

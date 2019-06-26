@@ -28,7 +28,7 @@ experiment('shared/services/LicencesApiClient', () => {
 
   experiment('construction', () => {
     test('creates the expected endpoint URL', async () => {
-      expect(client.getUrl()).to.equal('https://example.com/permits/licence');
+      expect(client.getUrl()).to.equal('https://example.com/permits/licences');
     });
 
     test('sets the JWT in the client headers', async () => {

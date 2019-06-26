@@ -15,7 +15,8 @@ experiment('Licence data plugin', () => {
       continue: 'continue',
       realm: {
         pluginOptions: {
-          getLicenceData: sandbox.stub().resolves({ error: null })
+          getSummaryByDocumentId: sandbox.stub(),
+          getCommunicationsByDocumentId: sandbox.stub()
         }
       }
     };
@@ -87,10 +88,8 @@ experiment('Licence data plugin', () => {
       test('loads data using getSummaryByDocumentId', async () => {
         await plugin._onPreHandler(request, h);
 
-        expect(h.realm.pluginOptions.getLicenceData.calledWith(
-          'getSummaryByDocumentId',
-          request.params.documentId,
-          request
+        expect(h.realm.pluginOptions.getSummaryByDocumentId.calledWith(
+          request.params.documentId, request
         )).to.equal(true);
       });
 
@@ -100,7 +99,7 @@ experiment('Licence data plugin', () => {
       });
 
       test('throws a Boom error and logs if getter throws error', async () => {
-        h.realm.pluginOptions.getLicenceData.rejects();
+        h.realm.pluginOptions.getSummaryByDocumentId.rejects();
 
         try {
           await plugin._onPreHandler(request, h);
@@ -129,10 +128,8 @@ experiment('Licence data plugin', () => {
       test('loads data using getCommunicationsByDocumentId', async () => {
         await plugin._onPreHandler(request, h);
 
-        expect(h.realm.pluginOptions.getLicenceData.calledWith(
-          'getCommunicationsByDocumentId',
-          request.params.documentId,
-          request
+        expect(h.realm.pluginOptions.getCommunicationsByDocumentId.calledWith(
+          request.params.documentId, request
         )).to.equal(true);
       });
     });

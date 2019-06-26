@@ -1,8 +1,10 @@
 const GoodWinston = require('good-winston');
 const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
+const LicenceDataConfig = require('external/lib/LicenceDataConfig');
 
 const createPlugins = (config, logger, connectors) => ([
   require('@hapi/scooter'),
+  require('hapi-auth-cookie'),
   require('@hapi/inert'),
   require('@hapi/vision'),
   {
@@ -30,6 +32,9 @@ const createPlugins = (config, logger, connectors) => ([
   }, {
     plugin: require('shared/plugins/reset-password'),
     options: new ResetPasswordConfig(config, connectors)
+  }, {
+    plugin: require('shared/plugins/licence-data'),
+    options: new LicenceDataConfig(config, connectors)
   }
 ]);
 

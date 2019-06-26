@@ -2,11 +2,97 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% from "contact-details.njk" import contactDetails %}
-{% from "nunjucks/view-licences/macros/licence-summary.njk" import licenceSummary %}
+
+{% from "nunjucks/view-licences/macros/amounts.njk" import amounts %}
+{% from "nunjucks/view-licences/macros/conditions.njk" import conditions %}
+{% from "nunjucks/view-licences/macros/periods.njk" import periods %}
+{% from "nunjucks/view-licences/macros/points.njk" import points %}
+{% from "nunjucks/view-licences/macros/purposes.njk" import purposes %}
+{% from "nunjucks/view-licences/macros/sources-of-supply.njk" import sourcesOfSupply %}
+{% from "nunjucks/view-licences/macros/gauging-stations.njk" import gaugingStations %}
 
 <h2 class="govuk-heading-m">Summary</h2>
 
-{{ licenceSummary(documentId, summary) }}
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Licence name
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ licence.documentName or 'No name chosen' }}
+
+      {% if not isInternal %}
+      <br />
+      <a href="/licences/{{ documentId }}/rename">
+        {{ 'Rename' if licence.documentName else 'Name' }} this licence
+      </a>
+      {% endif %}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Licence holder
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ licence.licenceHolderFullName }}
+      <br />
+      <a href="/licences/{{ documentId }}/contact">
+        View licence contact details
+      </a>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Effective from
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ licence.effectiveDate | date }}
+    </dd>
+  </div>
+  {% if licenceNumber.expiryDate %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      End date
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ licence.expiryDate | date }}
+    </dd>
+  </div>
+  {% endif %}
+
+  {{ sourcesOfSupply(licence.sourcesOfSupply) }}
+  {{ purposes(licence.uniquePurposeNames) }}
+
+  {% set link %}
+  <a href="/licences/{{ documentId }}/purposes">
+  View details of your
+  {{ 'purpose' | pluralize(licence.uniquePurposeNames) }},
+  {{ 'period' | pluralize(licence.abstractionPeriods) }}
+  and amounts
+  </a>
+  {% endset %}
+
+  {{ periods(licence.abstractionPeriods, link) }}
+
+  {% set link %}
+  <a href="/licences/{{ documentId }}/points">
+    View details of your abstraction {{ 'point' | pluralize(licence.points) }}
+  </a>
+  {% endset %}
+
+  {{ points(licence.points, link) }}
+
+  {% set link %}
+  <a href="/licences/{{ documentId }}/conditions">
+    View details of your abstraction {{ 'condition' | pluralize(licence.conditions) }}
+  </a>
+  {% endset %}
+
+  {% set baseUrl %}/licences/{{ documentId }}{% endset %}
+  {{ gaugingStations(licence.gaugingStations, baseUrl) }}
+  {{ conditions(licence.conditions, link) }}
+  {{ amounts(licence.aggregateQuantity) }}
+</dl>
 
 <div class="govuk-grid-row">
 

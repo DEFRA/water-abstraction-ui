@@ -30,7 +30,7 @@
     {{ return.due_date | date }}
   </td>
   <td class="govuk-table__cell">
-    {{ badge(return | returnBadge) }}
+    {{ badge(return.badge.text, return.badge.status) }}
   </td>
 </tr>
 {% endmacro %}

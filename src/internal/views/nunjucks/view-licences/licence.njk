@@ -8,13 +8,13 @@
 
       {{ verificationsAlert(verifications) }}
 
-      {% if not primaryUser %}
-        {{ title(summary.licenceNumber, 'Unregistered licence') }}
+      {% if isInternal and not primaryUser %}
+        {{ title(licence.licenceNumber, 'Unregistered licence') }}
       {% else %}
-        {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+        {{ title('Licence number ' + licence.licenceNumber, licence.documentName ) }}
       {% endif %}
 
-      {% if primaryUser %}
+      {% if isInternal and primaryUser %}
         <p>Registered to <a href="/user/{{primaryUser.userId}}/status">{{primaryUser.userName}}</a></p>
       {% endif %}
 

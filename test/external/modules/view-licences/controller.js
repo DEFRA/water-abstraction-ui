@@ -1,10 +1,14 @@
-const { expect } = require('code');
+const { expect, fail } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const { experiment, test, beforeEach, afterEach, it } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
 const services = require('external/lib/connectors/services');
+
+const communicationResponses = require('../../../shared/responses/water-service/communications/_documentId_');
+
 const controller = require('external/modules/view-licences/controller');
+const { scope } = require('external/lib/constants');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -38,138 +42,225 @@ experiment('getLicences', () => {
     await controller.getLicences(request, h);
     expect(h.redirect.calledWith('/add-licences')).to.be.true();
   });
+});
 
-  experiment('view-licences/base', () => {
-    const viewName = 'water/view-licences/licences';
-    let h;
+experiment('getLicenceCommunication', () => {
+  let request;
+  let h;
 
-    beforeEach(async () => {
-      sandbox.stub(services.idm.users, 'findOneByEmail');
-      sandbox.stub(services.crm.documents, 'findMany');
-      h = {
-        view: sandbox.spy()
-      };
-    });
+  beforeEach(async () => {
+    sandbox.stub(services.water.communications, 'getCommunication').resolves(communicationResponses.getCommunication());
 
-    afterEach(async () => {
-      sandbox.restore();
-    });
+    h = {
+      view: (...args) => args
+    };
 
-    experiment('when the form is invalid', () => {
-      let request;
+    request = {
+      view: {},
+      params: {
+        documentId: 'doc-id-1',
+        communicationId: 'notification-id'
+      },
+      auth: {
+        credentials: {
+          scope: scope.licenceHolder
+        }
+      }
+    };
+  });
 
-      beforeEach(async () => {
-        request = {
-          view: {},
-          formError: { email: true },
-          licence: {
-            licenceCount: 1,
-            outstandingVerifications: []
-          }
-        };
-        controller.getLicences(request, h);
-      });
+  afterEach(async () => {
+    sandbox.restore();
+  });
 
-      it('the view is shown again', async () => {
-        expect(h.view.calledWith(viewName, request.view)).to.be.true();
-      });
+  test('assigns the licence details to the view model', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.licence.documentId).to.equal('doc-id-1');
+    expect(view.licence.companyEntityId).to.equal('company-id-1');
+    expect(view.licence.documentName).to.equal('doc-1-name');
+    expect(view.licence.licenceRef).to.equal('lic-1');
+  });
 
-      it('the controller does not get the user', async () => {
-        expect(services.idm.users.findOneByEmail.notCalled).to.be.true();
-      });
+  test('when the document has a name, it is added to the page title', async () => {
+    const response = communicationResponses.getCommunication();
+    response.data.licenceDocuments[0].documentName = 'named document';
+    services.water.communications.getCommunication.resolves(response);
 
-      it('the controller does not get the licences', async () => {
-        expect(services.crm.documents.findMany.notCalled).to.be.true();
-      });
-    });
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.pageTitle).to.equal('named document, message review');
+  });
 
-    experiment('when the user adds an unknown email address', () => {
-      let request;
+  test('when the document has no name, the licence ref is added to the page title', async () => {
+    const response = communicationResponses.getCommunication();
+    response.data.licenceDocuments[0].documentName = null;
+    services.water.communications.getCommunication.resolves(response);
 
-      beforeEach(async () => {
-        request = {
-          auth: {
-            credentials: {
-              userId: 'user_1'
-            }
-          },
-          defra: {
-            entityId: '123'
-          },
-          view: {},
-          query: {
-            emailAddress: 'test@example.com'
-          },
-          yar: {
-            get: sandbox.stub().returns('company_1')
-          },
-          licence: {
-            licenceCount: 1,
-            outstandingVerifications: []
-          }
-        };
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.pageTitle).to.equal('lic-1, message review');
+  });
 
-        services.idm.users.findOneByEmail.resolves();
-        services.crm.documents.findMany.resolves({
-          data: [],
-          error: null,
-          pagination: {}
-        });
+  test('the message content is added to the view', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.messageContent).to.equal('Test message content');
+  });
 
-        await controller.getLicences(request, h);
-      });
+  test('the message type is added to the view', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.messageType).to.equal('Message Type');
+  });
 
-      it('an attempt is made to get the user by email', async () => {
-        expect(services.idm.users.findOneByEmail.calledWith('test@example.com')).to.be.true();
-      });
+  test('the message sent date is added to the view', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.sentDate).to.equal('2018-01-01T00:00:00.000Z');
+  });
 
-      it('an error is added to the view', async () => {
-        expect(request.view.error).to.be.true();
-      });
-    });
+  test('the recipientAddressParts is added to the view', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 2', 'Add 3', 'Add 4', 'Add 5', 'AB1 2CD']);
+  });
 
-    experiment('when the request is valid', async () => {
-      let request;
+  test('recipientAddressParts excludes falsey data', async () => {
+    const response = communicationResponses.getCommunication();
+    response.data.notification.address.addressLine2 = '    ';
+    response.data.notification.address.addressLine4 = '';
+    services.water.communications.getCommunication.resolves(response);
 
-      beforeEach(async () => {
-        request = {
-          auth: {
-            credentials: {
-              userId: 'user_1'
-            }
-          },
-          defra: {
-            entityId: '123'
-          },
-          view: {},
-          query: { page: 1 },
-          yar: {
-            get: sandbox.stub().returns('company_1')
-          },
-          licence: {
-            licenceCount: 1,
-            outstandingVerifications: []
-          }
-        };
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 3', 'Add 5', 'AB1 2CD']);
+  });
 
-        services.crm.documents.findMany.resolves({
-          data: [{ id: 1 }],
-          error: null,
-          pagination: { page: 1 }
-        });
+  test('recipientAddressParts trims address data', async () => {
+    const response = communicationResponses.getCommunication();
+    response.data.notification.address.addressLine1 = ' Add 1 ';
+    response.data.notification.address.addressLine2 = ' Add 2';
+    response.data.notification.address.addressLine3 = 'Add 3 ';
+    services.water.communications.getCommunication.resolves(response);
 
-        controller.getLicences(request, h);
-      });
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 2', 'Add 3', 'Add 4', 'Add 5', 'AB1 2CD']);
+  });
 
-      it('the view is shown using the expected view template', async () => {
-        expect(h.view.firstCall.args[0]).to.equal(viewName);
-      });
+  test('returns a 404 if the document id is not related to the notification', async () => {
+    request.params.documentId = 'nope';
 
-      it('the data is added to the response', async () => {
-        const viewContext = h.view.firstCall.args[1];
-        expect(viewContext.licenceData[0].id).to.equal(1);
-        expect(viewContext.pagination.page).to.equal(1);
-      });
-    });
+    try {
+      await controller.getLicenceCommunication(request, h);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(404);
+    }
+  });
+
+  test('requests the layout renders the back link', async () => {
+    const [, view] = await controller.getLicenceCommunication(request, h);
+    expect(view.back).to.equal('/licences/doc-id-1#communications');
+  });
+});
+
+experiment('validateGaugingStation', () => {
+  test('throws an error if requested gauging station is not attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
+      },
+      licence: {
+        summary: {
+          gaugingStations: []
+        }
+      }
+    };
+
+    try {
+      await controller.validateGaugingStation(request);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(404);
+    }
+  });
+  test('does not throw an error if requested gauging station is attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
+      },
+      licence: {
+        summary: {
+          gaugingStations: [{
+            stationReference: 'testStation'
+          }]
+        }
+      }
+    };
+
+    const error = () => controller.validateGaugingStation(request);
+    expect(error).not.to.throw();
+  });
+});
+
+experiment('getHoFTypes', () => {
+  test('returns false if code !== "CES"', async () => {
+    const conditions = [{
+      code: 'notCES',
+      subCode: 'FLOW'
+    }, {
+      code: 'notCES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns false if the code === "CES", but subCode !== "LEV" || "FLOW"', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns true if the conditions are flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
+  });
+
+  test('returns true if at least 1 condition is a flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
   });
 });

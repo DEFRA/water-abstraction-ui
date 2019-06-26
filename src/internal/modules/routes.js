@@ -2,7 +2,6 @@ const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
 const notificationsRoutes = require('./notifications/routes');
 const reportsRoutes = require('./notifications-reports/routes');
-const serviceStatusRoutes = require('./service-status/routes');
 const contactDetailsRoutes = require('./contact-details/routes');
 const abstractionReformRoutes = require('./abstraction-reform/routes');
 const wr22Routes = require('./abstraction-reform/wr22-routes');
@@ -19,7 +18,6 @@ module.exports = [
   ...Object.values(contentRoutes),
   ...Object.values(notificationsRoutes),
   ...Object.values(reportsRoutes),
-  ...Object.values(serviceStatusRoutes),
   ...Object.values(contactDetailsRoutes),
   ...Object.values(abstractionReformRoutes),
   ...Object.values(wr22Routes),

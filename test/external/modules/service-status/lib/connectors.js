@@ -1,12 +1,16 @@
 'use strict';
-const Lab = require('lab');
+
 const sinon = require('sinon');
-const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
-const connectors = require('../../../../../src/external/modules/service-status/lib/connectors');
-const IDM = require('../../../../../src/external/lib/connectors/idm');
-const CRM = require('../../../../../src/external/lib/connectors/crm');
-const water = require('../../../../../src/external/lib/connectors/water');
-const permits = require('../../../../../src/external/lib/connectors/permit');
+const sandbox = sinon.createSandbox();
+
+const {
+  experiment,
+  test,
+  beforeEach,
+  afterEach
+} = exports.lab = require('lab').script();
+const connectors = require('external/modules/service-status/lib/connectors');
+const services = require('external/lib/connectors/services');
 
 const { expect } = require('code');
 
@@ -21,7 +25,7 @@ const response = {
 
 const createClient = () => {
   return {
-    findMany: sinon.stub().resolves(response)
+    findMany: sandbox.stub().resolves(response)
   };
 };
 
@@ -93,25 +97,21 @@ experiment('getKPIData', () => {
 });
 
 experiment('Connectors call correct APIs', () => {
-  let sandbox;
-
   beforeEach(async () => {
-    sandbox = sinon.sandbox.create();
-
     // IDM
-    sandbox.stub(IDM.usersClient, 'findMany').resolves(response);
-    sandbox.stub(IDM.kpi, 'findMany').resolves(response);
+    sandbox.stub(services.idm.users, 'findMany').resolves(response);
+    sandbox.stub(services.idm.kpis, 'findMany').resolves(response);
 
     // CRM
-    sandbox.stub(CRM.documents, 'findMany').resolves(response);
-    sandbox.stub(CRM.verification, 'findMany').resolves(response);
-    sandbox.stub(CRM.kpi, 'findMany').resolves(response);
+    sandbox.stub(services.crm.documents, 'findMany').resolves(response);
+    sandbox.stub(services.crm.verifications, 'findMany').resolves(response);
+    sandbox.stub(services.crm.kpis, 'findMany').resolves(response);
 
     // Water
-    sandbox.stub(water.pendingImport, 'findMany').resolves(response);
+    sandbox.stub(services.water.pendingImports, 'findMany').resolves(response);
 
     // Permits
-    sandbox.stub(permits.licences, 'findMany').resolves(response);
+    sandbox.stub(services.permits.licences, 'findMany').resolves(response);
   });
 
   afterEach(async () => {
@@ -120,48 +120,48 @@ experiment('Connectors call correct APIs', () => {
 
   test('getIDMUserCount calls IDM users endpoint', async () => {
     await connectors.getIDMUserCount();
-    expect(IDM.usersClient.findMany.callCount).to.equal(1);
+    expect(services.idm.users.findMany.callCount).to.equal(1);
   });
 
   test('getIDMKPIData calls IDM KPI endpoint', async () => {
     await connectors.getIDMKPIData();
-    expect(IDM.kpi.findMany.callCount).to.equal(1);
+    expect(services.idm.kpis.findMany.callCount).to.equal(1);
   });
 
   test('getCRMDocumentCount calls CRM documents endpoint', async () => {
     await connectors.getCRMDocumentCount();
-    expect(CRM.documents.findMany.callCount).to.equal(1);
+    expect(services.crm.documents.findMany.callCount).to.equal(1);
   });
 
   test('getCRMKPIData calls CRM KPI endpoint', async () => {
     await connectors.getCRMKPIData();
-    expect(CRM.kpi.findMany.callCount).to.equal(1);
+    expect(services.crm.kpis.findMany.callCount).to.equal(1);
   });
 
   test('getCRMVerificationCount calls CRM verification endpoint', async () => {
     await connectors.getCRMVerificationCount();
-    expect(CRM.verification.findMany.callCount).to.equal(1);
+    expect(services.crm.verifications.findMany.callCount).to.equal(1);
   });
 
   test('getPermitCount calls permit repo licences endpoint', async () => {
     await connectors.getPermitCount();
-    expect(permits.licences.findMany.callCount).to.equal(1);
-    const [filter] = permits.licences.findMany.firstCall.args;
+    expect(services.permits.licences.findMany.callCount).to.equal(1);
+    const [filter] = services.permits.licences.findMany.firstCall.args;
     expect(filter.licence_regime_id).to.equal(1);
     expect(filter.licence_type_id).to.equal(8);
   });
 
   test('getWaterPendingImports calls water pending import endpoint', async () => {
     await connectors.getWaterPendingImports();
-    expect(water.pendingImport.findMany.callCount).to.equal(1);
-    const [filter] = water.pendingImport.findMany.firstCall.args;
+    expect(services.water.pendingImports.findMany.callCount).to.equal(1);
+    const [filter] = services.water.pendingImports.findMany.firstCall.args;
     expect(filter.status).to.equal(0);
   });
 
   test('getWaterCompletedImports calls water pending import endpoint', async () => {
     await connectors.getWaterCompletedImports();
-    expect(water.pendingImport.findMany.callCount).to.equal(1);
-    const [filter] = water.pendingImport.findMany.firstCall.args;
+    expect(services.water.pendingImports.findMany.callCount).to.equal(1);
+    const [filter] = services.water.pendingImports.findMany.firstCall.args;
     expect(filter.status).to.equal(1);
   });
 });

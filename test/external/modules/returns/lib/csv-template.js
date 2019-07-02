@@ -4,9 +4,9 @@ const { expect } = require('code');
 const Lab = require('lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
-const { logger } = require('../../../../../src/external/logger');
+const { logger } = require('external/logger');
 
-const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
+const csvTemplates = require('external/modules/returns/lib/csv-templates');
 
 experiment('csv templates', () => {
   let archive;
@@ -274,16 +274,20 @@ experiment('csv templates', () => {
 
   experiment('getCSVFilename', () => {
     test('creates a filename based on the company name and daily return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'day');
-      expect(result).to.equal('test_co_daily.csv');
+      const result = csvTemplates._getCSVFilename('TEST CO', 'day', false);
+      expect(result).to.equal('test co daily return.csv');
     });
     test('creates a filename based on the company name and weekly return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'week');
-      expect(result).to.equal('test_co_weekly.csv');
+      const result = csvTemplates._getCSVFilename('TEST CO', 'week', false);
+      expect(result).to.equal('test co weekly return.csv');
     });
     test('creates a filename based on the company name and monthly return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'month');
-      expect(result).to.equal('test_co_monthly.csv');
+      const result = csvTemplates._getCSVFilename('TEST CO', 'month', false);
+      expect(result).to.equal('test co monthly return.csv');
+    });
+    test('pluralises "return" to "returns" when isMultipleReturns is true', async () => {
+      const result = csvTemplates._getCSVFilename('TEST CO', 'day', true);
+      expect(result).to.equal('test co daily returns.csv');
     });
   });
 
@@ -297,7 +301,7 @@ experiment('csv templates', () => {
       const [csvStr, options] = archive.append.lastCall.args;
 
       expect(csvStr).to.equal('foo,bar\n');
-      expect(options.name).to.equal('test_co_daily.csv');
+      expect(options.name).to.equal('test co daily return.csv');
     });
   });
 
@@ -308,7 +312,7 @@ experiment('csv templates', () => {
       const [str, options] = archive.append.lastCall.args;
 
       expect(str).to.be.a.buffer();
-      expect(options.name).to.equal('readme.txt');
+      expect(options.name).to.equal('How to do bulk returns.txt');
     });
   });
 

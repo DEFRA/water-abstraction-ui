@@ -2,7 +2,7 @@ const Boom = require('boom');
 const sinon = require('sinon');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const { redirectToReturn } = require('../../../../../src/internal/modules/internal-search/lib/redirect-to-return');
+const { redirectToReturn } = require('internal/modules/internal-search/lib/redirect-to-return');
 
 experiment('redirectToReturn', () => {
   const returnId = `v1:1:01/123:12345678:2017-11-01:2018-10-31`;

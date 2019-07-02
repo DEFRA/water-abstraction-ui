@@ -1,7 +1,7 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
-const plugin = require('../../../../../src/shared/plugins/auth');
+const plugin = require('shared/plugins/auth');
 
 experiment('Auth plugin', () => {
   let server, options, h, request;

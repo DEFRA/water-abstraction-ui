@@ -5,7 +5,7 @@ const lab = exports.lab = Lab.script();
 const { expect } = require('code');
 const { difference } = require('lodash');
 
-const viewEngine = require('../../../../src/external/lib/view-engine/index');
+const viewEngine = require('external/lib/view-engine/index');
 
 lab.experiment('viewEngine', () => {
   lab.test('View engines should be an object', async () => {

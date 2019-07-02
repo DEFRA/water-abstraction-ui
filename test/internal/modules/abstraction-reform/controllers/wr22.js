@@ -2,8 +2,8 @@ require('dotenv').config();
 const Lab = require('lab');
 const sinon = require('sinon');
 const { expect } = require('code');
-const { getDeleteData, postDeleteData } = require('../../../../../src/internal/modules/abstraction-reform/controllers/wr22');
-const wr22Helpers = require('../../../../../src/internal/modules/abstraction-reform/lib/wr22-helpers');
+const { getDeleteData, postDeleteData } = require('internal/modules/abstraction-reform/controllers/wr22');
+const wr22Helpers = require('internal/modules/abstraction-reform/lib/wr22-helpers');
 
 const { experiment, beforeEach, test, afterEach } = exports.lab = Lab.script();
 

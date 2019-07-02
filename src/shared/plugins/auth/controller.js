@@ -5,7 +5,7 @@
 const { get } = require('lodash');
 
 const { signInForm, signInSchema, signInApplyErrorState } = require('./forms');
-const { handleRequest, setValues } = require('../../../shared/lib/forms');
+const { handleRequest, setValues } = require('shared/lib/forms');
 
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
@@ -60,7 +60,7 @@ const resetIsRequired = user => !!parseInt(get(user, 'reset_required', false));
  * @param {Object} h - the Hapi Response Toolkit
  */
 const postSignin = async (request, h) => {
-  const form = handleRequest(signInForm(), request, signInSchema);
+  const form = handleRequest(signInForm(), request, signInSchema, { abortEarly: true });
 
   // Destroy existing session
   h.realm.pluginOptions.signOut(request);

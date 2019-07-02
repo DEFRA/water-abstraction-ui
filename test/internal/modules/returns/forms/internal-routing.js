@@ -1,8 +1,8 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const { internalRoutingForm } = require('../../../../../src/internal/modules/returns/forms/internal-routing');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { internalRoutingForm } = require('internal/modules/returns/forms/internal-routing');
+const { scope } = require('internal/lib/constants');
 
 experiment('internalRoutingForm', () => {
   const request = {

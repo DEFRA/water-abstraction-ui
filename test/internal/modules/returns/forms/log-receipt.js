@@ -2,8 +2,8 @@ const { expect } = require('code');
 const moment = require('moment');
 const { find } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('lab').script();
-const { logReceiptForm, logReceiptSchema } = require('../../../../../src/internal/modules/returns/forms/log-receipt');
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { logReceiptForm, logReceiptSchema } = require('internal/modules/returns/forms/log-receipt');
+const { scope } = require('internal/lib/constants');
 
 experiment('logReceiptForm', () => {
   let form, request;

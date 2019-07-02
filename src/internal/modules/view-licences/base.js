@@ -1,5 +1,5 @@
-const CRM = require('../../lib/connectors/crm');
-const IDM = require('../../lib/connectors/idm');
+const services = require('../../lib/connectors/services');
+const config = require('../../config');
 const { mapSort, mapFilter } = require('./helpers');
 
 /**
@@ -27,12 +27,12 @@ async function getLicences (request, h) {
 
   // Check if user exists
   if (emailAddress) {
-    const { data } = await IDM.getUserByEmail(emailAddress);
-    request.view.error = data.length === 0;
+    const user = await services.idm.users.findOneByEmail(emailAddress, config.idm.application);
+    request.view.error = !user;
   }
 
   // Get licences from CRM
-  const { data, error, pagination } = await CRM.documents.findMany(filter, sort, {
+  const { data, error, pagination } = await services.crm.documents.findMany(filter, sort, {
     page,
     perPage: 50
   });

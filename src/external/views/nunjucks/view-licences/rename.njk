@@ -1,0 +1,19 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "nunjucks/view-licences/macros/licence-summary.njk" import licenceSummary %}
+
+{% block content %}
+
+  {{ formErrorSummary(form) }}
+
+  {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+
+  <div class="well">
+    {{ formRender(form) }}
+  </div>
+
+
+  {{ licenceSummary(documentId, summary, false )}}
+
+{% endblock %}

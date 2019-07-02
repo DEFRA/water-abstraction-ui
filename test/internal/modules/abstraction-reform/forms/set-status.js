@@ -4,9 +4,9 @@ const { expect } = require('code');
 const { find } = require('lodash');
 const Joi = require('joi');
 
-const { setStatusForm, setStatusSchema } = require('../../../../../src/internal/modules/abstraction-reform/forms/set-status');
+const { setStatusForm, setStatusSchema } = require('internal/modules/abstraction-reform/forms/set-status');
 
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { scope } = require('internal/lib/constants');
 
 const {
   STATUS_IN_PROGRESS,
@@ -14,7 +14,7 @@ const {
   STATUS_APPROVED,
   STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/statuses');
+} = require('internal/modules/abstraction-reform/lib/statuses');
 
 const lab = exports.lab = Lab.script();
 
@@ -59,15 +59,17 @@ lab.experiment('Test setStatusForm for AR user', () => {
     expect(csrf.value).to.equal(request.view.csrfToken);
   });
 
-  lab.test('The only available status should be review', async () => {
+  lab.test('The only available statuses should be review/NALD update', async () => {
     const status = findStatus(form);
-    expect(status.options.type).to.be.equal('hidden');
-    expect(status.value).to.equal(STATUS_IN_REVIEW);
+    expect(status.options.widget).to.be.equal('radio');
+
+    const choices = status.options.choices.map(choice => choice.value);
+    expect(choices).to.equal([STATUS_IN_REVIEW, STATUS_NALD_UPDATE]);
   });
 
-  lab.test('The button text should be Submit for approval', async () => {
+  lab.test('The button text should be "Submit"', async () => {
     const status = findButton(form);
-    expect(status.options.label).to.be.equal('Submit for approval');
+    expect(status.options.label).to.be.equal('Submit');
   });
 });
 
@@ -110,8 +112,8 @@ lab.experiment('Test setStatusSchema for AR user', () => {
     schema = Joi.describe(setStatusSchema(request));
   });
 
-  lab.test('It should only allow status to be In review', async () => {
-    expect(schema.children.status.valids).to.equal([STATUS_IN_REVIEW]);
+  lab.test('It should only allow status to be In review/NALD review', async () => {
+    expect(schema.children.status.valids).to.equal([STATUS_IN_REVIEW, STATUS_NALD_UPDATE]);
   });
 });
 

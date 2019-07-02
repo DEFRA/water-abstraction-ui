@@ -2,12 +2,12 @@ const Lab = require('lab');
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const water = require('../../../../../src/internal/lib/connectors/water');
+const services = require('internal/lib/connectors/services');
 
 const {
   getCSVData,
   getReportFilename
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/report-helpers');
+} = require('internal/modules/abstraction-reform/lib/report-helpers');
 
 const lab = exports.lab = Lab.script();
 
@@ -24,7 +24,7 @@ lab.experiment('getCSVData', () => {
   let stub;
 
   lab.before(async () => {
-    stub = sinon.stub(water.arLicenceAnalyis, 'findAll');
+    stub = sinon.stub(services.water.abstractionReformAnalysis, 'findAll');
   });
 
   lab.after(async () => {

@@ -1,12 +1,12 @@
 'use strict';
-const sinon = require('sinon');
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
-
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
-const controller = require('../../../../src/internal/modules/returns-reports/controller');
-const { returns } = require('../../../../src/internal/lib/connectors/returns');
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+
+const controller = require('internal/modules/returns-reports/controller');
+const services = require('internal/lib/connectors/services');
 
 const request = {
   params: {
@@ -28,12 +28,11 @@ const successResponse = {
   ]
 };
 
-lab.experiment('getDownloadReport', () => {
-  let stub;
+experiment('getDownloadReport', () => {
   let h;
 
-  lab.beforeEach(async () => {
-    stub = sinon.stub(returns, 'getReport');
+  beforeEach(async () => {
+    sandbox.stub(services.returns.returns, 'getReport');
     h = {
       response: sinon.stub().returns({
         header: sinon.stub().returnsThis()
@@ -41,18 +40,18 @@ lab.experiment('getDownloadReport', () => {
     };
   });
 
-  lab.afterEach(async () => {
-    stub.restore();
+  afterEach(async () => {
+    sandbox.restore();
   });
 
-  lab.test('It should throw an error if API returns error', async () => {
-    stub.resolves(errorResponse);
+  test('It should throw an error if API returns error', async () => {
+    services.returns.returns.getReport.resolves(errorResponse);
     const func = () => controller.getDownloadReport(request);
     expect(func()).to.reject();
   });
 
-  lab.test('It should download a CSV if success response', async () => {
-    stub.resolves(successResponse);
+  test('It should download a CSV if success response', async () => {
+    services.returns.returns.getReport.resolves(successResponse);
     await controller.getDownloadReport(request, h);
     expect(h.response.firstCall.args[0]).to.equal('return_id\nv1:123\n');
   });

@@ -1,7 +1,6 @@
-const Permit = require('../../lib/connectors/permit');
 const LicenceTransformer = require('../../lib/licence-transformer/');
-const waterConnector = require('../../lib/connectors/water');
-const { find, has } = require('lodash');
+const services = require('../../lib/connectors/services');
+const { cloneDeep, find, has, set } = require('lodash');
 const Boom = require('boom');
 
 /**
@@ -48,20 +47,28 @@ function mapFilter (companyId, query) {
  * @return {String} page title
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
-  if (customName) return `Licence number ${licenceNumber}`;
-
   const titles = {
-    purposes: `Abstraction details for for licence number ${licenceNumber}`,
-    points: `Abstraction points for licence number ${licenceNumber}`,
-    conditions: `Conditions held for licence number ${licenceNumber}`,
-    contact: `Contact details for licence number ${licenceNumber}`,
-    'gauging-station': `Gauging station for ${customName || licenceNumber}`
+    purposes: `Abstraction details`,
+    points: `Abstraction points`,
+    conditions: `Conditions held`,
+    contact: `Contact details`,
+    'gauging-station': `Gauging station`
   };
 
   let key = view.split('/').pop();
   if (key.slice(-4) === '.njk') key = key.slice(0, -4);
 
-  return titles[key] || `Licence number ${licenceNumber}`;
+  if (!titles[key]) {
+    return {
+      pageTitle: `Licence number ${licenceNumber}`,
+      pageHeading: `Licence number ${licenceNumber}`
+    };
+  }
+
+  return {
+    pageTitle: `${titles[key]} for ${customName || licenceNumber}`,
+    pageHeading: `${customName ? 'Licence' : titles[key] + ' for licence'} number ${licenceNumber}`
+  };
 }
 
 /**
@@ -80,7 +87,7 @@ function loadGaugingStations (metadata) {
       $in: (metadata.gaugingStations || []).map(row => row.stationReference)
     }
   };
-  return waterConnector.gaugingStations.findMany(filter);
+  return services.water.gaugingStations.findMany(filter);
 }
 
 /**
@@ -96,7 +103,7 @@ async function loadLicenceData (request, documentId) {
   const {
     error: permitError,
     data: permitData
-  } = await Permit.licences.findOne(documentHeader.system_internal_id);
+  } = await services.permits.licences.findOne(documentHeader.system_internal_id);
   if (permitError) {
     throw permitError;
   }
@@ -215,7 +222,7 @@ async function loadRiverLevelData (stationReference, hofTypes, mode) {
   }
 
   try {
-    riverLevel = await waterConnector.getRiverLevel(stationReference);
+    riverLevel = await services.water.riverLevels.getRiverLevel(stationReference);
   } catch (err) {
     // Don't throw error for 404.  A valid station ID may return 404
     // because it is disabled
@@ -262,6 +269,26 @@ function errorMapper (error) {
   return error;
 }
 
+/**
+ * Create isHof flag in condition object
+ * @param {Object} licenceData licenceData to be updated
+ */
+const setConditionHofFlags = (viewContext) => {
+  const updated = cloneDeep(viewContext);
+
+  const conditions = updated.summary.conditions;
+
+  const updatedConditions = conditions.map(condition => {
+    return {
+      ...condition,
+      isHof: (condition.code === 'CES' && (['FLOW', 'LEV'].includes(condition.subCode)))
+    };
+  });
+  set(updated.summary, 'conditions', updatedConditions);
+
+  return updated;
+};
+
 exports.mapSort = mapSort;
 exports.mapFilter = mapFilter;
 exports.getLicencePageTitle = getLicencePageTitle;
@@ -270,4 +297,5 @@ exports.loadRiverLevelData = loadRiverLevelData;
 exports.selectRiverLevelMeasure = selectRiverLevelMeasure;
 exports.validateStationReference = validateStationReference;
 exports.riverLevelFlags = riverLevelFlags;
+exports.setConditionHofFlags = setConditionHofFlags;
 exports.errorMapper = errorMapper;

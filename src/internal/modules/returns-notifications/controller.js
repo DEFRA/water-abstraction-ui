@@ -2,7 +2,7 @@ const moment = require('moment');
 const Boom = require('boom');
 const { reduce, pick, uniqBy, difference, last } = require('lodash');
 
-const { handleRequest, getValues, setValues } = require('../../../shared/lib/forms');
+const { handleRequest, getValues, setValues } = require('shared/lib/forms');
 const { csvDownload } = require('../../lib/csv-download');
 const licenceNumbersForm = require('./forms/licence-numbers');
 const confirmLicenceNumbersForm = require('./forms/licence-numbers-confirm');
@@ -10,8 +10,7 @@ const { schema } = require('./forms/licence-numbers');
 const { sendFinalRemindersForm } = require('./forms/send-final-reminders');
 const { sendRemindersForm, sendRemindersSchema } = require('./forms/send-reminders');
 
-const notificationsConnector = require('../../lib/connectors/water-service/returns-notifications');
-const batchNotificationsConnector = require('../../lib/connectors/water-service/batch-notifications');
+const services = require('../../lib/connectors/services');
 
 const { getFinalReminderConfig } = require('./lib/helpers');
 
@@ -78,7 +77,7 @@ const postPreviewRecipients = async (request, h) => {
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
-    const result = await notificationsConnector.previewPaperForms(licenceNumbers, emailAddress);
+    const result = await services.water.returnsNotifications.previewPaperForms(licenceNumbers, emailAddress);
 
     if (result.error) {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
@@ -119,7 +118,7 @@ const postSendForms = async (request, h) => {
 
     // Preview sending of paper forms.  This checks whether due returns exist
     // for the requested licence numbers
-    const result = await notificationsConnector.sendPaperForms(licenceNumbers, emailAddress);
+    const result = await services.water.returnsNotifications.sendPaperForms(licenceNumbers, emailAddress);
 
     if (result.error) {
       throw Boom.badImplementation(`Error previewing returns paper forms`, result.error);
@@ -166,7 +165,7 @@ const getFinalReminder = async (request, h) => {
  */
 const getFinalReminderCSV = async (request, h) => {
   const { email, endDate } = getFinalReminderConfig(request);
-  const { messages } = await notificationsConnector.finalReturnReminders(endDate, email, true);
+  const { messages } = await services.water.returnsNotifications.finalReturnReminders(endDate, email, true);
   const data = messages.map(row => row.personalisation);
   return csvDownload(h, data, `final-reminders-${endDate}.csv`);
 };
@@ -176,7 +175,7 @@ const getFinalReminderCSV = async (request, h) => {
  */
 const postSendFinalReminder = async (request, h) => {
   const { email, endDate } = getFinalReminderConfig(request);
-  const { event } = await notificationsConnector.finalReturnReminders(endDate, email, false);
+  const { event } = await services.water.returnsNotifications.finalReturnReminders(endDate, email, false);
   const view = {
     ...request.view,
     event
@@ -200,10 +199,10 @@ const getReturnsNotificationsStart = async (request, h) => {
 const getBatchNotificationsConnector = path => {
   const messageType = last(path.split('/'));
   const connectors = {
-    reminders: batchNotificationsConnector.prepareReturnsReminders,
-    invitations: batchNotificationsConnector.prepareReturnsInvitations
+    reminders: services.water.batchNotifications.prepareReturnsReminders,
+    invitations: services.water.batchNotifications.prepareReturnsInvitations
   };
-  return connectors[messageType];
+  return connectors[messageType].bind(services.water.batchNotifications);
 };
 /**
  * Calls the relevant API point with issuer and licences data

@@ -1,6 +1,5 @@
-const returnsService = require('../../../lib/connectors/returns');
 const ExtendableError = require('es6-error');
-const crm = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 const { isReturnId } = require('./helpers');
 
 class CRMDocumentsAPIError extends ExtendableError {};
@@ -58,7 +57,7 @@ const getRecentReturns = async (str) => {
   // For QR code support, we check whether the supplied value is a full
   // return ID
   if (isReturnId(str)) {
-    const { data, error } = await returnsService.returns.findOne(str);
+    const { data, error } = await services.returns.returns.findOne(str);
     if (error) {
       throw new ReturnAPIError(`Error getting return ${str} from returns API`, error);
     }
@@ -69,7 +68,7 @@ const getRecentReturns = async (str) => {
 
   const tasks = regions.map(regionCode => {
     const { filter, sort, pagination, columns } = findLatestReturn(str, regionCode);
-    return returnsService.returns.findMany(filter, sort, pagination, columns);
+    return services.returns.returns.findMany(filter, sort, pagination, columns);
   });
 
   const returns = await Promise.all(tasks);
@@ -92,7 +91,7 @@ const filterReturnsByCRMDocument = async (returns) => {
       $in: licenceNumbers
     }
   };
-  const { data, error } = await crm.documents.findMany(filter, null, null, ['system_external_id']);
+  const { data, error } = await services.crm.documents.findMany(filter, null, null, ['system_external_id']);
 
   if (error) {
     throw new CRMDocumentsAPIError(`Error loading CRM document headers`, error);

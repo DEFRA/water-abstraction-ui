@@ -1,0 +1,6 @@
+.well {
+  @extend .govuk-inset-text;
+  border: 1px solid $govuk-border-colour;
+  background: govuk-colour("grey-4");
+  padding: govuk-spacing(6);
+}

@@ -26,6 +26,12 @@ const getLicence = {
       config: {
         view: 'water/view-licences/licence'
       },
+      licenceData: {
+        load: {
+          summary: true,
+          communications: true
+        }
+      },
       viewContext: {
         activeNavLink: 'view'
       }

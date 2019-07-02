@@ -2,9 +2,8 @@ const { URL } = require('url');
 const RefParser = require('json-schema-ref-parser');
 const { pick, isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
-const apiHelpers = require('./api-helpers');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
-const licencesConnector = require('../../../lib/connectors/water-service/licences');
+const { formFactory, fields } = require('shared/lib/forms');
+const services = require('../../../lib/connectors/services');
 
 const { mapConditionText } = require('./map-condition');
 
@@ -47,17 +46,17 @@ const mapCondition = condition => ({ id: condition.id, value: mapConditionText(c
 const mapPoint = point => ({ id: point.id, value: point.name });
 
 const resolveLicenceData = async (context, connectorFn, mapFn) => {
-  const { data } = await connectorFn(context.documentId);
+  const { data } = await connectorFn.bind(services.water.licences)(context.documentId);
   return createEnumsObject(data, mapFn);
 };
 
 const resolveLicenceConditions = async context => {
-  const connector = licencesConnector.getLicenceConditionsByDocumentId;
+  const connector = services.water.licences.getConditionsByDocumentId;
   return resolveLicenceData(context, connector, mapCondition);
 };
 
 const resolveLicencePoints = async context => {
-  const connector = licencesConnector.getLicencePointsByDocumentId;
+  const connector = services.water.licences.getPointsByDocumentId;
   return resolveLicenceData(context, connector, mapPoint);
 };
 
@@ -71,8 +70,8 @@ const resolveLicences = async (ref, context) => {
 };
 
 const resolvePicklists = async ref => {
-  const picklist = await apiHelpers.getPicklist(ref);
-  const items = await apiHelpers.getPicklistItems(ref);
+  const picklist = await services.water.picklists.getPicklist(ref);
+  const items = await services.water.picklistItems.getPicklistItems(ref);
   return picklistSchemaFactory(picklist, items);
 };
 

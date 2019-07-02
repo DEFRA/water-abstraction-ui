@@ -1,8 +1,5 @@
 const Boom = require('boom');
-const { documents } = require('../../../lib/connectors/crm');
-const { licences } = require('../../../lib/connectors/permit');
-const { arRefreshLicenceWebhook } = require('../../../lib/connectors/water');
-
+const services = require('../../../lib/connectors/services');
 const { stateManager, getInitialState } = require('./state-manager');
 const { transformNulls } = require('./helpers');
 
@@ -18,7 +15,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
     licence_ref: licenceRef
   };
 
-  const { error, data } = await licences.findMany(filter);
+  const { error, data } = await services.permits.licences.findMany(filter);
 
   if (error) {
     throw Boom.badImplementation('Permit error', error);
@@ -33,7 +30,7 @@ const loadOrCreateARLicence = async (licenceRef) => {
       actions: []
     };
 
-    const { error: createError, data: createData } = await licences.create({
+    const { error: createError, data: createData } = await services.permits.licences.create({
       ...filter,
       licence_data_value: JSON.stringify(licenceData),
       metadata: '{}'
@@ -55,14 +52,14 @@ const loadOrCreateARLicence = async (licenceRef) => {
  */
 const loadLicence = async (documentId) => {
   // Load abstraction licence
-  const { error, data: { system_internal_id: licenceId } } = await documents.findOne(documentId);
+  const { error, data: { system_internal_id: licenceId } } = await services.crm.documents.findOne(documentId);
 
   if (error) {
     throw Boom.badImplementation('CRM error', error);
   }
 
   // Load permit repo licence
-  const { error: permitError, data: permitData } = await licences.findOne(licenceId);
+  const { error: permitError, data: permitData } = await services.permits.licences.findOne(licenceId);
 
   if (permitError) {
     throw Boom.badImplementation('Permit error', permitError);
@@ -116,12 +113,10 @@ const update = async (licenceId, data, licenceNumber) => {
   const payload = {
     licence_data_value: JSON.stringify(data)
   };
-  const result = await licences.updateOne(licenceId, payload);
-  await arRefreshLicenceWebhook(licenceNumber);
+  const result = await services.permits.licences.updateOne(licenceId, payload);
+  await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber);
   return result;
 };
 
-module.exports = {
-  load,
-  update
-};
+exports.load = load;
+exports.update = update;

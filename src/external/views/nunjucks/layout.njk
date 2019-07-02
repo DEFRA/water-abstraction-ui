@@ -2,9 +2,9 @@
 {% from "phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "back-link/macro.njk" import govukBackLink %}
 
-{% from "./macros/main-nav.njk" import mainNav %}
-{% from "./macros/forms/index.njk" import formRender, formErrorSummary %}
-{% from "./macros/title.njk" import title %}
+{% from "main-nav.njk" import mainNav %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
 
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -81,10 +81,14 @@
   {% endblock %}
 
   {% if back %}
+
+  {% set backLinkText %} {{ backText | default('Back') }} {% endset %}
+
   {{ govukBackLink({
     href: back,
-    text: "Back"
+    text: backLinkText
   }) }}
+
   {% endif %}
 {% endblock %}
 

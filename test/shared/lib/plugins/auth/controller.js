@@ -2,7 +2,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab')
 const { expect } = require('code');
 const { set } = require('lodash');
 const sandbox = require('sinon').createSandbox();
-const controller = require('../../../../../src/shared/plugins/auth/controller');
+const controller = require('shared/plugins/auth/controller');
 
 const createRequest = (isAuthenticated) => {
   return {
@@ -180,7 +180,7 @@ experiment('Auth plugin controller', () => {
       });
     });
 
-    experiment('when paylaod is invalid', async () => {
+    experiment('when payload is invalid', async () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload.email = 'not_an_email';
@@ -190,7 +190,7 @@ experiment('Auth plugin controller', () => {
       test('re-renders the form in error state', async () => {
         const [template, view] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/auth/sign-in.njk');
-        expect(view.form.errors).to.have.length(2);
+        expect(view.form.errors).to.have.length(1);
       });
     });
   });

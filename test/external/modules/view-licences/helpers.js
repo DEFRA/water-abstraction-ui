@@ -6,8 +6,8 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('code');
 const sinon = require('sinon');
 
-const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle } = require('../../../../src/external/modules/view-licences/helpers');
-const waterConnector = require('../../../../src/external/lib/connectors/water');
+const { selectRiverLevelMeasure, loadRiverLevelData, mapFilter, getLicencePageTitle, setConditionHofFlags } = require('../../../../src/external/modules/view-licences/helpers');
+const services = require('external/lib/connectors/services');
 
 const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
   const latestReading = hasLatestReading
@@ -19,6 +19,23 @@ const getTestMeasure = (parameter = 'flow', hasLatestReading = true) => {
     parameter,
     latestReading
   };
+};
+
+const getLicenceData = (code1, subCode1, code2, subCode2) => {
+  return { pageTitle: 'test',
+    summary: {
+      conditions: [{
+        code: code1,
+        subCode: subCode1,
+        otherData: 'should remain',
+        test: 1234
+      }, {
+        code: code2,
+        subCode: subCode2,
+        otherData: 'should also remain',
+        test: 9876
+      }]
+    } };
 };
 
 experiment('selectRiverLevelMeasure', () => {
@@ -91,11 +108,11 @@ experiment('loadRiverLevelData', () => {
   const hofTypes = { cesLevel: true, cesFlow: false };
 
   beforeEach(async () => {
-    sinon.stub(waterConnector, 'getRiverLevel');
+    sinon.stub(services.water.riverLevels, 'getRiverLevel');
   });
 
   afterEach(async () => {
-    waterConnector.getRiverLevel.restore();
+    services.water.riverLevels.getRiverLevel.restore();
   });
 
   test('returns null riverLevel and measure when no station reference', async () => {
@@ -112,7 +129,7 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: true, cesLev: false };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.an.object();
     expect(riverLevelData.riverLevel).to.be.an.object();
@@ -127,7 +144,7 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: false, cesLev: true };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.undefined();
     expect(riverLevelData.riverLevel).to.be.an.object();
@@ -142,14 +159,14 @@ experiment('loadRiverLevelData', () => {
       }]
     };
     const hofTypes = { cesFlow: true, cesLev: false };
-    waterConnector.getRiverLevel.resolves(response);
+    services.water.riverLevels.getRiverLevel.resolves(response);
     const riverLevelData = await loadRiverLevelData(1234, hofTypes);
     expect(riverLevelData.measure).to.be.undefined();
     expect(riverLevelData.riverLevel).to.be.an.object();
   });
 
   test('returns null riverLevel and measure when no station is found', async () => {
-    waterConnector.getRiverLevel.rejects({ statusCode: 404 });
+    services.water.riverLevels.getRiverLevel.rejects({ statusCode: 404 });
     const riverLevelData = await loadRiverLevelData(null, hofTypes);
     expect(riverLevelData).to.equal({ riverLevel: null, measure: null });
   });
@@ -192,21 +209,73 @@ experiment('mapFilter', () => {
     filter = mapFilter('1234', { emailAddress: 'right@example.com  ' });
     expect(filter.email).to.equal('right@example.com');
   });
+});
 
-  experiment('getLicencePageTitle', () => {
-    test('if licence has custom name, return "Licence number 1234"', async () => {
-      const pageTitle = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234', 'customName');
-      expect(pageTitle).to.equal('Licence number 1234');
+experiment('getLicencePageTitle', () => {
+  test('if licence has custom name, return "Licence number 1234"', async () => {
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234', 'customName');
+    expect(pageHeading).to.equal('Licence number 1234');
+    expect(pageTitle).to.equal('Contact details for customName');
+  });
+
+  test('if licence does not have custom name, return title for key', async () => {
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/points.njk', '1234');
+    expect(pageTitle).to.equal('Abstraction points for 1234');
+    expect(pageHeading).to.equal('Abstraction points for licence number 1234');
+  });
+
+  test('if licence has custom name and unexpected key, return default response', async () => {
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/test', '1234', 'customName');
+    expect(pageTitle).to.equal('Licence number 1234');
+    expect(pageHeading).to.equal('Licence number 1234');
+  });
+
+  test('if licence does not have custom name and unexpected key, return default response', async () => {
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/test', '1234');
+    expect(pageTitle).to.equal('Licence number 1234');
+    expect(pageHeading).to.equal('Licence number 1234');
+  });
+});
+
+experiment('setConditionHofFlags', () => {
+  test('creates isHof flag for each condition', async () => {
+    const result = setConditionHofFlags(getLicenceData('CES', 'LEV', 'CES', 'FLOW'));
+    expect(result.summary.conditions[0]).to.include('isHof');
+    expect(result.summary.conditions[1]).to.include('isHof');
+  });
+
+  test('retains existing condition data', async () => {
+    const existingConditionData = ['code', 'subCode', 'otherData', 'test'];
+    const result = setConditionHofFlags(getLicenceData('CES', 'LEV', 'CES', 'FLOW'));
+    expect(result.summary.conditions[0]).to.include(existingConditionData);
+    expect(result.summary.conditions[1]).to.include(existingConditionData);
+  });
+
+  experiment('isHof value', () => {
+    test('flags are set independently from each other', async () => {
+      const result = setConditionHofFlags(getLicenceData('OTHER', 'LEV', 'CES', 'FLOW'));
+      expect(result.summary.conditions[0].isHof).to.be.false();
+      expect(result.summary.conditions[1].isHof).to.be.true();
     });
 
-    test('if licence does not have custom name, return title for key', async () => {
-      const pageTitle = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234');
-      expect(pageTitle).to.equal('Contact details for licence number 1234');
+    test('is set to false when code !== "CES"', async () => {
+      const result = setConditionHofFlags(getLicenceData('OTHER', 'LEV'));
+      expect(result.summary.conditions[0].isHof).to.be.false();
     });
 
-    test('if licence does not have custom name and unexpected key, return default response', async () => {
-      const pageTitle = getLicencePageTitle('nunjucks/view-licences/test', '1234');
-      expect(pageTitle).to.equal('Licence number 1234');
+    test('is set to false when subCode !== "FLOW" or "LEV"', async () => {
+      const result = setConditionHofFlags(getLicenceData('CES', 'OTHER'));
+      expect(result.summary.conditions[0].isHof).to.be.false();
+    });
+
+    test('is set to true when code !== "CES" subCode !== "FLOW"', async () => {
+      const result = setConditionHofFlags(getLicenceData('CES', 'FLOW'));
+      expect(result.summary.conditions[0].isHof).to.be.true();
+    });
+
+    test('is set to true when code !== "CES" subCode !== "LEV"', async () => {
+      const result = setConditionHofFlags(getLicenceData('CES', 'LEV'));
+      expect(result.summary.conditions[0].isHof).to.be.true();
     });
   });
 });

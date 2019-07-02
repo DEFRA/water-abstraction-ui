@@ -3,14 +3,12 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const communicationsConnector = require('../../../../src/external/lib/connectors/water-service/communications');
+const services = require('external/lib/connectors/services');
 
-const communicationResponses = require('../../responses/water-service/communications/_documentId_');
+const communicationResponses = require('../../../shared/responses/water-service/communications/_documentId_');
 
-const controller = require('../../../../src/external/modules/view-licences/controller');
-const { scope } = require('../../../../src/external/lib/constants');
-const returnsConnector = require('../../../../src/external/lib/connectors/returns');
-const licenceConnector = require('../../../../src/external/lib/connectors/water-service/licences');
+const controller = require('external/modules/view-licences/controller');
+const { scope } = require('external/lib/constants');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -51,7 +49,7 @@ experiment('getLicenceCommunication', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(communicationsConnector, 'getCommunication').resolves(communicationResponses.getCommunication());
+    sandbox.stub(services.water.communications, 'getCommunication').resolves(communicationResponses.getCommunication());
 
     h = {
       view: (...args) => args
@@ -86,7 +84,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has a name, it is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = 'named document';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('named document, message review');
@@ -95,7 +93,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has no name, the licence ref is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = null;
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('lic-1, message review');
@@ -125,7 +123,7 @@ experiment('getLicenceCommunication', () => {
     const response = communicationResponses.getCommunication();
     response.data.notification.address.addressLine2 = '    ';
     response.data.notification.address.addressLine4 = '';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 3', 'Add 5', 'AB1 2CD']);
@@ -136,7 +134,7 @@ experiment('getLicenceCommunication', () => {
     response.data.notification.address.addressLine1 = ' Add 1 ';
     response.data.notification.address.addressLine2 = ' Add 2';
     response.data.notification.address.addressLine3 = 'Add 3 ';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 2', 'Add 3', 'Add 4', 'Add 5', 'AB1 2CD']);
@@ -160,127 +158,109 @@ experiment('getLicenceCommunication', () => {
   });
 });
 
-experiment('getExpiredLicence', () => {
-  let request;
-  let h;
-
-  beforeEach(async () => {
-    h = {
-      view: sandbox.spy()
-    };
-
-    sandbox.stub(licenceConnector, 'getLicenceByDocumentId').resolves({
-      data: {
-        document: {
-          name: 'test-doc-name'
-        },
-        licence_ref: 'test-licence-ref',
-        earliestEndDate: '20190101',
-        earliestEndDateReason: 'expired'
-      }
-    });
-
-    sandbox.stub(returnsConnector.returns, 'findMany').resolves({
-      data: [{ return_id: 'test-return' }],
-      pagination: { pageCount: 1 }
-    });
-
-    sandbox.stub(licenceConnector, 'getLicenceCommunicationsByDocumentId').resolves({
-      data: [{ id: 'test-message' }]
-    });
-
-    sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId').resolves({
-      userId: 1234,
-      entityId: 'test-entity-id',
-      userName: 'test-user@example.com',
-      roles: [ 'primary_user' ]
-    });
-
-    request = {
-      params: { documentId: 'test-doc-id' },
-      view: {
-        primaryUser: false,
-        verifications: []
+experiment('validateGaugingStation', () => {
+  test('throws an error if requested gauging station is not attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
       },
-      auth: {
-        credentials: {
-          scope: ['internal']
+      licence: {
+        summary: {
+          gaugingStations: []
         }
       }
     };
+
+    try {
+      await controller.validateGaugingStation(request);
+      fail('exception should have been thrown');
+    } catch (error) {
+      expect(error.isBoom).to.be.true();
+      expect(error.output.statusCode).to.equal(404);
+    }
   });
-
-  afterEach(async () => {
-    sandbox.restore();
-  });
-
-  test('uses the correct template', async () => {
-    await controller.getExpiredLicence(request, h);
-    const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/view-licences/expired-licence.njk');
-  });
-
-  experiment('the view context contains', () => {
-    test('the document id', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.documentId).to.equal('test-doc-id');
-    });
-
-    test('the expected licence details', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.licence.primaryUser.userName).to.equal('test-user@example.com');
-      expect(view.licence.licenceNumber).to.equal('test-licence-ref');
-      expect(view.licence.documentName).to.equal('test-doc-name');
-      expect(view.licence.expiryDate).to.equal('1 January 2019');
-    });
-
-    test('the returns', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.returns[0].return_id).to.equal('test-return');
-      expect(view.hasMoreReturns).to.be.false();
-    });
-
-    test('the messages', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.messages[0].id).to.equal('test-message');
-    });
-
-    test('the page title including the document name when present', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('Licence name test-doc-name');
-    });
-
-    test('the page title including the licence number when no document name', async () => {
-      licenceConnector.getLicenceByDocumentId.resolves({
-        data: {
-          document: {
-          },
-          licence_ref: 'test-licence-ref',
-          earliestEndDate: '20190101',
-          earliestEndDateReason: 'expired'
+  test('does not throw an error if requested gauging station is attached to licence', async () => {
+    const request = {
+      params: {
+        gaugingStation: 'testStation'
+      },
+      licence: {
+        summary: {
+          gaugingStations: [{
+            stationReference: 'testStation'
+          }]
         }
-      });
+      }
+    };
 
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('Licence number test-licence-ref');
-    });
+    const error = () => controller.validateGaugingStation(request);
+    expect(error).not.to.throw();
+  });
+});
 
-    test('the link back to the search including the licence number', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/admin/licences?query=test-licence-ref');
-    });
+experiment('getHoFTypes', () => {
+  test('returns false if code !== "CES"', async () => {
+    const conditions = [{
+      code: 'notCES',
+      subCode: 'FLOW'
+    }, {
+      code: 'notCES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
 
-    test('the isInternal value set to true', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.isInternal).to.be.true();
-    });
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns false if the code === "CES", but subCode !== "LEV" || "FLOW"', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.false();
+    expect(hofTypes.cesLev).to.be.false();
+  });
+
+  test('returns true if the conditions are flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
+  });
+
+  test('returns true if at least 1 condition is a flow or level conditions', async () => {
+    const conditions = [{
+      code: 'CES',
+      subCode: 'FLOW'
+    }, {
+      code: 'CES',
+      subCode: 'notFLOW'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'LEV'
+    }, {
+      code: 'CES',
+      subCode: 'notLEV'
+    }];
+    const hofTypes = controller.getHoFTypes(conditions);
+
+    expect(hofTypes.cesFlow).to.be.true();
+    expect(hofTypes.cesLev).to.be.true();
   });
 });

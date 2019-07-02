@@ -1,15 +1,15 @@
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const controller = require('../../../../../src/external/modules/returns/controllers/edit');
-const { returns } = require('../../../../../src/external/lib/connectors/water');
-const helpers = require('../../../../../src/external/modules/returns/lib/helpers');
-const { scope: { internal, external } } = require('../../../../../src/external/lib/constants');
-const returnPath = require('../../../../../src/external/modules/returns/lib/return-path');
-const permissions = require('../../../../../src/external/lib/permissions');
-const sessionHelpers = require('../../../../../src/external/modules/returns/lib/session-helpers');
-const forms = require('../../../../../src/shared/lib/forms');
-const flowHelpers = require('../../../../../src/external/modules/returns/lib/flow-helpers');
+const controller = require('external/modules/returns/controllers/edit');
+const services = require('external/lib/connectors/services');
+const helpers = require('external/modules/returns/lib/helpers');
+const { scope: { internal, external } } = require('external/lib/constants');
+const returnPath = require('external/modules/returns/lib/return-path');
+const permissions = require('external/lib/permissions');
+const sessionHelpers = require('external/modules/returns/lib/session-helpers');
+const forms = require('shared/lib/forms');
+const flowHelpers = require('external/modules/returns/lib/flow-helpers');
 
 const sandbox = sinon.createSandbox();
 
@@ -191,7 +191,7 @@ experiment('edit controller', () => {
       view: sandbox.stub(),
       redirect: sandbox.stub()
     };
-    sandbox.stub(returns, 'getReturn').returns(createReturn());
+    sandbox.stub(services.water.returns, 'getReturn').returns(createReturn());
     sandbox.stub(helpers, 'getLicenceNumbers').returns(documentHeaders);
     sandbox.stub(returnPath, 'isInternalEdit');
     sandbox.stub(permissions, 'isInternal');

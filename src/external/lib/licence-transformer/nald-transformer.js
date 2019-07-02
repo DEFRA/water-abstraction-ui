@@ -9,7 +9,7 @@ const {
   isArray
 } = require('lodash');
 const BaseTransformer = require('./base-transformer');
-const LicenceTitleLoader = require('../../../shared/lib/licence-title-loader');
+const LicenceTitleLoader = require('shared/lib/licence-title-loader');
 const licenceTitleLoader = new LicenceTitleLoader();
 const NALDHelpers = require('./nald-helpers');
 const sentenceCase = require('sentence-case');

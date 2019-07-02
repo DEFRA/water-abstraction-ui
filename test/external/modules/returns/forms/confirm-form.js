@@ -1,8 +1,8 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const confirmForm = require('../../../../../src/external/modules/returns/forms/confirm');
-const { scope } = require('../../../../../src/external/lib/constants');
+const confirmForm = require('external/modules/returns/forms/confirm');
+const { scope } = require('external/lib/constants');
 
 experiment('confirmForm', () => {
   const getRequest = () => {

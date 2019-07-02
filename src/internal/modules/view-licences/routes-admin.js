@@ -1,7 +1,7 @@
 const externalRoutes = require('./routes');
 const constants = require('../../lib/constants');
 const allAdmin = constants.scope.allAdmin;
-const { preLoadDocument, preInternalView } = require('./pre-handlers');
+const { preInternalView } = require('./pre-handlers');
 const controller = require('./controller');
 const { VALID_GUID } = require('shared/lib/validators');
 
@@ -10,7 +10,6 @@ const getLicenceAdmin = {
   config: {
     ...externalRoutes.getLicence.config,
     pre: [
-      { method: preLoadDocument },
       { method: preInternalView }
     ],
     auth: {

@@ -3,15 +3,13 @@ const Boom = require('boom');
 const { trim } = require('lodash');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
-const CRM = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const { getLicences: baseGetLicences } = require('./base');
-const { getLicencePageTitle, loadLicenceData, loadRiverLevelData, validateStationReference, riverLevelFlags, errorMapper } = require('./helpers');
-const licenceConnector = require('../../lib/connectors/water-service/licences');
+const helpers = require('./helpers');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
 const { isInternal } = require('../../lib/permissions');
-const communicationsConnector = require('../../lib/connectors/water-service/communications');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -47,10 +45,10 @@ async function getLicenceDetail (request, reply) {
   const { documentId } = request.params;
 
   try {
-    const { documentHeader, viewData, gaugingStations } = await loadLicenceData(request, documentId);
+    const { documentHeader, viewData, gaugingStations } = await helpers.loadLicenceData(request, documentId);
 
-    const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-    documentHeader.verifications = await CRM.getDocumentVerifications(documentId);
+    const primaryUser = await services.water.licences.getPrimaryUserByDocumentId(documentId);
+    documentHeader.verifications = await services.crm.documentVerifications.getUniqueDocumentVerifications(documentId);
 
     const { system_external_id: licenceNumber, document_name: customName } = documentHeader;
 
@@ -62,12 +60,13 @@ async function getLicenceDetail (request, reply) {
       name: 'name' in request.view ? request.view.name : customName,
       licenceData: viewData,
       back: `/licences/${documentId}`,
-      pageTitle: getLicencePageTitle(request.config.view, licenceNumber, customName),
+      backText: `Licence number ${licenceNumber}`,
+      pageTitle: helpers.getLicencePageTitle(request.config.view, licenceNumber, customName),
       crmData: documentHeader,
       primaryUser
     }, { layout: false });
   } catch (error) {
-    throw errorMapper(error);
+    throw helpers.errorMapper(error);
   }
 };
 
@@ -86,7 +85,7 @@ async function postLicenceRename (request, reply) {
   const { documentId } = request.params;
 
   // Rename licence
-  const { error } = await CRM.documents.setLicenceName(documentId, name);
+  const { error } = await services.crm.documents.setLicenceName(documentId, name);
   throwIfError(error);
 
   return reply.redirect(`/licences/${documentId}`);
@@ -101,16 +100,16 @@ async function getLicenceGaugingStation (request, reply) {
   const { licence_id: documentHeaderId, gauging_station: gaugingStation } = request.params;
 
   // Load licence data
-  const licenceData = await loadLicenceData(request, documentHeaderId);
+  const licenceData = await helpers.loadLicenceData(request, documentHeaderId);
 
   // Validate - check that the requested station reference is in licence metadata
-  if (!validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
+  if (!helpers.validateStationReference(licenceData.permitData.metadata.gaugingStations, gaugingStation)) {
     throw Boom.notFound(`Gauging station ${gaugingStation} not linked to licence ${licenceData.documentHeader.system_external_id}`);
   }
 
   // Load river level data
   const { hofTypes } = licenceData.viewData;
-  const { riverLevel, measure } = await loadRiverLevelData(gaugingStation, hofTypes, mode);
+  const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes, mode);
 
   const { system_external_id: licenceNumber, document_name: customName } = licenceData.documentHeader;
 
@@ -119,7 +118,7 @@ async function getLicenceGaugingStation (request, reply) {
     ...licenceData,
     riverLevel,
     measure,
-    ...riverLevelFlags(riverLevel, measure, hofTypes),
+    ...helpers.riverLevelFlags(riverLevel, measure, hofTypes),
     stationReference: gaugingStation,
     pageTitle: `Gauging station for ${customName || licenceNumber}`
   };
@@ -172,22 +171,15 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
  */
 const getLicence = async (request, h) => {
   const { documentId } = request.params;
-  const { data: licence } = await licenceConnector.getLicenceSummaryByDocumentId(documentId);
-
-  if (!licence) {
-    throw Boom.notFound(`Document ${documentId} not found`);
-  }
-
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId);
 
   const view = {
     ...request.view,
-    licence,
-    messages,
+    licence: request.licence.summary,
+    messages: request.licence.communications,
     ...await getCommonLicenceViewContext(
-      licence.licenceNumber,
+      request.licence.summary.licenceNumber,
       documentId,
-      licence.documentName,
+      request.licence.summary.documentName,
       request
     )
   };
@@ -210,7 +202,7 @@ const getAddressParts = notification => {
 
 const getLicenceCommunication = async (request, h) => {
   const { communicationId, documentId } = request.params;
-  const response = await communicationsConnector.getCommunication(communicationId);
+  const response = await services.water.communications.getCommunication(communicationId);
 
   const licence = response.data.licenceDocuments.find(doc => doc.documentId === documentId);
   if (!licence) {
@@ -226,7 +218,7 @@ const getLicenceCommunication = async (request, h) => {
     messageType: response.data.evt.name,
     sentDate: response.data.evt.createdDate,
     messageContent: response.data.notification.plainText,
-    back: `${isInternalUser ? '/admin' : ''}/licences/${documentId}#communications`,
+    back: `/licences/${documentId}#communications`,
     recipientAddressParts: getAddressParts(response.data.notification),
     isInternal: isInternalUser
   };
@@ -240,8 +232,8 @@ const getPageTitle = (documentName, licenceNumber) => {
 
 const getExpiredLicence = async (request, h) => {
   const { documentId } = request.params;
-  const { data: licenceData } = await licenceConnector.getLicenceByDocumentId(documentId, true);
-  const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId, true);
+  const { data: licenceData } = await services.water.licences.getByDocumentId(documentId, { includeExpired: true });
+  const primaryUser = await services.water.licences.getPrimaryUserByDocumentId(documentId, { includeExpired: true });
 
   // create the licence data that will be displayed in the view
   const licence = {
@@ -252,7 +244,7 @@ const getExpiredLicence = async (request, h) => {
     expiryReason: licenceData.earliestEndDateReason
   };
 
-  const { data: messages } = await licenceConnector.getLicenceCommunicationsByDocumentId(documentId, true);
+  const { data: messages } = await services.water.licences.getCommunicationsByDocumentId(documentId, { includeExpired: true });
 
   const view = {
     ...request.view,

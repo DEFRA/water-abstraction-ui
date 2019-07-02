@@ -2,22 +2,23 @@
 
 const server = require('../../../../server-internal');
 const { expect } = require('code');
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const client = require('../../../../src/internal/lib/connectors/water-service/notifications');
+const sandbox = sinon.createSandbox();
+
+const services = require('internal/lib/connectors/services');
 
 if (process.env.TEST_MODE) {
-  lab.experiment('findLastEmail', () => {
-    lab.beforeEach(async () => {
-      sinon.stub(client, 'getLatestEmailByAddress');
+  experiment('findLastEmail', () => {
+    beforeEach(async () => {
+      sandbox.stub(services.water.notifications, 'getLatestEmailByAddress');
     });
 
-    lab.afterEach(async () => {
-      client.getLatestEmailByAddress.restore();
+    afterEach(async () => {
+      sandbox.restore();
     });
 
-    lab.test('returns a 400 for a missing email', async () => {
+    test('returns a 400 for a missing email', async () => {
       const request = {
         method: 'GET',
         url: '/notifications/last'
@@ -27,8 +28,8 @@ if (process.env.TEST_MODE) {
       expect(response.statusCode).to.equal(400);
     });
 
-    lab.test('returns a 404 if no items are found', async () => {
-      client.getLatestEmailByAddress.resolves({
+    test('returns a 404 if no items are found', async () => {
+      services.water.notifications.getLatestEmailByAddress.resolves({
         data: [],
         error: null,
         pagination: { page: 1, perPage: 1, totalRows: 0, pageCount: 0 }
@@ -43,8 +44,8 @@ if (process.env.TEST_MODE) {
       expect(response.statusCode).to.equal(404);
     });
 
-    lab.test('returns a 200 with the expected data', async () => {
-      client.getLatestEmailByAddress.resolves({
+    test('returns a 200 with the expected data', async () => {
+      services.water.notifications.getLatestEmailByAddress.resolves({
         data: [{ id: 1 }, { id: 2 }],
         error: null,
         pagination: { page: 1, perPage: 1, totalRows: 2, pageCount: 1 }

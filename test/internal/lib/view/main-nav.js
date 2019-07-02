@@ -6,8 +6,8 @@ const { experiment, test } = exports.lab = Lab.script();
 
 const { expect } = require('code');
 
-const { getMainNav } = require('../../../../src/internal/lib/view/main-nav');
-const { scope } = require('../../../../src/internal/lib/constants');
+const { getMainNav } = require('internal/lib/view/main-nav');
+const { scope } = require('internal/lib/constants');
 
 const getAuthenticatedRequest = () => {
   return {

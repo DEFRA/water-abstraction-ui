@@ -4,9 +4,9 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const constants = require('../../../../src/internal/lib/constants');
+const constants = require('internal/lib/constants');
 const allAdmin = constants.scope.allAdmin;
-const routes = require('../../../../src/internal/modules/notifications/routes');
+const routes = require('internal/modules/notifications/routes');
 
 lab.experiment('notifications - admin routes', () => {
   lab.test('getStep has admin auth scopes', async () => {

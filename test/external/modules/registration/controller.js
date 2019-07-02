@@ -3,7 +3,7 @@ const { beforeEach, experiment, test } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 
 const testHelpers = require('../../test-helpers');
-const controller = require('../../../../src/external/modules/registration/controller');
+const controller = require('external/modules/registration/controller');
 
 experiment('getRegisterSuccess', () => {
   let viewContext;

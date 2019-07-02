@@ -4,8 +4,8 @@ const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const permissions = require('../../../src/external/lib/permissions');
-const { scope } = require('../../../src/external/lib/constants');
+const permissions = require('external/lib/permissions');
+const { scope } = require('external/lib/constants');
 
 const createRequest = (scope) => ({
   state: {

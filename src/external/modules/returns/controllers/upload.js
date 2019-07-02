@@ -1,17 +1,14 @@
-const { get, set } = require('lodash');
+const { get, set, isEmpty, lowerCase } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const snakeCase = require('snake-case');
 
 const { uploadForm } = require('../forms/upload');
-const water = require('../../../lib/connectors/water');
-const files = require('../../../lib/files');
+const files = require('../../../../shared/lib/files');
 const uploadHelpers = require('../lib/upload-helpers');
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');
-const waterReturns = require('../../../lib/connectors/water-service/returns');
-const waterCompany = require('../../../lib/connectors/water-service/company');
-const fileCheck = require('../../../lib/file-check');
+const services = require('../../../lib/connectors/services');
+const fileCheck = require('../../../../shared/lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
@@ -90,7 +87,7 @@ async function postXmlUpload (request, h) {
       const fileData = await files.readFile(localPath);
 
       // Send XML return data to API and get event ID for upload
-      const postData = await waterReturns.postUpload(fileData.toString(), userName, type);
+      const postData = await services.water.returns.postUpload(fileData.toString(), userName, type);
       eventId = get(postData, 'data.eventId');
     }
 
@@ -146,7 +143,7 @@ const getUploadEvent = async (eventId, userName) => {
   };
 
   // Get data from event database
-  const { data: [ evt ], error } = await water.events.findMany(filter);
+  const { data: [ evt ], error } = await services.water.events.findMany(filter);
   throwIfError(error);
   return evt;
 };
@@ -199,9 +196,14 @@ const getSummary = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    const returns = await waterReturns.getUploadPreview(eventId, options);
+    const returns = await services.water.returns.getUploadPreview(eventId, options);
 
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
+
+    if (isEmpty(grouped)) {
+      return h.redirect(`/returns/upload?error=empty`);
+    }
+
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
 
     const view = {
@@ -230,7 +232,7 @@ const getSummaryReturn = async (request, h) => {
   const { eventId, returnId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    const ret = await waterReturns.getUploadPreview(eventId, options, returnId);
+    const ret = await services.water.returns.getUploadPreview(eventId, options, returnId);
 
     const returnData = uploadSummaryHelpers.mapReturn(ret, eventId);
 
@@ -261,7 +263,7 @@ const postSubmit = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
   try {
-    await waterReturns.postUploadSubmit(eventId, options);
+    await services.water.returns.postUploadSubmit(eventId, options);
 
     // Redirect to spinner page while event resolves
     return h.redirect(`/returns/processing-upload/submitting/${eventId}`);
@@ -287,7 +289,7 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };
 
-const getZipFilename = companyName => `${snakeCase(companyName)}.zip`;
+const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates ${year}.zip`;
 
 /**
  * Downloads a ZIP of CSV templates
@@ -296,12 +298,13 @@ const getCSVTemplates = async (request, h) => {
   const { companyId, companyName } = request.defra;
 
   // Fetch returns for current company
-  const returns = await waterCompany.getCurrentDueReturns(companyId);
+  const returns = await services.water.companies.getCurrentDueReturns(companyId);
+  const endDate = returns[0].endDate;
 
   // Generate CSV data and build zip
   const data = csvTemplates.createCSVData(returns);
   const zip = await csvTemplates.buildZip(data, companyName);
-  const fileName = getZipFilename(companyName);
+  const fileName = getZipFilename(companyName, endDate.substring(0, 4));
 
   return h.response(zip)
     .header('Content-type', 'application/zip')

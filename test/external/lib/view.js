@@ -4,8 +4,8 @@ const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const view = require('../../../src/external/lib/view');
-const { scope } = require('../../../src/external/lib/constants');
+const view = require('external/lib/view');
+const { scope } = require('external/lib/constants');
 
 /*
  * Gets the minimal request object that allows the tests to run.

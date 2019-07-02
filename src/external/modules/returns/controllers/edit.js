@@ -5,7 +5,7 @@
  */
 const { get, set } = require('lodash');
 const Boom = require('boom');
-const forms = require('../../../../shared/lib/forms');
+const forms = require('shared/lib/forms');
 const { logger } = require('../../../logger');
 
 const {

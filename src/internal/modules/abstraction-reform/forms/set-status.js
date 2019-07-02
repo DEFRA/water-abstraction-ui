@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 const { isARApprover } = require('../../../lib/permissions');
 
 const {
@@ -29,6 +29,53 @@ const choices = [
   }
 ];
 
+const agentChoices = [
+  {
+    value: STATUS_IN_REVIEW,
+    label: 'Review'
+  },
+  {
+    value: STATUS_NALD_UPDATE,
+    label: 'NALD update'
+  }
+];
+
+const getNotesField = () => {
+  return fields.text('notes', {
+    required: false,
+    multiline: true,
+    label: 'Notes about these changes (optional)'
+  });
+};
+
+const getStatusField = isApprover => {
+  if (isApprover) {
+    return fields.radio('status', {
+      label: 'Do you approve these edits?',
+      choices,
+      errors: {
+        'any.required': {
+          message: 'Select if you approve these edits'
+        }
+      }
+    });
+  }
+  return fields.radio('status', {
+    label: 'Submit for',
+    choices: agentChoices,
+    errors: {
+      'any.required': {
+        message: 'Select a status'
+      }
+    }
+  });
+};
+
+const getSubmitButton = isApprover => {
+  const buttonText = isApprover ? 'Save decision' : 'Submit';
+  return fields.button(null, { label: buttonText });
+};
+
 /**
  * Get form object to set AR document status (and optionally leave notes)
  * @param {Object} request - HAPI request instance
@@ -42,27 +89,12 @@ const setStatusForm = (request) => {
 
   const f = formFactory(action);
 
-  f.fields.push(fields.text('notes', { required: false, multiline: true, label: 'Notes about these changes (optional)' }));
+  f.fields.push();
 
   const isApprover = isARApprover(request);
-
-  if (isApprover) {
-    f.fields.push(fields.radio('status', {
-      label: 'Do you approve these edits?',
-      choices,
-      errors: {
-        'any.required': {
-          message: 'Select if you approve these edits'
-        }
-      }
-    }));
-  } else {
-    f.fields.push(fields.hidden('status', { }, STATUS_IN_REVIEW));
-  }
-
-  const buttonText = isApprover ? 'Save decision' : 'Submit for approval';
-
-  f.fields.push(fields.button(null, { label: buttonText }));
+  f.fields.push(getNotesField());
+  f.fields.push(getStatusField(isApprover));
+  f.fields.push(getSubmitButton(isApprover));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 
   return f;
@@ -78,7 +110,7 @@ const setStatusSchema = (request) => {
   const validStatus = isApprover ? [STATUS_IN_PROGRESS,
     STATUS_APPROVED,
     STATUS_NALD_UPDATE,
-    STATUS_LICENCE_REVIEW] : STATUS_IN_REVIEW;
+    STATUS_LICENCE_REVIEW] : [STATUS_IN_REVIEW, STATUS_NALD_UPDATE];
   return {
     csrf_token: Joi.string().guid().required(),
     notes: Joi.string().allow(''),

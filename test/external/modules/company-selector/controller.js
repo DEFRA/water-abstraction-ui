@@ -5,9 +5,9 @@ const sandbox = sinon.createSandbox();
 const { set } = require('lodash');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const controller = require('../../../../src/external/modules/company-selector/controller');
-const loginHelpers = require('../../../../src/external/lib/login-helpers');
-const { externalUserWithLicences } = require('../../responses/water-service/user/_userId_/status');
+const controller = require('external/modules/company-selector/controller');
+const loginHelpers = require('external/lib/login-helpers');
+const { externalUserWithLicences } = require('../../../shared/responses/water-service/user/_userId_/status');
 
 const userId = 'user_1';
 

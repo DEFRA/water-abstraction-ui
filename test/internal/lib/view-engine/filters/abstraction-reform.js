@@ -7,7 +7,7 @@ const { expect } = require('code');
 const {
   mapARComparisonTable,
   ARConditionPlaceholder
-} = require('../../../../../src/internal/lib/view-engine/filters/abstraction-reform');
+} = require('internal/lib/view-engine/filters/abstraction-reform');
 
 lab.experiment('mapARComparisonTable', () => {
   const data = {

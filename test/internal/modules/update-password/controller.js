@@ -5,7 +5,7 @@ const lab = exports.lab = Lab.script();
 
 const Code = require('code');
 
-const controller = require('../../../../src/internal/modules/update-password/controller');
+const controller = require('internal/modules/update-password/controller');
 
 /**
  * Note current version test of 'code' can't test for async function

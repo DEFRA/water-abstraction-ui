@@ -7,9 +7,8 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { get } = require('lodash');
 
-const crmConnector = require('../../../../../src/external/lib/connectors/crm');
-const returnsConnector = require('../../../../../src/external/lib/connectors/returns').returns;
-const helpers = require('../../../../../src/external/modules/returns/lib/helpers');
+const services = require('external/lib/connectors/services');
+const helpers = require('external/modules/returns/lib/helpers');
 
 experiment('isReturnPastDueDate', () => {
   test('is true when the due date is before today', async () => {
@@ -42,7 +41,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'completed'
     };
-    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/returns/return?id=${returnId}`);
+    expect(helpers.getRedirectPath(completed)).to.equal(`/returns/return?id=${returnId}`);
   });
 
   test('redirects to edit return when status is not completed', async () => {
@@ -50,7 +49,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'due'
     };
-    expect(helpers.getRedirectPath(completed)).to.equal(`/admin/return/internal?returnId=${returnId}`);
+    expect(helpers.getRedirectPath(completed)).to.equal(`/return/internal?returnId=${returnId}`);
   });
 
   test('redirects to select licence when there is more than 1 matched return', async () => {
@@ -58,7 +57,7 @@ experiment('getRedirectPath', () => {
       ...ret,
       status: 'received'
     };
-    expect(helpers.getRedirectPath(completed, true)).to.equal(`/admin/returns/select-licence?formatId=${formatId}`);
+    expect(helpers.getRedirectPath(completed, true)).to.equal(`/returns/select-licence?formatId=${formatId}`);
   });
 });
 
@@ -76,7 +75,7 @@ experiment('isReturnId', () => {
 
 experiment('getLicenceReturns', () => {
   beforeEach(async () => {
-    sandbox.stub(returnsConnector, 'findMany').resolves({
+    sandbox.stub(services.returns.returns, 'findMany').resolves({
       data: {},
       error: null,
       pagination: {}
@@ -89,13 +88,13 @@ experiment('getLicenceReturns', () => {
 
   test('does not filter void returns for internal users', async () => {
     await helpers.getLicenceReturns([], 1, true);
-    const filter = returnsConnector.findMany.args[0][0];
+    const filter = services.returns.returns.findMany.args[0][0];
     expect(get(filter, 'status.$ne')).to.be.undefined();
   });
 
   test('omits void returns for external users', async () => {
     await helpers.getLicenceReturns([], 1, false);
-    const filter = returnsConnector.findMany.args[0][0];
+    const filter = services.returns.returns.findMany.args[0][0];
     expect(get(filter, 'status.$ne')).to.equal('void');
   });
 });
@@ -151,7 +150,7 @@ experiment('isXmlUpload', () => {
 
   experiment('pagination.totalRows > 0', () => {
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {
@@ -170,7 +169,7 @@ experiment('isXmlUpload', () => {
     let filter;
 
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {
@@ -178,7 +177,7 @@ experiment('isXmlUpload', () => {
         }
       });
       await helpers.isXmlUpload(['01/123', '04/567'], '2019-05-05');
-      filter = returnsConnector.findMany.lastCall.args[0];
+      filter = services.returns.returns.findMany.lastCall.args[0];
     });
 
     test('have the GOR upload flag set', async () => {
@@ -213,11 +212,10 @@ experiment('isXmlUpload', () => {
     experiment('for a summer return cycle', () => {
       beforeEach(async () => {
         await helpers.isXmlUpload(['01/123', '04/567'], '2019-11-01');
-        filter = returnsConnector.findMany.lastCall.args[0];
+        filter = services.returns.returns.findMany.lastCall.args[0];
       });
 
       test('are in the current return cycle', async () => {
-        console.log(filter);
         expect(filter['metadata->>isSummer']).to.equal('true');
         expect(filter.start_date).to.equal({
           $gte: '2018-11-01'
@@ -232,7 +230,7 @@ experiment('isXmlUpload', () => {
 
   experiment('pagination.totalRows === 0', () => {
     beforeEach(async () => {
-      sandbox.stub(returnsConnector, 'findMany').resolves({
+      sandbox.stub(services.returns.returns, 'findMany').resolves({
         data: {},
         error: null,
         pagination: {
@@ -253,7 +251,7 @@ experiment('isXmlUpload', () => {
 
 experiment('getLicenceNumbers', () => {
   beforeEach(async () => {
-    sandbox.stub(crmConnector.documents, 'findAll').resolves({});
+    sandbox.stub(services.crm.documents, 'findAll').resolves({});
   });
 
   afterEach(async () => {
@@ -262,7 +260,7 @@ experiment('getLicenceNumbers', () => {
 
   test('requests the required columns', async () => {
     await helpers.getLicenceNumbers({});
-    const [, , columns] = crmConnector.documents.findAll.lastCall.args;
+    const [, , columns] = services.crm.documents.findAll.lastCall.args;
     expect(columns).to.only.include([
       'system_external_id',
       'document_name',
@@ -271,30 +269,17 @@ experiment('getLicenceNumbers', () => {
     ]);
   });
 
-  test('includes expired licences for internal users', async () => {
-    const request = {
-      auth: {
-        credentials: {
-          scope: ['internal']
-        }
-      }
-    };
-    await helpers.getLicenceNumbers(request);
-    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
-    expect(get(filter, 'includeExpired')).to.equal(true);
-  });
-
   test('does not expired licences for external users', async () => {
     const request = {};
     await helpers.getLicenceNumbers(request);
-    const [ filter ] = crmConnector.documents.findAll.lastCall.args;
+    const [ filter ] = services.crm.documents.findAll.lastCall.args;
     expect(get(filter, 'includeExpired')).to.be.undefined();
   });
 });
 
 experiment('getViewData', () => {
   beforeEach(async () => {
-    sandbox.stub(crmConnector.documents, 'getWaterLicence').resolves({});
+    sandbox.stub(services.crm.documents, 'getWaterLicence').resolves({});
   });
 
   afterEach(async () => {
@@ -313,7 +298,7 @@ experiment('getViewData', () => {
     const data = { licenceNumber: '123' };
 
     await helpers.getViewData(internalRequest, data);
-    const [licenceNumber, isInternal] = crmConnector.documents.getWaterLicence.lastCall.args;
+    const [licenceNumber, isInternal] = services.crm.documents.getWaterLicence.lastCall.args;
 
     expect(licenceNumber).to.equal('123');
     expect(isInternal).to.be.true();

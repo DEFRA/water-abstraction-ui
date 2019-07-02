@@ -2,20 +2,18 @@ const { expect } = require('code');
 const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
 const sinon = require('sinon');
-const water = require('../../../../../src/external/lib/connectors/water');
-const forms = require('../../../../../src/shared/lib/forms/index');
-const files = require('../../../../../src/external/lib/files');
-const fileCheck = require('../../../../../src/external/lib/file-check');
-const waterReturns = require('../../../../../src/external/lib/connectors/water-service/returns');
-const waterCompany = require('../../../../../src/external/lib/connectors/water-service/company');
-
-const controller = require('../../../../../src/external/modules/returns/controllers/upload');
-const { logger } = require('../../../../../src/external/logger');
-const uploadHelpers = require('../../../../../src/external/modules/returns/lib/upload-helpers');
-const helpers = require('../../../../../src/external/modules/returns/lib/helpers.js');
-const csvTemplates = require('../../../../../src/external/modules/returns/lib/csv-templates');
-
 const sandbox = sinon.createSandbox();
+
+const forms = require('shared/lib/forms/index');
+const files = require('shared/lib/files');
+const fileCheck = require('shared/lib/file-check');
+const services = require('external/lib/connectors/services');
+
+const controller = require('external/modules/returns/controllers/upload');
+const { logger } = require('external/logger');
+const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
+const helpers = require('external/modules/returns/lib/helpers.js');
+const csvTemplates = require('external/modules/returns/lib/csv-templates');
 
 const eventId = 'event_1';
 const userName = 'user_1';
@@ -106,16 +104,16 @@ experiment('upload controller', () => {
         header
       })
     };
-    sandbox.stub(water.events, 'findMany');
+    sandbox.stub(services.water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
-    sandbox.stub(waterReturns, 'postUpload').resolves({ data: { eventId } });
+    sandbox.stub(services.water.returns, 'postUpload').resolves({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
-    sandbox.stub(waterReturns, 'postUploadSubmit');
-    sandbox.stub(waterCompany, 'getCurrentDueReturns').resolves(companyReturns);
+    sandbox.stub(services.water.returns, 'postUploadSubmit');
+    sandbox.stub(services.water.companies, 'getCurrentDueReturns').resolves(companyReturns);
     sandbox.stub(csvTemplates, 'createCSVData').returns(csvData);
     sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject);
     sandbox.stub(fileCheck, 'detectFileType').resolves('xml');
@@ -161,7 +159,7 @@ experiment('upload controller', () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       fileCheck.detectFileType.resolves('csv');
       await controller.postXmlUpload(createRequest(), h);
-      const [data, user, fileType] = waterReturns.postUpload.lastCall.args;
+      const [data, user, fileType] = services.water.returns.postUpload.lastCall.args;
       expect(data).to.equal('fileData');
       expect(user).to.equal('user_1');
       expect(fileType).to.equal('csv');
@@ -170,7 +168,7 @@ experiment('upload controller', () => {
   experiment('getSpinnerPage', () => {
     test('throws an error if there is an error response from the events API', async () => {
       const response = createErrorResponse();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       const func = () => controller.getSpinnerPage(createSpinnerRequest(), h);
       expect(func()).to.reject();
     });
@@ -178,7 +176,7 @@ experiment('upload controller', () => {
     test('it should redirect to the summary page if status is validated', async () => {
       const response = createResponse('validated');
       const request = createSpinnerRequest();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
       expect(h.redirect.callCount).to.equal(1);
@@ -189,7 +187,7 @@ experiment('upload controller', () => {
     test('it should load the waiting page', async () => {
       const response = createResponse();
       const request = createSpinnerRequest();
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
 
       const [path] = h.view.lastCall.args;
@@ -197,7 +195,7 @@ experiment('upload controller', () => {
     });
 
     test('throws a Boom 404 error if the event is not found', async () => {
-      water.events.findMany.resolves({ error: null, data: [] });
+      services.water.events.findMany.resolves({ error: null, data: [] });
       try {
         await controller.getSpinnerPage(createSpinnerRequest(), h);
         fail();
@@ -209,7 +207,7 @@ experiment('upload controller', () => {
 
     test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
       const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
-      water.events.findMany.resolves(response);
+      services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(createSpinnerRequest(), h);
 
       expect(h.redirect.callCount).to.equal(1);
@@ -233,12 +231,12 @@ experiment('upload controller', () => {
 
     experiment('getSummary', () => {
       beforeEach(async () => {
-        sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns);
+        sandbox.stub(services.water.returns, 'getUploadPreview').resolves(returns);
       });
 
       test('should call water returns API with correct params', async () => {
         await controller.getSummary(request, h);
-        const { args } = waterReturns.getUploadPreview.lastCall;
+        const { args } = services.water.returns.getUploadPreview.lastCall;
         expect(args[0]).to.equal(eventId);
         expect(args[1]).to.equal({
           userName,
@@ -264,14 +262,14 @@ experiment('upload controller', () => {
       });
 
       test('should have correct page title if there are no errors', async () => {
-        waterReturns.getUploadPreview.resolves([returns[0]]);
+        services.water.returns.getUploadPreview.resolves([returns[0]]);
         await controller.getSummary(request, h);
         const [, view] = h.view.lastCall.args;
         expect(view.pageTitle).to.equal(controller.pageTitles.ok);
       });
 
       test('should log an error if water returns API error', async () => {
-        waterReturns.getUploadPreview.rejects();
+        services.water.returns.getUploadPreview.rejects();
         const func = () => controller.getSummary(request, h);
         await expect(func()).to.reject();
 
@@ -286,16 +284,22 @@ experiment('upload controller', () => {
           }
         });
       });
+
+      test('redirects to upload form if upload contains no data', async () => {
+        services.water.returns.getUploadPreview.resolves([]);
+        await controller.getSummary(request, h);
+        expect(h.redirect.calledWith(`/returns/upload?error=empty`)).to.equal(true);
+      });
     });
 
     experiment('getSummaryReturn', () => {
       beforeEach(async () => {
-        sandbox.stub(waterReturns, 'getUploadPreview').resolves(returns[0]);
+        sandbox.stub(services.water.returns, 'getUploadPreview').resolves(returns[0]);
       });
 
       test('should call water returns API with correct params', async () => {
         await controller.getSummaryReturn(request, h);
-        const { args } = waterReturns.getUploadPreview.lastCall;
+        const { args } = services.water.returns.getUploadPreview.lastCall;
         expect(args[0]).to.equal(eventId);
         expect(args[1]).to.equal({
           userName,
@@ -315,7 +319,7 @@ experiment('upload controller', () => {
       });
 
       test('should log an error if water returns API error', async () => {
-        waterReturns.getUploadPreview.rejects();
+        services.water.returns.getUploadPreview.rejects();
         const func = () => controller.getSummaryReturn(request, h);
         await expect(func()).to.reject();
 
@@ -337,7 +341,7 @@ experiment('upload controller', () => {
       test('should call the water service upload submit API with correct params', async () => {
         const request = createRequest();
         await controller.postSubmit(request, h);
-        const { args } = waterReturns.postUploadSubmit.lastCall;
+        const { args } = services.water.returns.postUploadSubmit.lastCall;
         expect(args[0]).to.equal(eventId);
         expect(args[1]).to.equal({
           companyId,
@@ -354,7 +358,7 @@ experiment('upload controller', () => {
       });
 
       test('should log an error if the submission fails', async () => {
-        waterReturns.postUploadSubmit.rejects();
+        services.water.returns.postUploadSubmit.rejects();
         const func = () => controller.postSubmit(request, h);
         await expect(func()).to.reject();
         const [message, params] = logger.error.lastCall.args;
@@ -394,7 +398,7 @@ experiment('upload controller', () => {
       });
 
       test('should get current due returns for the correct company', async () => {
-        expect(waterCompany.getCurrentDueReturns.calledWith(companyId)).to.equal(true);
+        expect(services.water.companies.getCurrentDueReturns.calledWith(companyId)).to.equal(true);
       });
 
       test('calls csvTemplates.createCSVData with the company returns', async () => {
@@ -420,7 +424,7 @@ experiment('upload controller', () => {
       test('sets the correct content disposition in the response', async () => {
         const [key, value] = header.secondCall.args;
         expect(key).to.equal('Content-disposition');
-        expect(value).to.equal('attachment; filename=test_co_ltd.zip');
+        expect(value).to.equal('attachment; filename=test co ltd return templates 2019.zip');
       });
     });
   });

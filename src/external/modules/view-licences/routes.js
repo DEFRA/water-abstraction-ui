@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const controller = require('./controller');
-const { VALID_GUID, VALID_LICENCE_QUERY, VALID_LICENCE_NAME, VALID_GAUGING_STATION } = require('shared/lib/validators');
-const { preLoadDocument } = require('./pre-handlers');
+const { VALID_GUID, VALID_LICENCE_QUERY, VALID_GAUGING_STATION } = require('shared/lib/validators');
 
 const { scope } = require('../../lib/constants');
 
@@ -15,7 +14,6 @@ const getLicence = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View a single licence',
     validate: {
       params: {
@@ -25,6 +23,12 @@ const getLicence = {
     plugins: {
       config: {
         view: 'water/view-licences/licence'
+      },
+      licenceData: {
+        load: {
+          summary: true,
+          communications: true
+        }
       },
       viewContext: {
         activeNavLink: 'view'
@@ -36,12 +40,11 @@ const getLicence = {
 const getLicenceRename = {
   method: 'GET',
   path: '/licences/{documentId}/rename',
-  handler: controller.getLicenceDetail,
+  handler: controller.getLicenceRename,
   config: {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'Set user-defined name for licence',
     validate: {
       params: {
@@ -54,6 +57,11 @@ const getLicenceRename = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -61,14 +69,13 @@ const getLicenceRename = {
 
 const postLicenceRename = {
   method: 'POST',
-  path: '/licences/{documentId}',
+  path: '/licences/{documentId}/rename',
   handler: controller.postLicenceRename,
   config: {
     description: 'Update the user-defined licence name',
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     validate: {
       params: {
         documentId: VALID_GUID
@@ -85,10 +92,9 @@ const postLicenceRename = {
       viewContext: {
         activeNavLink: 'view'
       },
-      formValidator: {
-        payload: {
-          name: VALID_LICENCE_NAME,
-          csrf_token: VALID_GUID
+      licenceData: {
+        load: {
+          summary: true
         }
       }
     }
@@ -103,7 +109,6 @@ const getLicenceContact = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View contact info for licence',
     validate: {
       params: {
@@ -116,6 +121,11 @@ const getLicenceContact = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -129,7 +139,6 @@ const getLicencePurposes = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View abstraction purposes for licence',
     validate: {
       params: {
@@ -142,6 +151,11 @@ const getLicencePurposes = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -155,7 +169,6 @@ const getLicencePoints = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View abstraction points for licence',
     validate: {
       params: {
@@ -168,6 +181,11 @@ const getLicencePoints = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -181,7 +199,6 @@ const getLicenceConditions = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
@@ -194,6 +211,11 @@ const getLicenceConditions = {
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -201,18 +223,17 @@ const getLicenceConditions = {
 
 const getLicenceGaugingStation = {
   method: 'GET',
-  path: '/licences/{documentId}/station/{gauging_station}',
+  path: '/licences/{documentId}/station/{gaugingStation}',
   handler: controller.getLicenceGaugingStation,
   config: {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'View abstraction conditions info for licence',
     validate: {
       params: {
         documentId: VALID_GUID,
-        gauging_station: VALID_GAUGING_STATION
+        gaugingStation: VALID_GAUGING_STATION
       },
       query: {
         measure: Joi.string().allow('level', 'flow', 'auto').default('auto')
@@ -220,10 +241,15 @@ const getLicenceGaugingStation = {
     },
     plugins: {
       config: {
-        view: 'water/view-licences/gauging-station'
+        view: 'nunjucks/view-licences/gauging-station.njk'
       },
       viewContext: {
         activeNavLink: 'view'
+      },
+      licenceData: {
+        load: {
+          summary: true
+        }
       }
     }
   }
@@ -237,7 +263,6 @@ const getLicenceCommunication = {
     auth: {
       scope: allowedScopes
     },
-    pre: [{ method: preLoadDocument }],
     description: 'Look at the content of a message sent to the user regarding the licence',
     validate: {
       params: {

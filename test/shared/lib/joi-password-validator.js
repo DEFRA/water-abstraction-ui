@@ -7,8 +7,8 @@ const Code = require('code');
 
 const Joi = require('joi');
 
-const { VALID_PASSWORD } = require('../../../src/shared/lib/validators');
-const formatViewError = require('../../../src/shared/lib/format-view-error');
+const { VALID_PASSWORD } = require('shared/lib/validators');
+const formatViewError = require('shared/lib/format-view-error');
 
 const schema = {
   password: VALID_PASSWORD

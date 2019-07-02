@@ -4,10 +4,10 @@ const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const sessionHelpers = require('./lib/session-helpers');
 const helpers = require('./lib/helpers');
-const waterConnector = require('../../lib/connectors/water');
-const crmConnector = require('../../lib/connectors/crm');
+const services = require('../../lib/connectors/services');
 const returnPath = require('./lib/return-path');
 const permissions = require('../../lib/permissions');
+const config = require('../../config');
 
 /**
  * Redirects user to view return rather than edit
@@ -27,13 +27,15 @@ const redirectToReturn = (request, h) => {
  * @return {Promise}         - resolves with object for CRM document loaded
  */
 const loadCRMDocument = async (request, data) => {
-  const filter = crmConnector.documents.createFilter(request, {
-    system_external_id: data.licenceNumber
-  });
+  const filter = {
+    system_external_id: data.licenceNumber,
+    company_entity_id: get(request, 'defra.companyId'),
+    regime_entity_id: config.crm.regimes.water.entityId
+  };
   const pagination = { page: 1, perPage: 1 };
   const columns = ['document_id'];
   const { data: [ document ], error } =
-    await crmConnector.documents.findMany(filter, null, pagination, columns);
+    await services.crm.documents.findMany(filter, null, pagination, columns);
   throwIfError(error);
   return document;
 };
@@ -71,7 +73,7 @@ const getReturnData = async (request) => {
   // Load fresh data from water service if flag set in route config
   const isLoadRoute = get(request, 'route.settings.plugins.returns.load', false);
   if (isLoadRoute) {
-    const data = await waterConnector.returns.getReturn(returnId);
+    const data = await services.water.returns.getReturn(returnId);
     const canAccess = await checkAccess(request, data);
     if (!canAccess) {
       throw Boom.unauthorized(`Permission denied to submit/edit return`, data);

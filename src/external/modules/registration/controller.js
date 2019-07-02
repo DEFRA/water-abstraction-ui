@@ -3,8 +3,9 @@
  * @module controllers/registration
  */
 const Joi = require('joi');
-const IDM = require('../../lib/connectors/idm');
 const querystring = require('querystring');
+const config = require('../../config');
+const services = require('../../lib/connectors/services');
 
 /**
  * Render initial page with information for users
@@ -50,8 +51,8 @@ async function postEmailAddress (request, h, options = {}) {
     redirect: '/success',
     includeEmail: true
   };
-  const config = Object.assign(defaults, options);
-  const pageTitle = config.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
+  const emailConfig = Object.assign(defaults, options);
+  const pageTitle = emailConfig.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
   let email;
 
   try {
@@ -67,22 +68,22 @@ async function postEmailAddress (request, h, options = {}) {
     email = value.email;
 
     // Try to create user
-    const { error: createError } = await IDM.createUserWithoutPassword(email);
+    const { error: createError } = await services.idm.users.createUserWithoutPassword(config.idm.application, email);
 
     if (createError) {
       throw createError;
     }
 
-    await IDM.resetPassword(value.email, 'new');
-    return h.redirect(getUrlWithEmailParam(email, config));
+    await services.idm.users.resetPassword(config.idm.application, value.email, 'new');
+    return h.redirect(getUrlWithEmailParam(email, emailConfig));
   } catch (error) {
     // User exists
     if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
-      const { error: resetError } = await IDM.resetPassword(request.payload.email, 'existing');
+      const { error: resetError } = await services.idm.users.resetPassword(config.idm.application, request.payload.email, 'existing');
       if (resetError) {
         throw resetError;
       } else {
-        return h.redirect(getUrlWithEmailParam(email, config));
+        return h.redirect(getUrlWithEmailParam(email, emailConfig));
       }
     }
 
@@ -90,7 +91,7 @@ async function postEmailAddress (request, h, options = {}) {
     if (error.name === 'ValidationError') {
       request.view.pageTitle = pageTitle;
       request.view.error = error;
-      return h.view(config.template, request.view);
+      return h.view(emailConfig.template, request.view);
     }
 
     throw error;

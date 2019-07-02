@@ -1,5 +1,5 @@
 const hapi = require('@hapi/hapi');
-const configPlugin = require('../../../../../src/shared/plugins/config');
+const configPlugin = require('shared/plugins/config');
 
 const { experiment, test } = exports.lab = require('lab').script();
 const { expect } = require('code');

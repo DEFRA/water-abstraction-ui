@@ -9,7 +9,7 @@ const { get } = require('lodash');
 
 const loginHelpers = require('../../lib/login-helpers');
 const { selectCompanyForm } = require('./forms/select-company');
-const { handleRequest, getValues } = require('../../../shared/lib/forms');
+const { handleRequest, getValues } = require('shared/lib/forms');
 
 /**
  * Renders select company form for current user

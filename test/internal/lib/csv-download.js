@@ -5,7 +5,7 @@ const Lab = require('lab');
 const { experiment, test, beforeEach } = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const { csvDownload } = require('../../../src/internal/lib/csv-download');
+const { csvDownload } = require('internal/lib/csv-download');
 
 experiment('csvDownload', () => {
   let header;

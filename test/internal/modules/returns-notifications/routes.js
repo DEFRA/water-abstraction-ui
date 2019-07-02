@@ -4,9 +4,9 @@ const Lab = require('lab');
 const lab = exports.lab = Lab.script();
 
 const { expect } = require('code');
-const constants = require('../../../../src/internal/lib/constants');
+const constants = require('internal/lib/constants');
 const returnsScope = constants.scope.returns;
-const routes = require('../../../../src/internal/modules/returns-notifications/routes');
+const routes = require('internal/modules/returns-notifications/routes');
 
 lab.experiment('returns notifications', () => {
   lab.test('getSendForms has return scope', async () => {

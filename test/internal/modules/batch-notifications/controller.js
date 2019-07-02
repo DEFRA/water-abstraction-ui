@@ -5,11 +5,10 @@ const sandbox = sinon.createSandbox();
 
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const controller = require('../../../../src/internal/modules/batch-notifications/controller');
-const helpers = require('../../../../src/internal/modules/batch-notifications/lib/helpers');
-const csv = require('../../../../src/internal/lib/csv-download');
-const batchNotificationsConnector =
-  require('../../../../src/internal/lib/connectors/water-service/batch-notifications');
+const controller = require('internal/modules/batch-notifications/controller');
+const helpers = require('internal/modules/batch-notifications/lib/helpers');
+const csv = require('internal/lib/csv-download');
+const services = require('internal/lib/connectors/services');
 
 experiment('batch notifications controller', () => {
   let h;
@@ -55,7 +54,7 @@ experiment('batch notifications controller', () => {
       redirect: sandbox.stub()
     };
     sandbox.stub(csv, 'csvDownload').resolves();
-    sandbox.stub(batchNotificationsConnector, 'sendReminders').resolves();
+    sandbox.stub(services.water.batchNotifications, 'sendReminders').resolves();
   });
 
   afterEach(async () => {
@@ -119,7 +118,7 @@ experiment('batch notifications controller', () => {
     });
 
     test('calls water service batch notifications API with event ID and issuer', async () => {
-      const { args } = batchNotificationsConnector.sendReminders.lastCall;
+      const { args } = services.water.batchNotifications.sendReminders.lastCall;
       expect(args[0]).to.equal(eventId);
       expect(args[1]).to.equal(username);
     });

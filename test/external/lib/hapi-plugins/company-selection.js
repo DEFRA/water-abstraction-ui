@@ -10,7 +10,7 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const plugin = require('../../../../src/external/lib/hapi-plugins/company-selection');
+const plugin = require('external/lib/hapi-plugins/company-selection');
 const handler = plugin._handler;
 
 const getTestRequest = (overrides = {}) => {

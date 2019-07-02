@@ -1,8 +1,7 @@
 const { set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const CRM = require('../../lib/connectors/crm');
-const licenceConnector = require('../../lib/connectors/water-service/licences');
+const services = require('../../lib/connectors/services');
 const permissions = require('../../lib/permissions');
 
 const checkAccess = (request, documentHeader) => {
@@ -32,7 +31,7 @@ const preLoadDocument = async (request, h) => {
   };
 
   // Load document from CRM
-  const { error, data: [ documentHeader ] } = await CRM.documents.findMany(filter);
+  const { error, data: [ documentHeader ] } = await services.crm.documents.findMany(filter);
 
   throwIfError(error);
   if (!documentHeader) {
@@ -54,14 +53,12 @@ const preLoadDocument = async (request, h) => {
  */
 const preInternalView = async (request, h) => {
   const { documentId } = request.params;
-  const primaryUser = await licenceConnector.getLicencePrimaryUserByDocumentId(documentId);
-  const verifications = await CRM.getDocumentVerifications(documentId);
+  const primaryUser = await services.water.licences.getPrimaryUserByDocumentId(documentId);
+  const verifications = await services.crm.documentVerifications.getUniqueDocumentVerifications(documentId);
   set(request, 'view.primaryUser', primaryUser);
   set(request, 'view.verifications', verifications);
   return h.continue;
 };
 
-module.exports = {
-  preLoadDocument,
-  preInternalView
-};
+exports.preLoadDocument = preLoadDocument;
+exports.preInternalView = preInternalView;

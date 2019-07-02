@@ -3,14 +3,12 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 
-const communicationsConnector = require('../../../../src/internal/lib/connectors/water-service/communications');
+const services = require('internal/lib/connectors/services');
 
-const communicationResponses = require('../../responses/water-service/communications/_documentId_');
+const communicationResponses = require('../../../shared/responses/water-service/communications/_documentId_');
 
-const controller = require('../../../../src/internal/modules/view-licences/controller');
-const { scope } = require('../../../../src/internal/lib/constants');
-const returnsConnector = require('../../../../src/internal/lib/connectors/returns');
-const licenceConnector = require('../../../../src/internal/lib/connectors/water-service/licences');
+const controller = require('internal/modules/view-licences/controller');
+const { scope } = require('internal/lib/constants');
 
 experiment('getLicences', () => {
   test('redirects to security code page if no licences but outstanding verifications', async () => {
@@ -51,7 +49,7 @@ experiment('getLicenceCommunication', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(communicationsConnector, 'getCommunication').resolves(communicationResponses.getCommunication());
+    sandbox.stub(services.water.communications, 'getCommunication').resolves(communicationResponses.getCommunication());
 
     h = {
       view: (...args) => args
@@ -86,7 +84,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has a name, it is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = 'named document';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('named document, message review');
@@ -95,7 +93,7 @@ experiment('getLicenceCommunication', () => {
   test('when the document has no name, the licence ref is added to the page title', async () => {
     const response = communicationResponses.getCommunication();
     response.data.licenceDocuments[0].documentName = null;
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.pageTitle).to.equal('lic-1, message review');
@@ -125,7 +123,7 @@ experiment('getLicenceCommunication', () => {
     const response = communicationResponses.getCommunication();
     response.data.notification.address.addressLine2 = '    ';
     response.data.notification.address.addressLine4 = '';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 3', 'Add 5', 'AB1 2CD']);
@@ -136,7 +134,7 @@ experiment('getLicenceCommunication', () => {
     response.data.notification.address.addressLine1 = ' Add 1 ';
     response.data.notification.address.addressLine2 = ' Add 2';
     response.data.notification.address.addressLine3 = 'Add 3 ';
-    communicationsConnector.getCommunication.resolves(response);
+    services.water.communications.getCommunication.resolves(response);
 
     const [, view] = await controller.getLicenceCommunication(request, h);
     expect(view.recipientAddressParts).to.equal(['Add 1', 'Add 2', 'Add 3', 'Add 4', 'Add 5', 'AB1 2CD']);
@@ -169,7 +167,7 @@ experiment('getExpiredLicence', () => {
       view: sandbox.spy()
     };
 
-    sandbox.stub(licenceConnector, 'getLicenceByDocumentId').resolves({
+    sandbox.stub(services.water.licences, 'getByDocumentId').resolves({
       data: {
         document: {
           name: 'test-doc-name'
@@ -180,16 +178,16 @@ experiment('getExpiredLicence', () => {
       }
     });
 
-    sandbox.stub(returnsConnector.returns, 'findMany').resolves({
+    sandbox.stub(services.returns.returns, 'findMany').resolves({
       data: [{ return_id: 'test-return' }],
       pagination: { pageCount: 1 }
     });
 
-    sandbox.stub(licenceConnector, 'getLicenceCommunicationsByDocumentId').resolves({
+    sandbox.stub(services.water.licences, 'getCommunicationsByDocumentId').resolves({
       data: [{ id: 'test-message' }]
     });
 
-    sandbox.stub(licenceConnector, 'getLicencePrimaryUserByDocumentId').resolves({
+    sandbox.stub(services.water.licences, 'getPrimaryUserByDocumentId').resolves({
       userId: 1234,
       entityId: 'test-entity-id',
       userName: 'test-user@example.com',
@@ -256,7 +254,7 @@ experiment('getExpiredLicence', () => {
     });
 
     test('the page title including the licence number when no document name', async () => {
-      licenceConnector.getLicenceByDocumentId.resolves({
+      services.water.licences.getByDocumentId.resolves({
         data: {
           document: {
           },

@@ -1,9 +1,9 @@
 const Hapi = require('@hapi/hapi');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const anonGoogleAnalyticsPlugin = require('../../../../../src/shared/plugins/anon-google-analytics');
+const anonGoogleAnalyticsPlugin = require('shared/plugins/anon-google-analytics');
 
-const viewContextPlugin = require('../../../../../src/shared/plugins/view-context');
+const viewContextPlugin = require('shared/plugins/view-context');
 
 const getTestRoute = (path, pageTitle) => ({
   method: 'GET',

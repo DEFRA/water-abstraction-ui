@@ -4,7 +4,7 @@ const Lab = require('lab');
 const { experiment, test } = exports.lab = Lab.script();
 const { expect } = require('code');
 
-const helpers = require('../../../../../src/external/modules/returns/lib/upload-summary-helpers');
+const helpers = require('external/modules/returns/lib/upload-summary-helpers');
 
 const eventId = 'event_1';
 const userName = 'user_1';

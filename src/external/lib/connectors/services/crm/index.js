@@ -1,19 +1,17 @@
-const EntitiesAPIClient = require('shared/lib/connectors/services/crm/EntitiesAPIClient');
-const EntityRolesAPIClient = require('./EntityRolesAPIClient');
-const http = require('shared/lib/connectors/http');
+const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient');
+const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient');
+const KpiApiClient = require('shared/lib/connectors/services/crm/KpiApiClient');
+const EntityRolesApiClient = require('./EntityRolesApiClient');
+const DocumentsApiClient = require('./DocumentsApiClient');
+const VerificationsApiClient = require('./VerificationsApiClient');
+
+const { logger } = require('../../../../logger');
 
 module.exports = config => ({
-  entities: new EntitiesAPIClient(http.request, {
-    endpoint: `${config.services.crm}/entity`,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    }
-  }),
-
-  entityRoles: new EntityRolesAPIClient(http.request, {
-    endpoint: `${config.services.crm}/entity/{entityId}/roles`,
-    headers: {
-      Authorization: process.env.JWT_TOKEN
-    }
-  })
+  entities: new EntitiesApiClient(config, logger),
+  entityRoles: new EntityRolesApiClient(config, logger),
+  documentVerifications: new DocumentVerificationsApiClient(config, logger),
+  documents: new DocumentsApiClient(config, logger),
+  kpis: new KpiApiClient(config, logger),
+  verifications: new VerificationsApiClient(config, logger)
 });

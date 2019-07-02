@@ -6,8 +6,7 @@
 const Boom = require('boom');
 const { find, get } = require('lodash');
 
-const { documents } = require('../../../lib/connectors/crm');
-const { licences } = require('../../../lib/connectors/permit');
+const services = require('../../../lib/connectors/services');
 
 const perPage = 50;
 
@@ -68,7 +67,7 @@ const loadAbstractionReformLicences = async (crmLicences) => {
   };
 
   // Load documents
-  const { data, error } = await licences.findMany(arFilter);
+  const { data, error } = await services.permits.licences.findMany(arFilter);
 
   if (error) {
     throw Boom.badImplementation(error);
@@ -92,7 +91,7 @@ const search = async (q) => {
   };
 
   // Get licences from CRM
-  const { data, error, pagination } = await documents.findMany(filter, sort, {
+  const { data, error, pagination } = await services.crm.documents.findMany(filter, sort, {
     page,
     perPage
   });
@@ -122,7 +121,7 @@ const recent = async (page) => {
     page,
     perPage
   };
-  const { data, pagination, error } = await licences.findMany(filter, sort, requestPagination);
+  const { data, pagination, error } = await services.permits.licences.findMany(filter, sort, requestPagination);
 
   if (error) {
     throw error;
@@ -135,7 +134,7 @@ const recent = async (page) => {
     }
   };
 
-  const { data: crmData, error: crmError } = await documents.findMany(crmFilter, null, null, ['document_id', 'system_external_id']);
+  const { data: crmData, error: crmError } = await services.crm.documents.findMany(crmFilter, null, null, ['document_id', 'system_external_id']);
 
   if (crmError) {
     throw crmError;

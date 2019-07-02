@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
 
 const sendRemindersForm = (request) => {
   const { csrfToken } = request.view;

@@ -1,10 +1,10 @@
 const sinon = require('sinon');
 const { expect } = require('code');
-const { logger } = require('../../../src/external/logger');
+const { logger } = require('external/logger');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
-const loginHelpers = require('../../../src/external/lib/login-helpers');
-const waterUser = require('../../../src/external/lib/connectors/water-service/user');
-const { scope } = require('../../../src/external/lib/constants');
+const loginHelpers = require('external/lib/login-helpers');
+const services = require('external/lib/connectors/services');
+const { scope } = require('external/lib/constants');
 
 const sandbox = sinon.createSandbox();
 
@@ -72,7 +72,7 @@ experiment('loginHelpers', () => {
   };
 
   beforeEach(async () => {
-    sandbox.stub(waterUser, 'getUserStatus').resolves(responses.user);
+    sandbox.stub(services.water.users, 'getUserStatus').resolves(responses.user);
     h = {
       redirect: sandbox.stub().returns({
         takeover: sandbox.stub()
@@ -93,7 +93,7 @@ experiment('loginHelpers', () => {
     });
 
     test('it should throw an error if API returns an error response', async () => {
-      waterUser.getUserStatus.resolves(responses.error);
+      services.water.users.getUserStatus.resolves(responses.error);
       const func = () => loginHelpers.loadUserData(userId);
       expect(func()).to.reject();
     });
@@ -127,7 +127,7 @@ experiment('loginHelpers', () => {
 
     test('it should redirect to add licences if the user has no companies', async () => {
       const request = getRequest(scope.external);
-      waterUser.getUserStatus.resolves(responses.userWithNoCompanies);
+      services.water.users.getUserStatus.resolves(responses.userWithNoCompanies);
       const result = await loginHelpers.getLoginRedirectPath(request, user);
       expect(result).to.equal('/add-licences');
     });
@@ -140,7 +140,7 @@ experiment('loginHelpers', () => {
 
     test('it should redirect to select company if the user has >1 company', async () => {
       const request = getRequest(scope.external);
-      waterUser.getUserStatus.resolves(responses.userWithMultipleCompanies);
+      services.water.users.getUserStatus.resolves(responses.userWithMultipleCompanies);
       const result = await loginHelpers.getLoginRedirectPath(request, user);
       expect(result).to.equal('/select-company');
     });

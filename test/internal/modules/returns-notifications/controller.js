@@ -10,9 +10,8 @@ const {
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../src/internal/modules/returns-notifications/controller');
-const notificationsConnector = require('../../../../src/internal/lib/connectors/water-service/returns-notifications');
-var batchNotificationsConnector = require('../../../../src/internal/lib/connectors/water-service/batch-notifications');
+const controller = require('internal/modules/returns-notifications/controller');
+const services = require('internal/lib/connectors/services');
 
 const createLicence = (id, overrides = {}) => {
   return {
@@ -43,7 +42,7 @@ experiment('postPreviewRecipients', () => {
       }
     };
 
-    sandbox.stub(notificationsConnector, 'previewPaperForms').resolves({
+    sandbox.stub(services.water.returnsNotifications, 'previewPaperForms').resolves({
       error: null,
       data: [
         createLicence(1),
@@ -68,7 +67,7 @@ experiment('postPreviewRecipients', () => {
 
   experiment('when there is an error previewing the forms', () => {
     test('a boom error is thrown', async () => {
-      notificationsConnector.previewPaperForms.resolves({
+      services.water.returnsNotifications.previewPaperForms.resolves({
         error: {
           name: 'test-error',
           message: 'test-error-message'
@@ -119,7 +118,7 @@ experiment('postPreviewRecipients', () => {
     test('licence objects with future end dates do not have endedReasons', async () => {
       const futureDate = moment().add(1, 'year').format('YYYYMMDD');
 
-      notificationsConnector.previewPaperForms.resolves({
+      services.water.returnsNotifications.previewPaperForms.resolves({
         error: null,
         data: [
           createLicence(1, { dateRevoked: futureDate }),
@@ -241,13 +240,13 @@ experiment('postReturnsNotificationsStart', () => {
       }
     };
 
-    sandbox.stub(batchNotificationsConnector, 'prepareReturnsReminders').resolves({
+    sandbox.stub(services.water.batchNotifications, 'prepareReturnsReminders').resolves({
       data: {
         eventId: 'test-event-id'
       }
     });
 
-    sandbox.stub(batchNotificationsConnector, 'prepareReturnsInvitations').resolves({
+    sandbox.stub(services.water.batchNotifications, 'prepareReturnsInvitations').resolves({
       data: {
         eventId: 'test-event-id'
       }
@@ -259,13 +258,13 @@ experiment('postReturnsNotificationsStart', () => {
   });
   test('the username is used as the notification issuer', async () => {
     await controller.postReturnsNotificationsStart(request, h);
-    const [issuer] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
+    const [issuer] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args;
     expect(issuer).to.equal(username);
   });
 
   test('the excluded licences are passed as csv', async () => {
     await controller.postReturnsNotificationsStart(request, h);
-    const [, excludeLicences] = batchNotificationsConnector.prepareReturnsReminders.lastCall.args;
+    const [, excludeLicences] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args;
     expect(excludeLicences).to.equal(['123', '456']);
   });
 
@@ -302,7 +301,7 @@ experiment('postReturnsNotificationsStart', () => {
 
     test('the returnReminder connector is called', async () => {
       await controller.postReturnsNotificationsStart(request, h);
-      const previouslyCalled = batchNotificationsConnector.prepareReturnsReminders.calledWith(username, ['123', '456']);
+      const previouslyCalled = services.water.batchNotifications.prepareReturnsReminders.calledWith(username, ['123', '456']);
       expect(previouslyCalled).to.be.true();
     });
   });
@@ -334,7 +333,7 @@ experiment('postReturnsNotificationsStart', () => {
 
     test('the returnInvitations connector is called', async () => {
       await controller.postReturnsNotificationsStart(request, h);
-      const previouslyCalled = batchNotificationsConnector.prepareReturnsInvitations.calledWith(username, ['123', '456']);
+      const previouslyCalled = services.water.batchNotifications.prepareReturnsInvitations.calledWith(username, ['123', '456']);
       expect(previouslyCalled).to.be.true();
     });
   });

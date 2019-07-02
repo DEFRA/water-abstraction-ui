@@ -1,17 +1,21 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "nunjucks/macros/point.njk" import point %}
+{% from "point.njk" import point %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Abstraction details for {{crmData.document_name}}{% endset %}
-    {{ title(licenceName, pageTitle) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+  {% if summary.documentName %}
+    {% set licenceName %} Abstraction details for {{ summary.documentName }}{% endset %}
+    {{ title(licenceName, pageHeading) }}
   {% else %}
-    {{ title(pageTitle) }}
+    {{ title(pageHeading) }}
   {% endif %}
+  </div>
 
-  {% for purpose in licenceData.purposes %}
+  <div class="govuk-grid-column-full">
+  {% for purpose in summary.purposes %}
     <h3 class="govuk-heading-m">{{ purpose.name }}</h3>
     <hr class="govuk-section-break govuk-section-break--visible">
 
@@ -109,5 +113,8 @@
 
     </dl>
   {% endfor %}
+  </div>
+</div>
+
 
 {% endblock %}

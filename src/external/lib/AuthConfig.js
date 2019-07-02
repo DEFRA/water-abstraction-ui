@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 const loginHelpers = require('./login-helpers');
 const permissions = require('./permissions');
-const AuthConfigBase = require('../../shared/lib/AuthConfig');
+const AuthConfigBase = require('shared/lib/AuthConfig');
 
 const getUniqueCompanyIds = (entityRoles = []) => {
   const allIds = entityRoles.map(er => er.company_entity_id);

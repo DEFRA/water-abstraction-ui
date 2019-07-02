@@ -5,10 +5,8 @@ const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
-const { documents } = require('../../../lib/connectors/crm');
-const { returns, versions } = require('../../../lib/connectors/returns');
 const config = require('../../../config');
-const crmConnector = require('../../../lib/connectors/crm');
+const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('./return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
@@ -30,13 +28,15 @@ const getCurrentCycle = (date) => {
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
 const getLicenceNumbers = (request, filter = {}) => {
-  const f = documents.createFilter(request, filter);
+  const f = Object.assign({}, filter, {
+    regime_entity_id: config.crm.regimes.water.entityId,
+    includeExpired: true
+  });
+
   const sort = {};
   const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
-  if (isInternalUser(request)) {
-    f.includeExpired = true;
-  }
-  return documents.findAll(f, sort, columns);
+
+  return services.crm.documents.findAll(f, sort, columns);
 };
 
 /**
@@ -100,7 +100,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) =
     perPage: 50
   };
 
-  const { data, error, pagination } = await returns.findMany(filter, sort, requestPagination, columns);
+  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
     throw Boom.badImplementation('Returns error', error);
   }
@@ -133,7 +133,7 @@ const isXmlUpload = async (licenceNumbers, refDate) => {
   const requestPagination = { 'page': 1, 'perPage': 1 };
   const columns = ['return_id'];
 
-  const { error, pagination } = await returns.findMany(filter, {}, requestPagination, columns);
+  const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns);
   throwIfError(error);
 
   return pagination.totalRows > 0;
@@ -194,7 +194,7 @@ const getLatestVersion = async (returnId) => {
   const sort = {
     version_number: -1
   };
-  const { error, data: [version] } = await versions.findMany(filter, sort);
+  const { error, data: [version] } = await services.returns.versions.findMany(filter, sort);
   if (error) {
     throw Boom.badImplementation(error);
   }
@@ -308,7 +308,7 @@ const getReturnsViewData = async (request) => {
  * @param {String} path - the path to redirect to without '/admin'
  * @return {String} path with /admin if internal user
  */
-const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path}` : path;
+const getScopedPath = (request, path) => path;
 
 /**
  * Get common view data used by many controllers
@@ -318,7 +318,7 @@ const getScopedPath = (request, path) => isInternalUser(request) ? `/admin${path
  */
 const getViewData = async (request, data) => {
   const isInternal = isInternalUser(request);
-  const documentHeader = await crmConnector.documents.getWaterLicence(data.licenceNumber, isInternal);
+  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, isInternal);
   return {
     ...request.view,
     documentHeader,

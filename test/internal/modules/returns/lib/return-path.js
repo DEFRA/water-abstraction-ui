@@ -8,9 +8,9 @@ const {
   getReturnPath,
   isInternalEdit,
   getEditButtonPath
-} = require('../../../../../src/internal/modules/returns/lib/return-path');
+} = require('internal/modules/returns/lib/return-path');
 
-const { scope } = require('../../../../../src/internal/lib/constants');
+const { scope } = require('internal/lib/constants');
 
 const ret = {
   return_id: 'v1:123:456',

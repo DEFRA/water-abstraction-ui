@@ -1,8 +1,5 @@
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const IDM = require('../../../lib/connectors/idm');
-const CRM = require('../../../lib/connectors/crm');
-const permits = require('../../../lib/connectors/permit');
-const water = require('../../../lib/connectors/water');
+const services = require('../../../lib/connectors/services');
 
 const firstPage = {
   perPage: 1
@@ -24,7 +21,7 @@ const getCount = async (apiClient, filter = {}) => {
  * @return {Promise} Resolves with number of users
  */
 const getIDMUserCount = async () => {
-  return getCount(IDM.usersClient);
+  return getCount(services.idm.users);
 };
 
 const getKPIData = async (apiClient) => {
@@ -38,7 +35,7 @@ const getKPIData = async (apiClient) => {
  * @return {Promise} resolves with array of IDM KPIs
  */
 const getIDMKPIData = async () => {
-  return getKPIData(IDM.kpi);
+  return getKPIData(services.idm.kpis);
 };
 
 /**
@@ -46,7 +43,7 @@ const getIDMKPIData = async () => {
  * @return {Promise} resolves with number of CRM docs
  */
 const getCRMDocumentCount = async () => {
-  return getCount(CRM.documents);
+  return getCount(services.crm.documents);
 };
 
 /**
@@ -54,7 +51,7 @@ const getCRMDocumentCount = async () => {
  * @return {Promise} resolves wtih array of CRM KPIs
  */
 const getCRMKPIData = async () => {
-  return getKPIData(CRM.kpi);
+  return getKPIData(services.crm.kpis);
 };
 
 /**
@@ -62,7 +59,7 @@ const getCRMKPIData = async () => {
  * @return {Promise} resolves with number of CRM verifications
  */
 const getCRMVerificationCount = async () => {
-  return getCount(CRM.verification);
+  return getCount(services.crm.verifications);
 };
 
 /**
@@ -74,7 +71,7 @@ const getPermitCount = async () => {
     licence_regime_id: 1,
     licence_type_id: 8
   };
-  return getCount(permits.licences, filter);
+  return getCount(services.permits.licences, filter);
 };
 
 /**
@@ -84,7 +81,7 @@ const getPermitCount = async () => {
  */
 const getWaterImportStatus = async (status) => {
   const filter = { status };
-  return getCount(water.pendingImport, filter);
+  return getCount(services.water.pendingImports, filter);
 };
 
 /**

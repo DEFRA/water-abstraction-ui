@@ -1,4 +1,4 @@
-const { events, taskConfig, notifications } = require('../../lib/connectors/water');
+const services = require('../../lib/connectors/services');
 const { notifyToBadge } = require('./badge-status');
 
 /**
@@ -22,7 +22,7 @@ async function getNotificationsList (request, reply) {
     [field]: direction
   };
 
-  const { data, error, pagination } = await events.findMany(filter, sortParams);
+  const { data, error, pagination } = await services.water.events.findMany(filter, sortParams);
 
   if (error) {
     return reply(error);
@@ -43,7 +43,7 @@ async function getNotification (request, reply) {
   const { id } = request.params;
 
   // Load event
-  const { error, data: event } = await events.findOne(id);
+  const { error, data: event } = await services.water.events.findOne(id);
 
   if (error) {
     reply(error);
@@ -51,14 +51,14 @@ async function getNotification (request, reply) {
 
   // Load task config
   const { metadata: { taskConfigId } } = event;
-  const { error: taskError, data: task } = await taskConfig.findOne(taskConfigId);
+  const { error: taskError, data: task } = await services.water.taskConfigs.findOne(taskConfigId);
 
   if (taskError) {
     return reply(taskError);
   }
 
   // Load scheduled notifications
-  const { error: notificationError, data: messages } = await notifications.findMany({ event_id: event.event_id });
+  const { error: notificationError, data: messages } = await services.water.notifications.findMany({ event_id: event.event_id });
   if (notificationError) {
     return reply(notificationError);
   }

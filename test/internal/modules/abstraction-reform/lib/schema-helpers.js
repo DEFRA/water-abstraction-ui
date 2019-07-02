@@ -6,7 +6,7 @@ const lab = exports.lab = Lab.script();
 const {
   getSchemaCategories,
   getSchemaCategory
-} = require('../../../../../src/internal/modules/abstraction-reform/lib/schema-helpers');
+} = require('internal/modules/abstraction-reform/lib/schema-helpers');
 
 const schemas = [
   {

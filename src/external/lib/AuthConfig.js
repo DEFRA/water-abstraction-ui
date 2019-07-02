@@ -1,6 +1,5 @@
 const { get } = require('lodash');
 const loginHelpers = require('./login-helpers');
-const permissions = require('./permissions');
 const AuthConfigBase = require('shared/lib/AuthConfig');
 
 const getUniqueCompanyIds = (entityRoles = []) => {
@@ -28,7 +27,7 @@ class AuthConfig extends AuthConfigBase {
   };
 
   onSignOut (request, h) {
-    const path = `/signed-out?u=${permissions.isInternal(request) ? 'i' : 'e'}`;
+    const path = '/signed-out?u=e';
     return h.metaRedirect(path);
   }
 

@@ -2,18 +2,6 @@ const { set } = require('lodash');
 const Boom = require('boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const services = require('../../lib/connectors/services');
-const permissions = require('../../lib/permissions');
-
-const checkAccess = (request, documentHeader) => {
-  if (permissions.isInternal(request)) {
-    return;
-  }
-  const { companyId } = request.defra;
-  if (documentHeader.company_entity_id !== companyId) {
-    const params = { documentHeader, credentials: request.auth.credentials };
-    throw Boom.unauthorized(`Access denied to document`, params);
-  }
-};
 
 /**
  * Loads the CRM document, and also for external users, checks the document
@@ -37,9 +25,6 @@ const preLoadDocument = async (request, h) => {
   if (!documentHeader) {
     throw Boom.notFound(`Document ${documentId} not found`);
   }
-
-  // Check access for external users
-  checkAccess(request, documentHeader);
 
   // Attach document header to request and return
   request.documentHeader = documentHeader;

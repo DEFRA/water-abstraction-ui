@@ -40,6 +40,16 @@ lab.experiment('Test abstraction reform reducer', () => {
     expect(nextState.status).to.equal('In progress');
   });
 
+  lab.test('returns previous state when editing purpose that no longer exists', async () => {
+    const action = createEditPurpose({
+      HOURLY_QTY: 852,
+      NOTES: 'Some new notes here'
+    }, user, '999999999');
+
+    const nextState = reducer({ licence }, action);
+    expect(nextState).to.equal({ licence });
+  });
+
   lab.test('Test editing point', async () => {
     const action = createEditPoint({
       LOCAL_NAME: 'Duck pond'

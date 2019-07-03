@@ -22,7 +22,10 @@ async function getNotificationsList (request, reply) {
     [field]: direction
   };
 
-  const { data, error, pagination } = await services.water.events.findMany(filter, sortParams);
+  const { data, error, pagination } = await services.water.events.findMany(filter, sortParams, {
+    page: 1,
+    perPage: 100
+  });
 
   if (error) {
     return reply(error);

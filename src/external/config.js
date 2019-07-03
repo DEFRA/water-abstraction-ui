@@ -50,7 +50,8 @@ module.exports = {
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
     redirectTo: '/welcome',
-    isHttpOnly: true
+    isHttpOnly: true,
+    keepAlive: true
   },
 
   idm: {
@@ -100,14 +101,16 @@ module.exports = {
 
   yar: {
     maxCookieSize: 0,
+    cache: {
+      expiresIn: 10 * 365 * 24 * 60 * 60 * 1000
+    },
     cookieOptions: {
       password: process.env.COOKIE_SECRET,
       isSecure: !isLocal,
       isSameSite: 'Lax',
-      ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-      isHttpOnly: true
+      isHttpOnly: true,
+      ttl: 10 * 365 * 24 * 60 * 60 * 1000
     },
     storeBlank: false
-
   }
 };

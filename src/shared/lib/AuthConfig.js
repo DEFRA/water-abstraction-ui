@@ -22,6 +22,7 @@ class AuthConfig {
     request.cookieAuth.set({ userId });
 
     // Set session
+    request.yar.reset();
     request.yar.set('csrfToken', uuid());
     request.yar.set('userId', userId);
     request.yar.set('ip', get(request, 'info.remoteAddress'));

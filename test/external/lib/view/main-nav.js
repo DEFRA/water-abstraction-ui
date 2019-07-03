@@ -9,7 +9,7 @@ const { expect } = require('code');
 const { getMainNav } = require('external/lib/view/main-nav');
 const { scope } = require('external/lib/constants');
 
-const getAuthenticatedRequest = (isInternal = false) => {
+const getAuthenticatedRequest = () => {
   return {
     view: {
       activeNavLink: 'view'
@@ -20,7 +20,7 @@ const getAuthenticatedRequest = (isInternal = false) => {
     auth: {
       credentials: {
         userId: 'user_123',
-        scope: [isInternal ? scope.internal : scope.external]
+        scope: [scope.external]
       }
     }
   };

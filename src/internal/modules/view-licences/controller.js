@@ -9,7 +9,6 @@ const helpers = require('./helpers');
 const { getLicenceReturns } = require('../returns/lib/helpers');
 
 const { mapReturns } = require('../returns/lib/helpers');
-const { isInternal } = require('../../lib/permissions');
 
 /**
  * Gets a list of licences with options to filter by email address,
@@ -129,9 +128,8 @@ async function getLicenceGaugingStation (request, reply) {
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
 const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
-  const isInternalUser = isInternal(request);
   const pagination = { page: 1, perPage: 10 };
-  const returns = await getLicenceReturns([licenceNumber], pagination, isInternalUser);
+  const returns = await getLicenceReturns([licenceNumber], pagination, true);
 
   return {
     returns: mapReturns(returns.data, request),
@@ -150,7 +148,6 @@ const getLicenceReturnsForViewContext = async (request, licenceNumber) => {
  * @returns {object} An object of values that can be spread into the view context
  */
 const getCommonLicenceViewContext = async (licenceNumber, documentId, documentName, request) => {
-  const isInternalUser = isInternal(request);
   const returnsData = await getLicenceReturnsForViewContext(request, licenceNumber);
 
   return {
@@ -158,7 +155,7 @@ const getCommonLicenceViewContext = async (licenceNumber, documentId, documentNa
     ...returnsData,
     pageTitle: getPageTitle(documentName, licenceNumber),
     back: `/licences?query=${licenceNumber}`,
-    isInternal: isInternalUser
+    isInternal: true
   };
 };
 
@@ -209,8 +206,6 @@ const getLicenceCommunication = async (request, h) => {
     throw Boom.notFound('Document not associated with communication');
   }
 
-  const isInternalUser = isInternal(request);
-
   const viewContext = {
     ...request.view,
     ...{ pageTitle: (licence.documentName || licence.licenceRef) + ', message review' },
@@ -220,7 +215,7 @@ const getLicenceCommunication = async (request, h) => {
     messageContent: response.data.notification.plainText,
     back: `/licences/${documentId}#communications`,
     recipientAddressParts: getAddressParts(response.data.notification),
-    isInternal: isInternalUser
+    isInternal: true
   };
 
   return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });

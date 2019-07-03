@@ -9,7 +9,7 @@ const { expect } = require('code');
 const { getPropositionLinks } = require('external/lib/view/proposition-links');
 const { scope } = require('external/lib/constants');
 
-const getAuthenticatedRequest = (isInternal = false) => {
+const getAuthenticatedRequest = () => {
   return {
     view: {
       activeNavLink: 'change-password'
@@ -20,7 +20,7 @@ const getAuthenticatedRequest = (isInternal = false) => {
     auth: {
       credentials: {
         userId: 'user_123',
-        scope: isInternal ? scope.internal : scope.external
+        scope: scope.external
       }
     }
   };
@@ -34,14 +34,14 @@ lab.experiment('getPropositionLinks', () => {
   });
 
   lab.test('It should display change password and signout links for all authenticated users', async () => {
-    const request = getAuthenticatedRequest(false);
+    const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
     const ids = links.map(link => link.id);
     expect(ids).to.equal(['change-password', 'signout']);
   });
 
   lab.test('It should set the active nav link flag', async () => {
-    const request = getAuthenticatedRequest(true);
+    const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
     const link = find(links, { id: 'change-password' });
     expect(link.active).to.equal(true);
@@ -55,7 +55,7 @@ lab.experiment('getPropositionLinks', () => {
   });
 
   lab.test('It should set ID attributes', async () => {
-    const request = getAuthenticatedRequest(true);
+    const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
     const idAttributes = links.map(link => link.attributes.id);
     expect(idAttributes).to.equal(['change-password', 'signout']);

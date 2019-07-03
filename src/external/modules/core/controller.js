@@ -1,5 +1,3 @@
-const { isExternal } = require('../../lib/permissions');
-
 const index = async (request, h) => {
   return h.redirect('/licences');
 };
@@ -17,15 +15,13 @@ function getWelcome (request, h) {
 const getNotFoundError = (request, h) => {
   const view = {
     ...request.view,
-    isExternal: isExternal(request),
     pageTitle: 'We cannot find that page'
   };
   return h
     .view('nunjucks/errors/404.njk', view, { layout: false })
     .code(404);
 };
-module.exports = {
-  index,
-  getWelcome,
-  getNotFoundError
-};
+
+exports.index = index;
+exports.getWelcome = getWelcome;
+exports.getNotFoundError = getNotFoundError;

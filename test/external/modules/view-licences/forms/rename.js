@@ -3,7 +3,7 @@ const { experiment, test, beforeEach } = exports.lab = require('lab').script();
 const { renameLicenceForm, renameLicenceSchema } = require('external/modules/view-licences/forms/rename');
 const Joi = require('joi');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     params: {
       documentId: 'document_1'

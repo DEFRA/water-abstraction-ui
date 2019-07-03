@@ -20,13 +20,6 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{ licence.documentName or 'No name chosen' }}
-
-      {% if not isInternal %}
-      <br />
-      <a href="/licences/{{ documentId }}/rename">
-        {{ 'Rename' if licence.documentName else 'Name' }} this licence
-      </a>
-      {% endif %}
     </dd>
   </div>
   <div class="govuk-summary-list__row">

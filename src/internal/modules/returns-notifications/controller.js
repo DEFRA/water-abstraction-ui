@@ -202,7 +202,7 @@ const getBatchNotificationsConnector = path => {
     reminders: services.water.batchNotifications.prepareReturnsReminders,
     invitations: services.water.batchNotifications.prepareReturnsInvitations
   };
-  return connectors[messageType];
+  return connectors[messageType].bind(services.water.batchNotifications);
 };
 /**
  * Calls the relevant API point with issuer and licences data

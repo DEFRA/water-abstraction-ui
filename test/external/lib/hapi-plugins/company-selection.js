@@ -16,7 +16,6 @@ const handler = plugin._handler;
 const getTestRequest = (overrides = {}) => {
   const defaults = Object.assign({
     isAuthenticated: true,
-    isExternal: true,
     companyId: undefined,
     companyCount: 1,
     path: '/test',
@@ -28,10 +27,7 @@ const getTestRequest = (overrides = {}) => {
   set(request, 'defra.companyId', defaults.companyId);
   set(request, 'defra.companyCount', defaults.companyCount);
   set(request, 'route.settings.auth.access', defaults.access);
-
-  if (defaults.isExternal) {
-    set(request, 'auth.credentials.scope', ['external']);
-  }
+  set(request, 'auth.credentials.scope', ['external']);
 
   return request;
 };
@@ -84,36 +80,20 @@ experiment('handler', () => {
     expect(result).to.equal(h.continue);
   });
 
-  experiment('for an internal user', () => {
-    test('does not redirect for a route with access config', async () => {
-      const request = {
-        auth: {
-          isAuthenticated: true
-        },
-        defra: {
-          isExternalUser: false,
-          isInternalUser: true
-        },
-        path: '/',
-        access: {}
-      };
-
-      const result = handler(request, h);
-      expect(result).to.equal(h.continue);
-    });
-  });
-
   experiment('external user', () => {
     test('does not redirect for a route with access config', async () => {
-      const request = getTestRequest(true, {
-        access: {}
+      const request = getTestRequest({
+        access: {
+          entity: 'test',
+          scope: 'test'
+        }
       });
       const result = handler(request, h);
       expect(result).to.equal(h.continue);
     });
 
     test('does not redirect when there is a company id', async () => {
-      const request = getTestRequest(true, {
+      const request = getTestRequest({
         companyId: 'test-id'
       });
       const result = handler(request, h);
@@ -121,7 +101,7 @@ experiment('handler', () => {
     });
 
     test('does not redirect when the select-company page is requested', async () => {
-      const request = getTestRequest(true, {
+      const request = getTestRequest({
         path: '/select-company'
       });
       const result = handler(request, h);

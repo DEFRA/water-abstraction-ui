@@ -42,7 +42,7 @@ const editPurpose = (state, action) => {
   });
 
   if (index === -1) {
-    throw new Error(`Purpose ${purposeId} not found`);
+    return state;
   }
 
   const query = {

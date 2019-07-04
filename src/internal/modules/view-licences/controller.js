@@ -1,5 +1,6 @@
 const moment = require('moment');
 const services = require('../../lib/connectors/services');
+const titleCase = require('title-case');
 
 const pagination = { page: 1, perPage: 10 };
 
@@ -8,19 +9,22 @@ const pagination = { page: 1, perPage: 10 };
  * and communications
  */
 const getExpiredLicence = async (request, h) => {
-  const { licence_ref: licenceNumber } = request.licence.licence;
+  const { licence, primaryUser, communications } = request.licence;
+  const { licence_ref: licenceNumber } = licence;
 
   const { data: returns } = await services.returns.returns.getLicenceReturns([licenceNumber], pagination);
 
   const view = {
     ...request.view,
+    communications,
     licence: {
-      primaryUser: request.licence.primaryUser,
+      primaryUser,
       licenceNumber,
-      expiryDate: moment(request.licence.licence.earliestEndDate).format('D MMMM YYYY'),
-      expiryReason: request.licence.licence.earliestEndDateReason
+      expiryDate: moment(licence.earliestEndDate).format('D MMMM YYYY'),
+      expiryReason: licence.earliestEndDateReason
     },
-    returns
+    returns,
+    pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`
   };
 
   return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });

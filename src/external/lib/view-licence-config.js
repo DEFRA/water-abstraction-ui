@@ -13,4 +13,4 @@ exports.allowedScopes = [licenceHolder, colleague, colleagueWithReturns];
 exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
 exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
-exports.getRiverLevel = services.water.riverLevels.getRiverLevel;
+exports.getRiverLevel = services.water.riverLevels.getRiverLevel.bind(services.water.riverLevels);

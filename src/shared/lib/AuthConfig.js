@@ -2,6 +2,20 @@ const { get, set } = require('lodash');
 const uuid = require('uuid/v4');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
+/**
+ * Configures the new session for a newly authenticated user.
+ * @param {Object} request The HAPI request
+ * @param {String} userId The user id
+ */
+const setSession = (request, userId) => {
+  // Destroy any previous session to prevent an user returning to
+  // a session from a previous visit.
+  request.yar.reset();
+  request.yar.set('csrfToken', uuid());
+  request.yar.set('userId', userId);
+  request.yar.set('ip', get(request, 'info.remoteAddress'));
+};
+
 class AuthConfig {
   constructor (config, connectors) {
     this.connectors = connectors;
@@ -21,10 +35,7 @@ class AuthConfig {
     // Set user ID in auth cookie
     request.cookieAuth.set({ userId });
 
-    // Set session
-    request.yar.set('csrfToken', uuid());
-    request.yar.set('userId', userId);
-    request.yar.set('ip', get(request, 'info.remoteAddress'));
+    setSession(request, userId);
 
     // Create entity
     // This is currently required by both internal and external as the returns

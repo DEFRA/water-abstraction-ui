@@ -120,6 +120,10 @@ experiment('AuthConfig base class', () => {
       expect(value).to.have.length(36);
     });
 
+    test('resets the session to prevent an login to an older session', async () => {
+      expect(request.yar.reset.called).to.be.true();
+    });
+
     test('sets user ID in the session', async () => {
       expect(request.yar.set.calledWith('userId', user.user_id)).to.equal(true);
     });

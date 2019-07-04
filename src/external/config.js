@@ -1,6 +1,5 @@
 require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
-
 const isLocal = process.env.NODE_ENV === 'local';
 
 module.exports = {
@@ -108,6 +107,5 @@ module.exports = {
       isHttpOnly: true
     },
     storeBlank: false
-
   }
 };

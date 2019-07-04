@@ -1,7 +1,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 
 {% macro endedLicenceWarning(reason, endDate) %}
-  
+
   {% set reasonText = reason %}
   {% if reason === 'revoked' %}
     {% set reasonText = 'was revoked' %}

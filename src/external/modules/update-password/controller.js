@@ -24,7 +24,7 @@ async function postConfirmPassword (request, reply) {
     }
     const { password } = request.payload;
     const { userName } = request.defra;
-    await services.idm.users.authenticate(config.idm.application, userName, password);
+    await services.idm.users.authenticate(userName, password, config.idm.application);
 
     // Create auth token to verify user in subsequent page in flow
     const authtoken = uuid();

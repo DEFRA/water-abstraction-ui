@@ -144,15 +144,15 @@ experiment('services/water/LicencesService', () => {
 
     test('returns undefined when there is not primary user', async () => {
       serviceRequest.get.resolves(userResponses.multipleUsersExcludingPrimaryUser());
-      const user = await service.getPrimaryUserByDocumentId('test-id');
+      const { data: user } = await service.getPrimaryUserByDocumentId('test-id');
 
       expect(user).to.be.undefined();
     });
 
     test('returns the expected user when there is a primary user', async () => {
-      const user = await service.getPrimaryUserByDocumentId('test-id');
+      const { data } = await service.getPrimaryUserByDocumentId('test-id');
 
-      expect(user).to.be.equal({
+      expect(data).to.be.equal({
         userId: 4444,
         entityId: '44444444-0000-0000-0000-000000000000',
         userName: 'test4@example.com',

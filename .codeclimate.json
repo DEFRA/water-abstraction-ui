@@ -5,6 +5,9 @@
     "govuk_modules",
     "node_modules",
     "public",
-    "test"
+    "test",
+    "src/**/*routes.js",
+    "src/internal/config.js",
+    "src/external/config.js"
   ]
 }

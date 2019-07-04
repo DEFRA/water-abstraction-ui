@@ -17,7 +17,7 @@ const schema = Joi.object({
  * @return {Promise}              resolves with HTTP response body
  */
 const getRequest = (serviceRequest, url, options = {}) => {
-  Joi.assert(options, schema, `Invalid LicencesAPIClient options`);
+  Joi.assert(options, schema, `Invalid LicencesApiClient options`);
 
   // Build query params
   const qs = pick(options, ['includeExpired', 'companyId']);
@@ -58,15 +58,10 @@ class LicencesService extends ServiceClient {
   }
 
   async getPrimaryUserByDocumentId (documentId, options) {
-    try {
-      const userResponse = await this.getUsersByDocumentId(documentId, options);
-      const users = userResponse.data || [];
-      return users.find(user => user.roles.includes('primary_user'));
-    } catch (error) {
-      if (error.statusCode !== 404) {
-        throw error;
-      }
-    }
+    const userResponse = await this.getUsersByDocumentId(documentId, options);
+    const users = userResponse.data || [];
+    const primaryUser = users.find(user => user.roles.includes('primary_user'));
+    return { data: primaryUser };
   }
 }
 

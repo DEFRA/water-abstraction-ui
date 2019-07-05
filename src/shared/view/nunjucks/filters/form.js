@@ -133,7 +133,6 @@ const mapFormErrorSummary = (form) => {
 
   mapFields(form, (field) => {
     errorList.push(...mapFieldErrorSummary(field));
-    return field;
   });
 
   const options = {

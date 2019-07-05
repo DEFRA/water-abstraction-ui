@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.13.5
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:hoek:20180212':
@@ -21,3 +21,16 @@ patch:
   'npm:lodash:20180130':
     - hapi-route-acl > lodash:
         patched: '2018-07-02T21:30:00.808Z'
+  SNYK-JS-LODASH-450202:
+    - lodash:
+        patched: '2019-07-05T03:06:30.137Z'
+    - hapi-pg-rest-api > lodash:
+        patched: '2019-07-05T03:06:30.137Z'
+    - deep-map > lodash:
+        patched: '2019-07-05T03:06:30.137Z'
+    - request-promise-native > request-promise-core > lodash:
+        patched: '2019-07-05T03:06:30.137Z'
+    - archiver > async > lodash:
+        patched: '2019-07-05T03:06:30.137Z'
+    - '@envage/water-abstraction-helpers > request-promise-native > request-promise-core > lodash':
+        patched: '2019-07-05T03:06:30.137Z'

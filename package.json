@@ -43,7 +43,6 @@
     "gulp-uglify": "^3.0.2",
     "lab": "^14.3.4",
     "sinon": "^4.2.2",
-    "snyk": "^1.172.0",
     "xmldom": "^0.1.27"
   },
   "dependencies": {
@@ -110,7 +109,8 @@
     "title-case": "^2.1.1",
     "url-join": "^4.0.0",
     "uuid": "^3.3.2",
-    "winston": "^2.4.3"
+    "winston": "^2.4.3",
+    "snyk": "^1.192.0"
   },
   "snyk": true
 }

@@ -56,6 +56,14 @@ async function start () {
     }, {
       plugin: require('shared/plugins/view-licence'),
       options: require('external/lib/view-licence-config')
+    },
+    {
+      plugin: require('shared/plugins/flow'),
+      options: {
+        flows: [
+          require('external/modules/returns/flow')
+        ]
+      }
     }]);
 
     // Set up Nunjucks view engine

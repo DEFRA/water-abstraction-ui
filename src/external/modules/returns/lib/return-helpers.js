@@ -107,8 +107,8 @@ const applyReadingType = (data, readingType) => {
  * @param  {String} method - readingMethod,readingType
  * @return {Object}        - updated return model
  */
-const applyMethodExternal = (data, method) => {
-  const [readingMethod, readingType] = method.split(',');
+const applyMethodExternal = (data, formData) => {
+  const [readingMethod, readingType] = formData.method.split(',');
   return applyReadingType(applyMethod(data, readingMethod), readingType);
 };
 
@@ -182,10 +182,10 @@ const applyUserDetails = (data, request) => {
  * @param {Boolean} isNil
  * @return {Object}
  */
-const applyNilReturn = (data, isNil) => {
+const applyNilReturn = (data, formData) => {
   const d = cloneDeep(data);
-  d.isNil = isNil;
-  if (isNil) {
+  d.isNil = formData.isNil;
+  if (d.isNil) {
     delete d.lines;
     delete d.meters;
     delete d.reading;

@@ -55,7 +55,8 @@ async function start () {
     }, {
       plugin: require('shared/plugins/view-licence'),
       options: require('internal/lib/view-licence-config')
-    }]);
+    }
+    ]);
 
     // Set up Nunjucks view engine
     server.views(viewEngine);

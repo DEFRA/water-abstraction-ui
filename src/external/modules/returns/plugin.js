@@ -1,90 +1,22 @@
 const Boom = require('boom');
 const { get } = require('lodash');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-
-const sessionHelpers = require('./lib/session-helpers');
-const helpers = require('./lib/helpers');
 const services = require('../../lib/connectors/services');
-const returnPath = require('./lib/return-path');
-const permissions = require('../../lib/permissions');
-const config = require('../../config');
-
-/**
- * Redirects user to view return rather than edit
- */
-const redirectToReturn = (request, h) => {
-  const { returnId } = request.query;
-  const path = `/returns/return?id=${returnId}`;
-  return h.redirect(path).takeover();
-};
-
-/**
- * Loads the corresponding CRM document for the return specified in the
- * supplied data, if it belongs to the company entity ID in the current
- * request
- * @param  {Object}  request - current HAPI request
- * @param  {Object}  data    - return model data
- * @return {Promise}         - resolves with object for CRM document loaded
- */
-const loadCRMDocument = async (request, data) => {
-  const filter = {
-    system_external_id: data.licenceNumber,
-    company_entity_id: get(request, 'defra.companyId'),
-    regime_entity_id: config.crm.regimes.water.entityId
-  };
-  const pagination = { page: 1, perPage: 1 };
-  const columns = ['document_id'];
-  const { data: [ document ], error } =
-    await services.crm.documents.findMany(filter, null, pagination, columns);
-  throwIfError(error);
-  return document;
-};
 
 /**
  * Checks whether the current user may access the return
  * @param  {Object}  request - HAPI request
- * @param  {Object}  data    - return model data
+ * @param  {Object}  documentHeader - CRM doc header record
  * @return {Promise}         resolves with boolean - true if can access
  */
-const checkAccess = async (request, data) => {
-  // Internal user
-  if (returnPath.isInternalEdit(data, request)) {
-    return true;
+const checkAccess = (request, documentHeader) => {
+  if (documentHeader && (documentHeader.company_entity_id === request.defra.companyId)) {
+    return;
   }
-  if (permissions.isExternalReturns(request)) {
-    const document = await loadCRMDocument(request, data);
-    if (document) {
-      return true;
-    }
-  }
-  return false;
-};
-
-/**
- * Gets return data for the current request.
- * If the load flag is set on the route configuration, then fresh return
- * data is loaded from the water service and placed in the session.
- * Otherwise the data is loaded from the session.
- * @param  {Object}  request - HAPI request
- * @return {Promise}         - resolves with return model data
- */
-const getReturnData = async (request) => {
-  const { returnId } = request.query;
-  // Load fresh data from water service if flag set in route config
-  const isLoadRoute = get(request, 'route.settings.plugins.returns.load', false);
-  if (isLoadRoute) {
-    const data = await services.water.returns.getReturn(returnId);
-    const canAccess = await checkAccess(request, data);
-    if (!canAccess) {
-      throw Boom.unauthorized(`Permission denied to submit/edit return`, data);
-    }
-    // Bump return version number
-    data.versionNumber = (data.versionNumber || 0) + 1;
-    // Save to session
-    sessionHelpers.saveSessionData(request, data);
-  }
-
-  return sessionHelpers.getSessionData(request);
+  const params = {
+    returnId: request.query.returnId,
+    defra: request.defra
+  };
+  throw Boom.unauthorized(`Access denied to edit return`, params);
 };
 
 /**
@@ -98,28 +30,14 @@ const getReturnData = async (request) => {
 const preHandler = async (request, h) => {
   const { returnId } = request.query;
 
-  try {
-    const data = await getReturnData(request);
-    const view = await helpers.getViewData(request, data);
+  const [, , licenceNumber] = returnId.split(':');
 
-    // If no return ID in session, then throw error
-    if (returnId !== data.returnId) {
-      throw Boom.notFound(`Session return ${data.returnId} does match return in query ${returnId}`);
-    }
+  const documentHeader = await services.crm.documents.getWaterLicence(licenceNumber);
 
-    request.returns = {
-      data,
-      view,
-      isInternal: permissions.isInternal(request)
-    };
-  } catch (err) {
-    // Return data was not found in session
-    if (returnId) {
-      return redirectToReturn(request, h);
-    }
+  checkAccess(request, documentHeader);
 
-    throw err;
-  }
+  // Add document header data to view
+  request.view.documentHeader = documentHeader;
 
   return h.continue;
 };

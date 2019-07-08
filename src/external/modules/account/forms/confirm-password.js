@@ -12,7 +12,7 @@ const confirmPasswordForm = request => {
     controlClass: 'govuk-input--width-20',
     errors: {
       'any.empty': {
-        message: 'Please enter your password'
+        message: 'Check your password'
       }
     }
   }));

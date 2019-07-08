@@ -90,7 +90,7 @@ experiment('enterNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
         return f.name === 'email' &&
-          f.message === 'Email addresses must match';
+          f.message === 'The email addresses must match';
       })).to.exist();
     });
 

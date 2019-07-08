@@ -15,7 +15,7 @@ const verifyNewEmailForm = (request, data = {}) => {
     controlClass: 'govuk-input--width-4',
     errors: {
       'any.empty': {
-        message: 'Enter the verification code'
+        message: 'Check your code'
       }
     }
   }));

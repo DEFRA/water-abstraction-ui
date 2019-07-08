@@ -1,7 +1,7 @@
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
-const { verifyNewEmailForm } = require('external/modules/account/forms/verify-new-email');
+const { confirmPasswordForm } = require('external/modules/account/forms/confirm-password');
 
 const { handleRequest } = require('shared/lib/forms');
 
@@ -16,21 +16,21 @@ const createRequest = () => {
   };
 };
 
-experiment('verifyNewEmailForm', () => {
-  test('has a verification code field', async () => {
-    const form = verifyNewEmailForm(createRequest());
-    const verify = form.fields.find(x => x.name === 'verification-code');
-    expect(verify).to.exist();
+experiment('confirmPasswordForm', () => {
+  test('has an password field', async () => {
+    const form = confirmPasswordForm(createRequest());
+    const email = form.fields.find(x => x.name === 'password');
+    expect(email).to.exist();
   });
 
   test('has a hidden csrf field', async () => {
-    const form = verifyNewEmailForm(createRequest());
+    const form = confirmPasswordForm(createRequest());
     const csrf = form.fields.find(x => x.name === 'csrf_token');
     expect(csrf.value).to.equal('test-csrf-token');
   });
 
   test('has a continue button', async () => {
-    const form = verifyNewEmailForm(createRequest());
+    const form = confirmPasswordForm(createRequest());
     const button = form.fields.find(f => {
       return f.options.widget === 'button' && f.options.label === 'Continue';
     });
@@ -38,18 +38,18 @@ experiment('verifyNewEmailForm', () => {
   });
 
   experiment('errors', () => {
-    test('returns an error if the verification code field is missing', async () => {
+    test('returns an error if the password field is missing', async () => {
       const request = createRequest();
-      request.payload['verification-code'] = '';
+      request.payload.password = '';
 
-      const form = verifyNewEmailForm(request);
+      const form = confirmPasswordForm(request);
       const validated = handleRequest(form, request);
 
       expect(validated.isValid).to.be.false();
 
       expect(validated.errors.find(f => {
-        return f.name === 'verification-code' &&
-          f.message === 'Check your code';
+        return f.name === 'password' &&
+          f.message === 'Check your password';
       })).to.exist();
     });
   });

@@ -91,7 +91,7 @@
     "joi": "^13.1.2",
     "json-schema-ref-parser": "^6.1.0",
     "lodash": "^4.17.11",
-    "marked": "^0.6.2",
+    "marked": "^0.7.0",
     "minimatch": "^3.0.4",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",

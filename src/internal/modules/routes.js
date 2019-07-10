@@ -1,6 +1,5 @@
 const coreRoutes = require('./core/routes');
 const contentRoutes = require('./content/routes');
-const updatePasswordRoutes = require('./update-password/routes');
 const notificationsRoutes = require('./notifications/routes');
 const reportsRoutes = require('./notifications-reports/routes');
 const serviceStatusRoutes = require('./service-status/routes');
@@ -18,7 +17,6 @@ const viewLicences = require('./view-licences/routes');
 module.exports = [
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
-  ...Object.values(updatePasswordRoutes),
   ...Object.values(notificationsRoutes),
   ...Object.values(reportsRoutes),
   ...Object.values(serviceStatusRoutes),

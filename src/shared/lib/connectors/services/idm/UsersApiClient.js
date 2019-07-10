@@ -142,7 +142,7 @@ class UsersApiClient extends APIClient {
    * @param {number} user id - user's ID
    * @param {String} password - new password
    */
-  updatePassword (userId, password) {
+  updatePassword (application, userId, password) {
     return this.updateOne(userId, { password });
   }
 }

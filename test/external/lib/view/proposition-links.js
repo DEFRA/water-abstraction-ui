@@ -1,8 +1,7 @@
 'use strict';
 
 const { find } = require('lodash');
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = require('lab').script();
 
 const { expect } = require('code');
 
@@ -12,7 +11,7 @@ const { scope } = require('external/lib/constants');
 const getAuthenticatedRequest = () => {
   return {
     view: {
-      activeNavLink: 'change-password'
+      activeNavLink: 'account-settings'
     },
     state: {
       sid: '00000000-0000-0000-0000-000000000000'
@@ -26,38 +25,38 @@ const getAuthenticatedRequest = () => {
   };
 };
 
-lab.experiment('getPropositionLinks', () => {
-  lab.test('It should not display any links if the user is not authenticated', async () => {
+experiment('getPropositionLinks', () => {
+  test('It should not display any links if the user is not authenticated', async () => {
     const request = {};
     const result = getPropositionLinks(request);
     expect(result.length).to.equal(0);
   });
 
-  lab.test('It should display change password and signout links for all authenticated users', async () => {
+  test('displays account settings and signout links for all authenticated users', async () => {
     const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
     const ids = links.map(link => link.id);
-    expect(ids).to.equal(['change-password', 'signout']);
+    expect(ids).to.equal(['account-settings', 'signout']);
   });
 
-  lab.test('It should set the active nav link flag', async () => {
+  test('sets the active nav link flag', async () => {
     const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
-    const link = find(links, { id: 'change-password' });
+    const link = find(links, { id: 'account-settings' });
     expect(link.active).to.equal(true);
   });
 
-  lab.test('Non-active links should have the active flag set to false', async () => {
+  test('Non-active links should have the active flag set to false', async () => {
     const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
-    const flags = links.filter(link => (link.id !== 'change-password')).map(link => link.active);
+    const flags = links.filter(link => (link.id !== 'account-settings')).map(link => link.active);
     expect(flags).to.equal([false]);
   });
 
-  lab.test('It should set ID attributes', async () => {
+  test('It should set ID attributes', async () => {
     const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
     const idAttributes = links.map(link => link.attributes.id);
-    expect(idAttributes).to.equal(['change-password', 'signout']);
+    expect(idAttributes).to.equal(['account-settings', 'signout']);
   });
 });

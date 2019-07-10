@@ -12,6 +12,7 @@ const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 const waiting = require('./waiting/routes');
 const batchNotifications = require('./batch-notifications/routes');
+const viewLicences = require('./view-licences/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -27,5 +28,6 @@ module.exports = [
   ...Object.values(returnsReports),
   ...Object.values(internalSearch),
   ...Object.values(waiting),
-  ...Object.values(batchNotifications)
+  ...Object.values(batchNotifications),
+  ...Object.values(viewLicences)
 ];

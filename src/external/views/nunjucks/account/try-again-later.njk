@@ -1,0 +1,13 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p class="govuk-body">You have tried to enter a code too many times.</p>
+      <p class="govuk-body">To change your email address please try again in 24 hours.</p>
+      <a class="govuk-link" href="/licences">View licences</a>
+    </div>
+  </div>
+{% endblock %}

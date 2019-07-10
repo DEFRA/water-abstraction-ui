@@ -58,15 +58,10 @@ class LicencesService extends ServiceClient {
   }
 
   async getPrimaryUserByDocumentId (documentId, options) {
-    try {
-      const userResponse = await this.getUsersByDocumentId(documentId, options);
-      const users = userResponse.data || [];
-      return users.find(user => user.roles.includes('primary_user'));
-    } catch (error) {
-      if (error.statusCode !== 404) {
-        throw error;
-      }
-    }
+    const userResponse = await this.getUsersByDocumentId(documentId, options);
+    const users = userResponse.data || [];
+    const primaryUser = users.find(user => user.roles.includes('primary_user'));
+    return { data: primaryUser };
   }
 }
 

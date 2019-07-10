@@ -17,6 +17,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Create an account to manage your water abstraction licence online'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     }
@@ -35,6 +38,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Create an account'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     }
@@ -67,6 +73,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Confirm your email address'
+        },
+        companySelector: {
+          ignore: true
         }
       },
       validate: {
@@ -90,6 +99,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Request another email'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     }
@@ -122,6 +134,9 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Confirm your email address'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     }

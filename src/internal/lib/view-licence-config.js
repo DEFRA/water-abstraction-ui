@@ -13,5 +13,5 @@ const getLicenceSummaryReturns = licenceNumber => {
 exports.allowedScopes = [internal];
 exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
-exports.getCommunication = services.water.communications.getCommunication;
+exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
 exports.getRiverLevel = services.water.riverLevels.getRiverLevel;

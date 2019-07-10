@@ -18,6 +18,9 @@ module.exports = {
         },
         config: {
           view: 'nunjucks/content/accessibility.njk'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     },
@@ -40,6 +43,9 @@ module.exports = {
         },
         config: {
           view: 'nunjucks/content/cookies.njk'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     },
@@ -61,6 +67,9 @@ module.exports = {
         },
         config: {
           view: 'nunjucks/content/feedback.njk'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     },
@@ -82,6 +91,9 @@ module.exports = {
         },
         config: {
           view: 'nunjucks/content/privacy-policy.njk'
+        },
+        companySelector: {
+          ignore: true
         }
       }
     },

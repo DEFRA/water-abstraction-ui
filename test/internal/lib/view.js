@@ -43,15 +43,6 @@ experiment('lib/view.contextDefaults', () => {
     expect(viewContext.surveyType).to.equal('anonymous');
   });
 
-  test('surveyType is external for a logged in vml user', async () => {
-    const request = getBaseRequest();
-    request.state.sid = { sid: 'test-sid' };
-    set(request, 'auth.credentials.scope', [scope.external]);
-
-    const viewContext = view.contextDefaults(request);
-    expect(viewContext.surveyType).to.equal('external');
-  });
-
   test('surveyType is internal for a logged in admin user', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };

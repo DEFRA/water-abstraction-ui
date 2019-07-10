@@ -7,6 +7,7 @@ const registrationRoutes = require('./registration/routes');
 const serviceStatusRoutes = require('./service-status/routes');
 const returnsRoutes = require('./returns/routes');
 const companySelector = require('./company-selector/routes');
+const accountRoutes = require('./account/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -17,5 +18,6 @@ module.exports = [
   ...Object.values(viewLicenceRoutes),
   ...Object.values(serviceStatusRoutes),
   ...Object.values(returnsRoutes),
-  ...Object.values(companySelector)
+  ...Object.values(companySelector),
+  ...Object.values(accountRoutes)
 ];

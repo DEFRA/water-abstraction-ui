@@ -51,15 +51,6 @@ experiment('lib/view.contextDefaults', () => {
     const viewContext = view.contextDefaults(request);
     expect(viewContext.surveyType).to.equal('external');
   });
-
-  test('surveyType is internal for a logged in admin user', async () => {
-    const request = getBaseRequest();
-    set(request, 'auth.credentials.userId', 'user_123');
-    set(request, 'auth.credentials.scope', [scope.internal]);
-
-    const viewContext = view.contextDefaults(request);
-    expect(viewContext.surveyType).to.equal('internal');
-  });
 });
 
 experiment('lib/view.getTracking', () => {

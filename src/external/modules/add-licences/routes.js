@@ -9,7 +9,12 @@ module.exports = {
     path: '/add-licences',
     handler: controller.getLicenceAdd,
     config: {
-      description: 'Start flow to add licences'
+      description: 'Start flow to add licences',
+      plugins: {
+        companySelector: {
+          ignore: true
+        }
+      }
     }
   },
   postLicenceAdd: {

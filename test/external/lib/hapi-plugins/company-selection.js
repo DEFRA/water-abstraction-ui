@@ -15,23 +15,24 @@ const handler = plugin._handler;
 
 const getTestRequest = (overrides = {}) => {
   const defaults = Object.assign({
-    isAuthenticated: true,
-    isExternal: true,
     companyId: undefined,
     companyCount: 1,
     path: '/test',
-    access: undefined
+    ignore: false,
+    isAuthenticated: true,
+    method: 'GET'
   }, overrides);
 
-  const request = { path: defaults.path };
-  set(request, 'auth.isAuthenticated', defaults.isAuthenticated);
-  set(request, 'defra.companyId', defaults.companyId);
-  set(request, 'defra.companyCount', defaults.companyCount);
-  set(request, 'route.settings.auth.access', defaults.access);
+  const request = {
+    path: defaults.path,
+    method: defaults.method
+  };
 
-  if (defaults.isExternal) {
-    set(request, 'auth.credentials.scope', ['external']);
+  if (defaults.isAuthenticated) {
+    set(request, 'defra.companyId', defaults.companyId);
+    set(request, 'defra.companyCount', defaults.companyCount);
   }
+  set(request, 'route.settings.plugins.companySelector.ignore', defaults.ignore);
 
   return request;
 };
@@ -74,46 +75,23 @@ experiment('handler', () => {
   });
 
   test('continues if the request is not authenticated', async () => {
-    const request = {
-      auth: {
-        isAuthenticated: false
-      }
-    };
+    const request = getTestRequest({
+      isAuthenticated: false
+    });
 
     const result = handler(request, h);
     expect(result).to.equal(h.continue);
   });
 
-  experiment('for an internal user', () => {
-    test('does not redirect for a route with access config', async () => {
-      const request = {
-        auth: {
-          isAuthenticated: true
-        },
-        defra: {
-          isExternalUser: false,
-          isInternalUser: true
-        },
-        path: '/',
-        access: {}
-      };
-
-      const result = handler(request, h);
-      expect(result).to.equal(h.continue);
-    });
-  });
-
   experiment('external user', () => {
-    test('does not redirect for a route with access config', async () => {
-      const request = getTestRequest(true, {
-        access: {}
-      });
+    test('does not redirect for POST requests', async () => {
+      const request = getTestRequest({ method: 'POST' });
       const result = handler(request, h);
       expect(result).to.equal(h.continue);
     });
 
     test('does not redirect when there is a company id', async () => {
-      const request = getTestRequest(true, {
+      const request = getTestRequest({
         companyId: 'test-id'
       });
       const result = handler(request, h);
@@ -121,8 +99,16 @@ experiment('handler', () => {
     });
 
     test('does not redirect when the select-company page is requested', async () => {
-      const request = getTestRequest(true, {
+      const request = getTestRequest({
         path: '/select-company'
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('does not redirect when the ignore flag is set', async () => {
+      const request = getTestRequest({
+        ignore: true
       });
       const result = handler(request, h);
       expect(result).to.equal(h.continue);
@@ -132,8 +118,7 @@ experiment('handler', () => {
   experiment('external user with no selected company', () => {
     test('is redirected to "add licences" if they have no companies', async () => {
       const request = getTestRequest({
-        companyCount: 0,
-        access: {}
+        companyCount: 0
       });
 
       const result = handler(request, h);
@@ -144,8 +129,7 @@ experiment('handler', () => {
 
     test('is redirected to "select company" if they have companies', async () => {
       const request = getTestRequest({
-        companyCount: 1,
-        access: {}
+        companyCount: 1
       });
 
       const result = handler(request, h);

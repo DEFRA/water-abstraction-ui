@@ -68,7 +68,7 @@ experiment('Shared UsersApiClient', () => {
   experiment('authenticate', () => {
     experiment('when IDM post resolves', () => {
       test('calls IDM /login with correct params', async () => {
-        await client.authenticate(application, userName, password);
+        await client.authenticate(userName, password, application);
         const [uri, options] = serviceRequest.post.lastCall.args;
         expect(uri).to.equal('https://example.com/idm/user/login');
         expect(options).to.equal({

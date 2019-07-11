@@ -6,7 +6,6 @@ const STEP_LOG_RECEIPT = '/return/log-receipt';
 const STEP_RECEIPT_LOGGED = '/return/receipt-logged';
 const STEP_QUERY_LOGGED = '/return/query-logged';
 const STEP_START = '/return';
-const STEP_NIL_RETURN = '/return/nil-return';
 const STEP_METHOD = '/return/method';
 const STEP_INTERNAL_METHOD = '/return/internal-method';
 const STEP_METER_DETAILS_PROVIDED = '/return/meter/details-provided';
@@ -30,7 +29,6 @@ module.exports = {
   STEP_LOG_RECEIPT,
   STEP_RECEIPT_LOGGED,
   STEP_START,
-  STEP_NIL_RETURN,
   STEP_METHOD,
   STEP_INTERNAL_METHOD,
   STEP_UNITS,

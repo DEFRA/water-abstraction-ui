@@ -2,6 +2,7 @@ const Joi = require('joi');
 const moment = require('moment');
 const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
+const { getLineName, getLineLabel } = require('./common');
 
 /**
  * Returns form lines
@@ -10,33 +11,6 @@ const { fields } = require('shared/lib/forms');
  */
 const getFormLines = data =>
   get(data, 'lines.length') > 0 ? data.lines : data.requiredLines;
-
-/**
- * Get form field name
- * @param {Object} line
- * @return {String} field name
- */
-const getLineName = (line) => line.startDate + '_' + line.endDate;
-
-/**
- * Gets label text for line
- * @param {Object} line from requiredLines array
- * @return {String} label
- */
-const getLineLabel = (line) => {
-  if (line.timePeriod === 'day') {
-    return moment(line.startDate).format('D MMMM');
-  }
-  if (line.timePeriod === 'week') {
-    return 'Week ending ' + moment(line.endDate).format('D MMMM');
-  }
-  if (line.timePeriod === 'month') {
-    return moment(line.startDate).format('MMMM');
-  }
-  if (line.timePeriod === 'year') {
-    return moment(line.startDate).format('D MMMM YYYY - ') + moment(line.endDate).format('D MMMM YYYY');
-  }
-};
 
 /**
  * Get field suffix - this is the units used for this return

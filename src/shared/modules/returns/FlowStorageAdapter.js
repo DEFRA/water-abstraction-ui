@@ -1,3 +1,4 @@
+const WaterReturn = require('./models/WaterReturn');
 const getSessionKey = request => `return_${request.query.returnId}`;
 
 class FlowStorageAdapter {
@@ -22,22 +23,23 @@ class FlowStorageAdapter {
       request.yar.set(sessionKey, data);
     }
 
-    return data;
+    return new WaterReturn(data);
   };
 
   /**
    * Save return model data to session
    * @param  {Object}  request - HAPI request
-   * @param  {Object}  data    - return model data
+   * @param  {Object}  waterReturn - waterReturn instance
    */
-  set (request, data) {
+  set (request, waterReturn) {
     const sessionKey = getSessionKey(request);
-    console.log('Set', sessionKey, data);
-    return request.yar.set(sessionKey, data);
+    return request.yar.set(sessionKey, waterReturn.toObject());
   };
 
-  submit () {
-
+  async submit (request, waterReturn) {
+    await this.waterReturnsConnector.postReturn(waterReturn.toObject());
+    const sessionKey = getSessionKey(request);
+    request.yar.clear(sessionKey);
   }
 }
 

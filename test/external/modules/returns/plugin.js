@@ -7,7 +7,6 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const plugin = require('external/modules/returns/plugin');
 const services = require('external/lib/connectors/services');
-const sessionHelpers = require('external/modules/returns/lib/session-helpers');
 const helpers = require('external/modules/returns/lib/helpers');
 
 const sandbox = sinon.createSandbox();
@@ -41,8 +40,6 @@ experiment('returns plugin', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(sessionHelpers, 'getSessionData').returns({ returnId });
-    sandbox.stub(sessionHelpers, 'saveSessionData');
     sandbox.stub(services.water.returns, 'getReturn').resolves({
       returnId,
       licenceNumber
@@ -115,7 +112,6 @@ experiment('returns plugin', () => {
       test('loads data from session', async () => {
         await plugin._handler(request, h);
         expect(services.crm.documents.findMany.callCount).to.equal(0);
-        expect(sessionHelpers.getSessionData.callCount).to.equal(1);
       });
     });
   });

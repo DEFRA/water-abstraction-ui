@@ -7,18 +7,22 @@
  * add-licences route.
  *
  * Both of the above redirections will only take place if the user is
- * attempting to access a route that is configured with an access scope.
+ * attempting to access a route that has not opted out by setting
+ * config.plugins.companySelector.ignore to true.
  */
-const { get, isEmpty } = require('lodash');
+const { get } = require('lodash');
 const SELECT_COMPANY_PATH = '/select-company';
 const ADD_LICENCES_PATH = '/add-licences';
 
 const shouldRedirect = request => {
-  const { companyId } = request.defra;
-  const { path } = request;
-  const access = get(request, 'route.settings.auth.access', {});
+  if (request.method.toLowerCase() === 'get' && request.defra) {
+    const { companyId } = request.defra;
+    const { path } = request;
+    const ignoreRoute = get(request, 'route.settings.plugins.companySelector.ignore', false);
 
-  return (isEmpty(access) && !companyId && path !== SELECT_COMPANY_PATH);
+    return (!ignoreRoute && !companyId && path !== SELECT_COMPANY_PATH);
+  }
+  return false;
 };
 
 const getRedirectPath = companyCount => {
@@ -26,7 +30,7 @@ const getRedirectPath = companyCount => {
 };
 
 const handler = (request, h) => {
-  if (request.auth.isAuthenticated && shouldRedirect(request)) {
+  if (shouldRedirect(request)) {
     const path = getRedirectPath(request.defra.companyCount);
     return h.redirect(path).takeover();
   }

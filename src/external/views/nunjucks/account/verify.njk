@@ -1,0 +1,27 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ formErrorSummary(form) }}
+    {{ title(pageTitle) }}
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <p>We sent a code to
+        <span class="govuk-!-font-weight-bold">{{ newEmail }}</span>.
+      </p>
+    </div>
+    <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <p>Check your spam folder if you have not received the email within a few minutes.</p>
+      <p>
+        If the email hasn’t arrived you can
+        <a href="/account/change-email/enter-new-email">request another code.</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

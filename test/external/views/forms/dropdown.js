@@ -1,29 +1,23 @@
 'use strict';
 
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
-
+const { beforeEach, experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('code');
 const DOMParser = require('xmldom').DOMParser;
 
-const { expect } = require('code');
-const server = require('../../../../server-external');
+const { createServer } = require('../../server-factory');
+
 const { formFactory, fields } = require('shared/lib/forms');
 
 const simple = ['Red', 'Green', 'Blue'];
 
-const complex = [{
-  id: 'r',
-  value: 'Red'
-}, {
-  id: 'g',
-  value: 'Green'
-}, {
-  id: 'b',
-  value: 'Blue'
-}];
+const complex = [
+  { id: 'r', value: 'Red' },
+  { id: 'g', value: 'Green' },
+  { id: 'b', value: 'Blue' }
+];
 
 // Add route to render form control
-server.route({
+const route = {
   method: 'GET',
   path: '/test/forms/field/dropdown',
   handler: async (request, h) => {
@@ -48,16 +42,14 @@ server.route({
     form.fields.push(field);
 
     return h.view('test/forms', { form });
-  },
-  config: {
-    auth: false
   }
-});
+};
 
-lab.experiment('Dropdown fields', () => {
+experiment('Dropdown fields', () => {
   let dom;
 
-  lab.before(async () => {
+  beforeEach(async () => {
+    const server = await createServer(route);
     const response = await server.inject({
       url: '/test/forms/field/dropdown'
     });
@@ -65,7 +57,7 @@ lab.experiment('Dropdown fields', () => {
     dom = new DOMParser().parseFromString(response.payload);
   });
 
-  lab.test('It should render a dropdown with simple values', async () => {
+  test('It should render a dropdown with simple values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_1');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
     expect(options).to.have.length(4);
@@ -82,7 +74,7 @@ lab.experiment('Dropdown fields', () => {
     expect(values).to.equal([ '', 'Red', 'Green', 'Blue' ]);
   });
 
-  lab.test('It should select the correct dropdown option for simple values', async () => {
+  test('It should select the correct dropdown option for simple values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_2');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
 
@@ -90,7 +82,7 @@ lab.experiment('Dropdown fields', () => {
     expect(selected).to.equal([ '', '', 'selected', '' ]);
   });
 
-  lab.test('It should render a dropdown with complex values', async () => {
+  test('It should render a dropdown with complex values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_3');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
     expect(options).to.have.length(4);
@@ -107,7 +99,7 @@ lab.experiment('Dropdown fields', () => {
     expect(values).to.equal([ '', 'r', 'g', 'b' ]);
   });
 
-  lab.test('It should select the correct dropdown option for complex values', async () => {
+  test('It should select the correct dropdown option for complex values', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_4');
     const options = Object.values(dropdown.childNodes).filter(ele => ele.tagName === 'option');
 
@@ -116,7 +108,7 @@ lab.experiment('Dropdown fields', () => {
     expect(selected).to.equal([ '', '', '', 'selected' ]);
   });
 
-  lab.test('It should render a field in an error state', async () => {
+  test('It should render a field in an error state', async () => {
     const dropdown = dom.getElementById('dropdown-dropdown_5');
 
     // Dropdown should have error class

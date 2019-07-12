@@ -93,7 +93,7 @@ async function postXmlUpload (request, h) {
 
     redirectPath = getRedirectPath(status, eventId);
   } catch (error) {
-    logger.error('Error with XML upload checks', error);
+    logger.errorWithJourney('Error with XML upload checks', error, request);
     throw error;
   } finally {
     // Delete temporary file
@@ -176,8 +176,9 @@ const getSpinnerPage = async (request, h) => {
 
     return h.view('nunjucks/waiting/index.njk', request.view, { layout: false });
   } else {
-    logger.error('No event found with selected event_id and issuer', { eventId });
-    throw Boom.notFound(`Upload event not found`, { eventId });
+    const error = Boom.notFound(`Upload event not found`, { eventId });
+    logger.errorWithJourney('No event found with selected event_id and issuer', error, request, { eventId });
+    throw error;
   }
 };
 
@@ -195,9 +196,9 @@ const hasErrors = grouped => get(grouped, 'returnsWithErrors.length') > 0;
 const getSummary = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
+
   try {
     const returns = await services.water.returns.getUploadPreview(eventId, options);
-
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
 
     if (isEmpty(grouped)) {
@@ -217,7 +218,7 @@ const getSummary = async (request, h) => {
     return h.view('nunjucks/returns/upload-summary.njk', view, { layout: false });
   } catch (err) {
     const params = { eventId, options };
-    logger.error(`Return upload error`, params);
+    logger.errorWithJourney(`Return upload error`, err, request, params);
     throw err;
   }
 };
@@ -247,7 +248,7 @@ const getSummaryReturn = async (request, h) => {
     return h.view('nunjucks/returns/upload-return.njk', view, { layout: false });
   } catch (err) {
     const params = { eventId, returnId, options };
-    logger.error(`Return upload error`, params);
+    logger.errorWithJourney(`Return upload error`, err, request, params);
     throw err;
   }
 };
@@ -269,7 +270,7 @@ const postSubmit = async (request, h) => {
     return h.redirect(`/returns/processing-upload/submitting/${eventId}`);
   } catch (err) {
     const params = { eventId, options };
-    logger.error(`Return upload error`, params);
+    logger.errorWithJourney(`Return upload error`, err, request, params);
     throw err;
   }
 };

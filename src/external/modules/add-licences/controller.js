@@ -118,14 +118,13 @@ async function postLicenceAdd (request, reply) {
 
     return reply.redirect('/select-licences');
   } catch (err) {
-    logger.error('Add licence error', err);
+    logger.errorWithJourney('Add licence error', err, request);
 
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
       return reply.view('water/licences-add/add-licences', viewContext);
     }
     throw err;
-    // errorHandler(request, reply)(err);
   }
 }
 

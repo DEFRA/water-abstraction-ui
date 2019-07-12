@@ -48,11 +48,13 @@ const getLineFields = data => getFormLines(data).map(getLineField);
 
 const getStartReading = data => get(data, 'startReading', 0) || 0;
 
-const getMeterReadingValidator = (type, minValue) => Joi
-  .number()
-  .allow(null)
-  .min(minValue)
-  .error(() => ({ type }));
+const getMeterReadingValidator = (type, minValue) => {
+  return Joi
+    .number()
+    .allow(null)
+    .min(minValue)
+    .error(() => ({ type }));
+};
 
 const getStartReadingValidator = data => getMeterReadingValidator(
   'number.startReading',
@@ -73,8 +75,7 @@ const getRecentReadingValidator = getMeterReadingValidator.bind(
  *  - must be greater that any earlier readings
  *
  * @param {object} data The returns model
- * @param {object} internalData The request payload after all internal
- * mappers are applied.
+ * @param {object} form The form object
  */
 const schema = (request, data, form) => {
   const internalData = importData(form, request.payload);

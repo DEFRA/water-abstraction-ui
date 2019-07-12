@@ -1,5 +1,5 @@
 const Boom = require('boom');
-const { get } = require('lodash');
+const { get, set } = require('lodash');
 const services = require('../../lib/connectors/services');
 
 /**
@@ -37,7 +37,7 @@ const preHandler = async (request, h) => {
   checkAccess(request, documentHeader);
 
   // Add document header data to view
-  request.view.documentHeader = documentHeader;
+  set(request, 'view.documentHeader', documentHeader);
 
   return h.continue;
 };

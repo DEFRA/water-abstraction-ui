@@ -2,20 +2,18 @@
 const sinon = require('sinon');
 const { expect } = require('code');
 const Lab = require('lab');
-const { set } = require('lodash');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const plugin = require('external/modules/returns/plugin');
 const services = require('external/lib/connectors/services');
-const helpers = require('external/modules/returns/lib/helpers');
 
 const sandbox = sinon.createSandbox();
 
-const returnId = 'return_1';
-const licenceNumber = 'licence_1';
+const licence = '123/456';
+const returnId = `v1:1:${licence}:1234:2018-11-01:2019-10-31`;
 const companyId = 'company_1';
 
-const createRequest = (isInternal, isLoadOption) => ({
+const createRequest = (isLoadOption) => ({
   query: {
     returnId
   },
@@ -24,13 +22,13 @@ const createRequest = (isInternal, isLoadOption) => ({
   },
   auth: {
     credentials: {
-      scope: isInternal ? ['internal', 'returns'] : ['external', 'primary_user']
+      scope: ['external', 'primary_user']
     }
   },
   route: {
     settings: {
       plugins: {
-        returns: isLoadOption ? { load: true } : true
+        returns: isLoadOption
       }
     }
   }
@@ -40,15 +38,8 @@ experiment('returns plugin', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(services.water.returns, 'getReturn').resolves({
-      returnId,
-      licenceNumber
-    });
-    sandbox.stub(services.crm.documents, 'findMany').resolves({
-      error: null,
-      data: [{ document_id: 'abc' }]
-    });
-    sandbox.stub(helpers, 'getViewData').resolves({ foo: 'bar' });
+    sandbox.stub(services.crm.documents, 'getWaterLicence')
+      .resolves({ document_id: 'abc', company_entity_id: companyId });
     h = {
       view: sandbox.stub(),
       redirect: sandbox.stub(),
@@ -65,53 +56,41 @@ experiment('returns plugin', () => {
 
     experiment('when load config option is set', () => {
       beforeEach(async () => {
-        request = createRequest(false, true);
+        request = createRequest(true);
       });
 
-      test('loads document from CRM to check access', async () => {
+      test('extracts the licence number from the return ID and loads document header', async () => {
         await plugin._handler(request, h);
-        expect(services.crm.documents.findMany.callCount).to.equal(1);
-
-        const [ filter ] = services.crm.documents.findMany.lastCall.args;
-        expect(filter.company_entity_id).to.equal(companyId);
-        expect(filter.system_external_id).to.equal(licenceNumber);
-        expect(filter.regime_entity_id).to.be.a.string();
+        const [licenceNumber] = services.crm.documents.getWaterLicence.lastCall.args;
+        expect(licenceNumber).to.equal(licence);
       });
 
-      test('sets loaded view and return data in request', async () => {
+      test('places the document header in request.view', async () => {
         await plugin._handler(request, h);
-        expect(request.returns.data).to.equal({ returnId });
-        expect(request.returns.view).to.equal({ foo: 'bar' });
-        expect(request.returns.isInternal).to.equal(false);
+        expect(request.view.documentHeader).to.be.an.object();
       });
 
-      test('throws error and redirects if CRM document not found', async () => {
-        services.crm.documents.findMany.resolves({ data: [] });
+      test('throws an error if the document header is not loaded', async () => {
+        services.crm.documents.getWaterLicence.resolves();
         const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
-        expect(h.redirect.callCount).to.equal(1);
-        const [ path ] = h.redirect.lastCall.args;
-        expect(path).to.equal('/returns/return?id=return_1');
+        expect(func()).to.reject();
       });
 
-      test('throws error and redirects if no returns permission', async () => {
-        set(request, 'auth.credentials.scope', ['external', 'user']);
+      test('throws an error if the document header company ID does not match the current user', async () => {
+        request.defra.companyId = 'some-other-company';
         const func = () => plugin._handler(request, h);
-        await expect(func()).to.reject();
-        expect(h.redirect.callCount).to.equal(1);
-        const [ path ] = h.redirect.lastCall.args;
-        expect(path).to.equal('/returns/return?id=return_1');
+        expect(func()).to.reject();
       });
     });
 
     experiment('when load config option not set', () => {
       beforeEach(async () => {
-        request = createRequest(false, false);
+        request = createRequest(false);
       });
 
       test('loads data from session', async () => {
         await plugin._handler(request, h);
-        expect(services.crm.documents.findMany.callCount).to.equal(0);
+        expect(services.crm.documents.getWaterLicence.callCount).to.equal(0);
       });
     });
   });

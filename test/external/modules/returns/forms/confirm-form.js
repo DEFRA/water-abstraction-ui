@@ -23,10 +23,6 @@ experiment('confirmForm', () => {
 
   const externalForm = confirmForm(getRequest(), {});
 
-  test('it should have an external action URL for external users', async () => {
-    expect(externalForm.action).to.equal('/return/nil-return?returnId=abc');
-  });
-
   test('it should have a CSRF token', async () => {
     const csrf = find(externalForm.fields, { name: 'csrf_token' });
     expect(csrf.value).to.equal('xyz');

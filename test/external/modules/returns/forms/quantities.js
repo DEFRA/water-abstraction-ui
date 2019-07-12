@@ -64,19 +64,6 @@ experiment('quantitiesForm', () => {
     expect(text).to.not.include(expectedText);
   });
 
-  test('does not add help text about x10 meters if is internal user', async () => {
-    const form = quantitiesForm(createRequest(), createReturn());
-    const text = filter(form.fields, isParagraph).map(row => row.options.text);
-    expect(text).to.not.include(expectedText);
-  });
-
-  test('adds internal help text for internal users', async () => {
-    const form = quantitiesForm(createRequest(), createReturn());
-    const text = filter(form.fields, isParagraph).map(row => row.options.text);
-    expect(text).to.include(internalExpectedText[0]);
-    expect(text).to.include(internalExpectedText[1]);
-  });
-
   test('does not add internal help text for external users', async () => {
     const form = quantitiesForm(createRequest(false), createReturn());
     const text = filter(form.fields, isParagraph).map(row => row.options.text);

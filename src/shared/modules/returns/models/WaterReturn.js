@@ -367,6 +367,8 @@ class WaterReturn {
 }
 
 module.exports = WaterReturn;
+module.exports.READING_TYPE_MEASURED = READING_TYPE_MEASURED;
+module.exports.READING_TYPE_ESTIMATED = READING_TYPE_ESTIMATED;
 module.exports.METHOD_VOLUMES = METHOD_VOLUMES;
 module.exports.METHOD_ONE_METER = METHOD_ONE_METER;
 module.exports.STATUS_COMPLETED = STATUS_COMPLETED;

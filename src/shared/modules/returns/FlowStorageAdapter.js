@@ -1,3 +1,4 @@
+const { omit } = require('lodash');
 const WaterReturn = require('./models/WaterReturn');
 const getSessionKey = request => `return_${request.query.returnId}`;
 
@@ -37,7 +38,8 @@ class FlowStorageAdapter {
   };
 
   async submit (request, waterReturn) {
-    await this.waterReturnsConnector.postReturn(waterReturn.toObject());
+    const data = omit(waterReturn.toObject(), 'versions');
+    await this.waterReturnsConnector.postReturn(data);
     const sessionKey = getSessionKey(request);
     request.yar.clear(sessionKey);
   }

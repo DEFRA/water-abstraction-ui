@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
 
 const getContinueField = (label = 'Continue') => {
@@ -60,6 +61,15 @@ const getFormLines = (data) => {
   return data.lines && data.lines.length ? data.lines : data.requiredLines;
 };
 
+/**
+ * Returns a clone of the first meter if present, or an empty object otherwise
+ * @param  {Object} data - return model
+ * @return {Object}      - meter object or empty object
+ */
+const getMeter = data => {
+  return get(data, 'meters[0]', {});
+};
+
 exports.getContinueField = getContinueField;
 exports.getCsrfTokenField = getCsrfTokenField;
 exports.getHeadingField = getHeadingField;
@@ -67,3 +77,4 @@ exports.getParagraphField = getParagraphField;
 exports.getLineName = getLineName;
 exports.getLineLabel = getLineLabel;
 exports.getFormLines = getFormLines;
+exports.getMeter = getMeter;

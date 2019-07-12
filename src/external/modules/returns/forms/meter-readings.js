@@ -1,5 +1,5 @@
 const { formFactory, setValues } = require('shared/lib/forms');
-const { getMeter } = require('../lib/return-helpers');
+const { getMeter } = require('shared/modules/returns/forms/common');
 const { get, set } = require('lodash');
 
 const { getContinueField, getCsrfTokenField, getHeadingField } =

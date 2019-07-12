@@ -26,9 +26,7 @@
 
       {% if not data.isNil %}
       <p>
-        <a href="{{ makeChangePath }}">Edit your
-          {{ "meter readings" if data.reading.method else "volumes" }}
-        </a>
+        <a href="{{ makeChangePath }}">{{ makeChangeText }}</a>
       </p>
       {% endif %}
 

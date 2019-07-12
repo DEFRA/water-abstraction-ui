@@ -129,13 +129,6 @@ experiment('meterReadingsForm', () => {
     expect(startReading.value).to.equal(10);
   });
 
-  test('internal label is shown for internal user', async () => {
-    const request = createRequest();
-    const form = meterReadingsForm(request, data);
-    const label = form.fields[0];
-    expect(label.options.text).to.equal('Meter Readings');
-  });
-
   test('external label is shown for external user', async () => {
     const request = createRequest(false);
     const form = meterReadingsForm(request, data);

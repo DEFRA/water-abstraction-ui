@@ -155,13 +155,21 @@ const getConfirmBackPath = request => {
 /**
  * GET handler for confirm return
  */
-const getConfirm = async (request, h) => h.view('nunjucks/returns/confirm.njk', {
-  ...request.view,
-  lines: request.model
-    .applyMeterMultiplication()
-    .getLinesWithReadings(),
-  back: getConfirmBackPath(request)
-}, { layout: false });
+const getConfirm = async (request, h) => {
+  const { model } = request;
+  model.applyMeterMultiplication();
+  const path = model.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES;
+  const view = {
+    ...request.view,
+    lines: model.getLinesWithReadings(),
+    back: getConfirmBackPath(request),
+    total: model.getReturnTotal(),
+    endReading: model.getEndReading(),
+    makeChangeText: `Edit your ${model.isOneMeter() ? 'meter readings' : 'volumes'}`,
+    makeChangePath: addQuery(request, path)
+  };
+  return h.view('nunjucks/returns/confirm.njk', view, { layout: false });
+};
 
 /**
  * POST handler for confirm return

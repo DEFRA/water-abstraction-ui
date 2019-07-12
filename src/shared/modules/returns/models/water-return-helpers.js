@@ -42,6 +42,22 @@ const mapMeterLinesToVolumes = (startReading, readings) => {
   return lines;
 };
 
+/**
+ * Gets total abstracted quantity
+ * @param  {Array} lines - return lines
+ * @return {Number|null}
+ */
+const getReturnTotal = (lines) => {
+  if (!lines) {
+    return null;
+  }
+  const filteredLines = lines.filter(line => line.quantity !== null);
+  return filteredLines.length === 0 ? null : filteredLines.reduce((acc, line) => {
+    return acc + parseFloat(line.quantity);
+  }, 0);
+};
+
 exports.createLines = createLines;
 exports.getDefaultQuantity = getDefaultQuantity;
 exports.mapMeterLinesToVolumes = mapMeterLinesToVolumes;
+exports.getReturnTotal = getReturnTotal;

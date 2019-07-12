@@ -1,8 +1,9 @@
 const moment = require('moment');
 const Joi = require('joi');
-const { get, set, find, pick } = require('lodash');
+const { get, set, find, pick, findLastKey } = require('lodash');
 const { getDay, getMonth } = require('./return-date-helpers');
-const { createLines, getDefaultQuantity, mapMeterLinesToVolumes } = require('./water-return-helpers');
+const { createLines, getDefaultQuantity, mapMeterLinesToVolumes,
+  getReturnTotal } = require('./water-return-helpers');
 
 const METHOD_VOLUMES = 'abstractionVolumes';
 const METHOD_ONE_METER = 'oneMeter';
@@ -31,6 +32,7 @@ class WaterReturn {
     this.endDate = data.endDate;
     this.frequency = data.frequency;
     this.user = data.user;
+    this.versions = data.versions;
   }
 
   toObject () {
@@ -50,7 +52,8 @@ class WaterReturn {
       startDate: this.startDate,
       endDate: this.endDate,
       frequency: this.frequency,
-      user: this.user
+      user: this.user,
+      versions: this.versions
     };
   }
 
@@ -165,9 +168,6 @@ class WaterReturn {
    * @param {Array} readings
    */
   setMeterReadings (startReading, readings) {
-    console.log('startReading', startReading);
-    console.log('readings', readings);
-
     Joi.assert(startReading, Joi.number().positive());
     const schema = Joi.array().items({
       startDate: Joi.string().isoDate(),
@@ -326,6 +326,19 @@ class WaterReturn {
       'periodStartDay',
       'periodStartMonth'
     );
+  }
+
+  /**
+   * Gets total abstracted volume, or null
+   * @return {Number|null} - total abstracted volume
+   */
+  getReturnTotal () {
+    return getReturnTotal(this.lines);
+  }
+
+  getEndReading () {
+    const endReadingKey = findLastKey(get(this, 'meters[0].readings'), key => key > 0);
+    return get(this, `meters[0].readings.${endReadingKey}`);
   }
 
   isMeterDetailsProvided () {

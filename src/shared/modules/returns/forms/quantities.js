@@ -1,8 +1,8 @@
 const Joi = require('joi');
-const moment = require('moment');
 const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
 const { getLineName, getLineLabel } = require('./common');
+const { maxPrecision } = require('shared/lib/number-formatter');
 
 /**
  * Returns form lines
@@ -60,9 +60,17 @@ const getLineFields = data => {
   });
 };
 
-exports.getLineFields = getLineFields;
+const getLineValues = (lines) => {
+  return lines.reduce((acc, line) => {
+    const name = getLineName(line);
+    return {
+      ...acc,
+      [name]: maxPrecision(line.quantity, 3)
+    };
+  }, {});
+};
 
-exports.schema = (request, data) => {
+const quantitiesSchema = (request, data) => {
   const schema = {
     csrf_token: Joi.string().guid().required()
   };
@@ -77,3 +85,7 @@ exports.schema = (request, data) => {
     };
   }, schema);
 };
+
+exports.getLineFields = getLineFields;
+exports.getLineValues = getLineValues;
+exports.schema = quantitiesSchema;

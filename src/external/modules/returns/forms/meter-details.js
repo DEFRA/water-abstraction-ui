@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, setValues } = require('shared/lib/forms');
-const { getMeter } = require('../lib/return-helpers');
+const { getMeter } = require('shared/modules/returns/forms/common');
 
 const { getContinueField, getCsrfTokenField, getHeadingField, getParagraphField } =
  require('shared/modules/returns/forms/common');

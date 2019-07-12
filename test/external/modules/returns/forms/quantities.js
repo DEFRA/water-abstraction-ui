@@ -4,7 +4,7 @@ const {
   test
 } = exports.lab = require('lab').script();
 const { filter } = require('lodash');
-const { quantitiesForm } = require('external/modules/returns/forms/quantities');
+const { form: quantitiesForm } = require('external/modules/returns/forms/quantities');
 
 const createRequest = (isInternal = true) => {
   return {

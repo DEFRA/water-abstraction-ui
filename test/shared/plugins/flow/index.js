@@ -1,10 +1,11 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
+const { set } = require('lodash');
 const sandbox = require('sinon').createSandbox();
 const plugin = require('shared/plugins/flow');
 const forms = require('shared/lib/forms');
 
-const createForm = (request, data) => ({
+const createForm = (request, data = {}) => ({
   ...forms.formFactory(),
   fields: [
     forms.fields.text('name', { label: 'Name' }, data.name)
@@ -147,6 +148,19 @@ experiment('shared flow plugin: ', () => {
           expect(result).to.equal(h.continue);
         });
       });
+
+      experiment('onPostHandler', () => {
+        test('returns h.continue', async () => {
+          const result = await plugin._onPostHandler(request, h);
+          expect(result).to.equal(h.continue);
+        });
+
+        test('does not call adapter methods', async () => {
+          await plugin._onPostHandler(request, h);
+          expect(adapter.set.callCount).to.equal(0);
+          expect(adapter.submit.callCount).to.equal(0);
+        });
+      });
     });
 
     experiment('on POST routes', async () => {
@@ -157,9 +171,31 @@ experiment('shared flow plugin: ', () => {
         };
       });
 
-      test('handles the form request', async () => {
-        await plugin._onPreHandler(request, h);
-        expect(request.view.form.isSubmitted).to.equal(true);
+      experiment('the onPreHandler', () => {
+        test('handles the form request', async () => {
+          await plugin._onPreHandler(request, h);
+          expect(request.view.form.isSubmitted).to.equal(true);
+        });
+      });
+
+      experiment('the onPostHandler', () => {
+        beforeEach(async () => {
+          set(request, 'view.form.isValid', true);
+          set(request, 'model', model);
+        });
+
+        test('stores the model using the adapter if the form is valid', async () => {
+          await plugin._onPostHandler(request, h);
+          expect(adapter.set.calledWith(request, model)).to.equal(true);
+          expect(adapter.submit.callCount).to.equal(0);
+        });
+
+        test('submits the data using the adapter if configured as a submission route', async () => {
+          set(request, 'route.settings.plugins.flow.submit', true);
+          await plugin._onPostHandler(request, h);
+          expect(adapter.submit.calledWith(request, model)).to.equal(true);
+          expect(adapter.set.callCount).to.equal(0);
+        });
       });
     });
   });

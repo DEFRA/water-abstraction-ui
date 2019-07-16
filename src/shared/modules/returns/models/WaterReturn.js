@@ -5,6 +5,10 @@ const { getDay, getMonth } = require('./return-date-helpers');
 const { createLines, getDefaultQuantity, mapMeterLinesToVolumes,
   getReturnTotal } = require('./water-return-helpers');
 
+const Reading = require('./reading');
+const Meter = require('./meter');
+const Lines = require('./lines');
+
 const METHOD_VOLUMES = 'abstractionVolumes';
 const METHOD_ONE_METER = 'oneMeter';
 const READING_TYPE_ESTIMATED = 'estimated';
@@ -24,20 +28,21 @@ class WaterReturn {
     this.isCurrent = data.isCurrent;
     this.status = data.status;
     this.isNil = data.isNil;
-    this.meters = data.meters;
-    this.reading = data.reading;
-    this.lines = createLines(data);
+
+    const lineOptions = pick(data, ['startDate', 'endDate', 'frequency']);
+    this.lines = new Lines(data.lines, lineOptions);
     this.metadata = data.metadata;
     this.startDate = data.startDate;
     this.endDate = data.endDate;
     this.frequency = data.frequency;
     this.user = data.user;
     this.versions = data.versions;
+    this.reading = new Reading(data.reading);
+    this.meter = new Meter(this.reading, this.lines, data.meters[0]);
   }
 
   toObject () {
-    this.cleanup();
-    return {
+    const obj = {
       returnId: this.returnId,
       licenceNumber: this.licenceNumber,
       receivedDate: this.receivedDate,
@@ -45,9 +50,8 @@ class WaterReturn {
       isCurrent: this.isCurrent,
       status: this.status,
       isNil: this.isNil,
-      meters: this.meters,
-      reading: this.reading,
-      lines: this.lines,
+      meters: [this.meter.toObject()],
+      reading: this.reading.toObject(),
       metadata: this.metadata,
       startDate: this.startDate,
       endDate: this.endDate,
@@ -55,158 +59,21 @@ class WaterReturn {
       user: this.user,
       versions: this.versions
     };
-  }
 
-  cleanup () {
-    if (this.isVolumes()) {
-      this.meters = this.meters.map(meter => {
-        delete meter.startReading;
-        delete meter.readings;
-        delete meter.units;
-        return meter;
+    if (!this.isNilReturn()) {
+      Object.assign(obj, {
+        lines: this.getLines(),
+        meters: [this.meter.toObject()],
+        reading: this.reading.toObject()
       });
     }
-    if (this.isNilReturn()) {
-      delete this.lines;
-      delete this.meters;
-      delete this.reading;
-    }
+
+    return obj;
   }
 
   setNilReturn (isNil) {
     Joi.assert(isNil, Joi.boolean());
     this.isNil = isNil;
-    return this;
-  }
-
-  /**
-   * Reading type
-   * @param {String} type - estimated|measured
-   */
-  setReadingType (type) {
-    Joi.assert(type, Joi.string().valid([READING_TYPE_ESTIMATED, READING_TYPE_MEASURED]));
-    set(this, 'reading.type', type);
-    set(this, 'reading.totalFlag', false);
-    if (type === READING_TYPE_ESTIMATED) {
-      this.meters = [];
-    }
-    return this;
-  }
-
-  /**
-   * Sets whether method for return is abstraction volumes or readings from one
-   * meter
-   * @param {String} method - abstractionVolumes|oneMeter
-   */
-  setMethod (method) {
-    Joi.assert(method, Joi.string().valid([METHOD_VOLUMES, METHOD_ONE_METER]));
-    set(this, 'reading.method', method);
-
-    if (method === METHOD_ONE_METER) {
-      set(this, 'reading.totalFlag', false);
-      return this.setReadingType(READING_TYPE_MEASURED);
-    }
-
-    if (method === METHOD_VOLUMES) {
-      this.meters = this.meters || [];
-      for (let meter of this.meters) {
-        delete meter.readings;
-        delete meter.startReading;
-        delete meter.units;
-      }
-    }
-
-    return this;
-  }
-
-  /**
-   * Sets the units of water used
-   * @param {String} units - m³|l|Ml|gal
-   */
-  setUnits (units) {
-    Joi.assert(units, Joi.string().valid(['m³', 'l', 'Ml', 'gal']));
-    this.meters = this.meters.map(meter => ({
-      ...meter,
-      units
-    }));
-    set(this, 'reading.units', units);
-    return this;
-  };
-
-  /**
-   * Sets lines data
-   * @param {String} startDate - the start date for the return line
-   * @param {String} endDate - the end date for the return line
-   * @param {Number|null} quantity - abstracted volume or null
-   */
-  setLines (lines) {
-    const schema = Joi.array().items({
-      startDate: Joi.string().isoDate(),
-      endDate: Joi.string().isoDate(),
-      quantity: Joi.number().min(0).allow(null)
-    });
-    Joi.assert(lines, schema);
-
-    const abstractionPeriod = this.getAbstractionPeriod();
-
-    this.lines.forEach(line => {
-      const { startDate, endDate } = line;
-      const updatedLine = find(lines, { startDate, endDate });
-      if (!updatedLine) {
-        throw new Error(`Return ${this.returnId} missing line ${startDate} - ${endDate}`);
-      }
-      const defaultValue = getDefaultQuantity(line, abstractionPeriod);
-      line.quantity = updatedLine.quantity || defaultValue;
-    });
-
-    return this;
-  }
-
-  /**
-   * Sets meter readings
-   * @param {Number} startReading - the start reading
-   * @param {Array} readings
-   */
-  setMeterReadings (startReading, readings) {
-    Joi.assert(startReading, Joi.number().positive());
-    const schema = Joi.array().items({
-      startDate: Joi.string().isoDate(),
-      endDate: Joi.string().isoDate(),
-      reading: Joi.number().min(0).allow(null)
-    });
-    Joi.assert(readings, schema);
-
-    // Calculate volume lines
-    const lines = mapMeterLinesToVolumes(startReading, readings);
-    this.setLines(lines);
-
-    // Set meter readings
-    const meterReadings = readings.reduce((acc, row) => ({
-      ...acc,
-      [`${row.startDate}_${row.endDate}`]: row.reading
-    }), {});
-    set(this, 'meters[0].startReading', startReading);
-    set(this, 'meters[0].readings', meterReadings);
-    return this;
-  }
-
-  /**
-   * Sets meter details
-   * @param {Object} meter - the meter
-   */
-  setMeterDetails (meter) {
-    const schema = {
-      manufacturer: Joi.string().required(),
-      serialNumber: Joi.string().required(),
-      multiplier: Joi.number().positive(),
-      meterDetailsProvided: Joi.boolean().default(true)
-    };
-    const { value, error } = Joi.validate(meter, schema);
-    if (error) {
-      throw new Error(`Invalid meter details`, meter);
-    }
-    const current = get(this, 'meters[0]', {});
-    this.meters = [Object.assign(current, value)];
     return this;
   }
 
@@ -244,62 +111,33 @@ class WaterReturn {
     return this;
   };
 
+  setLines (lines) {
+    const abstractionPeriod = this.getAbstractionPeriod();
+    return this.lines.setLines(abstractionPeriod, lines);
+  }
+
   /**
-   * Applies the multiplication to the return lines if the return is not a nil
-   * return, and the method is oneMeter
+   * Gets lines data from either meters or lines object depending on
+   * whether reading type is oneMeter / abstractionVolumes
+   * @param  {Boolean} [includeReadings=false] - whether to include meter readings in lines
+   * @return {Array}                           - lines array
    */
-  applyMeterMultiplication () {
-    if (!this.isNilReturn() && this.isOneMeter()) {
-      const multiplier = parseFloat(get(this, 'meters[0].multiplier'));
-      this.lines = this.lines.map(row => ({
-        ...row,
-        quantity: row.quantity * multiplier
-      }));
+  getLines (includeReadings = false) {
+    if (this.isNilReturn()) {
+      return;
     }
-    return this;
-  };
+    if (this.reading.isOneMeter()) {
+      return this.meter.getVolumes(includeReadings);
+    }
+    // Volumes
+    return this.lines.toArray();
+  }
 
   incrementVersionNumber () {
     this.versionNumber = parseInt(this.versionNumber || 0) + 1;
     this.isCurrent = true;
     return this;
   }
-
-  /**
-   * Gets return lines including meter readings if present
-   * @return {Array}
-   */
-  getLinesWithReadings () {
-    if (this.isNilReturn()) {
-      return;
-    }
-
-    if (this.isVolumes()) {
-      return this.lines;
-    }
-
-    let previousReading = get(this, 'meters[0].startReading');
-
-    const lines = this.lines.map(row => {
-      if (row.quantity === null) {
-        return row;
-      }
-
-      const readingKey = `${row.startDate}_${row.endDate}`;
-      const reading = get(this, `meters[0].readings.${readingKey}`);
-
-      const newRow = {
-        ...row,
-        startReading: previousReading,
-        endReading: reading
-      };
-
-      previousReading = reading || previousReading;
-
-      return newRow;
-    });
-    return lines;
-  };
 
   /**
    * Gets the abstraction period start day/month and end day/month
@@ -333,36 +171,12 @@ class WaterReturn {
    * @return {Number|null} - total abstracted volume
    */
   getReturnTotal () {
-    return getReturnTotal(this.lines);
-  }
-
-  getEndReading () {
-    const endReadingKey = findLastKey(get(this, 'meters[0].readings'), key => key > 0);
-    return get(this, `meters[0].readings.${endReadingKey}`);
-  }
-
-  isMeterDetailsProvided () {
-    return get(this, 'meters[0].meterDetailsProvided', false);
-  }
-
-  isVolumes () {
-    return get(this, 'reading.method') === METHOD_VOLUMES;
-  }
-
-  isOneMeter () {
-    return get(this, 'reading.method') === METHOD_ONE_METER;
+    const lines = this.getLines();
+    return getReturnTotal(lines);
   }
 
   isNilReturn () {
     return this.isNil;
-  }
-
-  isSingleTotal () {
-    return get(this, 'reading.totalFlag', false);
-  }
-
-  isMeasured () {
-    return get(this, 'reading.type') === READING_TYPE_MEASURED;
   }
 }
 

@@ -46,7 +46,7 @@ const postAmounts = async (request, h) => {
  */
 const getMethod = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
-  back: addQuery(request, request.model.isOneMeter() ? STEP_METER_RESET : STEP_UNITS)
+  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS)
 }, { layout: false });
 
 /**
@@ -57,11 +57,11 @@ const postMethod = async (request, h) => {
     const { method } = forms.getValues(request.view.form);
     const [readingMethod, readingType] = method.split(',');
 
-    request.model
+    request.model.reading
       .setMethod(readingMethod)
       .setReadingType(readingType);
 
-    const path = addQuery(request, request.model.isOneMeter() ? STEP_METER_RESET : STEP_UNITS);
+    const path = addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS);
     return h.redirect(path);
   }
   return getAmounts(request, h);
@@ -72,7 +72,7 @@ const postMethod = async (request, h) => {
  */
 const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
-  back: addQuery(request, request.model.isOneMeter() ? STEP_METER_RESET : STEP_METHOD)
+  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_METHOD)
 }, { layout: false });
 
 /**
@@ -81,8 +81,8 @@ const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
 const postUnits = async (request, h) => {
   if (request.view.form.isValid) {
     const { units } = forms.getValues(request.view.form);
-    request.model.setUnits(units);
-    const path = addQuery(request, request.model.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS);
+    request.model.reading.setUnits(units);
+    const path = addQuery(request, request.model.reading.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS);
     return h.redirect(path);
   }
   return getAmounts(request, h);
@@ -111,7 +111,7 @@ const postQuantities = async (request, h) => {
     const data = omit(forms.getValues(request.view.form), 'csrf_token');
     request.model.setLines(getLines(data));
 
-    const path = addQuery(request, request.model.isMeasured() ? STEP_METER_DETAILS : STEP_CONFIRM);
+    const path = addQuery(request, request.model.reading.isMeasured() ? STEP_METER_DETAILS : STEP_CONFIRM);
     return h.redirect(path);
   }
   return getAmounts(request, h);
@@ -122,7 +122,7 @@ const postQuantities = async (request, h) => {
  */
 const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
-  back: addQuery(request, request.model.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES)
+  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES)
 }, { layout: false });
 
 /**
@@ -132,7 +132,7 @@ const postMeterDetails = async (request, h) => {
   if (request.view.form.isValid) {
     const { manufacturer, serialNumber, isMultiplier } = forms.getValues(request.view.form);
     const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1;
-    request.model.setMeterDetails({
+    request.model.meter.setMeterDetails({
       manufacturer,
       serialNumber,
       multiplier
@@ -146,9 +146,9 @@ const getConfirmBackPath = request => {
   let path;
   if (request.model.isNilReturn()) {
     path = STEP_START;
-  } else if (request.model.isMeasured()) {
+  } else if (request.model.reading.isMeasured()) {
     path = STEP_METER_DETAILS;
-  } else path = request.model.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS;
+  } else path = request.model.reading.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS;
   return addQuery(request, path);
 };
 
@@ -157,17 +157,18 @@ const getConfirmBackPath = request => {
  */
 const getConfirm = async (request, h) => {
   const { model } = request;
-  model.applyMeterMultiplication();
-  const path = model.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES;
+  // model.applyMeterMultiplication();
+  const path = model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES;
   const view = {
     ...request.view,
-    lines: model.getLinesWithReadings(),
+    lines: model.getLines(true),
     back: getConfirmBackPath(request),
     total: model.getReturnTotal(),
-    endReading: model.getEndReading(),
-    makeChangeText: `Edit your ${model.isOneMeter() ? 'meter readings' : 'volumes'}`,
+    endReading: model.meter.getEndReading(),
+    makeChangeText: `Edit your ${model.reading.isOneMeter() ? 'meter readings' : 'volumes'}`,
     makeChangePath: addQuery(request, path)
   };
+
   return h.view('nunjucks/returns/confirm.njk', view, { layout: false });
 };
 
@@ -179,8 +180,7 @@ const postConfirm = async (request, h) => {
     request.model
       .setUser(request.defra.userName, request.defra.entityId, false)
       .setStatus(STATUS_COMPLETED)
-      .incrementVersionNumber()
-      .applyMeterMultiplication();
+      .incrementVersionNumber();
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));
   }
@@ -202,7 +202,7 @@ const getMeterReset = async (request, h) => h.view('nunjucks/returns/form.njk', 
 const postMeterReset = async (request, h) => {
   if (request.view.form.isValid) {
     const { meterReset } = forms.getValues(request.view.form);
-    request.model.setMethod(meterReset ? METHOD_VOLUMES : METHOD_ONE_METER);
+    request.model.reading.setMethod(meterReset ? METHOD_VOLUMES : METHOD_ONE_METER);
     return h.redirect(addQuery(request, STEP_UNITS));
   }
   return getMeterReset(request, h);
@@ -224,7 +224,7 @@ const postMeterReadings = async (request, h) => {
     const data = omit(forms.getValues(request.view.form), ['csrf_token', 'startReading']);
     const lines = getLines(data, 'reading');
     const { startReading } = forms.getValues(request.view.form);
-    request.model.setMeterReadings(startReading, lines);
+    request.model.meter.setMeterReadings(startReading, lines);
     return h.redirect(addQuery(request, STEP_METER_DETAILS));
   }
   return getMeterReadings(request, h);

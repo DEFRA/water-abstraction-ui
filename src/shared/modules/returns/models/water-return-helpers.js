@@ -24,22 +24,34 @@ const getDefaultQuantity = (line, abstractionPeriod) => {
   return isDateWithinAbstractionPeriod(line.endDate, abstractionPeriod) ? 0 : null;
 };
 
-const mapMeterLinesToVolumes = (startReading, readings) => {
-  const { lines } = readings.reduce((acc, row) => {
-    const { startDate, endDate, reading } = row;
+const createLine = (row, quantity, endReading, includeReadings) => {
+  const line = {
+    ...row,
+    quantity
+  };
+  return includeReadings ? { ...line, endReading } : line;
+};
+
+const getReadingKey = line => `${line.startDate}_${line.endDate}`;
+
+const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier, includeReadings = false) => {
+  const result = lines.reduce((acc, line) => {
+    const reading = readings[getReadingKey(line)];
 
     let quantity = null;
     if (reading !== null) {
-      quantity = reading - acc.lastMeterReading;
+      quantity = multiplier * (reading - acc.lastMeterReading);
       acc.lastMeterReading = reading;
     }
 
-    acc.lines.push({ startDate, endDate, quantity });
+    // Create line with volume and optionally meter reading
+    const newLine = createLine(line, quantity, reading, includeReadings);
+    acc.lines.push(newLine);
 
     return acc;
   }, { lines: [], lastMeterReading: startReading });
 
-  return lines;
+  return result.lines;
 };
 
 /**

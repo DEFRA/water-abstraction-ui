@@ -68,13 +68,13 @@ const getReturn = async (request, h) => {
     total: model.getReturnTotal(),
     ...request.view,
     return: model.toObject(),
-    lines: model.getLinesWithReadings(),
+    lines: model.getLines(true),
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
     editButtonPath: getEditButtonPath(data, request),
     showVersions: false,
     isVoid: data.status === 'void',
-    endReading: model.getEndReading()
+    endReading: model.meter.getEndReading()
   };
 
   return h.view('water/returns/return', view);

@@ -73,47 +73,6 @@ experiment('WaterReturn', () => {
     });
   });
 
-  experiment('cleanup', () => {
-    test('for volumes, meter startReading, readings and units are removed', async () => {
-      const waterReturn = new WaterReturn({
-        ...createReturn(),
-        reading: {
-          method: METHOD_VOLUMES
-        },
-        meters: [createMeter()]
-      });
-      waterReturn.cleanup();
-      expect(waterReturn.meters[0]).to.only.include(['manufacturer', 'serialNumber', 'multiplier']);
-    });
-
-    test('for meter readings, meter startReading, readings and units are not removed', async () => {
-      const waterReturn = new WaterReturn({
-        ...createReturn(),
-        reading: {
-          method: METHOD_ONE_METER
-        },
-        meters: [createMeter()]
-      });
-      waterReturn.cleanup();
-      expect(waterReturn.meters[0]).to.equal(createMeter());
-    });
-
-    test('for nil returns, lines, meters and readings are removed', async () => {
-      const waterReturn = new WaterReturn({
-        ...createReturn(),
-        isNil: true,
-        reading: {
-          method: METHOD_ONE_METER
-        },
-        meters: [createMeter()]
-      });
-      waterReturn.cleanup();
-      expect(waterReturn.lines).to.be.undefined();
-      expect(waterReturn.meters).to.be.undefined();
-      expect(waterReturn.readings).to.be.undefined();
-    });
-  });
-
   experiment('setNilReturn', () => {
     test('sets isNil flag to false if false provided', async () => {
       const waterReturn = new WaterReturn(createReturn());

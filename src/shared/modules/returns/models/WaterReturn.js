@@ -15,7 +15,7 @@ const STATUS_RECEIVED = 'received';
 const STATUS_COMPLETED = 'completed';
 
 class WaterReturn {
-  constructor (data) {
+  constructor (data = {}) {
     this.returnId = data.returnId;
     this.licenceNumber = data.licenceNumber;
     this.receivedDate = data.receivedDate;
@@ -94,6 +94,7 @@ class WaterReturn {
   setStatus (status, receivedDate) {
     const date = receivedDate || moment().format('YYYY-MM-DD');
     Joi.assert(status, Joi.string().valid([STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED]));
+    Joi.assert(date, Joi.string().isoDate());
 
     if (!this.receivedDate) {
       this.receivedDate = date;

@@ -10,9 +10,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Account settings'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -27,9 +24,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'For security, confirm your password first'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -57,9 +51,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Change your email address'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -87,9 +78,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Verify your email address'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -117,9 +105,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Your email address is changed'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -134,9 +119,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Try again later'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }

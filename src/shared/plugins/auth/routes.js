@@ -24,11 +24,6 @@ module.exports = [
         viewContext: {
           pageTitle: 'Sign in',
           customTitle: 'Sign in - Manage your water abstraction or impoundment licence'
-        },
-        plugins: {
-          companySelector: {
-            ignore: true
-          }
         }
       }
     }

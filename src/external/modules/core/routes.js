@@ -23,11 +23,6 @@ module.exports = {
       auth: {
         strategy: 'standard',
         mode: 'try'
-      },
-      plugins: {
-        companySelector: {
-          ignore: true
-        }
       }
     }
   },
@@ -45,9 +40,6 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Sign in or create an account'
-        },
-        companySelector: {
-          ignore: true
         }
       }
     }
@@ -61,11 +53,6 @@ module.exports = {
       auth: {
         strategy: 'standard',
         mode: 'try'
-      },
-      plugins: {
-        companySelector: {
-          ignore: true
-        }
       }
     }
   }

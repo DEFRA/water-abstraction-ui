@@ -15,12 +15,11 @@ const handler = plugin._handler;
 
 const getTestRequest = (overrides = {}) => {
   const defaults = Object.assign({
+    method: 'get',
+    isAuthenticated: true,
     companyId: undefined,
     companyCount: 1,
-    path: '/test',
-    ignore: false,
-    isAuthenticated: true,
-    method: 'GET'
+    path: '/test'
   }, overrides);
 
   const request = {
@@ -32,7 +31,10 @@ const getTestRequest = (overrides = {}) => {
     set(request, 'defra.companyId', defaults.companyId);
     set(request, 'defra.companyCount', defaults.companyCount);
   }
-  set(request, 'route.settings.plugins.companySelector.ignore', defaults.ignore);
+
+  set(request, 'auth.isAuthenticated', defaults.isAuthenticated);
+  set(request, 'route.settings.auth.access', defaults.access);
+  set(request, 'auth.credentials.scope', ['external']);
 
   return request;
 };
@@ -105,20 +107,13 @@ experiment('handler', () => {
       const result = handler(request, h);
       expect(result).to.equal(h.continue);
     });
-
-    test('does not redirect when the ignore flag is set', async () => {
-      const request = getTestRequest({
-        ignore: true
-      });
-      const result = handler(request, h);
-      expect(result).to.equal(h.continue);
-    });
   });
 
   experiment('external user with no selected company', () => {
     test('is redirected to "add licences" if they have no companies', async () => {
       const request = getTestRequest({
-        companyCount: 0
+        companyCount: 0,
+        access: [{}]
       });
 
       const result = handler(request, h);
@@ -129,13 +124,44 @@ experiment('handler', () => {
 
     test('is redirected to "select company" if they have companies', async () => {
       const request = getTestRequest({
-        companyCount: 1
+        companyCount: 1,
+        access: [{}]
       });
 
       const result = handler(request, h);
       const [redirectPath] = h.redirect.lastCall.args;
       expect(result).to.equal('takeover');
       expect(redirectPath).to.equal('/select-company');
+    });
+
+    test('is not redirected when method is POST', async () => {
+      const request = getTestRequest({
+        method: 'post',
+        companyCount: 0,
+        access: [{}]
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('is not redirected when route is not authenticated', async () => {
+      const request = getTestRequest({
+        isAuthenticated: false,
+        companyCount: 0,
+        access: [{}]
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('is not redirected when route has no access configuration', async () => {
+      const request = getTestRequest({
+        isAuthenticated: false,
+        companyCount: 0,
+        access: undefined
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
     });
   });
 });

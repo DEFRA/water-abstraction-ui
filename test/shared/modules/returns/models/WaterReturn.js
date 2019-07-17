@@ -1,15 +1,10 @@
 const {
   experiment,
-  test,
-  beforeEach
+  test
 } = exports.lab = require('lab').script();
 const { expect } = require('code');
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
-const {
-  METHOD_VOLUMES, METHOD_ONE_METER,
-  READING_TYPE_MEASURED, READING_TYPE_ESTIMATED
-} = require('shared/modules/returns/models/WaterReturn');
 
 const createReturn = () => ({
   returnId: 'v1:5:01/123:1234:2018-11-01:2019-10-31',
@@ -28,17 +23,6 @@ const createReturn = () => ({
   frequency: 'month',
   user: {},
   versions: []
-});
-
-const createMeter = () => ({
-  manufacturer: 'Pump-u-like',
-  serialNumber: '1234',
-  startReading: 123,
-  readings: {
-    '2019-09-01_2018-09-30': 456
-  },
-  units: 'l',
-  multiplier: 10
 });
 
 experiment('WaterReturn', () => {

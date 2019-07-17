@@ -34,13 +34,26 @@ const createLine = (row, quantity, endReading, includeReadings) => {
 
 const getReadingKey = line => `${line.startDate}_${line.endDate}`;
 
+/**
+ * We need to introduce a multiplication and division to discard
+ * the least significant part of the floating point number
+ * @param  {Number} multiplier  [description]
+ * @param  {Number} reading     - the current reading
+ * @param  {Number} lastReading - the last reading
+ * @return {Number}
+ */
+const calculateQuantity = (multiplier, reading, lastReading) => {
+  const difference = ((100 * reading) - (100 * lastReading));
+  return multiplier * difference / 100;
+};
+
 const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier, includeReadings = false) => {
   const result = lines.reduce((acc, line) => {
     const reading = readings[getReadingKey(line)];
 
     let quantity = null;
     if (reading !== null) {
-      quantity = multiplier * (reading - acc.lastMeterReading);
+      quantity = calculateQuantity(multiplier, reading, acc.lastMeterReading);
       acc.lastMeterReading = reading;
     }
 

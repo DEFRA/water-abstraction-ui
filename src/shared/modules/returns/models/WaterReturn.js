@@ -1,18 +1,13 @@
 const moment = require('moment');
 const Joi = require('joi');
-const { get, set, find, pick, findLastKey } = require('lodash');
+const { get, pick } = require('lodash');
 const { getDay, getMonth } = require('./return-date-helpers');
-const { createLines, getDefaultQuantity, mapMeterLinesToVolumes,
-  getReturnTotal } = require('./water-return-helpers');
+const { getReturnTotal } = require('./water-return-helpers');
 
 const Reading = require('./reading');
 const Meter = require('./meter');
 const Lines = require('./lines');
 
-const METHOD_VOLUMES = 'abstractionVolumes';
-const METHOD_ONE_METER = 'oneMeter';
-const READING_TYPE_ESTIMATED = 'estimated';
-const READING_TYPE_MEASURED = 'measured';
 const USER_TYPE_INTERNAL = 'internal';
 const USER_TYPE_EXTERNAL = 'external';
 const STATUS_DUE = 'due';
@@ -181,8 +176,4 @@ class WaterReturn {
 }
 
 module.exports = WaterReturn;
-module.exports.READING_TYPE_MEASURED = READING_TYPE_MEASURED;
-module.exports.READING_TYPE_ESTIMATED = READING_TYPE_ESTIMATED;
-module.exports.METHOD_VOLUMES = METHOD_VOLUMES;
-module.exports.METHOD_ONE_METER = METHOD_ONE_METER;
 module.exports.STATUS_COMPLETED = STATUS_COMPLETED;

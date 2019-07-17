@@ -27,8 +27,7 @@ const getInitialLines = (lines = [], options) => {
 };
 
 class Lines {
-  constructor (lines = [], options) {
-    console.log('LINES>>', lines);
+  constructor (lines = [], options = {}) {
     Joi.assert(lines, linesSchema);
     Joi.assert(options, optionsSchema);
     this.lines = getInitialLines(lines, options);

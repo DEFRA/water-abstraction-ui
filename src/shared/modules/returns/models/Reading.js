@@ -6,7 +6,7 @@ const READING_TYPE_ESTIMATED = 'estimated';
 const READING_TYPE_MEASURED = 'measured';
 
 class Reading {
-  constructor (reading) {
+  constructor (reading = {}) {
     this.type = reading.type;
     this.method = reading.method;
     this.units = reading.units;

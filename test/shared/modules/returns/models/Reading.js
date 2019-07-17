@@ -27,7 +27,7 @@ experiment('Reading', () => {
     'total', 'totalCustomDates', 'totalCustomDateStart', 'totalCustomDateEnd'];
 
   experiment('constructor', () => {
-    for (let key in keys) {
+    for (let key of keys) {
       test(`Sets ${key} from supplied object data`, async () => {
         const data = createReading();
         const reading = new Reading(data);

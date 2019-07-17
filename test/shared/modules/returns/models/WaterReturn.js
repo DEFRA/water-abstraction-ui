@@ -54,13 +54,6 @@ experiment('WaterReturn', () => {
         expect(waterReturn[key]).to.equal(data[key]);
       });
     }
-
-    test('generates return lines when none are present', async () => {
-      const data = createReturn();
-      delete data.lines;
-      const waterReturn = new WaterReturn(data);
-      expect(waterReturn.lines.length).to.equal(12);
-    });
   });
 
   experiment('toObject', () => {
@@ -90,56 +83,6 @@ experiment('WaterReturn', () => {
       const waterReturn = new WaterReturn(createReturn());
       const func = () => waterReturn.setNilReturn(0);
       expect(func).to.throw();
-    });
-  });
-
-  experiment('setReadingType', () => {
-    experiment('when reading type is estimated', () => {
-      let waterReturn;
-
-      beforeEach(async () => {
-        waterReturn = new WaterReturn({
-          ...createReturn(),
-          meters: [createMeter()]
-        });
-        waterReturn.setReadingType(READING_TYPE_ESTIMATED);
-      });
-
-      test('sets type to estimated', async () => {
-        expect(waterReturn.reading.type).to.equal(READING_TYPE_ESTIMATED);
-      });
-
-      test('clears totalFlag', async () => {
-        expect(waterReturn.reading.totalFlag).to.equal(false);
-      });
-
-      test('clears meters', async () => {
-        expect(waterReturn.meters).to.equal([]);
-      });
-    });
-
-    experiment('when reading type is measured', () => {
-      let waterReturn;
-
-      beforeEach(async () => {
-        waterReturn = new WaterReturn({
-          ...createReturn(),
-          meters: [createMeter()]
-        });
-        waterReturn.setReadingType(READING_TYPE_MEASURED);
-      });
-
-      test('sets type to measured', async () => {
-        expect(waterReturn.reading.type).to.equal(READING_TYPE_MEASURED);
-      });
-
-      test('clears totalFlag', async () => {
-        expect(waterReturn.reading.totalFlag).to.equal(false);
-      });
-
-      test('does not clear meters', async () => {
-        expect(waterReturn.meters).to.have.length(1);
-      });
     });
   });
 });

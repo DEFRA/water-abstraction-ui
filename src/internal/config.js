@@ -3,6 +3,8 @@ const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
 
+const { internal } = require('./lib/constants').scope;
+
 module.exports = {
 
   blankie: {
@@ -109,5 +111,9 @@ module.exports = {
     },
     storeBlank: false
 
+  },
+
+  viewLicence: {
+    allowedScopes: [ internal ]
   }
 };

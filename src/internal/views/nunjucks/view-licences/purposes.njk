@@ -4,14 +4,18 @@
 
 {% block content %}
 
-  {% if crmData.document_name%}
-    {% set licenceName %} Abstraction details for {{crmData.document_name}}{% endset %}
-    {{ title(licenceName, pageTitle) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+  {% if summary.documentName %}
+    {% set licenceName %} Abstraction details for {{ summary.documentName }}{% endset %}
+    {{ title(licenceName, pageHeading) }}
   {% else %}
-    {{ title(pageTitle) }}
+    {{ title(pageHeading) }}
   {% endif %}
+  </div>
 
-  {% for purpose in licenceData.purposes %}
+  <div class="govuk-grid-column-full">
+  {% for purpose in summary.purposes %}
     <h3 class="govuk-heading-m">{{ purpose.name }}</h3>
     <hr class="govuk-section-break govuk-section-break--visible">
 
@@ -101,7 +105,7 @@
         Abstraction amount
       </dt>
       <dd class="govuk-summary-list__value">
-        {{ purpose.instantaneousQty | fixed(2) }} cubic metres (Instantaneous Quantity)
+        {{ purpose.instantaneousQty | fixed(2) }} litres per second (Instantaneous Quantity)
       </dd>
     </div>
     {% endif %}
@@ -109,5 +113,8 @@
 
     </dl>
   {% endfor %}
+  </div>
+</div>
+
 
 {% endblock %}

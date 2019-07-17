@@ -1,3 +1,7 @@
-{% macro badge(text, status) %}
-<strong class="badge badge--{{ status }} badge--no-wrap">{{ text }}</strong>
+{% macro badge(param, status) %}
+  {% if param | isObject %}
+    <strong class="badge badge--{{ param.status }} badge--no-wrap">{{ param.text }}</strong>
+  {% else %}
+    <strong class="badge badge--{{ status }} badge--no-wrap">{{ param }}</strong>
+  {% endif %}
 {% endmacro %}

@@ -3,13 +3,9 @@ const config = require('../config');
 
 const { getPropositionLinks } = require('./view/proposition-links');
 const { getMainNav } = require('./view/main-nav');
-const { isInternal } = require('./permissions');
 
-const getSurveyType = (isAuthenticated, isDefraAdmin) => {
-  if (isAuthenticated) {
-    return isDefraAdmin ? 'internal' : 'external';
-  }
-  return 'anonymous';
+const getSurveyType = isAuthenticated => {
+  return isAuthenticated ? 'external' : 'anonymous';
 };
 
 /**
@@ -84,10 +80,7 @@ function viewContextDefaults (request) {
 
   viewContext.env = process.env.NODE_ENV;
   viewContext.crownCopyrightMessage = '© Crown copyright';
-  viewContext.surveyType = getSurveyType(
-    viewContext.isAuthenticated,
-    isInternal(request)
-  );
+  viewContext.surveyType = getSurveyType(viewContext.isAuthenticated);
 
   viewContext.hasMultipleCompanies = hasMultipleCompanies(request);
   viewContext.companyName = get(request, 'defra.companyName');

@@ -1,5 +1,3 @@
-const { isExternal } = require('../../lib/permissions');
-
 const index = async (request, h) => h.redirect('/licences');
 
 /**
@@ -8,7 +6,6 @@ const index = async (request, h) => h.redirect('/licences');
 const getNotFoundError = (request, h) => {
   const view = {
     ...request.view,
-    isExternal: isExternal(request),
     pageTitle: 'We cannot find that page'
   };
   return h

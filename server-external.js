@@ -38,14 +38,25 @@ const server = Hapi.server({
  */
 async function start () {
   try {
-    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
+    await server.register(require('hapi-auth-cookie'));
 
     // Set up auth strategies
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie,
       validateFunc: (request, data) => authConfig.validateFunc(request, data)
     });
+
     server.auth.default('standard');
+
+    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
+
+    await server.register([{
+      plugin: require('shared/plugins/licence-data'),
+      options: require('external/lib/licence-data-config')
+    }, {
+      plugin: require('shared/plugins/view-licence'),
+      options: require('external/lib/view-licence-config')
+    }]);
 
     // Set up Nunjucks view engine
     server.views(viewEngine);

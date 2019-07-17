@@ -15,6 +15,7 @@ const handler = plugin._handler;
 
 const getTestRequest = (overrides = {}) => {
   const defaults = Object.assign({
+    method: 'get',
     isAuthenticated: true,
     companyId: undefined,
     companyCount: 1,
@@ -22,7 +23,7 @@ const getTestRequest = (overrides = {}) => {
     access: undefined
   }, overrides);
 
-  const request = { path: defaults.path };
+  const request = { path: defaults.path, method: defaults.method };
   set(request, 'auth.isAuthenticated', defaults.isAuthenticated);
   set(request, 'defra.companyId', defaults.companyId);
   set(request, 'defra.companyCount', defaults.companyCount);
@@ -113,7 +114,7 @@ experiment('handler', () => {
     test('is redirected to "add licences" if they have no companies', async () => {
       const request = getTestRequest({
         companyCount: 0,
-        access: {}
+        access: [{}]
       });
 
       const result = handler(request, h);
@@ -125,13 +126,43 @@ experiment('handler', () => {
     test('is redirected to "select company" if they have companies', async () => {
       const request = getTestRequest({
         companyCount: 1,
-        access: {}
+        access: [{}]
       });
 
       const result = handler(request, h);
       const [redirectPath] = h.redirect.lastCall.args;
       expect(result).to.equal('takeover');
       expect(redirectPath).to.equal('/select-company');
+    });
+
+    test('is not redirected when method is POST', async () => {
+      const request = getTestRequest({
+        method: 'post',
+        companyCount: 0,
+        access: [{}]
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('is not redirected when route is not authenticated', async () => {
+      const request = getTestRequest({
+        isAuthenticated: false,
+        companyCount: 0,
+        access: [{}]
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('is not redirected when route has no access configuration', async () => {
+      const request = getTestRequest({
+        isAuthenticated: false,
+        companyCount: 0,
+        access: undefined
+      });
+      const result = handler(request, h);
+      expect(result).to.equal(h.continue);
     });
   });
 });

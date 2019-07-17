@@ -4,9 +4,9 @@ const { get, pick } = require('lodash');
 const { getDay, getMonth } = require('./return-date-helpers');
 const { getReturnTotal } = require('./water-return-helpers');
 
-const Reading = require('./reading');
-const Meter = require('./meter');
-const Lines = require('./lines');
+const Reading = require('./Reading');
+const Meter = require('./Meter');
+const Lines = require('./Lines');
 
 const USER_TYPE_INTERNAL = 'internal';
 const USER_TYPE_EXTERNAL = 'external';

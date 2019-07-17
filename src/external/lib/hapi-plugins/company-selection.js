@@ -6,23 +6,22 @@
  * If the user has no company then they will be redirected to the
  * add-licences route.
  *
- * Both of the above redirections will only take place if the user is
- * attempting to access a route that has not opted out by setting
- * config.plugins.companySelector.ignore to true.
  */
 const { get } = require('lodash');
 const SELECT_COMPANY_PATH = '/select-company';
 const ADD_LICENCES_PATH = '/add-licences';
 
 const shouldRedirect = request => {
-  if (request.method.toLowerCase() === 'get' && request.defra) {
-    const { companyId } = request.defra;
-    const { path } = request;
-    const ignoreRoute = get(request, 'route.settings.plugins.companySelector.ignore', false);
-
-    return (!ignoreRoute && !companyId && path !== SELECT_COMPANY_PATH);
+  if (!request.auth.isAuthenticated) {
+    return false;
   }
-  return false;
+  if (request.method !== 'get') {
+    return false;
+  }
+  const { companyId } = request.defra;
+  const { path } = request;
+  const access = get(request, 'route.settings.auth.access', []);
+  return (access.length > 0 && !companyId && path !== SELECT_COMPANY_PATH);
 };
 
 const getRedirectPath = companyCount => {
@@ -32,6 +31,12 @@ const getRedirectPath = companyCount => {
 const handler = (request, h) => {
   if (shouldRedirect(request)) {
     const path = getRedirectPath(request.defra.companyCount);
+
+    // Don't redirect if redirect path equals current request path
+    if (request.path === path) {
+      return h.continue;
+    }
+
     return h.redirect(path).takeover();
   }
   return h.continue;

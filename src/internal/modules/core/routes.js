@@ -10,11 +10,6 @@ module.exports = {
     config: {
       validate: {
         query: VALID_UTM
-      },
-      plugins: {
-        companySelector: {
-          ignore: true
-        }
       }
     }
   },

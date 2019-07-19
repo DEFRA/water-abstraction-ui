@@ -8,11 +8,11 @@ const config = require('../../config');
 /**
  * Index page for manage licences
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} h - the HAPI HTTP response
  */
-async function getManage (request, reply) {
+async function getManageLicences (request, h) {
   const { view } = request;
-  return reply.view('water/manage-licences/manage_licences', view);
+  return h.view('nunjucks/manage-licences/index.njk', view, { layout: false });
 }
 
 /**
@@ -310,7 +310,7 @@ async function postChangeAccess (request, h) {
   return h.redirect('/manage_licences/access');
 };
 
-exports.getManage = getManage;
+exports.getManageLicences = getManageLicences;
 exports.getAccessList = getAccessList;
 exports.getAddAccess = getAddAccess;
 exports.postAddAccess = postAddAccess;

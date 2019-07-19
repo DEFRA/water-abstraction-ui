@@ -156,9 +156,11 @@ const getConfirmBackPath = request => {
   let path;
   if (request.model.isNilReturn()) {
     path = STEP_START;
-  } else if (request.model.reading.isMeasured()) {
-    path = STEP_METER_DETAILS;
-  } else path = request.model.reading.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS;
+  } else {
+    path = request.model.reading.isMeasured()
+      ? STEP_METER_DETAILS
+      : STEP_QUANTITIES;
+  }
   return addQuery(request, path);
 };
 
@@ -167,7 +169,6 @@ const getConfirmBackPath = request => {
  */
 const getConfirm = async (request, h) => {
   const { model } = request;
-  // model.applyMeterMultiplication();
   const path = model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES;
   const view = {
     ...request.view,

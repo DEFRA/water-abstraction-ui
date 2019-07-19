@@ -4,25 +4,54 @@ const sandbox = require('sinon').createSandbox();
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 
-const { STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
+const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM
 } = require('shared/modules/returns/steps');
 
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';
 
-let reading = {
-  isOneMeter: sandbox.stub(),
-  setMethod: sandbox.stub(),
-  setReadingType: sandbox.stub(),
-  setUnits: sandbox.stub(),
-  isVolumes: sandbox.stub(),
-  isMeasured: sandbox.stub()
+const lines = [
+  { startDate: '2019-01-01', endDate: '2019-01-31', quantity: 2 },
+  { startDate: '2019-02-01', endDate: '2019-02-28', quantity: 10 }
+];
+
+const createModel = () => {
+  let reading = {
+    isOneMeter: sandbox.stub(),
+    setMethod: sandbox.stub(),
+    setReadingType: sandbox.stub(),
+    setUnits: sandbox.stub(),
+    isVolumes: sandbox.stub(),
+    isMeasured: sandbox.stub()
+  };
+  reading.setMethod.returns(reading);
+
+  let model = {
+    setNilReturn: sandbox.stub(),
+    isNilReturn: sandbox.stub(),
+    reading,
+    setLines: sandbox.stub(),
+    meter: {
+      setMeterDetails: sandbox.stub(),
+      getEndReading: sandbox.stub().returns(55)
+    },
+    getLines: sandbox.stub().returns(lines),
+    getReturnTotal: sandbox.stub().returns(999),
+    setUser: sandbox.stub(),
+    setStatus: sandbox.stub(),
+    incrementVersionNumber: sandbox.stub()
+  };
+  model.setUser.returns(model);
+  model.setStatus.returns(model);
+  return model;
 };
 
-reading.setMethod.returns(reading);
-
 const createRequest = (isValid = true) => ({
+  defra: {
+    userName: 'bob@example.com',
+    entityId: 'entity-1'
+  },
   query: {
     returnId
   },
@@ -32,16 +61,7 @@ const createRequest = (isValid = true) => ({
     },
     csrfToken
   },
-  model: {
-    setNilReturn: sandbox.stub(),
-    isNilReturn: sandbox.stub(),
-    reading,
-    setLines: sandbox.stub(),
-    meter: {
-      setMeterDetails: sandbox.stub()
-    }
-  }
-
+  model: createModel()
 });
 
 experiment('returns edit controller: ', () => {
@@ -171,19 +191,19 @@ experiment('returns edit controller: ', () => {
 
     test('updates the method and reading type on the reading model', async () => {
       await controller.postMethod(request, h);
-      expect(reading.setMethod.calledWith('oneMeter')).to.equal(true);
-      expect(reading.setReadingType.calledWith('measured')).to.equal(true);
+      expect(request.model.reading.setMethod.calledWith('oneMeter')).to.equal(true);
+      expect(request.model.reading.setReadingType.calledWith('measured')).to.equal(true);
     });
 
     test('user is redirected to meter reset page if meter readings', async () => {
-      reading.isOneMeter.returns(true);
+      request.model.reading.isOneMeter.returns(true);
       await controller.postMethod(request, h);
       expect(h.redirect.calledWith(`${STEP_METER_RESET}?returnId=${returnId}`))
         .to.equal(true);
     });
 
     test('user is redirected to units page if volumes', async () => {
-      reading.isOneMeter.returns(false);
+      request.model.reading.isOneMeter.returns(false);
       await controller.postMethod(request, h);
       expect(h.redirect.calledWith(`${STEP_UNITS}?returnId=${returnId}`))
         .to.equal(true);
@@ -239,18 +259,18 @@ experiment('returns edit controller: ', () => {
 
     test('updates the units on the reading model', async () => {
       await controller.postUnits(request, h);
-      expect(reading.setUnits.calledWith('l')).to.equal(true);
+      expect(request.model.reading.setUnits.calledWith('l')).to.equal(true);
     });
 
     test('user is redirected to quantites page if volumes', async () => {
-      reading.isVolumes.returns(true);
+      request.model.reading.isVolumes.returns(true);
       await controller.postUnits(request, h);
       expect(h.redirect.calledWith(`${STEP_QUANTITIES}?returnId=${returnId}`))
         .to.equal(true);
     });
 
     test('user is redirected to meter readings page if meter readings', async () => {
-      reading.isVolumes.returns(false);
+      request.model.reading.isVolumes.returns(false);
       await controller.postUnits(request, h);
       expect(h.redirect.calledWith(`${STEP_METER_READINGS}?returnId=${returnId}`))
         .to.equal(true);
@@ -302,11 +322,8 @@ experiment('returns edit controller: ', () => {
 
     test('maps and updates the data on the lines model', async () => {
       await controller.postQuantities(request, h);
-      const [lines] = request.model.setLines.lastCall.args;
-      expect(lines).to.equal([
-        { startDate: '2019-01-01', endDate: '2019-01-31', quantity: 2 },
-        { startDate: '2019-02-01', endDate: '2019-02-28', quantity: 10 }
-      ]);
+      const [meterLines] = request.model.setLines.lastCall.args;
+      expect(meterLines).to.equal(lines);
     });
 
     test('redirects to meter details if reading type is measured', async () => {
@@ -416,6 +433,103 @@ experiment('returns edit controller: ', () => {
       });
 
       testFormIsRendered();
+    });
+  });
+
+  experiment('getConfirm', () => {
+    let request;
+    beforeEach(async () => {
+      request = createRequest();
+    });
+
+    test('sets data in the view', async () => {
+      await controller.getConfirm(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.lines).to.equal(lines);
+      expect(view.back).to.be.a.string();
+      expect(view.total).to.equal(999);
+      expect(view.endReading).to.equal(55);
+    });
+
+    test('back link is to start of flow if nil return', async () => {
+      request.model.isNilReturn.returns(true);
+      await controller.getConfirm(request, h);
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`${STEP_START}?returnId=${returnId}`);
+    });
+
+    test('back link is meter details if measured', async () => {
+      request.model.reading.isMeasured.returns(true);
+      await controller.getConfirm(request, h);
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`${STEP_METER_DETAILS}?returnId=${returnId}`);
+    });
+
+    test('back link is quantities if estimates', async () => {
+      request.model.reading.isMeasured.returns(false);
+      await controller.getConfirm(request, h);
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`${STEP_QUANTITIES}?returnId=${returnId}`);
+    });
+
+    experiment('for meter readings', async () => {
+      beforeEach(async () => {
+        request.model.reading.isOneMeter.returns(true);
+        await controller.getConfirm(request, h);
+      });
+
+      test('make change text is "Edit your meter readings"', async () => {
+        const [, { makeChangeText }] = h.view.lastCall.args;
+        expect(makeChangeText).to.equal('Edit your meter readings');
+      });
+
+      test('make change link leads to meter readings page', async () => {
+        const [, { makeChangePath }] = h.view.lastCall.args;
+        expect(makeChangePath).to.equal(`${STEP_METER_READINGS}?returnId=${returnId}`);
+      });
+    });
+
+    experiment('for volumes', async () => {
+      beforeEach(async () => {
+        request.model.reading.isOneMeter.returns(false);
+        await controller.getConfirm(request, h);
+      });
+
+      test('make change text is "Edit your meter volumes"', async () => {
+        const [, { makeChangeText }] = h.view.lastCall.args;
+        expect(makeChangeText).to.equal('Edit your volumes');
+      });
+
+      test('make change link leads to quantities page', async () => {
+        const [, { makeChangePath }] = h.view.lastCall.args;
+        expect(makeChangePath).to.equal(`${STEP_QUANTITIES}?returnId=${returnId}`);
+      });
+    });
+  });
+
+  experiment('postConfirm', async () => {
+    let request;
+    beforeEach(async () => {
+      request = createRequest();
+      controller.postConfirm(request, h);
+    });
+
+    test('sets the user on the return model', async () => {
+      expect(request.model.setUser.calledWith(
+        request.defra.userName,
+        request.defra.entityId,
+        false
+      )).to.equal(true);
+    });
+
+    test('sets status to completed on the return model', async () => {
+      expect(request.model.setStatus.calledWith(
+        'completed'
+      )).to.equal(true);
+    });
+
+    test('calls incrementVersionNumber() on the return model', async () => {
+      expect(request.model.incrementVersionNumber.callCount).to.equal(1);
     });
   });
 });

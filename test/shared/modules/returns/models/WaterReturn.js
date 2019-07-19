@@ -9,6 +9,7 @@ const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
+const { METHOD_ONE_METER, METHOD_VOLUMES } = require('shared/modules/returns/models/Reading');
 
 const createReturn = () => ({
   returnId: 'v1:5:01/123:1234:2018-11-01:2019-10-31',
@@ -184,6 +185,112 @@ experiment('WaterReturn', () => {
       expect(period.periodEndDay).to.equal(ret.metadata.nald.periodEndDay);
       expect(period.periodEndMonth).to.equal(ret.metadata.nald.periodEndMonth);
       expect(lines).to.equal(lineData);
+    });
+  });
+
+  experiment('getLines', () => {
+    let waterReturn;
+
+    beforeEach(async () => {
+      const ret = createReturn();
+      waterReturn = new WaterReturn(ret);
+      sandbox.stub(waterReturn.meter, 'getVolumes');
+      sandbox.stub(waterReturn.lines, 'toArray');
+    });
+
+    test('returns undefined when nil return', async () => {
+      waterReturn.setNilReturn(true);
+      const result = waterReturn.getLines();
+      expect(result).to.equal(undefined);
+    });
+
+    test('returns volumes using meter.getVolumes when meter readings', async () => {
+      waterReturn.reading.setMethod(METHOD_ONE_METER);
+      waterReturn.getLines(true);
+      expect(
+        waterReturn.meter.getVolumes.calledWith(true)
+      ).to.equal(true);
+    });
+
+    test('returns volumes using lines.toArray when volumes', async () => {
+      waterReturn.reading.setMethod(METHOD_VOLUMES);
+      waterReturn.getLines();
+      expect(
+        waterReturn.lines.toArray.callCount
+      ).to.equal(1);
+    });
+  });
+
+  experiment('incrementVersionNumber', () => {
+    let waterReturn;
+    beforeEach(async () => {
+      waterReturn = new WaterReturn(createReturn());
+    });
+
+    test('starts version numbering at 1 if undefined', async () => {
+      waterReturn.versionNumber = undefined;
+      waterReturn.incrementVersionNumber();
+      expect(waterReturn.versionNumber).to.equal(1);
+      expect(waterReturn.isCurrent).to.equal(true);
+    });
+
+    test('increments version numbering', async () => {
+      waterReturn.versionNumber = 3;
+      waterReturn.incrementVersionNumber();
+      expect(waterReturn.versionNumber).to.equal(4);
+      expect(waterReturn.isCurrent).to.equal(true);
+    });
+  });
+
+  experiment('getAbstractionPeriod', async () => {
+    let waterReturn;
+    beforeEach(async () => {
+      waterReturn = new WaterReturn(createReturn());
+    });
+
+    test('gets abstraction period using nald metadata', async () => {
+      const period = waterReturn.getAbstractionPeriod();
+      expect(period).to.equal({
+        periodEndDay: 31,
+        periodEndMonth: 10,
+        periodStartDay: 1,
+        periodStartMonth: 4
+      });
+    });
+
+    test('gets custom abstraction period if set in reading', async () => {
+      waterReturn.reading.setCustomAbstractionPeriod('2019-02-14', '2019-04-01');
+      const period = waterReturn.getAbstractionPeriod();
+      expect(period).to.equal({
+        periodEndDay: 1,
+        periodEndMonth: 4,
+        periodStartDay: 14,
+        periodStartMonth: 2
+      });
+    });
+  });
+
+  experiment('getReturnTotal', async () => {
+    test('returns total volume of all lines', async () => {
+      const waterReturn = new WaterReturn(createReturn());
+      expect(waterReturn.getReturnTotal()).to.equal(123);
+    });
+  });
+
+  experiment('isNilReturn', async () => {
+    let waterReturn;
+    beforeEach(async () => {
+      waterReturn = new WaterReturn(createReturn());
+    });
+
+    test('returns true if nil return flag set', async () => {
+      waterReturn.isNil = true;
+      expect(waterReturn.isNilReturn()).to.equal(true);
+    });
+
+    test('returns false if nil return flag not set', async () => {
+      waterReturn.isNil = false;
+      expect(waterReturn.isNilReturn()).to.equal(false);
     });
   });
 });

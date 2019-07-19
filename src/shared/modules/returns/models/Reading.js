@@ -4,6 +4,7 @@ const METHOD_VOLUMES = 'abstractionVolumes';
 const METHOD_ONE_METER = 'oneMeter';
 const READING_TYPE_ESTIMATED = 'estimated';
 const READING_TYPE_MEASURED = 'measured';
+const { VALID_DATE } = require('./validators');
 
 class Reading {
   constructor (reading = {}) {
@@ -66,6 +67,15 @@ class Reading {
     this.units = units;
     return this;
   };
+
+  setCustomAbstractionPeriod (startDate, endDate) {
+    Joi.assert(startDate, VALID_DATE);
+    Joi.assert(endDate, VALID_DATE);
+    this.totalCustomDates = true;
+    this.totalCustomDateStart = startDate;
+    this.totalCustomDateEnd = endDate;
+    return this;
+  }
 
   getUnits () {
     return this.units;

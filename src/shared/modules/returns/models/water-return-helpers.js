@@ -47,7 +47,7 @@ const calculateQuantity = (multiplier, reading, lastReading) => {
   return multiplier * difference / 100;
 };
 
-const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier, includeReadings = false) => {
+const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier = 1, includeReadings = false) => {
   const result = lines.reduce((acc, line) => {
     const reading = readings[getReadingKey(line)];
 

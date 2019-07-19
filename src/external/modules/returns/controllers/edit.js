@@ -37,7 +37,9 @@ const postAmounts = async (request, h) => {
   if (request.view.form.isValid) {
     const { isNil } = forms.getValues(request.view.form);
     request.model.setNilReturn(isNil);
-    const path = addQuery(request, request.model.isNilReturn() ? STEP_CONFIRM : STEP_METHOD);
+    const path = addQuery(request,
+      request.model.isNilReturn() ? STEP_CONFIRM : STEP_METHOD
+    );
     return h.redirect(path);
   }
   return getAmounts(request, h);
@@ -48,7 +50,9 @@ const postAmounts = async (request, h) => {
  */
 const getMethod = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
-  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS)
+  back: addQuery(request,
+    request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS
+  )
 }, { layout: false });
 
 /**
@@ -63,7 +67,9 @@ const postMethod = async (request, h) => {
       .setMethod(readingMethod)
       .setReadingType(readingType);
 
-    const path = addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS);
+    const path = addQuery(request,
+      request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS
+    );
     return h.redirect(path);
   }
   return getAmounts(request, h);
@@ -74,7 +80,9 @@ const postMethod = async (request, h) => {
  */
 const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
-  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_METHOD)
+  back: addQuery(request,
+    request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_METHOD
+  )
 }, { layout: false });
 
 /**

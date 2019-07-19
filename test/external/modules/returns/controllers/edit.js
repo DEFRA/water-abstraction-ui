@@ -1,12 +1,12 @@
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 
-const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
-  STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
-  STEP_SUBMITTED } = require('shared/modules/returns/steps');
+const { STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
+  STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM
+} = require('shared/modules/returns/steps');
 
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';

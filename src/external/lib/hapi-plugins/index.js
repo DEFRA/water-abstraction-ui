@@ -21,5 +21,6 @@ module.exports = {
   companySelection: require('./company-selection'),
   error: require('./error'),
   noRobots: require('shared/plugins/no-robots'),
-  staticAssets: require('shared/plugins/static-assets')
+  staticAssets: require('shared/plugins/static-assets'),
+  userJourney: require('shared/plugins/user-journey')
 };

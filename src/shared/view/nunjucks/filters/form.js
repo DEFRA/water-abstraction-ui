@@ -41,7 +41,8 @@ const mapFormField = (field) => {
     },
     classes: field.options.controlClass,
     attributes: field.options.attr || {},
-    suffix: field.options.suffix
+    suffix: field.options.suffix,
+    autocomplete: field.options.autoComplete
   };
 
   return applyErrors(options, field.errors);

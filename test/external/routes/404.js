@@ -1,23 +1,29 @@
 'use strict';
 
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('code');
 
-const Code = require('code');
-
-const server = require('../../../server-external');
+const routes = require('external/modules/core/routes');
 const routePath = '/causeA404';
 
-lab.experiment('Page does not exist', () => {
-  lab.test('The page should 404', async () => {
+const { createServer } = require('../server-factory');
+
+experiment('Page does not exist', () => {
+  test('The page should 404', async () => {
+    const server = await createServer();
+    server.route(routes['404']);
+
     const request = {
       method: 'GET',
       url: routePath,
       headers: {},
-      payload: {}
+      payload: {},
+      credentials: {
+        userId: '123'
+      }
     };
 
     const res = await server.inject(request);
-    Code.expect(res.statusCode).to.equal(404);
+    expect(res.statusCode).to.equal(404);
   });
 });

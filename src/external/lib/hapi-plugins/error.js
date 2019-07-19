@@ -46,7 +46,7 @@ const _handler = async (request, h) => {
     return h.redirect('/welcome');
   }
 
-  logger.error(pick(res, ['error', 'message', 'statusCode', 'stack']));
+  logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
 
   // Render 500 page
   const view = {

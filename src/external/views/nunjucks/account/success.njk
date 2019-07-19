@@ -1,0 +1,11 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <a class="govuk-link" href="/licences">View licences</a>
+    </div>
+  </div>
+{% endblock %}

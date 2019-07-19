@@ -10,6 +10,7 @@ const permissions = require('internal/lib/permissions');
 const sessionHelpers = require('internal/modules/returns/lib/session-helpers');
 const forms = require('shared/lib/forms');
 const flowHelpers = require('internal/modules/returns/lib/flow-helpers');
+const { logger } = require('internal/logger');
 
 const sandbox = sinon.createSandbox();
 
@@ -208,10 +209,13 @@ experiment('edit controller', () => {
     sandbox.spy(flowHelpers, 'getPreviousPath');
     sandbox.spy(flowHelpers, 'getNextPath');
     sandbox.spy(helpers, 'getReturnTotal');
+    sandbox.stub(logger, 'errorWithJourney');
   });
+
   afterEach(async () => {
     sandbox.restore();
   });
+
   experiment('getAmounts', () => {
     test('renders nunjucks/returns/form.njk with returns data', async () => {
       permissions.isExternalReturns.returns(true);
@@ -314,6 +318,7 @@ experiment('edit controller', () => {
 
       expect(getNextPathCalled).to.be.true();
     });
+
     test('it should delete meter details if reading.type is "estimated"', async () => {
       forms.handleRequest.returns({ isValid: true, meters });
       const request = createRequest(null, null, 'estimated');
@@ -322,6 +327,7 @@ experiment('edit controller', () => {
       const [updatedData] = sessionHelpers.submitReturnData.lastCall.args;
       expect(updatedData.meters).to.equal([]);
     });
+
     test('it should leave meter details as they are if reading.type is "measured"', async () => {
       forms.handleRequest.returns({ isValid: true, meters });
       const request = createRequest(null, null, 'measured');
@@ -329,6 +335,17 @@ experiment('edit controller', () => {
       await controller.postConfirm(request, h);
       const [updatedData] = sessionHelpers.submitReturnData.lastCall.args;
       expect(updatedData.meters).to.equal(meters);
+    });
+
+    test('logs the error with journey info when an error happens', async () => {
+      try {
+        forms.handleRequest.returns({ isValid: true, meters });
+        const request = createRequest(null, null, 'measured');
+        sessionHelpers.submitReturnData.rejects();
+        await controller.postConfirm(request, h);
+      } catch (err) {
+        expect(logger.errorWithJourney.called).to.be.true();
+      }
     });
   });
 

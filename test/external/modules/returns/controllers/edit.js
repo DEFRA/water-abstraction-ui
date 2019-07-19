@@ -3,13 +3,19 @@ const { expect } = require('code');
 const sandbox = require('sinon').createSandbox();
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
+const services = require('external/lib/connectors/services');
 
 const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
-  STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM
+  STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
+  STEP_SUBMITTED
 } = require('shared/modules/returns/steps');
 
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';
+
+const waterResponse = {
+  returnId
+};
 
 const lines = [
   { startDate: '2019-01-01', endDate: '2019-01-31', quantity: 2 },
@@ -34,7 +40,8 @@ const createModel = () => {
     setLines: sandbox.stub(),
     meter: {
       setMeterDetails: sandbox.stub(),
-      getEndReading: sandbox.stub().returns(55)
+      getEndReading: sandbox.stub().returns(55),
+      setMeterReadings: sandbox.stub()
     },
     getLines: sandbox.stub().returns(lines),
     getReturnTotal: sandbox.stub().returns(999),
@@ -73,6 +80,7 @@ experiment('returns edit controller: ', () => {
       view: sandbox.stub()
     };
     sandbox.stub(forms, 'getValues').returns({});
+    sandbox.stub(services.water.returns, 'getReturn').resolves(waterResponse);
   });
 
   afterEach(async () => {
@@ -530,6 +538,154 @@ experiment('returns edit controller: ', () => {
 
     test('calls incrementVersionNumber() on the return model', async () => {
       expect(request.model.incrementVersionNumber.callCount).to.equal(1);
+    });
+
+    test('redirects to submitted page', async () => {
+      expect(h.redirect.calledWith(`${STEP_SUBMITTED}?returnId=${returnId}`))
+        .to.equal(true);
+    });
+  });
+
+  experiment('getMeterReset', () => {
+    beforeEach(async () => {
+      const request = createRequest();
+      await controller.getMeterReset(request, h);
+    });
+
+    testFormIsRendered();
+
+    test('back link is to method page', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`${STEP_METHOD}?returnId=${returnId}`);
+    });
+  });
+
+  experiment('postMeterReset', () => {
+    let request;
+    beforeEach(async () => {
+      request = createRequest();
+    });
+
+    experiment('when meter reset', () => {
+      beforeEach(async () => {
+        forms.getValues.returns({ meterReset: true });
+        await controller.postMeterReset(request, h);
+      });
+
+      test('sets method to volumes', async () => {
+        expect(
+          request.model.reading.setMethod.calledWith('abstractionVolumes')
+        ).to.equal(true);
+      });
+
+      test('redirects to units page', async () => {
+        expect(h.redirect.calledWith(`${STEP_UNITS}?returnId=${returnId}`))
+          .to.equal(true);
+      });
+    });
+
+    experiment('when meter did not reset', () => {
+      beforeEach(async () => {
+        forms.getValues.returns({ meterReset: false });
+        await controller.postMeterReset(request, h);
+      });
+
+      test('sets method to meter readings', async () => {
+        expect(
+          request.model.reading.setMethod.calledWith('oneMeter')
+        ).to.equal(true);
+      });
+
+      test('redirects to units page', async () => {
+        expect(h.redirect.calledWith(`${STEP_UNITS}?returnId=${returnId}`))
+          .to.equal(true);
+      });
+    });
+  });
+
+  experiment('getMeterReadings', () => {
+    beforeEach(async () => {
+      const request = createRequest();
+      await controller.getMeterReadings(request, h);
+    });
+
+    testFormIsRendered();
+
+    test('back link is to units page', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`${STEP_UNITS}?returnId=${returnId}`);
+    });
+  });
+
+  experiment('postMeterReadings', async () => {
+    let request;
+    beforeEach(async () => {
+      request = createRequest();
+      forms.getValues.returns({
+        csrf_token: request.view.csrfToken,
+        startReading: 10,
+        '2019-01-01_2019-01-31': 2,
+        '2019-02-01_2019-02-28': 10
+      });
+      await controller.postMeterReadings(request, h);
+    });
+
+    test('sets meter start reading and readings on the meter model', async () => {
+      const readingLines = [{
+        startDate: '2019-01-01',
+        endDate: '2019-01-31',
+        reading: 2
+      }, {
+        startDate: '2019-02-01',
+        endDate: '2019-02-28',
+        reading: 10
+      }];
+      expect(
+        request.model.meter.setMeterReadings.calledWith(10, readingLines)
+      ).to.equal(true);
+    });
+
+    test('redirects to the meter details page', async () => {
+      expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
+        .to.equal(true);
+    });
+  });
+
+  experiment('getSubmitted', () => {
+    let request;
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getSubmitted(request, h);
+    });
+
+    test('renders correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns/submitted.njk');
+    });
+
+    test('sets view return URL in view', async () => {
+      const [, { returnUrl }] = h.view.lastCall.args;
+      expect(returnUrl).to.equal(`/returns/return?id=${returnId}`);
+    });
+
+    test('sets return data from water service in view', async () => {
+      const [, { data }] = h.view.lastCall.args;
+      expect(data).to.equal(waterResponse);
+    });
+
+    test('sets page title', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('Abstraction return - submitted');
+    });
+
+    test('sets special page title for nil return submitted', async () => {
+      services.water.returns.getReturn.resolves({
+        returnId,
+        isNil: true
+      });
+      await controller.getSubmitted(request, h);
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('Abstraction return - nil submitted');
     });
   });
 });

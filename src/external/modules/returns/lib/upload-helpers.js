@@ -83,7 +83,7 @@ const getUploadedFileStatus = async (file, type) => {
   const checkResult = await fileCheck.virusCheck(file);
   // Set redirectUrl if virusCheck failed
   if (!checkResult.isClean) {
-    logger.error(checkResult.err);
+    logger.error('Uploaded file failed virus scan', checkResult.err);
     return fileStatuses.VIRUS;
   }
 

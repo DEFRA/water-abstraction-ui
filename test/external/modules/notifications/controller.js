@@ -1,15 +1,21 @@
 'use strict';
 
-const server = require('../../../../server-external');
+const hapi = require('@hapi/hapi');
 const { expect } = require('code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const services = require('external/lib/connectors/services');
 
+const routes = require('external/modules/notifications/routes');
+
 if (process.env.TEST_MODE) {
+  let server;
+
   experiment('findLastEmail', () => {
     beforeEach(async () => {
+      server = hapi.server();
+      server.route(routes.findEmailByAddress);
       sandbox.stub(services.water.notifications, 'getLatestEmailByAddress');
     });
 

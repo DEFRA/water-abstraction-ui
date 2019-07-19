@@ -1,6 +1,4 @@
 const config = require('./config');
-const { createLogger } = require('@envage/water-abstraction-helpers').logger;
+const { create } = require('shared/lib/logger-factory');
 
-const logger = createLogger(config.logger);
-
-exports.logger = logger;
+exports.logger = create(config);

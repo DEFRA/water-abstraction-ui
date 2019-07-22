@@ -4,19 +4,27 @@ const sinon = require('sinon');
 
 const plugin = require('shared/plugins/user-journey');
 
-const getTestRequest = (path, query = {}, method = 'get') => {
-  return {
+const getTestRequest = (path, isAuthenticated = true, method = 'get') => {
+  const request = {
     headers: {
       'user-agent': 'test-user-agent'
     },
     method,
     path,
-    query,
+    query: {},
     yar: {
       get: sinon.stub(),
       set: sinon.stub()
     }
   };
+
+  if (isAuthenticated) {
+    request.auth = {
+      isAuthenticated
+    };
+  }
+
+  return request;
 };
 
 experiment('plugins/user-journey', () => {
@@ -52,6 +60,36 @@ experiment('plugins/user-journey', () => {
 
     test('the session is not written to', async () => {
       const request = getTestRequest('/csp');
+      await method(request, h);
+
+      expect(request.yar.set.called).to.be.false();
+    });
+
+    test('/status is ignored even when authenticated', async () => {
+      const request = getTestRequest('/status');
+      await method(request, h);
+
+      expect(request.yar.set.called).to.be.false();
+    });
+  });
+
+  experiment('when the user is not authenticated', () => {
+    test('continue is returned', async () => {
+      const request = getTestRequest('/valid/route', false);
+      const response = await method(request, h);
+
+      expect(response).to.equal('test-continue');
+    });
+
+    test('the session is not queried', async () => {
+      const request = getTestRequest('/valid/route', false);
+      await method(request, h);
+
+      expect(request.yar.get.called).to.be.false();
+    });
+
+    test('the session is not written to', async () => {
+      const request = getTestRequest('/valid/route', false);
       await method(request, h);
 
       expect(request.yar.set.called).to.be.false();
@@ -98,10 +136,10 @@ experiment('plugins/user-journey', () => {
       expect(journey.requests[0].date).to.be.a.date();
     });
 
-    test('if there have been 50 requests already, a new one is added, but the oldest is dropped', async () => {
+    test('if there have been 20 requests already, a new one is added, but the oldest is dropped', async () => {
       const currentSession = {
         userAgent: 'test-user-agent',
-        requests: Array(50)
+        requests: Array(20)
           .fill(1)
           .map((x, index) => {
             return {
@@ -120,12 +158,12 @@ experiment('plugins/user-journey', () => {
 
       const [, journey] = request.yar.set.lastCall.args;
 
-      expect(journey.requests).to.have.length(50);
+      expect(journey.requests).to.have.length(20);
       expect(journey.requests[0].method).to.equal('get');
       expect(journey.requests[0].path).to.equal('/latest');
-      expect(journey.requests[1].path).to.equal('/test-50');
-      expect(journey.requests[48].path).to.equal('/test-3');
-      expect(journey.requests[49].path).to.equal('/test-2');
+      expect(journey.requests[1].path).to.equal('/test-20');
+      expect(journey.requests[18].path).to.equal('/test-3');
+      expect(journey.requests[19].path).to.equal('/test-2');
     });
 
     test('a getUserJourney function is added to the request', async () => {

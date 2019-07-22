@@ -1,8 +1,9 @@
 // Requests that should not be collected
-const ignore = /^\/(public|assets|csp)/;
-const isTrackableRoute = request => !ignore.test(request.path);
+const { get } = require('lodash');
+const invalidRoutes = ['/public', '/assets', '/csp', '/status'];
+const isTrackableRoute = request => invalidRoutes.every(route => !request.path.startsWith(route));
 
-const MAX_NUMBER_OF_PATHS = 50;
+const MAX_NUMBER_OF_PATHS = 20;
 const SESSION_KEY = 'user-journey';
 
 const getNewJourney = request => ({
@@ -28,7 +29,9 @@ const updateJourney = (request, journey) => {
 const saveJourney = (request, journey) => request.yar.set(SESSION_KEY, journey);
 
 const onPreHandler = async (request, h) => {
-  if (isTrackableRoute(request)) {
+  const isAuthenticated = get(request, 'auth.isAuthenticated', false);
+
+  if (isAuthenticated && isTrackableRoute(request)) {
     const userJourney = getJourneyFromSession(request);
     updateJourney(request, userJourney);
     saveJourney(request, userJourney);

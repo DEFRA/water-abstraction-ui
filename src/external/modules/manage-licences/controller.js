@@ -198,7 +198,6 @@ async function getRemoveAccess (request, reply, context = {}) {
     const viewContext = {
       ...request.view,
       ...context,
-      entityID: entityId,
       colleagueName: colleagueEntity.entity_nm,
       colleagueEntityID
     };
@@ -272,31 +271,6 @@ async function postRemoveAccess (request, h) {
   );
 }
 
-/**
- * Instructions on how to add further licences to your account
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
- */
-async function getAddLicences (request, reply, context = {}) {
-  const { entityId } = request.defra;
-  const viewContext = Object.assign(request.view, context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Manage your licences';
-
-  try {
-    // Does user have outstanding verification codes?
-    const { data: verifications, error } = await services.crm.verifications.findMany({ entity_id: entityId, date_verified: null });
-    if (error) {
-      throw error;
-    }
-
-    viewContext.verificationCount = verifications.length;
-    return reply.view('water/manage-licences/manage_licences_add', viewContext);
-  } catch (error) {
-    throw error;
-  }
-}
-
 async function getChangeAccess (request, h) {
   const { entityId } = request.defra;
   const viewContext = request.view;
@@ -336,8 +310,6 @@ exports.postAddAccess = postAddAccess;
 
 exports.getRemoveAccess = getRemoveAccess;
 exports.postRemoveAccess = postRemoveAccess;
-
-exports.getAddLicences = getAddLicences;
 
 exports.createAccessListViewModel = createAccessListViewModel;
 

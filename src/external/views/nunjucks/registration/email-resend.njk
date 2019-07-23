@@ -1,0 +1,64 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "input/macro.njk" import govukInput %}
+{% from "ga-send-event.njk" import sendEvent %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+  {% if error %}
+    {{ sendEvent(nonces.script, 'register_send_again_invalid_email_address') }}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+              {
+                text: "Enter an email address in the right format",
+                href: "#email"
+              }
+            ]
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p>Enter your email address again.</p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form novalidate action="/send-again" method="post" class="form">
+        {% set errorMessage = false %}
+        {% if error %}
+          {% set errorMessage = {
+              text: "Enter an email address in the right format, for example, name@example.com"
+            }
+          %}
+        {% endif %}
+        {{
+          govukInput({
+            label: { text: "Email address" },
+            id: "email",
+            name: "email",
+            value: payload.email,
+            attributes: {
+              maxlength: 254
+            },
+            type: "email",
+            errorMessage: errorMessage,
+            classes: "govuk-!-width-one-half"
+          })
+        }}
+        {{
+          govukButton({ type: "submit", text: "Continue" })
+        }}
+      </div>
+  </div>
+
+{% endblock %}

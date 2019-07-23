@@ -125,17 +125,6 @@ module.exports = {
       }
     }
   },
-  getAddLicences: {
-    method: 'GET',
-    path: '/manage_licences_add',
-    handler: controller.getAddLicences,
-    config: {
-      auth: {
-        scope: scope.licenceHolder
-      },
-      description: 'Manage licences - add licences'
-    }
-  },
 
   getChangeAccess: {
     method: 'GET',

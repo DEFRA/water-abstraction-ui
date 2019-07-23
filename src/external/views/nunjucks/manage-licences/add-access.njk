@@ -1,0 +1,69 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "button/macro.njk" import govukButton %}
+{% from "input/macro.njk" import govukInput %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if errors.email %}
+        {{
+          govukErrorSummary({
+            titleText: "That email address is not valid",
+            errorList: [
+              {
+                text: "Re-enter email address",
+                href: "#email"
+              }
+            ]
+          })
+        }}
+      {% endif %}
+
+      <form novalidate method="post" action="/manage_licences/add_access" class="form">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        {% set errorMessage = false %}
+        {% if errors.email %}
+          {%
+            set errorMessage = {
+              text: 'Please enter a valid email address'
+            }
+          %}
+        {% endif %}
+        {{
+          govukInput({
+            label: {
+              text: "Enter their email address and we will send them a link to create an account."
+            },
+            id: "email",
+            name: "email",
+            errorMessage: errorMessage,
+            value: email,
+            type: "email",
+            classes: "govuk-!-width-three-quarters"
+          })
+        }}
+        {{
+          govukCheckboxes({
+            name: "returns",
+            items: [{
+              value: true,
+              text: "This person can also submit my returns",
+              checked: colleagueEntityRole.hasReturns
+            }]
+          })
+        }}
+        {{
+          govukButton({ type: "submit", text: "Give access" })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

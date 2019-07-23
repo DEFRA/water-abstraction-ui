@@ -1,0 +1,42 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <p class="govuk-body">
+    <span class="govuk-!-font-weight-bold">{{ colleagueEntityRole.name }}</span>
+    has access to your licences.
+  </p>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form novalidate method="post" action="/manage_licences/access/change" class="form">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+        <input name="colleagueEntityID" type="hidden" value="{{ colleagueEntityRole.colleagueEntityID }}" />
+        <input name="returnsEntityRoleID" type="hidden" value="{{ colleagueEntityRole.returnsEntityRoleID }}" />
+
+        {{
+          govukCheckboxes({
+            name: "returns",
+            items: [{
+              value: true,
+              text: "This person can also submit my returns",
+              checked: colleagueEntityRole.hasReturns
+            }]
+          })
+        }}
+
+        <p>
+          <a class="govuk-link" href="/manage_licences/access/{{ colleagueEntityRole.colleagueEntityID }}/remove">Remove access</a>
+        </p>
+
+        {{
+          govukButton({ type: "submit", text: "Update" })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

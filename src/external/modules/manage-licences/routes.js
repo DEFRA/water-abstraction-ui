@@ -3,11 +3,10 @@ const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 
 module.exports = {
-  // Manage licences
   getManageLicences: {
     method: 'GET',
     path: '/manage_licences',
-    handler: controller.getManage,
+    handler: controller.getManageLicences,
     config: {
       auth: {
         scope: scope.licenceHolder

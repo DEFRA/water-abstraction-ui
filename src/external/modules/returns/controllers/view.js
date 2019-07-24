@@ -1,19 +1,12 @@
 /* eslint new-cap: "warn" */
 const Boom = require('boom');
-const { get } = require('lodash');
-
-const { isInternal } = require('../../../lib/permissions');
 
 const {
   getLicenceNumbers,
-  getReturnsViewData,
-  getReturnTotal,
-  endReadingKey
+  getReturnsViewData
 } = require('../lib/helpers');
 
-const {
-  getLinesWithReadings
-} = require('../lib/return-helpers');
+const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
 const { getEditButtonPath } = require('../lib/return-path');
 
@@ -57,34 +50,31 @@ const getReturn = async (request, h) => {
 
   // Load return data
   const data = await services.water.returns.getReturn(id, version);
-  const lines = getLinesWithReadings(data);
+  const model = new WaterReturn(data);
 
   // Load CRM data to check access
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const isInternalUser = isInternal(request);
-  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: isInternalUser });
+  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
 
-  const canView = documentHeader && (isInternalUser || (data.isCurrent && data.metadata.isCurrent));
+  const canView = documentHeader && data.isCurrent && model.metadata.isCurrent;
 
   if (!canView) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
-  const showVersions = isInternal && get(data, 'versions[0].email');
-
   const view = {
-    total: getReturnTotal(data),
+    total: model.getReturnTotal(),
     ...request.view,
-    return: data,
-    lines,
+    return: model.toObject(),
+    lines: model.getLines(true),
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
     editButtonPath: getEditButtonPath(data, request),
-    showVersions,
+    showVersions: false,
     isVoid: data.status === 'void',
-    endReading: get(data, `meters[0].readings.${endReadingKey(data)}`)
+    endReading: model.meter.getEndReading()
   };
 
   return h.view('water/returns/return', view);

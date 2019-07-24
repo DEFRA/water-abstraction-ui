@@ -3,117 +3,242 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { get, set } = require('lodash');
-const Boom = require('boom');
+const { omit } = require('lodash');
 const forms = require('shared/lib/forms');
-const { logger } = require('../../../logger');
+const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
+  STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
+  STEP_SUBMITTED } = require('shared/modules/returns/steps');
+const { STATUS_COMPLETED } = require('shared/modules/returns/models/WaterReturn');
+const { METHOD_VOLUMES, METHOD_ONE_METER } = require('shared/modules/returns/models/Reading');
 
-const {
-  amountsForm, methodForm, confirmForm, unitsForm,
-  singleTotalForm, singleTotalSchema,
-  quantitiesForm, quantitiesSchema,
-  meterDetailsForm, meterDetailsSchema,
-  meterUnitsForm, meterReadingsForm, meterReadingsSchema,
-  meterResetForm, meterUsedForm, meterUsedSchema
-} = require('../forms');
-
-const {
-  applySingleTotal, applyQuantities,
-  applyNilReturn, applyMeterDetails,
-  applyMeterUnits, applyMeterReadings, applyMethodExternal,
-  getLinesWithReadings, applyStatus, applyUnderQuery,
-  applyMeterReset, checkMeterDetails, applyReadingType,
-  applyMultiplication
-} = require('../lib/return-helpers');
-
-const permissions = require('../../../lib/permissions');
-
-const flowHelpers = require('../lib/flow-helpers');
-
-const sessionHelpers = require('../lib/session-helpers');
-
-const helpers = require('../lib/helpers');
+const services = require('../../../lib/connectors/services');
 
 /**
- * Render form to display whether amounts / nil return for this cycle
- * @param {String} request.query.returnId - the return to edit
+ * Adds return ID query string from request.query.returnId to supplied path
+ * @param {Object} request
+ * @param {String} path
  */
-const getAmounts = async (request, h) => {
-  const { view, data } = request.returns;
-
-  const form = forms.setValues(amountsForm(request), data);
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_START, request, data)
-  }, { layout: false });
+const addQuery = (request, path) => {
+  return `${path}?returnId=${request.query.returnId}`;
 };
 
 /**
- * Post handler for amounts / nil return
- * @param {String} request.query.returnId - the return to edit
+ * Renders form for "Have you abstracted water in this return period?"
+ */
+const getAmounts = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: STEP_RETURNS
+}, { layout: false });
+
+/**
+ * Post handler for "Have you abstracted water in this return period?"
  */
 const postAmounts = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(forms.setValues(amountsForm(request), data), request);
-
-  if (form.isValid) {
-    const { isNil } = forms.getValues(form);
-
-    const d = applyNilReturn(data, isNil);
-    sessionHelpers.saveSessionData(request, d);
-
-    const path = flowHelpers.getNextPath(flowHelpers.STEP_START, request, d);
-
+  if (request.view.form.isValid) {
+    const { isNil } = forms.getValues(request.view.form);
+    request.model.setNilReturn(isNil);
+    const path = addQuery(request,
+      request.model.isNilReturn() ? STEP_CONFIRM : STEP_METHOD
+    );
     return h.redirect(path);
   }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_START, request, data)
-  }, { layout: false });
+  return getAmounts(request, h);
 };
 
 /**
- * Confirmation screen for nil return
+ * Get handler for method (meter/volumes/estimates)
  */
-const getNilReturn = async (request, h) => {
-  const { data, view } = request.returns;
+const getMethod = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request,
+    request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS
+  )
+}, { layout: false });
 
-  return h.view('nunjucks/returns/nil-return.njk', {
-    ...view,
-    return: data,
-    form: confirmForm(request, data),
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_NIL_RETURN, request, data)
-  }, { layout: false });
+/**
+ * Post handler for "Have you abstracted water in this return period?"
+ */
+const postMethod = async (request, h) => {
+  if (request.view.form.isValid) {
+    const { method } = forms.getValues(request.view.form);
+    const [readingMethod, readingType] = method.split(',');
+
+    request.model.reading
+      .setMethod(readingMethod)
+      .setReadingType(readingType);
+
+    const path = addQuery(request,
+      request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS
+    );
+    return h.redirect(path);
+  }
+  return getAmounts(request, h);
 };
 
 /**
- * Post handler for amounts or nil return flow
- * For internal users, also sets/clears under query status
+ * Get handler for units
+ */
+const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request,
+    request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_METHOD
+  )
+}, { layout: false });
+
+/**
+ * Post handler for units
+ */
+const postUnits = async (request, h) => {
+  if (request.view.form.isValid) {
+    const { units } = forms.getValues(request.view.form);
+    request.model.reading.setUnits(units);
+    const path = addQuery(request, request.model.reading.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS);
+    return h.redirect(path);
+  }
+  return getAmounts(request, h);
+};
+
+/**
+ * Get handler for units
+ */
+const getQuantities = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request, STEP_UNITS)
+}, { layout: false });
+
+const getLines = (data, valueKey = 'quantity') => {
+  return Object.keys(data).map(key => {
+    const [startDate, endDate] = key.split('_');
+    return { startDate, endDate, [valueKey]: data[key] };
+  });
+};
+
+/**
+ * Post handler for units
+ */
+const postQuantities = async (request, h) => {
+  if (request.view.form.isValid) {
+    const data = omit(forms.getValues(request.view.form), 'csrf_token');
+    request.model.setLines(getLines(data));
+
+    const path = addQuery(request, request.model.reading.isMeasured() ? STEP_METER_DETAILS : STEP_CONFIRM);
+    return h.redirect(path);
+  }
+  return getAmounts(request, h);
+};
+
+/**
+ * Get meter details
+ */
+const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES)
+}, { layout: false });
+
+/**
+ * POST handler for meter details page
+ */
+const postMeterDetails = async (request, h) => {
+  if (request.view.form.isValid) {
+    const { manufacturer, serialNumber, isMultiplier } = forms.getValues(request.view.form);
+    const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1;
+    request.model.meter.setMeterDetails({
+      manufacturer,
+      serialNumber,
+      multiplier
+    });
+    return h.redirect(addQuery(request, STEP_CONFIRM));
+  }
+  return getMeterDetails(request, h);
+};
+
+const getConfirmBackPath = request => {
+  let path;
+  if (request.model.isNilReturn()) {
+    path = STEP_START;
+  } else {
+    path = request.model.reading.isMeasured()
+      ? STEP_METER_DETAILS
+      : STEP_QUANTITIES;
+  }
+  return addQuery(request, path);
+};
+
+/**
+ * GET handler for confirm return
+ */
+const getConfirm = async (request, h) => {
+  const { model } = request;
+  const path = model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES;
+  const view = {
+    ...request.view,
+    lines: model.getLines(true),
+    back: getConfirmBackPath(request),
+    total: model.getReturnTotal(),
+    endReading: model.meter.getEndReading(),
+    makeChangeText: `Edit your ${model.reading.isOneMeter() ? 'meter readings' : 'volumes'}`,
+    makeChangePath: addQuery(request, path)
+  };
+
+  return h.view('nunjucks/returns/confirm.njk', view, { layout: false });
+};
+
+/**
+ * POST handler for confirm return
  */
 const postConfirm = async (request, h) => {
-  const { data } = request.returns;
-  const form = forms.handleRequest(confirmForm(request, data), request);
-  if (form.isValid) {
-    try {
-      // Apply status / under query
-      let updated = applyStatus(data);
-      updated = checkMeterDetails(updated);
-      if (permissions.isInternal(request)) {
-        updated = applyUnderQuery(updated, forms.getValues(form));
-      }
-      await sessionHelpers.submitReturnData(updated, request);
-      return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_NIL_RETURN, request, data));
-    } catch (error) {
-      logger.errorWithJourney('Post confirm return error', error, request);
-      throw Boom.badImplementation(`Return submission error`, { data, form });
-    }
+  if (request.view.form.isValid) {
+    request.model
+      .setUser(request.defra.userName, request.defra.entityId, false)
+      .setStatus(STATUS_COMPLETED)
+      .incrementVersionNumber();
+
+    return h.redirect(addQuery(request, STEP_SUBMITTED));
   }
+  return getConfirm(request, h);
+};
+
+/**
+ * Has the meter reset within this return cycle?  If so the user will have
+ * to do the volumes route since meter reset is not currently supported
+ */
+const getMeterReset = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request, STEP_METHOD)
+}, { layout: false });
+
+/**
+ * POST handler for meter reset
+ */
+const postMeterReset = async (request, h) => {
+  if (request.view.form.isValid) {
+    const { meterReset } = forms.getValues(request.view.form);
+    request.model.reading.setMethod(meterReset ? METHOD_VOLUMES : METHOD_ONE_METER);
+    return h.redirect(addQuery(request, STEP_UNITS));
+  }
+  return getMeterReset(request, h);
+};
+
+/**
+ * GET form for meter readings
+ */
+const getMeterReadings = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request, STEP_UNITS)
+}, { layout: false });
+
+/**
+ * POST form for meter readings
+ */
+const postMeterReadings = async (request, h) => {
+  if (request.view.form.isValid) {
+    const data = omit(forms.getValues(request.view.form), ['csrf_token', 'startReading']);
+    const lines = getLines(data, 'reading');
+    const { startReading } = forms.getValues(request.view.form);
+    request.model.meter.setMeterReadings(startReading, lines);
+    return h.redirect(addQuery(request, STEP_METER_DETAILS));
+  }
+  return getMeterReadings(request, h);
 };
 
 /**
@@ -122,381 +247,34 @@ const postConfirm = async (request, h) => {
  * @todo link to view return
  */
 const getSubmitted = async (request, h) => {
-  const { data, view } = request.returns;
-
-  // Clear session
-  sessionHelpers.deleteSessionData(request);
+  const data = await services.water.returns.getReturn(request.query.returnId);
 
   const returnUrl = `/returns/return?id=${data.returnId}`;
 
   return h.view('nunjucks/returns/submitted.njk', {
-    ...view,
-    return: data,
+    ...request.view,
+    data,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
   }, { layout: false });
 };
 
-/**
- * Routing question -
- * whether user is submitting meter readings or other
- */
-const getMethod = async (request, h) => {
-  const { data, view } = request.returns;
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: methodForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METHOD, request, data)
-  }, { layout: false });
-};
-
-/**
- * Post handler for routing question
- * whether user is submitting meter readings or other
- */
-const postMethod = async (request, h) => {
-  const { data, view } = request.returns;
-  const form = forms.handleRequest(methodForm(request, data), request);
-
-  if (form.isValid) {
-    const { method } = forms.getValues(form);
-    const d = applyMethodExternal(data, method);
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METHOD, request, d));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METHOD, request, data)
-  }, { layout: false });
-};
-
-/**
- * Form to choose units
- */
-const getUnits = async (request, h) => {
-  const { data, view } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: unitsForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_UNITS, request, data)
-  }, { layout: false });
-};
-
-/**
- * Post handler for units form - deals with Volumes or Estimates
- */
-const postUnits = async (request, h) => {
-  const { data, view } = request.returns;
-  const form = forms.handleRequest(unitsForm(request, data), request);
-
-  if (form.isValid) {
-    // Persist chosen units to session
-    const { units } = forms.getValues(form);
-    set(data, 'reading.units', units);
-    sessionHelpers.saveSessionData(request, data);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_UNITS, request, data));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_UNITS, request, data)
-  }, { layout: false });
-};
-
-/**
- * Form to choose whether single figure or multiple amounts
- */
-const getSingleTotal = async (request, h) => {
-  const { data, view } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: singleTotalForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_SINGLE_TOTAL, request, data)
-  }, { layout: false });
-};
-
-/**
- * Post handler for single total
- */
-const postSingleTotal = async (request, h) => {
-  const { data, view } = request.returns;
-
-  const form = forms.handleRequest(singleTotalForm(request, data), request, singleTotalSchema);
-  if (form.isValid) {
-    const updatedData = applySingleTotal(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, updatedData);
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_SINGLE_TOTAL, request, updatedData));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_SINGLE_TOTAL, request, data)
-  }, { layout: false });
-};
-
-/**
- * Screen for user to enter quantities
- */
-const getQuantities = async (request, h) => {
-  const { data, view } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: quantitiesForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_QUANTITIES, request, data)
-  }, { layout: false });
-};
-
-const postQuantities = async (request, h) => {
-  const { data, view } = request.returns;
-
-  const schema = quantitiesSchema(data);
-
-  const form = forms.handleRequest(quantitiesForm(request, data), request, schema);
-  if (form.isValid) {
-    // Persist
-    const d = applyQuantities(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_QUANTITIES, request, d));
-  }
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_QUANTITIES, request, data)
-  }, { layout: false });
-};
-
-/**
- * Confirm screen for user to check amounts before submission
- */
-const getConfirm = async (request, h) => {
-  const { view } = request.returns;
-  const data = applyMultiplication(request.returns.data);
-  const lines = getLinesWithReadings(data);
-  const form = confirmForm(request, data, `/return/confirm`);
-
-  const isReadings = get(data, 'reading.method') === 'oneMeter';
-
-  return h.view('nunjucks/returns/confirm.njk', {
-    ...view,
-    return: data,
-    lines,
-    form,
-    total: helpers.getReturnTotal(data),
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_CONFIRM, request, data),
-    makeChangePath: flowHelpers.getPath(isReadings ? flowHelpers.STEP_METER_READINGS : flowHelpers.STEP_QUANTITIES, request, data),
-    endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
-  }, { layout: false });
-};
-
-const getMeterDetails = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: meterDetailsForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_DETAILS, request, data)
-  }, { layout: false });
-};
-
-const postMeterDetails = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(meterDetailsForm(request, data), request, meterDetailsSchema(data));
-
-  if (form.isValid) {
-    const d = applyMeterDetails(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_DETAILS, request, d));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_DETAILS, request, data)
-  }, { layout: false });
-};
-
-const getMeterUnits = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: meterUnitsForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_UNITS, request, data)
-  }, { layout: false });
-};
-
-const postMeterUnits = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(meterUnitsForm(request, data), request);
-
-  if (form.isValid) {
-    const d = applyMeterUnits(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_UNITS, request, d));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_UNITS, request, data)
-  }, { layout: false });
-};
-
-const getMeterReset = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('nunjucks/returns/meter-reset.njk', {
-    ...view,
-    form: meterResetForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
-  }, { layout: false });
-};
-
-const postMeterReset = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(meterResetForm(request, data), request);
-
-  if (form.isValid) {
-    const d = applyMeterReset(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_RESET, request, d));
-  }
-
-  return h.view('nunjucks/returns/meter-reset.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_RESET, request, data)
-  }, { layout: false });
-};
-
-const getMeterReadings = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form: meterReadingsForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_READINGS, request, data)
-  }, { layout: false });
-};
-
-const postMeterReadings = async (request, h) => {
-  const { view, data } = request.returns;
-
-  const readingsForm = meterReadingsForm(request, data);
-
-  // Get the internal representation of the data to pass to the schema
-  // which needs the current user input in order to generate the
-  // schema to cater for checking if the readings are not lower than
-  // previous readings.
-  const internalData = forms.importData(readingsForm, request.payload);
-
-  const schema = meterReadingsSchema(data, internalData);
-
-  const form = forms.handleRequest(readingsForm, request, schema);
-
-  if (form.isValid) {
-    const d = applyMeterReadings(data, forms.getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_READINGS, request, d));
-  }
-
-  return h.view('nunjucks/returns/form.njk', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_READINGS, request, data)
-  }, { layout: false });
-};
-
-/**
- * Displays a screen for internal user to specify whether meter was used.
- * This disambiguates estimated/measured when volumes but no meter details
- * provided
- */
-const getMeterUsed = (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: meterUsedForm(request, data),
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_USED, request, data)
-  });
-};
-
-/**
- * Post handler for internal user to specify whether meter was used.
- */
-const postMeterUsed = (request, h) => {
-  const { view, data } = request.returns;
-  const form = forms.handleRequest(meterUsedForm(request, data), request, meterUsedSchema);
-
-  if (form.isValid) {
-    const { meterUsed } = forms.getValues(form);
-    const d = applyReadingType(data, meterUsed ? 'measured' : 'estimated');
-    sessionHelpers.saveSessionData(request, d);
-    return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_METER_USED, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: flowHelpers.getPreviousPath(flowHelpers.STEP_METER_USED, request, data)
-  });
-};
-
 module.exports = {
   getAmounts,
   postAmounts,
-  getNilReturn,
-  getSubmitted,
   getMethod,
   postMethod,
   getUnits,
   postUnits,
-  getSingleTotal,
-  postSingleTotal,
   getQuantities,
   postQuantities,
   getConfirm,
   postConfirm,
   getMeterDetails,
   postMeterDetails,
-  getMeterUnits,
-  postMeterUnits,
   getMeterReset,
   postMeterReset,
   getMeterReadings,
   postMeterReadings,
-  getMeterUsed,
-  postMeterUsed
+  getSubmitted
 };

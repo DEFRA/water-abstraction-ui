@@ -1,6 +1,6 @@
 const { last, find, groupBy, lowerCase } = require('lodash');
 const helpers = require('@envage/water-abstraction-helpers');
-const { getLineLabel } = require('./return-helpers');
+const { getLineLabel } = require('shared/modules/returns/forms/common');
 const moment = require('moment');
 const util = require('util');
 const csvStringify = util.promisify(require('csv-stringify'));

@@ -1,7 +1,7 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const confirmForm = require('external/modules/returns/forms/confirm');
+const confirmForm = require('external/modules/returns/forms/confirm').form;
 const { scope } = require('external/lib/constants');
 
 experiment('confirmForm', () => {
@@ -22,10 +22,6 @@ experiment('confirmForm', () => {
   };
 
   const externalForm = confirmForm(getRequest(), {});
-
-  test('it should have an external action URL for external users', async () => {
-    expect(externalForm.action).to.equal('/return/nil-return?returnId=abc');
-  });
 
   test('it should have a CSRF token', async () => {
     const csrf = find(externalForm.fields, { name: 'csrf_token' });

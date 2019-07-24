@@ -1,3 +1,4 @@
+/*
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
 
@@ -76,3 +77,4 @@ experiment('getPeriodStartEnd', () => {
     });
   });
 });
+*/

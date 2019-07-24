@@ -1,0 +1,10 @@
+{% macro sendEvent(nonce, action, category = 'error') %}
+  {% if nonce and action %}
+    <script nonce="{{nonce}}">
+      sendEvent({
+        category: '{{ category }}',
+        action:'{{ action }}'
+      });
+    </script>
+  {% endif %}
+{% endmacro %}

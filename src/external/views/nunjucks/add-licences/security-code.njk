@@ -1,0 +1,90 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "contact-details.njk" import contactDetails %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "input/macro.njk" import govukInput %}
+{% from "ga-send-event.njk" import sendEvent %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {{ sendEvent(nonces.script, 'security_code_not_entered') }}
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+              {
+                text: "Check the number you have entered is correct",
+                href: "#verification_code"
+              }
+            ]
+          })
+        }}
+      {% endif %}
+
+      {{ title(pageTitle) }}
+
+      <form method="POST" novalidate action="/security-code">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        {% set errorMessage = false %}
+        {% if error %}
+          {%
+            set errorMessage = {
+              text: 'Check the number you have entered is correct.'
+            }
+          %}
+        {% endif %}
+
+        {{
+          govukInput({
+            label: {
+              text: "Security code"
+            },
+            id: "verification_code",
+            name: "verification_code",
+            hint: {
+              text: "We sent this by post to the registered address"
+            },
+            errorMessage: errorMessage,
+            attributes: {
+              maxlength: 5
+            },
+            value: payload.verification_code,
+            type: "password",
+            classes: "govuk-!-width-one-half"
+          })
+        }}
+
+        {{
+          govukButton({ type: "submit", text: "Continue" })
+        }}
+
+    </div>
+
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <details class="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">Not received your code?</span>
+          </summary>
+          <div class="govuk-details__text">
+          <p>
+            Allow up to 2-3 working days to receive your code by post.
+          </p>
+          <p>
+            If it has not arrived after that time, contact
+            us to request a new code.
+          </p>
+          {{ contactDetails() }}
+      </div>
+    </details>
+    </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "contact-details.njk" import contactDetails %}
+{% from "ga-send-event.njk" import sendEvent %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if error.name === "ValidationError" %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            { text: "Enter your licence numbers", href: "#licence_no" }
+          ]
+        }) }}
+      {% endif %}
+
+      {% if ['LicenceNotFoundError', 'LicenceSimilarityError', 'LicenceMissingError'].includes(error.name) %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+              { text: "Check your licence numbers", href: "#licence_no" }
+            ],
+            descriptionHtml: '<p>We cannot find these licence numbers</p>
+                              <p>' + missingNumbers.data + '</p>'
+          }) }}
+      {% endif %}
+
+      {% set eventAction = "add_licence_licence_not_found_error" if error.name === 'LicenceNotFoundError' %}
+      {% set eventAction = "add_licence_licence_similarity_error" if error.name === 'LicenceSimilarityError' %}
+      {% set eventAction = "add_licence_licence_missing_error" if error.name === 'LicenceMissingError' %}
+      {% set eventAction = "add_licence_validation_error" if error.name === 'ValidationError' %}
+      {{ sendEvent(nonces.script, eventAction) }}
+
+      <form method="POST" novalidate action="/add-licences">
+
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+
+        {{
+          govukTextarea({
+            classes: 'govuk-!-width-three-quarters',
+            label: {
+              text: "You can enter one or many of your licence numbers"
+            },
+            hint: {
+              text: "Separate the numbers with spaces, commas, or by entering them on different lines."
+            },
+            id: "licence_no",
+            name: "licence_no",
+            rows: 5,
+            attributes: { maxlength: 8000 }
+          })
+        }}
+
+        {{ govukButton({ type: "submit", text: "Continue" })}}
+      </form>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <details class="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">Do you need help?</span>
+        </summary>
+        <div class="govuk-details__text">
+          <p>Please contact us for help.</p>
+          {{ contactDetails() }}
+        </div>
+      </details>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

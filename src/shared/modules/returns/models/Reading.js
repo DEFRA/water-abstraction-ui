@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { pick } = require('lodash');
 const METHOD_VOLUMES = 'abstractionVolumes';
 const METHOD_ONE_METER = 'oneMeter';

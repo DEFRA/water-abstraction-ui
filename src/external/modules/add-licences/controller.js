@@ -4,7 +4,7 @@
  *
  * @module controllers/registration
  */
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { difference } = require('lodash');
 const crmConnector = require('../../lib/connectors/crm');
 const services = require('../../lib/connectors/services');

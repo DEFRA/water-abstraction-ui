@@ -1,6 +1,6 @@
 const { find } = require('lodash');
-const { expect } = require('code');
-const { experiment, test, beforeEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { selectCompanyForm } = require('external/modules/company-selector/forms/select-company');
 
 const getRequest = () => {

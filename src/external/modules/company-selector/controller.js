@@ -4,7 +4,7 @@
  * they wish to view/manage
  */
 
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 
 const loginHelpers = require('../../lib/login-helpers');

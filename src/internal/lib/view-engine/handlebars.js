@@ -11,7 +11,7 @@ const { isString } = require('lodash');
 
 const timezone = 'Europe/London';
 const { pick, reduce } = require('lodash');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const commaNumber = require('comma-number');
 const { convertToCubicMetres } = require('../../../shared/lib/unit-conversion');

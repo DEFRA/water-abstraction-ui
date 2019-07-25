@@ -1,10 +1,10 @@
 'use strict';
 
 const { set, find } = require('lodash');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const { experiment, test } = exports.lab = Lab.script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { getMainNav } = require('internal/lib/view/main-nav');
 const { scope } = require('internal/lib/constants');

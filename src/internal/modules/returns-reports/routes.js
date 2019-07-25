@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const constants = require('../../lib/constants');
 const returns = constants.scope.returns;

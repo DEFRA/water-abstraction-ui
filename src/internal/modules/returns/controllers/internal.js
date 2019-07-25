@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const services = require('../../../lib/connectors/services');
 const { isInternal: isInternalUser } = require('../../../lib/permissions');
 

@@ -1,6 +1,6 @@
 require('dotenv').config();
-const Lab = require('lab');
-const { expect } = require('code');
+const Lab = require('@hapi/lab');
+const { expect } = require('@hapi/code');
 const { find } = require('lodash');
 const { selectSchemaForm } = require('internal/modules/abstraction-reform/forms/select-schema');
 const { getWR22 } = require('internal/modules/abstraction-reform/lib/schema');

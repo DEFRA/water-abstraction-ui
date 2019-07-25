@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const Joi = require('@hapi/joi');
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');
 const { meterReadingsSchema, meterReadingsForm } = require('internal/modules/returns/forms/meter-readings');
 

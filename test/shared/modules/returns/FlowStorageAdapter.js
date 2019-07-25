@@ -3,9 +3,9 @@ const {
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 const { omit } = require('lodash');
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');

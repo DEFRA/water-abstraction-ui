@@ -1,5 +1,5 @@
 const { isObject } = require('lodash');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient');
 const urlJoin = require('url-join');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');

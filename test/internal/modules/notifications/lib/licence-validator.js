@@ -1,9 +1,9 @@
 'use strict';
 
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const { experiment, test } = exports.lab = Lab.script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { isMany, mapErrors, licenceValidator } = require('internal/modules/notifications/lib/licence-validator');
 

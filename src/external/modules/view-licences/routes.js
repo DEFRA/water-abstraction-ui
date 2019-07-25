@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY } = require('shared/lib/validators');
 

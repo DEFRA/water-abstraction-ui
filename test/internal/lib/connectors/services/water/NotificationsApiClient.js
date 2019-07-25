@@ -1,5 +1,5 @@
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 const NotificationsApiClient = require('internal/lib/connectors/services/water/NotificationsApiClient');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');

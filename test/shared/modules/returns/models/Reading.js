@@ -2,8 +2,8 @@ const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const Reading = require('shared/modules/returns/models/Reading');
 const {

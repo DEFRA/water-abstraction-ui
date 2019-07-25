@@ -1,11 +1,11 @@
 'use strict';
 
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const lab = exports.lab = Lab.script();
 
-const Code = require('code');
+const Code = require('@hapi/code');
 
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const { VALID_PASSWORD } = require('shared/lib/validators');
 const formatViewError = require('shared/lib/format-view-error');

@@ -1,8 +1,8 @@
 const hapi = require('@hapi/hapi');
 const configPlugin = require('shared/plugins/config');
 
-const { experiment, test } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const getRoute = () => ({
   method: 'GET',

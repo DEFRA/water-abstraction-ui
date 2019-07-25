@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { get, omit, cloneDeep, set, isArray, isBoolean } = require('lodash');
 const moment = require('moment');
 const { maxPrecision } = require('../../../../shared/lib/number-formatter');

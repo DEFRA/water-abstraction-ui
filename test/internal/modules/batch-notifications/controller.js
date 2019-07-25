@@ -3,8 +3,8 @@
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const controller = require('internal/modules/batch-notifications/controller');
 const helpers = require('internal/modules/batch-notifications/lib/helpers');
 const csv = require('internal/lib/csv-download');

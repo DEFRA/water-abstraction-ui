@@ -3,7 +3,7 @@ const { get } = require('lodash');
 const { formFactory, setValues } = require('shared/lib/forms');
 const { getMeter } = require('shared/modules/returns/forms/common');
 
-const { getContinueField, getCsrfTokenField, getHeadingField, getParagraphField } =
+const { getContinueField, getCsrfTokenField, getHeadingField } =
  require('shared/modules/returns/forms/common');
 const { getTextField, getMultiplierField } =
   require('shared/modules/returns/forms/meter-details');

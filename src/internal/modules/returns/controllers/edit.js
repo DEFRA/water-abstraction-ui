@@ -3,7 +3,7 @@
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */
-const { omit } = require('lodash');
+const { omit, get } = require('lodash');
 const moment = require('moment');
 
 const services = require('internal/lib/connectors/services');
@@ -339,12 +339,14 @@ const getConfirm = async (request, h) => {
  */
 const postConfirm = async (request, h) => {
   if (request.view.form.isValid) {
-    const { isUnderQuery } = forms.getValues(request.view.form);
+    const values = forms.getValues(request.view.form);
+
+    const isUnderQuery = get(values, 'isUnderQuery[0]') === 'under_query';
 
     request.model
       .setUser(request.defra.userName, request.defra.entityId, true)
       .setStatus(STATUS_COMPLETED)
-      .setUnderQuery(isUnderQuery === ['under_query'])
+      .setUnderQuery(isUnderQuery)
       .incrementVersionNumber();
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));

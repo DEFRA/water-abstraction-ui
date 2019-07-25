@@ -1,6 +1,6 @@
 const moment = require('moment');
 const Joi = require('joi');
-const { get, pick } = require('lodash');
+const { get, pick, mapValues } = require('lodash');
 const { getDay, getMonth } = require('./return-date-helpers');
 const { getReturnTotal } = require('./water-return-helpers');
 
@@ -34,6 +34,7 @@ class WaterReturn {
     this.versions = data.versions;
     this.reading = new Reading(data.reading);
     this.meter = new Meter(this.reading, this.lines, data.meters[0]);
+    this.isUnderQuery = data.isUnderQuery;
   }
 
   toObject () {
@@ -52,7 +53,8 @@ class WaterReturn {
       endDate: this.endDate,
       frequency: this.frequency,
       user: this.user,
-      versions: this.versions
+      versions: this.versions,
+      isUnderQuery: this.isUnderQuery
     };
 
     if (!this.isNilReturn()) {
@@ -88,17 +90,10 @@ class WaterReturn {
   /**
    * Applys received date and completed status to return
    * @param {String} [status] - status to set to, defaults to 'completed'
-   * @param {String} [receivedDate] - ISO 8601 date string, YYYY-MM-DD
    * @return {Object} updated return data model
    */
-  setStatus (status, receivedDate) {
-    const date = receivedDate || moment().format('YYYY-MM-DD');
+  setStatus (status) {
     Joi.assert(status, Joi.string().valid([STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED]));
-    Joi.assert(date, Joi.string().isoDate());
-
-    if (!this.receivedDate) {
-      this.receivedDate = date;
-    }
 
     // Don't allow a completed return to go back to an earlier status
     if (this.status !== STATUS_COMPLETED) {
@@ -106,6 +101,17 @@ class WaterReturn {
     }
     return this;
   };
+
+  /**
+   * Sets the date on which the return was received
+   * @param {String} date - ISO 8601 date field
+   */
+  setReceivedDate (receivedDate) {
+    const date = receivedDate || moment().format('YYYY-MM-DD');
+    Joi.assert(date, Joi.string().isoDate());
+    this.receivedDate = date;
+    return this;
+  }
 
   setLines (lines) {
     const abstractionPeriod = this.getAbstractionPeriod();
@@ -129,6 +135,17 @@ class WaterReturn {
     return this.lines.toArray();
   }
 
+  /**
+   * Applies the single total value using the default/custom abstraction period
+   * @return {[type]} [description]
+   */
+  updateSingleTotalLines () {
+    const total = this.reading.getSingleTotal();
+    const abstractionPeriod = this.getAbstractionPeriod();
+    this.lines.setSingleTotal(abstractionPeriod, total);
+    return this;
+  }
+
   incrementVersionNumber () {
     this.versionNumber = parseInt(this.versionNumber || 0) + 1;
     this.isCurrent = true;
@@ -144,22 +161,25 @@ class WaterReturn {
    */
   getAbstractionPeriod () {
     const isCustomPeriod = get(this, 'reading.totalCustomDates', false);
+    let data;
     if (isCustomPeriod) {
       const { totalCustomDateStart, totalCustomDateEnd } = this.reading;
-      return {
+      data = {
         periodStartDay: getDay(totalCustomDateStart),
         periodStartMonth: getMonth(totalCustomDateStart),
         periodEndDay: getDay(totalCustomDateEnd),
         periodEndMonth: getMonth(totalCustomDateEnd)
       };
+    } else {
+      data = pick(
+        this.metadata.nald,
+        'periodEndDay',
+        'periodEndMonth',
+        'periodStartDay',
+        'periodStartMonth'
+      );
     }
-    return pick(
-      this.metadata.nald,
-      'periodEndDay',
-      'periodEndMonth',
-      'periodStartDay',
-      'periodStartMonth'
-    );
+    return mapValues(data, parseInt);
   }
 
   /**
@@ -174,7 +194,14 @@ class WaterReturn {
   isNilReturn () {
     return this.isNil;
   }
+
+  setUnderQuery (underQuery) {
+    Joi.assert(underQuery, Joi.boolean());
+    this.isUnderQuery = underQuery;
+    return this;
+  }
 }
 
 module.exports = WaterReturn;
 module.exports.STATUS_COMPLETED = STATUS_COMPLETED;
+module.exports.STATUS_RECEIVED = STATUS_RECEIVED;

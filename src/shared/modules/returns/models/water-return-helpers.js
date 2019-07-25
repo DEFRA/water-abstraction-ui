@@ -82,7 +82,32 @@ const getReturnTotal = (lines) => {
   }, 0);
 };
 
+/**
+ * Distributes a single total among the supplied abstraction period for
+ * the given list of return lines
+ * @param {Object} abstractionPeriod - contains abs period start/end day/month
+ * @param {Array} lines - return lines
+ * @param {Number} total
+ * @return {Array} lines with total distributed among lines
+ */
+const getSingleTotalLines = (abstractionPeriod, lines, total) => {
+  const indexes = lines.reduce((acc, line, index) => {
+    if (isDateWithinAbstractionPeriod(line.endDate, abstractionPeriod)) {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
+
+  const perPeriod = total / indexes.length;
+
+  return lines.map((line, i) => ({
+    ...line,
+    quantity: indexes.includes(i) ? perPeriod : null
+  }));
+};
+
 exports.createLines = createLines;
 exports.getDefaultQuantity = getDefaultQuantity;
 exports.mapMeterLinesToVolumes = mapMeterLinesToVolumes;
 exports.getReturnTotal = getReturnTotal;
+exports.getSingleTotalLines = getSingleTotalLines;

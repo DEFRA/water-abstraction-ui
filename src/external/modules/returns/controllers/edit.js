@@ -99,7 +99,7 @@ const postUnits = async (request, h) => {
 };
 
 /**
- * Get handler for units
+ * GET - volumes
  */
 const getQuantities = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
@@ -114,7 +114,7 @@ const getLines = (data, valueKey = 'quantity') => {
 };
 
 /**
- * Post handler for units
+ * POST - volumes
  */
 const postQuantities = async (request, h) => {
   if (request.view.form.isValid) {
@@ -191,6 +191,7 @@ const postConfirm = async (request, h) => {
     request.model
       .setUser(request.defra.userName, request.defra.entityId, false)
       .setStatus(STATUS_COMPLETED)
+      .setReceivedDate()
       .incrementVersionNumber();
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));

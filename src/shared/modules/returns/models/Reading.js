@@ -68,13 +68,43 @@ class Reading {
     return this;
   };
 
-  setCustomAbstractionPeriod (startDate, endDate) {
-    Joi.assert(startDate, VALID_DATE);
-    Joi.assert(endDate, VALID_DATE);
-    this.totalCustomDates = true;
-    this.totalCustomDateStart = startDate;
-    this.totalCustomDateEnd = endDate;
+  /**
+   * Sets a custom abstraction period for single total
+   * @param {Boolean} totalCustomDates
+   * @param {String} startDate - ISO 8601 date YYYY-MM-DD
+   * @param {String} endDate   - ISO 8601 date YYYY-MM-DD
+   */
+  setCustomAbstractionPeriod (totalCustomDates, startDate, endDate) {
+    Joi.assert(totalCustomDates, Joi.boolean());
+    this.totalCustomDates = totalCustomDates;
+    if (totalCustomDates) {
+      Joi.assert(startDate, VALID_DATE);
+      Joi.assert(endDate, VALID_DATE);
+      this.totalCustomDateStart = startDate;
+      this.totalCustomDateEnd = endDate;
+    }
     return this;
+  }
+
+  /**
+   * Sets single total flag and value
+   * @param {Boolean} totalFlag - the single total value
+   * @param {Number} total      - the total
+   */
+  setSingleTotal (totalFlag, total) {
+    Joi.assert(totalFlag, Joi.boolean());
+    Joi.assert(total, Joi.number().min(0));
+    this.totalFlag = totalFlag;
+    this.total = totalFlag ? total : null;
+    return this;
+  }
+
+  /**
+   * Gets single total value
+   * @return {Number|null}
+   */
+  getSingleTotal () {
+    return this.totalFlag ? this.total : null;
   }
 
   getUnits () {

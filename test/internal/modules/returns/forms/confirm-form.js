@@ -1,7 +1,7 @@
 const { find } = require('lodash');
 const { expect } = require('code');
 const { experiment, test } = exports.lab = require('lab').script();
-const confirmForm = require('internal/modules/returns/forms/confirm');
+const { form: confirmForm } = require('internal/modules/returns/forms/confirm');
 const { scope } = require('internal/lib/constants');
 
 experiment('confirmForm', () => {
@@ -24,25 +24,12 @@ experiment('confirmForm', () => {
   const externalForm = confirmForm(getRequest(false), {});
   const internalForm = confirmForm(getRequest(true), {});
 
-  test('it should have an external action URL for external users', async () => {
-    expect(externalForm.action).to.equal('/return/nil-return?returnId=abc');
-  });
-
   test('it should have a CSRF token', async () => {
     const csrf = find(externalForm.fields, { name: 'csrf_token' });
     expect(csrf.value).to.equal('xyz');
   });
 
-  test('it should have an internal action URL for internal users', async () => {
-    expect(internalForm.action).to.equal('/return/nil-return?returnId=abc');
-  });
-
-  test('it should not include under query checkbox for external users', async () => {
-    const fieldNames = externalForm.fields.map(field => field.name);
-    expect(fieldNames).to.equal(['csrf_token', null]);
-  });
-
-  test('it should include under query checkbox for internal users', async () => {
+  test('it should include under query checkbox', async () => {
     const fieldNames = internalForm.fields.map(field => field.name);
     expect(fieldNames).to.equal(['csrf_token', 'isUnderQuery', null]);
   });

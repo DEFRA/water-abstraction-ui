@@ -10,7 +10,6 @@ const Hapi = require('@hapi/hapi');
 const config = require('./src/internal/config');
 const plugins = require('./src/internal/lib/hapi-plugins');
 const routes = require('./src/internal/modules/routes');
-const returnsPlugin = require('./src/internal/modules/returns/plugin');
 const viewEngine = require('./src/internal/lib/view-engine/');
 const { logger } = require('./src/internal/logger');
 const connectors = require('./src/internal/lib/connectors/services');
@@ -47,15 +46,24 @@ async function start () {
 
     server.auth.default('standard');
 
-    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
+    await server.register([...common, ...Object.values(plugins)]);
 
-    await server.register([{
-      plugin: require('shared/plugins/licence-data'),
-      options: require('internal/lib/licence-data-config')
-    }, {
-      plugin: require('shared/plugins/view-licence'),
-      options: require('internal/lib/view-licence-config')
-    }
+    await server.register([
+      {
+        plugin: require('shared/plugins/returns'),
+        options: {
+          getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
+          checkAccess: false
+        }
+      }, {
+        plugin: require('shared/plugins/licence-data'),
+        options: require('internal/lib/licence-data-config')
+      }, {
+        plugin: require('shared/plugins/view-licence'),
+        options: require('internal/lib/view-licence-config')
+      }, {
+        plugin: require('shared/plugins/flow')
+      }
     ]);
 
     // Set up Nunjucks view engine

@@ -1,35 +1,80 @@
-const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { getPath } = require('../lib/flow-helpers');
-const { STEP_DATE_RECEIVED } = require('../lib/flow-helpers/steps');
+const Joi = require('joi');
+const { formFactory, fields } = require('shared/lib/forms');
+const moment = require('moment');
+
+const { getContinueField, getCsrfTokenField } =
+ require('shared/modules/returns/forms/common');
 
 const errorMessage = {
   message: 'Enter a date in the right format, for example 31 3 2018',
   summary: 'Enter a date in the right format'
 };
 
-const form = (request, data) => {
-  const { csrfToken } = request.view;
+const getDateField = value => fields.date('customDate', {
+  label: 'When was the return received?',
+  errors: {
+    'any.required': errorMessage,
+    'string.isoDate': errorMessage
+  }
+}, value);
 
-  const action = getPath(STEP_DATE_RECEIVED, request, data);
+/**
+ * Given a date, returns either 'today', 'yesterday' or 'custom'
+ * @param  {String} date YYYY-MM-DD
+ * @return {String}      today|yesterday|custom
+ */
+const getReceivedDate = date => {
+  if (moment().isSame(date, 'day')) {
+    return 'today';
+  }
+  if (moment().subtract(1, 'day').isSame(date, 'day')) {
+    return 'yesterday';
+  }
+  return 'custom';
+};
 
-  const f = formFactory(action);
-
-  f.fields.push(fields.date('receivedDate', {
-    type: 'date',
-    label: 'When was the return received?',
-    errors: {
-      'any.required': errorMessage,
-      'string.isoDate': errorMessage
+const getRadioField = value => fields.radio('receivedDate', {
+  label: 'When was the return received?',
+  subHeading: true,
+  errors: {
+    'any.required': {
+      message: 'Select when the return was received'
+    }
+  },
+  choices: [
+    {
+      label: 'Today',
+      value: 'today'
     },
-    enableJS: true
-  }));
+    {
+      label: 'Yesterday',
+      value: 'yesterday'
+    },
+    {
+      label: 'Custom date',
+      value: 'custom',
+      fields: [
+        getDateField(value)
+      ]
+    }
+  ]
+}, getReceivedDate(value));
 
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+exports.form = (request, data) => ({
+  ...formFactory(),
+  fields: [
+    getCsrfTokenField(request),
+    getRadioField(data.receivedDate),
+    getContinueField()
+  ]
+}
+);
 
-  return setValues(f, data);
-};
-
-module.exports = {
-  returnReceivedForm: form
-};
+exports.schema = () => ({
+  csrf_token: Joi.string().guid(),
+  receivedDate: Joi.string().required().valid(['today', 'yesterday', 'custom']),
+  customDate: Joi.when('receivedDate', {
+    is: 'custom',
+    then: Joi.string().isoDate().options({ convert: false })
+  })
+});

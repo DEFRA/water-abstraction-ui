@@ -95,6 +95,25 @@ const importData = (form, payload) => {
   return data;
 };
 
+/**
+ * Runs data which is output from the validator through the postValidate
+ * hook in each data mapper
+ * @param  {Object} form   - the form object
+ * @param  {Object} values - flat object of post-validation form data
+ * @return {Object}        - flat object of data run through mappers postValidate
+ */
+const postValidate = (form, values) => {
+  const data = {};
+  mapFields(form, (field) => {
+    if (field.name) {
+      const mapper = field.options.mapper || 'defaultMapper';
+      data[field.name] = mappers[mapper].postValidate(values[field.name]);
+    }
+    return field;
+  });
+  return data;
+};
+
 const getPayload = (form, request) => form.method === 'POST'
   ? request.payload
   : request.query;
@@ -120,7 +139,7 @@ const handleRequest = (form, request, validationSchema, options) => {
   f = applyErrors(f, formattedErrors);
   f.isValid = !error;
 
-  return setValues(f, value);
+  return setValues(f, postValidate(form, value));
 };
 
 /**

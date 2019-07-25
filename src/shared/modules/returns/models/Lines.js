@@ -1,7 +1,8 @@
 const { find, xor } = require('lodash');
 const Joi = require('joi');
 const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers');
-const { getDefaultQuantity } = require('./water-return-helpers');
+const { getDefaultQuantity, getSingleTotalLines } = require('./water-return-helpers');
+
 const {
   VALID_DATE, VALID_QUANTITY, VALID_PERIOD,
   VALID_READING_TYPE, VALID_ABSTRACTION_PERIOD
@@ -77,6 +78,11 @@ class Lines {
       };
     });
 
+    return this;
+  }
+
+  setSingleTotal (abstractionPeriod, total) {
+    this.lines = getSingleTotalLines(abstractionPeriod, this.lines, total);
     return this;
   }
 }

@@ -10,7 +10,8 @@ const defaultMapper = {
   import: (fieldName, payload) => {
     return payload[fieldName];
   },
-  export: identity
+  export: identity,
+  postValidate: identity
 };
 
 /**
@@ -35,7 +36,8 @@ const booleanMapper = {
       return 'false';
     }
     return undefined;
-  }
+  },
+  postValidate: identity
 };
 
 /**
@@ -77,6 +79,15 @@ const dateMapper = {
     const year = payload[fieldName + '-year'];
     return `${formatYearSegment(year)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
   },
+  postValidate: value => {
+    // The internal date format is an ISO 8601 string, YYYY-MM-DD, so if we
+    // detect that Joi has converted the value into a date object, convert
+    // it back to a string
+    if (value instanceof Date) {
+      return moment(value).format('YYYY-MM-DD');
+    }
+    return value;
+  },
   export: (value) => {
     const parts = value.split('-');
     return {
@@ -100,7 +111,8 @@ const numberMapper = {
     }
     return value;
   },
-  export: identity
+  export: identity,
+  postValidate: identity
 };
 
 /**
@@ -113,7 +125,8 @@ const licenceNumbersMapper = {
   },
   export: (value) => {
     return value.join(', ');
-  }
+  },
+  postValidate: identity
 };
 
 /**
@@ -126,7 +139,8 @@ const arrayMapper = {
     const arr = isArray(value) ? value : [value];
     return arr.filter(isDefined);
   },
-  export: identity
+  export: identity,
+  postValidate: identity
 };
 
 const objectMapper = {
@@ -145,7 +159,8 @@ const objectMapper = {
     };
     return find(field.options.choices, findOptions);
   },
-  export: identity
+  export: identity,
+  postValidate: identity
 };
 
 exports.defaultMapper = defaultMapper;

@@ -126,21 +126,15 @@ experiment('WaterReturn', () => {
   });
 
   experiment('setStatus', () => {
-    const data = omit(createReturn(), 'receivedDate');
+    let data;
+    beforeEach(async () => {
+      data = createReturn();
+    });
 
-    test('sets status with receivedDate defaulting to todays date', async () => {
-      const today = moment().format('YYYY-MM-DD');
+    test('sets status if status not completed', async () => {
       const waterReturn = new WaterReturn(data);
       waterReturn.setStatus('completed');
       expect(waterReturn.status).to.equal('completed');
-      expect(waterReturn.receivedDate).to.equal(today);
-    });
-
-    test('sets status with defined received date', async () => {
-      const waterReturn = new WaterReturn(data);
-      waterReturn.setStatus('completed', '2019-02-14');
-      expect(waterReturn.status).to.equal('completed');
-      expect(waterReturn.receivedDate).to.equal('2019-02-14');
     });
 
     test('does not set status if status is already completed', async () => {
@@ -151,13 +145,14 @@ experiment('WaterReturn', () => {
       waterReturn.setStatus('due');
       expect(waterReturn.status).to.equal('completed');
     });
+  });
 
-    test('does not set received date if date already set', async () => {
-      const waterReturn = new WaterReturn({
-        ...data,
-        receivedDate: '2019-02-14'
-      });
-      waterReturn.setStatus('completed');
+  experiment('setReceivedDate', () => {
+    const data = omit(createReturn(), 'receivedDate');
+
+    test('sets the received date', async () => {
+      const waterReturn = new WaterReturn(data);
+      waterReturn.setReceivedDate('2019-02-14');
       expect(waterReturn.receivedDate).to.equal('2019-02-14');
     });
   });
@@ -259,7 +254,7 @@ experiment('WaterReturn', () => {
     });
 
     test('gets custom abstraction period if set in reading', async () => {
-      waterReturn.reading.setCustomAbstractionPeriod('2019-02-14', '2019-04-01');
+      waterReturn.reading.setCustomAbstractionPeriod(true, '2019-02-14', '2019-04-01');
       const period = waterReturn.getAbstractionPeriod();
       expect(period).to.equal({
         periodEndDay: 1,

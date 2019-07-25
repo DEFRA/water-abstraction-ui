@@ -1,63 +1,78 @@
 const Boom = require('boom');
 const services = require('../../../lib/connectors/services');
-const { isInternal: isInternalUser } = require('../../../lib/permissions');
 
 const helpers = require('../lib/helpers');
-const sessionHelpers = require('../lib/session-helpers');
+const { get } = require('lodash');
 
 const { handleRequest, getValues } = require('shared/lib/forms');
 
-const {
-  applyStatus,
-  applyUserDetails,
-  applyUnderQuery,
-  applyReceivedDate,
-  applyMethod,
-  applyMeterDetailsProvided,
-  applySingleTotalAbstractionDates
-} = require('../lib/return-helpers');
-
-const { internalRoutingForm } = require('../forms');
+const { addQuery } = require('shared/modules/returns/route-helpers');
+const WaterReturn = require('shared/modules/returns/models/WaterReturn');
+const { STATUS_RECEIVED } = require('shared/modules/returns/models/WaterReturn');
 
 const {
   STEP_INTERNAL_ROUTING,
   STEP_LOG_RECEIPT,
+  STEP_RECEIPT_LOGGED,
   STEP_DATE_RECEIVED,
-  STEP_INTERNAL_METHOD,
-  STEP_METER_DETAILS_PROVIDED,
-  STEP_SINGLE_TOTAL_DATES,
-  getPreviousPath,
-  getNextPath
-} = require('../lib/flow-helpers');
+  STEP_LICENCES,
+  STEP_QUERY_LOGGED
+} = require('shared/modules/returns/steps');
 
 const {
   logReceiptForm,
   logReceiptSchema,
-  returnReceivedForm,
-  internalMethodForm,
-  meterDetailsProvidedForm,
-  meterDetailsProvidedSchema,
-  singleTotalAbstractionPeriodForm,
-  singleTotalAbstractionPeriodSchema
+  internalRoutingForm
 } = require('../forms');
+
+/**
+ * Loads a WaterReturn instance using the supplied returnId
+ * @param  {String}  returnId - return service return ID
+ * @return {Promise<WaterReturn>} resolves with WaterReturn instance
+ */
+const loadWaterReturn = async returnId => {
+  const data = await services.water.returns.getReturn(returnId);
+  return new WaterReturn(data);
+};
+
+/**
+ * Updates under query status of return
+ * @param  {Object}  request      - hapi request
+ * @param  {Boolean} isUnderQuery - whether return is under query
+ * @return {Promise}
+ */
+const updateReturn = async (request, waterReturn, isUnderQuery, receivedDate) => {
+  const { userName, entityId } = request.defra;
+
+  waterReturn
+    .setUser(userName, entityId, true)
+    .setStatus(STATUS_RECEIVED)
+    .setUnderQuery(isUnderQuery);
+
+  if (receivedDate) {
+    waterReturn.setReceivedDate(receivedDate);
+  }
+
+  return services.water.returns.patchReturn(waterReturn.toObject());
+};
 
 /**
  * For internal users, routing page to decide what to do with return
  * @param {String} request.query.returnId - return ID string
  */
-const getInternalRouting = async (request, h) => {
+const getInternalRouting = async (request, h, form) => {
   const { returnId } = request.query;
 
-  const data = await services.water.returns.getReturn(returnId);
+  const waterReturn = await loadWaterReturn(returnId);
+  const data = waterReturn.toObject();
   const view = await helpers.getViewData(request, data);
-  const form = internalRoutingForm(request, data);
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
-    form,
+    form: form || internalRoutingForm(request, data),
     return: data,
-    back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
-  });
+    back: STEP_LICENCES
+  }, { layout: false });
 };
 
 /**
@@ -66,51 +81,48 @@ const getInternalRouting = async (request, h) => {
 const postInternalRouting = async (request, h) => {
   const { returnId } = request.query;
 
-  let data = await services.water.returns.getReturn(returnId);
-  const view = await helpers.getViewData(request, data);
+  const waterReturn = await loadWaterReturn(returnId);
+  const data = waterReturn.toObject();
 
   const form = handleRequest(internalRoutingForm(request, data), request);
 
   if (form.isValid) {
-    const values = getValues(form);
-    const isQueryOption = ['set_under_query', 'clear_under_query'].includes(values.action);
-    const isUnderQuery = values.action === 'set_under_query';
+    const { action } = getValues(form);
+    const isQueryOption = ['set_under_query', 'clear_under_query'].includes(action);
 
     if (isQueryOption) {
-      data = applyUnderQuery(data, { isUnderQuery });
-      data = applyStatus(data, 'received');
-      data = applyUserDetails(data, request);
-      await services.water.returns.patchReturn(data);
+      await updateReturn(request, waterReturn, action === 'set_under_query');
     }
 
-    sessionHelpers.saveSessionData(request, data);
-    const path = getNextPath(STEP_INTERNAL_ROUTING, request, values);
-    return h.redirect(path);
+    const next = {
+      log_receipt: STEP_LOG_RECEIPT,
+      submit: STEP_DATE_RECEIVED,
+      set_under_query: STEP_QUERY_LOGGED,
+      clear_under_query: STEP_QUERY_LOGGED
+    };
+
+    return h.redirect(addQuery(request, next[action]));
   }
 
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_INTERNAL_ROUTING, request, data)
-  });
+  return getInternalRouting(request, h, form);
 };
 
 /**
  * Renders form to log receipt of a return form
  */
-const getLogReceipt = async (request, h) => {
+const getLogReceipt = async (request, h, form) => {
   const { returnId } = request.query;
 
-  const data = await services.water.returns.getReturn(returnId);
+  const waterReturn = await loadWaterReturn(returnId);
+  const data = waterReturn.toObject();
   const view = await helpers.getViewData(request, data);
 
-  return h.view('water/returns/internal/form', {
+  return h.view('nunjucks/returns/form.njk', {
     ...view,
-    form: logReceiptForm(request, data),
+    form: form || logReceiptForm(request, data),
     return: data,
-    back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
-  });
+    back: addQuery(request, STEP_INTERNAL_ROUTING)
+  }, { layout: false });
 };
 
 /**
@@ -119,30 +131,20 @@ const getLogReceipt = async (request, h) => {
 const postLogReceipt = async (request, h) => {
   const { returnId } = request.query;
 
-  const data = await services.water.returns.getReturn(returnId);
-  const view = await helpers.getViewData(request, data);
+  const waterReturn = await loadWaterReturn(returnId);
+  const data = waterReturn.toObject();
 
   const form = handleRequest(logReceiptForm(request, data), request, logReceiptSchema());
 
   if (form.isValid) {
-    const formValues = getValues(form);
+    const values = getValues(form);
+    const isUnderQuery = get(values, 'isUnderQuery[0]') === 'under_query';
+    await updateReturn(request, waterReturn, isUnderQuery, values.dateReceived);
 
-    let d = applyStatus(data, 'received', formValues.date_received);
-    d = applyUnderQuery(d, formValues);
-    d = applyUserDetails(d, request);
-
-    // Patch returns service via water service
-    await services.water.returns.patchReturn(d);
-
-    return h.redirect(getNextPath(STEP_LOG_RECEIPT, request, data));
+    return h.redirect(addQuery(request, STEP_RECEIPT_LOGGED));
   }
 
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_LOG_RECEIPT, request, data)
-  });
+  return getLogReceipt(request, h, form);
 };
 
 /**
@@ -159,7 +161,7 @@ const getSubmittedViewData = async (request) => {
   // Redirect path is returns page for this licence
   const documentResponse = await services.crm.documents.findMany({
     system_external_id: data.licenceNumber,
-    includeExpired: isInternalUser(request)
+    includeExpired: true
   });
 
   if (documentResponse.error) {
@@ -179,137 +181,12 @@ const getSubmittedViewData = async (request) => {
  */
 const getReceiptLogged = async (request, h) => {
   const view = await getSubmittedViewData(request);
-  return h.view('water/returns/internal/receipt-logged', view);
+  return h.view('nunjucks/returns/receipt-logged.njk', view, { layout: false });
 };
 
 const getQueryLogged = async (request, h) => {
   const view = await getSubmittedViewData(request);
-  return h.view('water/returns/internal/query-logged', view);
-};
-
-const getDateReceived = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: returnReceivedForm(request, data),
-    return: data,
-    back: getPreviousPath(STEP_DATE_RECEIVED, request, data)
-  });
-};
-
-const postDateReceived = async (request, h) => {
-  const { view, data } = request.returns;
-
-  const form = handleRequest(returnReceivedForm(request, data), request);
-
-  if (form.isValid) {
-    const d = applyReceivedDate(data, getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(getNextPath(STEP_DATE_RECEIVED, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_DATE_RECEIVED, request, data)
-  });
-};
-
-const getInternalMethod = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: internalMethodForm(request, data),
-    return: data,
-    back: getPreviousPath(STEP_INTERNAL_METHOD, request, data)
-  });
-};
-
-const postInternalMethod = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = handleRequest(internalMethodForm(request, data), request);
-
-  if (form.isValid) {
-    const d = applyMethod(data, getValues(form).method);
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(getNextPath(STEP_INTERNAL_METHOD, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_INTERNAL_METHOD, request, data)
-  });
-};
-
-const getMeterDetailsProvided = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: meterDetailsProvidedForm(request, data),
-    return: data,
-    back: getPreviousPath(STEP_METER_DETAILS_PROVIDED, request, data)
-  });
-};
-
-const postMeterDetailsProvided = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = handleRequest(meterDetailsProvidedForm(request, data), request, meterDetailsProvidedSchema);
-
-  if (form.isValid) {
-    const d = applyMeterDetailsProvided(data, getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(getNextPath(STEP_METER_DETAILS_PROVIDED, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_METER_DETAILS_PROVIDED, request, data)
-  });
-};
-
-const getSingleTotalAbstractionPeriod = async (request, h) => {
-  const { view, data } = request.returns;
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form: singleTotalAbstractionPeriodForm(request, data),
-    return: data,
-    back: getPreviousPath(STEP_SINGLE_TOTAL_DATES, request, data)
-  });
-};
-
-const postSingleTotalAbstractionPeriod = async (request, h) => {
-  const { view, data } = request.returns;
-  const form = handleRequest(
-    singleTotalAbstractionPeriodForm(request, data),
-    request,
-    singleTotalAbstractionPeriodSchema(data)
-  );
-
-  if (form.isValid) {
-    const d = applySingleTotalAbstractionDates(data, getValues(form));
-    sessionHelpers.saveSessionData(request, d);
-
-    return h.redirect(getNextPath(STEP_SINGLE_TOTAL_DATES, request, d));
-  }
-
-  return h.view('water/returns/internal/form', {
-    ...view,
-    form,
-    return: data,
-    back: getPreviousPath(STEP_SINGLE_TOTAL_DATES, request, data)
-  });
+  return h.view('nunjucks/returns/query-logged.njk', view, { layout: false });
 };
 
 exports.getInternalRouting = getInternalRouting;
@@ -320,15 +197,3 @@ exports.postLogReceipt = postLogReceipt;
 
 exports.getReceiptLogged = getReceiptLogged;
 exports.getQueryLogged = getQueryLogged;
-
-exports.getDateReceived = getDateReceived;
-exports.postDateReceived = postDateReceived;
-
-exports.getInternalMethod = getInternalMethod;
-exports.postInternalMethod = postInternalMethod;
-
-exports.getMeterDetailsProvided = getMeterDetailsProvided;
-exports.postMeterDetailsProvided = postMeterDetailsProvided;
-
-exports.getSingleTotalAbstractionPeriod = getSingleTotalAbstractionPeriod;
-exports.postSingleTotalAbstractionPeriod = postSingleTotalAbstractionPeriod;

@@ -3,7 +3,7 @@ const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
 const { getLineName, getLineLabel } = require('./common');
 const { maxPrecision } = require('shared/lib/number-formatter');
-
+const { getSuffix } = require('./common');
 /**
  * Returns form lines
  * @param {Object} returns data model
@@ -11,22 +11,6 @@ const { maxPrecision } = require('shared/lib/number-formatter');
  */
 const getFormLines = data =>
   get(data, 'lines.length') > 0 ? data.lines : data.requiredLines;
-
-/**
- * Get field suffix - this is the units used for this return
- * @param {String} unit - internal SI unit or gal
- * @return {String} suffix - human readable unit
- */
-const getSuffix = (unit) => {
-  const u = unit.replace('³', '3');
-  const units = {
-    m3: 'cubic metres',
-    l: 'litres',
-    gal: 'gallons',
-    Ml: 'megalitres'
-  };
-  return units[u];
-};
 
 const getLineField = (line, suffix, isFirstLine) => {
   const name = getLineName(line);

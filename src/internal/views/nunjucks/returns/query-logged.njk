@@ -6,10 +6,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    {{ confirmation(data) }}
+    {% set title %}
+    Query {{ 'recorded' if return.isUnderQuery else 'resolved' }}
+    {% endset %}
 
-    <p class="govuk-body govuk-!-margin-bottom-9">
-      <a href="{{ returnUrl }}">View this return</a>
+    {{ confirmation(data, title) }}
+
+    <p>
+      <a href="{{ returnsUrl }}">View returns for {{ return.licenceNumber }}</a>
     </p>
   </div>
 </div>

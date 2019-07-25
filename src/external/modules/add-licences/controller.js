@@ -33,13 +33,14 @@ const {
 /**
  * Render form to add licences to account
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - HAPI HTTP reply
  */
-async function getLicenceAdd (request, reply) {
-  const viewContext = request.view;
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Add your licences to the service';
-  return reply.view('water/licences-add/add-licences', viewContext);
+async function getLicenceAdd (request, h) {
+  return h.view(
+    'nunjucks/add-licences/index.njk',
+    request.view,
+    { layout: false }
+  );
 }
 
 /**
@@ -122,7 +123,7 @@ async function postLicenceAdd (request, reply) {
 
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
-      return reply.view('water/licences-add/add-licences', viewContext);
+      return reply.view('nunjucks/add-licences/index.njk', viewContext, { layout: false });
     }
     throw err;
   }
@@ -136,8 +137,6 @@ async function postLicenceAdd (request, reply) {
  */
 async function getLicenceSelect (request, reply) {
   const viewContext = request.view;
-  viewContext.pageTitle = 'Confirm your licences';
-  viewContext.activeNavLink = 'manage';
 
   if (request.query.error === 'noLicenceSelected') {
     viewContext.error = { name: 'LicenceNotSelectedError' };
@@ -153,9 +152,14 @@ async function getLicenceSelect (request, reply) {
       throw error;
     }
 
-    viewContext.licences = data;
     viewContext.token = request.query.token;
-    return reply.view('water/licences-add/select-licences', viewContext);
+    viewContext.licences = data.map(licence => ({
+      checked: true,
+      value: licence.document_id,
+      text: licence.system_external_id
+    }));
+
+    return reply.view('nunjucks/add-licences/select-licences.njk', viewContext, { layout: false });
   } catch (err) {
     reply.redirect('/add-licences?error=flow');
   }
@@ -230,7 +234,6 @@ async function postLicenceSelect (request, reply) {
       return reply.redirect('/select-licences?error=noLicenceSelected');
     }
     throw err;
-    // errorHandler(request, reply)(err);
   }
 }
 
@@ -238,14 +241,14 @@ async function postLicenceSelect (request, reply) {
  * There has been an error uploading/selecting licences
  * - show user contact information
  * @param {Object} request - HAPI HTTP request instance
- * @param {Object} reply - HAPI HTTP reply instance
+ * @param {Object} h - HAPI HTTP toolkit
  */
-function getLicenceSelectError (request, reply) {
-  const viewContext = request.view;
-  viewContext.pageTitle = 'Sorry, we need to confirm your licence information with you';
-  viewContext.customTitle = 'We need to confirm your licence information';
-  viewContext.activeNavLink = 'manage';
-  return reply.view('water/licences-add/select-licences-error', viewContext);
+function getLicenceSelectError (request, h) {
+  return h.view(
+    'nunjucks/add-licences/select-licences-error.njk',
+    request.view,
+    { layout: false }
+  );
 }
 
 const getUniqueAddresses = async selectedIds => {
@@ -447,14 +450,14 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
 /**
  * Verify licences with code received in post
  * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply
+ * @param {Object} h - HAPI HTTP response toolkit
  */
 async function getSecurityCode (request, h) {
-  const viewContext = request.view;
-  viewContext.pageTitle = 'Enter your security code';
-  viewContext.activeNavLink = 'manage';
-
-  return h.view('water/licences-add/security-code', viewContext);
+  return h.view(
+    'nunjucks/add-licences/security-code.njk',
+    request.view,
+    { layout: false }
+  );
 }
 
 /**
@@ -464,9 +467,6 @@ async function getSecurityCode (request, h) {
  */
 async function postSecurityCode (request, reply) {
   const viewContext = request.view;
-  viewContext.pageTitle = 'Enter your security code';
-  viewContext.activeNavLink = 'manage';
-
   const { entityId } = request.defra;
 
   try {
@@ -491,7 +491,7 @@ async function postSecurityCode (request, reply) {
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
       viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
-      return reply.view('water/licences-add/security-code', viewContext);
+      return reply.view('nunjucks/add-licences/security-code.njk', viewContext, { layout: false });
     }
 
     throw error;
@@ -500,12 +500,17 @@ async function postSecurityCode (request, reply) {
 
 exports.getLicenceAdd = getLicenceAdd;
 exports.postLicenceAdd = postLicenceAdd;
+
 exports.getLicenceSelect = getLicenceSelect;
 exports.postLicenceSelect = postLicenceSelect;
+
 exports.getLicenceSelectError = getLicenceSelectError;
+
 exports.getAddressSelect = getAddressSelect;
 exports.postAddressSelect = postAddressSelect;
+
 exports.getFAO = getFAO;
 exports.postFAO = postFAO;
+
 exports.getSecurityCode = getSecurityCode;
 exports.postSecurityCode = postSecurityCode;

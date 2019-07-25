@@ -12,15 +12,7 @@ const { STATUS_COMPLETED } = require('shared/modules/returns/models/WaterReturn'
 const { METHOD_VOLUMES, METHOD_ONE_METER } = require('shared/modules/returns/models/Reading');
 
 const services = require('../../../lib/connectors/services');
-
-/**
- * Adds return ID query string from request.query.returnId to supplied path
- * @param {Object} request
- * @param {String} path
- */
-const addQuery = (request, path) => {
-  return `${path}?returnId=${request.query.returnId}`;
-};
+const { addQuery } = require('shared/modules/returns/route-helpers');
 
 /**
  * Renders form for "Have you abstracted water in this return period?"

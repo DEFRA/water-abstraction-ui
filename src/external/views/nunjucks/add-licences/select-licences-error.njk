@@ -1,0 +1,41 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "contact-details.njk" import contactDetails %}
+
+{% block pageTitle %}
+  We need to confirm your licence information
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ title(pageTitle) }}
+      <p>Please contact us for help.</p>
+      {{ contactDetails() }}
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-inset-text">
+        <p>You will need to provide:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>the licence number(s) you are trying to access</li>
+          <li>the address each licence is registered to</li>
+          <li>the name of the licence holder for each licence </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        <a class="govuk-link" href="/signout">Sign out</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

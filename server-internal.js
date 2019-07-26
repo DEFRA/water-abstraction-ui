@@ -33,6 +33,26 @@ const server = Hapi.server({
   }
 });
 
+const pluginsArray = [
+  ...common,
+  ...Object.values(plugins),
+  {
+    plugin: require('shared/plugins/returns'),
+    options: {
+      getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
+      checkAccess: false
+    }
+  }, {
+    plugin: require('shared/plugins/licence-data'),
+    options: require('internal/lib/licence-data-config')
+  }, {
+    plugin: require('shared/plugins/view-licence'),
+    options: require('internal/lib/view-licence-config')
+  }, {
+    plugin: require('shared/plugins/flow')
+  }
+];
+
 /**
  * Async function to start HAPI server
  */
@@ -47,25 +67,7 @@ async function start () {
 
     server.auth.default('standard');
 
-    await server.register([...common, ...Object.values(plugins)]);
-
-    await server.register([
-      {
-        plugin: require('shared/plugins/returns'),
-        options: {
-          getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
-          checkAccess: false
-        }
-      }, {
-        plugin: require('shared/plugins/licence-data'),
-        options: require('internal/lib/licence-data-config')
-      }, {
-        plugin: require('shared/plugins/view-licence'),
-        options: require('internal/lib/view-licence-config')
-      }, {
-        plugin: require('shared/plugins/flow')
-      }
-    ]);
+    await server.register(pluginsArray);
 
     // Set up Nunjucks view engine
     server.views(viewEngine);

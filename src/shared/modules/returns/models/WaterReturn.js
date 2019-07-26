@@ -14,6 +14,10 @@ const STATUS_DUE = 'due';
 const STATUS_RECEIVED = 'received';
 const STATUS_COMPLETED = 'completed';
 
+const toObjectKeys = ['returnId', 'licenceNumber', 'receivedDate',
+  'versionNumber', 'isCurrent', 'status', 'isNil', 'metadata', 'startDate',
+  'endDate', 'frequency', 'user', 'versions', 'isUnderQuery'];
+
 class WaterReturn {
   constructor (data = {}) {
     this.returnId = data.returnId;
@@ -39,22 +43,9 @@ class WaterReturn {
 
   toObject () {
     const obj = {
-      returnId: this.returnId,
-      licenceNumber: this.licenceNumber,
-      receivedDate: this.receivedDate,
-      versionNumber: this.versionNumber,
-      isCurrent: this.isCurrent,
-      status: this.status,
-      isNil: this.isNil,
+      ...pick(this, toObjectKeys),
       meters: [this.meter.toObject()],
-      reading: this.reading.toObject(),
-      metadata: this.metadata,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      frequency: this.frequency,
-      user: this.user,
-      versions: this.versions,
-      isUnderQuery: this.isUnderQuery
+      reading: this.reading.toObject()
     };
 
     if (!this.isNilReturn()) {

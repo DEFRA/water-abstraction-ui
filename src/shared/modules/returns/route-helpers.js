@@ -1,15 +1,33 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { VALID_RETURN_ID } = require('shared/lib/validators');
 
+const optionsSchema = {
+  description: Joi.string(),
+  pageTitle: Joi.string().required(),
+  showMeta: Joi.boolean(),
+  form: Joi.func().required(),
+  schema: Joi.func(),
+  submit: Joi.boolean()
+};
+
+const createPluginsOptions = options => ({
+  viewContext: {
+    pageTitle: options.pageTitle,
+    activeNavLink: 'returns',
+    showMeta: options.showMeta || false
+  },
+  returns: {
+    load: true
+  },
+  flow: {
+    form: options.form,
+    schema: options.schema,
+    submit: options.submit
+  }
+});
+
 const createRoute = (method, path, handler, options) => {
-  Joi.assert(options, {
-    description: Joi.string(),
-    pageTitle: Joi.string().required(),
-    showMeta: Joi.boolean(),
-    form: Joi.func().required(),
-    schema: Joi.func(),
-    submit: Joi.boolean()
-  });
+  Joi.assert(options, optionsSchema);
 
   return {
     method,
@@ -22,21 +40,7 @@ const createRoute = (method, path, handler, options) => {
           returnId: VALID_RETURN_ID
         }
       },
-      plugins: {
-        viewContext: {
-          pageTitle: options.pageTitle,
-          activeNavLink: 'returns',
-          showMeta: options.showMeta || false
-        },
-        returns: {
-          load: true
-        },
-        flow: {
-          form: options.form,
-          schema: options.schema,
-          submit: options.submit
-        }
-      }
+      plugins: createPluginsOptions(options)
     }
   };
 };

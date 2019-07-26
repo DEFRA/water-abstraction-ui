@@ -21,6 +21,7 @@ const {
 } = require('shared/modules/returns/models/Reading');
 
 const { addQuery } = require('shared/modules/returns/route-helpers');
+const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappers');
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -158,13 +159,9 @@ const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk'
  */
 const postMeterDetails = async (request, h) => {
   if (request.view.form.isValid) {
-    const { manufacturer, serialNumber, isMultiplier } = forms.getValues(request.view.form);
-    const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1;
-    request.model.meter.setMeterDetails({
-      manufacturer,
-      serialNumber,
-      multiplier
-    });
+    const data = forms.getValues(request.view.form);
+    const details = mapMeterDetails(data);
+    request.model.meter.setMeterDetails(details);
     const next = request.model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_SINGLE_TOTAL;
     return h.redirect(addQuery(request, next));
   }
@@ -213,7 +210,7 @@ const getMeterReadings = async (request, h) => {
 const postMeterReadings = async (request, h) => {
   if (request.view.form.isValid) {
     const data = omit(forms.getValues(request.view.form), ['csrf_token', 'startReading']);
-    const lines = getLines(data, 'reading');
+    const lines = mapLines(data, 'reading');
     const { startReading } = forms.getValues(request.view.form);
     request.model.meter.setMeterReadings(startReading, lines);
     return h.redirect(addQuery(request, STEP_CONFIRM));
@@ -284,20 +281,13 @@ const getQuantities = async (request, h) => {
   }, { layout: false });
 };
 
-const getLines = (data, valueKey = 'quantity') => {
-  return Object.keys(data).map(key => {
-    const [startDate, endDate] = key.split('_');
-    return { startDate, endDate, [valueKey]: data[key] };
-  });
-};
-
 /**
  * POST - volumes
  */
 const postQuantities = async (request, h) => {
   if (request.view.form.isValid) {
     const data = omit(forms.getValues(request.view.form), 'csrf_token');
-    request.model.setLines(getLines(data));
+    request.model.setLines(mapLines(data));
     return h.redirect(addQuery(request, STEP_CONFIRM));
   }
   return getAmounts(request, h);

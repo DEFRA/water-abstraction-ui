@@ -14,7 +14,6 @@ const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/returns/lib/helpers');
 
 const controller = require('internal/modules/returns/controllers/internal');
-const sessionHelpers = require('internal/modules/returns/lib/session-helpers');
 
 const returnId = 'test-return-id';
 
@@ -58,7 +57,6 @@ const createReturn = () => ({
 
 experiment('internal returns controller', () => {
   beforeEach(async () => {
-    sandbox.stub(sessionHelpers, 'saveSessionData');
   });
 
   afterEach(async () => {

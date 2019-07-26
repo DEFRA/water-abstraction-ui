@@ -1,12 +1,13 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const { getContinueField, getCsrfTokenField, getHeadingField } =
+const { getContinueField, getCsrfTokenField } =
  require('shared/modules/returns/forms/common');
 
 exports.form = (request, data) => ({
   ...formFactory(),
   fields: [
-    getHeadingField('Did your meter reset in this abstraction period?'),
     fields.radio('meterReset', {
+      label: 'Did your meter reset in this abstraction period?',
+      subHeading: true,
       mapper: 'booleanMapper',
       errors: {
         'any.required': {

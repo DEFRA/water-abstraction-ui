@@ -1,14 +1,14 @@
-const { getContinueField, getCsrfTokenField, getHeadingField } =
+const { getContinueField, getCsrfTokenField } =
  require('shared/modules/returns/forms/common');
 const { getUnitsField } = require('shared/modules/returns/forms/units');
 const { formFactory, setValues } = require('shared/lib/forms');
+const { get } = require('lodash');
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
   fields: [
     getCsrfTokenField(request),
-    getHeadingField('Which units are you using?'),
-    getUnitsField(),
+    getUnitsField('Which units are you using?'),
     getContinueField()
   ]
-}, { units: data.reading.units });
+}, { units: get(data, 'reading.units') });

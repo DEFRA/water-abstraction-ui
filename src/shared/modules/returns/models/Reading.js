@@ -80,9 +80,9 @@ class Reading {
     if (totalCustomDates) {
       Joi.assert(startDate, VALID_DATE);
       Joi.assert(endDate, VALID_DATE);
-      this.totalCustomDateStart = startDate;
-      this.totalCustomDateEnd = endDate;
     }
+    this.totalCustomDateStart = totalCustomDates ? startDate : null;
+    this.totalCustomDateEnd = totalCustomDates ? endDate : null;
     return this;
   }
 

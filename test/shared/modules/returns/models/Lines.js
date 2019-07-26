@@ -171,4 +171,81 @@ experiment('Lines model', () => {
       expect(func).to.throw();
     });
   });
+
+  experiment('setSingleTotal', () => {
+    let lines;
+    beforeEach(async () => {
+      lines = new Lines([], createOptions());
+    });
+
+    test('throws an error if abstraction period object invalid', async () => {
+      const func = () => lines.setSingleTotal({}, 500);
+      expect(func).to.throw();
+    });
+
+    test('throws an error if abstraction volume is invalid', async () => {
+      const func = () => lines.setSingleTotal({}, -5);
+      expect(func).to.throw();
+    });
+
+    test('distributes single total value across abstraction period', async () => {
+      const arr =
+        lines.setSingleTotal({
+          periodStartDay: 1,
+          periodStartMonth: 1,
+          periodEndDay: 30,
+          periodEndMonth: 4
+        }, 400)
+          .toArray();
+
+      expect(arr).to.equal([ { startDate: '2018-11-01',
+        endDate: '2018-11-30',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2018-12-01',
+        endDate: '2018-12-31',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-01-01',
+        endDate: '2019-01-31',
+        timePeriod: 'month',
+        quantity: 100 },
+      { startDate: '2019-02-01',
+        endDate: '2019-02-28',
+        timePeriod: 'month',
+        quantity: 100 },
+      { startDate: '2019-03-01',
+        endDate: '2019-03-31',
+        timePeriod: 'month',
+        quantity: 100 },
+      { startDate: '2019-04-01',
+        endDate: '2019-04-30',
+        timePeriod: 'month',
+        quantity: 100 },
+      { startDate: '2019-05-01',
+        endDate: '2019-05-31',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-06-01',
+        endDate: '2019-06-30',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-07-01',
+        endDate: '2019-07-31',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-08-01',
+        endDate: '2019-08-31',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-09-01',
+        endDate: '2019-09-30',
+        timePeriod: 'month',
+        quantity: null },
+      { startDate: '2019-10-01',
+        endDate: '2019-10-31',
+        timePeriod: 'month',
+        quantity: null } ]);
+    });
+  });
 });

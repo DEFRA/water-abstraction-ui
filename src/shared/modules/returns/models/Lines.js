@@ -82,6 +82,8 @@ class Lines {
   }
 
   setSingleTotal (abstractionPeriod, total) {
+    Joi.assert(abstractionPeriod, VALID_ABSTRACTION_PERIOD);
+    Joi.assert(total, Joi.number().min(0));
     this.lines = getSingleTotalLines(abstractionPeriod, this.lines, total);
     return this;
   }

@@ -215,6 +215,30 @@ experiment('WaterReturn', () => {
     });
   });
 
+  experiment('updateSingleTotalLines', () => {
+    let waterReturn;
+
+    beforeEach(async () => {
+      const ret = createReturn();
+      waterReturn = new WaterReturn(ret);
+      sandbox.stub(waterReturn.reading, 'getSingleTotal').returns(500);
+      sandbox.stub(waterReturn.lines, 'setSingleTotal');
+    });
+
+    test('calls setSingleTotal on the lines instance', async () => {
+      const result = waterReturn.updateSingleTotalLines();
+
+      const [absPeriod, total] = waterReturn.lines.setSingleTotal.lastCall.args;
+
+      expect(absPeriod).to.equal({ periodEndDay: 31,
+        periodEndMonth: 10,
+        periodStartDay: 1,
+        periodStartMonth: 4 });
+      expect(total).to.equal(500);
+      expect(result).to.equal(waterReturn);
+    });
+  });
+
   experiment('incrementVersionNumber', () => {
     let waterReturn;
     beforeEach(async () => {
@@ -285,6 +309,23 @@ experiment('WaterReturn', () => {
     test('returns false if nil return flag not set', async () => {
       waterReturn.isNil = false;
       expect(waterReturn.isNilReturn()).to.equal(false);
+    });
+  });
+
+  experiment('setUnderQuery', () => {
+    let waterReturn;
+    beforeEach(async () => {
+      waterReturn = new WaterReturn(createReturn());
+    });
+
+    test('sets under query flag', async () => {
+      waterReturn.setUnderQuery(true);
+      expect(waterReturn.isUnderQuery).to.equal(true);
+    });
+
+    test('clears under query flag', async () => {
+      waterReturn.setUnderQuery(false);
+      expect(waterReturn.isUnderQuery).to.equal(false);
     });
   });
 });

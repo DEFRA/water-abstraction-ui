@@ -9,14 +9,20 @@ const Joi = require('joi');
  * @return {Promise}         resolves with boolean - true if can access
  */
 const checkAccess = (request, documentHeader) => {
-  if (documentHeader && (documentHeader.company_entity_id === request.defra.companyId)) {
-    return;
-  }
+  const companyId = get(request, 'defra.companyId');
   const params = {
     returnId: request.query.returnId,
     defra: request.defra
   };
-  throw Boom.unauthorized(`Access denied to edit return`, params);
+  if (!documentHeader.company_entity_id) {
+    throw Boom.unauthorized(`Access denied to edit return - document not registered`, params);
+  }
+  if (!companyId) {
+    throw Boom.unauthorized(`Access denied to edit return - no company selected`, params);
+  }
+  if (documentHeader.company_entity_id !== companyId) {
+    throw Boom.unauthorized(`Access denied to edit return`, params);
+  }
 };
 
 /**
@@ -33,6 +39,9 @@ const preHandler = async (request, h) => {
   const [, , licenceNumber] = returnId.split(':');
 
   const documentHeader = await h.realm.pluginOptions.getDocumentHeader(licenceNumber);
+  if (!documentHeader) {
+    throw Boom.notFound(`Licence ${licenceNumber} not found in CRM`);
+  }
 
   if (h.realm.pluginOptions.checkAccess) {
     checkAccess(request, documentHeader);

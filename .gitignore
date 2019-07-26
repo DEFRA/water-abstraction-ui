@@ -7,3 +7,4 @@
 lcov.info
 *.swp
 jsconfig.json
+.vscode

@@ -1,6 +1,6 @@
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { form: methodForm } = require('external/modules/returns/forms/method.js');
+const { form: unitsForm } = require('internal/modules/returns/forms/units.js');
 
 const { findField, findButton } = require('../../../../lib/form-test');
 
@@ -10,11 +10,15 @@ const createRequest = () => ({
   }
 });
 
-experiment('external method form', () => {
+experiment('internal units form', () => {
   let request, form;
   beforeEach(async () => {
     request = createRequest();
-    form = methodForm(request);
+    form = unitsForm(request, {
+      reading: {
+        units: 'l'
+      }
+    });
   });
 
   test('should be a POST form', async () => {
@@ -22,31 +26,28 @@ experiment('external method form', () => {
   });
 
   test('has a radio field', async () => {
-    const radio = findField(form, 'method');
+    const radio = findField(form, 'units');
     expect(radio).to.be.an.object();
   });
 
   test('radio field has correct choices', async () => {
-    const radio = findField(form, 'method');
-    expect(radio.options.choices).to.equal(
-      [ { value: 'oneMeter,measured',
-        label: 'Readings from a single meter' },
-      { value: 'abstractionVolumes,measured',
-        label: 'Volumes from one or more meters' },
-      { value: 'abstractionVolumes,estimated',
-        label: 'Estimates without a meter' } ]
-    );
+    const radio = findField(form, 'units');
+    expect(radio.options.choices).to.equal([
+      { value: 'm³', label: 'Cubic metres' },
+      { value: 'l', label: 'Litres' },
+      { value: 'Ml', label: 'Megalitres' },
+      { value: 'gal', label: 'Gallons' }
+    ]);
   });
 
-  test('selects the radio option based on the reading method and type', async () => {
-    form = methodForm(request, {
+  test('selects the radio option based on the reading units', async () => {
+    form = unitsForm(request, {
       reading: {
-        method: 'oneMeter',
-        type: 'measured'
+        units: 'gal'
       }
     });
-    const radio = findField(form, 'method');
-    expect(radio.value).to.equal('oneMeter,measured');
+    const radio = findField(form, 'units');
+    expect(radio.value).to.equal('gal');
   });
 
   test('has CSRF token field', async () => {

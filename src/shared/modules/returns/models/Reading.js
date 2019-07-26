@@ -93,7 +93,9 @@ class Reading {
    */
   setSingleTotal (totalFlag, total) {
     Joi.assert(totalFlag, Joi.boolean());
-    Joi.assert(total, Joi.number().min(0));
+    if (totalFlag) {
+      Joi.assert(total, Joi.number().min(0));
+    }
     this.totalFlag = totalFlag;
     this.total = totalFlag ? total : null;
     return this;

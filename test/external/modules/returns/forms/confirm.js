@@ -10,7 +10,7 @@ const createRequest = () => ({
   }
 });
 
-experiment('external meter reset form', () => {
+experiment('external confirmation form', () => {
   let request, form;
   beforeEach(async () => {
     request = createRequest();

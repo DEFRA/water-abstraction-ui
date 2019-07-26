@@ -1,6 +1,6 @@
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { form: methodForm } = require('external/modules/returns/forms/method.js');
+const { form: methodForm } = require('internal/modules/returns/forms/method.js');
 
 const { findField, findButton } = require('../../../../lib/form-test');
 
@@ -10,7 +10,7 @@ const createRequest = () => ({
   }
 });
 
-experiment('external method form', () => {
+experiment('internal method form', () => {
   let request, form;
   beforeEach(async () => {
     request = createRequest();
@@ -28,25 +28,20 @@ experiment('external method form', () => {
 
   test('radio field has correct choices', async () => {
     const radio = findField(form, 'method');
-    expect(radio.options.choices).to.equal(
-      [ { value: 'oneMeter,measured',
-        label: 'Readings from a single meter' },
-      { value: 'abstractionVolumes,measured',
-        label: 'Volumes from one or more meters' },
-      { value: 'abstractionVolumes,estimated',
-        label: 'Estimates without a meter' } ]
-    );
+    expect(radio.options.choices).to.equal([
+      { value: 'oneMeter', label: 'Meter readings' },
+      { value: 'abstractionVolumes', label: 'Abstraction volumes' }
+    ]);
   });
 
   test('selects the radio option based on the reading method and type', async () => {
     form = methodForm(request, {
       reading: {
-        method: 'oneMeter',
-        type: 'measured'
+        method: 'oneMeter'
       }
     });
     const radio = findField(form, 'method');
-    expect(radio.value).to.equal('oneMeter,measured');
+    expect(radio.value).to.equal('oneMeter');
   });
 
   test('has CSRF token field', async () => {

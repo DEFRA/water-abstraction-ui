@@ -1,5 +1,5 @@
 'use strict';
-const hoek = require('hoek');
+const hoek = require('@hapi/hoek');
 
 const routes = require('./routes');
 

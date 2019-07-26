@@ -1,4 +1,4 @@
-const BaseJoi = require('joi');
+const BaseJoi = require('@hapi/joi');
 const joiPasswordValidator = require('./joi-password-validator');
 const Joi = BaseJoi.extend(joiPasswordValidator);
 const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;

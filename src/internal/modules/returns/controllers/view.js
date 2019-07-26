@@ -1,5 +1,5 @@
 /* eslint new-cap: "warn" */
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 
 const { isInternal } = require('../../../lib/permissions');

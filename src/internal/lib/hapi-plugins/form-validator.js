@@ -5,7 +5,7 @@
  *
  * @module lib/hapi-form-validator-plugin
  */
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const formatViewError = require('shared/lib/format-view-error');
 
 const formValidator = {

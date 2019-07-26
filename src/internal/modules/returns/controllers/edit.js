@@ -4,7 +4,7 @@
  * @todo - ensure session data is valid at every step
  */
 const { get, set } = require('lodash');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const forms = require('shared/lib/forms');
 const { logger } = require('../../../logger');
 

@@ -1,5 +1,5 @@
 const moment = require('moment');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { get, pick } = require('lodash');
 const { getDay, getMonth } = require('./return-date-helpers');
 const { getReturnTotal } = require('./water-return-helpers');

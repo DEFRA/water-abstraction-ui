@@ -1,8 +1,8 @@
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('@hapi/lab').script();
 
 const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/batch-notifications/lib/helpers');

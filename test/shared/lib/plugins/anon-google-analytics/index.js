@@ -1,6 +1,6 @@
 const Hapi = require('@hapi/hapi');
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const anonGoogleAnalyticsPlugin = require('shared/plugins/anon-google-analytics');
 
 const viewContextPlugin = require('shared/plugins/view-context');

@@ -1,5 +1,5 @@
 const { get, set, lowerCase } = require('lodash');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const { uploadForm } = require('../forms/upload');

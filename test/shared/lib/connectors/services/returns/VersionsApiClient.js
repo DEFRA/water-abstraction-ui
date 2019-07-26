@@ -4,8 +4,8 @@ const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 experiment('shared/services/VersionsApiClient', () => {
   let logger;

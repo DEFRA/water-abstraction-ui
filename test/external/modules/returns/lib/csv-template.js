@@ -1,7 +1,7 @@
 'use strict';
 const sinon = require('sinon');
-const { expect } = require('code');
-const Lab = require('lab');
+const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
 const { logger } = require('external/logger');

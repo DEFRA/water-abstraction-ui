@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const licenceNumbersForm = (request) => {

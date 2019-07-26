@@ -1,5 +1,5 @@
 const services = require('../../lib/connectors/services');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 
 /**
  * Returns the last email message for a given email address.

@@ -1,5 +1,5 @@
-const { expect, fail } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { expect, fail } = require('@hapi/code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const fs = require('fs');
 const EventEmitter = require('events');

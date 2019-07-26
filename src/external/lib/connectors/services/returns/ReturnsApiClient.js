@@ -1,5 +1,5 @@
 const moment = require('moment');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { isObject } = require('lodash');
 const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient');
 

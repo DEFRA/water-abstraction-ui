@@ -2,7 +2,7 @@ const services = require('../../lib/connectors/services');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { get } = require('lodash');
 const { logger } = require('../../logger');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 
 const getPageTitle = (ev) => {
   const name = get(ev, 'subtype');

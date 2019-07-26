@@ -2,8 +2,8 @@
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const { expect } = require('code');
-const Lab = require('lab');
+const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 
 const {

@@ -1,9 +1,9 @@
 'use strict';
 
 const sinon = require('sinon');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const { experiment, test, beforeEach } = exports.lab = Lab.script();
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { csvDownload } = require('internal/lib/csv-download');
 

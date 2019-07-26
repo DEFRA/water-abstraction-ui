@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const services = require('../../../lib/connectors/services');
 

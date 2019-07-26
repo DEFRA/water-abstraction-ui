@@ -2,9 +2,9 @@
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const services = require('internal/lib/connectors/services');
 const { getKeyAndValue, isGrouped, isSingleValue, mapReportResponse, getReturnStats } = require('internal/modules/returns-reports/lib/returns-stats');

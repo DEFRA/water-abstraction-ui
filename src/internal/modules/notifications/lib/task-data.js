@@ -8,7 +8,7 @@
  * @module src/internal/modules/notifications/task-data
  */
 const nunjucks = require('nunjucks');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { find } = require('lodash');
 const { defaultMapper, licenceNumbersMapper, dateMapper, addressMapper } = require('./mappers');
 

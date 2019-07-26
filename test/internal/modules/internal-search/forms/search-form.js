@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { experiment, test, beforeEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { searchForm } = require('internal/modules/internal-search/forms/search-form');
 
 experiment('searchForm', () => {

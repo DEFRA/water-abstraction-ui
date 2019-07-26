@@ -1,8 +1,8 @@
 const sinon = require('sinon');
 const { set } = require('lodash');
-const { expect } = require('code');
-const { beforeEach, experiment, test, afterEach } = exports.lab = require('lab').script();
-const Boom = require('boom');
+const { expect } = require('@hapi/code');
+const { beforeEach, experiment, test, afterEach } = exports.lab = require('@hapi/lab').script();
+const Boom = require('@hapi/boom');
 
 const sandbox = sinon.createSandbox();
 

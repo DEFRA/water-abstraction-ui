@@ -1,5 +1,5 @@
 const ServiceClient = require('../ServiceClient');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { pick } = require('lodash');
 
 const schema = Joi.object({

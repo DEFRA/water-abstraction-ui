@@ -1,7 +1,6 @@
-const Boom = require('boom');
 const sinon = require('sinon');
-const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { expect, fail } = require('@hapi/code');
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { redirectToReturn } = require('internal/modules/internal-search/lib/redirect-to-return');
 
 experiment('redirectToReturn', () => {
@@ -10,19 +9,18 @@ experiment('redirectToReturn', () => {
 
   beforeEach(async () => {
     h.redirect = sinon.stub();
-    sinon.stub(Boom, 'notFound');
-    sinon.stub(Boom, 'unauthorized');
-  });
-
-  afterEach(async () => {
-    Boom.notFound.restore();
-    Boom.unauthorized.restore();
   });
 
   test('It should throw a 404 error if the return is not found', async () => {
     const view = {};
-    redirectToReturn(returnId, view, h);
-    expect(Boom.notFound.callCount).to.equal(1);
+
+    try {
+      redirectToReturn(returnId, view, h);
+      fail('Should not get here');
+    } catch (err) {
+      expect(err.isBoom).to.be.true();
+      expect(err.output.statusCode).to.equal(404);
+    }
   });
 
   test('It should throw a 401 error if the return does not have a path property', async () => {
@@ -31,8 +29,14 @@ experiment('redirectToReturn', () => {
         return_id: returnId
       }]
     };
-    redirectToReturn(returnId, view, h);
-    expect(Boom.unauthorized.callCount).to.equal(1);
+
+    try {
+      redirectToReturn(returnId, view, h);
+      fail('Should not get here');
+    } catch (err) {
+      expect(err.isBoom).to.be.true();
+      expect(err.output.statusCode).to.equal(401);
+    }
   });
 
   test('It should redirect if the return has a path property', async () => {

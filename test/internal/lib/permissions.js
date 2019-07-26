@@ -1,8 +1,8 @@
 'use strict';
 
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const { experiment, test } = exports.lab = Lab.script();
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const permissions = require('internal/lib/permissions');
 const { scope } = require('internal/lib/constants');

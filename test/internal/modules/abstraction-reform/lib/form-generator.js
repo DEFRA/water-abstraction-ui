@@ -8,10 +8,10 @@ const {
   addAttribute,
   createEnumField
 } = require('internal/modules/abstraction-reform/lib/form-generator');
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const services = require('internal/lib/connectors/services');
 
-const { beforeEach, afterEach, experiment, test } = exports.lab = require('lab').script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const conditionsResponse = {
   error: null,

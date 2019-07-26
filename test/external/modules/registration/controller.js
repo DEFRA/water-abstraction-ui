@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { beforeEach, experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { beforeEach, experiment, test } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 
 const testHelpers = require('../../test-helpers');

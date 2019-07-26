@@ -1,8 +1,8 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const {
   experiment,
   test
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 const { filter } = require('lodash');
 const { form: quantitiesForm } = require('internal/modules/returns/forms/quantities');
 

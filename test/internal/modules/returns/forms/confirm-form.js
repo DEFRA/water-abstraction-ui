@@ -1,6 +1,6 @@
 const { find } = require('lodash');
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { form: confirmForm } = require('internal/modules/returns/forms/confirm');
 const { scope } = require('internal/lib/constants');
 

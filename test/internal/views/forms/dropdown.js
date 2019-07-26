@@ -1,11 +1,11 @@
 'use strict';
 
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const lab = exports.lab = Lab.script();
 
 const DOMParser = require('xmldom').DOMParser;
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const server = require('../../../../server-internal');
 const { formFactory, fields } = require('shared/lib/forms');
 

@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const services = require('../../../lib/connectors/services');
 const { applyUserDetails, applyCleanup } = require('./return-helpers');
 const { logger } = require('../../../logger');

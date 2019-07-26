@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { trim } = require('lodash');
 const { selectRiverLevelMeasure } = require('./lib/river-level');
 const { getLicencePageTitle, getCommonViewContext } = require('./lib/view-helpers');

@@ -1,7 +1,7 @@
 'use strict';
 
-const { experiment, test } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const routes = require('external/modules/core/routes');
 const routePath = '/causeA404';
@@ -17,10 +17,7 @@ experiment('Page does not exist', () => {
       method: 'GET',
       url: routePath,
       headers: {},
-      payload: {},
-      credentials: {
-        userId: '123'
-      }
+      payload: {}
     };
 
     const res = await server.inject(request);

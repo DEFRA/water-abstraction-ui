@@ -1,7 +1,7 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const { experiment, test, beforeEach, afterEach, it } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach, it } = exports.lab = require('@hapi/lab').script();
 
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/view-licences/controller');

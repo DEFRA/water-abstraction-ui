@@ -1,8 +1,8 @@
 require('dotenv').config();
-const Lab = require('lab');
-const { expect } = require('code');
+const Lab = require('@hapi/lab');
+const { expect } = require('@hapi/code');
 const { find } = require('lodash');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const { setStatusForm, setStatusSchema } = require('internal/modules/abstraction-reform/forms/set-status');
 

@@ -1,6 +1,6 @@
 const sinon = require('sinon');
-const { expect } = require('code');
-const Lab = require('lab');
+const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const childProcessHelpers = require('shared/lib/child-process-helpers');
 
 const fileCheck = require('shared/lib/file-check');

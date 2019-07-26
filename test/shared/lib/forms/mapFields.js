@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { test, experiment } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { test, experiment } = exports.lab = require('@hapi/lab').script();
 const { mapFields } = require('shared/lib/forms/mapFields');
 
 const square = x => x ** 2;

@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { pick, findLastKey } = require('lodash');
 
 const { mapMeterLinesToVolumes } = require('./water-return-helpers');

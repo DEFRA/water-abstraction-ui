@@ -1,6 +1,6 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const { find } = require('lodash');
-const { experiment, test, beforeEach } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { selectAddressForm } = require('external/modules/add-licences/forms/select-address');
 const sandbox = require('sinon').createSandbox();
 

@@ -1,4 +1,4 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { get, set } = require('lodash');
 const services = require('../../lib/connectors/services');
 

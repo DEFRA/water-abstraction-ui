@@ -1,6 +1,6 @@
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const lab = Lab.script();
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { parseNaldDataURI } = require('internal/lib/nald-uri-parser');
 

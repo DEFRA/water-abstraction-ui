@@ -29,8 +29,9 @@ const authPlugin = {
 const server = Hapi.server({
   ...config.server,
   cache: {
-    engine: require('shared/lib/catbox-rest-api')
-  } });
+    provider: require('shared/lib/catbox-rest-api')
+  }
+});
 
 /**
  * Async function to start HAPI server

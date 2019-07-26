@@ -1,4 +1,4 @@
-const { get, set, isEmpty, lowerCase } = require('lodash');
+const { get, set, lowerCase } = require('lodash');
 const Boom = require('@hapi/boom');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
@@ -12,7 +12,6 @@ const fileCheck = require('../../../../shared/lib/file-check');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
-const helpers = require('../lib/helpers');
 
 const spinnerConfig = {
   processing: {
@@ -176,9 +175,9 @@ const getSpinnerPage = async (request, h) => {
 
     return h.view('nunjucks/waiting/index.njk', request.view, { layout: false });
   } else {
-    const error = Boom.notFound(`Upload event not found`, { eventId });
-    logger.errorWithJourney('No event found with selected event_id and issuer', error, request, { eventId });
-    throw error;
+    const err = Boom.notFound(`Upload event not found`, { eventId });
+    logger.errorWithJourney('No event found with selected event_id and issuer', err, request, { eventId });
+    throw err;
   }
 };
 
@@ -196,15 +195,10 @@ const hasErrors = grouped => get(grouped, 'returnsWithErrors.length') > 0;
 const getSummary = async (request, h) => {
   const { eventId } = request.params;
   const options = uploadSummaryHelpers.mapRequestOptions(request);
-
   try {
     const returns = await services.water.returns.getUploadPreview(eventId, options);
+
     const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
-
-    if (isEmpty(grouped)) {
-      return h.redirect(`/returns/upload?error=empty`);
-    }
-
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));
 
     const view = {
@@ -279,13 +273,11 @@ const postSubmit = async (request, h) => {
  * Page to render a success message
  */
 const getSubmitted = async (request, h) => {
-  const { xmlUser } = await helpers.getReturnsViewData(request);
   const { eventId } = request.params;
   logger.info(`Return upload submitted`, { eventId });
   const view = {
     ...request.view,
-    pageTitle: `Returns submitted`,
-    xmlUser
+    pageTitle: `Returns submitted`
   };
   return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
 };

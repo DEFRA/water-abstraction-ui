@@ -5,6 +5,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
+const Joi = require('joi');
 
 const controller = require('shared/plugins/update-password/controller');
 
@@ -18,7 +19,7 @@ experiment('update password controller', () => {
       view: sandbox.spy(),
       realm: {
         pluginOptions: {
-          authenticate: sandbox.stub().resolves(),
+          authenticate: sandbox.stub().resolves({ test: true }),
           updatePassword: sandbox.stub().resolves({
             error: null
           })
@@ -51,7 +52,7 @@ experiment('update password controller', () => {
 
     test('uses the template specified in the config', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('water/update-password/update_password');
+      expect(template).to.equal('nunjucks/update-password/enter-current.njk');
     });
 
     test('uses the view data from request.view', async () => {
@@ -63,19 +64,23 @@ experiment('update password controller', () => {
   experiment('postConfirmPassword', () => {
     experiment('when formError does not exist', () => {
       beforeEach(async () => {
-        request = {
-          payload: {
-            password: 'test-password'
-          },
-          defra: {
-            userName: 'test-userName'
-          }
+        request.payload.password = 'test-password';
+        request.defra = {
+          userName: 'test-userName'
         };
         await controller.postConfirmPassword(request, h);
       });
 
-      test('the resetPassword plugin option method is called', async () => {
-        expect(h.realm.pluginOptions.authenticate.calledWith(request.defra.userName, request.payload.password)).to.be.true();
+      test('an auth token in added to session', async () => {
+        const [key, value] = request.yar.set.lastCall.args;
+        expect(key).to.equal('authToken');
+        expect(Joi.string().uuid().validate(value).error).to.be.null();
+      });
+
+      test('the user is redirected to a page to enter a new password', async () => {
+        const [template, view] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/update-password/enter-new.njk');
+        expect(Joi.string().uuid().validate(view.authToken).error).to.be.null();
       });
     });
   });
@@ -91,14 +96,15 @@ experiment('update password controller', () => {
         },
         formError: {
           name: 'test-error'
-        }
+        },
+        view: {}
       };
       await controller.postConfirmPassword(request, h);
     });
 
     test('the correct template is displayed', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('water/update-password/update_password');
+      expect(template).to.equal('nunjucks/update-password/enter-current.njk');
     });
 
     test('an error object is passed in the options', async () => {
@@ -116,7 +122,7 @@ experiment('update password controller', () => {
 
     test('uses the correcttemplate', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('water/update-password/updated_password');
+      expect(template).to.equal('nunjucks/update-password/success.njk');
     });
 
     test('uses the view data from request.view', async () => {

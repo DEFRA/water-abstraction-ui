@@ -2,8 +2,8 @@ const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const Reading = require('shared/modules/returns/models/Reading');
 const {
@@ -151,6 +151,102 @@ experiment('Reading', () => {
     });
   });
 
+  experiment('setCustomAbstractionPeriod', () => {
+    let reading;
+
+    beforeEach(async () => {
+      reading = new Reading({ totalFlag: true });
+    });
+
+    test('sets custom abstraction period', async () => {
+      reading.setCustomAbstractionPeriod(true, '2018-02-14', '2018-12-25');
+      expect(reading.totalCustomDates).to.equal(true);
+      expect(reading.totalCustomDateStart).to.equal('2018-02-14');
+      expect(reading.totalCustomDateEnd).to.equal('2018-12-25');
+    });
+
+    test('clears custom abstraction period', async () => {
+      reading.totalCustomDates = true;
+      reading.totalCustomDateStart = '2018-01-01';
+      reading.totalCustomDateEnd = '2018-12-25';
+      reading.setCustomAbstractionPeriod(false);
+      expect(reading.totalCustomDates).to.equal(false);
+      expect(reading.totalCustomDateStart).to.equal(null);
+      expect(reading.totalCustomDateEnd).to.equal(null);
+    });
+
+    test('throws error if flag is not boolean', async () => {
+      const func = () => reading.setCustomAbstractionPeriod('x', '2018-02-14', '2018-12-25');
+      expect(func).to.throw();
+    });
+
+    test('throws error if start date is not valid', async () => {
+      const func = () => reading.setCustomAbstractionPeriod(true, 'x', '2018-12-25');
+      expect(func).to.throw();
+    });
+
+    test('throws error if end date is not valid', async () => {
+      const func = () => reading.setCustomAbstractionPeriod(true, '2019-04-01', 'x');
+      expect(func).to.throw();
+    });
+  });
+
+  experiment('setSingleTotal', () => {
+    let reading;
+
+    beforeEach(async () => {
+      reading = new Reading({ totalFlag: true });
+    });
+
+    test('sets a single total', async () => {
+      reading.setSingleTotal(true, 123);
+      expect(reading.totalFlag).to.equal(true);
+      expect(reading.total).to.equal(123);
+    });
+
+    test('clears a single total', async () => {
+      reading.totalFlag = true;
+      reading.total = 123;
+      reading.setSingleTotal(false);
+      expect(reading.totalFlag).to.equal(false);
+      expect(reading.total).to.equal(null);
+    });
+
+    test('throws error if flag is not boolean', async () => {
+      const func = () => reading.setSingleTotal('x');
+      expect(func).to.throw();
+    });
+
+    test('throws error if total is not number', async () => {
+      const func = () => reading.setSingleTotal(true, 'x');
+      expect(func).to.throw();
+    });
+
+    test('throws error if total is negative', async () => {
+      const func = () => reading.setSingleTotal(true, -5);
+      expect(func).to.throw();
+    });
+  });
+
+  experiment('getSingleTotal', () => {
+    let reading;
+
+    beforeEach(async () => {
+      reading = new Reading({ totalFlag: true, total: 123 });
+    });
+
+    test('gets single total value', async () => {
+      const result = reading.getSingleTotal();
+      expect(result).to.equal(123);
+    });
+
+    test('returns null if flag is false', async () => {
+      reading.totalFlag = false;
+      const result = reading.getSingleTotal();
+      expect(result).to.equal(null);
+    });
+  });
+
   experiment('getUnits', async () => {
     let reading;
 
@@ -205,7 +301,7 @@ experiment('Reading', () => {
       expect(reading.isMeasured()).to.equal(true);
     });
 
-    test('returns fale when method is not volumes', async () => {
+    test('returns false when method is not volumes', async () => {
       const reading = new Reading({ type: READING_TYPE_ESTIMATED });
       expect(reading.isMeasured()).to.equal(false);
     });

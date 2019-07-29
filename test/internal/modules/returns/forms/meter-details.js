@@ -1,9 +1,9 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const {
   experiment,
   test
-} = exports.lab = require('lab').script();
-const { meterDetailsForm } = require('internal/modules/returns/forms/meter-details');
+} = exports.lab = require('@hapi/lab').script();
+const { form: meterDetailsForm } = require('internal/modules/returns/forms/meter-details');
 
 const createRequest = (isInternal = true) => {
   return {

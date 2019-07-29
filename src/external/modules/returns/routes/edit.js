@@ -1,56 +1,21 @@
+const { set } = require('lodash');
+
 const services = require('external/lib/connectors/services');
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
 const constants = require('external/lib/constants');
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
-const { VALID_RETURN_ID } = require('shared/lib/validators');
 const steps = require('shared/modules/returns/steps');
-const Joi = require('joi');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
 
 const controller = require('../controllers/edit');
 
-const createRoute = (method, path, handler, options) => {
-  Joi.assert(options, {
-    description: Joi.string(),
-    pageTitle: Joi.string().required(),
-    showMeta: Joi.boolean(),
-    form: Joi.func().required(),
-    schema: Joi.func(),
-    submit: Joi.boolean()
-  });
+const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
 
-  return {
-    method,
-    path: path,
-    handler: handler,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: options.pageTitle,
-      validate: {
-        query: {
-          returnId: VALID_RETURN_ID
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: options.pageTitle,
-          activeNavLink: 'returns',
-          showMeta: options.showMeta || false
-        },
-        returns: {
-          load: true
-        },
-        flow: {
-          adapter: storageAdapter,
-          form: options.form,
-          schema: options.schema,
-          submit: options.submit
-        }
-      }
-    }
-  };
+const createRoute = (...args) => {
+  const route = sharedCreateRoute(...args);
+  set(route, 'options.auth.scope', allowedScopes);
+  set(route, 'options.plugins.flow.adapter', storageAdapter);
+  return route;
 };
 
 module.exports = [

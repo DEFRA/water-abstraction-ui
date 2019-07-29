@@ -1,0 +1,20 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "panel/macro.njk" import govukPanel %}
+{% from "returns/confirmation.njk" import confirmation %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% set title %}
+    Query {{ 'recorded' if return.isUnderQuery else 'resolved' }}
+    {% endset %}
+
+    {{ confirmation(data, title) }}
+
+    <p>
+      <a href="{{ returnsUrl }}">View returns for {{ return.licenceNumber }}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

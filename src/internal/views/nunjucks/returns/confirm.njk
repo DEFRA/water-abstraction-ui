@@ -8,30 +8,28 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
-    <h3 class="govuk-heading-m">
-      <span>Confirm </span>
-      {{ "this" if isAdmin else "your" }}
-      <span> return</span>
-    </h3>
+    {{ returnHeader(data, documentHeader, showMeta, true) }}
 
-    {{ confirmPageInsetText(return, endReading, isAdmin) }}
+    <h2 class="govuk-heading-l">
+      {{ "Nil return" if data.isNil else "Confirm this return" }}
+    </h2>
+    {{ confirmPageInsetText(data, endReading, true) }}
   </div>
 
-      {{ returnQuantitiesTable(return, lines, total, endReading, isAdmin) }}
+  {% if not data.isNil %}
+  {{ returnQuantitiesTable(data, lines, total, endReading, true) }}
+  {% endif %}
 
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+
+      {% if not data.isNil %}
       <p>
-        <a href="{{ makeChangePath }}">
-          <span>Edit </span>
-          <span>{{ "these" if isAdmin else "your"}} </span>
-          <span>{{ "meter readings" if return.reading.method else "volumes" }}</span>
-        </a>
+        <a href="{{ makeChangePath }}">{{ makeChangeText }}</a>
       </p>
-      
-      {{ returnDeclaration(isAdmin) }}
+      {% endif %}
+
       {{ formRender(form) }}
     </div>
   </div>

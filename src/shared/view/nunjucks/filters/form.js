@@ -51,13 +51,11 @@ const mapFormField = (field) => {
 /**
  * Given an ISO 8601 date string, e.g. 2018-11-01, returns an array of
  * items expected by the GOV.UK front end Nunjucks date component
- * @param  {String} field - the date value
- * @return {Array}       - array of items, one for day, month and year
+ * @param  {String|null} value - the date value.
+ * @return {Array} - array of items, one for day, month and year
  */
-const getFormDateItems = (value = '') => {
-  const year = value.slice(0, 4);
-  const month = value.slice(5, 7);
-  const day = value.slice(8, 10);
+const getFormDateItems = (value) => {
+  const [year, month, day] = (value || '').toString().split(/[- T]/g);
 
   return [
     {
@@ -90,9 +88,7 @@ const mapFormDateField = (field) => {
     id: field.name,
     namePrefix: field.name,
     fieldset: {
-      legend: {
-        text: field.options.label
-      }
+      legend: mapLegendOptions(field)
     },
     hint: {
       text: field.options.hint
@@ -190,12 +186,22 @@ const mapLegendOptions = (field) => {
     text: field.options.label
   };
 
-  const heading = {
-    isPageHeading: true,
-    classes: 'govuk-fieldset__legend--xl'
-  };
+  if (field.options.heading) {
+    return {
+      ...defaults,
+      isPageHeading: true,
+      classes: 'govuk-fieldset__legend--xl'
+    };
+  }
 
-  return field.options.heading ? { ...defaults, ...heading } : defaults;
+  if (field.options.subHeading) {
+    return {
+      ...defaults,
+      classes: 'govuk-fieldset__legend--m'
+    };
+  }
+
+  return defaults;
 };
 
 /**

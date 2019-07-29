@@ -2,8 +2,8 @@
 
 const { cloneDeep, set } = require('lodash');
 const sinon = require('sinon');
-const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const controller = require('internal/modules/internal-search/controller');
 const services = require('internal/lib/connectors/services');
 const { scope } = require('internal/lib/constants');

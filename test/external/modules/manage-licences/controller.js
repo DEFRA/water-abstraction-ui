@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
@@ -9,7 +9,7 @@ const {
   afterEach,
   experiment,
   test
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/manage-licences/controller');

@@ -7,7 +7,9 @@ const choices = [
   { value: 'gal', label: 'Gallons' }
 ];
 
-const getUnitsField = () => fields.radio('units', {
+const getUnitsField = label => fields.radio('units', {
+  label,
+  subHeading: true,
   errors: {
     'any.required': {
       message: 'Select a unit of measurement'

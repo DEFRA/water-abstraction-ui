@@ -1,19 +1,12 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "panel/macro.njk" import govukPanel %}
+{% from "returns/confirmation.njk" import confirmation %}
 
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <div class="panel panel--confirmation">
-      <h1 class="panel__title">
-        Return submitted
-      </h1>
-      <div class="panel__body panel__body--small">
-        Licence number <strong>{{ data.licenceNumber }}</strong><br /></br/>
-        Site description <strong>{{ data.metadata.description }}</strong><br /></br/>
-        Purpose <strong>{{ data.metadata.purposes[0].tertiary.description }}</strong>
-      </div>
-    </div>
+
+    {{ confirmation(data) }}
 
     <p class="govuk-body govuk-!-margin-bottom-9">
       <a href="{{ returnUrl }}">View this return</a>

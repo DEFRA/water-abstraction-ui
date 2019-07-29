@@ -2,8 +2,8 @@ const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
 const Meter = require('shared/modules/returns/models/Meter');
@@ -181,6 +181,24 @@ experiment('Meter', () => {
 
     test('sets the meter readings object from the supplied array', async () => {
       expect(meter.readings).to.equal(createReadingsObj());
+    });
+  });
+
+  experiment('setMeterDetailsProvided', () => {
+    let meter;
+
+    beforeEach(async () => {
+      meter = new Meter();
+    });
+
+    test('sets the meter details provided flag', async () => {
+      meter.setMeterDetailsProvided(true);
+      expect(meter.meterDetailsProvided).to.equal(true);
+    });
+
+    test('clears the meter details provided flag', async () => {
+      meter.setMeterDetailsProvided(false);
+      expect(meter.meterDetailsProvided).to.equal(false);
     });
   });
 

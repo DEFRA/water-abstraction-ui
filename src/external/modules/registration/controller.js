@@ -2,7 +2,7 @@
  * HAPI Route handlers for registering a user account
  * @module controllers/registration
  */
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const querystring = require('querystring');
 const config = require('../../config');
 const services = require('../../lib/connectors/services');

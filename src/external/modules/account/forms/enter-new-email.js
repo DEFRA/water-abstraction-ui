@@ -1,5 +1,5 @@
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const createError = (key, message) => ({
   [key]: { message }

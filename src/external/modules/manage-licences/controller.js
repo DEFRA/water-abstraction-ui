@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const Boom = require('boom');
+const Joi = require('@hapi/joi');
+const Boom = require('@hapi/boom');
 const { find } = require('lodash');
 const { logger } = require('../../logger');
 const services = require('../../lib/connectors/services');

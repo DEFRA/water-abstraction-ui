@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');
 const { form: amountsForm } = require('external/modules/returns/forms/amounts');
 
@@ -28,10 +28,10 @@ experiment('amountsForm', () => {
   });
 
   test('external label is shown for external user', async () => {
-    const request = createRequest(false);
+    const request = createRequest();
     const form = amountsForm(request, {});
-    const label = form.fields[1];
-    expect(label.options.text).to.equal('Have you abstracted water in this return period?');
+    const isNil = find(form.fields, { name: 'isNil' });
+    expect(isNil.options.label).to.equal('Have you abstracted water in this return period?');
   });
 
   test('has a continue button', async () => {

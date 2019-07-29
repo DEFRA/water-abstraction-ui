@@ -2,10 +2,10 @@
 'use strict';
 
 const moment = require('moment');
-const { beforeEach, test, experiment } = exports.lab = require('lab').script();
+const { beforeEach, test, experiment } = exports.lab = require('@hapi/lab').script();
 const { omit, set } = require('lodash');
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const testReturn = require('./test-return');
 
 const {

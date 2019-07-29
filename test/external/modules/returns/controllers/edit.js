@@ -1,5 +1,5 @@
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
@@ -47,10 +47,12 @@ const createModel = () => {
     getReturnTotal: sandbox.stub().returns(999),
     setUser: sandbox.stub(),
     setStatus: sandbox.stub(),
+    setReceivedDate: sandbox.stub(),
     incrementVersionNumber: sandbox.stub()
   };
   model.setUser.returns(model);
   model.setStatus.returns(model);
+  model.setReceivedDate.returns(model);
   return model;
 };
 

@@ -1,7 +1,7 @@
 'use strict';
 
-const { beforeEach, experiment, test } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { beforeEach, experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const DOMParser = require('xmldom').DOMParser;
 
 const { createServer } = require('../../server-factory');

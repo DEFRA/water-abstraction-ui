@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 exports.VALID_DATE = Joi.string().isoDate();
 exports.VALID_PERIOD = Joi.string().valid(['day', 'week', 'month', 'year']);

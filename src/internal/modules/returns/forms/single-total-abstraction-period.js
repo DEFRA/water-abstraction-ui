@@ -1,9 +1,9 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const moment = require('moment');
 const { first, last, get } = require('lodash');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { getPath, STEP_SINGLE_TOTAL_DATES } = require('../lib/flow-helpers');
-const { getFormLines } = require('../lib/return-helpers');
+const { getContinueField, getCsrfTokenField } =
+ require('shared/modules/returns/forms/common');
 
 const dateError = {
   message: 'Enter a date in the right format, for example 31 3 2018',
@@ -23,80 +23,76 @@ const mapDataToForm = data => {
   return { totalCustomDates };
 };
 
-const form = (request, data) => {
-  const { csrfToken } = request.view;
-
-  const action = getPath(STEP_SINGLE_TOTAL_DATES, request);
-
-  const f = formFactory(action);
-
-  f.fields.push(fields.radio('totalCustomDates', {
-    label: 'What period was used for this volume?',
-    errors: {
-      'any.required': {
-        summary: 'Select the period used for this volume',
-        message: 'Select the period used for this volume'
-      }
+const getRadioField = () => fields.radio('totalCustomDates', {
+  label: 'What period was used for this volume?',
+  subHeading: true,
+  errors: {
+    'any.required': {
+      summary: 'Select the period used for this volume',
+      message: 'Select the period used for this volume'
+    }
+  },
+  choices: [
+    {
+      value: false,
+      label: 'Default abstraction period'
     },
-    choices: [
-      {
-        value: false,
-        label: 'Default abstraction period'
-      },
-      {
-        value: true,
-        label: 'Custom dates',
-        fields: [
-          fields.date('totalCustomDateStart', {
-            type: 'date',
-            mapper: 'dateMapper',
-            controlClass: 'form-control form-control--small',
-            errors: {
-              'any.required': dateError,
-              'string.isoDate': dateError,
-              'date.isoDate': dateError,
-              'date.base': dateError,
-              'date.min': {
-                message: 'Enter a date from the start of the abstraction period'
-              }
+    {
+      value: true,
+      label: 'Custom dates',
+      fields: [
+        fields.date('totalCustomDateStart', {
+          type: 'date',
+          mapper: 'dateMapper',
+          controlClass: 'form-control form-control--small',
+          errors: {
+            'any.required': dateError,
+            'string.isoDate': dateError,
+            'date.isoDate': dateError,
+            'date.base': dateError,
+            'date.min': {
+              message: 'Enter a date from the start of the abstraction period'
             }
-          }),
-          fields.paragraph(null, {
-            text: 'to',
-            controlClass: 'bold'
-          }),
-          fields.date('totalCustomDateEnd', {
-            type: 'date',
-            mapper: 'dateMapper',
-            controlClass: 'form-control form-control--small',
-            errors: {
-              'any.required': dateError,
-              'string.isoDate': dateError,
-              'date.isoDate': dateError,
-              'date.base': dateError,
-              'date.greater': {
-                message: 'Enter an end date after the start date'
-              },
-              'date.max': {
-                message: 'Enter a date up to the end of the abstraction period'
-              }
+          }
+        }),
+        fields.paragraph(null, {
+          text: 'to',
+          controlClass: 'bold'
+        }),
+        fields.date('totalCustomDateEnd', {
+          type: 'date',
+          mapper: 'dateMapper',
+          controlClass: 'form-control form-control--small',
+          errors: {
+            'any.required': dateError,
+            'string.isoDate': dateError,
+            'date.isoDate': dateError,
+            'date.base': dateError,
+            'date.greater': {
+              message: 'Enter an end date after the start date'
+            },
+            'date.max': {
+              message: 'Enter a date up to the end of the abstraction period'
             }
-          })
-        ]
-      }
-    ]
-  }));
+          }
+        })
+      ]
+    }]
+});
 
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-
-  return setValues(f, mapDataToForm(data));
-};
+exports.form = (request, data) => setValues({
+  ...formFactory(),
+  fields: [
+    getRadioField(),
+    getCsrfTokenField(request),
+    getContinueField()
+  ]
+}, mapDataToForm(data));
 
 const formatLineDateForValidation = date => moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY');
 
-const schema = returnData => {
-  const lines = getFormLines(returnData);
+exports.schema = (request, returnData) => {
+  const lines = returnData.lines;
   const startDate = formatLineDateForValidation(first(lines).startDate);
   const endDate = formatLineDateForValidation(last(lines).endDate);
 
@@ -113,6 +109,3 @@ const schema = returnData => {
     csrf_token: Joi.string().guid().required()
   };
 };
-
-exports.singleTotalAbstractionPeriodForm = form;
-exports.singleTotalAbstractionPeriodSchema = schema;

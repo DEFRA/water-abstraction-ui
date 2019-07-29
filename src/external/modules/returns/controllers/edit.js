@@ -12,15 +12,8 @@ const { STATUS_COMPLETED } = require('shared/modules/returns/models/WaterReturn'
 const { METHOD_VOLUMES, METHOD_ONE_METER } = require('shared/modules/returns/models/Reading');
 
 const services = require('../../../lib/connectors/services');
-
-/**
- * Adds return ID query string from request.query.returnId to supplied path
- * @param {Object} request
- * @param {String} path
- */
-const addQuery = (request, path) => {
-  return `${path}?returnId=${request.query.returnId}`;
-};
+const { addQuery } = require('shared/modules/returns/route-helpers');
+const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappers');
 
 /**
  * Renders form for "Have you abstracted water in this return period?"
@@ -99,27 +92,20 @@ const postUnits = async (request, h) => {
 };
 
 /**
- * Get handler for units
+ * GET - volumes
  */
 const getQuantities = async (request, h) => h.view('nunjucks/returns/form.njk', {
   ...request.view,
   back: addQuery(request, STEP_UNITS)
 }, { layout: false });
 
-const getLines = (data, valueKey = 'quantity') => {
-  return Object.keys(data).map(key => {
-    const [startDate, endDate] = key.split('_');
-    return { startDate, endDate, [valueKey]: data[key] };
-  });
-};
-
 /**
- * Post handler for units
+ * POST - volumes
  */
 const postQuantities = async (request, h) => {
   if (request.view.form.isValid) {
     const data = omit(forms.getValues(request.view.form), 'csrf_token');
-    request.model.setLines(getLines(data));
+    request.model.setLines(mapLines(data));
 
     const path = addQuery(request, request.model.reading.isMeasured() ? STEP_METER_DETAILS : STEP_CONFIRM);
     return h.redirect(path);
@@ -140,13 +126,9 @@ const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk'
  */
 const postMeterDetails = async (request, h) => {
   if (request.view.form.isValid) {
-    const { manufacturer, serialNumber, isMultiplier } = forms.getValues(request.view.form);
-    const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1;
-    request.model.meter.setMeterDetails({
-      manufacturer,
-      serialNumber,
-      multiplier
-    });
+    const values = forms.getValues(request.view.form);
+    const details = mapMeterDetails(values);
+    request.model.meter.setMeterDetails(details);
     return h.redirect(addQuery(request, STEP_CONFIRM));
   }
   return getMeterDetails(request, h);
@@ -191,6 +173,7 @@ const postConfirm = async (request, h) => {
     request.model
       .setUser(request.defra.userName, request.defra.entityId, false)
       .setStatus(STATUS_COMPLETED)
+      .setReceivedDate()
       .incrementVersionNumber();
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));
@@ -233,7 +216,7 @@ const getMeterReadings = async (request, h) => h.view('nunjucks/returns/form.njk
 const postMeterReadings = async (request, h) => {
   if (request.view.form.isValid) {
     const data = omit(forms.getValues(request.view.form), ['csrf_token', 'startReading']);
-    const lines = getLines(data, 'reading');
+    const lines = mapLines(data, 'reading');
     const { startReading } = forms.getValues(request.view.form);
     request.model.meter.setMeterReadings(startReading, lines);
     return h.redirect(addQuery(request, STEP_METER_DETAILS));

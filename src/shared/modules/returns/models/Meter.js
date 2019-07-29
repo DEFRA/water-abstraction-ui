@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const { pick, findLastKey } = require('lodash');
 
 const { mapMeterLinesToVolumes } = require('./water-return-helpers');
@@ -71,6 +71,12 @@ class Meter {
     this.startReading = startReading;
     this.readings = mapReadingsArrayToObject(readings);
 
+    return this;
+  }
+
+  setMeterDetailsProvided (meterDetailsProvided) {
+    Joi.assert(meterDetailsProvided, Joi.boolean());
+    this.meterDetailsProvided = meterDetailsProvided;
     return this;
   }
 

@@ -1,9 +1,9 @@
 'use strict';
 
 const { find } = require('lodash');
-const { experiment, test } = exports.lab = require('lab').script();
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { getPropositionLinks } = require('external/lib/view/proposition-links');
 const { scope } = require('external/lib/constants');

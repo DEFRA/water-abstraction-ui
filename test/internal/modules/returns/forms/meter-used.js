@@ -1,11 +1,11 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const {
   beforeEach,
   experiment,
   test
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 const { find, set } = require('lodash');
-const { meterUsedForm } = require('internal/modules/returns/forms/meter-used');
+const { form: meterUsedForm } = require('internal/modules/returns/forms/meter-used');
 
 experiment('meterUsedForm', () => {
   let request;

@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
@@ -97,9 +97,9 @@ module.exports = {
           returnId: Joi.string().required()
         },
         payload: {
-          'date_received-day': Joi.string().allow(''),
-          'date_received-month': Joi.string().allow(''),
-          'date_received-year': Joi.string().allow(''),
+          'dateReceived-day': Joi.string().allow(''),
+          'dateReceived-month': Joi.string().allow(''),
+          'dateReceived-year': Joi.string().allow(''),
           csrf_token: Joi.string().guid(),
           isUnderQuery: Joi.string().valid(['', 'under_query'])
         }
@@ -161,8 +161,9 @@ module.exports = {
         }
       }
     }
-  },
+  }
 
+  /*
   getDateReceived: {
     method: 'GET',
     path: '/return/date-received',
@@ -220,7 +221,8 @@ module.exports = {
       }
     }
   },
-
+  */
+  /*
   getInternalMethod: {
     method: 'GET',
     path: '/return/internal-method',
@@ -388,4 +390,5 @@ module.exports = {
       }
     }
   }
+  */
 };

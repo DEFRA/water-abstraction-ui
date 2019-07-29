@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const contactController = require('./contact-controller');
 const { VALID_EMAIL } = require('shared/lib/validators');
 const constants = require('../../lib/constants');

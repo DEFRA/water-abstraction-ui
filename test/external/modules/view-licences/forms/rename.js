@@ -1,7 +1,7 @@
-const { expect } = require('code');
-const { experiment, test, beforeEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { renameLicenceForm, renameLicenceSchema } = require('external/modules/view-licences/forms/rename');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const createRequest = () => {
   return {

@@ -8,8 +8,8 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const {
-  singleTotalAbstractionPeriodForm,
-  singleTotalAbstractionPeriodSchema
+  form: singleTotalAbstractionPeriodForm,
+  schema: singleTotalAbstractionPeriodSchema
 } = require('internal/modules/returns/forms/single-total-abstraction-period');
 
 experiment('single-total-abstraction-period form', () => {
@@ -73,7 +73,7 @@ experiment('schema', () => {
 
   experiment('when there is no custom period', () => {
     test('the data validates', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { totalCustomDates: false, csrf_token: csrf };
       const { error, value } = Joi.validate(data, schema);
 
@@ -85,7 +85,7 @@ experiment('schema', () => {
     });
 
     test('validation fails for missing csrf token', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { totalCustomDates: false };
       const { error } = Joi.validate(data, schema);
 
@@ -93,7 +93,7 @@ experiment('schema', () => {
     });
 
     test('validation fails for missing totalCustomDates value', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { csrf_token: csrf };
       const { error } = Joi.validate(data, schema);
 
@@ -103,7 +103,7 @@ experiment('schema', () => {
 
   experiment('when there is a custom period', () => {
     test('the start date must be at least the start date of the first return line', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = {
         totalCustomDates: true,
         csrf_token: csrf,
@@ -115,7 +115,7 @@ experiment('schema', () => {
     });
 
     test('the end date must be at no greater than the end date of the last return line', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = {
         totalCustomDates: true,
         csrf_token: csrf,
@@ -127,7 +127,7 @@ experiment('schema', () => {
     });
 
     test('the end date must be greater than the start date', async () => {
-      const schema = singleTotalAbstractionPeriodSchema(returnData);
+      const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = {
         totalCustomDates: true,
         csrf_token: csrf,

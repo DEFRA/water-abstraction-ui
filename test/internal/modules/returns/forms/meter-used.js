@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 const { find, set } = require('lodash');
-const { meterUsedForm } = require('internal/modules/returns/forms/meter-used');
+const { form: meterUsedForm } = require('internal/modules/returns/forms/meter-used');
 
 experiment('meterUsedForm', () => {
   let request;

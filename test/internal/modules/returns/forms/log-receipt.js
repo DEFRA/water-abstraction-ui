@@ -23,12 +23,12 @@ experiment('logReceiptForm', () => {
       }
     };
 
-    form = logReceiptForm(request);
+    form = logReceiptForm(request, {});
   });
 
   test('should contain the correct fields', async () => {
     const names = form.fields.map(row => row.name).filter(x => x);
-    expect(names).to.include(['csrf_token', 'date_received', 'isUnderQuery']);
+    expect(names).to.include(['csrf_token', 'dateReceived', 'isUnderQuery']);
   });
 
   test('should include the CSRF token from the request', async () => {
@@ -38,7 +38,7 @@ experiment('logReceiptForm', () => {
 
   test('the received date field should default to today', async () => {
     const today = moment().format('YYYY-MM-DD');
-    const date = find(form.fields, { name: 'date_received' });
+    const date = find(form.fields, { name: 'dateReceived' });
     expect(date.value).to.equal(today);
   });
 });
@@ -47,6 +47,6 @@ experiment('logReceiptSchema', () => {
   test('should contain the correct fields', async () => {
     const schema = logReceiptSchema();
     const keys = Object.keys(schema);
-    expect(keys).to.only.include(['csrf_token', 'date_received', 'isUnderQuery']);
+    expect(keys).to.only.include(['csrf_token', 'dateReceived', 'isUnderQuery']);
   });
 });

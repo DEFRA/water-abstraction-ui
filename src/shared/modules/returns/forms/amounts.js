@@ -1,6 +1,8 @@
 const { fields } = require('shared/lib/forms');
 
-const getIsNilField = () => fields.radio('isNil', {
+const getIsNilField = label => fields.radio('isNil', {
+  label,
+  subHeading: true,
   mapper: 'booleanMapper',
   errors: {
     'any.required': {

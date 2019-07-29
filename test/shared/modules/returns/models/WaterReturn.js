@@ -1,4 +1,3 @@
-const moment = require('moment');
 const { omit } = require('lodash');
 const {
   experiment,
@@ -126,21 +125,15 @@ experiment('WaterReturn', () => {
   });
 
   experiment('setStatus', () => {
-    const data = omit(createReturn(), 'receivedDate');
+    let data;
+    beforeEach(async () => {
+      data = createReturn();
+    });
 
-    test('sets status with receivedDate defaulting to todays date', async () => {
-      const today = moment().format('YYYY-MM-DD');
+    test('sets status if status not completed', async () => {
       const waterReturn = new WaterReturn(data);
       waterReturn.setStatus('completed');
       expect(waterReturn.status).to.equal('completed');
-      expect(waterReturn.receivedDate).to.equal(today);
-    });
-
-    test('sets status with defined received date', async () => {
-      const waterReturn = new WaterReturn(data);
-      waterReturn.setStatus('completed', '2019-02-14');
-      expect(waterReturn.status).to.equal('completed');
-      expect(waterReturn.receivedDate).to.equal('2019-02-14');
     });
 
     test('does not set status if status is already completed', async () => {
@@ -151,13 +144,14 @@ experiment('WaterReturn', () => {
       waterReturn.setStatus('due');
       expect(waterReturn.status).to.equal('completed');
     });
+  });
 
-    test('does not set received date if date already set', async () => {
-      const waterReturn = new WaterReturn({
-        ...data,
-        receivedDate: '2019-02-14'
-      });
-      waterReturn.setStatus('completed');
+  experiment('setReceivedDate', () => {
+    const data = omit(createReturn(), 'receivedDate');
+
+    test('sets the received date', async () => {
+      const waterReturn = new WaterReturn(data);
+      waterReturn.setReceivedDate('2019-02-14');
       expect(waterReturn.receivedDate).to.equal('2019-02-14');
     });
   });
@@ -221,6 +215,30 @@ experiment('WaterReturn', () => {
     });
   });
 
+  experiment('updateSingleTotalLines', () => {
+    let waterReturn;
+
+    beforeEach(async () => {
+      const ret = createReturn();
+      waterReturn = new WaterReturn(ret);
+      sandbox.stub(waterReturn.reading, 'getSingleTotal').returns(500);
+      sandbox.stub(waterReturn.lines, 'setSingleTotal');
+    });
+
+    test('calls setSingleTotal on the lines instance', async () => {
+      const result = waterReturn.updateSingleTotalLines();
+
+      const [absPeriod, total] = waterReturn.lines.setSingleTotal.lastCall.args;
+
+      expect(absPeriod).to.equal({ periodEndDay: 31,
+        periodEndMonth: 10,
+        periodStartDay: 1,
+        periodStartMonth: 4 });
+      expect(total).to.equal(500);
+      expect(result).to.equal(waterReturn);
+    });
+  });
+
   experiment('incrementVersionNumber', () => {
     let waterReturn;
     beforeEach(async () => {
@@ -259,7 +277,7 @@ experiment('WaterReturn', () => {
     });
 
     test('gets custom abstraction period if set in reading', async () => {
-      waterReturn.reading.setCustomAbstractionPeriod('2019-02-14', '2019-04-01');
+      waterReturn.reading.setCustomAbstractionPeriod(true, '2019-02-14', '2019-04-01');
       const period = waterReturn.getAbstractionPeriod();
       expect(period).to.equal({
         periodEndDay: 1,
@@ -291,6 +309,23 @@ experiment('WaterReturn', () => {
     test('returns false if nil return flag not set', async () => {
       waterReturn.isNil = false;
       expect(waterReturn.isNilReturn()).to.equal(false);
+    });
+  });
+
+  experiment('setUnderQuery', () => {
+    let waterReturn;
+    beforeEach(async () => {
+      waterReturn = new WaterReturn(createReturn());
+    });
+
+    test('sets under query flag', async () => {
+      waterReturn.setUnderQuery(true);
+      expect(waterReturn.isUnderQuery).to.equal(true);
+    });
+
+    test('clears under query flag', async () => {
+      waterReturn.setUnderQuery(false);
+      expect(waterReturn.isUnderQuery).to.equal(false);
     });
   });
 });

@@ -3,7 +3,7 @@ const {
   experiment,
   test
 } = exports.lab = require('@hapi/lab').script();
-const { meterDetailsForm } = require('internal/modules/returns/forms/meter-details');
+const { form: meterDetailsForm } = require('internal/modules/returns/forms/meter-details');
 
 const createRequest = (isInternal = true) => {
   return {

@@ -184,6 +184,24 @@ experiment('Meter', () => {
     });
   });
 
+  experiment('setMeterDetailsProvided', () => {
+    let meter;
+
+    beforeEach(async () => {
+      meter = new Meter();
+    });
+
+    test('sets the meter details provided flag', async () => {
+      meter.setMeterDetailsProvided(true);
+      expect(meter.meterDetailsProvided).to.equal(true);
+    });
+
+    test('clears the meter details provided flag', async () => {
+      meter.setMeterDetailsProvided(false);
+      expect(meter.meterDetailsProvided).to.equal(false);
+    });
+  });
+
   experiment('getStartReading', () => {
     test('gets the start reading', async () => {
       const meter = new Meter();

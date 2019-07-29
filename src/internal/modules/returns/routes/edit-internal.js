@@ -1,385 +1,169 @@
-const Joi = require('@hapi/joi');
+const { set } = require('lodash');
 const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
-const returns = constants.scope.returns;
-const { VALID_GUID } = require('shared/lib/validators');
-const { upperFirst } = require('lodash');
+const allowedScopes = [constants.scope.returns];
+const steps = require('shared/modules/returns/steps');
 
-const getHandlerName = (method, path, pathExclude) => {
-  return method.toLowerCase() + path.replace(pathExclude, '').split('/').map(upperFirst).join('');
+const services = require('internal/lib/connectors/services');
+const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
+const storageAdapter = new FlowStorageAdapter(services.water.returns);
+
+const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
+
+const createRoute = (...args) => {
+  const route = sharedCreateRoute(...args);
+  set(route, 'options.auth.scope', allowedScopes);
+  set(route, 'options.plugins.flow.adapter', storageAdapter);
+  return route;
 };
 
-const createMeterRoute = (method, path, description, title) => {
-  return {
-    method,
-    path,
-    handler: controller[getHandlerName(method, path, '/return/')],
-    options: {
-      auth: { scope: returns },
-      description,
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view',
-          pageTitle: title
-        },
-        returns: true
-      }
-    }
-  };
-};
+module.exports = [
 
-const createGetMeterRoute = createMeterRoute.bind(null, 'GET');
-const createPostMeterRoute = createMeterRoute.bind(null, 'POST');
+  createRoute('GET', steps.STEP_DATE_RECEIVED, controller.getDateReceived, {
+    pageTitle: 'Abstraction return - enter date received',
+    form: require('../forms/return-received').form,
+    schema: require('../forms/return-received').schema
+  }),
 
-module.exports = {
+  createRoute('POST', steps.STEP_DATE_RECEIVED, controller.postDateReceived, {
+    pageTitle: 'Abstraction return - enter date received',
+    form: require('../forms/return-received').form,
+    schema: require('../forms/return-received').schema
+  }),
 
-  getAmounts: {
-    method: 'GET',
-    path: '/return',
-    handler: controller.getAmounts,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Form to start the return process for a return, asks if nil return',
-      validate: {
-        query: {
-          returnId: Joi.string().required()
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-  postAmounts: {
-    method: 'POST',
-    path: '/return',
-    handler: controller.postAmounts,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Form handler for nil returns',
-      validate: {
-        query: {
-          returnId: Joi.string().required()
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
-          activeNavLink: 'view',
-          showMeta: true
-        },
-        formValidator: {
-          payload: {
-            csrf_token: VALID_GUID,
-            isNil: Joi.string().required().valid('Yes', 'No')
-          }
-        },
-        returns: true
-      }
-    }
-  },
+  createRoute('GET', steps.STEP_START, controller.getAmounts, {
+    pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+    form: require('../forms/amounts').form
+  }),
 
-  getNilReturn: {
-    method: 'GET',
-    path: '/return/nil-return',
-    handler: controller.getNilReturn,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Confirmation screen for nil return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - submit nil',
-          activeNavLink: 'view',
-          showMeta: true
-        },
-        returns: true
-      }
-    }
-  },
+  createRoute('POST', steps.STEP_START, controller.postAmounts, {
+    pageTitle: 'Abstraction return - are there any abstraction amounts to report?',
+    form: require('../forms/amounts').form
+  }),
 
-  postNilReturn: {
-    method: 'POST',
-    path: '/return/nil-return',
-    handler: controller.postConfirm,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for nil return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - nil submitted',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
+  createRoute('GET', steps.STEP_METHOD, controller.getMethod, {
+    pageTitle: 'Abstraction return - how are you reporting your return?',
+    form: require('../forms/method').form
+  }),
 
-  getSubmitted: {
+  createRoute('POST', steps.STEP_METHOD, controller.postMethod, {
+    pageTitle: 'Abstraction return - how are you reporting your return?',
+    form: require('../forms/method').form
+  }),
+
+  createRoute('GET', steps.STEP_UNITS, controller.getUnits, {
+    pageTitle: 'Abstraction return - what is the unit of measurement?',
+    form: require('../forms/units').form
+  }),
+
+  createRoute('POST', steps.STEP_UNITS, controller.postUnits, {
+    pageTitle: 'Abstraction return - what is the unit of measurement?',
+    form: require('../forms/units').form
+  }),
+
+  createRoute('GET', steps.STEP_METER_DETAILS_PROVIDED, controller.getMeterDetailsProvided, {
+    pageTitle: 'Abstraction return - are meter details provided',
+    form: require('../forms/meter-details-provided').form
+  }),
+
+  createRoute('POST', steps.STEP_METER_DETAILS_PROVIDED, controller.postMeterDetailsProvided, {
+    pageTitle: 'Abstraction return - are meter details provided',
+    form: require('../forms/meter-details-provided').form
+  }),
+
+  createRoute('GET', steps.STEP_METER_USED, controller.getMeterUsed, {
+    pageTitle: 'Abstraction return - was a meter or meters used?',
+    form: require('../forms/meter-used').form
+  }),
+
+  createRoute('POST', steps.STEP_METER_USED, controller.postMeterUsed, {
+    pageTitle: 'Abstraction return - is it a single abstracted amount?',
+    form: require('../forms/meter-used').form
+  }),
+
+  createRoute('GET', steps.STEP_METER_DETAILS, controller.getMeterDetails, {
+    pageTitle: 'Abstraction return - tell us about the meter',
+    form: require('../forms/meter-details').form
+  }),
+
+  createRoute('POST', steps.STEP_METER_DETAILS, controller.postMeterDetails, {
+    pageTitle: 'Abstraction return - tell us about the meter',
+    form: require('../forms/meter-details').form
+  }),
+
+  createRoute('GET', steps.STEP_METER_READINGS, controller.getMeterReadings, {
+    pageTitle: 'Abstraction return - tell us about the meter',
+    form: require('../forms/meter-readings').form
+  }),
+
+  createRoute('POST', steps.STEP_METER_READINGS, controller.postMeterReadings, {
+    pageTitle: 'Abstraction return - tell us about the meter',
+    form: require('../forms/meter-readings').form,
+    schema: require('../forms/meter-readings').schema
+  }),
+
+  createRoute('GET', steps.STEP_SINGLE_TOTAL, controller.getSingleTotal, {
+    pageTitle: 'Abstraction return - is it a single abstracted amount?',
+    form: require('../forms/single-total').form
+  }),
+
+  createRoute('POST', steps.STEP_SINGLE_TOTAL, controller.postSingleTotal, {
+    pageTitle: 'Abstraction return - was a meter or meters used?',
+    form: require('../forms/single-total').form,
+    schema: require('../forms/single-total').schema
+  }),
+
+  createRoute('GET', steps.STEP_SINGLE_TOTAL_DATES, controller.getSingleTotalDates, {
+    pageTitle: 'Abstraction return - what period was used for this volume?',
+    form: require('../forms/single-total-abstraction-period').form
+  }),
+
+  createRoute('POST', steps.STEP_SINGLE_TOTAL_DATES, controller.postSingleTotalDates, {
+    pageTitle: 'Abstraction return - what period was used for this volume?',
+    form: require('../forms/single-total-abstraction-period').form,
+    schema: require('../forms/single-total-abstraction-period').schema
+  }),
+
+  createRoute('GET', steps.STEP_QUANTITIES, controller.getQuantities, {
+    pageTitle: 'Abstraction return - enter amounts',
+    form: require('../forms/quantities').form
+  }),
+
+  createRoute('POST', steps.STEP_QUANTITIES, controller.postQuantities, {
+    pageTitle: 'Abstraction return - enter amounts',
+    form: require('../forms/quantities').form,
+    schema: require('../forms/quantities').schema
+  }),
+
+  createRoute('GET', steps.STEP_CONFIRM, controller.getConfirm, {
+    pageTitle: 'Abstraction return - check the information before submitting',
+    form: require('../forms/confirm').form,
+    showMeta: true
+  }),
+
+  createRoute('POST', steps.STEP_CONFIRM, controller.postConfirm, {
+    pageTitle: 'Abstraction return - check the information before submitting',
+    form: require('../forms/confirm').form,
+    showMeta: true,
+    submit: true
+  }),
+
+  {
     method: 'GET',
     path: '/return/submitted',
     handler: controller.getSubmitted,
     options: {
       auth: {
-        scope: returns
+        scope: allowedScopes
       },
       description: 'Confirmation screen for nil return',
       plugins: {
         viewContext: {
-          activeNavLink: 'view'
+          activeNavLink: 'returns'
         },
         returns: true
       }
     }
-  },
+  }
 
-  getMethod: {
-    method: 'GET',
-    path: '/return/method',
-    handler: controller.getMethod,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Ask whether meter readings are used',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postMethod: {
-    method: 'POST',
-    path: '/return/method',
-    handler: controller.postMethod,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'POST handler for meter readings routing',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - how are you reporting your return?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getUnits: {
-    method: 'GET',
-    path: '/return/units',
-    handler: controller.getUnits,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Get units used for this return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - what is the unit of measurement?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postUnits: {
-    method: 'POST',
-    path: '/return/units',
-    handler: controller.postUnits,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for units used for this return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - what is the unit of measurement?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getSingleTotal: {
-    method: 'GET',
-    path: '/return/single-total',
-    handler: controller.getSingleTotal,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Get whether a single total was submitted for this return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - is it a single abstracted amount?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postSingleTotal: {
-    method: 'POST',
-    path: '/return/single-total',
-    handler: controller.postSingleTotal,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for single total submitted for this return',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - is it a single amount?',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getQuantities: {
-    method: 'GET',
-    path: '/return/quantities',
-    handler: controller.getQuantities,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Display quantities form',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - enter amounts',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  postQuantities: {
-    method: 'POST',
-    path: '/return/quantities',
-    handler: controller.postQuantities,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for quantities',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - enter amounts',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getConfirm: {
-    method: 'GET',
-    path: '/return/confirm',
-    handler: controller.getConfirm,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Display confirmation screen of returned quantities',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - check the information before submitting',
-          activeNavLink: 'view',
-          showMeta: true
-        },
-        returns: true
-      }
-    }
-  },
-
-  postConfirm: {
-    method: 'POST',
-    path: '/return/confirm',
-    handler: controller.postConfirm,
-    options: {
-      auth: {
-        scope: returns
-      },
-      description: 'Post handler for confirmation screen',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Abstraction return - check the information before submitting',
-          activeNavLink: 'view'
-        },
-        returns: true
-      }
-    }
-  },
-
-  getMeterDetails: createGetMeterRoute(
-    '/return/meter/details',
-    'Shows the view allowing an admin user to enter meter details',
-    'Abstraction return - tell us about your meter'
-  ),
-
-  postMeterDetails: createPostMeterRoute(
-    '/return/meter/details',
-    'POST handler for meter details',
-    'Abstraction return - tell us about your meter'
-  ),
-
-  getMeterUnits: createGetMeterRoute(
-    '/return/meter/units',
-    'Shows the view allowing an admin user to enter meter units',
-    'Abstraction return - what is the unit of measurement?'
-  ),
-
-  postMeterUnits: createPostMeterRoute(
-    '/return/meter/units',
-    'POST handler for meter units',
-    'Abstraction return - what is the unit of measurement?'
-  ),
-
-  getMeterReadings: createGetMeterRoute(
-    '/return/meter/readings',
-    'Shows the view allowing an admin user to enter meter readings',
-    'Abstraction return - enter meter readings'
-  ),
-
-  postMeterReadings: createPostMeterRoute(
-    '/return/meter/readings',
-    'POST handler for meter readings',
-    'Abstraction return - enter meter readings'
-  ),
-
-  getMeterUsed: createGetMeterRoute(
-    '/return/meter/used',
-    'View for internal user to specify whether a meter was used',
-    'Abstraction return - was a meter or meters used?'
-  ),
-
-  postMeterUsed: createPostMeterRoute(
-    '/return/meter/used',
-    'POST handler for meter used',
-    'Abstraction return - was a meter or meters used?'
-  )
-};
+];

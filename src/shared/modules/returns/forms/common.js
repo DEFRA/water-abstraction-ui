@@ -70,6 +70,22 @@ const getMeter = data => {
   return get(data, 'meters[0]', {});
 };
 
+/**
+ * Get field suffix - this is the units used for this return
+ * @param {String} unit - internal SI unit or gal
+ * @return {String} suffix - human readable unit
+ */
+const getSuffix = (unit) => {
+  const u = unit.replace('³', '3');
+  const units = {
+    m3: 'cubic metres',
+    l: 'litres',
+    gal: 'gallons',
+    Ml: 'megalitres'
+  };
+  return units[u];
+};
+
 exports.getContinueField = getContinueField;
 exports.getCsrfTokenField = getCsrfTokenField;
 exports.getHeadingField = getHeadingField;
@@ -78,3 +94,4 @@ exports.getLineName = getLineName;
 exports.getLineLabel = getLineLabel;
 exports.getFormLines = getFormLines;
 exports.getMeter = getMeter;
+exports.getSuffix = getSuffix;

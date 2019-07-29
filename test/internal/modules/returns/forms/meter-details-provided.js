@@ -5,7 +5,7 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 
-const { meterDetailsProvidedForm } = require('internal/modules/returns/forms/meter-details-provided');
+const { form: meterDetailsProvidedForm } = require('internal/modules/returns/forms/meter-details-provided');
 
 experiment('meter-details-provided', () => {
   let request;

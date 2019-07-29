@@ -47,10 +47,12 @@ const createModel = () => {
     getReturnTotal: sandbox.stub().returns(999),
     setUser: sandbox.stub(),
     setStatus: sandbox.stub(),
+    setReceivedDate: sandbox.stub(),
     incrementVersionNumber: sandbox.stub()
   };
   model.setUser.returns(model);
   model.setStatus.returns(model);
+  model.setReceivedDate.returns(model);
   return model;
 };
 

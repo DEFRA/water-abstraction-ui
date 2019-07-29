@@ -1,5 +1,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "./text.njk" import formTextWidget %}
+{% from "./date.njk" import formDateWidget %}
+{% from "./paragraph.njk" import formParagraphWidget %}
 
 {% macro formRadioWidget(field, form) %}
 
@@ -9,7 +11,19 @@
     {% set outerLoop = loop %}
     {% for item in choice.fields %}
       {% set html %}
-        {{ formTextWidget(item, form) }}
+
+        {% if item.options.widget=='text' %}
+          {{ formTextWidget(item, form) }}
+        {% endif %}
+
+        {% if item.options.widget=='date' %}
+          {{ formDateWidget(item, form) }}
+        {% endif %}
+
+        {% if item.options.widget=='paragraph' %}
+          {{ formParagraphWidget(item, form) }}
+        {% endif %}
+
       {% endset %}
       {% set options = options | setConditionalRadioField(outerLoop.index0, html) %}
     {% endfor %}

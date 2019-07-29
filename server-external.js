@@ -10,7 +10,6 @@ const Hapi = require('@hapi/hapi');
 const config = require('./src/external/config');
 const plugins = require('./src/external/lib/hapi-plugins');
 const routes = require('./src/external/modules/routes');
-const returnsPlugin = require('./src/external/modules/returns/plugin');
 const viewEngine = require('./src/external/lib/view-engine/');
 const { logger } = require('./src/external/logger');
 const connectors = require('./src/external/lib/connectors/services');
@@ -49,9 +48,15 @@ async function start () {
 
     server.auth.default('standard');
 
-    await server.register([...common, ...Object.values(plugins), returnsPlugin]);
+    await server.register([...common, ...Object.values(plugins)]);
 
     await server.register([{
+      plugin: require('shared/plugins/returns'),
+      options: {
+        getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
+        checkAccess: true
+      }
+    }, {
       plugin: require('shared/plugins/licence-data'),
       options: require('external/lib/licence-data-config')
     }, {

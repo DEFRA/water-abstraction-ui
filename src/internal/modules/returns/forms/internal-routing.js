@@ -1,5 +1,9 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const { STEP_INTERNAL_ROUTING, getPath } = require('../lib/flow-helpers');
+const { STEP_INTERNAL_ROUTING } = require('shared/modules/returns/steps');
+const { addQuery } = require('shared/modules/returns/route-helpers');
+
+const { getContinueField, getCsrfTokenField } =
+ require('shared/modules/returns/forms/common');
 
 const isReceived = data => data.receivedDate !== null;
 const isUnderQuery = data => data.isUnderQuery;
@@ -32,28 +36,25 @@ const getChoices = (data) => {
   return choices;
 };
 
-const form = (request, data) => {
-  const { csrfToken } = request.view;
+const getRadioField = data => fields.radio('action', {
+  label: 'What do you want to do with this return?',
+  subHeading: true,
+  errors: {
+    'any.required': {
+      message: 'Select what you want to do with this return'
+    }
+  },
+  choices: getChoices(data)
+});
 
-  const action = getPath(STEP_INTERNAL_ROUTING, request);
-
-  const f = formFactory(action);
-
-  f.fields.push(fields.radio('action', {
-    label: 'What do you want to do with this return?',
-    errors: {
-      'any.required': {
-        message: 'Select what you want to do with this return'
-      }
-    },
-    choices: getChoices(data)
-  }));
-
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-
-  return f;
-};
+const form = (request, data) => ({
+  ...formFactory(addQuery(request, STEP_INTERNAL_ROUTING)),
+  fields: [
+    getRadioField(data),
+    getCsrfTokenField(request),
+    getContinueField()
+  ]
+});
 
 module.exports = {
   internalRoutingForm: form

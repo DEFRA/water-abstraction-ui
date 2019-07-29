@@ -74,6 +74,12 @@ class Meter {
     return this;
   }
 
+  setMeterDetailsProvided (meterDetailsProvided) {
+    Joi.assert(meterDetailsProvided, Joi.boolean());
+    this.meterDetailsProvided = meterDetailsProvided;
+    return this;
+  }
+
   getStartReading () {
     return this.startReading;
   }

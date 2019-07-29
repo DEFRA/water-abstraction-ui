@@ -43,7 +43,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "sinon": "^4.2.2",
-    "snyk": "^1.193.2",
+    "snyk": "^1.200.1",
     "xmldom": "^0.1.27"
   },
   "dependencies": {

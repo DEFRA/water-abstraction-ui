@@ -11,8 +11,9 @@ const config = require('../../config');
  * @param {Object} h - the HAPI HTTP response
  */
 async function getManageLicences (request, h) {
-  const { view } = request;
-  return h.view('nunjucks/manage-licences/index.njk', view, { layout: false });
+  return h.view('nunjucks/manage-licences/index.njk', request.view, {
+    layout: false
+  });
 }
 
 /**
@@ -71,32 +72,32 @@ async function getAccessList (request, h, context = {}) {
 /**
  * Renders form for user to share their licence
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} h - the HAPI HTTP response toolkit
  * @param {Object} [context] - additional view context data
  */
-function getAddAccess (request, reply, context = {}) {
-  const viewContext = Object.assign(request.view, context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Give access to view your licences';
-
-  // get list of roles in same org as current user
-  return reply.view('water/manage-licences/manage_licences_add_access_form', viewContext);
+function getAddAccess (request, h, context = {}) {
+  return h.view(
+    'nunjucks/manage-licences/add-access.njk',
+    { ...request.view, ...context },
+    { layout: false }
+  );
 }
 
 /**
  * share their licence
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} reply - the HAPI HTTP response toolkit
  * @param {string} email - the email of account to share with
  * @param {Object} [context] - additional view context data
  */
-async function postAddAccess (request, reply, context = {}) {
+async function postAddAccess (request, h) {
   const { entityId } = request.defra;
-  const viewContext = Object.assign(request.view, context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Manage access to your licences';
-  viewContext.email = request.payload.email;
-  viewContext.errors = {};
+  const viewContext = {
+    ...request.view,
+    email: request.payload.email,
+    errors: {}
+  };
+
   // Validate input data with Joi
   const schema = {
     email: Joi.string().trim().required().email().lowercase().trim(),
@@ -117,7 +118,7 @@ async function postAddAccess (request, reply, context = {}) {
     // Gracefully handle any errors.
     if (validationError) {
       viewContext.errors.email = true;
-      return reply.view('water/manage-licences/manage_licences_add_access_form', viewContext);
+      return getAddAccess(request, h, viewContext);
     }
 
     // Notification details
@@ -163,7 +164,11 @@ async function postAddAccess (request, reply, context = {}) {
     const user = await services.idm.users.findOneByEmail(email, config.idm.application);
     await services.idm.users.updateExternalId(user, crmEntityId);
 
-    return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
+    return h.view(
+      'nunjucks/manage-licences/add-access-success.njk',
+      viewContext,
+      { layout: false }
+    );
   } catch (err) {
     logger.errorWithJourney('Post add access error', err, request);
     throw err;
@@ -190,13 +195,18 @@ async function getRemoveAccess (request, reply, context = {}) {
       throw Boom.badImplementation(`CRM error finding entity ${colleagueEntityID}`, error);
     }
 
-    const viewContext = Object.assign(request.view, context);
-    viewContext.activeNavLink = 'manage';
-    viewContext.entityID = entityId;
-    viewContext.colleagueName = colleagueEntity.entity_nm;
-    viewContext.colleagueEntityID = colleagueEntityID;
-    viewContext.pageTitle = 'You are about to remove access';
-    return reply.view('water/manage-licences/remove-access', viewContext);
+    const viewContext = {
+      ...request.view,
+      ...context,
+      colleagueName: colleagueEntity.entity_nm,
+      colleagueEntityID
+    };
+
+    return reply.view(
+      'nunjucks/manage-licences/remove-access.njk',
+      viewContext,
+      { layout: false }
+    );
   } catch (error) {
     logger.errorWithJourney('Remove access error', error, request);
     throw error;
@@ -254,45 +264,26 @@ async function postRemoveAccess (request, h) {
     colleague
   };
 
-  return h.view('water/manage-licences/remove-access-success', view);
-}
-
-/**
- * Instructions on how to add further licences to your account
- * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
- */
-async function getAddLicences (request, reply, context = {}) {
-  const { entityId } = request.defra;
-  const viewContext = Object.assign(request.view, context);
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Manage your licences';
-
-  try {
-    // Does user have outstanding verification codes?
-    const { data: verifications, error } = await services.crm.verification.findMany({ entity_id: entityId, date_verified: null });
-    if (error) {
-      throw error;
-    }
-
-    viewContext.verificationCount = verifications.length;
-    return reply.view('water/manage-licences/manage_licences_add', viewContext);
-  } catch (error) {
-    throw error;
-  }
+  return h.view(
+    'nunjucks/manage-licences/remove-access-success.njk',
+    view,
+    { layout: false }
+  );
 }
 
 async function getChangeAccess (request, h) {
   const { entityId } = request.defra;
   const viewContext = request.view;
-  viewContext.activeNavLink = 'manage';
-  viewContext.pageTitle = 'Change access to your licences';
 
   const allAccessEntities = await getLicenceAccessListViewModel(entityId);
   const colleagueEntityRole = allAccessEntities.find(entity => entity.colleagueEntityID === request.params.colleagueEntityID);
   viewContext.colleagueEntityRole = colleagueEntityRole;
 
-  return h.view('water/manage-licences/change-access', viewContext);
+  return h.view(
+    'nunjucks/manage-licences/change-access.njk',
+    viewContext,
+    { layout: false }
+  );
 };
 
 async function postChangeAccess (request, h) {
@@ -311,12 +302,16 @@ async function postChangeAccess (request, h) {
 };
 
 exports.getManageLicences = getManageLicences;
+
 exports.getAccessList = getAccessList;
+
 exports.getAddAccess = getAddAccess;
 exports.postAddAccess = postAddAccess;
+
 exports.getRemoveAccess = getRemoveAccess;
 exports.postRemoveAccess = postRemoveAccess;
-exports.getAddLicences = getAddLicences;
+
 exports.createAccessListViewModel = createAccessListViewModel;
+
 exports.getChangeAccess = getChangeAccess;
 exports.postChangeAccess = postChangeAccess;

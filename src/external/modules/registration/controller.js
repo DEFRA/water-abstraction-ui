@@ -12,18 +12,22 @@ const services = require('../../lib/connectors/services');
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-function getRegisterStart (request, h) {
-  return h.view('water/registration/register_start', request.view);
-}
+const getRegisterStart = (request, h) => h.view(
+  'nunjucks/registration/start.njk',
+  request.view,
+  { layout: false }
+);
 
 /**
  * Render form to get user email address
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-function getEmailAddress (request, h) {
-  return h.view('water/registration/register_email', request.view);
-}
+const getEmailAddress = (request, h) => h.view(
+  'nunjucks/registration/enter-email.njk',
+  request.view,
+  { layout: false }
+);
 
 const getUrlWithEmailParam = (email, options) => {
   if (options.includeEmail) {
@@ -31,6 +35,17 @@ const getUrlWithEmailParam = (email, options) => {
     return `${options.redirect}?${query}`;
   }
   return options.redirect;
+};
+
+const validateEmail = requestPayload => {
+  const { error, value } = Joi.validate(requestPayload, {
+    email: Joi.string().trim().required().email().lowercase()
+  });
+
+  if (error) {
+    throw error;
+  }
+  return value.email;
 };
 
 /**
@@ -45,27 +60,18 @@ const getUrlWithEmailParam = (email, options) => {
  * @param {String} request.payload.email - email address for user account
  * @param {Object} h - Hapi Response Toolkit
  */
-async function postEmailAddress (request, h, options = {}) {
+const postEmailAddress = async (request, h, options = {}) => {
   const defaults = {
-    template: 'water/registration/register_email',
+    template: 'nunjucks/registration/enter-email.njk',
     redirect: '/success',
     includeEmail: true
   };
   const emailConfig = Object.assign(defaults, options);
-  const pageTitle = emailConfig.template === 'water/registration/register_email' ? 'Tell us your email address' : 'Ask for another email';
   let email;
 
   try {
     // Validate email
-    const { error, value } = Joi.validate(request.payload, {
-      email: Joi.string().trim().required().email().lowercase()
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    email = value.email;
+    email = validateEmail(request.payload);
 
     // Try to create user
     const { error: createError } = await services.idm.users.createUserWithoutPassword(config.idm.application, email);
@@ -74,7 +80,7 @@ async function postEmailAddress (request, h, options = {}) {
       throw createError;
     }
 
-    await services.idm.users.resetPassword(config.idm.application, value.email, 'new');
+    await services.idm.users.resetPassword(config.idm.application, email, 'new');
     return h.redirect(getUrlWithEmailParam(email, emailConfig));
   } catch (error) {
     // User exists
@@ -82,40 +88,44 @@ async function postEmailAddress (request, h, options = {}) {
       const { error: resetError } = await services.idm.users.resetPassword(config.idm.application, request.payload.email, 'existing');
       if (resetError) {
         throw resetError;
-      } else {
-        return h.redirect(getUrlWithEmailParam(email, emailConfig));
       }
+      return h.redirect(getUrlWithEmailParam(email, emailConfig));
     }
 
     // Email was invalid - handle error
     if (error.name === 'ValidationError') {
-      request.view.pageTitle = pageTitle;
       request.view.error = error;
-      return h.view(emailConfig.template, request.view);
+      return h.view(emailConfig.template, request.view, { layout: false });
     }
 
     throw error;
   }
-}
+};
 
 /**
  * Success page shown when account created
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-function getRegisterSuccess (request, h) {
-  request.view.email = request.query.email;
-  return h.view('water/registration/register_success', request.view);
-}
+const getRegisterSuccess = (request, h) => h.view(
+  'nunjucks/registration/email-sent.njk',
+  {
+    ...request.view,
+    email: request.query.email
+  },
+  { layout: false }
+);
 
 /**
  * Try sending email again
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-function getSendAgain (request, h) {
-  return h.view('water/registration/register_send_again', request.view);
-}
+const getSendAgain = (request, h) => h.view(
+  'nunjucks/registration/email-resend.njk',
+  request.view,
+  { layout: false }
+);
 
 /**
  * Send email again
@@ -123,23 +133,25 @@ function getSendAgain (request, h) {
  * @param {String} request.payload.email - email address for user account
  * @param {Object} h - Hapi Response Toolkit
  */
-function postSendAgain (request, h) {
+const postSendAgain = (request, h) => {
   const options = {
-    template: 'water/registration/register_send_again',
+    template: 'nunjucks/registration/email-resend.njk',
     redirect: '/resent-success',
     includeEmail: false
   };
   return postEmailAddress(request, h, options);
-}
+};
 
 /**
  * Success page shown when account created
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-function getResentSuccess (request, h) {
-  return h.view('water/registration/register_resent_success', request.view);
-}
+const getResentSuccess = (request, h) => h.view(
+  'nunjucks/registration/email-resent.njk',
+  request.view,
+  { layout: false }
+);
 
 exports.getRegisterStart = getRegisterStart;
 exports.getEmailAddress = getEmailAddress;

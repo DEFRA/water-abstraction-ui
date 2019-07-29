@@ -1,0 +1,17 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <span class="govuk-!-font-weight-bold">{{ colleague.entity_nm }}</span>
+        will no longer have access to your licences.
+      </p>
+      <p>They will not be notified about this change.</p>
+      <p><a class="govuk-link" href="/manage_licences/access">Return to give access</a></p>
+    </div>
+  </div>
+{% endblock %}

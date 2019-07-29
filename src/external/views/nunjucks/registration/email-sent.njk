@@ -1,0 +1,13 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p>
+        We have sent a link to <span class="govuk-!-font-weight-bold">{{ email }}</span>
+      </p>
+      <p><a class="govuk-link" href="/send-again">I have not received the email</a></p>
+    </div>
+  </div>
+{% endblock %}

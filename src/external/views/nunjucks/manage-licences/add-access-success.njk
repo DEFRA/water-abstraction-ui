@@ -1,0 +1,16 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title('Access email sent to ' + email) }}
+      <p class="govuk-body-l">
+        We have sent instructions about how to view your licences.
+      </p>
+      <p>
+        <a class="govuk-link" href="/manage_licences/access">Return to give access</a>
+      </p>
+      <p>You can remove access to your licences on this page.</p>
+    </div>
+  </div>
+{% endblock %}

@@ -50,6 +50,12 @@ module.exports = {
         params: {
           colleagueEntityID: Joi.string().uuid().required()
         }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage',
+          pageTitle: 'You are about to remove access'
+        }
       }
     }
   },
@@ -76,6 +82,7 @@ module.exports = {
       }
     }
   },
+
   getAddAccess: {
     method: 'GET',
     path: '/manage_licences/add_access',
@@ -84,9 +91,16 @@ module.exports = {
       auth: {
         scope: scope.licenceHolder
       },
-      description: 'Manage licences - add access form'
+      description: 'Manage licences - add access form',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Give access to your licences',
+          activeNavLink: 'manage'
+        }
+      }
     }
   },
+
   postAddAccess: {
     method: 'POST',
     path: '/manage_licences/add_access',
@@ -94,6 +108,12 @@ module.exports = {
     config: {
       auth: {
         scope: scope.licenceHolder
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Give access to your licences',
+          activeNavLink: 'manage'
+        }
       },
       description: 'Manage licences - add access process',
       validate: {
@@ -105,17 +125,7 @@ module.exports = {
       }
     }
   },
-  getAddLicences: {
-    method: 'GET',
-    path: '/manage_licences_add',
-    handler: controller.getAddLicences,
-    config: {
-      auth: {
-        scope: scope.licenceHolder
-      },
-      description: 'Manage licences - add licences'
-    }
-  },
+
   getChangeAccess: {
     method: 'GET',
     path: '/manage_licences/access/{colleagueEntityID}/change',
@@ -128,6 +138,12 @@ module.exports = {
       validate: {
         params: {
           colleagueEntityID: Joi.string().uuid().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage',
+          pageTitle: 'Change access to your licences'
         }
       }
     }

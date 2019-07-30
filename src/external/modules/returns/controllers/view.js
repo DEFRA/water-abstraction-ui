@@ -18,7 +18,7 @@ const services = require('../../../lib/connectors/services');
  */
 const getReturns = async (request, h) => {
   const view = await getReturnsViewData(request);
-  return h.view('water/returns/index', view);
+  return h.view('nunjucks/returns/index.njk', view, { layout: false });
 };
 
 /**

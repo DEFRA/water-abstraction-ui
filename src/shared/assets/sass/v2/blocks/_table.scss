@@ -1,36 +1,4 @@
-.table {
-  font-family: "nta", Arial, sans-serif;
-   @include govuk-font($size: 19);
-  // larger screens
-  @media (min-width: 768px) {
-    display: table;
-    width: 100%;
-  }
-}
 
-.table__head {
-  display: none;
-  @media (min-width: 768px) {
-    display: table-header-group;
-  }
-}
-
-.table__body {
-  @media (min-width: 768px) {
-    display: table-row-group;
-  }
-}
-
-.table__row {
-  display: block;
-  margin-bottom: 15px;
-  @media (min-width: 768px) {
-    display: table-row;
-    padding-bottom: 0;
-    margin-bottom: 0;
-  }
-  text-decoration: none;
-}
 .table__header, .table__cell {
     padding: 15px;
     padding-left: 0;
@@ -46,33 +14,81 @@
     }
 }
 
-.table__header {
-    @include govuk-typography-weight-bold;
-}
-
-.table__context {
-  margin: 0;
-  color: $govuk-secondary-text-colour;
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: block;
   @include govuk-typography-weight-regular;
-
-
-  // larger screens
-  @media (min-width: 768px) {
-    font-size: 0;
-    text-indent: -1000em;
-  }
+  max-width: 250px;
 }
 
-.table-row:first .table__cell:first-child {
-  border: none;
-  @media (min-width: 768px) {
-    border-bottom: 1px solid #bfc1c3;
-  }
+.column--15 { width: 15% }
+
+.big-space {
+  margin-bottom: 45px;
 }
 
-
-
+// .table {
+//   font-family: "nta", Arial, sans-serif;
+//    @include govuk-font($size: 19);
+//   // larger screens
+//   @media (min-width: 768px) {
+//     display: table;
+//     width: 100%;
+//   }
+// }
+//
+// .table__head {
+//   display: none;
+//   @media (min-width: 768px) {
+//     display: table-header-group;
+//   }
+// }
+//
+// .table__body {
+//   @media (min-width: 768px) {
+//     display: table-row-group;
+//   }
+// }
+//
+// .table__row {
+//   display: block;
+//   margin-bottom: 15px;
+//   @media (min-width: 768px) {
+//     display: table-row;
+//     padding-bottom: 0;
+//     margin-bottom: 0;
+//   }
+//   text-decoration: none;
+// }
+//
+// .table__header {
+//     @include govuk-typography-weight-bold;
+// }
+//
+//
+// .table__context {
+//   margin: 0;
+//   color: $govuk-secondary-text-colour;
+//   display: block;
+//   @include govuk-typography-weight-regular;
+//
+//
+//   // larger screens
+//   @media (min-width: 768px) {
+//     font-size: 0;
+//     text-indent: -1000em;
+//   }
+// }
+//
+// .table-row:first .table__cell:first-child {
+//   border: none;
+//   @media (min-width: 768px) {
+//     border-bottom: 1px solid #bfc1c3;
+//   }
+// }
+//
 // // flexible tables, present well on mobiles
 // // also improved accessibly
 //
@@ -259,7 +275,6 @@
 // // control the relative width of table columns
 // // evenly spaced by default
 //
-// .column--15 { width: 15% }
 // .column--20 { width: 20% }
 // .column--25 { width: 25% }
 // .column--33 { width: 33% }

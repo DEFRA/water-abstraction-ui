@@ -1,10 +1,7 @@
 /* eslint new-cap: "warn" */
 const Boom = require('@hapi/boom');
 
-const {
-  getLicenceNumbers,
-  getReturnsViewData
-} = require('../lib/helpers');
+const helpers = require('../lib/helpers');
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
@@ -17,7 +14,7 @@ const services = require('../../../lib/connectors/services');
  * grouped by year
  */
 const getReturns = async (request, h) => {
-  const view = await getReturnsViewData(request);
+  const view = await helpers.getReturnsViewData(request);
   return h.view('nunjucks/returns/index.njk', view, { layout: false });
 };
 
@@ -27,7 +24,7 @@ const getReturns = async (request, h) => {
  * @param {Number} request.query.page - the page number for paginated results
  */
 const getReturnsForLicence = async (request, h) => {
-  const view = await getReturnsViewData(request);
+  const view = await helpers.getReturnsViewData(request);
 
   const { documentId } = request.params;
 
@@ -56,7 +53,7 @@ const getReturn = async (request, h) => {
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
+  const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
 
   const canView = documentHeader && data.isCurrent && model.metadata.isCurrent;
 

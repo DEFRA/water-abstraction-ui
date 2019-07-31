@@ -1,4 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
 
 {% block content %}
@@ -16,8 +17,8 @@
   {% if returns.length %}
     {% for returnsByYear in returns %}
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <table class="govuk-table big-space">
+        <div class="govuk-grid-column-full govuk-!-padding-bottom-4">
+          <table class="govuk-table">
             <h2 class="govuk-table__caption govuk-heading-m">{{ returnsByYear.year }}</h2>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
@@ -46,7 +47,7 @@
                           {% endfor %}
                           at
                           {{ return.metadata.description | titleCase }}
-                          {% if return.received_date == null %}
+                          {% if return.status === 'due' %}
                             - return due
                           {% endif %}
                         </span>
@@ -67,9 +68,7 @@
                   </td>
                   <td class="govuk-table__cell table__cell">
                     <h4 class="govuk-visually-hidden">Status</h4>
-                    <div class="badge badge--{{ (return | returnBadge).status }} badge--no-wrap">
-                      {{ (return | returnBadge).text }}
-                    </div>
+                    {{ badge(return | returnBadge) }}
                   </td>
                 </tr>
               {% endfor %}

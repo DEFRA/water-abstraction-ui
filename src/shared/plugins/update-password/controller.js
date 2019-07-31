@@ -5,9 +5,14 @@ const { AuthTokenError } = require('./errors');
 /**
  * Update password step 1 - enter current password
  */
-async function getConfirmPassword (request, h) {
-  return h.view('water/update-password/update_password', request.view);
-}
+const getConfirmPassword = async (request, h) => h.view(
+  'nunjucks/update-password/enter-current.njk',
+  {
+    ...request.view,
+    pageTitle: 'Enter your current password'
+  },
+  { layout: false }
+);
 
 /**
  * Update password step 1 POST handler - enter current password
@@ -22,15 +27,27 @@ async function postConfirmPassword (request, h) {
     }
     const { password } = request.payload;
     const { userName } = request.defra;
-    await h.realm.pluginOptions.authenticate(userName, password);
 
-    // Create auth token to verify user in subsequent page in flow
-    const authtoken = uuid();
-    request.yar.set('authToken', authtoken);
+    const authResponse = await h.realm.pluginOptions.authenticate(userName, password);
 
-    return h.view('water/update-password/update_password_verified_password', { authtoken, ...request.view });
+    if (authResponse) {
+      // Create auth token to verify user in subsequent page in flow
+      const authtoken = uuid();
+      request.yar.set('authToken', authtoken);
+
+      return h.view(
+        'nunjucks/update-password/enter-new.njk',
+        { authtoken, ...request.view },
+        { layout: false }
+      );
+    }
+
+    request.view.errors = true;
+    return getConfirmPassword(request, h);
   } catch (error) {
-    return h.view('water/update-password/update_password', { error, ...request.view });
+    request.view.error = error;
+    request.view.errors = true;
+    return getConfirmPassword(request, h);
   }
 }
 
@@ -46,7 +63,11 @@ async function postSetPassword (request, h) {
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
     const { authtoken } = request.payload;
-    return h.view('water/update-password/update_password_verified_password', { ...request.view, errors, authtoken });
+    return h.view(
+      'nunjucks/update-password/enter-new.njk',
+      { ...request.view, errors, authtoken },
+      { layout: false }
+    );
   }
 
   try {
@@ -63,7 +84,7 @@ async function postSetPassword (request, h) {
     }
 
     // All OK
-    return h.redirect('/password_updated');
+    return h.redirect('/account/update-password/success');
   } catch (error) {
     return handlePostSetPasswordError(error, h);
   }
@@ -75,7 +96,7 @@ async function postSetPassword (request, h) {
  */
 const handlePostSetPasswordError = (error, h) => {
   if (error.name === 'AuthTokenError') {
-    return h.redirect('water/update-password/update_password');
+    return h.redirect('/account/update-password');
   }
   return h(error);
 };
@@ -85,13 +106,13 @@ const handlePostSetPasswordError = (error, h) => {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply interface
  */
-async function getPasswordUpdated (request, h) {
-  return h.view('water/update-password/updated_password', request.view);
-}
+const getPasswordUpdated = async (request, h) => h.view(
+  'nunjucks/update-password/success.njk',
+  request.view,
+  { layout: false }
+);
 
-module.exports = {
-  getConfirmPassword,
-  postConfirmPassword,
-  postSetPassword,
-  getPasswordUpdated
-};
+exports.getConfirmPassword = getConfirmPassword;
+exports.postConfirmPassword = postConfirmPassword;
+exports.postSetPassword = postSetPassword;
+exports.getPasswordUpdated = getPasswordUpdated;

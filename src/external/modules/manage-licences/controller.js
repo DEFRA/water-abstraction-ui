@@ -165,7 +165,7 @@ async function postAddAccess (request, reply, context = {}) {
 
     return reply.view('water/manage-licences/manage_licences_added_access', viewContext);
   } catch (err) {
-    logger.error('Post add access error', err);
+    logger.errorWithJourney('Post add access error', err, request);
     throw err;
   }
 }
@@ -198,7 +198,7 @@ async function getRemoveAccess (request, reply, context = {}) {
     viewContext.pageTitle = 'You are about to remove access';
     return reply.view('water/manage-licences/remove-access', viewContext);
   } catch (error) {
-    logger.error('Remove access error', error);
+    logger.errorWithJourney('Remove access error', error, request);
     throw error;
   }
 }

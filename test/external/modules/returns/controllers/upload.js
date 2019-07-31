@@ -104,11 +104,13 @@ experiment('upload controller', () => {
         header
       })
     };
+
     sandbox.stub(services.water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
     sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
     sandbox.stub(uploadHelpers, 'uploadFile');
     sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
+    sandbox.stub(uploadHelpers, 'createDirectory');
     sandbox.stub(services.water.returns, 'postUpload').resolves({ data: { eventId } });
     sandbox.stub(files, 'deleteFile');
     sandbox.stub(files, 'readFile').returns('fileData');
@@ -118,10 +120,15 @@ experiment('upload controller', () => {
     sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject);
     sandbox.stub(fileCheck, 'detectFileType').resolves('xml');
     sandbox.stub(helpers, 'getReturnsViewData').returns({ xmlUser: true });
+    sandbox.stub(logger, 'errorWithJourney');
+    sandbox.stub(logger, 'error');
+    sandbox.stub(logger, 'info');
   });
+
   afterEach(async () => {
     sandbox.restore();
   });
+
   experiment('getXmlUpload', () => {
     test('it should display the upload xml page', async () => {
       const request = createRequest();
@@ -132,8 +139,9 @@ experiment('upload controller', () => {
       expect(view.form.action).to.equal('/returns/upload');
     });
   });
+
   experiment('postXmlUpload', () => {
-    test('it should redirect to spinner page if there are no errors', async () => {
+    test('redirects to spinner page if there are no errors', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       await controller.postXmlUpload(createRequest(), h);
 
@@ -141,21 +149,21 @@ experiment('upload controller', () => {
       expect(path).to.equal(`/returns/processing-upload/processing/${eventId}`);
     });
 
-    test('it should redirect to same page with virus error message if virus', async () => {
+    test('redirects to same page with virus error message if virus', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.VIRUS);
       await controller.postXmlUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=virus');
     });
 
-    test('it should redirect to same page with file type message if unsupported file type', async () => {
+    test('redirects to same page with file type message if unsupported file type', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
       await controller.postXmlUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=invalid-type');
     });
 
-    test('it should call the water returns upload API with the correct file type', async () => {
+    test('calls the water returns upload API with the correct file type', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       fileCheck.detectFileType.resolves('csv');
       await controller.postXmlUpload(createRequest(), h);
@@ -164,7 +172,17 @@ experiment('upload controller', () => {
       expect(user).to.equal('user_1');
       expect(fileType).to.equal('csv');
     });
+
+    test('logs the journey data if there is an error', async () => {
+      uploadHelpers.createDirectory.rejects();
+      try {
+        await controller.postXmlUpload(createRequest());
+      } catch (err) {
+        expect(logger.errorWithJourney.called).to.be.true();
+      }
+    });
   });
+
   experiment('getSpinnerPage', () => {
     test('throws an error if there is an error response from the events API', async () => {
       const response = createErrorResponse();
@@ -220,13 +238,7 @@ experiment('upload controller', () => {
     let request;
 
     beforeEach(async () => {
-      sandbox.stub(logger, 'error');
-      sandbox.stub(logger, 'info');
       request = createRequest();
-    });
-
-    afterEach(async () => {
-      sandbox.restore();
     });
 
     experiment('getSummary', () => {
@@ -273,7 +285,7 @@ experiment('upload controller', () => {
         const func = () => controller.getSummary(request, h);
         await expect(func()).to.reject();
 
-        const [message, params] = logger.error.lastCall.args;
+        const [message, , , params] = logger.errorWithJourney.lastCall.args;
         expect(message).to.be.a.string();
         expect(params).to.equal({
           eventId,
@@ -323,7 +335,7 @@ experiment('upload controller', () => {
         const func = () => controller.getSummaryReturn(request, h);
         await expect(func()).to.reject();
 
-        const [message, params] = logger.error.lastCall.args;
+        const [message, , , params] = logger.errorWithJourney.lastCall.args;
         expect(message).to.be.a.string();
         expect(params).to.equal({
           eventId,
@@ -361,8 +373,9 @@ experiment('upload controller', () => {
         services.water.returns.postUploadSubmit.rejects();
         const func = () => controller.postSubmit(request, h);
         await expect(func()).to.reject();
-        const [message, params] = logger.error.lastCall.args;
+        const [message, err, , params] = logger.errorWithJourney.lastCall.args;
         expect(message).to.be.a.string();
+        expect(err).to.be.an.error();
         expect(params).to.equal({
           eventId,
           options: {

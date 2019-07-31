@@ -10,6 +10,7 @@ const permissions = require('external/lib/permissions');
 const sessionHelpers = require('external/modules/returns/lib/session-helpers');
 const forms = require('shared/lib/forms');
 const flowHelpers = require('external/modules/returns/lib/flow-helpers');
+const { logger } = require('../../../../../src/external/logger');
 
 const sandbox = sinon.createSandbox();
 
@@ -208,6 +209,7 @@ experiment('edit controller', () => {
     sandbox.spy(flowHelpers, 'getPreviousPath');
     sandbox.spy(flowHelpers, 'getNextPath');
     sandbox.spy(helpers, 'getReturnTotal');
+    sandbox.stub(logger, 'errorWithJourney');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -329,6 +331,20 @@ experiment('edit controller', () => {
       await controller.postConfirm(request, h);
       const [updatedData] = sessionHelpers.submitReturnData.lastCall.args;
       expect(updatedData.meters).to.equal(meters);
+    });
+
+    test('logs the error with user journey if session fails to save', async () => {
+      forms.handleRequest.returns({ isValid: true, meters });
+      sessionHelpers.submitReturnData.rejects();
+      const request = createRequest();
+
+      try {
+        await controller.postConfirm(request, h);
+      } catch (err) {
+        const [msg, , req] = logger.errorWithJourney.lastCall.args;
+        expect(msg).to.be.a.string();
+        expect(req).to.equal(request);
+      }
     });
   });
 

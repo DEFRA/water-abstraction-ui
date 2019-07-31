@@ -19,14 +19,20 @@ const getTestRequest = (overrides = {}) => {
     isAuthenticated: true,
     companyId: undefined,
     companyCount: 1,
-    path: '/test',
-    access: undefined
+    path: '/test'
   }, overrides);
 
-  const request = { path: defaults.path, method: defaults.method };
+  const request = {
+    path: defaults.path,
+    method: defaults.method
+  };
+
+  if (defaults.isAuthenticated) {
+    set(request, 'defra.companyId', defaults.companyId);
+    set(request, 'defra.companyCount', defaults.companyCount);
+  }
+
   set(request, 'auth.isAuthenticated', defaults.isAuthenticated);
-  set(request, 'defra.companyId', defaults.companyId);
-  set(request, 'defra.companyCount', defaults.companyCount);
   set(request, 'route.settings.auth.access', defaults.access);
   set(request, 'auth.credentials.scope', ['external']);
 
@@ -71,24 +77,17 @@ experiment('handler', () => {
   });
 
   test('continues if the request is not authenticated', async () => {
-    const request = {
-      auth: {
-        isAuthenticated: false
-      }
-    };
+    const request = getTestRequest({
+      isAuthenticated: false
+    });
 
     const result = handler(request, h);
     expect(result).to.equal(h.continue);
   });
 
   experiment('external user', () => {
-    test('does not redirect for a route with access config', async () => {
-      const request = getTestRequest({
-        access: {
-          entity: 'test',
-          scope: 'test'
-        }
-      });
+    test('does not redirect for POST requests', async () => {
+      const request = getTestRequest({ method: 'POST' });
       const result = handler(request, h);
       expect(result).to.equal(h.continue);
     });

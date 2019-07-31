@@ -141,7 +141,7 @@ experiment('Shared UsersApiClient', () => {
 
   experiment('updatePassword', () => {
     beforeEach(async () => {
-      await client.updatePassword('test-id', 'new-password');
+      await client.updatePassword(application, 'test-id', 'new-password');
     });
 
     test('the expected user id is passed to updateOne', async () => {

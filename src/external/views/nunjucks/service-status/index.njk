@@ -1,68 +1,67 @@
-<html>
-   <head>
-   <body>
+{% extends "./nunjucks/layout.njk" %}
 
+{% macro statusRow(headerText, value) %}
+   <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="row">{{ headerText }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ value }}</td>
+   </tr>
+{% endmacro %}
 
-      <table>
-      <tr>
-         <th>Service</th>
-         <th>Info</th>
-      </tr>
-      <tr>
-         <td>IDM Users</td>
-         <td>{{ userCount }}</td>
-      </tr>
+{% block content %}
 
-        {% for kpi in idmKPI %}
-        <tr>
-           <td></td>
-           <td>{{ kpi.datapoint }}</td>
-           <td>{{ kpi.measure }}</td>
-           <td>{{ kpi.dimension }}</td>
-        </tr>
-        {% endfor %}
+   <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
 
+         <h1 class="govuk-heading-l">Service status</h1>
 
+         <h2 class="govuk-heading-m">IDM</h2>
+         <table class="govuk-table">
+            {{ statusRow('IDM users', idm.users) }}
+            {{ statusRow('Internal registrations not completed', idm.internalRegistrationsCompleted) }}
+            {{ statusRow('Internal registrations not completed', idm.internalRegistrationsNotCompleted) }}
+            {{ statusRow('External registrations completed', idm.externalRegistrationsCompleted) }}
+            {{ statusRow('External registrations not completed', idm.externalRegistrationsNotCompleted) }}
+         </table>
 
-      <tr>
-         <td>CRM Documents</td>
-         <td>{{ crmDocumentCount }}</td>
-      </tr>
+         <h2 class="govuk-heading-m">CRM</h2>
+         <table class="govuk-table">
+            {{ statusRow('Documents', crm.documents) }}
+            {{ statusRow('Renamed licences', crm.renamedLicences) }}
+            {{ statusRow('Users with multiple verifications', crm.usersWithMultipleVerifications) }}
+            {{ statusRow('Verifications completed last month', crm.verificationsCompletedLastMonth) }}
+            {{ statusRow('Verifications started this month', crm.verificationsStartedThisMonth) }}
+            {{ statusRow('Verifications completed this month', crm.verificationsCompletedThisMonth) }}
+            {{ statusRow('Additional access grantees', crm.additionalAccessGrantees) }}
+            {{ statusRow('Verifications started last month', crm.verificationsStartedLastMonth) }}
+            {{ statusRow('Verifications', crm.verifications) }}
+         </table>
 
-      {% for kpi in crmKPI %}
-      <tr>
-         <td></td>
-         <td>{{ kpi.datapoint }}</td>
-         <td>{{ kpi.value }}</td>
-         <td>{{ kpi.description }}</td>
-      </tr>
-      {% endfor %}
+         <h2 class="govuk-heading-m">Permit Repo</h2>
+         <table class="govuk-table">
+            {{ statusRow('Permits', permitRepo.permits) }}
+         </table>
 
+         <h2 class="govuk-heading-m">Water Service</h2>
+         <table class="govuk-table">
+            {{ statusRow('Pending imports', waterService.import.pending) }}
+            {{ statusRow('Completed imports', waterService.import.complete) }}
+         </table>
 
-      <tr>
-         <td>CRM Verifications</td>
-         <td>{{ crmVerificationCount }}</td>
-      </tr>
-      <tr>
-         <td>Permit Repo Permits</td>
-         <td>{{ permitCount }}</td>
-      </tr>
-      <tr>
-         <td>Imported Permits</td>
-         <td>{{ waterCompletedImports }}</td>
-      </tr>
-      <tr>
-         <td>Pending Permits</td>
-         <td>{{ waterPendingImports }}</td>
-      </tr>
-      <tr>
-        <td>Virus scanner</td>
-        <td>{{ virusScanner }}</td>
-      </tr>
-      <tr>
-         <td><b>Errors<b></td>
-         <td>{{ errorCount }} ERRORS REPORTED</td>
-      </tr>
+         <h2 class="govuk-heading-m">Virus scanner</h2>
+         <table class="govuk-table">
+            {{ statusRow('Status', virusScanner) }}
+         </table>
 
-   </body>
-</html>
+         <h2 class="govuk-heading-m">Service versions</h2>
+         <table class="govuk-table">
+            {{ statusRow('Water service', versions.waterService) }}
+            {{ statusRow('IDM', versions.idm) }}
+            {{ statusRow('CRM', versions.crm) }}
+            {{ statusRow('Permit', versions.permit) }}
+            {{ statusRow('Returns', versions.returns) }}
+            {{ statusRow('Import', versions.import) }}
+         </table>
+      </div>
+   </div>
+
+{% endblock %}

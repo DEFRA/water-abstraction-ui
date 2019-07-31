@@ -110,7 +110,7 @@ const postConfirm = async (request, h) => {
       await sessionHelpers.submitReturnData(updated, request);
       return h.redirect(flowHelpers.getNextPath(flowHelpers.STEP_NIL_RETURN, request, data));
     } catch (error) {
-      logger.error('Post confirm return error', error);
+      logger.errorWithJourney('Post confirm return error', error, request);
       throw Boom.badImplementation(`Return submission error`, { data, form });
     }
   }

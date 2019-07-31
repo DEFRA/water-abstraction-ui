@@ -6,8 +6,6 @@
  * If the user has no company then they will be redirected to the
  * add-licences route.
  *
- * Both of the above redirections will only take place if the user is
- * attempting to access a route that is configured with an access scope.
  */
 const { get } = require('lodash');
 const SELECT_COMPANY_PATH = '/select-company';

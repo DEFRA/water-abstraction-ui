@@ -66,7 +66,7 @@ const submitReturnData = (data, request) => {
     request.log(`Posting return`, { data: dataToSubmit });
     return services.water.returns.postReturn(dataToSubmit);
   } catch (err) {
-    logger.error('Submit return data error', { data: dataToSubmit });
+    logger.errorWithJourney('Submit return data error', err, request, { data: dataToSubmit });
     throw err;
   }
 };

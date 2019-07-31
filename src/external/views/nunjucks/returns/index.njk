@@ -1,0 +1,101 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
+{% from "paginate.njk" import paginate %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      {% if xmlUser %}
+        <p>You can
+          <a href="/returns/upload-instructions">send your returns in bulk</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if returns.length %}
+    {% for returnsByYear in returns %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full govuk-!-padding-bottom-4">
+          <table class="govuk-table">
+            <h2 class="govuk-table__caption govuk-heading-m">{{ returnsByYear.year }}</h2>
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header" scope="col">Licence</th>
+                <th class="govuk-table__header" scope="col">Site description</th>
+                <th class="govuk-table__header" scope="col">Purpose</th>
+                <th class="govuk-table__header column--15" scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for return in returnsByYear.returns %}
+                <tr class="govuk-table__row {{'clickable' if return.path}}">
+                  <th class="govuk-table__cell table__cell govuk-!-font-weight-regular">
+                    <h3 class="govuk-visually-hidden">Licence</h3>
+                    {% if return.path %}
+                      <a href="{{return.path}}">
+                        <span class="govuk-visually-hidden">{{ "Edit" if return.isEdit else "View" }}
+                          return from</span>
+                      {% endif %}
+                      {{ return.licenceName if return.licenceName else return.licence_ref}}
+                      {% if return.path %}
+                        <span class="govuk-visually-hidden">
+                          for
+                          {% for purpose in return.metadata.purposes %}
+                            {{ purpose.tertiary.description }}
+                          {% endfor %}
+                          at
+                          {{ return.metadata.description | titleCase }}
+                          {% if return.status === 'due' %}
+                            - return due
+                          {% endif %}
+                        </span>
+                      </a>
+                    {%endif %}
+                  </th>
+                  <td class="govuk-table__cell table__cell">
+                    <h4 class="govuk-visually-hidden">Site description</h4>
+                    <span class="truncate">
+                      {{ return.metadata.description | titleCase }}
+                    </span>
+                  </td>
+                  <td class="govuk-table__cell table__cell">
+                    <h4 class="govuk-visually-hidden">Purpose</h4>
+                    {% for purpose in return.metadata.purposes %}
+                      {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell table__cell">
+                    <h4 class="govuk-visually-hidden">Status</h4>
+                    {{ badge(return | returnBadge) }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No returns found.</p>
+  {% endif %}
+  {{ paginate(pagination, '/returns') }}
+</div>
+
+{% endblock %}
+
+{% block bodyEnd %}
+<script
+  src="/public/javascripts/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+$(function() {
+  $('.clickable').on('click', function (ev) {
+    ev.preventDefault();
+    window.location.href = $(this).find('a:first').attr('href');
+  });
+});
+</script>
+{% endblock %}

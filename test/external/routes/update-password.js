@@ -7,7 +7,7 @@ const routes = require('shared/plugins/update-password/routes');
 
 experiment('Check signin', () => {
   test('The page should have a links', async () => {
-    const url = '/update_password';
+    const url = '/account/update-password';
     const method = 'GET';
 
     const route = routes.find(r => {

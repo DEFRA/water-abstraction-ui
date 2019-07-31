@@ -38,12 +38,28 @@ experiment('ResetConfig class', () => {
 
   experiment('authenticate method', () => {
     let response;
+    let email;
+    let password;
+
     beforeEach(async () => {
-      response = await updatePasswordConfig.authenticate('foo', 'bar');
+      email = 'test@example.com';
+      password = 'secret-123';
+      response = await updatePasswordConfig.authenticate(email, password);
     });
 
-    test('calls IDM method with application as first argument', async () => {
-      expect(connectors.idm.users.authenticate.calledWith('test_app', 'foo', 'bar')).to.be.true();
+    test('calls IDM method with email as first argument', async () => {
+      const [emailArg] = connectors.idm.users.authenticate.lastCall.args;
+      expect(emailArg).to.equal(email);
+    });
+
+    test('calls IDM method with password as second argument', async () => {
+      const [, passwordArg] = connectors.idm.users.authenticate.lastCall.args;
+      expect(passwordArg).to.equal(password);
+    });
+
+    test('calls IDM method with application as third argument', async () => {
+      const [, , applicationArg] = connectors.idm.users.authenticate.lastCall.args;
+      expect(applicationArg).to.equal('test_app');
     });
 
     test('resolves with the IDM resetPassword response', async () => {
@@ -53,12 +69,29 @@ experiment('ResetConfig class', () => {
 
   experiment('updatePassword method', () => {
     let response;
+    let userId;
+    let password;
+
     beforeEach(async () => {
-      response = await updatePasswordConfig.updatePassword('foo', 'bar');
+      userId = 123321;
+      password = 'secret-123';
+
+      response = await updatePasswordConfig.updatePassword(userId, password);
     });
 
     test('calls IDM method with application as first argument', async () => {
-      expect(connectors.idm.users.updatePassword.calledWith('test_app', 'foo', 'bar')).to.be.true();
+      const [applicationArg] = connectors.idm.users.updatePassword.lastCall.args;
+      expect(applicationArg).to.equal('test_app');
+    });
+
+    test('calls IDM method with userId as second argument', async () => {
+      const [, userIdArg] = connectors.idm.users.updatePassword.lastCall.args;
+      expect(userIdArg).to.equal(userId);
+    });
+
+    test('calls IDM method with password as third argument', async () => {
+      const [, , passwordArg] = connectors.idm.users.updatePassword.lastCall.args;
+      expect(passwordArg).to.equal(password);
     });
 
     test('resolves with the IDM updatePassword response', async () => {

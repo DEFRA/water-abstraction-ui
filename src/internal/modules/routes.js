@@ -29,6 +29,6 @@ module.exports = [
   ...Object.values(waiting),
   ...Object.values(batchNotifications),
   ...Object.values(viewLicences),
-  ...require('./manage/routes')
+  ...require('./manage/routes'),
   ...Object.values(accountRoutes)
 ];

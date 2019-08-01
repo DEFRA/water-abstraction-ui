@@ -1,7 +1,7 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
-const getChoices = () => ([
+const choices = [
   {
     value: 'basic',
     label: 'Basic access',
@@ -23,12 +23,12 @@ const getChoices = () => ([
     hint: 'Send renewals.'
   },
   {
-    value: 'nps_arr_user',
+    value: 'nps_ar_user',
     label: 'National Permitting Service and Digitise! editor',
     hint: 'Send renewals and digitise licence information.'
   },
   {
-    value: 'nps_arr_approver',
+    value: 'nps_ar_approver',
     label: 'National Permitting Service and Digitise! approver ',
     hint: 'Send renewals, digitise licence information and approve changes.'
   },
@@ -42,7 +42,7 @@ const getChoices = () => ([
     label: 'Waste and Industry Regulatory Service',
     hint: 'Process returns. '
   }
-]);
+];
 
 /**
  * Creates an object representing the form for assigning a permissions group
@@ -56,11 +56,10 @@ const form = (request, permission) => {
   const f = formFactory('/account/create-user/set-permissions');
 
   f.fields.push(fields.radio('permission', {
-    choices: getChoices(),
+    choices,
     errors: {
-      'any.required': {
-        message: 'Select the permissions for the user'
-      }
+      'any.required': { message: 'Select the permissions for the user' },
+      'any.allowOnly': { message: 'Select the permissions for the user' }
     }
   }));
 
@@ -72,7 +71,7 @@ const form = (request, permission) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  permission: Joi.string().required()
+  permission: Joi.string().required().valid(choices.map(choice => choice.value))
 };
 
 exports.setPermissionsForm = form;

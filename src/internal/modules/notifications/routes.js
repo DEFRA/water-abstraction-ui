@@ -34,23 +34,6 @@ const getStep = {
 };
 
 const routes = {
-  getManage: {
-    method: 'GET',
-    path: '/notifications',
-    config: {
-      auth: {
-        scope: scope.hasManageTab
-      },
-      description: 'Manage tab',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Manage reports and notices',
-          activeNavLink: 'notifications'
-        }
-      }
-    },
-    handler: controller.getManageTab
-  },
   getStep,
   postStep: {
     path: '/notifications/{id}',

@@ -27,5 +27,6 @@ module.exports = [
   ...Object.values(internalSearch),
   ...Object.values(waiting),
   ...Object.values(batchNotifications),
-  ...Object.values(viewLicences)
+  ...Object.values(viewLicences),
+  ...require('./manage/routes')
 ];

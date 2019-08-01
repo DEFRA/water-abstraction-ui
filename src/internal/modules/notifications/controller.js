@@ -5,22 +5,8 @@ const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const { forceArray } = require('shared/lib/array-helpers');
 const services = require('../../lib/connectors/services');
-const { getManageTabConfig } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
 const { checkAccess } = require('./lib/permission');
-
-/**
- * Renders manage tab
- * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply interface
- */
-async function getManageTab (request, h) {
-  const view = {
-    ...request.view,
-    ...getManageTabConfig(request)
-  };
-  return h.view('nunjucks/notifications/manage-tab.njk', view, { layout: false });
-}
 
 /**
   * Helper handler for start flow
@@ -436,7 +422,6 @@ async function postSend (request, reply) {
   return reply.view('water/notifications/sent', view);
 }
 
-exports.getManageTab = getManageTab;
 exports.getStep = getStep;
 exports.postStep = postStep;
 exports.getRefine = getRefine;

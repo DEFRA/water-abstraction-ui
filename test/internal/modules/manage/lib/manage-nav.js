@@ -3,7 +3,7 @@ const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const { expect } = require('@hapi/code');
 
-const { getManageTabConfig } = require('internal/modules/notifications/lib/notifications-list');
+const { getManageTabConfig } = require('internal/modules/manage/lib/manage-nav');
 const { scope } = require('internal/lib/constants');
 
 const { flatMap } = require('lodash');

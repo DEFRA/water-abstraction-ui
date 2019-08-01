@@ -8,7 +8,7 @@ const { isExternalReturns } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
-const { getReturnPath } = require('./return-path');
+const { getReturnPath } = require('internal/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const helpers = require('@envage/water-abstraction-helpers');
 

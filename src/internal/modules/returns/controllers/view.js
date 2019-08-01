@@ -13,7 +13,7 @@ const {
   getLinesWithReadings
 } = require('../lib/return-helpers');
 
-const { getEditButtonPath } = require('../lib/return-path');
+const { getEditButtonPath } = require('internal/lib/return-path');
 
 const services = require('../../../lib/connectors/services');
 

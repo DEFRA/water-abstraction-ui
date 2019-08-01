@@ -8,7 +8,7 @@ const {
   getReturnPath,
   isInternalEdit,
   getEditButtonPath
-} = require('internal/modules/returns/lib/return-path');
+} = require('internal/lib/return-path');
 
 const { scope } = require('internal/lib/constants');
 

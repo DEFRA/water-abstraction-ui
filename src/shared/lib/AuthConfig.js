@@ -59,7 +59,7 @@ class AuthConfig {
 
   async _mapUserRequestData (request, user) {
     const entityId = get(user, 'external_id');
-    const userScopes = get(user, 'role.scopes', []);
+    const userScopes = get(user, 'roles', []);
 
     return {
       userId: user.user_id,

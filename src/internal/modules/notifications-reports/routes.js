@@ -3,7 +3,7 @@ const controller = require('./controller');
 const { VALID_GUID } = require('shared/lib/validators');
 
 const constants = require('../../lib/constants');
-const allAdmin = constants.scope.allAdmin;
+const { allNotifications } = constants.scope;
 
 module.exports = {
 
@@ -12,7 +12,7 @@ module.exports = {
     path: '/notifications/report',
     handler: controller.getNotificationsList,
     config: {
-      auth: { scope: allAdmin },
+      auth: { scope: allNotifications },
       description: 'View list of notifications sent',
       validate: {
         query: {
@@ -34,7 +34,7 @@ module.exports = {
     path: '/notifications/report/{id}',
     handler: controller.getNotification,
     config: {
-      auth: { scope: allAdmin },
+      auth: { scope: allNotifications },
       description: 'View list of recipients for a single event',
       validate: {
         params: {

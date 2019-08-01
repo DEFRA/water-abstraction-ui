@@ -2,79 +2,58 @@
  * Contains functions to help with building a list of notifications that
  * can be sent by the current authenticated user
  */
-const { isInternalReturns, isARApprover } = require('../../../lib/permissions');
+const { hasScope } = require('../../../lib/permissions');
+const { scope } = require('../../../lib/constants');
+const { mapValues } = require('lodash');
 
 /**
- * Create a simple notification object with name and URL path
- * @param {String} name
- * @param {String} path
- * @return {Object}
+ * Creates a link object for the manage tab view
+ * @param  {String} name   - link text
+ * @param  {String} path   - link path
+ * @param  {Array} scopes  - a list of scopes which can access this link
+ * @return {Object}          link object
  */
-const createNotificationType = (name, path, options = {}) => {
-  const defaultOptions = {
-    newWindow: false
-  };
-  return {
-    name,
-    path,
-    options: Object.assign({}, defaultOptions, options)
-  };
-};
+const createLink = (name, path, scopes) => ({ name, path, scopes });
 
 /**
- * Creates a notification list object given a row from the task config table
- * @param {Object} task - task config object
- * @return {Object} notification list object
+ * Gets a skeleton object for the manage tab view
+ * @type {Object}
  */
-const createNotificationTypeFromTask = (task) => {
-  const path = `/notifications/${task.task_config_id}?start=1`;
-  const { name } = task.config;
-  return createNotificationType(name, path);
-};
-
-/**
- * Gets a list of notifications that can be sent by the current user,
- * each with a name and URL path
- * @param {Array} tasks - tasks list retrieved from water service
- * @param {Object} permissions - permissions object for the current user
- * @return {Array} an array of notifications that can be sent
- */
-const getNotificationsList = (tasks, request) => {
-  const notifications = tasks.map(createNotificationTypeFromTask);
-
-  if (isInternalReturns(request)) {
-    notifications.push(createNotificationType('Returns: send invitations', '/returns-notifications/invitations'));
-    notifications.push(createNotificationType('Returns: send paper forms', '/returns-notifications/forms'));
-    notifications.push(createNotificationType('Returns: send reminders', '/returns-notifications/reminders'));
-    notifications.push(createNotificationType('Returns: send final reminder', '/returns-notifications/final-reminder'));
-  }
-
-  return notifications;
+const manageTabSkeleton = {
+  reports: [
+    createLink('Notices', '/notifications/report', scope.allNotifications),
+    createLink('Returns cycles', '/returns-reports', scope.returns),
+    createLink('Digitise!', '/digitise/report', scope.abstractionReformApprover)
+  ],
+  returnNotifications: [
+    createLink('Invitations', '/returns-notifications/invitations', scope.bulkReturnNotifications),
+    createLink('Paper forms', '/returns-notifications/forms', scope.returns),
+    createLink('Reminders', '/returns-notifications/reminders', scope.bulkReturnNotifications)
+  ],
+  licenceNotifications: [
+    createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)
+  ],
+  hofNotifications: [
+    createLink('Restriction', 'notifications/1?start=1', scope.hofNotifications),
+    createLink('Hands-off flow', 'notifications/3?start=1', scope.hofNotifications),
+    createLink('Resume', 'notifications/4?start=1', scope.hofNotifications)
+  ],
+  accounts: [
+    createLink('Create an internal account', '/account/create-user', scope.manageAccounts)
+  ]
 };
 
 /**
- * Gets a list of reports for the current user
- * @param {Object} permissions - permissions object for the current user
- * @return {Array}               array of reports the current user can view
+ * Get a config object for the current user's manage tab
+ * @param  {Object} request
+ * @param  {Array} tasks   - list of tasks from water service
+ * @return {[type]}         [description]
  */
-const getReportsList = (request) => {
-  const reports = [
-    createNotificationType('Notifications report', '/notifications/report'),
-    createNotificationType('View service performance (opens in a new tab)', 'https://datastudio.google.com/embed/u/0/reporting/1EP0W_SJN-cEHSwNX1omO4wvWnMiMvcLt/page/lY4N', { newWindow: true })
-  ];
-
-  if (isARApprover(request)) {
-    reports.push(createNotificationType('Abstraction reform report', '/digitise/report'));
-  }
-
-  if (isInternalReturns(request)) {
-    reports.push(createNotificationType('Returns overview', '/returns-reports'));
-  }
-
-  return reports;
+const getManageTabConfig = (request) => {
+  // Filter skeleton items by scope
+  return mapValues(manageTabSkeleton, (links, key) => {
+    return links.filter(link => hasScope(request, link.scopes));
+  });
 };
 
-module.exports = {
-  getNotificationsList,
-  getReportsList
-};
+exports.getManageTabConfig = getManageTabConfig;

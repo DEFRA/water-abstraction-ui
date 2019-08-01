@@ -2,15 +2,16 @@ const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const contactRoutes = require('./contact-routes');
 const apiController = require('./api-controller');
-const constants = require('../../lib/constants');
-const allAdmin = constants.scope.allAdmin;
+const { scope } = require('../../lib/constants');
+
+const allowedScopes = [scope.hofNotifications, scope.renewalNotifications];
 
 const getStep = {
   method: 'GET',
   path: '/notifications/{id}',
   config: {
     auth: {
-      scope: allAdmin
+      scope: allowedScopes
     },
     description: 'Admin view step of notification task',
     validate: {
@@ -25,7 +26,6 @@ const getStep = {
     },
     plugins: {
       viewContext: {
-        // pageTitle: 'Reports and notifications',
         activeNavLink: 'notifications'
       }
     }
@@ -34,22 +34,22 @@ const getStep = {
 };
 
 const routes = {
-  getResetPassword: {
+  getManage: {
     method: 'GET',
     path: '/notifications',
     config: {
       auth: {
-        scope: allAdmin
+        scope: scope.hasManageTab
       },
-      description: 'Admin report/notifications index page',
+      description: 'Manage tab',
       plugins: {
         viewContext: {
-          pageTitle: 'Reports and notifications',
+          pageTitle: 'Manage reports and notices',
           activeNavLink: 'notifications'
         }
       }
     },
-    handler: controller.getIndex
+    handler: controller.getManageTab
   },
   getStep,
   postStep: {
@@ -58,7 +58,7 @@ const routes = {
     handler: controller.postStep,
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Post handler for single step of notification query flow',
       plugins: {
@@ -73,7 +73,7 @@ const routes = {
     path: '/notifications/{id}/refine',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: refine audience',
       validate: {
@@ -95,7 +95,7 @@ const routes = {
     path: '/notifications/{id}/refine',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: refine audience',
       validate: {
@@ -117,7 +117,7 @@ const routes = {
     path: '/notifications/{id}/data',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: add custom data',
       validate: {
@@ -139,7 +139,7 @@ const routes = {
     path: '/notifications/{id}/data',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: add custom data',
       validate: {
@@ -162,7 +162,7 @@ const routes = {
     path: '/notifications/{id}/preview',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: preview',
       validate: {
@@ -185,7 +185,7 @@ const routes = {
     path: '/notifications/{id}/send',
     config: {
       auth: {
-        scope: allAdmin
+        scope: allowedScopes
       },
       description: 'Notification: send messages',
       validate: {

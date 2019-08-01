@@ -1,84 +1,129 @@
 'use strict';
-
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const { expect } = require('@hapi/code');
 
-const { getNotificationsList, getReportsList } = require('internal/modules/notifications/lib/notifications-list');
+const { getManageTabConfig } = require('internal/modules/notifications/lib/notifications-list');
 const { scope } = require('internal/lib/constants');
 
-const createRequest = (scopes) => {
+const { flatMap } = require('lodash');
+
+const mapLinkGroup = (links, group) => links.map(link => ({
+  group,
+  name: link.name,
+  path: link.path
+}));
+
+const getAllLinks = config => flatMap(config, mapLinkGroup);
+
+const createRequest = (scopes = []) => {
   return {
     auth: {
       credentials: {
-        scope: scopes || scope.internal
+        scope: scopes
       }
     }
   };
 };
 
-const createReturnsRequest = () => {
-  return createRequest([scope.internal, scope.returns]);
-};
-
-experiment('getNotificationsList', () => {
-  const tasks = [{
-    task_config_id: '123',
-    config: {
-      name: 'Test'
-    }
-  }];
-
-  const options = {
-    newWindow: false
-  };
-
-  test('It should only return task notifications when user doesnt have returns scope', async () => {
-    const request = createRequest();
-    const result = getNotificationsList(tasks, request);
-    expect(result).to.equal([ { name: 'Test', path: '/notifications/123?start=1', options } ]);
+experiment('getManageTabConfig', () => {
+  experiment('when a user has no scopes', () => {
+    test('none of the links are visible', async () => {
+      const request = createRequest();
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([]);
+    });
   });
 
-  test('It should include returns task notifications when user has returns scope', async () => {
-    const request = createReturnsRequest();
-    const result = getNotificationsList(tasks, request);
-    const names = result.map(row => row.name);
-    expect(names).to.equal([
-      'Test',
-      'Returns: send invitations',
-      'Returns: send paper forms',
-      'Returns: send reminders',
-      'Returns: send final reminder'
-    ]);
-  });
-});
-
-experiment('getReportsList', () => {
-  test('It should not include AR report link for AR user scope', async () => {
-    const request = createRequest(scope.abstractionReformUser);
-    const reports = getReportsList(request);
-    const paths = reports.map(item => item.path);
-    expect(paths.includes('/digitise/report')).to.equal(false);
+  experiment('when user has bulk returns notifications scope', () => {
+    test('they can view notification report, return invitations and return reminders notifications', async () => {
+      const request = createRequest(scope.bulkReturnNotifications);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([
+        { group: 'reports',
+          name: 'Notices',
+          path: '/notifications/report' },
+        { group: 'returnNotifications',
+          name: 'Invitations',
+          path: '/returns-notifications/invitations' },
+        { group: 'returnNotifications',
+          name: 'Reminders',
+          path: '/returns-notifications/reminders' }
+      ]);
+    });
   });
 
-  test('It should include AR report link in list for AR approver scope', async () => {
-    const request = createRequest(scope.abstractionReformApprover);
-    const reports = getReportsList(request);
-    const paths = reports.map(item => item.path);
-    expect(paths.includes('/digitise/report')).to.equal(true);
+  experiment('when user has abstraction reform approver scope', () => {
+    test('they can view Digitise! report', async () => {
+      const request = createRequest(scope.abstractionReformApprover);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([
+        { group: 'reports', name: 'Digitise!', path: '/digitise/report' }
+      ]);
+    });
   });
 
-  test('It includes returns overview link for returns user', async () => {
-    const request = createReturnsRequest();
-    const reports = getReportsList(request);
-    const paths = reports.map(item => item.path);
-    expect(paths.includes('/returns-reports')).to.equal(true);
+  experiment('when user has renewal notifications scope', () => {
+    test('they can view notifications report and renewal notifice', async () => {
+      const request = createRequest(scope.renewalNotifications);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([
+        { group: 'reports',
+          name: 'Notices',
+          path: '/notifications/report' },
+        { group: 'licenceNotifications',
+          name: 'Renewal',
+          path: 'notifications/2?start=1' }
+      ]);
+    });
   });
 
-  test('It does not include returns overview link for other internal users', async () => {
-    const request = createRequest();
-    const reports = getReportsList(request);
-    const paths = reports.map(item => item.path);
-    expect(paths.includes('/returns-reports')).to.equal(false);
+  experiment('when user has returns scope', () => {
+    test('they can view notifications and returns cycles reports and send paper returns forms', async () => {
+      const request = createRequest(scope.returns);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([
+        { group: 'reports',
+          name: 'Notices',
+          path: '/notifications/report' },
+        { group: 'reports',
+          name: 'Returns cycles',
+          path: '/returns-reports' },
+        { group: 'returnNotifications',
+          name: 'Paper forms',
+          path: '/returns-notifications/forms'
+        }]);
+    });
+  });
+
+  experiment('when user has HoF notifications scope', () => {
+    test('they can view notifications reports and all HoF notifications', async () => {
+      const request = createRequest(scope.hofNotifications);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([ { group: 'reports',
+        name: 'Notices',
+        path: '/notifications/report' },
+      { group: 'hofNotifications',
+        name: 'Restriction',
+        path: 'notifications/1?start=1' },
+      { group: 'hofNotifications',
+        name: 'Hands-off flow',
+        path: 'notifications/3?start=1' },
+      { group: 'hofNotifications',
+        name: 'Resume',
+        path: 'notifications/4?start=1' } ]);
+    });
+  });
+
+  experiment('when user has manage accounts scope', () => {
+    test('they can view create account link', async () => {
+      const request = createRequest(scope.manageAccounts);
+      const config = getManageTabConfig(request);
+      expect(getAllLinks(config)).to.equal([{
+        group: 'accounts',
+        name: 'Create an internal account',
+        path: '/account/create-user'
+      }]);
+    });
   });
 });

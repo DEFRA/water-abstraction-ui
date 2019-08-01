@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 
 const {
-  isAnyAR, isAuthenticated
+  isAnyAR, isAuthenticated, isManageTab
 } = require('../permissions');
 
 const { createLink, setActiveLink } = require('./helpers');
@@ -14,7 +14,7 @@ const createNavLink = (label, path, id) => {
 const internalLinks = {
   licences: createNavLink('Licences', '/licences', 'view'),
   ar: createNavLink('Digitise!', '/digitise', 'ar'),
-  notifications: createNavLink('Reports and notifications', '/notifications', 'notifications')
+  notifications: createNavLink('Manage', '/notifications', 'notifications')
 };
 
 /**
@@ -27,7 +27,9 @@ const getInternalNav = (request) => {
   if (isAnyAR(request)) {
     links.push(internalLinks.ar);
   }
-  links.push(internalLinks.notifications);
+  if (isManageTab(request)) {
+    links.push(internalLinks.notifications);
+  }
   return links;
 };
 

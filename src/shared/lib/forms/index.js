@@ -1,4 +1,4 @@
-const { cloneDeep } = require('lodash');
+const { cloneDeep, get } = require('lodash');
 const fields = require('./fields');
 const mappers = require('./mappers');
 const { mapFields } = require('./mapFields');
@@ -34,7 +34,7 @@ const setValues = (form, values) => {
   return mapFields(form, (field) => {
     const { name, value, ...rest } = field;
 
-    const newValue = name in values ? values[name] : value;
+    const newValue = get(values, name, value);
 
     return {
       name,

@@ -54,7 +54,7 @@ experiment('getMainNav', () => {
   });
 
   test('Non-active links should have the active flag set to false', async () => {
-    const request = getARUserRequest();
+    const request = getARApproverRequest();
     const links = getMainNav(request);
 
     expect(find(links, { id: 'view' }).active).to.equal(true);
@@ -65,13 +65,13 @@ experiment('getMainNav', () => {
   test('It should display correct links for internal user', async () => {
     const request = getAuthenticatedRequest(true);
     const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'notifications']);
+    expect(ids).to.equal(['view']);
   });
 
   test('It should display correct links for AR user', async () => {
     const request = getARUserRequest();
     const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'ar', 'notifications']);
+    expect(ids).to.equal(['view', 'ar']);
   });
 
   test('It should display correct links for AR approver', async () => {
@@ -85,18 +85,4 @@ experiment('getMainNav', () => {
     const ids = getIds(getMainNav(request));
     expect(ids).to.equal(['view', 'notifications']);
   });
-
-  // test('for a request with licence.userLicenceCount of 0, only view is added', async () => {
-  //   const request = getPrimaryUserRequest();
-  //   request.licence = { userLicenceCount: 0 };
-  //   const ids = getIds(getMainNav(request));
-  //   expect(ids).to.equal(['view']);
-  // });
-  //
-  // test('for a request with licence.userLicenceCount of 1, all tabs are added', async () => {
-  //   const request = getPrimaryUserRequest();
-  //   request.licence = { userLicenceCount: 1 };
-  //   const ids = getIds(getMainNav(request));
-  //   expect(ids).to.equal(['view', 'returns', 'manage']);
-  // });
 });

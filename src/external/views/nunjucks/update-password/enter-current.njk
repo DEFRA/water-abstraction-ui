@@ -1,0 +1,70 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "input/macro.njk" import govukInput %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block mainNav %}
+{% endblock %}
+
+{% block content %}
+
+  {% if errors %}
+    <script nonce="{{nonces.script}}">
+      sendEvent({category:'error', action:'update_password_invalid_verification_password'})
+    </script>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [{
+              text: "Enter your current password",
+              href: "#password"
+            }]
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p>
+        For security, we need you to confirm your current
+        password before you can change it.
+      </p>
+
+      <form novalidate action="/account/update-password/verify" method="post" class="form">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+        {% set errorMessage = false %}
+        {% if errors %}
+          {% set errorMessage = {
+            text: "This is the password you use to access this service"
+          } %}
+        {% endif %}
+
+        {{
+          govukInput({
+            label: { text: "Your current password" },
+            id: "password",
+            name: "password",
+            errorMessage: errorMessage,
+            type: "password",
+            attributes: {
+              maxlength: 128
+            },
+            autocomplete: "current-password",
+            classes: "govuk-!-width-one-half"
+          })
+        }}
+
+        {{
+          govukButton({ text: "Continue", type: "submit" })
+        }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

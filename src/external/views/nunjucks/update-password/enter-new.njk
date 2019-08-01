@@ -1,0 +1,110 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block mainNav %}
+
+{% endblock %}
+
+{% macro errorItem(errors, key, text, isHint = false) %}
+  <li class="password-validation {{ ' password-validation-failure' if errors[key] }}">
+    <span class="{{ 'govuk-hint' if isHint }}">
+      {% if errors[key] %}
+        <span aria-hidden="true" class="validation-icon">&#10007;</span>
+        <span class="govuk-visually-hidden">Your password does not contain </span>
+      {% else %}
+        <span aria-hidden="true" class="validation-icon">&#10003;</span>
+        <span class="govuk-visually-hidden">Your password contains </span>
+      {% endif %}
+      {{ text }}
+    </span>
+  </li>
+{% endmacro %}
+
+{% block content %}
+
+  {% if errors.hasValidationErrors %}
+    <script nonce="{{nonces.script}}">
+      sendEvent({category:'error', action:'update_password_invalid_password'})
+    </script>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+              There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+              <p>Your password must contain</p>
+              <ul class="govuk-list govuk-error-summary__list">
+                {{ errorItem(errors, 'passwordTooShort', '8 characters' )}}
+                {{ errorItem(errors, 'passwordHasNoSymbol', '1 symbol (like ?!£%)' )}}
+                {{ errorItem(errors, 'passwordHasNoUpperCase', '1 capital letter' )}}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (not errors.hasValidationErrors) and (errors.passwordsDontMatch or errors.noConfirmPassword) %}
+   {{
+      govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+          { text: "Re-enter your new password", href: "#password" },
+          { text: "Re-enter your new password", href: "#confirm-password" }
+        ]
+      })
+    }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <form novalidate action="/account/update-password/new" method="post" class="form">
+        <input type="hidden" name="authtoken" value="{{authtoken}}">
+        <input name="csrf_token" type="hidden" value="{{csrfToken}}" />
+
+        {% set hasError = false %}
+        {% if errors.hasValidationErrors or errors.passwordsDontMatch %}
+          {% set hasError = true %}
+        {% endif %}
+        <div class="govuk-form-group {{ 'govuk-form-group--error' if errors.hasValidationErrors }}">
+          <div class="govuk-hint">
+            <p class="govuk-hint">Your new password must have at least:</p>
+            <ul class="govuk-list govuk-error-summary__list">
+              {{ errorItem(errors, 'passwordTooShort', '8 characters', true )}}
+              {{ errorItem(errors, 'passwordHasNoSymbol', '1 symbol (like ?!£%)', true )}}
+              {{ errorItem(errors, 'passwordHasNoUpperCase', '1 capital letter', true )}}
+            </ul>
+          </div>
+
+          <label class="govuk-label" for="password">Enter a new password</label>
+          <input
+            class="govuk-input govuk-!-width-one-half {{ 'govuk-input--error' if hasError }}"
+            maxlength="128"
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="new-password">
+        </div>
+
+        {% set hasConfirmError = false %}
+        {% if errors.noConfirmPassword or errors.passwordsDontMatch %}
+          {% set hasConfirmError = true %}
+        {% endif %}
+        <div class="govuk-form-group {{ ' govuk-form-group--error' if hasConfirmError }}" >
+          <label class="govuk-label" for="confirm-password">Confirm your password</label>
+          <input class="govuk-input govuk-!-width-one-half {{ 'govuk-input--error' if hasConfirmError }}" maxlength="128" id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password">
+        </div>
+
+        {{
+          govukButton({ text: "Change password", type: "submit" })
+        }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

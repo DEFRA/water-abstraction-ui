@@ -11,7 +11,7 @@ const createPropositionLink = (label, path, id) => {
 };
 
 const contactLink = createPropositionLink('Contact information', '/contact-information', 'contact-information');
-const changePasswordLink = createPropositionLink('Change password', '/update_password', 'change-password');
+const changePasswordLink = createPropositionLink('Change password', '/account/update-password', 'change-password');
 const signoutLink = createPropositionLink('Sign out', '/signout', 'signout');
 
 /**

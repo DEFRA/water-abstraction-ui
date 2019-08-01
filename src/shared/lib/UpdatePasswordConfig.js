@@ -8,17 +8,26 @@ class UpdatePasswordConfig {
     this.config = config;
   }
 
-  _callIDMMethod (method, args) {
+  /**
+   * Attempts to authenticate a user
+   *
+   * @param {string} email The email/username
+   * @param {string} password The user password
+   */
+  authenticate (email, password) {
     const { application } = this.config.idm;
-    return this.connectors.idm.users[method](application, ...args);
+    return this.connectors.idm.users.authenticate(email, password, application);
   }
 
-  authenticate (...args) {
-    return this._callIDMMethod('authenticate', args);
-  }
-
-  updatePassword (...args) {
-    return this._callIDMMethod('updatePassword', args);
+  /**
+   * Updates a user's password
+   *
+   * @param {number} userId The id of the user whose password is to be updated
+   * @param {string} password The new password for the user
+   */
+  updatePassword (userId, password) {
+    const { application } = this.config.idm;
+    return this.connectors.idm.users.updatePassword(application, userId, password);
   }
 }
 

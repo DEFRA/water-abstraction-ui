@@ -1,6 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
 
+{% block mainNav %}
+{% endblock %}
+
 {% block content %}
   {{ title(pageTitle) }}
   <div class="govuk-grid-row">
@@ -11,7 +14,7 @@
         {# Enable this when the feature is integrated with backend #}
         {# <a class="govuk-link" href="/account/change-email/confirm-password">Change your email address</a> #}
       </div>
-      <a class="govuk-link govuk-body-m" href="/update_password">Change your password</a>
+      <a class="govuk-link govuk-body-m" href="/account/update-password">Change your password</a>
     </div>
   </div>
 {% endblock %}

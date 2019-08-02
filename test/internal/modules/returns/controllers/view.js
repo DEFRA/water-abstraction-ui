@@ -4,8 +4,8 @@ const Lab = require('@hapi/lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
 
-const controller = require('external/modules/returns/controllers/view');
-const helpers = require('external/modules/returns/lib/helpers');
+const controller = require('internal/modules/returns/controllers/view');
+const helpers = require('internal/modules/returns/lib/helpers');
 
 const request = {
   params: {
@@ -26,18 +26,6 @@ experiment('view controlller', async () => {
   });
 
   afterEach(async () => { sandbox.restore(); });
-
-  experiment('getReturns', async () => {
-    beforeEach(async () => {
-      helpers.getReturnsViewData.returns({ test: 'data' });
-      await controller.getReturns(request, h);
-    });
-    test('correct template is passed', async () => {
-      const [template, view] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/index.njk');
-      expect(view).to.equal({ test: 'data' });
-    });
-  });
 
   experiment('getReturnsForLicence', async () => {
     test('correct template is passed', async () => {

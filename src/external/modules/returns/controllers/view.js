@@ -31,10 +31,12 @@ const getReturnsForLicence = async (request, h) => {
   if (!view.document) {
     throw Boom.notFound(`Document ${documentId} not found - entity ${request.defra.entityId} may not have the correct roles`);
   }
-  view.pageTitle = `Returns for ${view.document.system_external_id}`;
+  view.pageTitle = `Returns for licence number ${view.document.system_external_id}`;
   view.paginationUrl = `/licences/${documentId}/returns`;
+  view.back = `/licences/${documentId}`;
+  view.backText = `Licence number ${view.document.system_external_id}`;
 
-  return h.view('water/returns/licence', view);
+  return h.view('nunjucks/returns/licence.njk', view, { layout: false });
 };
 
 /**

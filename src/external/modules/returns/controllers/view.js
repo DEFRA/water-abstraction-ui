@@ -5,7 +5,7 @@ const helpers = require('../lib/helpers');
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
-const { getEditButtonPath } = require('../lib/return-path');
+const { getEditButtonPath } = require('external/lib/return-path');
 
 const services = require('../../../lib/connectors/services');
 

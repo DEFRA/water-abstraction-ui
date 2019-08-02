@@ -1,6 +1,6 @@
 const controller = require('./controller');
 const constants = require('../../lib/constants');
-const returns = constants.scope.returns;
+const { returns, bulkReturnNotifications } = constants.scope;
 
 module.exports = {
   getSendForms: {
@@ -73,7 +73,7 @@ module.exports = {
     path: '/returns-notifications/final-reminder',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -90,7 +90,7 @@ module.exports = {
     path: '/returns-notifications/final-reminder/csv',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -107,7 +107,7 @@ module.exports = {
     path: '/returns-notifications/final-reminder',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -124,7 +124,7 @@ module.exports = {
     path: '/returns-notifications/reminders',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -141,7 +141,7 @@ module.exports = {
     path: '/returns-notifications/reminders',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -158,7 +158,7 @@ module.exports = {
     path: '/returns-notifications/invitations',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {
@@ -175,7 +175,7 @@ module.exports = {
     path: '/returns-notifications/invitations',
     config: {
       auth: {
-        scope: returns
+        scope: bulkReturnNotifications
       },
       plugins: {
         viewContext: {

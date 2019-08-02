@@ -6,7 +6,7 @@ const { expect } = require('@hapi/code');
 
 const {
   getReturnPath
-} = require('external/modules/returns/lib/return-path');
+} = require('external/lib/return-path');
 
 const { scope } = require('external/lib/constants');
 

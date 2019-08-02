@@ -5,17 +5,17 @@ const lab = exports.lab = Lab.script();
 
 const { expect } = require('@hapi/code');
 const constants = require('internal/lib/constants');
-const allAdmin = constants.scope.allAdmin;
+const { allNotifications } = constants.scope;
 const routes = require('internal/modules/notifications-reports/routes');
 
-lab.experiment('notification reports - admin routes', () => {
-  lab.test('getNotificationsList has admin auth scopes', async () => {
+lab.experiment('notification reports', () => {
+  lab.test('getNotificationsList has all notification scopes', async () => {
     const route = routes.getNotificationsList;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allNotifications);
   });
 
-  lab.test('getNotification has admin auth scopes', async () => {
+  lab.test('getNotification has all notification scopes', async () => {
     const route = routes.getNotification;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allNotifications);
   });
 });

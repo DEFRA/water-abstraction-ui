@@ -27,7 +27,7 @@ experiment('permissions', () => {
         expect(permissions.hasScope(request, 'foo')).to.equal(true);
       });
 
-      test('it should return true if scope is not in the credentials', async () => {
+      test('it should return false if scope is not in the credentials', async () => {
         const request = createRequest(['foo', 'bar']);
         expect(permissions.hasScope(request, 'baz')).to.equal(false);
       });
@@ -44,7 +44,7 @@ experiment('permissions', () => {
         expect(permissions.hasScope(request, ['baz', 'foo'])).to.equal(true);
       });
 
-      test('it should return true if scope is not in the credentials', async () => {
+      test('it should return false if scope is not in the credentials', async () => {
         const request = createRequest(['foo', 'bar']);
         expect(permissions.hasScope(request, ['baz'])).to.equal(false);
       });

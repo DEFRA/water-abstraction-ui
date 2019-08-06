@@ -51,7 +51,6 @@ const getReturn = async (request, h) => {
   // Load licence from CRM to check user has access
   const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: true });
 
-
   if (!documentHeader) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }

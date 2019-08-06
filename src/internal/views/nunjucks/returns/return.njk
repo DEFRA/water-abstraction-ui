@@ -1,0 +1,67 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "returns/not-current-version-warning.njk" import notCurrentVersionWarning %}
+{% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
+{% from "returns/return-header.njk" import returnHeader %}
+{% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "button/macro.njk" import govukButton %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ notCurrentVersionWarning(data) }}
+      {{ returnHeader(data, documentHeader, showMeta, true) }}
+    </div>
+
+    <div class="govuk-grid-column-full">
+      {% if isVoid %}
+        <h2 class="govuk-heading-l">This return has been made void</h2>
+      </div>
+    {% else %}
+      {% if data.isNil %}
+        <h2 class="govuk-heading-l">Nil return</h2>
+      {% else %}
+        <h2 class="govuk-heading-m">Abstraction volumes</h2>
+      {% endif %}
+
+      {% if editButtonPath %}
+        {{ govukButton({
+          text: "Edit return",
+          href: editButtonPath
+        }) }}
+      {% endif %}
+
+      {{ meterDetailsInsetText(data, endReading, true) }}
+    </div>
+
+    {% if not data.isNil %}
+      {{ returnQuantitiesTable(data, lines, total, endReading) }}
+    {% endif %}
+  {% endif %}
+
+  {% if showVersions %}
+    <div class="govuk-grid-column-two-thirds">
+      <h3 class="govuk-heading-m">Submitted by</h3>
+      {% for version in data.versions | reverse %}
+        {% if data.versionNumber === version.versionNumber %}
+          <span class="govuk-visually-hidden">This version</span>
+          {% set insetHTML %}
+          {{ version.email }}<br>{{ version.createdAt | date }}<br>
+          {% endset %}
+          {% set insetCustomClass %}inset-text__versions--this-version{% endset %}
+        {% else %}
+          {% set insetHTML %}
+          {{ version.email }}<br>
+          <a href="/returns/return?id={{ data.returnId }}&amp;version={{ version.versionNumber }}">
+            {{ version.createdAt | date }}</a><br>
+          {% endset %}
+        {% endif %}
+        {{ govukInsetText({
+          classes: insetCustomClass,
+          html: insetHTML
+        }) }}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -73,7 +73,7 @@ const getReturn = async (request, h) => {
   const view = {
     total: getReturnTotal(data),
     ...request.view,
-    return: data,
+    data,
     lines,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
@@ -83,7 +83,7 @@ const getReturn = async (request, h) => {
     endReading: get(data, `meters[0].readings.${endReadingKey(data)}`)
   };
 
-  return h.view('water/returns/return', view);
+  return h.view('nunjucks/returns/return.njk', view, { layout: false });
 };
 
 module.exports = {

@@ -1,0 +1,5 @@
+.inset-text__versions--this-version {
+  @extend .govuk-inset-text;
+
+  border-color: $govuk-link-colour;
+}

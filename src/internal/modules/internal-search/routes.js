@@ -1,7 +1,5 @@
 const Joi = require('@hapi/joi');
 const controller = require('./controller');
-const { scope } = require('../../lib/constants');
-const allowedScopes = scope.internal;
 
 module.exports = {
   getSearchForm: {
@@ -9,7 +7,6 @@ module.exports = {
     method: 'GET',
     handler: controller.getSearchForm,
     options: {
-      auth: { scope: allowedScopes },
       description: 'Internal search',
       plugins: {
         viewContext: {
@@ -31,7 +28,6 @@ module.exports = {
     path: '/user/{userId}/status',
     handler: controller.getUserStatus,
     config: {
-      auth: { scope: allowedScopes },
       description: 'Admin: view the licence, verification and login status of a user',
       plugins: {
         viewContext: {

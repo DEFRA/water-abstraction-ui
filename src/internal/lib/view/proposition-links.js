@@ -2,7 +2,8 @@ const { get } = require('lodash');
 const { createLink, setActiveLink } = require('./helpers');
 
 const {
-  isAuthenticated
+  isAuthenticated,
+  isHofOrRenewalNotifications
 } = require('../permissions');
 
 const createPropositionLink = (label, path, id) => {
@@ -24,8 +25,12 @@ const getPropositionLinks = (request) => {
     return [];
   }
 
-  // Select links relevant to user type
-  const links = [contactLink, changePasswordLink, signoutLink];
+  let links = [];
+
+  if (isHofOrRenewalNotifications(request)) {
+    links.push(contactLink);
+  }
+  links.push(changePasswordLink, signoutLink);
 
   // Add active boolean to correct link
   const activeNavLink = get(request, 'view.activeNavLink');

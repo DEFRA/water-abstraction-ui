@@ -5,29 +5,8 @@ const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const { forceArray } = require('shared/lib/array-helpers');
 const services = require('../../lib/connectors/services');
-const { getNotificationsList, getReportsList } = require('./lib/notifications-list');
 const { licenceValidator } = require('./lib/licence-validator');
-
-/**
- * Renders page with list of notifications that can be selected
- * @param {Object} request - HAPI HTTP request
- * @param {Object} reply - HAPI HTTP reply interface
- */
-async function getIndex (request, reply) {
-  const filter = {
-    type: 'notification'
-  };
-  const { data: tasks, error } = await services.water.taskConfigs.findMany(filter);
-
-  const notifications = getNotificationsList(tasks, request);
-  const reports = getReportsList(request);
-
-  if (error) {
-    return reply(error);
-  }
-
-  return reply.view('water/notifications/index', { notifications, reports, ...request.view });
-}
+const { checkAccess } = require('./lib/permission');
 
 /**
   * Helper handler for start flow
@@ -69,6 +48,8 @@ async function getStep (request, reply) {
   if (taskConfigError) {
     throw new Error(taskConfigError);
   }
+
+  checkAccess(request, task);
 
   if (start) {
     return getStartFlow(request, reply, task);
@@ -132,10 +113,10 @@ async function postStep (request, reply) {
   if (taskConfigError) {
     return reply(taskConfigError);
   }
+  checkAccess(request, task);
 
   // Update task data
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
-  // taskData.fromJson(data);
   const { error } = taskData.processRequest(request.payload, step);
 
   // Update
@@ -169,6 +150,7 @@ async function getRefine (request, reply) {
   if (taskConfigError) {
     return reply(taskConfigError);
   }
+  checkAccess(request, task);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
@@ -235,6 +217,7 @@ async function postRefine (request, reply) {
   if (taskConfigError) {
     return reply(taskConfigError);
   }
+  checkAccess(request, task);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
@@ -268,6 +251,7 @@ async function postRefine (request, reply) {
  */
 async function renderVariableData (request, reply, taskData) {
   const { task } = taskData;
+  checkAccess(request, task);
 
   const view = {
     ...request.view,
@@ -296,6 +280,8 @@ async function getVariableData (request, reply) {
     return reply(taskConfigError);
   }
 
+  checkAccess(request, task);
+
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
 
@@ -316,6 +302,8 @@ async function postVariableData (request, reply) {
   if (taskConfigError) {
     return reply(taskConfigError);
   }
+
+  checkAccess(request, task);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
@@ -402,6 +390,9 @@ async function getPreview (request, reply) {
     ...request.view,
     ...await getSendViewContext(id, request.yar.get('notificationsFlow'))
   };
+
+  checkAccess(request, view.task);
+
   return reply.view('water/notifications/preview', view);
 }
 
@@ -423,13 +414,14 @@ async function postSend (request, reply) {
     ...await getSendViewContext(id, request.yar.get('notificationsFlow'), userName)
   };
 
+  checkAccess(request, view.task);
+
   // Flow is completed - delete state in session store
   request.yar.clear('notificationsFlow');
 
   return reply.view('water/notifications/sent', view);
 }
 
-exports.getIndex = getIndex;
 exports.getStep = getStep;
 exports.postStep = postStep;
 exports.getRefine = getRefine;

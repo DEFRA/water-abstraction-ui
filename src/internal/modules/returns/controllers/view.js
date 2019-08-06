@@ -1,16 +1,13 @@
 /* eslint new-cap: "warn" */
 const Boom = require('@hapi/boom');
 const { get } = require('lodash');
-
-const { isInternal } = require('../../../lib/permissions');
-
 const helpers = require('../lib/helpers');
 
 const {
   getLinesWithReadings
 } = require('../lib/return-helpers');
 
-const { getEditButtonPath } = require('../lib/return-path');
+const { getEditButtonPath } = require('internal/lib/return-path');
 
 const services = require('../../../lib/connectors/services');
 
@@ -52,16 +49,14 @@ const getReturn = async (request, h) => {
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const isInternalUser = isInternal(request);
-  const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: isInternalUser });
+  const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: true });
 
-  const canView = documentHeader && (isInternalUser || (data.isCurrent && data.metadata.isCurrent));
 
-  if (!canView) {
+  if (!documentHeader) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
-  const showVersions = isInternal && get(data, 'versions[0].email');
+  const showVersions = get(data, 'versions[0].email');
 
   const view = {
     total: helpers.getReturnTotal(data),

@@ -2,19 +2,22 @@
 
 const controller = require('./controller');
 const constants = require('../../lib/constants');
-const { allAdmin } = constants.scope;
+const { hofNotifications, renewalNotifications } = constants.scope;
+
+const allowedScopes = [hofNotifications, renewalNotifications];
 
 const getContactInformation = {
   method: 'GET',
   path: '/contact-information',
   handler: controller.getContactInformation,
   options: {
-    auth: { scope: allAdmin },
+    auth: { scope: allowedScopes },
     description: 'Displays the user\'s contact information',
     plugins: {
       viewContext: {
         pageTitle: 'Contact information',
-        back: '/'
+        back: '/',
+        activeNavLink: 'contact-information'
       }
     }
   }
@@ -25,12 +28,13 @@ const postContactInformation = {
   path: '/contact-information',
   handler: controller.postContactInformation,
   options: {
-    auth: { scope: allAdmin },
+    auth: { scope: allowedScopes },
     description: 'Updates the user\'s contact information if valid',
     plugins: {
       viewContext: {
         pageTitle: 'Contact information',
-        back: '/'
+        back: '/',
+        activeNavLink: 'contact-information'
       }
     }
   }

@@ -39,7 +39,7 @@ const testData = isCurrent => {
     } };
 };
 
-experiment('view controlller', async () => {
+experiment('external view controller', async () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
     sandbox.stub(helpers, 'getLicenceNumbers');
@@ -58,35 +58,6 @@ experiment('view controlller', async () => {
       const [template, view] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/returns/index.njk');
       expect(view).to.equal({ test: 'data' });
-    });
-  });
-
-  experiment('getReturn', async () => {
-    beforeEach(async () => {
-      helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
-      WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });
-    });
-    test('correct template is passed', async () => {
-      const returnData = testData(true);
-      services.water.returns.getReturn.returns(returnData);
-      await controller.getReturn(request, h);
-
-      const [template, view] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/return.njk');
-      expect(view.data.isCurrent).to.equal(returnData.isCurrent);
-      expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
-      expect(view.data.lines).to.equal(returnData.lines);
-      expect(view.data.metadata).to.equal(returnData.metadata);
-    });
-
-    test('Boom error is thrown if !canView', async () => {
-      services.water.returns.getReturn.returns(testData(false));
-      try {
-        await controller.getReturn(request, h);
-      } catch (err) {
-        expect(err.isBoom).to.be.true();
-        expect(err.message).to.equal('Access denied return test-id for entity test-entity-id');
-      }
     });
   });
 
@@ -115,6 +86,35 @@ experiment('view controlller', async () => {
         expect(err.isBoom).to.equal(true);
         expect(err.message).to.equal(errorMessage);
         expect(err.output.statusCode).to.equal(404);
+      }
+    });
+  });
+
+  experiment('getReturn', async () => {
+    beforeEach(async () => {
+      helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
+      WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });
+    });
+    test('correct template is passed', async () => {
+      const returnData = testData(true);
+      services.water.returns.getReturn.returns(returnData);
+      await controller.getReturn(request, h);
+
+      const [template, view] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns/return.njk');
+      expect(view.data.isCurrent).to.equal(returnData.isCurrent);
+      expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
+      expect(view.data.lines).to.equal(returnData.lines);
+      expect(view.data.metadata).to.equal(returnData.metadata);
+    });
+
+    test('Boom error is thrown if !canView', async () => {
+      services.water.returns.getReturn.returns(testData(false));
+      try {
+        await controller.getReturn(request, h);
+      } catch (err) {
+        expect(err.isBoom).to.be.true();
+        expect(err.message).to.equal('Access denied return test-id for entity test-entity-id');
       }
     });
   });

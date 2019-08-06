@@ -44,22 +44,17 @@
       <h3 class="govuk-heading-m">Submitted by</h3>
       {% for version in data.versions | reverse %}
         {% if data.versionNumber === version.versionNumber %}
+        <div class="govuk-inset-text inset-text__versions--this-version">
           <span class="govuk-visually-hidden">This version</span>
-          {% set insetHTML %}
           {{ version.email }}<br>{{ version.createdAt | date }}<br>
-          {% endset %}
-          {% set insetCustomClass %}inset-text__versions--this-version{% endset %}
+        </div>
         {% else %}
-          {% set insetHTML %}
+          <div class="govuk-inset-text" data-clickable>
           {{ version.email }}<br>
           <a href="/returns/return?id={{ data.returnId }}&amp;version={{ version.versionNumber }}">
             {{ version.createdAt | date }}</a><br>
-          {% endset %}
+          </div>
         {% endif %}
-        {{ govukInsetText({
-          classes: insetCustomClass,
-          html: insetHTML
-        }) }}
       {% endfor %}
     </div>
   {% endif %}

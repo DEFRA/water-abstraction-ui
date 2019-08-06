@@ -3,9 +3,7 @@ const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 const helpers = require('../lib/helpers');
 
-const {
-  getLinesWithReadings
-} = require('../lib/return-helpers');
+const returnHelpers = require('../lib/return-helpers');
 
 const { getEditButtonPath } = require('internal/lib/return-path');
 
@@ -43,7 +41,7 @@ const getReturn = async (request, h) => {
   // Load return data
   const data = await services.water.returns.getReturn(id, version);
 
-  const lines = getLinesWithReadings(data);
+  const lines = returnHelpers.getLinesWithReadings(data);
 
   // Load CRM data to check access
   const { licenceNumber } = data;

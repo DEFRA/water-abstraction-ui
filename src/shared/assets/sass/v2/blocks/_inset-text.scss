@@ -3,3 +3,12 @@
 
   border-color: $govuk-link-colour;
 }
+
+.inset-text--clickable {
+  @extend .govuk-inset-text;
+
+  &:hover {
+    cursor: pointer;
+    background: #f3f2f1;
+  }
+}

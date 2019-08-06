@@ -4,7 +4,6 @@ const moment = require('moment');
 const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
-const { isExternalReturns } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
@@ -258,14 +257,11 @@ const getReturnsViewData = async (request) => {
 
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
-  const xmlUpload = await isXmlUpload(licenceNumbers);
-  const externalReturns = isExternalReturns(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
-    xmlUser: xmlUpload && externalReturns,
     returns: []
   };
 

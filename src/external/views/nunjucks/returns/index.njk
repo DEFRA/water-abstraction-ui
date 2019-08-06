@@ -30,7 +30,7 @@
             </thead>
             <tbody class="govuk-table__body">
               {% for return in returnsByYear.returns %}
-                <tr class="{{'table__row--clickable' if return.path else 'govuk-table__row'}}">
+                <tr class="govuk-table__row" {{'data-clickable' if return.path }}>
                   <th class="table__cell--tall govuk-!-font-weight-regular">
                     <h3 class="govuk-visually-hidden">Licence</h3>
                     {% if return.path %}
@@ -82,30 +82,5 @@
   {% endif %}
   {{ paginate(pagination, '/returns') }}
 </div>
-<script type="text/javascript">
-  window.onload = function () {
-    document.addEventListener('click', function (event) {
-      const element = event.target
 
-      //return row element
-    	if (element.parentElement.matches('.table__row--clickable')) {
-    		makeClickable(event.target.parentElement);
-    	}
-
-      //if user clicks on status badger, return row element
-      if (element.parentElement.matches('.table__cell--tall')) {
-        if (element.parentElement.parentElement.matches('.table__row--clickable')){
-          makeClickable(element.parentElement.parentElement);
-        }
-      }
-
-});
-  }
-
-  function makeClickable(target) {
-    document.location.href = target.querySelector("a");
-    ev.preventDefault();
-
-  }
-</script>
 {% endblock %}

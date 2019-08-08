@@ -2,7 +2,6 @@
 const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 const helpers = require('../lib/helpers');
-
 const returnHelpers = require('../lib/return-helpers');
 
 const { getEditButtonPath } = require('internal/lib/return-path');

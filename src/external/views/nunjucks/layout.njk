@@ -94,9 +94,8 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="/assets/js/all.js"></script>
-  <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
   <script nonce="{{ nonces.script }}" src="/public/javascripts/application-v2.all.min.js"></script>
+  <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->
   <script nonce="{{nonces.script}}">

@@ -1,0 +1,14 @@
+.inset-text__versions--this-version {
+  @extend .govuk-inset-text;
+
+  border-color: $govuk-link-colour;
+}
+
+.inset-text--clickable {
+  @extend .govuk-inset-text;
+
+  &:hover {
+    cursor: pointer;
+    background: govuk-colour("grey-4");
+  }
+}

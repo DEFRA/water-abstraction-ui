@@ -1,12 +1,17 @@
 const { expect } = require('@hapi/code');
-const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const controller = require('external/modules/account/controller');
+const services = require('external/lib/connectors/services');
 
 experiment('modules/account/controller', () => {
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
   experiment('.getAccount', () => {
     let h;
 
@@ -31,91 +36,6 @@ experiment('modules/account/controller', () => {
     });
   });
 
-  experiment('.getConfirmPassword', () => {
-    let h;
-
-    beforeEach(async () => {
-      h = { view: sandbox.spy() };
-
-      const request = {
-        view: { csrfToken: 'token' }
-      };
-
-      await controller.getConfirmPassword(request, h);
-    });
-
-    test('the expected view template is used', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form.njk');
-    });
-
-    test('the view data is passed through to the view', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.csrfToken).to.equal('token');
-    });
-
-    test('the back link is setup to return to /account', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.back).to.equal('/account');
-    });
-  });
-
-  experiment('.postConfirmPassword', () => {
-    let h;
-
-    beforeEach(async () => {
-      h = {
-        view: sandbox.spy(),
-        redirect: sandbox.spy()
-      };
-    });
-
-    experiment('when the data is valid', () => {
-      beforeEach(async () => {
-        const request = {
-          view: { csrfToken: 'token' },
-          payload: {
-            csrf_token: 'token',
-            password: 'secrets'
-          }
-        };
-
-        await controller.postConfirmPassword(request, h);
-      });
-
-      test('the user is redirected to the next step', async () => {
-        const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/account/change-email/enter-new-email');
-      });
-    });
-
-    experiment('when the data is invalid', () => {
-      beforeEach(async () => {
-        const request = {
-          view: { csrfToken: 'token' },
-          payload: { password: '' }
-        };
-
-        await controller.postConfirmPassword(request, h);
-      });
-
-      test('the expected view template is used', async () => {
-        const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form.njk');
-      });
-
-      test('the view data is passed through to the view', async () => {
-        const [, context] = h.view.lastCall.args;
-        expect(context.csrfToken).to.equal('token');
-      });
-
-      test('the back link is setup to return to /account', async () => {
-        const [, context] = h.view.lastCall.args;
-        expect(context.back).to.equal('/account');
-      });
-    });
-  });
-
   experiment('.getEnterNewEmail', () => {
     let h;
 
@@ -131,7 +51,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form.njk');
+      expect(template).to.equal('nunjucks/form-without-nav.njk');
     });
 
     test('the view data is passed through to the view', async () => {
@@ -153,6 +73,8 @@ experiment('modules/account/controller', () => {
         view: sandbox.spy(),
         redirect: sandbox.spy()
       };
+
+      sandbox.stub(services.water.changeEmailAddress, 'postGenerateSecurityCode');
     });
 
     experiment('when the data is valid', () => {
@@ -163,6 +85,9 @@ experiment('modules/account/controller', () => {
             csrf_token: 'token',
             email: 'user@example.com',
             'confirm-email': 'user@example.com'
+          },
+          defra: {
+            userId: 'user-1'
           }
         };
 
@@ -182,6 +107,9 @@ experiment('modules/account/controller', () => {
           payload: {
             email: '',
             'confirm-password': ''
+          },
+          defra: {
+            userId: 'user-1'
           }
         };
 
@@ -190,7 +118,7 @@ experiment('modules/account/controller', () => {
 
       test('the expected view template is used', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form.njk');
+        expect(template).to.equal('nunjucks/form-without-nav.njk');
       });
 
       test('the view contains a form with errors', async () => {
@@ -214,14 +142,25 @@ experiment('modules/account/controller', () => {
     let h;
 
     beforeEach(async () => {
-      h = { view: sandbox.spy() };
+      h = {
+        view: sandbox.spy(),
+        redirect: sandbox.spy()
+      };
 
       const request = {
         view: {
-          newEmail: 'test@example.com',
           csrfToken: 'token'
+        },
+        defra: {
+          userId: 'user-1'
         }
       };
+
+      sandbox.stub(services.water.changeEmailAddress, 'getStatus').resolves({
+        data: {
+          email: 'test@example.com'
+        }
+      });
 
       await controller.getVerifyEmail(request, h);
     });
@@ -250,6 +189,13 @@ experiment('modules/account/controller', () => {
         view: sandbox.spy(),
         redirect: sandbox.spy()
       };
+
+      sandbox.stub(services.water.changeEmailAddress, 'postSecurityCode');
+      sandbox.stub(services.water.changeEmailAddress, 'getStatus').resolves({
+        data: {
+          email: 'test@example.com'
+        }
+      });
     });
 
     experiment('when the data is valid', () => {
@@ -257,8 +203,11 @@ experiment('modules/account/controller', () => {
         const request = {
           view: { csrfToken: 'token' },
           payload: {
-            csrf_token: 'token',
-            'verification-code': '12345'
+            csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
+            'verificationCode': '123456'
+          },
+          defra: {
+            userId: 'user-1'
           }
         };
 
@@ -278,6 +227,9 @@ experiment('modules/account/controller', () => {
           payload: {
             csrf_token: 'token',
             'verification-code': ''
+          },
+          defra: {
+            userId: 'user-1'
           }
         };
 

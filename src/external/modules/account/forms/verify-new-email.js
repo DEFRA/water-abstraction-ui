@@ -40,7 +40,7 @@ const verifyNewEmailForm = (request, data = {}) => {
  * @param {Number} code - HTTP status code
  * @return {Object} updated form with errors applied
  */
-const verifyNewEmailApplyErrors = (form, code) => {
+const verifyNewEmailApplyErrors = (form) => {
   return applyErrors(form, [{
     name: 'verificationCode',
     message: 'Check your code',

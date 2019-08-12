@@ -25,6 +25,22 @@ const postConfirmPasswordForm = request => handleRequest(
   { abortEarly: true }
 );
 
+const postConfirmPasswordAPIRequest = async (h, userId, password) => {
+  const { reauthenticate } = h.realm.pluginOptions;
+  try {
+    await reauthenticate(userId, password);
+    return 'authenticated';
+  } catch (err) {
+    if (isLockedHttpStatus(err)) {
+      return 'locked';
+    }
+    if (isErrorHttpStatus(err)) {
+      return 'formError';
+    }
+    throw err;
+  }
+};
+
 /**
  * Post handler
  * Interacts with reauthenticate feature in IDM
@@ -38,26 +54,22 @@ const postConfirmPassword = async (request, h) => {
 
   const { userId } = request.defra;
   const { password } = getValues(form);
+  const action = await postConfirmPasswordAPIRequest(h, userId, password);
 
-  try {
-    const { reauthenticate } = h.realm.pluginOptions;
-    await reauthenticate(userId, password);
+  const actions = {
+    authenticated: () => {
+      // Set session data
+      request.yar.set('reauthExpiryTime', helpers.getExpiryTime());
 
-    // Set session data
-    request.yar.set('reauthExpiryTime', helpers.getExpiryTime());
+      // Redirect to original requested path
+      const path = request.yar.get('reauthRedirectPath');
+      return h.redirect(path);
+    },
+    locked: () => h.redirect('/confirm-password/locked'),
+    formError: () => getConfirmPassword(request, h, confirmPasswordApplyErrors(form))
+  };
 
-    // Redirect to original requested path
-    const path = request.yar.get('reauthRedirectPath');
-    return h.redirect(path);
-  } catch (err) {
-    if (isLockedHttpStatus(err)) {
-      return h.redirect('/confirm-password/locked');
-    }
-    if (isErrorHttpStatus(err)) {
-      return getConfirmPassword(request, h, confirmPasswordApplyErrors(form, err.statusCode));
-    }
-    throw err;
-  }
+  return actions[action]();
 };
 
 /**

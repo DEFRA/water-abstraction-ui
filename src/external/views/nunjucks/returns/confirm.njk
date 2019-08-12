@@ -1,23 +1,23 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
-{% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
-{% from "nunjucks/returns/macros/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "returns/return-header.njk" import returnHeader %}
+{% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
+{% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
 {% from "nunjucks/returns/macros/return-declaration.njk" import returnDeclaration %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
+    {{ returnHeader(data, documentHeader, showMeta) }}
 
     <h2 class="govuk-heading-l">
       {{ "Nil return" if data.isNil else "Confirm your return" }}
     </h2>
-    {{ confirmPageInsetText(data, endReading, isAdmin) }}
+    {{ meterDetailsInsetText(data, endReading) }}
   </div>
 
   {% if not data.isNil %}
-  {{ returnQuantitiesTable(data, lines, total, endReading, isAdmin) }}
+  {{ returnQuantitiesTable(data, lines, total, endReading) }}
   {% endif %}
 
   </div>
@@ -30,7 +30,7 @@
       </p>
       {% endif %}
 
-      {{ returnDeclaration(isAdmin) }}
+      {{ returnDeclaration() }}
       {{ formRender(form) }}
     </div>
   </div>

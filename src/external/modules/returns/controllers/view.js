@@ -5,8 +5,6 @@ const helpers = require('../lib/helpers');
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
-const { getEditButtonPath } = require('external/lib/return-path');
-
 const services = require('../../../lib/connectors/services');
 
 /**
@@ -66,17 +64,15 @@ const getReturn = async (request, h) => {
   const view = {
     total: model.getReturnTotal(),
     ...request.view,
-    return: model.toObject(),
+    data: model.toObject(),
     lines: model.getLines(true),
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
-    editButtonPath: getEditButtonPath(data, request),
-    showVersions: false,
     isVoid: data.status === 'void',
     endReading: model.meter.getEndReading()
   };
 
-  return h.view('water/returns/return', view);
+  return h.view('nunjucks/returns/return.njk', view, { layout: false });
 };
 
 module.exports = {

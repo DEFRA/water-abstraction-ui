@@ -6,8 +6,14 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('external/modules/returns/controllers/view');
 const helpers = require('external/modules/returns/lib/helpers');
+const services = require('external/lib/connectors/services');
+const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
 const request = {
+  query: {
+    id: 'test-id',
+    version: 1
+  },
   params: {
     documentId: 'test-document-id'
   },
@@ -20,9 +26,25 @@ const h = {
   view: sandbox.stub()
 };
 
-experiment('view controlller', async () => {
+const testData = isCurrent => {
+  return {
+    licenceNumber: '123-abc',
+    isCurrent,
+    lines: [{
+      startDate: '2012-01-01'
+    }],
+    meters: [{}],
+    metadata: {
+      isCurrent
+    } };
+};
+
+experiment('external view controller', async () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
+    sandbox.stub(helpers, 'getLicenceNumbers');
+    sandbox.stub(services.water.returns, 'getReturn');
+    sandbox.stub(WaterReturn.prototype, 'constructor');
   });
 
   afterEach(async () => { sandbox.restore(); });
@@ -64,6 +86,35 @@ experiment('view controlller', async () => {
         expect(err.isBoom).to.equal(true);
         expect(err.message).to.equal(errorMessage);
         expect(err.output.statusCode).to.equal(404);
+      }
+    });
+  });
+
+  experiment('getReturn', async () => {
+    beforeEach(async () => {
+      helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
+      WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });
+    });
+    test('correct template is passed', async () => {
+      const returnData = testData(true);
+      services.water.returns.getReturn.returns(returnData);
+      await controller.getReturn(request, h);
+
+      const [template, view] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns/return.njk');
+      expect(view.data.isCurrent).to.equal(returnData.isCurrent);
+      expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
+      expect(view.data.lines).to.equal(returnData.lines);
+      expect(view.data.metadata).to.equal(returnData.metadata);
+    });
+
+    test('Boom error is thrown if !canView', async () => {
+      services.water.returns.getReturn.returns(testData(false));
+      try {
+        await controller.getReturn(request, h);
+      } catch (err) {
+        expect(err.isBoom).to.be.true();
+        expect(err.message).to.equal('Access denied return test-id for entity test-entity-id');
       }
     });
   });

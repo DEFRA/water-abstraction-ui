@@ -86,6 +86,7 @@ gulp.task('combine-minify-js-nunjucks', () => {
     './src/shared/public/javascripts/v2/json-forms-toggle.js',
     './src/shared/public/javascripts/v2/abstraction-reform.js',
     './src/shared/public/javascripts/v2/clickable-rows.js',
+    './src/shared/public/javascripts/v2/toggle-visibility.js',
     './src/shared/public/javascripts/v2/back-link.js'
   ];
 

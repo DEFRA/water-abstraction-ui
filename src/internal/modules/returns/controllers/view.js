@@ -2,10 +2,7 @@
 const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 const helpers = require('../lib/helpers');
-
-const {
-  getLinesWithReadings
-} = require('../lib/return-helpers');
+const returnHelpers = require('../lib/return-helpers');
 
 const { getEditButtonPath } = require('internal/lib/return-path');
 
@@ -43,7 +40,7 @@ const getReturn = async (request, h) => {
   // Load return data
   const data = await services.water.returns.getReturn(id, version);
 
-  const lines = getLinesWithReadings(data);
+  const lines = returnHelpers.getLinesWithReadings(data);
 
   // Load CRM data to check access
   const { licenceNumber } = data;
@@ -60,7 +57,7 @@ const getReturn = async (request, h) => {
   const view = {
     total: helpers.getReturnTotal(data),
     ...request.view,
-    return: data,
+    data,
     lines,
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
@@ -70,7 +67,7 @@ const getReturn = async (request, h) => {
     endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
   };
 
-  return h.view('water/returns/return', view);
+  return h.view('nunjucks/returns/return.njk', view, { layout: false });
 };
 
 module.exports = {

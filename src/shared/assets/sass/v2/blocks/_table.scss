@@ -29,7 +29,7 @@
   .js-enabled & {
     &:hover {
       cursor: pointer;
-      background: #f3f2f1;
+      background: govuk-colour("grey-4");
     }
   }
 }

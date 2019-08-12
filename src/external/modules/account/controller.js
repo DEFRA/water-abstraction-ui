@@ -88,10 +88,10 @@ const postEnterNewEmailAPIRequest = async (userId, email) => {
       return 'locked';
     }
     // Swallow on conflict status - the new user is sent an email
-    if (isConflictHttpStatus(err)) {
-      return;
+    // Throw other errors
+    if (!isConflictHttpStatus(err)) {
+      throw err;
     }
-    throw err;
   }
   return 'redirect';
 };

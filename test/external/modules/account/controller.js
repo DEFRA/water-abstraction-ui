@@ -184,6 +184,54 @@ experiment('modules/account/controller', () => {
       });
     });
 
+    experiment('when the water API returns a locked status', async () => {
+      beforeEach(async () => {
+        const request = {
+          view: { csrfToken: 'token' },
+          payload: {
+            csrf_token: 'token',
+            email: 'user@example.com',
+            'confirm-email': 'user@example.com'
+          },
+          defra: {
+            userId: 'user-1'
+          }
+        };
+        services.water.changeEmailAddress.postGenerateSecurityCode.rejects({
+          statusCode: 423
+        });
+        await controller.postEnterNewEmail(request, h);
+      });
+
+      test('the user is redirected to the locked page', async () => {
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/account/change-email/locked');
+      });
+    });
+
+    experiment('when the water API throws an error', async () => {
+      let request;
+      beforeEach(async () => {
+        request = {
+          view: { csrfToken: 'token' },
+          payload: {
+            csrf_token: 'token',
+            email: 'user@example.com',
+            'confirm-email': 'user@example.com'
+          },
+          defra: {
+            userId: 'user-1'
+          }
+        };
+        services.water.changeEmailAddress.postGenerateSecurityCode.rejects();
+      });
+
+      test('the error is thrown', async () => {
+        const func = () => controller.postEnterNewEmail(request, h);
+        expect(func()).to.reject();
+      });
+    });
+
     experiment('when the data is invalid', () => {
       beforeEach(async () => {
         const request = {
@@ -301,6 +349,79 @@ experiment('modules/account/controller', () => {
       test('the user is redirected to the next step', async () => {
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal('/account/change-email/success');
+      });
+    });
+
+    experiment('when the water API responds with a locked status code', () => {
+      beforeEach(async () => {
+        const request = {
+          view: { csrfToken: 'token' },
+          payload: {
+            csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
+            'verificationCode': '123456'
+          },
+          defra: {
+            userId: 'user-1'
+          }
+        };
+        services.water.changeEmailAddress.postSecurityCode.rejects({
+          statusCode: 423
+        });
+        await controller.postVerifyEmail(request, h);
+      });
+
+      test('the user is redirected to the locked page', async () => {
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/account/change-email/locked');
+      });
+    });
+
+    experiment('when the user enters an incorrect code', () => {
+      beforeEach(async () => {
+        const request = {
+          view: { csrfToken: 'token' },
+          payload: {
+            csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
+            'verificationCode': '123456'
+          },
+          defra: {
+            userId: 'user-1'
+          }
+        };
+        services.water.changeEmailAddress.postSecurityCode.rejects({
+          statusCode: 401
+        });
+        await controller.postVerifyEmail(request, h);
+      });
+
+      test('the form is re-rendered in an error state', async () => {
+        const [template, view] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/account/verify.njk');
+        expect(view.form.errors.length).to.equal(1);
+      });
+    });
+
+    experiment('when the API throws an unexpected error', () => {
+      let request;
+      beforeEach(async () => {
+        request = {
+          view: { csrfToken: 'token' },
+          payload: {
+            csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
+            'verificationCode': '123456'
+          },
+          defra: {
+            userId: 'user-1'
+          }
+        };
+        services.water.changeEmailAddress.postSecurityCode.rejects({
+          statusCode: 500
+        });
+      });
+
+      test('the error is thrown', async () => {
+        const func = () => controller.postVerifyEmail(request, h);
+        expect(func()).to.reject();
       });
     });
 

@@ -14,6 +14,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/pluralize'),
   ...require('shared/view/nunjucks/filters/query-string'),
   ...require('shared/view/nunjucks/filters/return-badge'),
+  ...require('shared/view/nunjucks/filters/return-period'),
   ...require('shared/view/nunjucks/filters/slice'),
   ...require('shared/view/nunjucks/filters/sort-new-direction'),
   ...require('shared/view/nunjucks/filters/sort-query'),

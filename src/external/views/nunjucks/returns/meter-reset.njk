@@ -1,32 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
-{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
+{% from "returns/return-header.njk" import returnHeader %}
 
 {% block content %}
   {{ formErrorSummary(form) }}
-  {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
+  {{ returnHeader(data, documentHeader, showMeta) }}
   {{ formRender(form) }}
-{% endblock %}
-
-{% block bodyEnd %}
-<script
-  src="/public/javascripts/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-<script>
-
-/**
- * [updateView description]
- * @return {[type]} [description]
- */
-function updateView() {
-  const isChecked = $('#meterReset-1').is(':checked');
-  $('#meterReset-1-item-hint').toggle(isChecked);
-};
-
-$(function() {
-  updateView();
-  $('[name=meterReset]').on('change', updateView);
-});
-</script>
 {% endblock %}

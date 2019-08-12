@@ -22,16 +22,16 @@
             <h2 class="govuk-table__caption govuk-heading-m">{{ returnsByYear.year }}</h2>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th class="govuk-table__header" scope="col">Licence</th>
-                <th class="govuk-table__header" scope="col">Site description</th>
-                <th class="govuk-table__header" scope="col">Purpose</th>
-                <th class="govuk-table__header column--15" scope="col">Status</th>
+                <th class="table__header--tall" scope="col">Licence</th>
+                <th class="table__header--tall" scope="col">Site description</th>
+                <th class="table__header--tall" scope="col">Purpose</th>
+                <th class="table__header--tall" scope="col">Status</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for return in returnsByYear.returns %}
-                <tr class="govuk-table__row {{'clickable' if return.path}}">
-                  <th class="govuk-table__cell table__cell govuk-!-font-weight-regular">
+                <tr class="govuk-table__row" {{'data-clickable' if return.path }}>
+                  <th class="table__cell--tall govuk-!-font-weight-regular">
                     <h3 class="govuk-visually-hidden">Licence</h3>
                     {% if return.path %}
                       <a href="{{return.path}}">
@@ -54,19 +54,19 @@
                       </a>
                     {%endif %}
                   </th>
-                  <td class="govuk-table__cell table__cell">
+                  <td class="table__cell--tall">
                     <h4 class="govuk-visually-hidden">Site description</h4>
                     <span class="truncate">
                       {{ return.metadata.description | titleCase }}
                     </span>
                   </td>
-                  <td class="govuk-table__cell table__cell">
+                  <td class="table__cell--tall">
                     <h4 class="govuk-visually-hidden">Purpose</h4>
                     {% for purpose in return.metadata.purposes %}
                       {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
                     {% endfor %}
                   </td>
-                  <td class="govuk-table__cell table__cell">
+                  <td class="table__cell--tall">
                     <h4 class="govuk-visually-hidden">Status</h4>
                     {{ badge(return | returnBadge) }}
                   </td>
@@ -83,19 +83,4 @@
   {{ paginate(pagination, '/returns') }}
 </div>
 
-{% endblock %}
-
-{% block bodyEnd %}
-<script
-  src="/public/javascripts/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-<script>
-$(function() {
-  $('.clickable').on('click', function (ev) {
-    ev.preventDefault();
-    window.location.href = $(this).find('a:first').attr('href');
-  });
-});
-</script>
 {% endblock %}

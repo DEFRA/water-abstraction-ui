@@ -4,10 +4,10 @@ const Lab = require('@hapi/lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
 
-const controller = require('external/modules/returns/controllers/view');
-const helpers = require('external/modules/returns/lib/helpers');
-const services = require('external/lib/connectors/services');
-const WaterReturn = require('shared/modules/returns/models/WaterReturn');
+const controller = require('internal/modules/returns/controllers/view');
+const helpers = require('internal/modules/returns/lib/helpers');
+const services = require('internal/lib/connectors/services');
+const returnHelpers = require('internal/modules/returns/lib/return-helpers');
 
 const request = {
   query: {
@@ -39,27 +39,15 @@ const testData = isCurrent => {
     } };
 };
 
-experiment('external view controller', async () => {
+experiment('internal view controller', async () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
     sandbox.stub(helpers, 'getLicenceNumbers');
+    sandbox.stub(returnHelpers, 'getLinesWithReadings');
     sandbox.stub(services.water.returns, 'getReturn');
-    sandbox.stub(WaterReturn.prototype, 'constructor');
   });
 
   afterEach(async () => { sandbox.restore(); });
-
-  experiment('getReturns', async () => {
-    beforeEach(async () => {
-      helpers.getReturnsViewData.returns({ test: 'data' });
-      await controller.getReturns(request, h);
-    });
-    test('correct template is passed', async () => {
-      const [template, view] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/index.njk');
-      expect(view).to.equal({ test: 'data' });
-    });
-  });
 
   experiment('getReturnsForLicence', async () => {
     test('correct template is passed', async () => {
@@ -93,7 +81,7 @@ experiment('external view controller', async () => {
   experiment('getReturn', async () => {
     beforeEach(async () => {
       helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
-      WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });
+      returnHelpers.getLinesWithReadings.returns([{ test: 'lines' }]);
     });
     test('correct template is passed', async () => {
       const returnData = testData(true);
@@ -104,8 +92,9 @@ experiment('external view controller', async () => {
       expect(template).to.equal('nunjucks/returns/return.njk');
       expect(view.data.isCurrent).to.equal(returnData.isCurrent);
       expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
-      expect(view.data.lines).to.equal(returnData.lines);
       expect(view.data.metadata).to.equal(returnData.metadata);
+      expect(view.lines).to.equal([{ test: 'lines' }]);
+      expect(view.documentHeader).to.equal({ documentHeader: 'test-doc-header' });
     });
 
     test('Boom error is thrown if !canView', async () => {

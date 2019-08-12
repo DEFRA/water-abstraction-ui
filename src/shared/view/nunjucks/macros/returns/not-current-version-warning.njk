@@ -1,0 +1,14 @@
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% macro notCurrentVersionWarning(data) %}
+  {% if not data.isCurrent %}
+    {% set warningHtml %}
+    This return is not the current version<br>
+    <a href="/returns/return?id={{ data.returnId }}">View the current return</a>
+    {% endset %}
+      {{ govukWarningText({
+        html: warningHtml,
+        iconFallbackText: "Warning"
+      }) }}
+  {% endif %}
+{% endmacro %}

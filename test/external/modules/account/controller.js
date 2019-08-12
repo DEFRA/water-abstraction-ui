@@ -36,6 +36,90 @@ experiment('modules/account/controller', () => {
     });
   });
 
+  experiment('.getChangeEmail', () => {
+    let request, h;
+    beforeEach(async () => {
+      h = { redirect: sandbox.spy() };
+      request = {
+        defra: { userName: 'test-user' }
+      };
+      sandbox.stub(services.water.changeEmailAddress, 'getStatus');
+    });
+
+    test('redirects to locked page if email change record is locked', async () => {
+      services.water.changeEmailAddress.getStatus.resolves({
+        data: {
+          isLocked: true
+        }
+      });
+      await controller.getChangeEmail(request, h);
+      expect(h.redirect.calledWith(
+        '/account/change-email/locked'
+      )).to.equal(true);
+    });
+
+    test('redirects to security code page if unlocked record found', async () => {
+      services.water.changeEmailAddress.getStatus.resolves({
+        data: {
+          isLocked: false
+        }
+      });
+      await controller.getChangeEmail(request, h);
+      expect(h.redirect.calledWith(
+        '/account/change-email/verify-new-email'
+      )).to.equal(true);
+    });
+
+    test('redirects to enter new email if no email change record found', async () => {
+      services.water.changeEmailAddress.getStatus.throws({
+        statusCode: 404
+      });
+      await controller.getChangeEmail(request, h);
+      expect(h.redirect.calledWith(
+        '/account/change-email/enter-new-email'
+      )).to.equal(true);
+    });
+
+    test('throws non-404 API errors', async () => {
+      services.water.changeEmailAddress.getStatus.throws({
+        statusCode: 500
+      });
+      const func = () => controller.getChangeEmail(request, h);
+      expect(func()).to.reject();
+    });
+  });
+
+  experiment('.getChangeEmailLocked', () => {
+    let request, h;
+
+    beforeEach(async () => {
+      request = {
+        defra: {
+          userName: 'bob@example.com'
+        }
+      };
+      h = {
+        view: sandbox.spy()
+      };
+      await controller.getChangeEmailLocked(request, h);
+    });
+
+    test('renders the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/account/try-again-later.njk');
+    });
+
+    test('sets the correct back link in the view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/account');
+    });
+
+    test('sets the correct nunjucks options', async () => {
+      const [, , options] = h.view.lastCall.args;
+      expect(options.layout).to.equal(false);
+    });
+  });
+
   experiment('.getEnterNewEmail', () => {
     let h;
 

@@ -61,7 +61,6 @@ const getChangeEmail = async (request, h) => {
 const getChangeEmailLocked = async (request, h) => {
   const view = {
     ...request.view,
-    userName: request.defra.userName,
     back: '/account'
   };
   return h.view('nunjucks/account/try-again-later.njk', view, { layout: false });

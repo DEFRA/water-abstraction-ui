@@ -160,7 +160,6 @@ class UsersApiClient extends APIClient {
         password
       }
     };
-    console.log('uri', uri, options);
     return serviceRequest.post(uri, options);
   };
 }

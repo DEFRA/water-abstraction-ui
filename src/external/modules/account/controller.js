@@ -79,19 +79,20 @@ const getEnterNewEmail = async (request, h, form) => {
   return h.view('nunjucks/form-without-nav.njk', view, { layout: false });
 };
 
+const postEnterNewEmailForm = request => handleRequest(
+  enterNewEmailForm(request, request.payload.data),
+  request,
+  enterNewEmailSchema,
+  { abortEarly: true }
+);
+
 /**
  * POST - enter and confirm new email address
  */
 const postEnterNewEmail = async (request, h) => {
-  const data = request.payload;
   const { userId } = request.defra;
 
-  const form = handleRequest(
-    enterNewEmailForm(request, data),
-    request,
-    enterNewEmailSchema,
-    { abortEarly: true }
-  );
+  const form = postEnterNewEmailForm(request);
 
   if (!form.isValid) {
     return getEnterNewEmail(request, h, form);
@@ -136,12 +137,15 @@ const getVerifyEmail = async (request, h, form) => {
   }
 };
 
+const postVerifyEmailForm = request => handleRequest(
+  verifyNewEmailForm(request, request.payload.data),
+  request,
+  verifyNewEmailSchema,
+  { abortEarly: true }
+);
+
 const postVerifyEmail = async (request, h) => {
-  const data = request.payload;
-  const form = handleRequest(
-    verifyNewEmailForm(request, data), request, verifyNewEmailSchema,
-    { abortEarly: true }
-  );
+  const form = postVerifyEmailForm(request);
 
   if (!form.isValid) {
     return getVerifyEmail(request, h, form);

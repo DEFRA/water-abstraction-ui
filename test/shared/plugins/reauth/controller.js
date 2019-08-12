@@ -107,3 +107,32 @@ experiment('.postConfirmPassword', () => {
     });
   });
 });
+
+experiment('.getPasswordLocked', () => {
+  let h;
+
+  beforeEach(async () => {
+    h = { view: sandbox.spy() };
+
+    const request = {
+      view: { csrfToken: 'token' }
+    };
+
+    await controller.getPasswordLocked(request, h);
+  });
+
+  test('the expected view template is used', async () => {
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/reauth/try-again-later.njk');
+  });
+
+  test('the view data is passed through to the view', async () => {
+    const [, context] = h.view.lastCall.args;
+    expect(context.csrfToken).to.equal('token');
+  });
+
+  test('the back link is setup to return to /account', async () => {
+    const [, context] = h.view.lastCall.args;
+    expect(context.back).to.equal('/account');
+  });
+});

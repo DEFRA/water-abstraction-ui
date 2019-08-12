@@ -18,15 +18,19 @@ const getConfirmPassword = async (request, h, form) => {
 const isLockedHttpStatus = err => err.statusCode === 429;
 const isErrorHttpStatus = err => err.statusCode === 401;
 
+const postConfirmPasswordForm = request => handleRequest(
+  setValues(confirmPasswordForm(request), request.payload),
+  request,
+  confirmPasswordSchema,
+  { abortEarly: true }
+);
+
 /**
  * Post handler
  * Interacts with reauthenticate feature in IDM
  */
 const postConfirmPassword = async (request, h) => {
-  const form = handleRequest(
-    setValues(confirmPasswordForm(request), request.payload),
-    request, confirmPasswordSchema, { abortEarly: true }
-  );
+  const form = postConfirmPasswordForm(request);
 
   if (!form.isValid) {
     return getConfirmPassword(request, h, form);

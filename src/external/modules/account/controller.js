@@ -13,6 +13,13 @@ const {
 const { handleRequest, getValues } = require('shared/lib/forms');
 const services = require('external/lib/connectors/services');
 
+const isLockedHttpStatus = err => [423, 429].includes(err.statusCode);
+const isErrorHttpStatus = err => [401, 404].includes(err.statusCode);
+const isConflictHttpStatus = err => err.statusCode === 409;
+
+/**
+ * Renders account screen with options to change email/password
+ */
 const getAccount = async (request, h) => {
   const view = {
     ...request.view,
@@ -97,13 +104,12 @@ const postEnterNewEmail = async (request, h) => {
     await services.water
       .changeEmailAddress.postGenerateSecurityCode(userId, email);
   } catch (err) {
-    if ([423, 429].includes(err.statusCode)) {
+    if (isLockedHttpStatus(err)) {
       return h.redirect('/account/change-email/locked');
-      // return getEnterNewEmail(request, h, enterNewEmailApplyErrors(form, err.statusCode));
     }
     // Swallow 409 error - in the event of a conflict, the other user is
     // sent an email
-    if (err.statusCode !== 409) {
+    if (isConflictHttpStatus(err)) {
       throw err;
     }
   }
@@ -150,10 +156,10 @@ const postVerifyEmail = async (request, h) => {
       .changeEmailAddress.postSecurityCode(userId, verificationCode);
     return h.redirect('/account/change-email/success');
   } catch (err) {
-    if ([401, 404].includes(err.statusCode)) {
+    if (isErrorHttpStatus(err)) {
       return getVerifyEmail(request, h, verifyNewEmailApplyErrors(form, err.statusCode));
     }
-    if ([423, 429].includes(err.statusCode)) {
+    if (isLockedHttpStatus(err)) {
       return h.redirect('/account/change-email/locked');
     }
     throw err;
@@ -171,8 +177,6 @@ const getTryAgainLater = async (request, h) => {
 exports.getAccount = getAccount;
 exports.getChangeEmail = getChangeEmail;
 exports.getChangeEmailLocked = getChangeEmailLocked;
-// exports.getConfirmPassword = getConfirmPassword;
-// exports.postConfirmPassword = postConfirmPassword;
 exports.getEnterNewEmail = getEnterNewEmail;
 exports.postEnterNewEmail = postEnterNewEmail;
 exports.getVerifyEmail = getVerifyEmail;

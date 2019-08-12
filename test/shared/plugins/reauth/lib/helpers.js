@@ -25,8 +25,9 @@ experiment('helpers', () => {
 
   experiment('.getExpiryTime', () => {
     test('returns a timestamp 10 minutes in the future', () => {
-      const result = helpers.getExpiryTime('2019-08-12T11:00:00');
-      expect(result).to.equal('2019-08-12T11:10:00+01:00');
+      const t = '2019-08-12T11:00:00';
+      const result = helpers.getExpiryTime(t);
+      expect(moment(result).diff(t, 'minutes')).to.equal(10);
     });
   });
 });

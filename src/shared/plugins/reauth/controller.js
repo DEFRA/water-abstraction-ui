@@ -15,6 +15,9 @@ const getConfirmPassword = async (request, h, form) => {
   return h.view('nunjucks/form-without-nav.njk', view, { layout: false });
 };
 
+const isLockedHttpStatus = err => err.statusCode === 429;
+const isErrorHttpStatus = err => err.statusCode === 401;
+
 /**
  * Post handler
  * Interacts with reauthenticate feature in IDM
@@ -43,10 +46,10 @@ const postConfirmPassword = async (request, h) => {
     const path = request.yar.get('reauthRedirectPath');
     return h.redirect(path);
   } catch (err) {
-    if (err.statusCode === 429) {
+    if (isLockedHttpStatus(err)) {
       return h.redirect('/confirm-password/locked');
     }
-    if (err.statusCode === 401) {
+    if (isErrorHttpStatus(err)) {
       return getConfirmPassword(request, h, confirmPasswordApplyErrors(form, err.statusCode));
     }
     throw err;

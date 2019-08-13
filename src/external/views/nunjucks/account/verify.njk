@@ -2,10 +2,14 @@
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
 
+{% block mainNav %}{% endblock %}
+
 {% block content %}
+
+  {{ formErrorSummary(form) }}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-    {{ formErrorSummary(form) }}
     {{ title(pageTitle) }}
     </div>
     <div class="govuk-grid-column-two-thirds">

@@ -65,6 +65,11 @@ async function start () {
     },
     {
       plugin: require('shared/plugins/flow')
+    }, {
+      plugin: require('shared/plugins/reauth'),
+      options: {
+        reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
+      }
     }]);
 
     // Set up Nunjucks view engine

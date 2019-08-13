@@ -22,14 +22,13 @@ const enterNewEmailForm = (request, data = {}) => {
 
   f.fields.push(createEmailField('email', 'Your new email address', {
     ...createError('any.allowOnly', 'The email addresses must match'),
-    ...createError('string.email', 'Enter a valid email'),
-    ...createError('any.empty', 'Enter your email')
+    ...createError('string.email', 'Enter an email address, like name@example.com'),
+    ...createError('any.empty', 'Enter your new email address')
   }));
 
   f.fields.push(createEmailField('confirm-email', 'Confirm your new email address', {
-    ...createError('string.email', 'Enter a valid email'),
+    ...createError('any.allowOnly', 'The email addresses must match'),
     ...createError('any.empty', 'Confirm your new email address')
-
   }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -38,15 +37,16 @@ const enterNewEmailForm = (request, data = {}) => {
   return setValues(f, data);
 };
 
-const enterNewEmailSchema = {
-  email: Joi
-    .string()
-    .email()
-    .valid(Joi.ref('confirm-email'))
-    .required(),
-  'confirm-email': Joi.string().email().required(),
+const VALID_EMAIL = Joi.string().email().required();
+
+const enterNewEmailSchema = Joi.object({
+  email: VALID_EMAIL,
+  'confirm-email': Joi.when('email', {
+    is: VALID_EMAIL,
+    then: Joi.string().required().valid(Joi.ref('email'))
+  }),
   csrf_token: Joi.string().required()
-};
+});
 
 exports.enterNewEmailForm = enterNewEmailForm;
 exports.enterNewEmailSchema = enterNewEmailSchema;

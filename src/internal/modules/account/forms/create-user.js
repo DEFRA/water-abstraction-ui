@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const config = require('../../../config');
+const { getEmailRegex } = require('../helpers');
 
 const getEmailErrors = () => {
   return ['string.regex.base', 'string.email', 'any.empty'].reduce((acc, key) => {
@@ -32,12 +32,6 @@ const form = (request, email) => {
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return setValues(f, { email });
-};
-
-const getEmailRegex = () => {
-  return (config.isLocal || config.testMode)
-    ? /(\.gov\.uk|gmail\.com)$/
-    : /\.gov\.uk$/;
 };
 
 const schema = {

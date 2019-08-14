@@ -1,15 +1,13 @@
 const controller = require('./controller');
 const Joi = require('joi');
 
-// TODO: Apply new scope to all of the following routes.
-// Adding new internal users is restricted to the data_and_billing scope
 module.exports = {
   getCreateAccount: {
     method: 'get',
     path: '/account/create-user',
     handler: controller.getCreateAccount,
     config: {
-      // auth: { scope: 'data_and_billing' },
+      auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
           pageTitle: 'Create an internal account'
@@ -23,7 +21,7 @@ module.exports = {
     path: '/account/create-user',
     handler: controller.postCreateAccount,
     config: {
-      // auth: { scope: 'data_and_billing' },
+      auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
           pageTitle: 'Create an internal account'
@@ -34,18 +32,13 @@ module.exports = {
 
   getSetPermissions: {
     method: 'get',
-    path: '/account/create-user/{userId}/set-permissions',
+    path: '/account/create-user/set-permissions',
     handler: controller.getSetPermissions,
     config: {
-      // auth: { scope: 'data_and_billing' },
+      auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
           pageTitle: 'Set permissions'
-        }
-      },
-      validate: {
-        params: {
-          userId: Joi.number().integer().required()
         }
       }
     }
@@ -53,18 +46,13 @@ module.exports = {
 
   postSetPermissions: {
     method: 'post',
-    path: '/account/create-user/{userId}/set-permissions',
+    path: '/account/create-user/set-permissions',
     handler: controller.postSetPermissions,
     config: {
-      // auth: { scope: 'data_and_billing' },
+      auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
           pageTitle: 'Set permissions'
-        }
-      },
-      validate: {
-        params: {
-          userId: Joi.number().integer().required()
         }
       }
     }
@@ -75,7 +63,7 @@ module.exports = {
     path: '/account/create-user/{userId}/success',
     handler: controller.getCreateAccountSuccess,
     config: {
-      // auth: { scope: 'data_and_billing' },
+      auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
           pageTitle: 'New account created'

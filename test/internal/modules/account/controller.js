@@ -8,7 +8,16 @@ const {
 const controller = require('internal/modules/account/controller');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const services = require('internal/lib/connectors/services');
+const helpers = require('internal/modules/account/helpers');
+
+const userData = {
+  error: null,
+  data: {
+    user_id: 100,
+    user_name: 'test@example.gov.uk',
+    groups: ['basic']
+  }
+};
 
 experiment('account/controller', () => {
   let h;
@@ -16,7 +25,8 @@ experiment('account/controller', () => {
 
   beforeEach(async () => {
     h = {
-      view: sandbox.spy()
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
     };
 
     request = {
@@ -24,17 +34,16 @@ experiment('account/controller', () => {
       payload: {
         csrf_token: '00000000-0000-0000-0000-000000000000'
       },
-      params: {}
+      params: {},
+      defra: {},
+      yar: {
+        _store: {}
+      }
     };
 
-    sandbox.stub(services.idm.users, 'findOne').resolves({
-      error: null,
-      data: {
-        user_id: 100,
-        user_name: 'test@example.gov.uk',
-        groups: ['basic']
-      }
-    });
+    sandbox.stub(helpers, 'getUserByEmail');
+    sandbox.stub(helpers, 'getUserById').resolves(userData);
+    sandbox.stub(helpers, 'getInternalUser').resolves();
   });
 
   afterEach(async () => sandbox.restore());
@@ -71,6 +80,37 @@ experiment('account/controller', () => {
         expect(error).to.be.an.object();
       });
     });
+
+    experiment('when the email address is already in use', () => {
+      beforeEach(async () => {
+        request.payload.email = 'existing@email.com';
+        helpers.getUserByEmail.resolves(userData);
+        await controller.postCreateAccount(request, h);
+      });
+
+      test('gets the user using the email param', async () => {
+        const [email] = helpers.getUserByEmail.lastCall.args;
+        expect(email).to.equal('existing@email.com');
+      });
+
+      test('email already in use error is applied', async () => {
+        const [, view] = h.view.lastCall.args;
+        const error = view.form.errors.find(e => e.message === 'Email specified is already in use');
+        expect(error).to.be.an.object();
+      });
+    });
+
+    experiment('when the email address is valid', () => {
+      beforeEach(async () => {
+        request.yar.set = sandbox.spy();
+        await controller.postCreateAccount(request, h);
+      });
+
+      test('redirects to the expected url', async () => {
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal(`/account/create-user/set-permissions`);
+      });
+    });
   });
 
   experiment('.getSetPermissions', () => {
@@ -79,27 +119,16 @@ experiment('account/controller', () => {
       await controller.getSetPermissions(request, h);
     });
 
-    test('gets the user using the userId param', async () => {
-      const [userId] = services.idm.users.findOne.lastCall.args;
-      expect(userId).to.equal(100);
-    });
-
     test('renders the expected template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/account/set-permissions.njk');
-    });
-
-    test('passes the user permission to the form', async () => {
-      const [, view] = h.view.lastCall.args;
-      const { form } = view;
-      const permissionField = form.fields.find(f => f.name === 'permission');
-      expect(permissionField.value).to.equal('basic');
     });
   });
 
   experiment('.postSetPermissions', () => {
     experiment('when the permisson is invalid', () => {
       beforeEach(async () => {
+        request.defra.userId = 100;
         request.payload.permission = '';
         await controller.postSetPermissions(request, h);
       });
@@ -120,11 +149,13 @@ experiment('account/controller', () => {
   experiment('.getCreateAccountSuccess', () => {
     beforeEach(async () => {
       request.params.userId = 100;
+      request.yar._store = { newInternalUserAccountEmail: 'test@example.gov.uk' };
+      helpers.getUserById.resolves(userData.data);
       await controller.getCreateAccountSuccess(request, h);
     });
 
     test('gets the user using the userId param', async () => {
-      const [userId] = services.idm.users.findOne.lastCall.args;
+      const [userId] = helpers.getUserById.lastCall.args;
       expect(userId).to.equal(100);
     });
 

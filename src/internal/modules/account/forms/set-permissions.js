@@ -1,5 +1,7 @@
 const Joi = require('@hapi/joi');
+const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
+const { getEmailRegex } = require('../helpers');
 
 const choices = [
   {
@@ -63,6 +65,9 @@ const form = (request, permission) => {
     }
   }));
 
+  const newAccountEmail = get(request, 'yar._store.newInternalUserAccountEmail');
+  f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail));
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -71,6 +76,7 @@ const form = (request, permission) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
+  email: Joi.string().email().lowercase().trim().regex(getEmailRegex()),
   permission: Joi.string().required().valid(choices.map(choice => choice.value))
 };
 

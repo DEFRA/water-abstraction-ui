@@ -154,4 +154,22 @@ experiment('Shared UsersApiClient', () => {
       expect(updates).to.equal({ password: 'new-password' });
     });
   });
+
+  experiment('reauthenticate', () => {
+    beforeEach(async () => {
+      await client.reauthenticate('test-id', 'current-password');
+    });
+
+    test('the expected user ID is present in the URI', async () => {
+      const [uri] = serviceRequest.post.lastCall.args;
+      expect(uri).to.equal('https://example.com/idm/user/test-id/reauthenticate');
+    });
+
+    test('the expected password is sent in the post body', async () => {
+      const [, options] = serviceRequest.post.lastCall.args;
+      expect(options.body).to.equal({
+        password: 'current-password'
+      });
+    });
+  });
 });

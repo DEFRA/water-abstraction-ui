@@ -79,12 +79,12 @@ experiment('account/forms/set-permissions schema', () => {
 
   experiment('email', () => {
     test('validates for an email', async () => {
-      const result = setPermissionsSchema.email.validate('test@defra.gov.uk');
+      const result = setPermissionsSchema.newUserEmail.validate('test@defra.gov.uk');
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a valid email', async () => {
-      const result = setPermissionsSchema.email.validate('pasta');
+      const result = setPermissionsSchema.newUserEmail.validate('pasta');
       expect(result.error).to.exist();
     });
   });

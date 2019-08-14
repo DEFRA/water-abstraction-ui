@@ -76,7 +76,7 @@ const form = (request, permission) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  email: Joi.string().email().lowercase().trim().regex(getEmailRegex()),
+  newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex()),
   permission: Joi.string().required().valid(choices.map(choice => choice.value))
 };
 

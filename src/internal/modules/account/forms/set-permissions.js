@@ -1,7 +1,7 @@
 const Joi = require('@hapi/joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { getEmailRegex } = require('../helpers');
+const { getEmailRegex } = require('./create-user');
 
 const choices = [
   {

@@ -70,6 +70,12 @@ class UsersApiClient extends APIClient {
     return user;
   }
 
+  async findOneById (userId) {
+    const { data: [user], error } = await this.findOne(userId);
+    throwIfError(error);
+    return user;
+  };
+
   /**
    * Update the external_id field for the given user
    * @param {object} user - The user

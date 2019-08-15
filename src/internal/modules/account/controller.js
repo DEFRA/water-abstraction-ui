@@ -1,7 +1,8 @@
 const { createUserForm, createUserSchema } = require('./forms/create-user');
 const { setPermissionsForm, setPermissionsSchema } = require('./forms/set-permissions');
 const { handleRequest, applyErrors } = require('shared/lib/forms');
-const helpers = require('./helpers');
+const services = require('internal/lib/connectors/services');
+const config = require('internal/config');
 
 const getCreateAccount = async (request, h, formFromPost) => {
   const form = formFromPost || createUserForm(request);
@@ -22,7 +23,7 @@ const postCreateAccount = async (request, h) => {
     abortEarly: true
   });
 
-  const user = await helpers.getUserByEmail(payload.email);
+  const user = await services.idm.users.findOneByEmail(payload.email, config.idm.application);
   if (user) {
     return getCreateAccount(request, h, applyErrors(form, [{
       name: 'email',
@@ -62,7 +63,8 @@ const postSetPermissions = async (request, h) => {
   );
 
   if (form.isValid) {
-    const newUser = await helpers.getInternalUser(callingUserId, newUserEmail, permission);
+    const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
+    delete request.yar.clear('key');
 
     return h.redirect(`/account/create-user/${newUser.user_id}/success`);
   }
@@ -71,8 +73,7 @@ const postSetPermissions = async (request, h) => {
 };
 
 const getCreateAccountSuccess = async (request, h) => {
-  const user = await helpers.getUserById(request.params.userId);
-  delete request.yar._store.newInternalUserAccountEmail;
+  const user = await services.idm.users.findOneById(request.params.userId);
 
   return h.view(
     'nunjucks/account/create-user-success.njk',

@@ -8,7 +8,7 @@ const {
 const controller = require('internal/modules/account/controller');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const helpers = require('internal/modules/account/helpers');
+const services = require('internal/lib/connectors/services');
 
 const userData = {
   error: null,
@@ -41,9 +41,9 @@ experiment('account/controller', () => {
       }
     };
 
-    sandbox.stub(helpers, 'getUserByEmail');
-    sandbox.stub(helpers, 'getUserById').resolves(userData);
-    sandbox.stub(helpers, 'getInternalUser').resolves();
+    sandbox.stub(services.idm.users, 'findOneByEmail');
+    sandbox.stub(services.idm.users, 'findOneById').resolves(userData);
+    sandbox.stub(services.water.users, 'postCreateInternalUser').resolves();
   });
 
   afterEach(async () => sandbox.restore());
@@ -84,12 +84,12 @@ experiment('account/controller', () => {
     experiment('when the email address is already in use', () => {
       beforeEach(async () => {
         request.payload.email = 'existing@email.com';
-        helpers.getUserByEmail.resolves(userData);
+        services.idm.users.findOneByEmail.resolves(userData);
         await controller.postCreateAccount(request, h);
       });
 
       test('gets the user using the email param', async () => {
-        const [email] = helpers.getUserByEmail.lastCall.args;
+        const [email] = services.idm.users.findOneByEmail.lastCall.args;
         expect(email).to.equal('existing@email.com');
       });
 
@@ -150,12 +150,12 @@ experiment('account/controller', () => {
     beforeEach(async () => {
       request.params.userId = 100;
       request.yar._store = { newInternalUserAccountEmail: 'test@example.gov.uk' };
-      helpers.getUserById.resolves(userData.data);
+      services.idm.users.findOneById.resolves(userData.data);
       await controller.getCreateAccountSuccess(request, h);
     });
 
     test('gets the user using the userId param', async () => {
-      const [userId] = helpers.getUserById.lastCall.args;
+      const [userId] = services.idm.users.findOneById.lastCall.args;
       expect(userId).to.equal(100);
     });
 

@@ -1,6 +1,12 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { getEmailRegex } = require('../helpers');
+const config = require('internal/config');
+
+const getEmailRegex = () => {
+  return (config.isLocal || config.testMode)
+    ? /(\.gov\.uk|gmail\.com)$/
+    : /\.gov\.uk$/;
+};
 
 const getEmailErrors = () => {
   return ['string.regex.base', 'string.email', 'any.empty'].reduce((acc, key) => {
@@ -41,3 +47,4 @@ const schema = {
 
 exports.createUserForm = form;
 exports.createUserSchema = schema;
+exports.getEmailRegex = getEmailRegex;

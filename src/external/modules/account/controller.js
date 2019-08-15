@@ -1,12 +1,25 @@
-const { confirmPasswordForm } = require('./forms/confirm-password');
+const { get } = require('lodash');
+
 const {
   enterNewEmailForm,
   enterNewEmailSchema
 } = require('./forms/enter-new-email');
-const { verifyNewEmailForm } = require('./forms/verify-new-email');
+const {
+  verifyNewEmailForm,
+  verifyNewEmailApplyErrors,
+  verifyNewEmailSchema
+} = require('./forms/verify-new-email');
 
-const { handleRequest, setValues } = require('shared/lib/forms');
+const { handleRequest, getValues } = require('shared/lib/forms');
+const services = require('external/lib/connectors/services');
 
+const isLockedHttpStatus = err => [423, 429].includes(err.statusCode);
+const isErrorHttpStatus = err => [401, 404].includes(err.statusCode);
+const isConflictHttpStatus = err => err.statusCode === 409;
+
+/**
+ * Renders account screen with options to change email/password
+ */
 const getAccount = async (request, h) => {
   const view = {
     ...request.view,
@@ -15,27 +28,47 @@ const getAccount = async (request, h) => {
   return h.view('nunjucks/account/entry.njk', view, { layout: false });
 };
 
-const getConfirmPassword = async (request, h, form) => {
-  const passwordForm = form || confirmPasswordForm(request);
+/**
+ * Start page for email address change flow.
+ * If there is an unverified outstanding email change, then the user is
+ * redirected to the security code page.  Otherwise, they are redirected
+ * to the start of the flow
+ */
+const getChangeEmail = async (request, h) => {
+  const { userId } = request.defra;
+  try {
+    const response = await services.water
+      .changeEmailAddress.getStatus(userId);
+
+    if (response.data.isLocked) {
+      return h.redirect('/account/change-email/locked');
+    }
+    return h.redirect('/account/change-email/verify-new-email');
+  } catch (err) {
+    if (err.statusCode !== 404) {
+      throw err;
+    }
+  }
+  return h.redirect(`/account/change-email/enter-new-email`);
+};
+
+/**
+ * Displays a locked page since the user can't progress with the flow
+ * until tomorrow.
+ * This occurs when rate limits are exceeded or the email change request is
+ * already verified
+ */
+const getChangeEmailLocked = async (request, h) => {
   const view = {
     ...request.view,
-    form: passwordForm,
     back: '/account'
   };
-  return h.view('nunjucks/form.njk', view, { layout: false });
+  return h.view('nunjucks/account/try-again-later.njk', view, { layout: false });
 };
 
-const postConfirmPassword = async (request, h) => {
-  const data = request.payload;
-  const form = handleRequest(setValues(confirmPasswordForm(request), data), request);
-
-  if (form.isValid) {
-    return h.redirect('/account/change-email/enter-new-email');
-  }
-
-  return getConfirmPassword(request, h, form);
-};
-
+/**
+ * GET - enter and confirm new email address
+ */
 const getEnterNewEmail = async (request, h, form) => {
   const emailForm = form || enterNewEmailForm(request);
   const view = {
@@ -43,44 +76,127 @@ const getEnterNewEmail = async (request, h, form) => {
     form: emailForm,
     back: '/account'
   };
-  return h.view('nunjucks/form.njk', view, { layout: false });
+  return h.view('nunjucks/form-without-nav.njk', view, { layout: false });
 };
 
+const postEnterNewEmailAPIRequest = async (userId, email) => {
+  try {
+    await services.water
+      .changeEmailAddress.postGenerateSecurityCode(userId, email);
+  } catch (err) {
+    if (isLockedHttpStatus(err)) {
+      return 'locked';
+    }
+    // Swallow on conflict status - the new user is sent an email
+    // Throw other errors
+    if (!isConflictHttpStatus(err)) {
+      throw err;
+    }
+  }
+  return 'redirect';
+};
+
+/**
+ * POST - enter and confirm new email address
+ */
 const postEnterNewEmail = async (request, h) => {
-  const data = request.payload;
   const form = handleRequest(
-    enterNewEmailForm(request, data),
+    enterNewEmailForm(request, request.payload.data),
     request,
-    enterNewEmailSchema
+    enterNewEmailSchema,
+    { abortEarly: true }
   );
 
-  if (form.isValid) {
-    return h.redirect('/account/change-email/verify-new-email');
+  if (!form.isValid) {
+    return getEnterNewEmail(request, h, form);
   }
 
-  return getEnterNewEmail(request, h, form);
-};
-
-const getVerifyEmail = async (request, h, form) => {
-  const verifyForm = form || verifyNewEmailForm(request);
-  const view = {
-    ...request.view,
-    form: verifyForm,
-    back: '/account',
-    newEmail: 'test@example.com'
+  const actions = {
+    redirect: () => h.redirect('/account/change-email/verify-new-email'),
+    locked: () => h.redirect('/account/change-email/locked')
   };
-  return h.view('nunjucks/account/verify.njk', view, { layout: false });
+
+  const { email } = getValues(form);
+  const { userId } = request.defra;
+
+  const action = await postEnterNewEmailAPIRequest(userId, email);
+
+  return actions[action]();
 };
 
-const postVerifyEmail = async (request, h) => {
-  const data = request.payload;
-  const form = handleRequest(verifyNewEmailForm(request, data), request);
+/**
+ * GET - verify new email address with security code
+ */
+const getVerifyEmail = async (request, h, form) => {
+  const { userId } = request.defra;
 
-  if (form.isValid) {
-    return h.redirect('/account/change-email/success');
+  try {
+    const response = await services.water
+      .changeEmailAddress.getStatus(userId);
+
+    const verifyForm = form || verifyNewEmailForm(request);
+    const view = {
+      ...request.view,
+      form: verifyForm,
+      back: '/account',
+      newEmail: get(response, 'data.email')
+    };
+    return h.view('nunjucks/account/verify.njk', view, { layout: false });
+  } catch (err) {
+    return h.redirect('/account/change-email/enter-new-email');
+  }
+};
+
+/**
+ * Performs the water API request to verify email address with security code
+ * and resolves with one of 3 known statuses, or throws an error
+ * @param  {Number}  userId       - idm.users ID
+ * @param  {String}  securityCode - 6 digit code
+ * @return {Promise<String>}        status
+ */
+const postVerifyEmailAPIRequest = async (userId, securityCode) => {
+  try {
+    await services.water
+      .changeEmailAddress.postSecurityCode(userId, securityCode);
+    return 'redirect';
+  } catch (err) {
+    if (isErrorHttpStatus(err)) {
+      return 'formError';
+    }
+    if (isLockedHttpStatus(err)) {
+      return 'locked';
+    }
+    throw err;
+  }
+};
+
+/**
+ * POST - verify new email address with security code
+ */
+const postVerifyEmail = async (request, h) => {
+  const form = handleRequest(
+    verifyNewEmailForm(request, request.payload.data),
+    request,
+    verifyNewEmailSchema,
+    { abortEarly: true }
+  );
+
+  if (!form.isValid) {
+    return getVerifyEmail(request, h, form);
   }
 
-  return getVerifyEmail(request, h, form);
+  const actions = {
+    redirect: () => h.redirect('/account/change-email/success'),
+    formError: () => getVerifyEmail(request, h, verifyNewEmailApplyErrors(form)),
+    locked: () => h.redirect('/account/change-email/locked')
+  };
+
+  const { userId } = request.defra;
+  const { verificationCode } = getValues(form);
+
+  const action = await postVerifyEmailAPIRequest(userId, verificationCode);
+
+  return actions[action]();
 };
 
 const getSuccess = async (request, h) => {
@@ -92,8 +208,8 @@ const getTryAgainLater = async (request, h) => {
 };
 
 exports.getAccount = getAccount;
-exports.getConfirmPassword = getConfirmPassword;
-exports.postConfirmPassword = postConfirmPassword;
+exports.getChangeEmail = getChangeEmail;
+exports.getChangeEmailLocked = getChangeEmailLocked;
 exports.getEnterNewEmail = getEnterNewEmail;
 exports.postEnterNewEmail = postEnterNewEmail;
 exports.getVerifyEmail = getVerifyEmail;

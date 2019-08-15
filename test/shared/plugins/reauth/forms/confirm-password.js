@@ -1,7 +1,7 @@
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
-const { confirmPasswordForm } = require('external/modules/account/forms/confirm-password');
+const { confirmPasswordForm } = require('shared/plugins/reauth/forms/confirm-password');
 
 const { handleRequest } = require('shared/lib/forms');
 
@@ -49,7 +49,7 @@ experiment('confirmPasswordForm', () => {
 
       expect(validated.errors.find(f => {
         return f.name === 'password' &&
-          f.message === 'Check your password';
+          f.message === 'Enter your password';
       })).to.exist();
     });
   });

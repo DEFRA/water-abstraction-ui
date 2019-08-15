@@ -77,6 +77,18 @@ experiment('account/forms/set-permissions schema', () => {
     });
   });
 
+  experiment('email', () => {
+    test('validates for an email', async () => {
+      const result = setPermissionsSchema.newUserEmail.validate('test@defra.gov.uk');
+      expect(result.error).to.be.null();
+    });
+
+    test('fails for a string that is not a valid email', async () => {
+      const result = setPermissionsSchema.newUserEmail.validate('pasta');
+      expect(result.error).to.exist();
+    });
+  });
+
   experiment('permissions', () => {
     const validPermissions = [
       'basic',

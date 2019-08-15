@@ -33,6 +33,12 @@ experiment('Shared UsersApiClient', () => {
     client = new UsersApiClient(config, logger);
 
     sandbox.stub(serviceRequest, 'post').resolves(userResponse);
+    sandbox.stub(client, 'findOne').resolves({
+      error: null,
+      data: [{
+        user_id: 'user_1'
+      }]
+    });
     sandbox.stub(client, 'findMany').resolves({
       error: null,
       data: [{
@@ -121,6 +127,26 @@ experiment('Shared UsersApiClient', () => {
     test('throws error if error API response', async () => {
       client.findMany.resolves({ error: 'oh no!' });
       const func = () => client.findOneByEmail(userName, application);
+      expect(func()).to.reject();
+    });
+  });
+
+  experiment('findOneById', () => {
+    test('calls client.findMany with correct filter', async () => {
+      await client.findOneById(userId);
+      expect(client.findOne.calledWith(userId)).to.equal(true);
+    });
+
+    test('resolves with user found in API call', async () => {
+      const result = await client.findOneById(userId);
+      expect(result).to.equal({
+        user_id: userId
+      });
+    });
+
+    test('throws error if error API response', async () => {
+      client.findOne.resolves({ error: 'oh no!' });
+      const func = () => client.findOneById(userId);
       expect(func()).to.reject();
     });
   });

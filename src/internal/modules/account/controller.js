@@ -58,30 +58,29 @@ const getSetPermissions = async (request, h, formFromPost) => {
 };
 
 const postSetPermissions = async (request, h) => {
-  const { payload } = request;
   const { userId: callingUserId } = request.defra;
-  const { newUserEmail, permission } = payload;
+  const { newUserEmail, permission } = request.payload;
   const form = handleRequest(
-    setPermissionsForm(request, payload),
+    setPermissionsForm(request, request.payload),
     request,
     setPermissionsSchema
   );
 
-  if (form.isValid) {
-    try {
-      const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
-      delete request.yar.clear('key');
-      return h.redirect(`/account/create-user/${newUser.user_id}/success`);
-    } catch (err) {
-      // User exists
-      if (err.statusCode === 409) {
-        return getSetPermissions(request, h, applyEmailExistsError(form, 'permission'));
-      }
-      throw err;
-    }
+  if (!form.isValid) {
+    return getSetPermissions(request, h, form);
   }
 
-  return getSetPermissions(request, h, form);
+  try {
+    const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
+    delete request.yar.clear('key');
+    return h.redirect(`/account/create-user/${newUser.user_id}/success`);
+  } catch (err) {
+    // User exists
+    if (err.statusCode === 409) {
+      return getSetPermissions(request, h, applyEmailExistsError(form, 'permission'));
+    }
+    throw err;
+  }
 };
 
 const getCreateAccountSuccess = async (request, h) => {

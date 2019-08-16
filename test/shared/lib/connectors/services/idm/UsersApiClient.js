@@ -35,9 +35,9 @@ experiment('Shared UsersApiClient', () => {
     sandbox.stub(serviceRequest, 'post').resolves(userResponse);
     sandbox.stub(client, 'findOne').resolves({
       error: null,
-      data: [{
+      data: {
         user_id: 'user_1'
-      }]
+      }
     });
     sandbox.stub(client, 'findMany').resolves({
       error: null,

@@ -144,6 +144,41 @@ experiment('account/controller', () => {
         expect(error).to.be.an.object();
       });
     });
+
+    experiment('when the account exists', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100;
+        request.payload.permission = 'environment_officer';
+        services.water.users.postCreateInternalUser.rejects({
+          statusCode: 409
+        });
+        await controller.postSetPermissions(request, h);
+      });
+
+      test('the set permissions template is replayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/account/set-permissions.njk');
+      });
+
+      test('the form object contains errors', async () => {
+        const [, view] = h.view.lastCall.args;
+        const error = view.form.errors.find(e => e.name === 'permission');
+        expect(error).to.be.an.object();
+      });
+    });
+
+    experiment('for other API errors', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100;
+        request.payload.permission = 'environment_officer';
+        services.water.users.postCreateInternalUser.rejects();
+      });
+
+      test('the error is rethrown', async () => {
+        const func = () => controller.postSetPermissions(request, h);
+        expect(func()).to.reject();
+      });
+    });
   });
 
   experiment('.getCreateAccountSuccess', () => {

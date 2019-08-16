@@ -17,6 +17,15 @@ const getCreateAccount = async (request, h, formFromPost) => {
   );
 };
 
+const applyEmailExistsError = (form, field) => {
+  const message = 'Email specified is already in use';
+  return applyErrors(form, [{
+    name: field,
+    message,
+    summary: message
+  }]);
+};
+
 const postCreateAccount = async (request, h) => {
   const { payload } = request;
   const form = handleRequest(createUserForm(request, payload), request, createUserSchema, {
@@ -25,11 +34,7 @@ const postCreateAccount = async (request, h) => {
 
   const user = await services.idm.users.findOneByEmail(payload.email, config.idm.application);
   if (user) {
-    return getCreateAccount(request, h, applyErrors(form, [{
-      name: 'email',
-      message: 'Email specified is already in use',
-      summary: 'Email specified is already in use'
-    }]));
+    return getCreateAccount(request, h, applyEmailExistsError(form, 'email'));
   }
 
   if (form.isValid) {
@@ -53,23 +58,29 @@ const getSetPermissions = async (request, h, formFromPost) => {
 };
 
 const postSetPermissions = async (request, h) => {
-  const { payload } = request;
   const { userId: callingUserId } = request.defra;
-  const { newUserEmail, permission } = payload;
+  const { newUserEmail, permission } = request.payload;
   const form = handleRequest(
-    setPermissionsForm(request, payload),
+    setPermissionsForm(request, request.payload),
     request,
     setPermissionsSchema
   );
 
-  if (form.isValid) {
-    const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
-    delete request.yar.clear('key');
-
-    return h.redirect(`/account/create-user/${newUser.user_id}/success`);
+  if (!form.isValid) {
+    return getSetPermissions(request, h, form);
   }
 
-  return getSetPermissions(request, h, form);
+  try {
+    const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
+    delete request.yar.clear('key');
+    return h.redirect(`/account/create-user/${newUser.user_id}/success`);
+  } catch (err) {
+    // User exists
+    if (err.statusCode === 409) {
+      return getSetPermissions(request, h, applyEmailExistsError(form, 'permission'));
+    }
+    throw err;
+  }
 };
 
 const getCreateAccountSuccess = async (request, h) => {

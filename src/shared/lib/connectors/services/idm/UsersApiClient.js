@@ -71,7 +71,7 @@ class UsersApiClient extends APIClient {
   }
 
   async findOneById (userId) {
-    const { data: [user], error } = await this.findOne(userId);
+    const { data: user, error } = await this.findOne(userId);
     throwIfError(error);
     return user;
   };

@@ -138,7 +138,7 @@ experiment('getUserStatus', () => {
   test('adds the form from post if exists', async () => {
     await controller.getUserStatus(request, h, { test: 'form' });
 
-    const [, view] = h.view.firstCall.args;
+    const [, view] = h.view.lastCall.args;
     expect(view.form).to.equal({ test: 'form' });
   });
 });

@@ -3,16 +3,24 @@
 {% from "./nunjucks/internal-search/macros/user-companies.njk" import userCompanies %}
 
 {% block content %}
-  <div class="govuk-grid-row space--medium">
-    <div class="govuk-grid-column">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
       {{ userDetails(userStatus.user) }}
 
-      {% if userStatus.licenceCount %}
-        {{ userCompanies(userStatus.companies) }}
+      {% if userStatus.user.isInternal %}
+        {% if 'manage_accounts' in user.scope %}
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7">
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">Set permissions</h1>
+          {{ formRender(form) }}
+        {% endif %}
       {% else %}
-        <p class="govuk-body-l">
-          This user does not have any licences linked to their account
-        </p>
+        {% if userStatus.licenceCount %}
+          {{ userCompanies(userStatus.companies) }}
+        {% else %}
+          <p class="govuk-body-l">
+            This user does not have any licences linked to their account
+          </p>
+        {% endif %}
       {% endif %}
     </div>
   </div>

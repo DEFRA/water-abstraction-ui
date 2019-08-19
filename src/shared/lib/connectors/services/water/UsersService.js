@@ -14,6 +14,14 @@ class UsersService extends ServiceClient {
       permissionsKey
     } });
   };
+
+  updateInternalUserPermissions (callingUserId, userId, permissionsKey) {
+    const url = this.joinUrl(`user/internal/${userId}`);
+    return this.serviceRequest.patch(url, { body: {
+      callingUserId,
+      permissionsKey
+    } });
+  };
 }
 
 module.exports = UsersService;

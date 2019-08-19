@@ -45,7 +45,7 @@ const postCreateAccount = async (request, h) => {
 };
 
 const getSetPermissions = async (request, h, formFromPost) => {
-  const form = formFromPost || setPermissionsForm(request);
+  const form = formFromPost || setPermissionsForm(request, '/account/create-user/set-permissions');
 
   return h.view(
     'nunjucks/account/set-permissions.njk',
@@ -61,7 +61,7 @@ const postSetPermissions = async (request, h) => {
   const { userId: callingUserId } = request.defra;
   const { newUserEmail, permission } = request.payload;
   const form = handleRequest(
-    setPermissionsForm(request, request.payload),
+    setPermissionsForm(request, request.payload, true),
     request,
     setPermissionsSchema
   );
@@ -72,7 +72,8 @@ const postSetPermissions = async (request, h) => {
 
   try {
     const newUser = await services.water.users.postCreateInternalUser(callingUserId, newUserEmail, permission);
-    delete request.yar.clear('key');
+    request.yar.clear('newInternalUserAccountEmail');
+
     return h.redirect(`/account/create-user/${newUser.user_id}/success`);
   } catch (err) {
     // User exists

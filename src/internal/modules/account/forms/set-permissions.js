@@ -52,10 +52,12 @@ const choices = [
  * @param {Object} request The Hapi request
  * @param {String} permission The key for the currently assigned group (e.g. basic|psc|wirs)
  */
-const form = (request, permission) => {
+const form = (request, permission, newUser) => {
   const { csrfToken } = request.view;
 
-  const f = formFactory('/account/create-user/set-permissions');
+  const f = formFactory(newUser
+    ? '/account/create-user/set-permissions'
+    : `/user/${request.params.userId}/update-permissions`);
 
   f.fields.push(fields.radio('permission', {
     choices,
@@ -65,8 +67,10 @@ const form = (request, permission) => {
     }
   }));
 
-  const newAccountEmail = get(request, 'yar._store.newInternalUserAccountEmail');
-  f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail));
+  if (newUser) {
+    const newAccountEmail = get(request, 'yar._store.newInternalUserAccountEmail');
+    f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail));
+  }
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -76,9 +80,10 @@ const form = (request, permission) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex()),
-  permission: Joi.string().required().valid(choices.map(choice => choice.value))
+  permission: Joi.string().required().valid(choices.map(choice => choice.value)),
+  newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex())
 };
 
 exports.setPermissionsForm = form;
 exports.setPermissionsSchema = schema;
+exports.permissionsChoices = choices;

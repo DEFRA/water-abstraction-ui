@@ -45,6 +45,8 @@ const isBasicUser = request => {
 
 const isManageTab = request => hasScope(request, scope.hasManageTab);
 
+const isManageAccounts = request => hasScope(request, scope.manageAccounts);
+
 exports.hasScope = hasScope;
 exports.isAuthenticated = isAuthenticated;
 exports.isInternalReturns = isInternalReturns;
@@ -56,3 +58,4 @@ exports.isHofOrRenewalNotifications = isHofOrRenewalNotifications;
 exports.isAnyNotifications = isAnyNotifications;
 exports.isBasicUser = isBasicUser;
 exports.isManageTab = isManageTab;
+exports.isManageAccounts = isManageAccounts;

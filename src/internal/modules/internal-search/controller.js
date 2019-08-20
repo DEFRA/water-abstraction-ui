@@ -63,21 +63,21 @@ const getOutstandingVerificationLicenceCount = companies => {
 const getPermissionsFormData = async (request) => {
   if (isManageAccounts(request)) {
     const user = await services.idm.users.findOneById(request.params.userId);
-    const permission = get(user, 'groups[0]');
+    const permission = getPermissionsKey(user);
     return setPermissionsForm(request, permission);
   }
 };
 
-const getPermissionsLabelText = user => {
-  const updated = user;
-  if (updated.groups[0] === 'nps') {
-    const [subtype] = user.roles.filter(role => role.substring(0, 2) === 'ar');
-    if (subtype) updated.groups[0] = `nps_${subtype}`;
-  }
+const getPermissionsKey = user => {
+  const group = user.groups[0] || 'basic';
+  const roles = user.roles.filter(role => role.startsWith('ar_'));
+  console.log('permissions key', [group, ...roles].join('_'));
+  return [group, ...roles].join('_');
+};
 
-  if (updated.groups.length === 0 && updated.roles.length === 0) updated.groups[0] = 'basic';
-  const [updatedPermission] = permissionsChoices.filter(choice => choice.value === updated.groups[0]);
-  return updatedPermission;
+const getPermissionsLabelText = user => {
+  const key = getPermissionsKey(user);
+  return permissionsChoices.filter(choice => choice.value === key)[0];
 };
 
 const getUserStatus = async (request, h, formFromPost) => {
@@ -118,11 +118,11 @@ const postUpdatePermissions = async (request, h) => {
 const getUpdateSuccessful = async (request, h) => {
   const { userId } = request.params;
   const user = await services.idm.users.findOneById(userId);
-  const updatedPermissions = getPermissionsLabelText(user);
+
   return h.view('nunjucks/internal-search/update-permissions-success.njk', {
     ...request.view,
     updatedUser: user.user_name,
-    updatedPermissions,
+    updatedPermissions: getPermissionsLabelText(user),
     back: `/user/${userId}/status`
   }, { layout: false });
 };

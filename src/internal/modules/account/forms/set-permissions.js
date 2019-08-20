@@ -1,5 +1,4 @@
 const Joi = require('@hapi/joi');
-const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { getEmailRegex } = require('./create-user');
 
@@ -68,7 +67,7 @@ const form = (request, permission, newUser) => {
   }));
 
   if (newUser) {
-    const newAccountEmail = get(request, 'yar._store.newInternalUserAccountEmail');
+    const newAccountEmail = request.yar.get('newInternalUserAccountEmail');
     f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail));
   }
 

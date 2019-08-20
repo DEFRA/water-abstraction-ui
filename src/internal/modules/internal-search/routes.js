@@ -37,7 +37,7 @@ module.exports = {
       },
       validate: {
         params: {
-          userId: Joi.number()
+          userId: Joi.number().required()
         }
       }
     }
@@ -58,7 +58,7 @@ module.exports = {
       },
       validate: {
         params: {
-          userId: Joi.number()
+          userId: Joi.number().required()
         }
       }
     }
@@ -79,7 +79,7 @@ module.exports = {
       },
       validate: {
         params: {
-          userId: Joi.number()
+          userId: Joi.number().required()
         }
       }
     }

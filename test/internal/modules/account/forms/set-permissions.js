@@ -1,16 +1,24 @@
 const { expect } = require('@hapi/code');
-const { beforeEach, experiment, test } = exports.lab = require('@hapi/lab').script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
+const sandbox = require('sinon').createSandbox();
 const { setPermissionsForm, setPermissionsSchema } = require('internal/modules/account/forms/set-permissions');
 
 const { findField, findButton } = require('../../../../lib/form-test');
 
 const createRequest = () => ({
+  params: {
+    userId: 100
+  },
   view: {
     csrfToken: 'token'
+  },
+  yar: {
+    get: sandbox.stub().returns('example@defra.gov.uk')
   }
 });
 
 experiment('account/forms/set-permissions form', () => {
+  afterEach(async () => { sandbox.restore(); });
   test('sets the form method to POST', async () => {
     const form = setPermissionsForm(createRequest());
     expect(form.method).to.equal('POST');
@@ -62,9 +70,33 @@ experiment('account/forms/set-permissions form', () => {
     const button = findButton(form);
     expect(button.options.label).to.equal('Continue');
   });
+
+  test('sets newUserEmail field if newUser is true', () => {
+    const form = setPermissionsForm(createRequest(), '', true);
+    const field = findField(form, 'newUserEmail');
+    expect(field.value).to.equal('example@defra.gov.uk');
+  });
+
+  test('does not set newUserEmail field if newUser is falsy', () => {
+    const form = setPermissionsForm(createRequest());
+    const field = findField(form, 'newUserEmail');
+    expect(field).to.be.undefined();
+  });
+
+  test('sets correct action when newUser === true', async () => {
+    const form = setPermissionsForm(createRequest(), '', true);
+    expect(form.action).to.equal('/account/create-user/set-permissions');
+  });
+
+  test('sets correct action when newUser === false', async () => {
+    const request = createRequest();
+    const form = setPermissionsForm(request);
+    expect(form.action).to.equal(`/user/${request.params.userId}/update-permissions`);
+  });
 });
 
 experiment('account/forms/set-permissions schema', () => {
+  afterEach(async () => { sandbox.restore(); });
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = setPermissionsSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

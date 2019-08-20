@@ -69,7 +69,20 @@ const externalUserWithoutLicences = () => ({
   error: null
 });
 
+const internalUser = () => ({
+  data: {
+    user: {
+      isLocked: false,
+      isInternal: true,
+      lastLogin: '2019-01-01T00:00:00.000Z',
+      userName: 'test@defra.gov.uk.com'
+    },
+    companies: []
+  },
+  error: null });
+
 module.exports = {
   externalUserWithLicences,
-  externalUserWithoutLicences
+  externalUserWithoutLicences,
+  internalUser
 };

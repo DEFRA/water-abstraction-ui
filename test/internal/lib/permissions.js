@@ -256,4 +256,16 @@ experiment('permissions', () => {
       expect(permissions.isManageTab(request)).to.equal(false);
     });
   });
+
+  experiment('isManageAccounts', async () => {
+    test('it should return false if scopes empty', async () => {
+      const request = createRequest([]);
+      expect(permissions.isManageAccounts(request)).to.equal(false);
+    });
+
+    test('it should return true if scopes "manage_accounts"', async () => {
+      const request = createRequest(['manage_accounts']);
+      expect(permissions.isManageAccounts(request)).to.equal(true);
+    });
+  });
 });

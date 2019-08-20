@@ -16,6 +16,7 @@ experiment('services/water/UsersService', () => {
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get').resolves({});
     sandbox.stub(serviceRequest, 'post').resolves({});
+    sandbox.stub(serviceRequest, 'patch').resolves({});
   });
 
   afterEach(async () => {
@@ -60,6 +61,33 @@ experiment('services/water/UsersService', () => {
         }
       };
       const [, options] = serviceRequest.post.lastCall.args;
+
+      expect(options).to.equal(expectedOptions);
+    });
+  });
+
+  experiment('.updateInternalUserPermissions', () => {
+    let service;
+
+    beforeEach(async () => {
+      service = new UsersService('http://127.0.0.1:8001/water/1.0');
+      await service.updateInternalUserPermissions('calling-user-id', 'user-id', 'permission');
+    });
+
+    test('passes the expected URL to the service request', async () => {
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/internal/user-id`;
+      const [url] = serviceRequest.patch.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+
+    test('passes the body data to the service request', async () => {
+      const expectedOptions = {
+        body: {
+          callingUserId: 'calling-user-id',
+          permissionsKey: 'permission'
+        }
+      };
+      const [, options] = serviceRequest.patch.lastCall.args;
 
       expect(options).to.equal(expectedOptions);
     });

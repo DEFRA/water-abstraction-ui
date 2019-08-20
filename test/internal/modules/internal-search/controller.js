@@ -1,18 +1,19 @@
 'use strict';
 
 const { cloneDeep, set } = require('lodash');
-const sinon = require('sinon');
+const sandbox = require('sinon').createSandbox();
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const controller = require('internal/modules/internal-search/controller');
 const services = require('internal/lib/connectors/services');
 const { scope } = require('internal/lib/constants');
+const { permissionsChoices } = require('internal/modules/account/forms/set-permissions');
+const forms = require('shared/lib/forms');
 
 const getUserStatusResponses = require('../../../shared/responses/water-service/user/_userId_/status');
 
 experiment('getSearchForm', () => {
   const h = {};
-  let apiStub;
   const baseRequest = {
     auth: {
       credentials: {
@@ -25,15 +26,15 @@ experiment('getSearchForm', () => {
   };
 
   beforeEach(async () => {
-    h.view = sinon.stub();
-    h.redirect = sinon.stub();
-    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
+    h.view = sandbox.stub();
+    h.redirect = sandbox.stub();
+    sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       users: [{ user_id: 123 }]
     });
   });
 
   afterEach(async () => {
-    apiStub.restore();
+    sandbox.restore();
   });
 
   test('It should display the form if no search query is present', async () => {
@@ -66,8 +67,8 @@ experiment('getSearchForm', () => {
 
   test('It should redirect if user searches for exact return ID', async () => {
     const returnId = 'v1:1:01/123:123456:2017-10-31:2018-10-31';
-    apiStub.restore();
-    apiStub = sinon.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
+    sandbox.restore();
+    sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
       returns: [{
         return_id: returnId
       }]
@@ -86,19 +87,20 @@ experiment('getUserStatus', () => {
   let h;
 
   beforeEach(async () => {
-    sinon
+    sandbox.stub(services.idm.users, 'findOneById');
+    sandbox
       .stub(services.water.users, 'getUserStatus')
       .resolves(getUserStatusResponses.externalUserWithLicences());
 
     request = { params: { userId: 1234 }, view: {} };
     h = {
-      view: sinon.spy()
+      view: sandbox.spy()
     };
     await controller.getUserStatus(request, h);
   });
 
   afterEach(async () => {
-    services.water.users.getUserStatus.restore();
+    sandbox.restore();
   });
 
   test('passes the user id from the request to the water service', async () => {
@@ -131,5 +133,118 @@ experiment('getUserStatus', () => {
 
     const [, view] = h.view.lastCall.args;
     expect(view.userStatus.licenceCount).to.equal(0);
+  });
+
+  test('adds the form from post if exists', async () => {
+    await controller.getUserStatus(request, h, { test: 'form' });
+
+    const [, view] = h.view.lastCall.args;
+    expect(view.form).to.equal({ test: 'form' });
+  });
+});
+
+experiment('postUpdatePermissions', () => {
+  let request;
+  let h;
+
+  beforeEach(async () => {
+    sandbox.stub(services.water.users, 'updateInternalUserPermissions').resolves({});
+    sandbox.stub(services.water.users, 'getUserStatus').resolves(
+      getUserStatusResponses.internalUser()
+    );
+    sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
+
+    request = {
+      auth: {
+        credentials: {
+          scope: ['manage_accounts']
+        }
+      },
+      defra: {
+        userId: 1111
+      },
+      params: {
+        userId: 1234
+      },
+      payload: {
+        permission: 'basic'
+      },
+      view: {
+        csrfToken: '12345678-0000-test-0000-000000000000'
+      } };
+
+    h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('passes the callingUserId, userId and permission from the request to the water service', async () => {
+    await controller.postUpdatePermissions(request, h);
+    const [callingUserId, userId, permission] = services.water.users.updateInternalUserPermissions.lastCall.args;
+    expect(callingUserId).to.equal(request.defra.userId);
+    expect(userId).to.equal(request.params.userId);
+    expect(permission).to.equal(request.payload.permission);
+  });
+});
+
+experiment('getUpdateSuccessful', () => {
+  let request;
+  let h;
+
+  beforeEach(async () => {
+    sandbox.stub(services.idm.users, 'findOneById').resolves({ user_name: 'test@defra.gov.uk', roles: [], groups: [] });
+    sandbox.stub(services.water.users, 'getUserStatus').resolves(
+      getUserStatusResponses.internalUser()
+    );
+
+    request = {
+      auth: {
+        credentials: {
+          scope: ['manage_accounts']
+        }
+      },
+      defra: {
+        userId: 1111
+      },
+      params: {
+        userId: 1234
+      },
+      payload: {
+        permission: 'billing_and_data'
+      } };
+
+    h = {
+      view: sandbox.spy()
+    };
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('passes the correct template', async () => {
+    await controller.getUpdateSuccessful(request, h);
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/internal-search/update-permissions-success.njk');
+  });
+
+  test('view contains correct back link', async () => {
+    await controller.getUpdateSuccessful(request, h);
+    const [, view] = h.view.lastCall.args;
+    expect(view.back).to.equal(`/user/${request.params.userId}/status`);
+  });
+
+  test('view contains email and permissions of updated user', async () => {
+    services.idm.users.findOneById.resolves({ user_name: 'test@defra.gov.uk', roles: [], groups: ['billing_and_data'] });
+    await controller.getUpdateSuccessful(request, h);
+    const [permissionLabelText] = permissionsChoices.filter(choice => choice.value === request.payload.permission);
+    const [, view] = h.view.lastCall.args;
+    expect(view.updatedUser).to.equal('test@defra.gov.uk');
+    expect(view.updatedPermissions).to.equal(permissionLabelText);
   });
 });

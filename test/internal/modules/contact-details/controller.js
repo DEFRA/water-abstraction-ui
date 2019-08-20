@@ -24,7 +24,7 @@ experiment('getContactInformation', () => {
     sandbox.restore();
   });
 
-  test('renders the form view', async () => {
+  test('renders the form view when contact details have been set previously', async () => {
     const request = {
       defra: {
         user: {
@@ -33,6 +33,20 @@ experiment('getContactInformation', () => {
               name: 'test-name'
             }
           }
+        }
+      },
+      view: {}
+    };
+
+    await controller.getContactInformation(request, h);
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/form.njk');
+  });
+
+  test('renders the form view when contact details are empty', async () => {
+    const request = {
+      defra: {
+        user: {
         }
       },
       view: {}

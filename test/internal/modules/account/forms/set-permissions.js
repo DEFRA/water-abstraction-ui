@@ -1,5 +1,6 @@
 const { expect } = require('@hapi/code');
-const { beforeEach, experiment, test } = exports.lab = require('@hapi/lab').script();
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
+const sandbox = require('sinon').createSandbox();
 const { setPermissionsForm, setPermissionsSchema } = require('internal/modules/account/forms/set-permissions');
 
 const { findField, findButton } = require('../../../../lib/form-test');
@@ -12,13 +13,12 @@ const createRequest = () => ({
     csrfToken: 'token'
   },
   yar: {
-    _store: {
-      newInternalUserAccountEmail: 'example@defra.gov.uk'
-    }
+    get: sandbox.stub().returns('example@defra.gov.uk')
   }
 });
 
 experiment('account/forms/set-permissions form', () => {
+  afterEach(async () => { sandbox.restore(); });
   test('sets the form method to POST', async () => {
     const form = setPermissionsForm(createRequest());
     expect(form.method).to.equal('POST');
@@ -96,6 +96,7 @@ experiment('account/forms/set-permissions form', () => {
 });
 
 experiment('account/forms/set-permissions schema', () => {
+  afterEach(async () => { sandbox.restore(); });
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = setPermissionsSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

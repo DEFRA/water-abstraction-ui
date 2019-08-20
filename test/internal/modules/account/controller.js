@@ -37,7 +37,7 @@ experiment('account/controller', () => {
       params: {},
       defra: {},
       yar: {
-        _store: {}
+        get: sandbox.stub().returns('test@example.gov.uk')
       }
     };
 
@@ -184,7 +184,6 @@ experiment('account/controller', () => {
   experiment('.getCreateAccountSuccess', () => {
     beforeEach(async () => {
       request.params.userId = 100;
-      request.yar._store = { newInternalUserAccountEmail: 'test@example.gov.uk' };
       services.idm.users.findOneById.resolves(userData.data);
       await controller.getCreateAccountSuccess(request, h);
     });

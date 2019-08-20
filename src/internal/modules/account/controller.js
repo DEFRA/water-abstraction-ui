@@ -45,7 +45,7 @@ const postCreateAccount = async (request, h) => {
 };
 
 const getSetPermissions = async (request, h, formFromPost) => {
-  const form = formFromPost || setPermissionsForm(request, '', true);
+  const form = formFromPost || setPermissionsForm(request, null, true);
 
   return h.view(
     'nunjucks/account/set-permissions.njk',
@@ -78,7 +78,7 @@ const postSetPermissions = async (request, h) => {
   } catch (err) {
     // User exists
     if (err.statusCode === 409) {
-      return getSetPermissions(request, h, applyEmailExistsError(form, permission));
+      return getSetPermissions(request, h, applyEmailExistsError(form, 'permission'));
     }
     throw err;
   }

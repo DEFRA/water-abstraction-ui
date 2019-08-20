@@ -85,6 +85,7 @@ experiment('postContactInformation', () => {
         csrf_token: '00000000-0000-0000-0000-000000000000'
       },
       defra: {
+        userId: 'test-user-id',
         user: {
           user_id: 'test-user-id',
           user_data: {

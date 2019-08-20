@@ -1,13 +1,11 @@
 'use strict';
-
+const { get, pick } = require('lodash');
 const { handleRequest } = require('shared/lib/forms');
 const { setUserData } = require('../../lib/user-data');
 const { contactDetailsForm, contactDetailsSchema } = require('./contact-details-form');
 
-const payloadToContactDetails = payload => {
-  const { name, jobTitle, tel, email, address } = payload;
-  return { name, jobTitle, tel, email, address };
-};
+const payloadToContactDetails = payload =>
+  pick(payload, ['name', 'jobTitle', 'tel', 'email', 'address']);
 
 const getContactFormView = (h, viewContext, form) => {
   return h.view('nunjucks/form.njk', {
@@ -16,8 +14,11 @@ const getContactFormView = (h, viewContext, form) => {
   }, { layout: false });
 };
 
+const getUserData = request => get(request, 'defra.user.user_data', {});
+const getContactDetails = request => get(request, 'defra.user.user_data.contactDetails', {});
+
 const getContactInformation = async (request, h) => {
-  const { contactDetails } = request.defra.user.user_data;
+  const contactDetails = getContactDetails(request);
   const { view } = request;
   return getContactFormView(h, view, contactDetailsForm(request, contactDetails));
 };
@@ -27,8 +28,12 @@ const postContactInformation = async (request, h) => {
   const form = handleRequest(contactDetailsForm(request, payload), request, contactDetailsSchema);
 
   if (form.isValid) {
-    const { user_id: userId, user_data: userData } = request.defra.user;
-    userData.contactDetails = payloadToContactDetails(payload);
+    const { userId } = request.defra;
+
+    const userData = {
+      ...getUserData(request),
+      contactDetails: payloadToContactDetails(payload)
+    };
 
     await setUserData(userId, userData);
     return h.redirect('/');

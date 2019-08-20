@@ -71,7 +71,6 @@ const getPermissionsFormData = async (request) => {
 const getPermissionsKey = user => {
   const group = user.groups[0] || 'basic';
   const roles = user.roles.filter(role => role.startsWith('ar_'));
-  console.log('permissions key', [group, ...roles].join('_'));
   return [group, ...roles].join('_');
 };
 

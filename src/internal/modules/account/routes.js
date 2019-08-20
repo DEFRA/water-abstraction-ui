@@ -10,7 +10,8 @@ module.exports = {
       auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
-          pageTitle: 'Create an internal account'
+          pageTitle: 'Create an internal account',
+          activeNavLink: 'notifications'
         }
       }
     }
@@ -24,7 +25,8 @@ module.exports = {
       auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
-          pageTitle: 'Create an internal account'
+          pageTitle: 'Create an internal account',
+          activeNavLink: 'notifications'
         }
       }
     }
@@ -38,7 +40,8 @@ module.exports = {
       auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
-          pageTitle: 'Set permissions'
+          pageTitle: 'Set permissions',
+          activeNavLink: 'notifications'
         }
       }
     }
@@ -52,7 +55,8 @@ module.exports = {
       auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
-          pageTitle: 'Set permissions'
+          pageTitle: 'Set permissions',
+          activeNavLink: 'notifications'
         }
       }
     }
@@ -66,7 +70,8 @@ module.exports = {
       auth: { scope: 'manage_accounts' },
       plugins: {
         viewContext: {
-          pageTitle: 'New account created'
+          pageTitle: 'New account created',
+          activeNavLink: 'notifications'
         }
       },
       validate: {

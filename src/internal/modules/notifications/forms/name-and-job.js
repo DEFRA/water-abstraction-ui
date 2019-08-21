@@ -1,10 +1,9 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
-const getTextField = (name, label, multiline = false) =>
+const getTextField = (name, label) =>
   fields.text(name, {
     label,
-    multiline,
     controlClass: 'govuk-!-width-one-half',
     errors: {
       'any.empty': {

@@ -68,11 +68,12 @@ const postDetails = async (request, h) => {
   const form = handleRequest(detailsForm.form(request), request, detailsForm.schema);
 
   if (form.isValid) {
+    // Persist new contact data to IDM user
     const data = omit(getValues(form), 'csrf_token');
-    contactDetailsStorage.submit(request, data);
+    await contactDetailsStorage.submit(request, data);
 
+    // Redirect
     const path = request.yar.get(REDIRECT_SESSION_KEY);
-
     return h.redirect(path);
   }
 

@@ -1,3 +1,4 @@
+const { get } = require('lodash');
 const services = require('../../../lib/connectors/services');
 
 /**
@@ -39,7 +40,7 @@ async function getContext (userId) {
   // Load context data for default parameter values
   const user = await getUser(userId);
 
-  context.contactDetails = user.user_data.contactDetails || {};
+  context.contactDetails = get(user, 'user_data.contactDetails', {});
 
   return context;
 }

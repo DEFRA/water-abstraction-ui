@@ -1,4 +1,4 @@
-const { set, omit } = require('lodash');
+const { omit } = require('lodash');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const contactDetailsStorage = require('./lib/contact-details-storage');
 const nameAndJobForm = require('./forms/name-and-job');

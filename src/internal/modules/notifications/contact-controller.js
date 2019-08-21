@@ -1,75 +1,29 @@
-const { set, get } = require('lodash');
-const { setUserData } = require('../../lib/user-data');
+const { set, omit } = require('lodash');
+const { handleRequest, getValues } = require('shared/lib/forms');
+const contactDetailsStorage = require('./lib/contact-details-storage');
+const nameAndJobForm = require('./forms/name-and-job');
+const detailsForm = require('./forms/details-form');
 
-const getUserData = request => get(request, 'defra.user.user_data', {});
-
-/**
- * Maps form validator plugin errors to those required by the contact
- * details partial
- * @param {Object} errors - from the form validator plugin
- * @return {Object} - errors in format required for Handlebars contact partial
- */
-const mapErrors = (errors) => {
-  return {
-    contactName: errors['contact-name_empty'],
-    contactJobTitle: errors['contact-job-title_empty'],
-    contactTel: errors['contact-tel_empty'],
-    contactEmail: errors['contact-email_empty'] || errors['contact-email_email'],
-    contactAddress: errors['contact-address_empty']
-  };
-};
-
-/**
- * Maps posted form data to format required by view partial
- * @param {Object} payload - from request.payload
- * @return {Object} with values mapped to names for view partial
- */
-const mapPost = (payload) => {
-  return {
-    name: payload['contact-name'],
-    jobTitle: payload['contact-job-title'],
-    redirect: payload['redirect'],
-    tel: payload['contact-tel'],
-    email: payload['contact-email'],
-    address: payload['contact-address']
-  };
-};
-
-/**
- * Gets data to send to view when form is in error state
- * @param {Object} HAPI request
- * @return {Object} view context data
- */
-const getErrorViewContext = (request) => {
-  const contactDetails = mapPost(request.payload);
-  return {
-    ...request.view,
-    error: mapErrors(request.view.errors),
-    contactDetails
-  };
-};
+const REDIRECT_SESSION_KEY = 'redirect';
 
 /**
  * Display form for admin user to enter their name and job role
  * prior to entering notification flow
  */
-const getNameAndJob = async (request, h) => {
-  // WHere to redirect after flow complete
+const getNameAndJob = async (request, h, form) => {
+  // Where to redirect after flow completes
   const { redirect } = request.query;
-  request.yar.set('redirect', redirect);
+  request.yar.set(REDIRECT_SESSION_KEY, redirect);
 
-  // Load user data from IDM
-  const { contactDetails = {} } = getUserData(request);
+  const contactDetails = contactDetailsStorage.get(request);
 
-  request.yar.set('notificationContactDetails', {
-    contactDetails,
-    redirect
-  });
-
-  return h.view('water/notifications/contact-name-job', {
+  const view = {
+    back: '/manage',
     ...request.view,
-    contactDetails
-  });
+    form: form || nameAndJobForm.form(request, contactDetails)
+  };
+
+  return h.view('nunjucks/form.njk', view, { layout: false });
 };
 
 /**
@@ -78,55 +32,49 @@ const getNameAndJob = async (request, h) => {
  * otherwise redisplays form with error message
  */
 const postNameAndJob = async (request, h) => {
-  const contactDetails = mapPost(request.payload);
+  const form = handleRequest(nameAndJobForm.form(request), request, nameAndJobForm.schema);
 
-  if (request.formError) {
-    return h.view('water/notifications/contact-name-job', getErrorViewContext(request));
+  if (form.isValid) {
+    const data = omit(getValues(form), 'csrf_token');
+    contactDetailsStorage.set(request, data);
+
+    return h.redirect('/notifications/contact-details');
   }
 
-  // Merge updated fields to user_data
-  const { userId } = request.defra;
-  let userData = getUserData(request);
-  set(userData, 'contactDetails.name', contactDetails.name);
-  set(userData, 'contactDetails.jobTitle', contactDetails.jobTitle);
-  await setUserData(userId, userData);
-
-  return h.redirect('/notifications/contact-details');
+  return getNameAndJob(request, h, form);
 };
 
 /**
  * Form to get contact details - email/tel/address
  */
-const getDetails = async (request, h) => {
-  // Load user data from IDM
-  const { contactDetails = {} } = getUserData(request);
+const getDetails = async (request, h, form) => {
+  const contactDetails = contactDetailsStorage.get(request);
 
-  return h.view('water/notifications/contact-details', {
+  const view = {
+    back: '/notifications/contact',
     ...request.view,
-    contactDetails
-  });
+    form: form || detailsForm.form(request, contactDetails)
+  };
+
+  return h.view('nunjucks/form.njk', view, { layout: false });
 };
 
 /**
  * Post handler for contact details - email/tel/address
  */
 const postDetails = async (request, h) => {
-  const contactDetails = mapPost(request.payload);
+  const form = handleRequest(detailsForm.form(request), request, detailsForm.schema);
 
-  if (request.formError) {
-    return h.view('water/notifications/contact-details', getErrorViewContext(request));
+  if (form.isValid) {
+    const data = omit(getValues(form), 'csrf_token');
+    contactDetailsStorage.submit(request, data);
+
+    const path = request.yar.get(REDIRECT_SESSION_KEY);
+
+    return h.redirect(path);
   }
 
-  // Merge updated fields to user_data
-  const { userId } = request.defra;
-  let userData = getUserData(request);
-  set(userData, 'contactDetails.email', contactDetails.email);
-  set(userData, 'contactDetails.tel', contactDetails.tel);
-  set(userData, 'contactDetails.address', contactDetails.address);
-  await setUserData(userId, userData);
-
-  // Redirect to notifications flow
-  return h.redirect(request.yar.get('redirect'));
+  return getDetails(request, h, form);
 };
 
 module.exports = {

@@ -1,4 +1,4 @@
-const { omit } = require('lodash');
+const { get, omit } = require('lodash');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const contactDetailsStorage = require('./lib/contact-details-storage');
 const nameAndJobForm = require('./forms/name-and-job');
@@ -12,8 +12,10 @@ const REDIRECT_SESSION_KEY = 'redirect';
  */
 const getNameAndJob = async (request, h, form) => {
   // Where to redirect after flow completes
-  const { redirect } = request.query;
-  request.yar.set(REDIRECT_SESSION_KEY, redirect);
+  const redirect = get(request, 'query.redirect');
+  if (redirect) {
+    request.yar.set(REDIRECT_SESSION_KEY, redirect);
+  }
 
   const contactDetails = contactDetailsStorage.get(request);
 

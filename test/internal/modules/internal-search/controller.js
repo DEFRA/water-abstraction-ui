@@ -135,11 +135,25 @@ experiment('getUserStatus', () => {
     expect(view.userStatus.licenceCount).to.equal(0);
   });
 
+  test('adds the form', async () => {
+    await controller.getUserStatus(request, h, { test: 'form' });
+
+    const [, view] = h.view.lastCall.args;
+    expect(view.form).to.be.an.object();
+  });
+
   test('adds the form from post if exists', async () => {
     await controller.getUserStatus(request, h, { test: 'form' });
 
     const [, view] = h.view.lastCall.args;
     expect(view.form).to.equal({ test: 'form' });
+  });
+
+  test('adds the link to delete the account', async () => {
+    await controller.getUserStatus(request, h);
+
+    const [, view] = h.view.lastCall.args;
+    expect(view.deleteAccountLink).to.equal(`/account/delete-account/${request.params.userId}`);
   });
 });
 

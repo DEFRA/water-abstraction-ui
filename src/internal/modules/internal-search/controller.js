@@ -90,7 +90,8 @@ const getUserStatus = async (request, h, formFromPost) => {
   const view = {
     ...request.view,
     userStatus,
-    form: formFromPost || await getPermissionsFormData(request)
+    form: formFromPost || await getPermissionsFormData(request),
+    deleteAccountLink: `/account/delete-account/${request.params.userId}`
   };
 
   return h.view('nunjucks/internal-search/user-status.njk', view, { layout: false });

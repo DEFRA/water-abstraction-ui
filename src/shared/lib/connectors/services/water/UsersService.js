@@ -22,6 +22,13 @@ class UsersService extends ServiceClient {
       permissionsKey
     } });
   };
+
+  disableInternalUser (callingUserId, userId) {
+    const url = this.joinUrl(`user/internal/${userId}`);
+    return this.serviceRequest.delete(url, { body: {
+      callingUserId
+    } });
+  };
 }
 
 module.exports = UsersService;

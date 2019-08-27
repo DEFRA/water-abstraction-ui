@@ -80,5 +80,68 @@ module.exports = {
         }
       }
     }
+  },
+
+  getDeleteUserAccount: {
+    method: 'GET',
+    path: '/account/delete-account/{userId}',
+    handler: controller.getDeleteUserAccount,
+    config: {
+      description: 'Admin: delete internal user account',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Delete user account',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
+  },
+
+  postDeleteUserAccount: {
+    method: 'POST',
+    path: '/account/delete-account/{userId}',
+    handler: controller.postDeleteUserAccount,
+    config: {
+      description: 'Admin: delete internal user account',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Delete user account',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
+  },
+
+  getDeleteAccountSuccess: {
+    method: 'GET',
+    path: '/account/delete-account/{userId}/success',
+    handler: controller.getDeleteAccountSuccess,
+    config: {
+      description: 'Admin: internal user account deleted successfully',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Account deleted',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
   }
 };

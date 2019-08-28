@@ -10,7 +10,8 @@ const routeConfigSchema = Joi.object().keys({
     summary: Joi.boolean().valid(true),
     communications: Joi.boolean().valid(true),
     users: Joi.boolean().valid(true),
-    primaryUser: Joi.boolean().valid(true)
+    primaryUser: Joi.boolean().valid(true),
+    chargeVersions: Joi.boolean().valid(true)
   })
 });
 
@@ -19,7 +20,8 @@ const waterMethods = {
   summary: 'getSummaryByDocumentId',
   communications: 'getCommunicationsByDocumentId',
   users: 'getUsersByExternalId',
-  primaryUser: 'getPrimaryUserByDocumentId'
+  primaryUser: 'getPrimaryUserByDocumentId',
+  chargeVersions: 'getChargeVersionsByDocumentId'
 };
 
 /**

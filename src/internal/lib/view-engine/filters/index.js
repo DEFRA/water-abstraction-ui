@@ -2,6 +2,7 @@ module.exports = {
   ...require('./abstraction-reform'),
   ...require('./most-significant-entity-role'),
   ...require('shared/view/nunjucks/filters/abstraction-period'),
+  ...require('shared/view/nunjucks/filters/charge-version-badge'),
   ...require('shared/view/nunjucks/filters/date'),
   ...require('shared/view/nunjucks/filters/fixed'),
   ...require('shared/view/nunjucks/filters/flow-converter'),

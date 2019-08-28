@@ -1,0 +1,56 @@
+<h2 class="govuk-heading-m">Charge versions</h2>
+
+{% macro chargeVersionLink(chargeVersion) %}
+  Version {{ chargeVersion.versionNumber }}
+  {# <a class="govuk-link" href="/licences/{{ documentId }}/charge-version/{{ chargeVersion.chargeVersionId }}">Version {{ chargeVersion.versionNumber }}</a> #}
+{% endmacro %}
+
+{% macro chargeVersionRowMobile(chargeVersion) %}
+  <div class="phone--show">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+      {{ chargeVersionLink(chargeVersion) }}
+    </h3>
+
+    <p>Effective from: {{ chargeVersion.startDate | date }}</p>
+    <p>Effective to: {{ chargeVersion.endDate | date }}</p>
+    {{ badge(chargeVersion | chargeVersionBadge) }}
+  </div>
+{% endmacro %}
+
+{% macro chargeVersionRow(chargeVersion) %}
+  <tr class="govuk-table__row">
+    <td class="govuk-table__cell" scope="row">
+      {{ chargeVersionLink(chargeVersion) }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ chargeVersion.startDate | date }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ chargeVersion.endDate | date }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ badge(chargeVersion | chargeVersionBadge) }}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% for chargeVersion in chargeVersions %}
+  {{ chargeVersionRowMobile(chargeVersion) }}
+{% endfor %}
+
+<table class="govuk-table phone--hide">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Version</th>
+      <th class="govuk-table__header" scope="col">Effective from</th>
+      <th class="govuk-table__header" scope="col">Effective to</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for chargeVersion in chargeVersions %}
+      {{ chargeVersionRow(chargeVersion) }}
+    {% endfor %}
+  </tbody>
+</table>

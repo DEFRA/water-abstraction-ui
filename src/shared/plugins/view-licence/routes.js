@@ -25,7 +25,8 @@ module.exports = allowedScopes => [
           load: {
             summary: true,
             communications: true,
-            primaryUser: true
+            primaryUser: true,
+            chargeVersions: true
           }
         },
         viewContext: {

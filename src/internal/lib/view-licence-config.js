@@ -1,6 +1,7 @@
 const { getReturnPath } = require('./return-path');
 
 const services = require('./connectors/services');
+const permissions = require('./permissions');
 
 const getLicenceSummaryReturns = licenceNumber => {
   return services.returns.returns.getLicenceReturns([licenceNumber], {
@@ -13,3 +14,13 @@ exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
 exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
 exports.getRiverLevel = services.water.riverLevels.getRiverLevel.bind(services.water.riverLevels);
+
+/**
+ * Should the licence view show charging information to this user?
+ *
+ * Will be true of the user has the charging role.
+ *
+ * @param {Object} request The HAPI request object
+ * @returns {Boolean} True if this user can see charging details
+ */
+exports.canShowCharging = request => permissions.isCharging(request);

@@ -1,5 +1,5 @@
 const Boom = require('@hapi/boom');
-const { trim } = require('lodash');
+const { trim, sortBy } = require('lodash');
 const { selectRiverLevelMeasure } = require('./lib/river-level');
 const { getLicencePageTitle, getCommonViewContext } = require('./lib/view-helpers');
 const { getCommonBackLink } = require('shared/lib/view-licence-helpers');
@@ -97,7 +97,7 @@ const hasMultiplePages = pagination => pagination.pageCount > 1;
 const getLicence = async (request, h) => {
   const { licenceNumber } = request.licence.summary;
 
-  const { getLicenceSummaryReturns, getReturnPath } = h.realm.pluginOptions;
+  const { getLicenceSummaryReturns, getReturnPath, canShowCharging } = h.realm.pluginOptions;
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
 
@@ -106,7 +106,9 @@ const getLicence = async (request, h) => {
     pageTitle: `Licence number ${licenceNumber}`,
     returns: returns.data.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
     hasMoreReturns: hasMultiplePages(returns.pagination),
-    back: '/licences'
+    back: '/licences',
+    showChargeVersions: canShowCharging(request),
+    chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse()
   };
 
   return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });

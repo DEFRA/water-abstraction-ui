@@ -1,14 +1,17 @@
 const { createUserForm, createUserSchema } = require('./forms/create-user');
 const { setPermissionsForm, setPermissionsSchema } = require('./forms/set-permissions');
+const { deleteUserForm, deleteUserSchema } = require('./forms/delete-user');
 const { handleRequest, applyErrors } = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const config = require('internal/config');
+
+const isEnabledAccount = user => user && (user.enabled === true);
 
 const getCreateAccount = async (request, h, formFromPost) => {
   const form = formFromPost || createUserForm(request);
 
   return h.view(
-    'nunjucks/account/create-user.njk',
+    'nunjucks/form.njk',
     {
       ...request.view,
       form
@@ -18,7 +21,7 @@ const getCreateAccount = async (request, h, formFromPost) => {
 };
 
 const applyEmailExistsError = (form, field) => {
-  const message = 'Email specified is already in use';
+  const message = 'This email address is already in use';
   return applyErrors(form, [{
     name: field,
     message,
@@ -33,7 +36,7 @@ const postCreateAccount = async (request, h) => {
   });
 
   const user = await services.idm.users.findOneByEmail(payload.email, config.idm.application);
-  if (user) {
+  if (isEnabledAccount(user)) {
     return getCreateAccount(request, h, applyEmailExistsError(form, 'email'));
   }
 
@@ -48,10 +51,11 @@ const getSetPermissions = async (request, h, formFromPost) => {
   const form = formFromPost || setPermissionsForm(request, null, true);
 
   return h.view(
-    'nunjucks/account/set-permissions.njk',
+    'nunjucks/form.njk',
     {
       ...request.view,
-      form
+      form,
+      back: '/account/create-user'
     },
     { layout: false }
   );
@@ -98,6 +102,63 @@ const getCreateAccountSuccess = async (request, h) => {
   );
 };
 
+const getDeleteUserAccount = async (request, h, formFromPost) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+  const form = formFromPost || deleteUserForm(request, userEmail);
+
+  const view = {
+    ...request.view,
+    userEmail,
+    form,
+    back: `/user/${userId}/status`
+  };
+
+  return h.view('nunjucks/form.njk', view, { layout: false });
+};
+
+const postDeleteUserAccount = async (request, h) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+
+  const form = handleRequest(
+    deleteUserForm(request, userEmail),
+    request,
+    deleteUserSchema
+  );
+
+  if (!form.isValid) {
+    return getDeleteUserAccount(request, h, form);
+  }
+  try {
+    await services.water.users.disableInternalUser(request.defra.userId, userId);
+
+    return h.redirect(`/account/delete-account/${userId}/success`);
+  } catch (err) {
+    if (err.statusCode === 404) {
+      const message = 'The account specified does not exist';
+      return getDeleteUserAccount(request, h, applyErrors(form, [{
+        name: 'confirmDelete',
+        message,
+        summary: message }]));
+    }
+    throw (err);
+  }
+};
+
+const getDeleteAccountSuccess = async (request, h) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+
+  return h.view('nunjucks/account/delete-user-success.njk', {
+    ...request.view,
+    deletedUser: {
+      userEmail,
+      userId
+    }
+  }, { layout: false });
+};
+
 exports.getCreateAccount = getCreateAccount;
 exports.postCreateAccount = postCreateAccount;
 
@@ -105,3 +166,7 @@ exports.getSetPermissions = getSetPermissions;
 exports.postSetPermissions = postSetPermissions;
 
 exports.getCreateAccountSuccess = getCreateAccountSuccess;
+
+exports.getDeleteUserAccount = getDeleteUserAccount;
+exports.postDeleteUserAccount = postDeleteUserAccount;
+exports.getDeleteAccountSuccess = getDeleteAccountSuccess;

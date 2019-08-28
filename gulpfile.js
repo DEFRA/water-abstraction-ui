@@ -79,7 +79,15 @@ gulp.task('combine-minify-js', () => {
 gulp.task('combine-minify-js-nunjucks', () => {
   // All JS files that are required by front end in order
   const files = [
-    './node_modules/iframe-resizer/js/iframeResizer.min.js'
+    './node_modules/govuk-frontend/all.js',
+    './node_modules/iframe-resizer/js/iframeResizer.min.js',
+    './src/shared/public/javascripts/jquery-3.3.1.min.js',
+    './src/shared/public/javascripts/abstraction-reform.js',
+    './src/shared/public/javascripts/v2/json-forms-toggle.js',
+    './src/shared/public/javascripts/v2/abstraction-reform.js',
+    './src/shared/public/javascripts/v2/clickable-rows.js',
+    './src/shared/public/javascripts/v2/toggle-visibility.js',
+    './src/shared/public/javascripts/v2/back-link.js'
   ];
 
   return combineMinifyJs(files, 'application-v2.all.min.js');

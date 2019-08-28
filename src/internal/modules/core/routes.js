@@ -1,5 +1,7 @@
 const { VALID_UTM } = require('shared/lib/validators');
 const controller = require('./controller');
+const pkg = require('../../../../package.json');
+const { version } = pkg;
 
 module.exports = {
 
@@ -29,7 +31,7 @@ module.exports = {
   status: {
     method: 'GET',
     path: '/status',
-    handler: () => 'OK',
+    handler: () => ({ version }),
     config: {
       auth: {
         strategy: 'standard',

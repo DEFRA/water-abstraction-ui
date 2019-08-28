@@ -1,37 +1,36 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "nunjucks/returns/macros/return-header.njk" import returnHeader %}
-{% from "nunjucks/returns/macros/confirm-page-inset-text.njk" import confirmPageInsetText %}
-{% from "nunjucks/returns/macros/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "returns/return-header.njk" import returnHeader %}
+{% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
+{% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
 {% from "nunjucks/returns/macros/return-declaration.njk" import returnDeclaration %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    {{ returnHeader(data, documentHeader, showMeta, isAdmin) }}
-    <h3 class="govuk-heading-m">
-      <span>Confirm </span>
-      {{ "this" if isAdmin else "your" }}
-      <span> return</span>
-    </h3>
+    {{ returnHeader(data, documentHeader, showMeta) }}
 
-    {{ confirmPageInsetText(return, endReading, isAdmin) }}
+    <h2 class="govuk-heading-l">
+      {{ "Nil return" if data.isNil else "Confirm your return" }}
+    </h2>
+    {{ meterDetailsInsetText(data, endReading) }}
   </div>
 
-      {{ returnQuantitiesTable(return, lines, total, endReading, isAdmin) }}
+  {% if not data.isNil %}
+  {{ returnQuantitiesTable(data, lines, total, endReading) }}
+  {% endif %}
 
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+
+      {% if not data.isNil %}
       <p>
-        <a href="{{ makeChangePath }}">
-          <span>Edit </span>
-          <span>{{ "these" if isAdmin else "your"}} </span>
-          <span>{{ "meter readings" if return.reading.method else "volumes" }}</span>
-        </a>
+        <a href="{{ makeChangePath }}">{{ makeChangeText }}</a>
       </p>
-      
-      {{ returnDeclaration(isAdmin) }}
+      {% endif %}
+
+      {{ returnDeclaration() }}
       {{ formRender(form) }}
     </div>
   </div>

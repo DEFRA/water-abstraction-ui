@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const { markdown } = require('shared/view/nunjucks/filters/markdown');
 

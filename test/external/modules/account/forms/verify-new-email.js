@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const { verifyNewEmailForm } = require('external/modules/account/forms/verify-new-email');
 
@@ -19,7 +19,7 @@ const createRequest = () => {
 experiment('verifyNewEmailForm', () => {
   test('has a verification code field', async () => {
     const form = verifyNewEmailForm(createRequest());
-    const verify = form.fields.find(x => x.name === 'verification-code');
+    const verify = form.fields.find(x => x.name === 'verificationCode');
     expect(verify).to.exist();
   });
 
@@ -40,7 +40,7 @@ experiment('verifyNewEmailForm', () => {
   experiment('errors', () => {
     test('returns an error if the verification code field is missing', async () => {
       const request = createRequest();
-      request.payload['verification-code'] = '';
+      request.payload['verificationCode'] = '';
 
       const form = verifyNewEmailForm(request);
       const validated = handleRequest(form, request);
@@ -48,7 +48,7 @@ experiment('verifyNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
 
       expect(validated.errors.find(f => {
-        return f.name === 'verification-code' &&
+        return f.name === 'verificationCode' &&
           f.message === 'Check your code';
       })).to.exist();
     });

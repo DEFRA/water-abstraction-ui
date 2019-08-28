@@ -6,8 +6,8 @@ const {
   beforeEach,
   afterEach,
   test
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');

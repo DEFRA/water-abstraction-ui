@@ -1,13 +1,13 @@
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/waiting/controller');
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const {
   test,
   experiment,
   beforeEach,
   afterEach
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 

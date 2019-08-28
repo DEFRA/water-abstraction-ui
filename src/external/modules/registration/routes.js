@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const loginHelpers = require('../../lib/login-helpers');
 
@@ -16,7 +16,8 @@ module.exports = {
       description: 'Register start page - information for users before registering',
       plugins: {
         viewContext: {
-          pageTitle: 'Create an account to manage your water abstraction licence online'
+          pageTitle: 'Create an account to manage your water abstraction licence online',
+          back: '/signin'
         }
       }
     }
@@ -34,7 +35,8 @@ module.exports = {
       description: 'Register user account - get email address',
       plugins: {
         viewContext: {
-          pageTitle: 'Create an account'
+          pageTitle: 'Create an account',
+          back: '/start'
         }
       }
     }
@@ -49,6 +51,12 @@ module.exports = {
       validate: {
         payload: {
           email: Joi.string().allow('').max(254)
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Create an account',
+          back: '/start'
         }
       }
     }
@@ -89,7 +97,8 @@ module.exports = {
       description: 'Register user account - resend email form',
       plugins: {
         viewContext: {
-          pageTitle: 'Request another email'
+          pageTitle: 'Ask for another email',
+          back: '/start'
         }
       }
     }
@@ -104,6 +113,12 @@ module.exports = {
       validate: {
         payload: {
           email: Joi.string().allow('').max(254)
+        }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Ask for another email',
+          back: '/start'
         }
       }
     }

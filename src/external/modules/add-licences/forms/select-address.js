@@ -1,5 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const getLines = licences => {
   return licences.map(licence => {

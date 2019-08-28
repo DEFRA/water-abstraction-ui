@@ -1,0 +1,48 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error.name === 'LicenceNotSelectedError' %}
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+              { text: "Select the licences that belong to you", href: "#licences" }
+            ]
+          })
+        }}
+      {% endif %}
+
+      <form method="POST" novalidate action="/select-licences">
+        <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
+        {{
+          govukCheckboxes({
+            name: 'licences',
+            hint: {
+              text: " You can add more licences at any time."
+            },
+            items: licences
+          })
+        }}
+        {{
+          govukButton({ type: "submit", text: "Continue" })
+        }}
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        <a class="govuk-link" href="/select-licences-error">Some licences are missing or do not belong to me</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

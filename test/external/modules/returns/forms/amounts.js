@@ -1,7 +1,7 @@
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');
-const amountsForm = require('external/modules/returns/forms/amounts');
+const { form: amountsForm } = require('external/modules/returns/forms/amounts');
 
 const createRequest = (isInternal = true) => {
   return {
@@ -22,28 +22,21 @@ const createRequest = (isInternal = true) => {
 experiment('amountsForm', () => {
   test('has a radio field for whether water has been abstracted field', async () => {
     const request = createRequest();
-    const form = amountsForm(request);
+    const form = amountsForm(request, {});
     const isNil = find(form.fields, { name: 'isNil' });
     expect(isNil.options.widget).to.equal('radio');
   });
 
-  test('internal label is shown for internal user', async () => {
-    const request = createRequest();
-    const form = amountsForm(request);
-    const label = form.fields[0];
-    expect(label.options.text).to.equal('Has water been abstracted in this return period?');
-  });
-
   test('external label is shown for external user', async () => {
-    const request = createRequest(false);
-    const form = amountsForm(request);
-    const label = form.fields[0];
-    expect(label.options.text).to.equal('Have you abstracted water in this return period?');
+    const request = createRequest();
+    const form = amountsForm(request, {});
+    const isNil = find(form.fields, { name: 'isNil' });
+    expect(isNil.options.label).to.equal('Have you abstracted water in this return period?');
   });
 
   test('has a continue button', async () => {
     const request = createRequest();
-    const form = amountsForm(request);
+    const form = amountsForm(request, {});
     const button = form.fields.find(f => {
       return f.options.widget === 'button' && f.options.label === 'Continue';
     });
@@ -52,7 +45,7 @@ experiment('amountsForm', () => {
 
   test('has a hidden csrf field', async () => {
     const request = createRequest();
-    const form = amountsForm(request);
+    const form = amountsForm(request, {});
     const csrf = form.fields.find(x => x.name === 'csrf_token');
     expect(csrf.value).to.equal('test-csrf-token');
   });

@@ -1,5 +1,5 @@
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
 const UsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient');
@@ -33,6 +33,12 @@ experiment('Shared UsersApiClient', () => {
     client = new UsersApiClient(config, logger);
 
     sandbox.stub(serviceRequest, 'post').resolves(userResponse);
+    sandbox.stub(client, 'findOne').resolves({
+      error: null,
+      data: {
+        user_id: 'user_1'
+      }
+    });
     sandbox.stub(client, 'findMany').resolves({
       error: null,
       data: [{
@@ -125,6 +131,26 @@ experiment('Shared UsersApiClient', () => {
     });
   });
 
+  experiment('findOneById', () => {
+    test('calls client.findMany with correct filter', async () => {
+      await client.findOneById(userId);
+      expect(client.findOne.calledWith(userId)).to.equal(true);
+    });
+
+    test('resolves with user found in API call', async () => {
+      const result = await client.findOneById(userId);
+      expect(result).to.equal({
+        user_id: userId
+      });
+    });
+
+    test('throws error if error API response', async () => {
+      client.findOne.resolves({ error: 'oh no!' });
+      const func = () => client.findOneById(userId);
+      expect(func()).to.reject();
+    });
+  });
+
   experiment('updateExternalId', () => {
     test('calls client.updateOne if external ID is truthy', async () => {
       await client.updateExternalId({ user_id: userId }, entityId);
@@ -152,6 +178,24 @@ experiment('Shared UsersApiClient', () => {
     test('the expected password is passed to updateOne', async () => {
       const [, updates] = client.updateOne.lastCall.args;
       expect(updates).to.equal({ password: 'new-password' });
+    });
+  });
+
+  experiment('reauthenticate', () => {
+    beforeEach(async () => {
+      await client.reauthenticate('test-id', 'current-password');
+    });
+
+    test('the expected user ID is present in the URI', async () => {
+      const [uri] = serviceRequest.post.lastCall.args;
+      expect(uri).to.equal('https://example.com/idm/user/test-id/reauthenticate');
+    });
+
+    test('the expected password is sent in the post body', async () => {
+      const [, options] = serviceRequest.post.lastCall.args;
+      expect(options.body).to.equal({
+        password: 'current-password'
+      });
     });
   });
 });

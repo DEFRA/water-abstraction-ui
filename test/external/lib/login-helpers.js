@@ -1,7 +1,7 @@
 const sinon = require('sinon');
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const { logger } = require('external/logger');
-const { experiment, test, afterEach, beforeEach } = exports.lab = require('lab').script();
+const { experiment, test, afterEach, beforeEach } = exports.lab = require('@hapi/lab').script();
 const loginHelpers = require('external/lib/login-helpers');
 const services = require('external/lib/connectors/services');
 const { scope } = require('external/lib/constants');

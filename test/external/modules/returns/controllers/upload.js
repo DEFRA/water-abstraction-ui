@@ -1,6 +1,6 @@
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const { set } = require('lodash');
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('lab').script();
+const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 

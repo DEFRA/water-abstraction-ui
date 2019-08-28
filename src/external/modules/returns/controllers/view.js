@@ -1,21 +1,9 @@
 /* eslint new-cap: "warn" */
-const Boom = require('boom');
-const { get } = require('lodash');
+const Boom = require('@hapi/boom');
 
-const { isInternal } = require('../../../lib/permissions');
+const helpers = require('../lib/helpers');
 
-const {
-  getLicenceNumbers,
-  getReturnsViewData,
-  getReturnTotal,
-  endReadingKey
-} = require('../lib/helpers');
-
-const {
-  getLinesWithReadings
-} = require('../lib/return-helpers');
-
-const { getEditButtonPath } = require('../lib/return-path');
+const WaterReturn = require('shared/modules/returns/models/WaterReturn');
 
 const services = require('../../../lib/connectors/services');
 
@@ -24,8 +12,8 @@ const services = require('../../../lib/connectors/services');
  * grouped by year
  */
 const getReturns = async (request, h) => {
-  const view = await getReturnsViewData(request);
-  return h.view('water/returns/index', view);
+  const view = await helpers.getReturnsViewData(request);
+  return h.view('nunjucks/returns/index.njk', view, { layout: false });
 };
 
 /**
@@ -34,17 +22,19 @@ const getReturns = async (request, h) => {
  * @param {Number} request.query.page - the page number for paginated results
  */
 const getReturnsForLicence = async (request, h) => {
-  const view = await getReturnsViewData(request);
+  const view = await helpers.getReturnsViewData(request);
 
   const { documentId } = request.params;
 
   if (!view.document) {
     throw Boom.notFound(`Document ${documentId} not found - entity ${request.defra.entityId} may not have the correct roles`);
   }
-  view.pageTitle = `Returns for ${view.document.system_external_id}`;
+  view.pageTitle = `Returns for licence number ${view.document.system_external_id}`;
   view.paginationUrl = `/licences/${documentId}/returns`;
+  view.back = `/licences/${documentId}`;
+  view.backText = `Licence number ${view.document.system_external_id}`;
 
-  return h.view('water/returns/licence', view);
+  return h.view('nunjucks/returns/licence.njk', view, { layout: false });
 };
 
 /**
@@ -57,37 +47,32 @@ const getReturn = async (request, h) => {
 
   // Load return data
   const data = await services.water.returns.getReturn(id, version);
-  const lines = getLinesWithReadings(data);
+  const model = new WaterReturn(data);
 
   // Load CRM data to check access
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const isInternalUser = isInternal(request);
-  const [ documentHeader ] = await getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: isInternalUser });
+  const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
 
-  const canView = documentHeader && (isInternalUser || (data.isCurrent && data.metadata.isCurrent));
+  const canView = documentHeader && data.isCurrent && model.metadata.isCurrent;
 
   if (!canView) {
     throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
   }
 
-  const showVersions = isInternal && get(data, 'versions[0].email');
-
   const view = {
-    total: getReturnTotal(data),
+    total: model.getReturnTotal(),
     ...request.view,
-    return: data,
-    lines,
+    data: model.toObject(),
+    lines: model.getLines(true),
     pageTitle: `Abstraction return for ${licenceNumber}`,
     documentHeader,
-    editButtonPath: getEditButtonPath(data, request),
-    showVersions,
     isVoid: data.status === 'void',
-    endReading: get(data, `meters[0].readings.${endReadingKey(data)}`)
+    endReading: model.meter.getEndReading()
   };
 
-  return h.view('water/returns/return', view);
+  return h.view('nunjucks/returns/return.njk', view, { layout: false });
 };
 
 module.exports = {

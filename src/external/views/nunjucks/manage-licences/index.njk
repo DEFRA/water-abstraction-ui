@@ -1,0 +1,34 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Add licences</h2>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          <a class="govuk-link" href="/add-licences">Add more of your licences to the service</a>
+        </li>
+        <li>
+          <a class="govuk-link" href="/security-code">Enter the security code we sent you to link your licences to your account</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Share access licences</h2>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            <a class="govuk-link" href="/manage_licences/access">Give or remove access to your licence information</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

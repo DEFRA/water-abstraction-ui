@@ -1,5 +1,5 @@
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
-const { expect } = require('code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
 const AuthConfig = require('shared/lib/AuthConfig');
@@ -51,9 +51,7 @@ experiment('AuthConfig base class', () => {
     const user = {
       user_id: userId,
       user_name: userName,
-      role: {
-        scopes: ['internal', 'returns']
-      }
+      roles: ['internal', 'returns']
     };
     if (withEntity) {
       user.external_id = entityId;
@@ -216,7 +214,7 @@ experiment('AuthConfig base class', () => {
       test('credentials returned include user ID and scope', async () => {
         const { credentials } = await authConfig.validateFunc(request, { userId });
         expect(credentials.userId).to.equal(userId);
-        expect(credentials.scope).to.equal(user.role.scopes);
+        expect(credentials.scope).to.equal(user.roles);
       });
 
       test('sets data in the request.defra object', async () => {
@@ -226,7 +224,7 @@ experiment('AuthConfig base class', () => {
         expect(request.defra.userName).to.equal(user.user_name);
         expect(request.defra.user).to.equal(user);
         expect(request.defra.entityId).to.equal(entityId);
-        expect(request.defra.userScopes).to.equal(user.role.scopes);
+        expect(request.defra.userScopes).to.equal(user.roles);
       });
     });
 

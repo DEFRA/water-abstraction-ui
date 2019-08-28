@@ -1,56 +1,52 @@
 'use strict';
 
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const lab = exports.lab = Lab.script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const constants = require('internal/lib/constants');
-const allAdmin = constants.scope.allAdmin;
+const { hofNotifications, renewalNotifications } = constants.scope;
+const allowedScopes = [hofNotifications, renewalNotifications];
 const routes = require('internal/modules/notifications/routes');
 
 lab.experiment('notifications - admin routes', () => {
-  lab.test('getStep has admin auth scopes', async () => {
+  lab.test('getStep has HoF / renewal notification scopes', async () => {
     const route = routes.getStep;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('postStep has admin auth scopes', async () => {
+  lab.test('postStep has HoF / renewal notification scopes', async () => {
     const route = routes.postStep;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('getResetPassword has admin auth scopes', async () => {
-    const route = routes.getResetPassword;
-    expect(route.config.auth.scope).to.equal(allAdmin);
-  });
-
-  lab.test('getRefine has admin auth scopes', async () => {
+  lab.test('getRefine has HoF / renewal notification scopes', async () => {
     const route = routes.getRefine;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('postRefine has admin auth scopes', async () => {
+  lab.test('postRefine has HoF / renewal notification scopes', async () => {
     const route = routes.postRefine;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('getVariableData has admin auth scopes', async () => {
+  lab.test('getVariableData has HoF / renewal notification scopes', async () => {
     const route = routes.getVariableData;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('postVariableData has admin auth scopes', async () => {
+  lab.test('postVariableData has HoF / renewal notification scopes', async () => {
     const route = routes.postVariableData;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('getPreview has admin auth scopes', async () => {
+  lab.test('getPreview has HoF / renewal notification scopes', async () => {
     const route = routes.getPreview;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 
-  lab.test('postSend has admin auth scopes', async () => {
+  lab.test('postSend has HoF / renewal notification scopes', async () => {
     const route = routes.postSend;
-    expect(route.config.auth.scope).to.equal(allAdmin);
+    expect(route.config.auth.scope).to.only.include(allowedScopes);
   });
 });

@@ -12,6 +12,9 @@ const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiC
 const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient');
 const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient');
 
+// Services
+const ChangeEmailAddressService = require('./ChangeEmailAddressService');
+
 // API Clients
 const NotificationsApiClient = require('./NotificationsApiClient');
 
@@ -31,6 +34,9 @@ module.exports = config => ({
   events: new EventsApiClient(config, logger),
   gaugingStations: new GaugingStationsApiClient(config, logger),
   pendingImports: new PendingImportsApiClient(config, logger),
+
+  // Services
+  changeEmailAddress: new ChangeEmailAddressService(config.services.water, logger),
 
   // API Clients
   notifications: new NotificationsApiClient(config, logger)

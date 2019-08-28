@@ -1,0 +1,22 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p>
+        We have emailed the new user instructions to complete
+        their account set up.
+      </p>
+      <p>
+        <a href="/user/{{ userId }}/status" class="govuk-link">
+          View the user page
+        </a>
+        for
+        <span class="govuk-!-font-weight-bold">{{ email }}</span>.
+      </p>
+    </div>
+  </div>
+
+{% endblock %}

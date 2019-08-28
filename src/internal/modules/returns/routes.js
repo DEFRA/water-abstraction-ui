@@ -4,6 +4,6 @@ const internalRoutes = require('./routes/internal');
 
 module.exports = [
   ...Object.values(viewInternalRoutes),
-  ...Object.values(editInternalRoutes),
+  ...editInternalRoutes,
   ...Object.values(internalRoutes)
 ];

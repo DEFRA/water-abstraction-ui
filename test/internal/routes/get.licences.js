@@ -1,27 +1,29 @@
 'use strict';
 
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
+const {
+  experiment,
+  test,
+  beforeEach,
+  afterEach
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
-const Code = require('code');
 const server = require('../../../server-internal');
 
 const routePath = '/licences';
 const sinon = require('sinon');
 let sandbox;
 
-lab.experiment('Check licences', () => {
-  lab.beforeEach((cb) => {
+experiment('Check licences', () => {
+  beforeEach(async () => {
     sandbox = sinon.sandbox.create();
-    cb();
   });
 
-  lab.afterEach((cb) => {
+  afterEach(async () => {
     sandbox.restore();
-    cb();
   });
 
-  lab.test('The page should redirect if unauthorised', async () => {
+  test('The page should redirect if unauthorised', async () => {
     const request = {
       method: 'GET',
       url: routePath,
@@ -30,6 +32,6 @@ lab.experiment('Check licences', () => {
     };
 
     const res = await server.inject(request);
-    Code.expect(res.statusCode).to.equal(302);
+    expect(res.statusCode).to.equal(302);
   });
 });

@@ -1,6 +1,6 @@
 const { find, get } = require('lodash');
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const confirmForm = require('external/modules/returns/forms/confirm-upload');
 
 const findButton = field => get(field, 'options.widget') === 'button';

@@ -7,8 +7,8 @@
  * @module lib/hapi-plugins/csrf
  */
 const { URL } = require('url');
-const Boom = require('boom');
-const Joi = require('joi');
+const Boom = require('@hapi/boom');
+const Joi = require('@hapi/joi');
 const { get } = require('lodash');
 
 /**

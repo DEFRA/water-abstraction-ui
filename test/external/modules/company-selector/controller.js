@@ -3,8 +3,8 @@
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { set } = require('lodash');
-const { expect } = require('code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const controller = require('external/modules/company-selector/controller');
 const loginHelpers = require('external/lib/login-helpers');
 const { externalUserWithLicences } = require('../../../shared/responses/water-service/user/_userId_/status');

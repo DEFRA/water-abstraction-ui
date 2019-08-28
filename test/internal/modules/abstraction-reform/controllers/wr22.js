@@ -1,7 +1,7 @@
 require('dotenv').config();
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const sinon = require('sinon');
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const { getDeleteData, postDeleteData } = require('internal/modules/abstraction-reform/controllers/wr22');
 const wr22Helpers = require('internal/modules/abstraction-reform/lib/wr22-helpers');
 

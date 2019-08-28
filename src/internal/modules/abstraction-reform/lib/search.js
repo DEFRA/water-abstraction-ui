@@ -3,7 +3,7 @@
  * abstraction reform search page, and then match them up with AR "licences"
  * to enable display of status/last editor in list
  */
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { find, get } = require('lodash');
 
 const services = require('../../../lib/connectors/services');

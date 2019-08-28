@@ -1,7 +1,6 @@
 const { singleTotalForm, singleTotalSchema } = require('./single-total');
 const { quantitiesForm, quantitiesSchema } = require('./quantities');
 const { meterDetailsForm, meterDetailsSchema } = require('./meter-details');
-const meterUnitsForm = require('./meter-units');
 const { meterReadingsForm, meterReadingsSchema } = require('./meter-readings');
 const { logReceiptForm, logReceiptSchema } = require('./log-receipt');
 const { meterDetailsProvidedForm } = require('./meter-details-provided');
@@ -23,7 +22,6 @@ module.exports = {
   quantitiesSchema,
   meterDetailsForm,
   meterDetailsSchema,
-  meterUnitsForm,
   meterReadingsForm,
   meterReadingsSchema,
   meterResetForm: require('./meter-reset'),

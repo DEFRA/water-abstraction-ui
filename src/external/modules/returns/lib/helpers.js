@@ -1,14 +1,14 @@
 /* eslint new-cap: "warn" */
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const moment = require('moment');
-const { get, isObject, findLastKey, last } = require('lodash');
+const { get, isObject, last } = require('lodash');
 const titleCase = require('title-case');
 
 const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
-const { getReturnPath } = require('./return-path');
+const { getReturnPath } = require('external/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const helpers = require('@envage/water-abstraction-helpers');
 
@@ -212,21 +212,6 @@ const hasGallons = (lines) => {
   }, false);
 };
 
-/**
- * Gets return total, which can also be null if no values are filled in
- * @param {Object} ret - return model from water service
- * @return {Number|null} total or null
- */
-const getReturnTotal = (ret) => {
-  if (!ret.lines) {
-    return null;
-  }
-  const lines = ret.lines.filter(line => line.quantity !== null);
-  return lines.length === 0 ? null : lines.reduce((acc, line) => {
-    return acc + parseFloat(line.quantity);
-  }, 0);
-};
-
 const isReturnPastDueDate = returnRow => {
   const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
   const today = moment().startOf('day');
@@ -383,8 +368,6 @@ const getBadge = (status, isPastDueDate) => {
   };
 };
 
-const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0);
-
 exports.getLicenceNumbers = getLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
 exports.isXmlUpload = isXmlUpload;
@@ -393,7 +376,6 @@ exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
 exports.getLatestVersion = getLatestVersion;
 exports.hasGallons = hasGallons;
 exports.getReturnsViewData = getReturnsViewData;
-exports.getReturnTotal = getReturnTotal;
 exports.getViewData = getViewData;
 exports.isReturnPastDueDate = isReturnPastDueDate;
 exports.getRedirectPath = getRedirectPath;
@@ -401,4 +383,3 @@ exports.isReturnId = isReturnId;
 exports.getSuffix = getSuffix;
 exports.getBadge = getBadge;
 exports.mapReturns = mapReturns;
-exports.endReadingKey = endReadingKey;

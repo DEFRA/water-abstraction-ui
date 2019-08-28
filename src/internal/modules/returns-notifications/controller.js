@@ -1,5 +1,5 @@
 const moment = require('moment');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const { reduce, pick, uniqBy, difference, last } = require('lodash');
 
 const { handleRequest, getValues, setValues } = require('shared/lib/forms');

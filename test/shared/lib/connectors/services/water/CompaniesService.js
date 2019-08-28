@@ -6,8 +6,8 @@ const {
   beforeEach,
   afterEach,
   test
-} = exports.lab = require('lab').script();
-const { expect } = require('code');
+} = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code');
 
 const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers');
 const { last } = require('lodash');

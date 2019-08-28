@@ -1,5 +1,5 @@
-const { expect } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const {
   enterNewEmailForm,
@@ -59,7 +59,7 @@ experiment('enterNewEmailForm', () => {
 
       expect(validated.errors.find(f => {
         return f.name === 'email' &&
-          f.message === 'Enter your email';
+          f.message === 'Enter your new email address';
       })).to.exist();
     });
 
@@ -89,7 +89,7 @@ experiment('enterNewEmailForm', () => {
 
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
-        return f.name === 'email' &&
+        return f.name === 'confirm-email' &&
           f.message === 'The email addresses must match';
       })).to.exist();
     });
@@ -105,7 +105,7 @@ experiment('enterNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
         return f.name === 'email' &&
-          f.message === 'Enter a valid email';
+          f.message === 'Enter an email address, like name@example.com';
       })).to.exist();
     });
 
@@ -120,7 +120,7 @@ experiment('enterNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
         return f.name === 'confirm-email' &&
-          f.message === 'Enter a valid email';
+          f.message === 'The email addresses must match';
       })).to.exist();
     });
   });

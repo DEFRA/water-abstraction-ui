@@ -1,7 +1,7 @@
 const { APIClient } = require('@envage/hapi-pg-rest-api');
 const urlJoin = require('url-join');
 const { http } = require('@envage/water-abstraction-helpers');
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 
 const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'documentHeader');
 

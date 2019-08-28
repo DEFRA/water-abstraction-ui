@@ -1,14 +1,13 @@
 /* eslint new-cap: "warn" */
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const moment = require('moment');
 const { get, isObject, findLastKey, last } = require('lodash');
 const titleCase = require('title-case');
 
-const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
-const { getReturnPath } = require('./return-path');
+const { getReturnPath } = require('internal/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const helpers = require('@envage/water-abstraction-helpers');
 
@@ -42,13 +41,10 @@ const getLicenceNumbers = (request, filter = {}) => {
 /**
  * Gets the filter to use for retrieving licences from returns service
  * @param {Array} licenceNumbers
- * @param {Boolean} isInternal
  * @return {Object} filter
  */
-const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
-  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
-
-  const filter = {
+const getLicenceReturnsFilter = (licenceNumbers) => {
+  return {
     regime: 'water',
     licence_type: 'abstraction',
     licence_ref: {
@@ -58,23 +54,6 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
       $gte: '2008-04-01'
     }
   };
-
-  // External users can only view returns for the current version of a licence
-  // and cannot see void returns.
-  if (!isInternal) {
-    filter['metadata->>isCurrent'] = 'true';
-    filter.status = { $ne: 'void' };
-  }
-
-  // External users on production-like environments can only view returns where
-  // return cycle is in the past
-  if (!isInternal && !showFutureReturns) {
-    filter.end_date = {
-      $lte: moment().format('YYYY-MM-DD')
-    };
-  }
-
-  return filter;
 };
 
 /**
@@ -82,8 +61,8 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
  * @param {Array} list of licence numbers to get returns data for
  * @return {Promise} resolves with returns
  */
-const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) => {
-  const filter = getLicenceReturnsFilter(licenceNumbers, isInternal);
+const getLicenceReturns = async (licenceNumbers, page = 1) => {
+  const filter = getLicenceReturnsFilter(licenceNumbers);
 
   const sort = {
     start_date: -1,
@@ -276,23 +255,18 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const isInternal = isInternalUser(request);
-
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
-  const xmlUpload = await isXmlUpload(licenceNumbers);
-  const externalReturns = isExternalReturns(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
-    xmlUser: xmlUpload && externalReturns,
     returns: []
   };
 
   if (licenceNumbers.length) {
-    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, isInternal);
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, true);
     const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(mapReturns(data, request), documents));
 
     view.pagination = pagination;
@@ -317,8 +291,7 @@ const getScopedPath = (request, path) => path;
  * @return {Promise} resolves with view data
  */
 const getViewData = async (request, data) => {
-  const isInternal = isInternalUser(request);
-  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, isInternal);
+  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, true);
   return {
     ...request.view,
     documentHeader,

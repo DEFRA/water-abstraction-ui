@@ -1,7 +1,7 @@
 'use strict';
 const moment = require('moment');
-const { expect } = require('code');
-const Lab = require('lab');
+const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const { beforeEach, afterEach, experiment, test } = exports.lab = Lab.script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
@@ -90,12 +90,6 @@ experiment('getLicenceReturns', () => {
     await helpers.getLicenceReturns([], 1, true);
     const filter = services.returns.returns.findMany.args[0][0];
     expect(get(filter, 'status.$ne')).to.be.undefined();
-  });
-
-  test('omits void returns for external users', async () => {
-    await helpers.getLicenceReturns([], 1, false);
-    const filter = services.returns.returns.findMany.args[0][0];
-    expect(get(filter, 'status.$ne')).to.equal('void');
   });
 });
 

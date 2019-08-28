@@ -1,12 +1,12 @@
 'use strict';
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('lab').script();
+} = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
@@ -24,7 +24,7 @@ experiment('getContactInformation', () => {
     sandbox.restore();
   });
 
-  test('renders the form view', async () => {
+  test('renders the form view when contact details have been set previously', async () => {
     const request = {
       defra: {
         user: {
@@ -33,6 +33,20 @@ experiment('getContactInformation', () => {
               name: 'test-name'
             }
           }
+        }
+      },
+      view: {}
+    };
+
+    await controller.getContactInformation(request, h);
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/form.njk');
+  });
+
+  test('renders the form view when contact details are empty', async () => {
+    const request = {
+      defra: {
+        user: {
         }
       },
       view: {}
@@ -71,6 +85,7 @@ experiment('postContactInformation', () => {
         csrf_token: '00000000-0000-0000-0000-000000000000'
       },
       defra: {
+        userId: 'test-user-id',
         user: {
           user_id: 'test-user-id',
           user_data: {

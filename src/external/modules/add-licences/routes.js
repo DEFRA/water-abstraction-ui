@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const controller = require('./controller');
 
 module.exports = {
@@ -9,9 +9,16 @@ module.exports = {
     path: '/add-licences',
     handler: controller.getLicenceAdd,
     config: {
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage',
+          pageTitle: 'Add your licences to the service'
+        }
+      },
       description: 'Start flow to add licences'
     }
   },
+
   postLicenceAdd: {
     method: 'POST',
     path: '/add-licences',
@@ -22,6 +29,12 @@ module.exports = {
         payload: {
           licence_no: Joi.string().allow('').max(9000),
           csrf_token: Joi.string().guid().required()
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'manage',
+          pageTitle: 'Add your licences to the service'
         }
       }
     }
@@ -38,6 +51,13 @@ module.exports = {
         query: {
           error: Joi.string().max(32)
         }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Confirm your licences',
+          activeNavLink: 'manage',
+          back: '/add-licences'
+        }
       }
     }
   },
@@ -52,6 +72,13 @@ module.exports = {
           licences: [Joi.array(), Joi.string().allow('')],
           csrf_token: Joi.string().guid().required()
         }
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Confirm your licences',
+          activeNavLink: 'manage',
+          back: '/add-licences'
+        }
       }
     }
   },
@@ -60,7 +87,13 @@ module.exports = {
     path: '/select-licences-error',
     handler: controller.getLicenceSelectError,
     config: {
-      description: 'Error uploading licences - show contact information'
+      description: 'Error uploading licences - show contact information',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Sorry, we need to confirm your licence information with you',
+          activeNavLink: 'manage'
+        }
+      }
     }
   },
 
@@ -150,6 +183,10 @@ module.exports = {
       plugins: {
         licenceLoader: {
           loadUserLicenceCount: true
+        },
+        viewContext: {
+          pageTitle: 'Enter your security code',
+          activeNavLink: 'manage'
         }
       }
     }
@@ -163,6 +200,10 @@ module.exports = {
       plugins: {
         licenceLoader: {
           loadUserLicenceCount: true
+        },
+        viewContext: {
+          pageTitle: 'Enter your security code',
+          activeNavLink: 'manage'
         }
       },
       validate: {

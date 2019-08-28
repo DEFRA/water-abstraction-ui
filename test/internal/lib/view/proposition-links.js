@@ -1,15 +1,15 @@
 'use strict';
 
 const { find } = require('lodash');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const lab = exports.lab = Lab.script();
 
-const { expect } = require('code');
+const { expect } = require('@hapi/code');
 
 const { getPropositionLinks } = require('internal/lib/view/proposition-links');
 const { scope } = require('internal/lib/constants');
 
-const getAuthenticatedRequest = () => {
+const getAuthenticatedRequest = (scope = []) => {
   return {
     view: {
       activeNavLink: 'change-password'
@@ -20,7 +20,7 @@ const getAuthenticatedRequest = () => {
     auth: {
       credentials: {
         userId: 'user_1',
-        scope: scope.internal
+        scope
       }
     }
   };
@@ -33,8 +33,22 @@ lab.experiment('getPropositionLinks', () => {
     expect(result.length).to.equal(0);
   });
 
-  lab.test('It should display contact details, change password, signout links for internal users', async () => {
-    const request = getAuthenticatedRequest(true);
+  lab.test('It should display change password, signout links for internal users', async () => {
+    const request = getAuthenticatedRequest();
+    const links = getPropositionLinks(request);
+    const ids = links.map(link => link.id);
+    expect(ids).to.equal(['change-password', 'signout']);
+  });
+
+  lab.test('It should display contact details, change password, signout links for internal users with HoF notification scope', async () => {
+    const request = getAuthenticatedRequest(scope.hofNotifications);
+    const links = getPropositionLinks(request);
+    const ids = links.map(link => link.id);
+    expect(ids).to.equal(['contact-information', 'change-password', 'signout']);
+  });
+
+  lab.test('It should display contact details, change password, signout links for internal users with renewal notification scope', async () => {
+    const request = getAuthenticatedRequest(scope.renewalNotifications);
     const links = getPropositionLinks(request);
     const ids = links.map(link => link.id);
     expect(ids).to.equal(['contact-information', 'change-password', 'signout']);
@@ -51,7 +65,6 @@ lab.experiment('getPropositionLinks', () => {
     const request = getAuthenticatedRequest();
     const links = getPropositionLinks(request);
 
-    expect(find(links, { id: 'contact-information' }).active).to.equal(false);
     expect(find(links, { id: 'signout' }).active).to.equal(false);
     ;
   });
@@ -60,6 +73,6 @@ lab.experiment('getPropositionLinks', () => {
     const request = getAuthenticatedRequest(true);
     const links = getPropositionLinks(request);
     const idAttributes = links.map(link => link.attributes.id);
-    expect(idAttributes).to.equal(['contact-information', 'change-password', 'signout']);
+    expect(idAttributes).to.equal(['change-password', 'signout']);
   });
 });

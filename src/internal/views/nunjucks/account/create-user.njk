@@ -1,0 +1,14 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ formErrorSummary(form) }}
+      {{ title(pageTitle) }}
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

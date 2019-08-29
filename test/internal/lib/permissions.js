@@ -268,4 +268,21 @@ experiment('permissions', () => {
       expect(permissions.isManageAccounts(request)).to.equal(true);
     });
   });
+
+  experiment('isCharging', async () => {
+    test('returns false if scopes empty', async () => {
+      const request = createRequest([]);
+      expect(permissions.isCharging(request)).to.equal(false);
+    });
+
+    test('it should return true if scopes "charging"', async () => {
+      const request = createRequest(['charging']);
+      expect(permissions.isCharging(request)).to.equal(true);
+    });
+
+    test('it should return true if scopes contains "charging"', async () => {
+      const request = createRequest(['charging', 'manage_accounts']);
+      expect(permissions.isCharging(request)).to.equal(true);
+    });
+  });
 });

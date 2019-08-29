@@ -47,6 +47,8 @@ const isManageTab = request => hasScope(request, scope.hasManageTab);
 
 const isManageAccounts = request => hasScope(request, scope.manageAccounts);
 
+const isCharging = request => hasScope(request, scope.charging);
+
 exports.hasScope = hasScope;
 exports.isAuthenticated = isAuthenticated;
 exports.isInternalReturns = isInternalReturns;
@@ -59,3 +61,4 @@ exports.isAnyNotifications = isAnyNotifications;
 exports.isBasicUser = isBasicUser;
 exports.isManageTab = isManageTab;
 exports.isManageAccounts = isManageAccounts;
+exports.isCharging = isCharging;

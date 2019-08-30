@@ -1,8 +1,7 @@
 <h2 class="govuk-heading-m">Charge versions</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-  Version {{ chargeVersion.versionNumber }}
-  {# <a class="govuk-link" href="/licences/{{ documentId }}/charge-version/{{ chargeVersion.chargeVersionId }}">Version {{ chargeVersion.versionNumber }}</a> #}
+  <a class="govuk-link" href="/licences/{{ documentId }}/charge-version/{{ chargeVersion.chargeVersionId }}">Version {{ chargeVersion.versionNumber }}</a>
 {% endmacro %}
 
 {% macro chargeVersionRowMobile(chargeVersion) %}
@@ -35,22 +34,28 @@
   </tr>
 {% endmacro %}
 
-{% for chargeVersion in chargeVersions %}
-  {{ chargeVersionRowMobile(chargeVersion) }}
-{% endfor %}
+{% if chargeVersions.length %}
 
-<table class="govuk-table phone--hide">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Version</th>
-      <th class="govuk-table__header" scope="col">Effective from</th>
-      <th class="govuk-table__header" scope="col">Effective to</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    {% for chargeVersion in chargeVersions %}
-      {{ chargeVersionRow(chargeVersion) }}
-    {% endfor %}
-  </tbody>
-</table>
+  {% for chargeVersion in chargeVersions %}
+    {{ chargeVersionRowMobile(chargeVersion) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Version</th>
+        <th class="govuk-table__header" scope="col">Effective from</th>
+        <th class="govuk-table__header" scope="col">Effective to</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for chargeVersion in chargeVersions %}
+        {{ chargeVersionRow(chargeVersion) }}
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+  <p>No charge versions for this licence.</p>
+{% endif %}

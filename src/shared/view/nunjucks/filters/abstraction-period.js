@@ -6,7 +6,7 @@ const moment = require('moment');
  * @param  {String} str - day and month string
  * @return {String}     - readable day and month string
  */
-const abstractionPeriod = (str) => {
+const abstractionPeriod = str => {
   if (str === null) {
     return null;
   }

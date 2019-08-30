@@ -5,6 +5,7 @@ const LicencesService = require('shared/lib/connectors/services/water/LicencesSe
 const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLevelsService');
 const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
+const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService');
 
 // Internal services (possibly unique, or overriding shared)
 const ReturnsService = require('./ReturnsService');
@@ -35,6 +36,7 @@ module.exports = config => ({
   riverLevels: new RiverLevelsService(config.services.water, logger),
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
+  chargeVersions: new ChargeVersionsService(config.services.water, logger),
 
   // Internal services
   returns: new ReturnsService(config.services.water, logger),

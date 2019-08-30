@@ -43,6 +43,8 @@ async function getLicenceAdd (request, h) {
   );
 }
 
+const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
+
 /**
  * Post handler for adding licences
  * Need to:
@@ -124,7 +126,7 @@ async function postLicenceAdd (request, reply) {
       return reply.view('nunjucks/add-licences/index.njk', viewContext, { layout: false });
     }
 
-    logger.errorWithJourney('Add licence error', err, request);
+    logger.info('Add licence error', err);
     throw err;
   }
 }
@@ -143,7 +145,7 @@ async function getLicenceSelect (request, reply) {
   }
 
   try {
-    const { documentIds } = request.yar.get('addLicenceFlow');
+    const { documentIds } = getFlowDataFromSession(request);
 
     // Get unverified licences from DB
     const { data, error } = await services.crm.documents.getUnregisteredLicencesByIds(documentIds);
@@ -182,7 +184,7 @@ async function postLicenceSelect (request, reply) {
   const { entityId } = request.defra;
 
   try {
-    const { documentIds } = request.yar.get('addLicenceFlow');
+    const { documentIds } = getFlowDataFromSession(request);
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
 
@@ -273,7 +275,7 @@ async function getAddressSelect (request, reply) {
   const { view } = request;
 
   // Load from session
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
   return reply.view('nunjucks/form.njk', {
@@ -333,14 +335,14 @@ const getLicence = async documentId => {
  */
 async function postAddressSelect (request, h) {
   const { selectedAddressId } = request.payload;
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
 
   const uniqueAddresses = await getUniqueAddresses(selectedIds);
   const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
 
   if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
-    const flowData = request.yar.get('addLicenceFlow');
+    const flowData = getFlowDataFromSession(request);
     flowData.selectedAddressId = selectedAddressId;
     request.yar.set('addLicenceFlow', flowData);
 
@@ -382,7 +384,7 @@ async function postFAO (request, h) {
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
 
   const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
 
@@ -498,6 +500,23 @@ async function postSecurityCode (request, reply) {
   }
 }
 
+/**
+ * Function to be used as a prehandler that ensures that the session contains
+ * data relating to the add licence flow. If not, then the user is redirected
+ * back to the start of the flow. This is here because there are user journeys
+ * seen in the error logs where on completion of the flow (where the session data
+ * is cleared) a user is going back to the previous page, which relies on the
+ * presence of the data in session.
+ *
+ * @param {Object} request HAPI request object
+ * @param {Object} h HAPI response toolkit
+ */
+const ensureSessionDataPreHandler = (request, h) => {
+  return getFlowDataFromSession(request)
+    ? h.continue
+    : h.redirect('/add-licences').takeover();
+};
+
 exports.getLicenceAdd = getLicenceAdd;
 exports.postLicenceAdd = postLicenceAdd;
 
@@ -514,3 +533,5 @@ exports.postFAO = postFAO;
 
 exports.getSecurityCode = getSecurityCode;
 exports.postSecurityCode = postSecurityCode;
+
+exports.ensureSessionDataPreHandler = ensureSessionDataPreHandler;

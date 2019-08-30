@@ -12,7 +12,6 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/markdown'),
   ...require('shared/view/nunjucks/filters/merge'),
   ...require('shared/view/nunjucks/filters/number'),
-  ...require('shared/view/nunjucks/filters/is-null'),
   ...require('shared/view/nunjucks/filters/is-object'),
   ...require('shared/view/nunjucks/filters/pluralize'),
   ...require('shared/view/nunjucks/filters/query-string'),

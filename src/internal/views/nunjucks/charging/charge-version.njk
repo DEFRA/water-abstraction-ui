@@ -65,7 +65,7 @@
           </dd>
         </div>
 
-        {% if not chargeElement.billableAnnualQuantity | isNull %}
+        {% if chargeElement.billableAnnualQuantity !== null %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Billable quantity

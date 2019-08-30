@@ -61,7 +61,7 @@ experiment('postPreviewRecipients', () => {
       request.payload = { licenceNumbers: '' };
       await controller.postPreviewRecipients(request, h);
       const [viewName] = h.view.lastCall.args;
-      expect(viewName).to.equal('water/returns-notifications/forms');
+      expect(viewName).to.equal('nunjucks/form.njk');
     });
   });
 
@@ -85,7 +85,7 @@ experiment('postPreviewRecipients', () => {
     test('the confirm view is rendered', async () => {
       await controller.postPreviewRecipients(request, h);
       const [viewName] = h.view.lastCall.args;
-      expect(viewName).to.equal('water/returns-notifications/forms-confirm');
+      expect(viewName).to.equal('nunjucks/returns-notifications/forms-confirm.njk');
     });
 
     test('the found licences are added to the view', async () => {

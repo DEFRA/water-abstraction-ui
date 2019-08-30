@@ -18,11 +18,12 @@ const { getFinalReminderConfig } = require('./lib/helpers');
  * Renders a page for the user to input a list of licences to whom
  * they wish to send return forms
  */
-const getSendForms = async (request, h) => {
-  return h.view('water/returns-notifications/forms', {
+const getSendForms = async (request, h, form) => {
+  return h.view('nunjucks/form.njk', {
     ...request.view,
-    form: licenceNumbersForm(request)
-  });
+    back: '/manage',
+    form: form || licenceNumbersForm(request)
+  }, { layout: false });
 };
 
 const isValidDateBeforeNow = val => {
@@ -90,17 +91,15 @@ const postPreviewRecipients = async (request, h) => {
       licenceNumbers: uniqueLicenceNumbers
     });
 
-    return h.view('water/returns-notifications/forms-confirm', {
+    return h.view('nunjucks/returns-notifications/forms-confirm.njk', {
       ...request.view,
+      back: '/returns-notifications/forms',
       form: confirmForm,
       uniqueLicences,
       notMatched: difference(licenceNumbers, uniqueLicenceNumbers)
-    });
+    }, { layout: false });
   } else {
-    return h.view('water/returns-notifications/forms', {
-      ...request.view,
-      form
-    });
+    return getSendForms(request, h, form);
   }
 };
 
@@ -134,9 +133,9 @@ const postSendForms = async (request, h) => {
  * Success page for when flow completed
  */
 const getSendFormsSuccess = (request, h) => {
-  return h.view('water/returns-notifications/forms-success', {
+  return h.view('nunjucks/returns-notifications/forms-success.njk', {
     ...request.view
-  });
+  }, { layout: false });
 };
 
 /**

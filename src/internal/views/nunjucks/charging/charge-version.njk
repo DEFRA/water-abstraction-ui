@@ -1,0 +1,182 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./tabs/macro.njk" import govukTabs %}
+{% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
+{% from "badge.njk" import badge %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ title ('Licence charge', licenceTitle) }}
+
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Last billed
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeVersion.billedUptoDate | date }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Charge version
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeVersion.versionNumber }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Effective {{ 'period' if chargeVersion.endDate else 'from' }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeVersion.startDate | date }}
+            {% if chargeVersion.endDate %}
+              to {{ chargeVersion.endDate | date }}
+            {% endif %}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Status
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ badge(chargeVersion | chargeVersionBadge) }}
+          </dd>
+        </div>
+      </dl>
+
+
+      {% for chargeElement in chargeVersion.chargeElements %}
+      <h2 class="govuk-heading-m">{{ chargeElement.purposeTertiaryDescription }}</h2>
+
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Description
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.description | titleCase }}
+          </dd>
+        </div>
+
+        {% if chargeElement.billableAnnualQuantity !== null %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Billable quantity
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.billableAnnualQuantity }} megalitres per year
+          </dd>
+        </div>
+        {% endif %}
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Authorised quantity
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.authorisedAnnualQuantity }} megalitres per year
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Abstraction period
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement | chargeElementAbstractionPeriod }}
+          </dd>
+        </div>
+
+        {% if chargeElement.timeLimitedStartDate %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Time limited {{ 'period' if chargeElement.timeLimitedEndDate else 'start date' }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.timeLimitedStartDate | date }}
+            {% if chargeElement.timeLimitedEndDate %}
+              to {{ chargeElement.timeLimitedEndDate | date }}
+            {% endif %}
+          </dd>
+        </div>
+        {% endif %}
+
+      </dl>
+
+      <h3 class="govuk-heading-s">Factors</h3>
+
+      {% if chargeElement.factorsOverridden %}
+      {{ badge('Overridden')}}
+      {% endif %}
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Loss
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.loss | sentenceCase }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Season
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.season | sentenceCase }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Source
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeElement.source | sentenceCase }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            EUIC source
+          </dt>
+          <dd class="govuk-summary-list__value">
+
+          </dd>
+        </div>
+      </dl>
+
+      {% if chargeElement.chargeAgreements.length %}
+      <h3 class="govuk-heading-s">{{ 'Agreement' | pluralize(chargeElement.chargeAgreements) }}</h3>
+
+      <dl class="govuk-summary-list">
+
+        {% for chargeAgreement in chargeElement.chargeAgreements %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            {{ chargeAgreement.agreementDescription }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeAgreement.startDate | date }}
+            {{ 'to' if chargeAgreement.endDate else 'ongoing' }}
+            {{ chargeAgreement.endDate | date }}
+          </dd>
+        </div>
+        {% endfor %}
+      </dl>
+
+      {% endif %}
+
+      <br />
+
+      {% endfor %}
+
+
+    </div>
+  </div>
+{% endblock %}

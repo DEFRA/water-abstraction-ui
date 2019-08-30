@@ -12,9 +12,11 @@
         Charge version {{ chargeVersion.versionNumber }}
       </h1>
 
+      {% if chargeVersion.status !== 'superseded' %}
       <div class="govuk-!-margin-bottom-6">
         {{ badge(chargeVersion | chargeVersionBadge) }}
       </div>
+      {% endif %}
 
       <dl class="govuk-summary-list govuk-!-margin-bottom-9">
         <div class="govuk-summary-list__row">

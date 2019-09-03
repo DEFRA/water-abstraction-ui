@@ -42,10 +42,7 @@ class WaterReturn {
   }
 
   toObject () {
-    const obj = {
-      ...pick(this, toObjectKeys),
-      reading: this.reading.toObject()
-    };
+    const obj = pick(this, toObjectKeys);
 
     if (!this.isNilReturn()) {
       const meters = this.reading.isMeasured() ? [this.meter.toObject()] : [];

@@ -13,6 +13,8 @@ const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_SINGLE_TOTAL_DATES
 } = require('shared/modules/returns/steps');
 
+const { READING_TYPE_MEASURED } = require('shared/modules/returns/models/reading');
+
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';
 
@@ -379,13 +381,24 @@ experiment('returns edit controller: ', () => {
         ).to.equal(true);
       });
 
-      test('redirects to meter details if meter details provided', async () => {
-        forms.getValues.returns({
-          meterDetailsProvided: true
+      experiment('when meter details are provided', () => {
+        beforeEach(async () => {
+          forms.getValues.returns({
+            meterDetailsProvided: true
+          });
+          await controller.postMeterDetailsProvided(request, h);
         });
-        await controller.postMeterDetailsProvided(request, h);
-        expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
-          .to.equal(true);
+
+        test('sets reading type to measured', async () => {
+          expect(request.model.reading.setReadingType).calledWith(
+            READING_TYPE_MEASURED
+          ).to.equal(true);
+        });
+
+        test('redirects to meter details if meter details provided', async () => {
+          expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
+            .to.equal(true);
+        });
       });
 
       test('redirects to meter used if volumes and meter details not provided', async () => {

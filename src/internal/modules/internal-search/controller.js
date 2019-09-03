@@ -80,7 +80,8 @@ const getPermissionsLabelText = user => {
 };
 
 const getUserStatus = async (request, h, formFromPost) => {
-  const response = await services.water.users.getUserStatus(request.params.userId);
+  const { userId } = request.params;
+  const response = await services.water.users.getUserStatus(userId);
 
   const userStatus = response.data;
   userStatus.unverifiedLicenceCount = getOutstandingVerificationLicenceCount(userStatus.companies);
@@ -90,7 +91,9 @@ const getUserStatus = async (request, h, formFromPost) => {
   const view = {
     ...request.view,
     userStatus,
-    form: formFromPost || await getPermissionsFormData(request)
+    form: formFromPost || await getPermissionsFormData(request),
+    deleteAccountLink: `/account/delete-account/${userId}`,
+    unlinkLicencePathTail: `unlink-licence?userId=${userId}`
   };
 
   return h.view('nunjucks/internal-search/user-status.njk', view, { layout: false });

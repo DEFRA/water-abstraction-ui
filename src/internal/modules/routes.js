@@ -13,6 +13,7 @@ const waiting = require('./waiting/routes');
 const batchNotifications = require('./batch-notifications/routes');
 const viewLicences = require('./view-licences/routes');
 const accountRoutes = require('./account/routes');
+const unlinkLicenceRoutes = require('./unlink-licence/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -30,5 +31,6 @@ module.exports = [
   ...Object.values(batchNotifications),
   ...Object.values(viewLicences),
   ...require('./manage/routes'),
-  ...Object.values(accountRoutes)
+  ...Object.values(accountRoutes),
+  ...Object.values(unlinkLicenceRoutes)
 ];

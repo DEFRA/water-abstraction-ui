@@ -13,7 +13,7 @@ const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_SINGLE_TOTAL_DATES
 } = require('shared/modules/returns/steps');
 
-const { READING_TYPE_MEASURED } = require('shared/modules/returns/models/reading');
+const { READING_TYPE_MEASURED } = require('shared/modules/returns/models/Reading');
 
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';

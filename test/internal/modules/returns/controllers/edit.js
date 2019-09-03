@@ -390,9 +390,9 @@ experiment('returns edit controller: ', () => {
         });
 
         test('sets reading type to measured', async () => {
-          expect(request.model.reading.setReadingType).calledWith(
+          expect(request.model.reading.setReadingType.calledWith(
             READING_TYPE_MEASURED
-          ).to.equal(true);
+          )).to.equal(true);
         });
 
         test('redirects to meter details if meter details provided', async () => {

@@ -9,12 +9,13 @@
 
   <p class="heading-small">
     {% if user.lastLogin %}
-    Last signed in {{user.lastLogin | date('D MMMM YYYY, HH:MM')}}
+      Last signed in {{user.lastLogin | date('D MMMM YYYY, HH:MM')}}
+    {% elseif user.isDisabled %}
+      Account removed {{ user.dateDisabled | date('D MMMM YYYY, HH:MMa')}}
     {% else %}
       Never signed in
     {% endif %}
   </p>
-
 
   {% if user.isLocked  %}
     <div class="govuk-warning-text">

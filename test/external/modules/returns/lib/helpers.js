@@ -99,13 +99,6 @@ experiment('getLicenceReturns', () => {
   });
 });
 
-experiment('getSuffix', () => {
-  test('handles superscript', async () => {
-    expect(helpers.getSuffix('m³')).to.equal('cubic metres');
-    expect(helpers.getSuffix('m3')).to.equal('cubic metres');
-  });
-});
-
 experiment('getBadge', () => {
   test('If return is overdue, return overdue badge', async () => {
     expect(helpers.getBadge('due', true)).to.equal({

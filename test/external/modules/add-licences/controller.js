@@ -237,3 +237,42 @@ experiment('postFAO', () => {
       .to.be.true();
   });
 });
+
+experiment('ensureSessionDataPreHandler', () => {
+  let request;
+  let h;
+  let takeoverSpy;
+
+  beforeEach(async () => {
+    takeoverSpy = sinon.spy();
+    request = {
+      yar: {
+        get: sinon.stub().returns()
+      }
+    };
+
+    h = {
+      continue: Symbol('test-continue'),
+      redirect: sinon.stub().returns({
+        takeover: takeoverSpy
+      })
+    };
+  });
+
+  experiment('when the data is in session', () => {
+    test('continue is returned', async () => {
+      request.yar.get.returns({ test: true });
+      const result = controller.ensureSessionDataPreHandler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+  });
+
+  experiment('when the data is not found in the session', () => {
+    test('the user is redirected to the add-licences page', async () => {
+      controller.ensureSessionDataPreHandler(request, h);
+      const [redirect] = h.redirect.lastCall.args;
+      expect(redirect).to.equal('/add-licences');
+      expect(takeoverSpy.called).to.be.true();
+    });
+  });
+});

@@ -27,7 +27,9 @@ const postUnlinkLicence = async (request, h) => {
   if (form.isValid) {
     await services.water.licences.patchUnlinkLicence(documentId, request.defra.userId);
     return h.redirect(
-      `/licences/${documentId}/unlink-licence/success?userId=${request.query.userId}&companyName=${licenceData.companyName}`
+      `/licences/${documentId}/unlink-licence/success` +
+      `?userId=${request.query.userId}` +
+      `&companyName=${licenceData.companyName}`
     );
   }
   return getUnlinkLicence(request, h, form);
@@ -36,14 +38,13 @@ const postUnlinkLicence = async (request, h) => {
 const getUnlinkLicenceSuccess = async (request, h) => {
   const { licence_ref: licenceNumber } = request.licence.licence;
 
-  const view = {
+  return h.view('nunjucks/unlink-licence/unlink-licence-success.njk', {
     ...request.view,
     pageTitle: `Unlinked licence ${licenceNumber}`,
     licenceNumber,
     companyName: request.query.companyName,
     userPageUrl: `/user/${request.query.userId}/status`
-  };
-  return h.view('nunjucks/unlink-licence/unlink-licence-success.njk', view, { layout: false });
+  }, { layout: false });
 };
 
 exports.getUnlinkLicence = getUnlinkLicence;

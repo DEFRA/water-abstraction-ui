@@ -37,7 +37,8 @@ class WaterReturn {
     this.user = data.user;
     this.versions = data.versions;
     this.reading = new Reading(data.reading);
-    this.meter = new Meter(this.reading, this.lines, data.meters[0]);
+    const meterData = get(data, 'meters[0]', {});
+    this.meter = new Meter(this.reading, this.lines, meterData);
     this.isUnderQuery = data.isUnderQuery;
   }
 

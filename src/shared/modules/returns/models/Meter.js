@@ -21,9 +21,10 @@ class Meter {
   }
 
   toObject () {
-    const obj = pick(this,
-      ['meterDetailsProvided', 'manufacturer', 'serialNumber', 'multiplier']
-    );
+    const obj = {
+      ...pick(this, ['manufacturer', 'serialNumber', 'multiplier']),
+      meterDetailsProvided: this.isMeterDetailsProvided()
+    };
     if (this.reading.isOneMeter()) {
       Object.assign(obj, {
         startReading: this.startReading,
@@ -59,7 +60,7 @@ class Meter {
    * @param {Array} readings
    */
   setMeterReadings (startReading, readings) {
-    Joi.assert(startReading, Joi.number().positive());
+    Joi.assert(startReading, Joi.number().min(0));
     const schema = Joi.array().items({
       startDate: Joi.string().isoDate(),
       endDate: Joi.string().isoDate(),

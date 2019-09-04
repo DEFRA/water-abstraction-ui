@@ -35,7 +35,7 @@ async function postResetPassword (request, h) {
   } catch (error) {
     // Note: we don't do anything differently as we don't wish to reveal if
     // account exists
-    request.log('error', 'Reset password error', { error });
+    request.log('debug', 'Reset password error', { error });
   }
   return h.redirect(request.config.redirect);
 }

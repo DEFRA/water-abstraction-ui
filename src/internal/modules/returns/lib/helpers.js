@@ -327,22 +327,6 @@ const isReturnId = (returnId) => {
 };
 
 /**
- * Get field suffix - this is the units used for this return
- * @param {String} unit - internal SI unit or gal
- * @return {String} suffix - human readable unit
- */
-const getSuffix = (unit) => {
-  const u = unit.replace('³', '3');
-  const units = {
-    m3: 'cubic metres',
-    l: 'litres',
-    gal: 'gallons',
-    Ml: 'megalitres'
-  };
-  return units[u];
-};
-
-/**
  * Gets badge object to render for return row
  * @param  {String}  status    - return status
  * @param  {Boolean} isPastDue - whether return is past due
@@ -381,7 +365,6 @@ exports.getViewData = getViewData;
 exports.isReturnPastDueDate = isReturnPastDueDate;
 exports.getRedirectPath = getRedirectPath;
 exports.isReturnId = isReturnId;
-exports.getSuffix = getSuffix;
 exports.getBadge = getBadge;
 exports.mapReturns = mapReturns;
 exports.endReadingKey = endReadingKey;

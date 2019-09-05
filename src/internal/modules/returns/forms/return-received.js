@@ -30,7 +30,9 @@ const getReceivedDate = date => {
   if (moment().subtract(1, 'day').isSame(date, 'day')) {
     return 'yesterday';
   }
-  return 'custom';
+  if (date) {
+    return 'custom';
+  }
 };
 
 const getRadioField = value => fields.radio('receivedDate', {

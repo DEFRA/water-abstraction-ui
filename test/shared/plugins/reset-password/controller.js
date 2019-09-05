@@ -155,7 +155,7 @@ experiment('reset password controller', () => {
 
       test('a message is logged with request.log', async () => {
         const [level, message, error] = request.log.lastCall.args;
-        expect(level).to.equal('error');
+        expect(level).to.equal('debug');
         expect(message).to.equal('Reset password error');
         expect(error).to.be.an.object();
       });

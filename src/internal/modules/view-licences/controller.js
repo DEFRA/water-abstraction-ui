@@ -17,6 +17,7 @@ const getExpiredLicence = async (request, h) => {
   const { data: returns } = await services.returns.returns.getLicenceReturns([licenceNumber], pagination);
 
   const view = {
+    documentId: request.params.documentId,
     ...request.view,
     communications,
     licence: {

@@ -134,6 +134,7 @@ const postMeterDetailsProvided = async (request, h) => {
     // Calculate next page in flow
     let next;
     if (meterDetailsProvided) {
+      request.model.reading.setReadingType(READING_TYPE_MEASURED);
       next = STEP_METER_DETAILS;
     } else if (request.model.reading.isVolumes()) {
       next = STEP_METER_USED;

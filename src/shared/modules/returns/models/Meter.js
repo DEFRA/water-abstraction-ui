@@ -11,7 +11,7 @@ const mapReadingsArrayToObject = arr => arr.reduce((acc, row) => ({
 class Meter {
   constructor (reading, lines, meter = {}) {
     this.reading = reading;
-    this.meterDetailsProvided = meter.meterDetailsProvided;
+    this.meterDetailsProvided = meter.meterDetailsProvided || false;
     this.manufacturer = meter.manufacturer;
     this.serialNumber = meter.serialNumber;
     this.startReading = meter.startReading;
@@ -21,10 +21,12 @@ class Meter {
   }
 
   toObject () {
-    const obj = {
-      ...pick(this, ['manufacturer', 'serialNumber', 'multiplier']),
-      meterDetailsProvided: this.isMeterDetailsProvided()
-    };
+    const obj = pick(this, ['meterDetailsProvided', 'multiplier']);
+
+    if (this.meterDetailsProvided) {
+      Object.assign(obj, pick(this, 'manufacturer', 'serialNumber'));
+    }
+
     if (this.reading.isOneMeter()) {
       Object.assign(obj, {
         startReading: this.startReading,

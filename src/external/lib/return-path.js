@@ -4,8 +4,14 @@
  * A return can either be editable, viewable, or not viewable, depending
  * on various factors.
  */
-const { getReturnId, isCompleted, isDue, isAfterSummer2018, isEndDatePast } = require('shared/lib/return-path-helpers');
-const { isExternalReturns } = require('./permissions');
+const { isReturnsUser } = require('./permissions');
+const {
+  getReturnId,
+  isCompleted,
+  isDue,
+  isAfterSummer2018,
+  isEndDatePast
+} = require('shared/lib/returns/return-path-helpers');
 
 /**
  * Gets a link to view/edit return for external users
@@ -18,11 +24,9 @@ const getReturnPath = (ret, request) => {
   if (isCompleted(ret)) {
     return { path: `/returns/return?id=${returnId}`, isEdit: false }; ;
   }
-  if (isDue(ret) && isAfterSummer2018(ret) && isEndDatePast(ret) && isExternalReturns(request)) {
+  if (isDue(ret) && isAfterSummer2018(ret) && isEndDatePast(ret) && isReturnsUser(request)) {
     return { path: `/return?returnId=${returnId}`, isEdit: true };
   }
 };
 
-module.exports = {
-  getReturnPath
-};
+exports.getReturnPath = getReturnPath;

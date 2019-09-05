@@ -29,7 +29,7 @@ const selectCompany = (request, company) => {
 
 /**
  * Gets the path the user should be redirected to upon successful login
- * This depends on internal/external scope, and how many companies they manage
+ * This depends on how many companies they manage
  */
 const getLoginRedirectPath = async (request, user) => {
   const { user_id: userId } = user;

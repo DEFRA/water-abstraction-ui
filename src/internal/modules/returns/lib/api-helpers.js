@@ -1,8 +1,7 @@
 const ExtendableError = require('es6-error');
 const services = require('../../../lib/connectors/services');
-const { isReturnId } = require('./helpers');
+const { isReturnId } = require('shared/lib/returns/strings');
 
-class CRMDocumentsAPIError extends ExtendableError {};
 class ReturnAPIError extends ExtendableError {};
 
 /**
@@ -77,44 +76,6 @@ const getRecentReturns = async (str) => {
   return returns.map(filterReturn).filter(x => x);
 };
 
-/**
- * Given an array of returns, checks each licence number
- * exists in CRM
- * @param {Array} returns
- * @return {Promise} resolves with list of returns filtered by whether
- *                   they exist in the CRM document headers
- */
-const filterReturnsByCRMDocument = async (returns) => {
-  const licenceNumbers = returns.map(row => row.licence_ref);
-  const filter = {
-    system_external_id: {
-      $in: licenceNumbers
-    }
-  };
-  const { data, error } = await services.crm.documents.findMany(filter, null, null, ['system_external_id']);
-
-  if (error) {
-    throw new CRMDocumentsAPIError(`Error loading CRM document headers`, error);
-  }
-
-  const validLicenceNumbers = data.map(row => row.system_external_id);
-
-  return returns.filter(row => validLicenceNumbers.includes(row.licence_ref));
-};
-
-/**
- * Finds returns by format ID in each region, then filters them by whether
- * they have a current CRM doc header
- * @param {String} formatId
- * @return {Promise} resoves with an array of basic returns API row data
- */
-const findLatestReturnsByFormatId = async (formatId) => {
-  const returns = await getRecentReturns(formatId);
-  return filterReturnsByCRMDocument(returns);
-};
-
 exports.findLatestReturn = findLatestReturn;
 exports.getRecentReturns = getRecentReturns;
-exports.filterReturnsByCRMDocument = filterReturnsByCRMDocument;
-exports.findLatestReturnsByFormatId = findLatestReturnsByFormatId;
 exports.filterReturn = filterReturn;

@@ -6,7 +6,7 @@ const {
 const { filter } = require('lodash');
 const { form: quantitiesForm } = require('internal/modules/returns/forms/quantities');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token'
@@ -16,7 +16,7 @@ const createRequest = (isInternal = true) => {
     },
     auth: {
       credentials: {
-        scope: isInternal ? 'internal' : 'external'
+        scope: 'internal'
       }
     }
   };

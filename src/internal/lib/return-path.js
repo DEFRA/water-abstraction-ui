@@ -5,11 +5,14 @@
  * on various factors.
  */
 
+const { isReturnsUser } = require('./permissions');
 const {
-  isInternalReturns
-} = require('./permissions');
-
-const { getReturnId, isCompleted, isAfterSummer2018, isEndDatePast, isVoid } = require('shared/lib/return-path-helpers');
+  getReturnId,
+  isCompleted,
+  isAfterSummer2018,
+  isEndDatePast,
+  isVoid
+} = require('shared/lib/returns/return-path-helpers');
 
 /**
  * Checks if return can be edited by internal returns user
@@ -18,7 +21,7 @@ const { getReturnId, isCompleted, isAfterSummer2018, isEndDatePast, isVoid } = r
  * @return {Boolean}        whether return can be edited
  */
 const isInternalEdit = (ret, request) => {
-  return (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request) && !isVoid(ret));
+  return (isAfterSummer2018(ret) && isEndDatePast(ret) && isReturnsUser(request) && !isVoid(ret));
 };
 
 /**
@@ -47,13 +50,11 @@ const getReturnPath = (ret, request) => {
     return { path: `/returns/return?id=${returnId}`, isEdit: false };
   }
   // Link to editable return
-  if (isAfterSummer2018(ret) && isEndDatePast(ret) && isInternalReturns(request)) {
+  if (isAfterSummer2018(ret) && isEndDatePast(ret) && isReturnsUser(request)) {
     return { path: `/return/internal?returnId=${returnId}`, isEdit: true };
   }
 };
 
-module.exports = {
-  getReturnPath,
-  isInternalEdit,
-  getEditButtonPath
-};
+exports.getReturnPath = getReturnPath;
+exports.isInternalEdit = isInternalEdit;
+exports.getEditButtonPath = getEditButtonPath;

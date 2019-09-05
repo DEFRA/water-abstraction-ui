@@ -16,6 +16,9 @@ experiment('internal view licences controller', () => {
       });
 
       request = {
+        params: {
+          documentId: 'document_1'
+        },
         licence: {
           licence: {
             licence_ref: '01/123',
@@ -62,6 +65,7 @@ experiment('internal view licences controller', () => {
       expect(view.returns).to.be.an.array();
       expect(view.communications).to.be.an.array();
       expect(view.pageTitle).to.equal('Lapsed licence 01/123');
+      expect(view.documentId).to.equal(request.params.documentId);
     });
 
     test('adds the charge versions sorted by version number', async () => {

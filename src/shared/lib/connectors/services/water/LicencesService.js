@@ -63,6 +63,20 @@ class LicencesService extends ServiceClient {
     const primaryUser = users.find(user => user.roles.includes('primary_user'));
     return { data: primaryUser };
   }
+
+  getCompanyByDocumentId (documentId, options = {}) {
+    const url = this.joinUrl('documents', documentId, 'licence/company');
+    return getRequest(this.serviceRequest, url, options);
+  }
+
+  patchUnlinkLicence (documentId, callingUserId) {
+    const url = this.joinUrl('documents', documentId, 'unlink-licence');
+    return this.serviceRequest.patch(url, {
+      body: {
+        callingUserId
+      }
+    });
+  }
 }
 
 module.exports = LicencesService;

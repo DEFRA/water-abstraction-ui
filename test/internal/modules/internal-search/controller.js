@@ -155,6 +155,13 @@ experiment('getUserStatus', () => {
     const [, view] = h.view.lastCall.args;
     expect(view.deleteAccountLink).to.equal(`/account/delete-account/${request.params.userId}`);
   });
+
+  test('adds the unlinkLicence link path tail', async () => {
+    await controller.getUserStatus(request, h);
+
+    const [, view] = h.view.lastCall.args;
+    expect(view.unlinkLicencePathTail).to.equal(`unlink-licence?userId=${request.params.userId}`);
+  });
 });
 
 experiment('postUpdatePermissions', () => {

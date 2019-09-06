@@ -11,6 +11,7 @@ const routeConfigSchema = Joi.object().keys({
     communications: Joi.boolean().valid(true),
     users: Joi.boolean().valid(true),
     primaryUser: Joi.boolean().valid(true),
+    company: Joi.boolean().valid(true),
     chargeVersions: Joi.boolean().valid(true)
   })
 });
@@ -21,6 +22,7 @@ const waterMethods = {
   communications: 'getCommunicationsByDocumentId',
   users: 'getUsersByExternalId',
   primaryUser: 'getPrimaryUserByDocumentId',
+  company: 'getCompanyByDocumentId',
   chargeVersions: 'getChargeVersionsByDocumentId'
 };
 

@@ -14,6 +14,7 @@ experiment('services/water/LicencesService', () => {
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get').resolves();
+    sandbox.stub(serviceRequest, 'patch').resolves();
     service = new LicencesService('https://example.com/api');
   });
 
@@ -158,6 +159,43 @@ experiment('services/water/LicencesService', () => {
         userName: 'test4@example.com',
         roles: ['primary_user']
       });
+    });
+  });
+
+  experiment('.getCompanyByDocumentId', () => {
+    test('calls the expected URL without options', async () => {
+      await service.getCompanyByDocumentId('doc-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/documents/doc-id/licence/company');
+    });
+
+    test('calls the expected URL with options', async () => {
+      await service.getCompanyByDocumentId('doc-id', {
+        includeExpired: true
+      });
+      const [, query] = serviceRequest.get.lastCall.args;
+      expect(query).to.equal({
+        qs: {
+          includeExpired: true
+        }
+      });
+    });
+  });
+
+  experiment('.patchUnlinkLicence', () => {
+    test('calls the expected URL', async () => {
+      await service.patchUnlinkLicence('doc-id', 'user-id');
+      const [url] = serviceRequest.patch.lastCall.args;
+      expect(url).to.equal('https://example.com/api/documents/doc-id/unlink-licence');
+    });
+
+    test('calls with the expected options', async () => {
+      await service.patchUnlinkLicence('doc-id', 'user-id');
+      const [, options] = serviceRequest.patch.lastCall.args;
+      expect(options).to.equal({
+        body: {
+          callingUserId: 'user-id'
+        } });
     });
   });
 });

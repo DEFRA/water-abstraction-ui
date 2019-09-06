@@ -34,12 +34,7 @@
   color: govuk-colour("green");
 }
 
-.badge--void {
-  border-color: govuk-colour("black");
-  color: govuk-colour("black");
-}
-
-.badge--expired {
+.badge--expired, .badge--void {
   border-color: $govuk-text-colour;
   color: $govuk-text-colour;
 }

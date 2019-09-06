@@ -9,7 +9,7 @@ exports.form = (request, data) => setValues({
   fields: [
     getCsrfTokenField(request),
     getParagraphField('Volumes entered should be calculated manually.'),
-    getParagraphField('Take into consideration the x10 display.'),
+    getParagraphField('Take into consideration the ×10 display.'),
     getHeadingField('Volumes'),
     ...getLineFields(data),
     getContinueField()

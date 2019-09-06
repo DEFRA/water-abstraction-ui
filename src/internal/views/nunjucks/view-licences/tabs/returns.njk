@@ -41,7 +41,7 @@
     <br /><span class="govuk-caption-m link--no-underline">Due {{ return.due_date | date }}</span>
   </p>
 
-  {{ badge(return.badge.text, return.badge.status) }}
+  {{ badge(return | returnBadge) }}
 </div>
 {% endmacro %}
 

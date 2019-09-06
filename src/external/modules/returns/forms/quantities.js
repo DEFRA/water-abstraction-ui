@@ -19,7 +19,7 @@ exports.form = (request, data) => {
   };
 
   if (isMeasured) {
-    f.fields.splice(2, 0, getParagraphField('Remember if you have a x10 meter you need to multiply your volumes.'));
+    f.fields.splice(2, 0, getParagraphField('Remember if you have a ×10 meter you need to multiply your volumes.'));
   }
 
   const values = getLineValues(data.lines);

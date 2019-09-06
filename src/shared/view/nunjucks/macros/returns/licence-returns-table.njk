@@ -1,4 +1,5 @@
 {% from "badge.njk" import badge %}
+{% from "returns/return-purposes.njk" import returnPurposes %}
 
 {% macro licenceReturnsTable(returns) %}
   <div class="govuk-grid-row">
@@ -26,10 +27,7 @@
                     {{ return.start_date | returnPeriod(return.end_date) }}
                     {% if return.path %}
                       <span class="govuk-visually-hidden">
-                        for
-                        {% for purpose in return.metadata.purposes %}
-                          {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
-                        {% endfor %}
+                        for {{ returnPurposes(return) }}
                         at
                         {{ return.metadata.description | titleCase }}
                       </span>
@@ -38,9 +36,7 @@
                 </th>
                 <td class="table__cell--tall">
                   <h4 class="govuk-visually-hidden">Purpose</h4>
-                  {% for purpose in return.metadata.purposes %}
-                    {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
-                  {% endfor %}
+                  {{ returnPurposes(return) }}
                 </td>
                 <td class="table__cell--tall">
                   <h4 class="govuk-visually-hidden">Site description</h4>

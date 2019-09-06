@@ -300,6 +300,7 @@ const getCSVTemplates = async (request, h) => {
 
   // Fetch returns for current company
   const returns = await services.water.companies.getCurrentDueReturns(companyId);
+
   const endDate = returns[0].endDate;
 
   // Generate CSV data and build zip

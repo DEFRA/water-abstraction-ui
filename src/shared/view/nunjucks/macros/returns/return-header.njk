@@ -1,4 +1,5 @@
 {% from "title.njk" import title %}
+{% from "returns/return-purposes.njk" import returnPurposes %}
 
 {% macro returnHeader(return, documentHeader, showMeta, isAdmin) %}
   {% if documentHeader.document_name %}
@@ -41,13 +42,7 @@
           Purpose
         </dt>
         <dd class="meta__value">
-          {% for purpose in return.metadata.purposes %}
-            {%if purpose.alias%}
-              {{ purpose.alias | titleCase }}
-            {%else%}
-              {{ purpose.tertiary.description }}
-            {%endif%}
-          {% endfor %}
+          {{ returnPurposes(return) }}
         </dd>
       </div>
       <div class="meta__row">

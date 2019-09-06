@@ -27,6 +27,9 @@ const createRequest = (error = {}) => {
     cookieAuth: {
       clear: sandbox.stub()
     },
+    state: {
+      seen_cookie_message: 'yes'
+    },
     logOut: sandbox.stub()
   };
 };

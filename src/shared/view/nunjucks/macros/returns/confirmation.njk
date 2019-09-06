@@ -1,3 +1,5 @@
+{% from "returns/return-purposes.njk" import returnPurposes %}
+
 {% macro confirmation(data, customTitle) %}
 <div class="panel panel--confirmation">
   <h1 class="panel__title">
@@ -7,7 +9,7 @@
   <div class="panel__body panel__body--small">
     Licence number <strong>{{ data.licenceNumber }}</strong><br /></br/>
     Site description <strong>{{ data.metadata.description }}</strong><br /></br/>
-    Purpose <strong>{{ data.metadata.purposes[0].tertiary.description }}</strong>
+    Purpose <strong>{{ returnPurposes(data) }}</strong>
   </div>
 
 </div>

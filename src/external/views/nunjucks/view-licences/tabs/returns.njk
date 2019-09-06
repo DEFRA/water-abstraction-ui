@@ -1,9 +1,4 @@
-{% macro returnPurposes(return) %}
-  {% for purpose in return.metadata.purposes %}
-    {{ ', ' if not loop.first }}
-    {{ purpose.tertiary.description }}
-  {% endfor %}
-{% endmacro %}
+{% from "returns/return-purposes.njk" import returnPurposes %}
 
 {% macro returnLink(return) %}
   {% if return.path %}

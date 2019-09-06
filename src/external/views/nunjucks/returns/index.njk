@@ -1,6 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
+{% from "returns/return-purposes.njk" import returnPurposes %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -42,9 +43,7 @@
                       {% if return.path %}
                         <span class="govuk-visually-hidden">
                           for
-                          {% for purpose in return.metadata.purposes %}
-                            {{ purpose.tertiary.description }}
-                          {% endfor %}
+                          {{ returnPurposes(return) }}
                           at
                           {{ return.metadata.description | titleCase }}
                           {% if return.status === 'due' %}
@@ -62,9 +61,7 @@
                   </td>
                   <td class="table__cell--tall">
                     <h4 class="govuk-visually-hidden">Purpose</h4>
-                    {% for purpose in return.metadata.purposes %}
-                      {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
-                    {% endfor %}
+                    {{ returnPurposes(return) }}
                   </td>
                   <td class="table__cell--tall">
                     <h4 class="govuk-visually-hidden">Status</h4>

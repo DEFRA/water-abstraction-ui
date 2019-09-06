@@ -24,17 +24,12 @@
   }
 }
 
-.badge--error {
+.badge--danger {
   border-color: govuk-colour("red");
   color: govuk-colour("red");
 }
 
-.badge--success {
-  border-color: govuk-colour("green");
-  color: govuk-colour("green");
-}
-
-.badge--expired, .badge--void {
+.badge--dark {
   border-color: $govuk-text-colour;
   color: $govuk-text-colour;
 }

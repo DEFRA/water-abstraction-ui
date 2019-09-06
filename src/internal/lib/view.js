@@ -71,6 +71,7 @@ function viewContextDefaults (request) {
   viewContext.mainNavLinks = getMainNav(request);
   viewContext.propositionLinks = getPropositionLinks(request);
 
+  viewContext.showCookieMessage = !(request.state.seen_cookie_message === 'yes');
   viewContext.user = request.auth.credentials;
 
   viewContext.tracking = getTracking(request.defra);

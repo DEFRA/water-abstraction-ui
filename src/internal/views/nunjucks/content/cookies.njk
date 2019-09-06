@@ -130,8 +130,13 @@
       <tbody>
         <tr>
           <th class="govuk-table__header" scope="row">sid</th>
-          <td class="govuk-table__cell">Used for session management.</td>
-          <td class="govuk-table__cell">24 hours</td>
+          <td class="govuk-table__cell">Used for authentication.</td>
+          <td class="govuk-table__cell">24 hours rolling, deleted on sign out</td>
+        </tr>
+        <tr>
+          <th class="govuk-table__header" scope="row">session</th>
+          <td class="govuk-table__cell">Used to store session data.</td>
+          <td class="govuk-table__cell">10 years, deleted on sign out</td>
         </tr>
       </tbody>
     </table>

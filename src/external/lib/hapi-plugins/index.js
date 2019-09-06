@@ -1,6 +1,7 @@
 module.exports = {
   config: require('shared/plugins/config'),
   csrf: require('shared/plugins/csrf'),
+  cookieMessage: require('shared/plugins/cookie-message'),
   metaRedirect: require('shared/plugins/meta-redirect'),
   redirect: require('shared/plugins/redirect'),
   secureHeaders: require('shared/plugins/secure-headers'),

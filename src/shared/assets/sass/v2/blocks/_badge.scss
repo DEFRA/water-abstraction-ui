@@ -13,10 +13,11 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   text-decoration: none;
-  color: govuk-colour("white");
+  color: govuk-colour("blue");
   border-radius: 2px;
   border-width: 1px;
   border-style: solid;
+  border-color: govuk-colour("blue");
 
   @include govuk-media-query($until: tablet) {
     padding-bottom:  3px;
@@ -24,8 +25,8 @@
 }
 
 .badge--error {
-  border-color: $govuk-error-colour;
-  color: $govuk-error-colour;
+  border-color: govuk-colour("red");
+  color: govuk-colour("red");
 }
 
 .badge--success {
@@ -33,24 +34,9 @@
   color: govuk-colour("green");
 }
 
-.badge--due {
-  border-color: govuk-colour("bright-red");
-  color: govuk-colour("bright-red");
-}
-
-.badge--completed {
-  border-color: $govuk-link-colour;
-  color: $govuk-link-colour;
-}
-
 .badge--void {
-  border-color: #b10e1e;
-  color: #b10e1e;
-}
-
-.badge--info {
-  border-color: #6f777b;
-  color: #6f777b;
+  border-color: govuk-colour("black");
+  color: govuk-colour("black");
 }
 
 .badge--expired {

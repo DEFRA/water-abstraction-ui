@@ -19,10 +19,8 @@ const returnBadge = ret => {
   const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
 
   const styles = {
-    overdue: 'success',
-    due: 'due',
-    received: 'completed',
-    completed: 'completed',
+    overdue: 'error',
+    due: 'error',
     void: 'void'
   };
 

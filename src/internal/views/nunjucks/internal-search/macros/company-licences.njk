@@ -24,7 +24,9 @@
 
             <td class="govuk-table__cell govuk-table__cell--numeric">
               {% if userCanUnlinkLicences %}
-                <a class="govuk-link" href="/licences/{{licence.documentId}}/{{unlinkLicencePathTail}}">Unlink licence</a>
+                <a class="govuk-link" href="/licences/{{licence.documentId}}/{{unlinkLicencePathTail}}">
+                  Unlink licence<span class="govuk-visually-hidden"> {{ licence.licenceRef }}</span>
+                </a>
               {% endif %}
             </td>
 

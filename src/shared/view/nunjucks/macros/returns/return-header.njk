@@ -9,7 +9,7 @@
   {% endif %}
 
   {%if showMeta %}
-    <dl class="meta">
+    <dl class="meta govuk-!-margin-bottom-4">
 
       {% if isAdmin %}
         <div class="meta__row">
@@ -72,7 +72,7 @@
       </div>
     </dl>
 
-    <p class="medium-space">
+    <p class="govuk-!-margin-bottom-7">
       <a href="/{{ "expired-" if not documentHeader.metadata.IsCurrent }}licences/{{ documentHeader.document_id }}">View this licence</a>
     </p>
 

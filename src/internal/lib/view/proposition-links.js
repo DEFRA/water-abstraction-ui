@@ -37,6 +37,4 @@ const getPropositionLinks = (request) => {
   return setActiveLink(links, activeNavLink);
 };
 
-module.exports = {
-  getPropositionLinks
-};
+exports.getPropositionLinks = getPropositionLinks;

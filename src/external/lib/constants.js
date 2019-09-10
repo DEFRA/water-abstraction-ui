@@ -1,7 +1,3 @@
-const SCOPE_INTERNAL = 'internal';
-const SCOPE_INTERNAL_RETURNS = 'returns';
-const SCOPE_ABSTRACTION_REFORM_USER = 'ar_user';
-const SCOPE_ABSTRACTION_REFORM_APPROVER = 'ar_approver';
 const SCOPE_EXTERNAL = 'external';
 
 const ROLE_EXTERNAL_COLLEAGUE = 'user';
@@ -16,17 +12,7 @@ const externalRoles = {
 
 module.exports = {
   scope: {
-    allAdmin: [
-      SCOPE_INTERNAL,
-      SCOPE_ABSTRACTION_REFORM_USER,
-      SCOPE_ABSTRACTION_REFORM_APPROVER,
-      SCOPE_INTERNAL_RETURNS
-    ],
-    internal: SCOPE_INTERNAL,
     external: SCOPE_EXTERNAL,
-    abstractionReformUser: SCOPE_ABSTRACTION_REFORM_USER,
-    abstractionReformApprover: SCOPE_ABSTRACTION_REFORM_APPROVER,
-    returns: SCOPE_INTERNAL_RETURNS,
     ...externalRoles
   },
   externalRoles

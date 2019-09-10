@@ -2,49 +2,14 @@
 <main id="content" tabindex="-1">
   {{>element-phase-tag}}{{>element-main-nav}}
 
-{{#if isAdmin }}
-  {{#unless crmData.company_entity_id}}
-    {{#if crmData.verifications}}
-      <div class="grid-row">
-        <div class="column-full">
-          <div class="panel panel-border-wide alert-default">
-            We have sent {{crmData.verifications.length}} security code{{#notEqual crmData.verifications.length  1}}s{{/notEqual}} by post.
-            <ul>
-              {{#each crmData.verifications }}
-                <li class="spaceless">{{entity_nm}} - <strong class="bold-small">{{verification_code}}</strong></li>
-              {{/each}}
-            </ul>
-        </div>
-      </div>
-    </div>
-    {{/if}}
-  {{/unless}}
-{{/if}}
-
   <h1 class="heading-large">
     {{#if crmData.document_name }}
       <span class="heading-secondary">Licence number {{ licenceData.licenceNumber }}</span>
       {{ crmData.document_name }}
     {{else}}
-      {{#if isAdmin }}
-        {{#unless primaryUser }}
-          <span class="heading-secondary">Unregistered licence</span>
-        {{/unless}}
-      {{/if}}
       Licence number {{ licenceData.licenceNumber }}
     {{/if}}
   </h1>
-
-  {{#if isAdmin }}
-    {{#if primaryUser }}
-      <p class="govuk-body">
-        Registered to&nbsp;
-        <a href="/user/{{primaryUser.userId}}/status" class="govuk-link">
-          {{primaryUser.userName}}
-        </a>
-      </p>
-    {{/if}}
-  {{/if}}
 
   <p>Current licence version started on {{ formatDate licenceData.currentVersionEffectiveStartDate }}
      {{#if licenceData.expiryDate }}

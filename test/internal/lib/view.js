@@ -43,7 +43,7 @@ experiment('lib/view.contextDefaults', () => {
     expect(viewContext.surveyType).to.equal('anonymous');
   });
 
-  test('surveyType is internal for a logged in admin user', async () => {
+  test('surveyType is internal for a logged in user', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };
     set(request, 'auth.credentials.scope', [scope.internal]);

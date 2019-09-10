@@ -9,8 +9,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const {
   findLatestReturn,
   getRecentReturns,
-  filterReturn,
-  filterReturnsByCRMDocument
+  filterReturn
 } = require('internal/modules/returns/lib/api-helpers');
 
 const services = require('internal/lib/connectors/services');
@@ -105,42 +104,5 @@ experiment('getRecentReturns', async () => {
     const result = await getRecentReturns('v1:2:MD/123/0045/067:12345678:2013-04-11:2014-03-31');
     expect(result.length).to.equal(1);
     expect(result[0]).to.equal(returnData);
-  });
-});
-
-experiment('filterReturnsByCRMDocument', async () => {
-  const returns = [
-    {
-      return_id: 'v1:123',
-      licence_ref: '123/456',
-      status: 'completed'
-    },
-    {
-      return_id: 'v1:456',
-      licence_ref: '789/012',
-      status: 'due'
-    }
-  ];
-
-  beforeEach(async () => {
-    sandbox.stub(services.crm.documents, 'findMany');
-  });
-
-  afterEach(async () => {
-    sandbox.restore();
-  });
-
-  test('It should throw an error if an API error occurs', async () => {
-    services.crm.documents.findMany.resolves({ data: null, error: 'SomeError' });
-    const rejects = () => {
-      return filterReturnsByCRMDocument(returns);
-    };
-    await expect(rejects()).to.reject();
-  });
-
-  test('It should filter out any returns for which a CRM document cannot be found', async () => {
-    services.crm.documents.findMany.resolves({ data: [{ system_external_id: returns[0].licence_ref }], error: null });
-    const result = await filterReturnsByCRMDocument(returns);
-    await expect(result).to.equal([returns[0]]);
   });
 });

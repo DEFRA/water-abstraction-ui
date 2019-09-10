@@ -35,11 +35,9 @@
 
   {{#if enableSearch}}
 
-  {{#if isAdmin }}
   <p>
     Search by the licence holder's email address, partial licence number or licence name
   </p>
-  {{/if}}
 
   <form novalidate method="GET" action="/licences" name="licenceSearch">
 
@@ -78,7 +76,7 @@
 
 
 
-    {{#>element-licence-results-header this isAdmin=isAdmin}}{{/element-licence-results-header}}
+    {{#>element-licence-results-header this}}{{/element-licence-results-header}}
 
     {{^licenceData}}
     <!-- No results found -->
@@ -91,7 +89,7 @@
 
     <!-- Display list of clickable licence rows/tiles -->
     {{#each licenceData}}
-      {{#>element-licence-link this  isAdmin=../isAdmin}}{{/element-licence-link}}
+      {{#>element-licence-link this}}{{/element-licence-link}}
     {{/each}}
 
   </div>

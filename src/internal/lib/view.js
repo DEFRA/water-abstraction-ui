@@ -63,8 +63,6 @@ function viewContextDefaults (request) {
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
 
-  // Are we in admin view?  Add a flag for templates
-  viewContext.isAdmin = true;
   viewContext.isTestMode = process.env.TEST_MODE;
 
   // Set navigation links

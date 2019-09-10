@@ -21,7 +21,7 @@ const hasScope = (request, scope) => {
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
 // Returns
-const isInternalReturns = request => hasScope(request, scope.returns);
+const isReturnsUser = request => hasScope(request, scope.returns);
 const isBulkReturnNotifications = request => hasScope(request, scope.bulkReturnNotifications);
 
 // Abstraction reform / digitise!
@@ -51,7 +51,7 @@ const isCharging = request => hasScope(request, scope.charging);
 
 exports.hasScope = hasScope;
 exports.isAuthenticated = isAuthenticated;
-exports.isInternalReturns = isInternalReturns;
+exports.isReturnsUser = isReturnsUser;
 exports.isBulkReturnNotifications = isBulkReturnNotifications;
 exports.isARUser = isARUser;
 exports.isARApprover = isARApprover;

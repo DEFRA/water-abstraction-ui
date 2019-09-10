@@ -25,7 +25,7 @@ const createFormValues = (jan, feb, mar, apr) => ({
   csrf_token: '4a95f0e2-4861-49ef-af95-0a269fae982c'
 });
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token'
@@ -35,7 +35,7 @@ const createRequest = (isInternal = true) => {
     },
     auth: {
       credentials: {
-        scope: isInternal ? 'internal' : 'external'
+        scope: 'external'
       }
     }
   };
@@ -147,7 +147,7 @@ experiment('meterReadingsForm', () => {
   });
 
   test('external label is shown for external user', async () => {
-    const request = createRequest(false);
+    const request = createRequest();
     const form = meterReadingsForm(request, data);
     const label = form.fields[0];
     expect(label.options.text).to.equal('Enter your readings exactly as they appear on your meter');

@@ -8,28 +8,7 @@
 
       {{ verificationsAlert(verifications) }}
 
-      {% if isInternal and not primaryUser %}
-        {{ title(summary.licenceNumber, 'Unregistered licence') }}
-      {% else %}
-        {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
-      {% endif %}
-
-      {% if isInternal and primaryUser %}
-        <p>Registered to <a href="/user/{{primaryUser.userId}}/status">{{primaryUser.userName}}</a></p>
-      {% endif %}
-
-      {% set summaryHtml %}
-
-      {% endset %}
-
-      {% set returnsHtml %}
-        {% include "nunjucks/view-licences/tabs/returns.njk" %}
-      {% endset %}
-
-      {% set communicationsHtml %}
-        {% include "nunjucks/view-licences/tabs/communications.njk" %}
-      {% endset %}
-
+      {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
 
       <div class="govuk-tabs" data-module="tabs">
         <h2 class="govuk-tabs__title">

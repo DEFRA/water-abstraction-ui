@@ -6,7 +6,7 @@ const {
 const { filter } = require('lodash');
 const { form: quantitiesForm } = require('external/modules/returns/forms/quantities');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token'
@@ -16,7 +16,7 @@ const createRequest = (isInternal = true) => {
     },
     auth: {
       credentials: {
-        scope: isInternal ? 'internal' : 'external'
+        scope: 'external'
       }
     }
   };
@@ -53,7 +53,7 @@ experiment('quantitiesForm', () => {
   const internalExpectedText = ['Volumes entered should be calculated manually.', 'Take into consideration the ×10 display.'];
 
   test('adds help text about ×10 meters if external and measured volumes', async () => {
-    const form = quantitiesForm(createRequest(false), createReturn());
+    const form = quantitiesForm(createRequest(), createReturn());
     const text = filter(form.fields, isParagraph).map(row => row.options.text);
     expect(text).to.include(expectedText);
   });
@@ -65,7 +65,7 @@ experiment('quantitiesForm', () => {
   });
 
   test('does not add internal help text for external users', async () => {
-    const form = quantitiesForm(createRequest(false), createReturn());
+    const form = quantitiesForm(createRequest(), createReturn());
     const text = filter(form.fields, isParagraph).map(row => row.options.text);
     expect(text).to.not.include(internalExpectedText[0]);
     expect(text).to.not.include(internalExpectedText[1]);

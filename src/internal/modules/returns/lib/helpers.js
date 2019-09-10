@@ -1,24 +1,13 @@
 /* eslint new-cap: "warn" */
 const Boom = require('@hapi/boom');
-const moment = require('moment');
-const { get, isObject, findLastKey, last } = require('lodash');
-const titleCase = require('title-case');
+const { get, isObject, findLastKey } = require('lodash');
 
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('internal/lib/return-path');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const helpers = require('@envage/water-abstraction-helpers');
-
-/**
- * Gets the current return cycle object
- * @param  {String} [date] - reference date, for unit testing
- * @return {Object}      { startDate, endDate, isSummer }
- */
-const getCurrentCycle = (date) => {
-  return last(helpers.returns.date.createReturnCycles(undefined, date));
-};
+const badge = require('shared/lib/returns/badge');
+const dates = require('shared/lib/returns/dates');
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -88,37 +77,6 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
 };
 
 /**
- * Checks whether user uses XML Upload for a list of licence numbers
- * @param {Array} licenceNumbers to check if isUpload flag is true
- * @param {String} [refDate] todays date, used for unit testing
- * @return {Promise<boolean>} if user has XML Upload functionality
- */
-const isXmlUpload = async (licenceNumbers, refDate) => {
-  const cycle = getCurrentCycle(refDate);
-
-  const filter = {
-    'metadata->>isUpload': 'true',
-    'metadata->>isCurrent': 'true',
-    'metadata->>isSummer': cycle.isSummer ? 'true' : 'false',
-    status: 'due',
-    start_date: { $gte: cycle.startDate },
-    end_date: {
-      $gte: '2018-10-31',
-      $lte: cycle.endDate
-    },
-    licence_ref: { '$in': licenceNumbers }
-  };
-
-  const requestPagination = { 'page': 1, 'perPage': 1 };
-  const columns = ['return_id'];
-
-  const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns);
-  throwIfError(error);
-
-  return pagination.totalRows > 0;
-};
-
-/**
  * Groups and sorts returns by year descending
  * @param {Array} data
  * @return {Array} organised by year
@@ -161,37 +119,6 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
 };
 
 /**
- * Gets the most recent version of a return
- * @param {String} returnId
- * @return {Promise} resolves with object of version data on success
- */
-const getLatestVersion = async (returnId) => {
-  // Find newest version
-  const filter = {
-    return_id: returnId
-  };
-  const sort = {
-    version_number: -1
-  };
-  const { error, data: [version] } = await services.returns.versions.findMany(filter, sort);
-  if (error) {
-    throw Boom.badImplementation(error);
-  }
-  return version;
-};
-
-/**
- * Checks whether any line in the return has imperial units
- * @param {Array} lines
- * @return {Boolean}
- */
-const hasGallons = (lines) => {
-  return lines.reduce((acc, line) => {
-    return acc || line.user_unit === 'gal';
-  }, false);
-};
-
-/**
  * Gets return total, which can also be null if no values are filled in
  * @param {Object} ret - return model from water service
  * @return {Number|null} total or null
@@ -206,17 +133,11 @@ const getReturnTotal = (ret) => {
   }, 0);
 };
 
-const isReturnPastDueDate = returnRow => {
-  const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
-  const today = moment().startOf('day');
-  return dueDate.isBefore(today);
-};
-
 const mapReturnRow = (row, request) => {
-  const isPastDueDate = isReturnPastDueDate(row);
+  const isPastDueDate = dates.isReturnPastDueDate(row);
   return {
     ...row,
-    badge: getBadge(row.status, isPastDueDate),
+    badge: badge.getBadge(row.status, isPastDueDate),
     ...getReturnPath(row, request)
   };
 };
@@ -277,14 +198,6 @@ const getReturnsViewData = async (request) => {
 };
 
 /**
- * Redirects to admin path if internal user
- * @param {Object} request - HAPI request instance
- * @param {String} path - the path to redirect to without '/admin'
- * @return {String} path with /admin if internal user
- */
-const getScopedPath = (request, path) => path;
-
-/**
  * Get common view data used by many controllers
  * @param {Object} HAPI request instance
  * @param {Object} data - the return model
@@ -299,72 +212,14 @@ const getViewData = async (request, data) => {
   };
 };
 
-/**
- * When searching for return by ID, gets redirect path which is either to
- * the completed return page, or the edit return flow if not yet completed
- * @param {Object} ret - return object from returns service
- * @param {Boolean} isMultiple - if true, redirect to licence disambiguation page
- * @return {String} redirect path
- */
-const getRedirectPath = (ret, isMultiple = false) => {
-  const { return_id: returnId, status, return_requirement: formatId } = ret;
-  if (isMultiple) {
-    return `/returns/select-licence?formatId=${formatId}`;
-  }
-  return status === 'completed' ? `/returns/return?id=${returnId}` : `/return/internal?returnId=${returnId}`;
-};
-
-/**
- * Checks whether supplied string is a return ID as currently supported in
- * the digital service.  This consists of a version prefix, region code,
- * licence number, format ID and return cycle date range
- * @param {String} returnId - the string to test
- * @return {Boolean} true if match
- */
-const isReturnId = (returnId) => {
-  const r = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-  return r.test(returnId);
-};
-
-/**
- * Gets badge object to render for return row
- * @param  {String}  status    - return status
- * @param  {Boolean} isPastDue - whether return is past due
- * @return {Object}            - badge text and style
- */
-const getBadge = (status, isPastDueDate) => {
-  const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
-
-  const styles = {
-    overdue: 'success',
-    due: 'due',
-    received: 'completed',
-    completed: 'completed',
-    void: 'void'
-  };
-
-  return {
-    text: titleCase(viewStatus),
-    status: styles[viewStatus]
-  };
-};
-
 const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
 exports.getLicenceNumbers = getLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
-exports.isXmlUpload = isXmlUpload;
 exports.groupReturnsByYear = groupReturnsByYear;
 exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
-exports.getLatestVersion = getLatestVersion;
-exports.hasGallons = hasGallons;
 exports.getReturnsViewData = getReturnsViewData;
 exports.getReturnTotal = getReturnTotal;
-exports.getScopedPath = getScopedPath;
 exports.getViewData = getViewData;
-exports.isReturnPastDueDate = isReturnPastDueDate;
-exports.getRedirectPath = getRedirectPath;
-exports.isReturnId = isReturnId;
-exports.getBadge = getBadge;
 exports.mapReturns = mapReturns;
 exports.endReadingKey = endReadingKey;

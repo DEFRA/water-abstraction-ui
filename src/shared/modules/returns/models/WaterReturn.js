@@ -37,21 +37,20 @@ class WaterReturn {
     this.user = data.user;
     this.versions = data.versions;
     this.reading = new Reading(data.reading);
-    this.meter = new Meter(this.reading, this.lines, data.meters[0]);
+    const meterData = get(data, 'meters[0]', {});
+    this.meter = new Meter(this.reading, this.lines, meterData);
     this.isUnderQuery = data.isUnderQuery;
   }
 
   toObject () {
-    const obj = {
-      ...pick(this, toObjectKeys),
-      meters: [this.meter.toObject()],
-      reading: this.reading.toObject()
-    };
+    const obj = pick(this, toObjectKeys);
 
     if (!this.isNilReturn()) {
+      const meters = this.reading.isMeasured() ? [this.meter.toObject()] : [];
+
       Object.assign(obj, {
         lines: this.getLines(),
-        meters: [this.meter.toObject()],
+        meters,
         reading: this.reading.toObject()
       });
     }

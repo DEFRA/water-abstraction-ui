@@ -259,6 +259,7 @@ const mapFormCheckbox = (field) => {
   const items = choices.map(choice => ({
     value: choice.value,
     text: choice.label,
+    html: choice.htmlLabel,
     hint: {
       text: choice.hint
     },

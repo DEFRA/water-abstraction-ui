@@ -143,6 +143,19 @@ experiment('Meter', () => {
         );
       });
     });
+
+    experiment('when the meter is initialised with empty data', () => {
+      let result;
+      beforeEach(async () => {
+        reading.isOneMeter.returns(false);
+        const meter = new Meter(reading, lines, {});
+        result = meter.toObject();
+      });
+
+      test('meterDetailsProvided is false', async () => {
+        expect(result.meterDetailsProvided).to.be.false();
+      });
+    });
   });
 
   experiment('setMeterDetails', () => {

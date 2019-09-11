@@ -5,6 +5,7 @@ const SCOPE_ABSTRACTION_REFORM_APPROVER = 'ar_approver';
 const SCOPE_HOF_NOTIFICATIONS = 'hof_notifications';
 const SCOPE_RENEWAL_NOTIFICATIONS = 'renewal_notifications';
 const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts';
+const SCOPE_CHARGING = 'charging';
 
 module.exports = {
   scope: {
@@ -28,6 +29,7 @@ module.exports = {
       SCOPE_RENEWAL_NOTIFICATIONS,
       SCOPE_BULK_RETURNS_NOTIFICATIONS
     ],
-    manageAccounts: SCOPE_MANAGE_ACCOUNTS
+    manageAccounts: SCOPE_MANAGE_ACCOUNTS,
+    charging: SCOPE_CHARGING
   }
 };

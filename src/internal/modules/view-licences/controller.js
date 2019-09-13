@@ -3,6 +3,7 @@ const services = require('../../lib/connectors/services');
 const titleCase = require('title-case');
 const { sortBy } = require('lodash');
 const permissions = require('../../lib/permissions');
+const { getReturnPath } = require('../../lib/return-path');
 
 const pagination = { page: 1, perPage: 10 };
 
@@ -28,7 +29,7 @@ const getExpiredLicence = async (request, h) => {
     },
     showChargeVersions: permissions.isCharging(request),
     chargeVersions: sortBy(chargeVersions, 'versionNumber').reverse(),
-    returns,
+    returns: returns.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
     pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`
   };
 

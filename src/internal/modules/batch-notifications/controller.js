@@ -51,7 +51,9 @@ const getReview = async (request, h) => {
 const mapCSVRow = message => ({
   ...message.personalisation,
   message_type: message.message_type,
-  recipient: message.recipient
+  recipient: message.recipient,
+  message_ref: message.message_ref,
+  licences: (message.licences || []).join(',')
 });
 
 /**

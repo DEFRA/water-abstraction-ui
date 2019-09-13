@@ -1,4 +1,4 @@
-const { get, pick } = require('lodash');
+const { get } = require('lodash');
 const { confirmForm } = require('./forms/confirm');
 const helpers = require('./lib/helpers');
 const csv = require('../../lib/csv-download');
@@ -53,7 +53,7 @@ const mapCSVRow = message => ({
   message_type: message.message_type,
   recipient: message.recipient,
   message_ref: message.message_ref,
-  licences: message.licences.join(',')
+  licences: (message.licences || []).join(',')
 });
 
 /**

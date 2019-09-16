@@ -5,6 +5,7 @@
 {% from "main-nav.njk" import mainNav %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
+{% from "google-analytics.njk" import googleMeasurementSnippet, crossSiteTracking %}
 
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -104,29 +105,7 @@
   <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->
-  <script nonce="{{nonces.script}}">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.nonce='{{nonces.script}}';a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics{%if tracking.debug %}_debug{% endif %}.js','ga');
-
-  ga('create', '{{ tracking.propertyId }}', 'auto');
-  ga('set', 'allowAdFeatures', false);
-
-  ga('send', 'pageview', {
-    {% if tracking.isLoggedIn %}
-    'dimension2': '{{ tracking.newUser }}',
-    {% endif %}
-    {% if tracking.lastLogin %}
-    'dimension3': '{{ tracking.lastLogin }}',
-    {% endif %}
-    'dimension1': '{{ tracking.userType }}',
-    'anonymizeIp': true,
-    'page': '{{ gaUrl }}',
-    'title': '{{ gaPageTitle }}',
-    'location': window.location.origin + '{{ gaUrl }}'
-  });
-  </script>
+  {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
+  {{ crossSiteTracking(nonces.script, gaUrl, gaPageTitle) }}
   <!-- End Google Analytics -->
-
 {% endblock %}

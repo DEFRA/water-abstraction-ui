@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const moment = require('moment');
 const { get, isObject, last } = require('lodash');
 
-const { isReturnsUser } = require('../../../lib/permissions');
+// const { isReturnsUser } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
@@ -222,14 +222,16 @@ const getReturnsViewData = async (request) => {
 
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
-  const xmlUpload = await isXmlUpload(licenceNumbers);
-  const externalReturns = isReturnsUser(request);
+
+  // WATER-2302 For now, the bulk upload link has been disabled
+  // const xmlUpload = await isXmlUpload(licenceNumbers);
+  // const externalReturns = isReturnsUser(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
-    xmlUser: xmlUpload && externalReturns,
+    xmlUser: false, // xmlUpload && externalReturns,
     returns: []
   };
 

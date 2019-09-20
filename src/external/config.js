@@ -1,6 +1,7 @@
 require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 const isLocal = process.env.NODE_ENV === 'local';
+const { withQueryStringSubset } = require('./lib/url');
 
 module.exports = {
 
@@ -48,7 +49,7 @@ module.exports = {
     isSecure: !isLocal,
     isSameSite: 'Lax',
     ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
-    redirectTo: '/welcome',
+    redirectTo: request => withQueryStringSubset('/welcome', request.query, '_ga'),
     isHttpOnly: true,
     keepAlive: true // ttl restarts after each request
   },

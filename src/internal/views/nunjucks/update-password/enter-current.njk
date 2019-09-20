@@ -2,6 +2,7 @@
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
+{% from "google-analytics.njk" import sendEvent %}
 
 {% block mainNav %}
 {% endblock %}
@@ -9,10 +10,6 @@
 {% block content %}
 
   {% if errors %}
-    <script nonce="{{nonces.script}}">
-      sendEvent({category:'error', action:'update_password_invalid_verification_password'})
-    </script>
-
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         {{
@@ -68,3 +65,10 @@
   </div>
 
 {% endblock %}
+
+{% if errors %}
+  {% block bodyEnd %}
+    {{ super() }}
+    {{ sendEvent(nonces.script, 'update_password_invalid_verification_password') }}
+  {% endblock %}
+{% endif %}

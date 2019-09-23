@@ -27,7 +27,8 @@ const createRequest = () => ({
 const createReturn = () => ({
   returnId,
   frequency: 'month',
-  meters: []
+  meters: [],
+  metadata: {}
 });
 
 experiment('Returns FlowStorageAdapter:', () => {

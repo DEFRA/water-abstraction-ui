@@ -5,7 +5,7 @@ const { getDefaultQuantity, getSingleTotalLines } = require('./water-return-help
 
 const {
   VALID_DATE, VALID_QUANTITY, VALID_PERIOD,
-  VALID_READING_TYPE, VALID_ABSTRACTION_PERIOD
+  VALID_READING_TYPE, VALID_ABSTRACTION_PERIOD, VALID_FLAG
 } = require('./validators');
 
 const linesSchema = Joi.array().items({
@@ -19,7 +19,8 @@ const linesSchema = Joi.array().items({
 const optionsSchema = {
   startDate: VALID_DATE,
   endDate: VALID_DATE,
-  frequency: VALID_PERIOD
+  frequency: VALID_PERIOD,
+  isFinal: VALID_FLAG
 };
 
 const getDateKey = line => `${line.startDate}_${line.endDate}`;
@@ -30,8 +31,8 @@ const getInitialLines = (lines = [], options) => {
   if (lines.length) {
     return lines;
   }
-  const { startDate, endDate, frequency } = options;
-  return getRequiredLines(startDate, endDate, frequency);
+  const { startDate, endDate, frequency, isFinal } = options;
+  return getRequiredLines(startDate, endDate, frequency, isFinal);
 };
 
 class Lines {

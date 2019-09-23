@@ -29,7 +29,7 @@ class WaterReturn {
     this.isNil = data.isNil;
 
     const lineOptions = pick(data, ['startDate', 'endDate', 'frequency']);
-    this.lines = new Lines(data.lines, lineOptions);
+    this.lines = new Lines(data.lines, { ...lineOptions, isFinal: data.metadata.isFinal });
     this.metadata = data.metadata;
     this.startDate = data.startDate;
     this.endDate = data.endDate;

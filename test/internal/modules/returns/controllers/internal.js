@@ -52,7 +52,8 @@ const createReturn = () => ({
   returnId,
   frequency: 'month',
   meters: [],
-  reading: {}
+  reading: {},
+  metadata: {}
 });
 
 experiment('internal returns controller', () => {

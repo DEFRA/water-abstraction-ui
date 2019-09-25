@@ -5,6 +5,7 @@ const Lab = require('@hapi/lab');
 const { experiment, test, afterEach, beforeEach, fail } = exports.lab = Lab.script();
 const sandbox = sinon.createSandbox();
 const { logger } = require('external/logger');
+const helpers = require('@envage/water-abstraction-helpers');
 
 const csvTemplates = require('external/modules/returns/lib/csv-templates');
 
@@ -93,6 +94,41 @@ experiment('csv templates', () => {
   });
 
   experiment('createReturnColumn', () => {
+    test('passes the correct parameters to getRequiredLines helpers function', async () => {
+      const csvLines = [
+        {
+          startDate: '2018-04-01',
+          endDate: '2018-04-01',
+          timePeriod: 'day'
+        },
+        {
+          startDate: '2018-04-02',
+          endDate: '2018-04-02',
+          timePeriod: 'day'
+        }, {
+          startDate: '2018-04-03',
+          endDate: '2018-04-03',
+          timePeriod: 'day'
+        }
+      ];
+      const ret = {
+        returnId: 'v1:01/123',
+        licenceNumber: '01/123',
+        returnRequirement: '01234',
+        frequency: 'day',
+        startDate: '2018-04-01',
+        endDate: '2018-04-02',
+        metadata: { isFinal: true }
+      };
+      const getRequiredLinesSpy = sinon.spy(helpers.returns.lines, 'getRequiredLines');
+      csvTemplates._createReturnColumn(ret, csvLines);
+      expect(getRequiredLinesSpy.calledWith(
+        ret.startDate,
+        ret.endDate,
+        ret.frequency,
+        ret.metadata.isFinal
+      )).to.be.true();
+    });
     test('should create a daily return column', async () => {
       const csvLines = [
         {
@@ -116,7 +152,8 @@ experiment('csv templates', () => {
         returnRequirement: '01234',
         frequency: 'day',
         startDate: '2018-04-01',
-        endDate: '2018-04-02'
+        endDate: '2018-04-02',
+        metadata: {}
       };
       const column = csvTemplates._createReturnColumn(ret, csvLines);
       expect(column).to.equal([
@@ -156,7 +193,8 @@ experiment('csv templates', () => {
         returnRequirement: '01234',
         frequency: 'week',
         startDate: '2018-04-01',
-        endDate: '2018-04-14'
+        endDate: '2018-04-14',
+        metadata: {}
       };
       const column = csvTemplates._createReturnColumn(ret, csvLines);
       expect(column).to.equal([
@@ -196,7 +234,8 @@ experiment('csv templates', () => {
         returnRequirement: '01234',
         frequency: 'month',
         startDate: '2018-04-01',
-        endDate: '2018-05-31'
+        endDate: '2018-05-31',
+        metadata: {}
       };
       const column = csvTemplates._createReturnColumn(ret, csvLines);
       expect(column).to.equal([
@@ -236,21 +275,24 @@ experiment('csv templates', () => {
         returnRequirement: 'requirement_1',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
-        frequency: 'day'
+        frequency: 'day',
+        metadata: {}
       }, {
         returnId: 'return_2',
         licenceNumber: 'licence_2',
         returnRequirement: 'requirement_2',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
-        frequency: 'month'
+        frequency: 'month',
+        metadata: {}
       }, {
         returnId: 'return_3',
         licenceNumber: 'licence_3',
         returnRequirement: 'requirement_3',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
-        frequency: 'week'
+        frequency: 'week',
+        metadata: {}
       }];
 
       const csvData = csvTemplates.createCSVData(returns);

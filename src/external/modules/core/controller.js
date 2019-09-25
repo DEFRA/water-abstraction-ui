@@ -1,5 +1,21 @@
+const { withQueryStringSubset } = require('../../lib/url');
+
+/**
+ * Provides a controller handler that will redirect to /licences.
+ *
+ * If this request includes the _ga query param this will be forwards to the
+ * licences pages to enable cross domain tracking in the .gov.uk domains.
+ *
+ * /licences requires authentication to access and this check will be handled
+ * by the HapiAuthCookie plugin which is also configured to forward the query
+ * param on redirect.
+ *
+ * @param {Object} request HAPI JS request object
+ * @param {Object} h HAPI JS response toolkit
+ */
 const index = async (request, h) => {
-  return h.redirect('/licences');
+  const url = withQueryStringSubset('/licences', request.query, '_ga');
+  return h.redirect(url);
 };
 
 /**

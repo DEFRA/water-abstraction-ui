@@ -1,6 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "button/macro.njk" import govukButton %}
+{% from "google-analytics.njk" import sendEvent %}
 
 {% block mainNav %}
 
@@ -24,9 +25,6 @@
 {% block content %}
 
   {% if errors.hasValidationErrors %}
-    <script nonce="{{nonces.script}}">
-      sendEvent({category:'error', action:'update_password_invalid_password'})
-    </script>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -108,3 +106,10 @@
   </div>
 
 {% endblock %}
+
+{% if errors.hasValidationErrors %}
+  {% block bodyEnd %}
+    {{ super() }}
+    {{ sendEvent(nonces.script, 'update_password_invalid_password') }}
+  {% endblock %}
+{% endif %}

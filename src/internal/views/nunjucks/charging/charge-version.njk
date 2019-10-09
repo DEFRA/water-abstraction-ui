@@ -6,25 +6,25 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      {{ title ('Licence charge', licenceTitle) }}
+      <!-- page heading -->
+      <h1 class="govuk-heading-l">
+        <span class="govuk-caption-l">{{ licenceTitle }}</span>
+        Charge version {{ chargeVersion.versionNumber }}
+      </h1>
 
+      {% if chargeVersion.status !== 'superseded' %}
+      <div class="govuk-!-margin-bottom-6">
+        {{ badge(chargeVersion | chargeVersionBadge) }}
+      </div>
+      {% endif %}
 
-      <dl class="govuk-summary-list">
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Last billed
           </dt>
           <dd class="govuk-summary-list__value">
             {{ chargeVersion.billedUptoDate | date }}
-          </dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            Charge version
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{ chargeVersion.versionNumber }}
           </dd>
         </div>
 
@@ -39,20 +39,11 @@
             {% endif %}
           </dd>
         </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            Status
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{ badge(chargeVersion | chargeVersionBadge) }}
-          </dd>
-        </div>
       </dl>
 
 
       {% for chargeElement in chargeVersion.chargeElements %}
-      <h2 class="govuk-heading-m">{{ chargeElement.purposeTertiaryDescription }}</h2>
+      <h2 class="govuk-heading-l">{{ chargeElement.purposeTertiaryDescription }}</h2>
 
 
       <dl class="govuk-summary-list">
@@ -110,7 +101,7 @@
 
       </dl>
 
-      <h3 class="govuk-heading-s">Factors</h3>
+      <h3 class="govuk-heading-m">Factors</h3>
 
       {% if chargeElement.factorsOverridden %}
       {{ badge('Overridden')}}
@@ -146,13 +137,13 @@
             EUIC source
           </dt>
           <dd class="govuk-summary-list__value">
-
+            {{ chargeElement.eiucSource | sentenceCase }}
           </dd>
         </div>
       </dl>
 
       {% if chargeElement.chargeAgreements.length %}
-      <h3 class="govuk-heading-s">{{ 'Agreement' | pluralize(chargeElement.chargeAgreements) }}</h3>
+      <h3 class="govuk-heading-m">{{ 'Agreement' | pluralize(chargeElement.chargeAgreements) }}</h3>
 
       <dl class="govuk-summary-list">
 

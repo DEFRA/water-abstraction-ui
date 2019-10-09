@@ -64,15 +64,15 @@ experiment('permissions', () => {
     });
   });
 
-  experiment('isInternalReturns', async () => {
-    test('it should return true if internal returns in scope', async () => {
+  experiment('isReturnsUser', async () => {
+    test('returns true if internal returns in scope', async () => {
       const request = createRequest([scope.internal, scope.returns]);
-      expect(permissions.isInternalReturns(request)).to.equal(true);
+      expect(permissions.isReturnsUser(request)).to.equal(true);
     });
 
-    test('it should return false if internal returns not in scope', async () => {
+    test('returns false if internal returns not in scope', async () => {
       const request = createRequest([scope.internal]);
-      expect(permissions.isInternalReturns(request)).to.equal(false);
+      expect(permissions.isReturnsUser(request)).to.equal(false);
     });
   });
 

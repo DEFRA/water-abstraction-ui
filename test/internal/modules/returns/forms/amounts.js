@@ -3,7 +3,7 @@ const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');
 const { form: amountsForm } = require('internal/modules/returns/forms/amounts');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token'
@@ -13,7 +13,7 @@ const createRequest = (isInternal = true) => {
     },
     auth: {
       credentials: {
-        scope: isInternal ? 'internal' : 'external'
+        scope: 'internal'
       }
     }
   };

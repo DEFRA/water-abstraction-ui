@@ -2,15 +2,16 @@
 const Boom = require('@hapi/boom');
 const moment = require('moment');
 const { get, isObject, last } = require('lodash');
-const titleCase = require('title-case');
 
-const { isInternal: isInternalUser, isExternalReturns } = require('../../../lib/permissions');
+// const { isReturnsUser } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('external/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const helpers = require('@envage/water-abstraction-helpers');
+const badge = require('shared/lib/returns/badge');
+const dates = require('shared/lib/returns/dates');
 
 /**
  * Gets the current return cycle object
@@ -42,10 +43,9 @@ const getLicenceNumbers = (request, filter = {}) => {
 /**
  * Gets the filter to use for retrieving licences from returns service
  * @param {Array} licenceNumbers
- * @param {Boolean} isInternal
  * @return {Object} filter
  */
-const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
+const getLicenceReturnsFilter = licenceNumbers => {
   const showFutureReturns = get(config, 'returns.showFutureReturns', false);
 
   const filter = {
@@ -56,19 +56,16 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
     },
     start_date: {
       $gte: '2008-04-01'
+    },
+    'metadata->>isCurrent': 'true',
+    status: {
+      $ne: 'void'
     }
   };
 
-  // External users can only view returns for the current version of a licence
-  // and cannot see void returns.
-  if (!isInternal) {
-    filter['metadata->>isCurrent'] = 'true';
-    filter.status = { $ne: 'void' };
-  }
-
   // External users on production-like environments can only view returns where
   // return cycle is in the past
-  if (!isInternal && !showFutureReturns) {
+  if (!showFutureReturns) {
     filter.end_date = {
       $lte: moment().format('YYYY-MM-DD')
     };
@@ -82,8 +79,8 @@ const getLicenceReturnsFilter = (licenceNumbers, isInternal) => {
  * @param {Array} list of licence numbers to get returns data for
  * @return {Promise} resolves with returns
  */
-const getLicenceReturns = async (licenceNumbers, page = 1, isInternal = false) => {
-  const filter = getLicenceReturnsFilter(licenceNumbers, isInternal);
+const getLicenceReturns = async (licenceNumbers, page = 1) => {
+  const filter = getLicenceReturnsFilter(licenceNumbers);
 
   const sort = {
     start_date: -1,
@@ -181,48 +178,11 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
   });
 };
 
-/**
- * Gets the most recent version of a return
- * @param {String} returnId
- * @return {Promise} resolves with object of version data on success
- */
-const getLatestVersion = async (returnId) => {
-  // Find newest version
-  const filter = {
-    return_id: returnId
-  };
-  const sort = {
-    version_number: -1
-  };
-  const { error, data: [version] } = await services.returns.versions.findMany(filter, sort);
-  if (error) {
-    throw Boom.badImplementation(error);
-  }
-  return version;
-};
-
-/**
- * Checks whether any line in the return has imperial units
- * @param {Array} lines
- * @return {Boolean}
- */
-const hasGallons = (lines) => {
-  return lines.reduce((acc, line) => {
-    return acc || line.user_unit === 'gal';
-  }, false);
-};
-
-const isReturnPastDueDate = returnRow => {
-  const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
-  const today = moment().startOf('day');
-  return dueDate.isBefore(today);
-};
-
 const mapReturnRow = (row, request) => {
-  const isPastDueDate = isReturnPastDueDate(row);
+  const isPastDueDate = dates.isReturnPastDueDate(row);
   return {
     ...row,
-    badge: getBadge(row.status, isPastDueDate),
+    badge: badge.getBadge(row.status, isPastDueDate),
     ...getReturnPath(row, request)
   };
 };
@@ -232,7 +192,7 @@ const mapReturnRow = (row, request) => {
  *
  * Adds an editable flag to each return in list
  * This is based on the status of the return, and whether the user
- * has internal returns role.
+ * has the returns role.
  *
  * Adds isPastDueDate flag to help with badge selection.
  *
@@ -260,23 +220,23 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const isInternal = isInternalUser(request);
-
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
-  const xmlUpload = await isXmlUpload(licenceNumbers);
-  const externalReturns = isExternalReturns(request);
+
+  // WATER-2302 For now, the bulk upload link has been disabled
+  // const xmlUpload = await isXmlUpload(licenceNumbers);
+  // const externalReturns = isReturnsUser(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
-    xmlUser: xmlUpload && externalReturns,
+    xmlUser: false, // xmlUpload && externalReturns,
     returns: []
   };
 
   if (licenceNumbers.length) {
-    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, isInternal);
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
     const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(mapReturns(data, request), documents));
 
     view.pagination = pagination;
@@ -286,100 +246,10 @@ const getReturnsViewData = async (request) => {
   return view;
 };
 
-/**
- * Get common view data used by many controllers
- * @param {Object} HAPI request instance
- * @param {Object} data - the return model
- * @return {Promise} resolves with view data
- */
-const getViewData = async (request, data) => {
-  const isInternal = isInternalUser(request);
-  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, isInternal);
-  return {
-    ...request.view,
-    documentHeader,
-    data
-  };
-};
-
-/**
- * When searching for return by ID, gets redirect path which is either to
- * the completed return page, or the edit return flow if not yet completed
- * @param {Object} ret - return object from returns service
- * @param {Boolean} isMultiple - if true, redirect to licence disambiguation page
- * @return {String} redirect path
- */
-const getRedirectPath = (ret, isMultiple = false) => {
-  const { return_id: returnId, status, return_requirement: formatId } = ret;
-  if (isMultiple) {
-    return `/returns/select-licence?formatId=${formatId}`;
-  }
-  return status === 'completed' ? `/returns/return?id=${returnId}` : `/return/internal?returnId=${returnId}`;
-};
-
-/**
- * Checks whether supplied string is a return ID as currently supported in
- * the digital service.  This consists of a version prefix, region code,
- * licence number, format ID and return cycle date range
- * @param {String} returnId - the string to test
- * @return {Boolean} true if match
- */
-const isReturnId = (returnId) => {
-  const r = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-  return r.test(returnId);
-};
-
-/**
- * Get field suffix - this is the units used for this return
- * @param {String} unit - internal SI unit or gal
- * @return {String} suffix - human readable unit
- */
-const getSuffix = (unit) => {
-  const u = unit.replace('³', '3');
-  const units = {
-    m3: 'cubic metres',
-    l: 'litres',
-    gal: 'gallons',
-    Ml: 'megalitres'
-  };
-  return units[u];
-};
-
-/**
- * Gets badge object to render for return row
- * @param  {String}  status    - return status
- * @param  {Boolean} isPastDue - whether return is past due
- * @return {Object}            - badge text and style
- */
-const getBadge = (status, isPastDueDate) => {
-  const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
-
-  const styles = {
-    overdue: 'success',
-    due: 'due',
-    received: 'completed',
-    completed: 'completed',
-    void: 'void'
-  };
-
-  return {
-    text: titleCase(viewStatus),
-    status: styles[viewStatus]
-  };
-};
-
 exports.getLicenceNumbers = getLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
 exports.isXmlUpload = isXmlUpload;
 exports.groupReturnsByYear = groupReturnsByYear;
 exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
-exports.getLatestVersion = getLatestVersion;
-exports.hasGallons = hasGallons;
 exports.getReturnsViewData = getReturnsViewData;
-exports.getViewData = getViewData;
-exports.isReturnPastDueDate = isReturnPastDueDate;
-exports.getRedirectPath = getRedirectPath;
-exports.isReturnId = isReturnId;
-exports.getSuffix = getSuffix;
-exports.getBadge = getBadge;
 exports.mapReturns = mapReturns;

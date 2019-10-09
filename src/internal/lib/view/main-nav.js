@@ -1,9 +1,6 @@
 const { get } = require('lodash');
 
-const {
-  isAnyAR, isAuthenticated, isManageTab
-} = require('../permissions');
-
+const { isAnyAR, isAuthenticated, isManageTab } = require('../permissions');
 const { createLink, setActiveLink } = require('./helpers');
 
 const createNavLink = (label, path, id) => {
@@ -11,24 +8,24 @@ const createNavLink = (label, path, id) => {
 };
 
 // Internal links
-const internalLinks = {
+const availableLinks = {
   licences: createNavLink('Licences', '/licences', 'view'),
   ar: createNavLink('Digitise!', '/digitise', 'ar'),
   notifications: createNavLink('Manage', '/manage', 'notifications')
 };
 
 /**
- * Get links for internal staff
+ * Get links that the current user is authorised to see.
  * @param  {Object} request - HAPI request instance
  * @return {Array}         - array of links
  */
-const getInternalNav = (request) => {
-  const links = [internalLinks.licences];
+const getNavigationForUser = (request) => {
+  const links = [availableLinks.licences];
   if (isAnyAR(request)) {
-    links.push(internalLinks.ar);
+    links.push(availableLinks.ar);
   }
   if (isManageTab(request)) {
-    links.push(internalLinks.notifications);
+    links.push(availableLinks.notifications);
   }
   return links;
 };
@@ -43,13 +40,11 @@ const getMainNav = (request) => {
     return [];
   }
 
-  const links = getInternalNav(request);
+  const links = getNavigationForUser(request);
 
   // Add active boolean to correct link
   const activeNavLink = get(request, 'view.activeNavLink');
   return setActiveLink(links, activeNavLink);
 };
 
-module.exports = {
-  getMainNav
-};
+exports.getMainNav = getMainNav;

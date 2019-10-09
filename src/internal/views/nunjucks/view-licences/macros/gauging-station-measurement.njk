@@ -48,12 +48,12 @@
 
   {% if showFlowLink %}
   <p>
-    <a href="{% if isAdmin %}/admin{% endif %}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
+    <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
   </p>
   {% endif %}
   {% if showLevelLink %}
   <p>
-    <a href="{% if isAdmin %}/admin{% endif %}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
+    <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
   </p>
   {% endif %}
   </div>

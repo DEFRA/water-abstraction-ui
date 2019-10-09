@@ -5,7 +5,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { form: meterDetailsForm } = require('internal/modules/returns/forms/meter-details');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token',

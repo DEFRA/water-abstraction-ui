@@ -1,5 +1,5 @@
 /**
- * Controller to allow internal colleagues to submit/edit returns data
+ * Controller to allow returns users to submit/edit returns data
  * @todo - ensure the user cannot edit/submit a completed return
  * @todo - ensure session data is valid at every step
  */

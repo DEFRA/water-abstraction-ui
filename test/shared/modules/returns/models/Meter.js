@@ -52,7 +52,8 @@ experiment('Meter', () => {
     lines = new Lines([], {
       frequency: 'month',
       startDate: '2019-09-01',
-      endDate: '2019-11-30'
+      endDate: '2019-11-30',
+      isFinal: false
     });
   });
 

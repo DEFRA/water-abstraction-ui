@@ -5,6 +5,7 @@ const sandbox = require('sinon').createSandbox();
 
 const controller = require('internal/modules/view-licences/controller');
 const services = require('internal/lib/connectors/services');
+const { scope } = require('internal/lib/constants');
 
 experiment('internal view licences controller', () => {
   experiment('getExpiredLicence', () => {
@@ -12,12 +13,22 @@ experiment('internal view licences controller', () => {
 
     beforeEach(async () => {
       sandbox.stub(services.returns.returns, 'getLicenceReturns').resolves({
-        data: []
+        data: [{
+          return_id: 'return_1',
+          start_date: '2018-04-01',
+          end_date: '2019-03-31',
+          status: 'due'
+        }]
       });
 
       request = {
         params: {
           documentId: 'document_1'
+        },
+        auth: {
+          credentials: {
+            scope: [scope.returns]
+          }
         },
         licence: {
           licence: {
@@ -93,6 +104,13 @@ experiment('internal view licences controller', () => {
       await controller.getExpiredLicence(request, h);
       const [ , view ] = h.view.lastCall.args;
       expect(view.showChargeVersions).to.be.true();
+    });
+
+    test('adds links to the returns', async () => {
+      await controller.getExpiredLicence(request, h);
+      const [ , view ] = h.view.lastCall.args;
+      expect(view.returns[0].path).to.be.a.string();
+      expect(view.returns[0].isEdit).to.be.a.boolean();
     });
   });
 });

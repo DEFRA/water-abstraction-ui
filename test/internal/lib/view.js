@@ -43,13 +43,26 @@ experiment('lib/view.contextDefaults', () => {
     expect(viewContext.surveyType).to.equal('anonymous');
   });
 
-  test('surveyType is internal for a logged in admin user', async () => {
+  test('surveyType is internal for a logged in user', async () => {
     const request = getBaseRequest();
     request.state.sid = { sid: 'test-sid' };
     set(request, 'auth.credentials.scope', [scope.internal]);
 
     const viewContext = view.contextDefaults(request);
     expect(viewContext.surveyType).to.equal('internal');
+  });
+
+  test('showCookieMessage is true when the seen_cookie_message is not set', async () => {
+    const request = getBaseRequest();
+    const viewContext = view.contextDefaults(request);
+    expect(viewContext.showCookieMessage).to.be.true();
+  });
+
+  test('showCookieMessage is false when the seen_cookie_message is set to "yes"', async () => {
+    const request = getBaseRequest();
+    set(request, 'state.seen_cookie_message', 'yes');
+    const viewContext = view.contextDefaults(request);
+    expect(viewContext.showCookieMessage).to.be.false();
   });
 });
 

@@ -67,13 +67,13 @@ function viewContextDefaults (request) {
   viewContext.labels.licences = 'Your licences';
 
   // TODO: Remove this as part of UI split
-  viewContext.isAdmin = false;
   viewContext.isTestMode = process.env.TEST_MODE;
 
   // Set navigation links
   viewContext.mainNavLinks = getMainNav(request);
   viewContext.propositionLinks = getPropositionLinks(request);
 
+  viewContext.showCookieMessage = !(request.state.seen_cookie_message === 'yes');
   viewContext.user = request.auth.credentials;
 
   viewContext.tracking = getTracking(request.defra);

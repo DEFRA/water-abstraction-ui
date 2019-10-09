@@ -18,15 +18,9 @@ const mapARComparisonTable = (data) => {
 
   return {
     head: [
-      {
-        text: 'NALD field'
-      },
-      {
-        text: 'NALD data'
-      },
-      {
-        text: 'New value'
-      }
+      { text: 'NALD field' },
+      { text: 'NALD data' },
+      { text: 'New value' }
     ],
     rows
   };
@@ -43,7 +37,5 @@ const ARConditionPlaceholder = (str) => {
   return tpl.replace(/\]/g, ']</strong>');
 };
 
-module.exports = {
-  mapARComparisonTable,
-  ARConditionPlaceholder
-};
+exports.mapARComparisonTable = mapARComparisonTable;
+exports.ARConditionPlaceholder = ARConditionPlaceholder;

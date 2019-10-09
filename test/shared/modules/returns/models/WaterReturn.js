@@ -30,7 +30,8 @@ const createReturn = () => ({
       periodStartMonth: 4,
       periodEndDay: 31,
       periodEndMonth: 10
-    }
+    },
+    isFinal: true
   },
   startDate: '2018-11-01',
   endDate: '2019-10-31',
@@ -52,6 +53,20 @@ experiment('WaterReturn', () => {
         expect(waterReturn[key]).to.equal(data[key]);
       });
     }
+
+    test('throws an error if metadata.isFinal is not a boolean', async () => {
+      const data = createReturn();
+      set(data, 'metadata.isFinal', 'not a boolean');
+      const func = () => new WaterReturn(data);
+      expect(func).to.throw();
+    });
+
+    test('does not throw an error if metadata.isFinal is undefined', async () => {
+      const data = createReturn();
+      set(data, 'metadata.isFinal', undefined);
+      const func = () => new WaterReturn(data);
+      expect(func).not.to.throw();
+    });
   });
 
   experiment('toObject', () => {

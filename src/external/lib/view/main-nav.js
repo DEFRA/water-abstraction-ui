@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 
 const {
-  isExternalReturns, isPrimaryUser, isAuthenticated
+  isReturnsUser, isPrimaryUser, isAuthenticated
 } = require('../permissions');
 
 const { createLink, setActiveLink } = require('./helpers');
@@ -36,7 +36,7 @@ const getExternalNav = (request) => {
   const links = [externalLinks.licences];
 
   if (userHasLicences(request)) {
-    if (isExternalReturns(request)) {
+    if (isReturnsUser(request)) {
       links.push(externalLinks.returns);
     }
 

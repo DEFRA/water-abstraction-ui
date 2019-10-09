@@ -52,6 +52,7 @@ module.exports = {
           error: Joi.string().max(32)
         }
       },
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Confirm your licences',
@@ -73,6 +74,7 @@ module.exports = {
           csrf_token: Joi.string().guid().required()
         }
       },
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Confirm your licences',
@@ -103,6 +105,7 @@ module.exports = {
     handler: controller.getAddressSelect,
     config: {
       description: 'Select the address to send postal verification letter',
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Where should we send your security code?',
@@ -123,6 +126,7 @@ module.exports = {
     handler: controller.postAddressSelect,
     config: {
       description: 'Post handler for select address form',
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Where should we send your security code?',
@@ -144,6 +148,7 @@ module.exports = {
     handler: controller.getFAO,
     config: {
       description: 'Specify a name or department for security code letter',
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Tell us if you want the security code marked for someone’s attention',
@@ -165,6 +170,7 @@ module.exports = {
           csrf_token: Joi.string().guid().required()
         }
       },
+      pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
         viewContext: {
           pageTitle: 'Tell us if you want the security code marked for someone’s attention',

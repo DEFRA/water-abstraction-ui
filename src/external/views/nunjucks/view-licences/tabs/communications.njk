@@ -10,7 +10,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro messageRow(message, isInternal) %}
+{% macro messageRow(message) %}
 <tr class="govuk-table__row">
   <td class="govuk-table__cell" scope="row">
     {{ messageLink(message) }}
@@ -18,11 +18,6 @@
   <td class="govuk-table__cell">
     {{ message.date | date }}
   </td>
-  {% if isInternal %}
-  <td class="govuk-table__cell">
-    {{ message.sender }}
-  </td>
-  {% endif %}
   <td class="govuk-table__cell">
     {{ message.messageType }}
   </td>
@@ -30,20 +25,13 @@
 {% endmacro %}
 
 
-{% macro messageRowMobile(message, isInternal) %}
+{% macro messageRowMobile(message) %}
 <div class="phone--show">
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
   <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
     {{ messageLink(message) }}
   </h3>
-  <p>{{ message.messageType | title }} sent {{ message.date | date }}
-
-    {% if isInternal %}
-    <br /><span class="govuk-caption-m link--no-underline">
-      By {{ message.sender }}
-    </span>
-    {% endif %}
-  </p>
+  <p>{{ message.messageType | title }} sent {{ message.date | date }}</p>
 </div>
 {% endmacro %}
 
@@ -52,7 +40,7 @@
 {% if communications.length %}
 
   {% for message in communications %}
-    {{ messageRowMobile(message, isInternal) }}
+    {{ messageRowMobile(message) }}
   {% endfor %}
 
   <table class="govuk-table phone--hide">
@@ -60,15 +48,12 @@
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col">Type</th>
         <th class="govuk-table__header" scope="col">Sent</th>
-        {% if isInternal  %}
-        <th class="govuk-table__header" scope="col">Sender</th>
-        {% endif %}
         <th class="govuk-table__header" scope="col">Method</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       {% for message in communications %}
-        {{ messageRow(message, isInternal) }}
+        {{ messageRow(message) }}
       {% endfor %}
     </tbody>
   </table>

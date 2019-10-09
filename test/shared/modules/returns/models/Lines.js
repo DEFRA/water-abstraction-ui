@@ -10,7 +10,8 @@ const Lines = require('shared/modules/returns/models/Lines');
 const createOptions = frequency => ({
   startDate: '2018-11-01',
   endDate: '2019-10-31',
-  frequency: 'month'
+  frequency: 'month',
+  isFinal: true
 });
 
 const createLines = () => ([ { startDate: '2018-11-01',

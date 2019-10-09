@@ -19,7 +19,7 @@
         {% endif %}
       {% else %}
         {% if userStatus.licenceCount %}
-          {{ userCompanies(userStatus.companies) }}
+          {{ userCompanies(userStatus.companies, user, unlinkLicencePathTail) }}
         {% else %}
           <p class="govuk-body-l">
             This user does not have any licences linked to their account

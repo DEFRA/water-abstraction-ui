@@ -12,3 +12,10 @@
     background: govuk-colour("grey-4");
   }
 }
+
+.inset-text--rename-licence {
+  @extend .govuk-inset-text;
+  border: 2px solid $govuk-text-colour;  
+  padding: govuk-spacing(6);
+}
+

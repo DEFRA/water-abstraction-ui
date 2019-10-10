@@ -12,7 +12,7 @@ const form = (query) => {
 
   f.fields.push(fields.text('query', {
     widget: 'search',
-    hint: 'Search by name, registered email address, return ID or licence number',
+    label: 'Search by name, registered email address, return ID or licence number',
     errors: {
       'any.empty': {
         message: 'Enter a name, registered email address, return ID or licence number'

@@ -34,28 +34,22 @@
   </tr>
 {% endmacro %}
 
-{% if chargeVersions.length %}
+{% for chargeVersion in chargeVersions %}
+  {{ chargeVersionRowMobile(chargeVersion) }}
+{% endfor %}
 
-  {% for chargeVersion in chargeVersions %}
-    {{ chargeVersionRowMobile(chargeVersion) }}
-  {% endfor %}
-
-  <table class="govuk-table phone--hide">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Version</th>
-        <th class="govuk-table__header" scope="col">Effective from</th>
-        <th class="govuk-table__header" scope="col">Effective to</th>
-        <th class="govuk-table__header" scope="col">Status</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      {% for chargeVersion in chargeVersions %}
-        {{ chargeVersionRow(chargeVersion) }}
-      {% endfor %}
-    </tbody>
-  </table>
-
-{% else %}
-  <p>No charge versions for this licence.</p>
-{% endif %}
+<table class="govuk-table phone--hide">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Version</th>
+      <th class="govuk-table__header" scope="col">Effective from</th>
+      <th class="govuk-table__header" scope="col">Effective to</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for chargeVersion in chargeVersions %}
+      {{ chargeVersionRow(chargeVersion) }}
+    {% endfor %}
+  </tbody>
+</table>

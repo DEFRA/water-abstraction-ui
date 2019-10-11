@@ -7,7 +7,6 @@ module.exports = {
     path: '/select-company',
     handler: controller.getSelectCompany,
     options: {
-
       description: 'Allows the user to select their company'
     }
   },

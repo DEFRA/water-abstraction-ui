@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api/archive/v4.3.0.tar.gz",
-    "@envage/water-abstraction-helpers": "^3.2.0",
+    "@envage/water-abstraction-helpers": "^3.6.0",
     "@hapi/boom": "^7.4.2",
     "@hapi/hapi": "^18.3.1",
     "@hapi/hoek": "^8.1.0",

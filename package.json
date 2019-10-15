@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {

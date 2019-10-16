@@ -20,7 +20,7 @@ const {
   READING_TYPE_ESTIMATED, READING_TYPE_MEASURED
 } = require('shared/modules/returns/models/Reading');
 
-const { addQuery } = require('shared/modules/returns/route-helpers');
+const { addQuery, errorRedirect } = require('shared/modules/returns/route-helpers');
 const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappers');
 
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -28,10 +28,12 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 /**
  * GET - date received
  */
-const getDateReceived = async (request, h) => h.view('nunjucks/returns/form.njk', {
-  ...request.view,
-  back: addQuery(request, STEP_INTERNAL_ROUTING)
-}, { layout: false });
+const getDateReceived = async (request, h) => {
+  return h.view('nunjucks/returns/form.njk', {
+    ...request.view,
+    back: addQuery(request, STEP_INTERNAL_ROUTING)
+  }, { layout: false });
+};
 
 /**
  * POST - date received
@@ -48,7 +50,8 @@ const postDateReceived = async (request, h) => {
 
     return h.redirect(addQuery(request, STEP_START));
   }
-  return getDateReceived(request, h);
+
+  return errorRedirect(request, h, STEP_DATE_RECEIVED);
 };
 
 /**
@@ -71,7 +74,7 @@ const postAmounts = async (request, h) => {
     );
     return h.redirect(path);
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_START);
 };
 
 /**
@@ -91,7 +94,7 @@ const postMethod = async (request, h) => {
     request.model.reading.setMethod(method);
     return h.redirect(addQuery(request, STEP_UNITS));
   }
-  return getMethod(request, h);
+  return errorRedirect(request, h, STEP_METHOD);
 };
 
 /**
@@ -112,7 +115,7 @@ const postUnits = async (request, h) => {
     const path = addQuery(request, STEP_METER_DETAILS_PROVIDED);
     return h.redirect(path);
   }
-  return getUnits(request, h);
+  return errorRedirect(request, h, STEP_UNITS);
 };
 
 /**
@@ -144,7 +147,7 @@ const postMeterDetailsProvided = async (request, h) => {
 
     return h.redirect(addQuery(request, next));
   }
-  return getMeterDetailsProvided(request, h);
+  return errorRedirect(request, h, STEP_METER_DETAILS_PROVIDED);
 };
 
 /**
@@ -166,7 +169,7 @@ const postMeterDetails = async (request, h) => {
     const next = request.model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_SINGLE_TOTAL;
     return h.redirect(addQuery(request, next));
   }
-  return getMeterDetails(request, h);
+  return errorRedirect(request, h, STEP_METER_DETAILS);
 };
 
 /**
@@ -189,7 +192,7 @@ const postMeterUsed = async (request, h) => {
 
     return h.redirect(addQuery(request, STEP_SINGLE_TOTAL));
   }
-  return getMeterUsed(request, h);
+  return errorRedirect(request, h, STEP_METER_USED);
 };
 
 /**
@@ -216,7 +219,7 @@ const postMeterReadings = async (request, h) => {
     request.model.meter.setMeterReadings(startReading, lines);
     return h.redirect(addQuery(request, STEP_CONFIRM));
   }
-  return getMeterReadings(request, h);
+  return errorRedirect(request, h, STEP_METER_READINGS);
 };
 
 /**
@@ -242,7 +245,7 @@ const postSingleTotal = async (request, h) => {
     const path = isSingleTotal ? STEP_SINGLE_TOTAL_DATES : STEP_QUANTITIES;
     return h.redirect(addQuery(request, path));
   }
-  return getSingleTotal(request, h);
+  return errorRedirect(request, h, STEP_SINGLE_TOTAL);
 };
 
 /**
@@ -266,7 +269,7 @@ const postSingleTotalDates = async (request, h) => {
     request.model.updateSingleTotalLines();
     return h.redirect(addQuery(request, STEP_QUANTITIES));
   }
-  return getSingleTotalDates(request, h);
+  return errorRedirect(request, h, STEP_SINGLE_TOTAL_DATES);
 };
 
 /**
@@ -291,7 +294,7 @@ const postQuantities = async (request, h) => {
     request.model.setLines(mapLines(data));
     return h.redirect(addQuery(request, STEP_CONFIRM));
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_QUANTITIES);
 };
 
 const getConfirmBackPath = request => {
@@ -342,7 +345,7 @@ const postConfirm = async (request, h) => {
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));
   }
-  return getConfirm(request, h);
+  return errorRedirect(request, h, STEP_CONFIRM);
 };
 
 /**

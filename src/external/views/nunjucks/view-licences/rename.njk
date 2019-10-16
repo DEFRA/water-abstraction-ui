@@ -7,13 +7,12 @@
 
   {{ formErrorSummary(form) }}
 
-  {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+  {% if summary.documentName.length %}
+    {{ title('Rename licence number ' + summary.licenceNumber) }}
+  {% else %}
+    {{ title('Name licence number ' + summary.licenceNumber) }}
+  {% endif %}
 
-  <div class="inset-text--rename-licence">
     {{ formRender(form) }}
-  </div>
-
-
-  {{ licenceSummary(documentId, summary, false )}}
 
 {% endblock %}

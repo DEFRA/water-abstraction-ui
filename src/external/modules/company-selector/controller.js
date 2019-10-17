@@ -12,6 +12,16 @@ const { selectCompanyForm } = require('./forms/select-company');
 const { handleRequest, getValues } = require('shared/lib/forms');
 
 /**
+ * Only show the back link if the user has already selected a company.
+ *
+ * @param {Object} request Hapi request abstraction
+ */
+const getBackLink = request => {
+  const companyId = get(request, 'defra.companyId', false);
+  return companyId && '/licences';
+};
+
+/**
  * Renders select company form for current user
  * @param  {Object} request - HAPI request
  * @param  {Object} h       - HAPI reply interface
@@ -22,7 +32,7 @@ const renderForm = (request, h, form) => {
   const view = {
     ...request.view,
     form,
-    back: '/licences',
+    back: getBackLink(request),
     pageTitle: 'Choose a licence holder'
   };
   return h.view('nunjucks/auth/select-company.njk', view, { layout: false });

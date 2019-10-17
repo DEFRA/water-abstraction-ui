@@ -153,6 +153,20 @@ experiment('shared flow plugin: ', () => {
           const result = await plugin._onPreHandler(request, h);
           expect(result).to.equal(h.continue);
         });
+
+        experiment('when there is a form in error state in the session', () => {
+          const errorForm = {
+            errors: ['oh no!']
+          };
+          beforeEach(async () => {
+            request.yar.get.returns(errorForm);
+          });
+
+          test('places the form in error state in request.view', async () => {
+            await plugin._onPreHandler(request, h);
+            expect(request.view.form).to.equal(errorForm);
+          });
+        });
       });
 
       experiment('onPostHandler', () => {

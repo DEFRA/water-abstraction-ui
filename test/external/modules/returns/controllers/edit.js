@@ -562,6 +562,15 @@ experiment('returns edit controller: ', () => {
       expect(h.redirect.calledWith(`${STEP_SUBMITTED}?returnId=${returnId}`))
         .to.equal(true);
     });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postConfirm(request, h);
+      });
+
+      testRedirect(STEP_CONFIRM);
+    });
   });
 
   experiment('getMeterReset', () => {
@@ -619,6 +628,15 @@ experiment('returns edit controller: ', () => {
           .to.equal(true);
       });
     });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterReset(request, h);
+      });
+
+      testRedirect(STEP_METER_RESET);
+    });
   });
 
   experiment('getMeterReadings', () => {
@@ -666,6 +684,15 @@ experiment('returns edit controller: ', () => {
     test('redirects to the meter details page', async () => {
       expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
         .to.equal(true);
+    });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterReadings(request, h);
+      });
+
+      testRedirect(STEP_METER_READINGS);
     });
   });
 

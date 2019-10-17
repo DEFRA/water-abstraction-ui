@@ -437,6 +437,15 @@ experiment('returns edit controller: ', () => {
           .to.equal(true);
       });
     });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterDetailsProvided(request, h);
+      });
+
+      testRedirect(STEP_METER_DETAILS_PROVIDED);
+    });
   });
 
   experiment('getMeterDetails', () => {
@@ -633,6 +642,15 @@ experiment('returns edit controller: ', () => {
     test('redirects to the confirmation page', async () => {
       expect(h.redirect.calledWith(`${STEP_CONFIRM}?returnId=${returnId}`))
         .to.equal(true);
+    });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterReadings(request, h);
+      });
+
+      testRedirect(STEP_METER_READINGS);
     });
   });
 
@@ -980,6 +998,15 @@ experiment('returns edit controller: ', () => {
     test('redirects to submitted page', async () => {
       expect(h.redirect.calledWith(`${STEP_SUBMITTED}?returnId=${returnId}`))
         .to.equal(true);
+    });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postConfirm(request, h);
+      });
+
+      testRedirect(STEP_CONFIRM);
     });
   });
 

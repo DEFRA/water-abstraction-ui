@@ -1,8 +1,7 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
-const url = require('url');
-const querystring = require('querystring');
+const { URL } = require('url');
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('external/lib/connectors/services');
@@ -105,12 +104,11 @@ experiment('returns edit controller: ', () => {
   const testRedirect = step => test('redirects to the correct URL', async () => {
     const [path] = h.redirect.lastCall.args;
 
-    const { query, pathname } = url.parse(path);
-    const params = querystring.parse(query);
+    const url = new URL(path, process.env.BASE_URL);
 
-    expect(params.error).to.be.a.string().length(36);
-    expect(params.returnId).to.equal(returnId);
-    expect(pathname).to.equal(step);
+    expect(url.searchParams.get('error')).to.be.a.string().length(36);
+    expect(url.searchParams.get('returnId')).to.equal(returnId);
+    expect(url.pathname).to.equal(step);
   });
 
   experiment('getAmounts', () => {

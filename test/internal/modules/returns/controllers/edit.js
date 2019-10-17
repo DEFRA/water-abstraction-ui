@@ -5,8 +5,7 @@ const sandbox = require('sinon').createSandbox();
 const controller = require('internal/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
-const url = require('url');
-const querystring = require('querystring');
+const { URL } = require('url');
 
 const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
@@ -118,12 +117,11 @@ experiment('returns edit controller: ', () => {
   const testRedirect = step => test('redirects to the correct URL', async () => {
     const [path] = h.redirect.lastCall.args;
 
-    const { query, pathname } = url.parse(path);
-    const params = querystring.parse(query);
+    const url = new URL(path, process.env.BASE_URL);
 
-    expect(params.error).to.be.a.string().length(36);
-    expect(params.returnId).to.equal(returnId);
-    expect(pathname).to.equal(step);
+    expect(url.searchParams.get('error')).to.be.a.string().length(36);
+    expect(url.searchParams.get('returnId')).to.equal(returnId);
+    expect(url.pathname).to.equal(step);
   });
 
   experiment('getDateReceived', () => {

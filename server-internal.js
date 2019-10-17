@@ -40,7 +40,8 @@ const pluginsArray = [
     plugin: require('shared/plugins/returns'),
     options: {
       getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
-      checkAccess: false
+      checkAccess: false,
+      includeExpired: true
     }
   }, {
     plugin: require('shared/plugins/licence-data'),

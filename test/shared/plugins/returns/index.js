@@ -26,11 +26,12 @@ const createRequest = (pluginEnabled = true, includeCompany = false) => {
   return r;
 };
 
-const createH = (checkAccess = true) => ({
+const createH = (checkAccess = true, includeExpired = false) => ({
   realm: {
     pluginOptions: {
       getDocumentHeader: sandbox.stub().resolves(documentHeader),
-      checkAccess
+      checkAccess,
+      includeExpired
     }
   },
   continue: 'continue'
@@ -101,7 +102,7 @@ experiment('returns plugin', () => {
 
     test('the document header is loaded', async () => {
       expect(
-        h.realm.pluginOptions.getDocumentHeader.calledWith('01/123')
+        h.realm.pluginOptions.getDocumentHeader.calledWith('01/123', false)
       ).to.equal(true);
     });
 
@@ -118,6 +119,16 @@ experiment('returns plugin', () => {
         expect(err.isBoom).to.equal(true);
         expect(err.output.statusCode).to.equal(404);
       }
+    });
+
+    test('expired licences can be configured to be included', async () => {
+      request = createRequest(true, false);
+      h = createH(false, true);
+      await plugin._handler(request, h);
+
+      const [licenceRef, includeExpired] = h.realm.pluginOptions.getDocumentHeader.lastCall.args;
+      expect(licenceRef).to.equal('01/123');
+      expect(includeExpired).to.be.true();
     });
   });
 

@@ -1,4 +1,5 @@
 // Shared services
+const AcceptanceTestsService = require('shared/lib/connectors/services/water/AcceptanceTestsService');
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
@@ -22,6 +23,7 @@ const { logger } = require('../../../../logger');
 
 module.exports = config => ({
   // Shared services
+  acceptanceTests: new AcceptanceTestsService(config.services.water, logger),
   communications: new CommunicationsService(config.services.water, logger),
   companies: new CompaniesService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),

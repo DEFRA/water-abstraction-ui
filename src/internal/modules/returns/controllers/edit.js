@@ -28,12 +28,10 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 /**
  * GET - date received
  */
-const getDateReceived = async (request, h) => {
-  return h.view('nunjucks/returns/form.njk', {
-    ...request.view,
-    back: addQuery(request, STEP_INTERNAL_ROUTING)
-  }, { layout: false });
-};
+const getDateReceived = async (request, h) => h.view('nunjucks/returns/form.njk', {
+  ...request.view,
+  back: addQuery(request, STEP_INTERNAL_ROUTING)
+}, { layout: false });
 
 /**
  * POST - date received

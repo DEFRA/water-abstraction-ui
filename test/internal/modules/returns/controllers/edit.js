@@ -117,7 +117,7 @@ experiment('returns edit controller: ', () => {
   const testRedirect = step => test('redirects to the correct URL', async () => {
     const [path] = h.redirect.lastCall.args;
 
-    const url = new URL(path, process.env.BASE_URL);
+    const url = new URL(path, 'http://localhost:8008');
 
     expect(url.searchParams.get('error')).to.be.a.string().length(36);
     expect(url.searchParams.get('returnId')).to.equal(returnId);

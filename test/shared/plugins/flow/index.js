@@ -92,6 +92,7 @@ experiment('shared flow plugin: ', () => {
 
     beforeEach(async () => {
       request = {
+        view: {},
         path: '/test',
         route: {
           settings: {
@@ -102,6 +103,11 @@ experiment('shared flow plugin: ', () => {
               }
             }
           }
+        },
+        yar: {
+          set: sandbox.stub(),
+          get: sandbox.stub(),
+          clear: sandbox.stub()
         }
       };
     });

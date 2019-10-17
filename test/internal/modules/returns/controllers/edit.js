@@ -5,6 +5,8 @@ const sandbox = require('sinon').createSandbox();
 const controller = require('internal/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
+const url = require('url');
+const querystring = require('querystring');
 
 const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
@@ -83,7 +85,12 @@ const createRequest = (isValid = true) => ({
     },
     csrfToken
   },
-  model: createModel()
+  model: createModel(),
+  yar: {
+    set: sandbox.stub(),
+    get: sandbox.stub(),
+    clear: sandbox.stub()
+  }
 });
 
 experiment('returns edit controller: ', () => {
@@ -106,6 +113,17 @@ experiment('returns edit controller: ', () => {
     const [template, , options] = h.view.lastCall.args;
     expect(template).to.equal('nunjucks/returns/form.njk');
     expect(options).to.equal({ layout: false });
+  });
+
+  const testRedirect = step => test('redirects to the correct URL', async () => {
+    const [path] = h.redirect.lastCall.args;
+
+    const { query, pathname } = url.parse(path);
+    const params = querystring.parse(query);
+
+    expect(params.error).to.be.a.string().length(36);
+    expect(params.returnId).to.equal(returnId);
+    expect(pathname).to.equal(step);
   });
 
   experiment('getDateReceived', () => {
@@ -176,7 +194,7 @@ experiment('returns edit controller: ', () => {
         await controller.postDateReceived(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_DATE_RECEIVED);
     });
   });
 
@@ -242,7 +260,7 @@ experiment('returns edit controller: ', () => {
         await controller.postAmounts(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_START);
     });
   });
 
@@ -294,7 +312,7 @@ experiment('returns edit controller: ', () => {
         await controller.postMethod(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METHOD);
     });
   });
 
@@ -345,7 +363,7 @@ experiment('returns edit controller: ', () => {
         await controller.postUnits(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_UNITS);
     });
   });
 
@@ -502,10 +520,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postMeterDetails(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METER_DETAILS);
     });
   });
 
@@ -559,7 +577,7 @@ experiment('returns edit controller: ', () => {
         await controller.postMeterUsed(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METER_USED);
     });
   });
 
@@ -702,7 +720,7 @@ experiment('returns edit controller: ', () => {
         await controller.postSingleTotal(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_SINGLE_TOTAL);
     });
   });
 
@@ -769,7 +787,7 @@ experiment('returns edit controller: ', () => {
         await controller.postSingleTotalDates(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_SINGLE_TOTAL_DATES);
     });
   });
 
@@ -830,10 +848,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postQuantities(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_QUANTITIES);
     });
   });
 

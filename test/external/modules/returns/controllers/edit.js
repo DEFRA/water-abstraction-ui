@@ -1,6 +1,8 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
+const url = require('url');
+const querystring = require('querystring');
 const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('external/lib/connectors/services');
@@ -70,7 +72,12 @@ const createRequest = (isValid = true) => ({
     },
     csrfToken
   },
-  model: createModel()
+  model: createModel(),
+  yar: {
+    set: sandbox.stub(),
+    get: sandbox.stub(),
+    clear: sandbox.stub()
+  }
 });
 
 experiment('returns edit controller: ', () => {
@@ -93,6 +100,17 @@ experiment('returns edit controller: ', () => {
     const [template, , options] = h.view.lastCall.args;
     expect(template).to.equal('nunjucks/returns/form.njk');
     expect(options).to.equal({ layout: false });
+  });
+
+  const testRedirect = step => test('redirects to the correct URL', async () => {
+    const [path] = h.redirect.lastCall.args;
+
+    const { query, pathname } = url.parse(path);
+    const params = querystring.parse(query);
+
+    expect(params.error).to.be.a.string().length(36);
+    expect(params.returnId).to.equal(returnId);
+    expect(pathname).to.equal(step);
   });
 
   experiment('getAmounts', () => {
@@ -157,7 +175,7 @@ experiment('returns edit controller: ', () => {
         await controller.postAmounts(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_START);
     });
   });
 
@@ -225,7 +243,7 @@ experiment('returns edit controller: ', () => {
         await controller.postMethod(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METHOD);
     });
   });
 
@@ -292,7 +310,7 @@ experiment('returns edit controller: ', () => {
         await controller.postUnits(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_UNITS);
     });
   });
 
@@ -353,10 +371,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postQuantities(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_QUANTITIES);
     });
   });
 
@@ -439,10 +457,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postMeterDetails(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METER_DETAILS);
     });
   });
 

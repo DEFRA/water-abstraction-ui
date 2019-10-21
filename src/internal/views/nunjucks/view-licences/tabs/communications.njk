@@ -44,22 +44,27 @@
 
 <h2 class="govuk-heading-m">Communications</h2>
 
-{% for message in communications %}
-  {{ messageRowMobile(message) }}
-{% endfor %}
+{% if communications.length %}
 
-<table class="govuk-table phone--hide">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col">Sent</th>
-      <th class="govuk-table__header" scope="col">Sender</th>
-      <th class="govuk-table__header" scope="col">Method</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    {% for message in communications %}
-      {{ messageRow(message) }}
-    {% endfor %}
-  </tbody>
-</table>
+  {% for message in communications %}
+    {{ messageRowMobile(message) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Type</th>
+        <th class="govuk-table__header" scope="col">Sent</th>
+        <th class="govuk-table__header" scope="col">Sender</th>
+        <th class="govuk-table__header" scope="col">Method</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for message in communications %}
+        {{ messageRow(message) }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No communications for this licence.</p>
+{% endif %}

@@ -43,7 +43,12 @@ const onPreHandler = async (request, h) => {
   initialForm.action = getPathAndQueryString(request);
 
   if (request.method === 'get') {
-    set(request, 'view.form', initialForm);
+    // Get form from session if in error state, otherwise use
+    // form initial value
+    const key = get(request, 'query.error');
+    const sessionForm = request.yar.get(key);
+    request.view.form = sessionForm || initialForm;
+    request.yar.clear(key);
   }
   if (request.method === 'post') {
     const validationSchema = options.schema ? options.schema(request, data, initialForm) : undefined;

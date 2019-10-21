@@ -31,5 +31,6 @@ module.exports = {
     options: {
       postToPath: path => services.water.acceptanceTests.postToPath(path)
     }
-  }
+  },
+  csp: require('shared/plugins/csp')
 };

@@ -29,7 +29,7 @@ module.exports = {
   acceptanceTestsProxy: {
     plugin: require('shared/plugins/acceptance-tests-proxy'),
     options: {
-      postToPath: path => services.water.acceptanceTests.postToPath(path)
+      postToPath: (path, payload) => services.water.acceptanceTests.postToPath(path, payload)
     }
   }
 };

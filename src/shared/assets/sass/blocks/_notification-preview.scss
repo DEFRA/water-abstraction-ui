@@ -1,12 +1,16 @@
 .notification-preview {
-  background-color: $govuk-blue;
-  color: $page-colour;
+  background-color:  govuk-colour('blue');
+  color: govuk-colour('white');
   padding: 30px;
   word-wrap: break-word;
 
+  p {
+    color: govuk-colour('white');
+  }
+
   h1 {
-    font-size: 1.15em;
-    font-weight: bold;
+    @include govuk-typography-common;
+    @include govuk-font(24, 'bold');
   }
 
   h1 + h1 {
@@ -17,7 +21,6 @@
     list-style: disc;
     margin-left: 1em;
     padding-left: 1em;
-
   }
 
   a {

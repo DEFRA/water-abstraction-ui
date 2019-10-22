@@ -36,7 +36,7 @@ experiment('external/modules/core/controller', () => {
       const request = createRequest();
       await controller.getNotFoundError(request, h);
       const [path] = h.view.lastCall.args;
-      expect(path).to.equal('nunjucks/errors/404.njk');
+      expect(path).to.equal('nunjucks/errors/404');
     });
 
     test('should respond with a 404 status code', async () => {

@@ -6,35 +6,33 @@ const { scope } = require('../../lib/constants');
 
 const allowedScopes = [scope.hofNotifications, scope.renewalNotifications];
 
-const getStep = {
-  method: 'GET',
-  path: '/notifications/{id}',
-  config: {
-    auth: {
-      scope: allowedScopes
-    },
-    description: 'Admin view step of notification task',
-    validate: {
-      params: {
-        id: Joi.number()
-      },
-      query: {
-        step: Joi.number().default(0),
-        data: Joi.string(),
-        start: Joi.number().default(0).allow(0, 1)
-      }
-    },
-    plugins: {
-      viewContext: {
-        activeNavLink: 'notifications'
-      }
-    }
-  },
-  handler: controller.getStep
-};
-
 const routes = {
-  getStep,
+  getStep: {
+    method: 'GET',
+    path: '/notifications/{id}',
+    config: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Admin view step of notification task',
+      validate: {
+        params: {
+          id: Joi.number()
+        },
+        query: {
+          step: Joi.number().default(0),
+          data: Joi.string(),
+          start: Joi.number().default(0).allow(0, 1)
+        }
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      }
+    },
+    handler: controller.getStep
+  },
   postStep: {
     path: '/notifications/{id}',
     method: 'POST',
@@ -51,6 +49,7 @@ const routes = {
       }
     }
   },
+
   getRefine: {
     method: 'GET',
     path: '/notifications/{id}/refine',
@@ -73,6 +72,7 @@ const routes = {
     },
     handler: controller.getRefine
   },
+
   postRefine: {
     method: 'POST',
     path: '/notifications/{id}/refine',
@@ -95,6 +95,7 @@ const routes = {
     },
     handler: controller.postRefine
   },
+
   getVariableData: {
     method: 'GET',
     path: '/notifications/{id}/data',
@@ -117,6 +118,7 @@ const routes = {
     },
     handler: controller.getVariableData
   },
+
   postVariableData: {
     method: 'POST',
     path: '/notifications/{id}/data',

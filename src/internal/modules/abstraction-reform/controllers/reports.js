@@ -14,9 +14,10 @@ const getCSVReport = async (request, h) => {
     return csvDownload(h, data, getReportFilename());
   }
 
-  return h.view('water/abstraction-reform/csv-report', view);
+  return h.view(
+    'nunjucks/abstraction-reform/csv-report',
+    { ...view, back: '/notifications' }
+  );
 };
 
-module.exports = {
-  getCSVReport
-};
+exports.getCSVReport = getCSVReport;

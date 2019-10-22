@@ -55,7 +55,7 @@ experiment('internal view controller', async () => {
       await controller.getReturnsForLicence(request, h);
 
       const [template, view] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/licence.njk');
+      expect(template).to.equal('nunjucks/returns/licence');
       expect(view).to.contain(['back', 'backText', 'document', 'pageTitle', 'paginationUrl']);
       expect(view.back).to.equal(`/licences/${request.params.documentId}`);
       expect(view.backText).to.equal(`Licence number ${view.document.system_external_id}`);
@@ -89,7 +89,7 @@ experiment('internal view controller', async () => {
       await controller.getReturn(request, h);
 
       const [template, view] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/return.njk');
+      expect(template).to.equal('nunjucks/returns/return');
       expect(view.data.isCurrent).to.equal(returnData.isCurrent);
       expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
       expect(view.data.metadata).to.equal(returnData.metadata);

@@ -10,7 +10,7 @@ const getManageTab = async (request, h) => {
     ...request.view,
     ...getManageTabConfig(request)
   };
-  return h.view('nunjucks/notifications/manage-tab.njk', view, { layout: false });
+  return h.view('nunjucks/notifications/manage-tab', view);
 };
 
 exports.getManageTab = getManageTab;

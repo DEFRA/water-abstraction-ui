@@ -1,133 +1,35 @@
-// Table styles
-table {
-  .numeric {
-    text-align: right;
-  }
+.table__header--tall {
+  @extend .govuk-table__header;
 
-  td {
-    &--centred {
-      text-align: center;
-    }
-  }
-
+    padding: 15px;
+    padding-left: 0;
 }
 
+.table__cell--tall {
+  @extend .govuk-table__cell;
 
-
-// Flextable
-.table {
-  padding-bottom: 15px;
-  @media (min-width: 768px) {
-    display: table;
-    width: 100%;
-  }
-
-  &-return-quantities {
-
-    table-layout: fixed;
-
-    h3 {
-      font-weight: bold;
-      @media (min-width: 768px) {
-        font-weight: normal;
-      }
-    }
-
-    .table-foot {
-      @media (min-width: 768px) {
-        font-weight: bold;
-      }
-
-      h3 {
-        @media (min-width: 768px) {
-          font-weight: bold;
-        }
-      }
-    }
-
-  }
+    padding: 15px;
+    padding-left: 0;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  @include govuk-typography-weight-regular;
+  max-width: 250px;
+}
 
-
-.table-row {
-
-  margin-bottom: 30px;
-  @media (min-width: 768px) {
-    display: table-row;
-  }
+.table__row--clickable {
+  @extend .govuk-table__row !optional;
 
   // If JS is enabled, user can click entire table row to view licence
   // Hint to user this is possible by displaying hover state on table row
-  .js-enabled &.clickable {
+  .js-enabled & {
     &:hover {
       cursor: pointer;
-      background: $highlight-colour;
+      background: govuk-colour("grey-4");
     }
   }
-
-}
-
-
-
-.table-head {
-  display: none;
-  @media (min-width: 768px) {
-    display: table-row;
-  }
-}
-
-
-
-.table-cell {
-  font-size: inherit;
-
-  border-bottom: 1px solid #bfc1c3;
-  padding: 15px;
-  padding-left: 0;
-
-
-  @media (min-width: 768px) {
-    display: table-cell;
-    vertical-align: middle;
-  }
-
-  &--desktop {
-    display: none;
-    @media (min-width: 768px) {
-      display: table-cell;
-    }
-  }
-
-  &--date {
-    @media (min-width: 768px) {
-      min-width: 170px;
-    }
-  }
-
-  &.numbers {
-    @media (min-width: 768px) {
-      text-align: right;
-    }
-  }
-}
-
-.table-cell .multiple-choice {
-  white-space:nowrap;
-  float: none;
-  overflow: auto;
-}
-
-
-.context {
-  color: $grey-1;
-  display: block;
-  display: auto;
-  @media (min-width: 768px) {
-    display: none;
-  }
-}
-
-.full {
-  width: 100%;
 }

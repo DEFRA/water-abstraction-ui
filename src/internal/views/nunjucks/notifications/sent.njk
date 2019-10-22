@@ -1,0 +1,39 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "panel/macro.njk" import govukPanel %}
+{% from "button/macro.njk" import govukButton %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Your {{ task.config.name | lower }} has been sent
+      </h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h2 class="govuk-panel__title">Notification sent</h2>
+        <div class="govuk-panel__body">
+          You sent this notification to
+          <span class="govuk-!-font-weight-bold">{{ summary.messageCount }} {{ 'recipient' | pluralize(summary.messageCount != 1) }}.
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <a class="govuk-link govuk-!-margin-top-5" href="/notifications/report">
+        See report for notices
+      </a>
+    </p>
+    </div>
+  </div>
+{% endblock %}

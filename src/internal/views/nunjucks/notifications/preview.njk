@@ -1,0 +1,49 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        You are about to send this notification to
+        <span class="govuk-!-font-weight-bold">
+          {{ summary.messageCount }}
+          {{ 'recipient' | pluralize(summary.messageCount != 1) }}
+        </span>
+        <span>regarding </span>
+        <span class="govuk-!-font-weight-bold">
+          {{ summary.licenceCount }}
+          {{ 'licence' | pluralize(summary.messageCount != 1) }}
+        </span>.
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="notification-preview">
+        {{ summary.sampleMessage | markdown | safe }}
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST" action="{{ formAction }}">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        <input type="hidden" name="data" value="{{ data }}" />
+        {{
+          govukButton({
+            text: "Send notification",
+            classes: "govuk-!-margin-top-5"
+          })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

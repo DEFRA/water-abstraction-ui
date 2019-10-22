@@ -19,7 +19,7 @@ module.exports = [
           pageTitle: 'Reset your password'
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password.njk'
+          view: 'nunjucks/reset-password/reset-password'
         }
       }
     },
@@ -46,7 +46,7 @@ module.exports = [
           }
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password.njk',
+          view: 'nunjucks/reset-password/reset-password',
           redirect: '/reset_password_check_email'
         }
       }
@@ -64,7 +64,7 @@ module.exports = [
           back: '/signin'
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password-sent.njk'
+          view: 'nunjucks/reset-password/reset-password-sent'
         }
       }
     },
@@ -81,7 +81,7 @@ module.exports = [
           back: '/reset_password_check_email'
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password-resend.njk'
+          view: 'nunjucks/reset-password/reset-password-resend'
         }
       }
     },
@@ -108,7 +108,7 @@ module.exports = [
           }
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password-resend.njk',
+          view: 'nunjucks/reset-password/reset-password-resend',
           redirect: '/reset_password_resent_email'
         }
       }
@@ -125,7 +125,7 @@ module.exports = [
           pageTitle: 'Check your email'
         },
         config: {
-          view: 'nunjucks/reset-password/reset-password-resent.njk'
+          view: 'nunjucks/reset-password/reset-password-resent'
         }
       }
     },

@@ -8,6 +8,13 @@ const services = require('../../lib/connectors/services');
 const { licenceValidator } = require('./lib/licence-validator');
 const { checkAccess } = require('./lib/permission');
 
+const createErrorList = error => {
+  return error.map(err => ({
+    text: err.message,
+    href: `#${err.field}`
+  }));
+};
+
 /**
   * Helper handler for start flow
   * @param {Object} request - HAPI HTTP request
@@ -96,7 +103,7 @@ async function renderStep (request, reply, taskData, index) {
     formAction: `/notifications/${task.task_config_id}?step=${index}`,
     pageTitle: task.config.title
   };
-  return reply.view('water/notifications/step', view);
+  return reply.view('nunjucks/notifications/step', view);
 }
 
 /**
@@ -125,6 +132,11 @@ async function postStep (request, reply) {
   // If validation error, re-render current step
   if (error) {
     request.view.error = error;
+    request.view.errorList = createErrorList(error);
+    request.view.errorField = error.reduce((acc, err) => {
+      acc[err.field] = { text: err.message };
+      return acc;
+    }, {});
     return renderStep(request, reply, taskData, step);
   }
 
@@ -185,6 +197,8 @@ async function getRefine (request, reply) {
     });
   });
 
+  const licenceErrors = licenceValidator(filter, data);
+
   const view = {
     ...request.view,
     pagination,
@@ -198,10 +212,11 @@ async function getRefine (request, reply) {
     errors: {
       [request.query.flash]: true
     },
-    licenceErrors: licenceValidator(filter, data)
+    licenceErrors,
+    errorList: createErrorList(licenceErrors)
   };
 
-  return reply.view('water/notifications/refine', view);
+  return reply.view('nunjucks/notifications/refine', view);
 }
 
 /**
@@ -262,7 +277,7 @@ async function renderVariableData (request, reply, taskData) {
     back: `/notifications/${task.task_config_id}/refine`
   };
 
-  return reply.view('water/notifications/data', view);
+  return reply.view('nunjucks/notifications/data', view);
 }
 
 /**
@@ -315,6 +330,7 @@ async function postVariableData (request, reply) {
   // Re-render variable screen
   if (error) {
     request.view.error = error;
+    request.view.errorList = createErrorList(error);
     return renderVariableData(request, reply, taskData);
   } else {
     // Redirect to next step
@@ -393,7 +409,7 @@ async function getPreview (request, reply) {
 
   checkAccess(request, view.task);
 
-  return reply.view('water/notifications/preview', view);
+  return reply.view('nunjucks/notifications/preview', view);
 }
 
 /**
@@ -419,14 +435,18 @@ async function postSend (request, reply) {
   // Flow is completed - delete state in session store
   request.yar.clear('notificationsFlow');
 
-  return reply.view('water/notifications/sent', view);
+  return reply.view('nunjucks/notifications/sent', view);
 }
 
 exports.getStep = getStep;
 exports.postStep = postStep;
+
 exports.getRefine = getRefine;
 exports.postRefine = postRefine;
+
 exports.getVariableData = getVariableData;
 exports.postVariableData = postVariableData;
+
 exports.getPreview = getPreview;
+
 exports.postSend = postSend;

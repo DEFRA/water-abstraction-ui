@@ -20,7 +20,7 @@ experiment('.getConfirmPassword', () => {
 
   test('the expected view template is used', async () => {
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/form-without-nav.njk');
+    expect(template).to.equal('nunjucks/form-without-nav');
   });
 
   test('the view data is passed through to the view', async () => {
@@ -93,7 +93,7 @@ experiment('.postConfirmPassword', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form-without-nav.njk');
+      expect(template).to.equal('nunjucks/form-without-nav');
     });
 
     test('the view data is passed through to the view', async () => {
@@ -123,7 +123,7 @@ experiment('.getPasswordLocked', () => {
 
   test('the expected view template is used', async () => {
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/reauth/try-again-later.njk');
+    expect(template).to.equal('nunjucks/reauth/try-again-later');
   });
 
   test('the view data is passed through to the view', async () => {

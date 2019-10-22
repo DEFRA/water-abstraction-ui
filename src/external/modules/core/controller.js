@@ -22,7 +22,7 @@ const index = async (request, h) => {
  * Welcome page before routing to signin/register
  */
 function getWelcome (request, h) {
-  return h.view('nunjucks/core/welcome.njk', request.view, { layout: false });
+  return h.view('nunjucks/core/welcome', request.view);
 }
 
 /**
@@ -34,7 +34,7 @@ const getNotFoundError = (request, h) => {
     pageTitle: 'We cannot find that page'
   };
   return h
-    .view('nunjucks/errors/404.njk', view, { layout: false })
+    .view('nunjucks/errors/404', view)
     .code(404);
 };
 

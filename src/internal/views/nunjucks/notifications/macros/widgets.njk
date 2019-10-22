@@ -1,0 +1,53 @@
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "input/macro.njk" import govukInput %}
+{% from "date-input/macro.njk" import govukDateInput %}
+
+{% macro widgetTextArea(widget, errorField, values) %}
+  {{
+    govukTextarea({
+      name: widget.name,
+      id: widget.name,
+      value: values[widget.name],
+      label: {
+        text: widget.label
+      },
+      hint: {
+        text: widget.hint
+      },
+      attributes: {
+        maxlength: 8000,
+        rows: 5
+      },
+      errorMessage: errorField[widget.name]
+    })
+  }}
+{% endmacro %}
+
+{% macro widgetText(widget, errorField, values) %}
+  {{ widget.value }}
+  {{
+    govukInput({
+      label: {
+        text: widget.label
+      },
+      name: widget.name,
+      id: widget.name,
+      value: values[widget.name],
+      errorMessage: errorField[widget.name]
+    })
+  }}
+{% endmacro %}
+
+{% macro widgetDate(widget, errorField, values) %}
+  {{
+    govukDateInput({
+      id: widget.name,
+      namePrefix: widget.name,
+      fieldset: {
+        legend: {
+          text: widget.label
+        }
+      }
+    })
+  }}
+{% endmacro %}

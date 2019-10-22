@@ -1,356 +1,38 @@
-// Path to assets for use with the file-url function
-// in the govuk frontend toolkit's url-helpers partial
-$path: "/public/images/";
-// Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
-// Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
-@import 'govuk-elements';
-// Settings (variables)
-@import "colours";
-// Colour variables
-@import "font_stack";
-// Font family variables
-@import "measurements";
-// Widths and gutter variables
-// Mixins
-@import "conditionals";
-// Media query mixin
-@import "device-pixels";
-// Retina image mixin
-@import "grid_layout";
-// Basic grid layout mixin
-@import "typography";
-// Core bold and heading mixins
-@import "shims";
-// Inline block mixin, clearfix placeholder
-// Take a look at in app/assets/sass/patterns/ to see which files are imported.
-// @import 'patterns/check-your-answers';
-// @import 'patterns/task-list';
+// global styles for <a> and <p> tags
+$govuk-global-styles: true;
 
-@import "blocks/licence_search";
-@import "blocks/licence_rename";
-@import "blocks/data_row";
-@import "blocks/pagination";
-@import "blocks/navbar";
-@import "blocks/table";
-@import "blocks/notification-preview";
-@import "blocks/notification-report";
+// Import GOV.UK Frontend
+@import "govuk-frontend/all";
+
+// Patterns that aren't in Frontend
+@import "blocks/alert";
 @import "blocks/badge";
-@import "blocks/flex";
-@import "blocks/unit-selector";
-@import "blocks/space";
-@import "blocks/meta";
-@import "blocks/forms";
-@import "blocks/text";
 @import "blocks/company-switcher";
-
-* {
-family: "nta", Arial, sans-serif;
-}
-
-.cookies-table {
-  tr {
-    th:first-child,td:first-child {
-      @media screen and (min-width: 641px) {
-        width: 33%;
-      }
-    }
-    th:last-child, td:last-child {
-      @media screen and (min-width: 641px) {
-        width: 20%;
-      }
-    }
-  }
-}
-
-.panel {
-  border-top: none;
-}
-
-.alert-default {
-  border-color: #008EC9;
-  background-color: #E8F4FA;
-
-  @media screen and (min-width: 641px) {
-    width : 66%;
-  }
-}
-
-// Related items
-// (These styles will be moved to GOV.UK elements, duplicating here for now.)
-
-// Screen-reader only text
-// @see https://accessible360.com/accessible360-blog/use-aria-label-screen-reader-text/
-.sr-only {
-  position: absolute;
-  height: 1px;
-  width: 1px;
-  clip: rect(1px 1px 1px 1px); // IE 6 and 7
-  clip: rect(1px,1px,1px,1px);
-  clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
-  -webkit-clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
-  overflow: hidden !important;
-}
-
-.form-hint {
-  .list {
-    margin-bottom: 0px;
+@import "blocks/cookie-message";
+@import "blocks/data-row";
+@import "blocks/flex";
+@import "blocks/input";
+@import "blocks/inset-text";
+@import "blocks/licence-results";
+@import "blocks/licence-search";
+@import "blocks/link";
+@import "blocks/message-preview";
+@import "blocks/meta";
+@import "blocks/meter-readings";
+@import "blocks/notification-preview";
+@import "blocks/pagination";
+@import "blocks/panel";
+@import "blocks/password-validation";
+@import "blocks/phone";
+@import "blocks/search";
+@import "blocks/spinner";
+@import "blocks/subnav";
+@import "blocks/summary-list";
+@import "blocks/survey-frame";
+@import "blocks/table";
+@import "blocks/text";
+@import "blocks/unit-selector";
+@import "blocks/warning";
 
 
-    &-errors {
-      margin-left: 0px;
-      padding-left: 0px;
-    }
-
-    .validation-icon {
-      display: inline-block;
-      width: 1em;
-    }
-
-    li {
-      &:before {
-        position: absolute;
-        margin-left: -1.3em;
-        font-weight: bold;
-      }
-
-      &.password-validation {
-        color: $green;
-        list-style: none;
-        list-style-position: outside;
-      }
-
-      &.password-validation-failure {
-        color: $error-colour;
-        list-style: none;
-        list-style-position: outside;
-      }
-    }
-  }
-}
-
-.heading-medium {
-  margin-top: 0.3em;
-  margin-bottom: 0.5em;
-}
-
-.medium-space {
-  margin-bottom: 30px;
-}
-
-li {
-  margin-bottom: 10px;
-}
-// Add extra styles here, or re-organise the Sass files in whichever way makes most sense to you
-.sourceofsupplyq {
-  display: inline-block;
-  vertical-align: top;
-  padding-bottom: 7px;
-  padding-right: 0.5em;
-  width: 20%;
-  font-weight: bold;
-}
-
-.licenceAnswer {
-  display: inline-block;
-  width: 50%;
-  padding-bottom: 7px;
-  padding-left: 3em;
-}
-
-.name {
-  display: inline-block;
-  width: 50%;
-  padding-bottom: 7px;
-  padding-left: 0.5em;
-}
-
-.header-links {
-    float: right;
-    line-height:0;
-
-    a {
-      font-size: 0.875em;
-      line-height: 1.14286;
-      margin-left: 0.5em;
-      margin-right: 0.5em;
-    }
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-a.accordion {
-  display: block;
-}
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-a.accordion.active,
-a.accordion:hover,
-button.accordion.active,
-button.accordion:hover {
-  background-color: #F8F8F8;
-}
-
-a.accordion:after,
-button.accordion:after {
-  content: '\02795';
-  /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;
-  padding-top: 6px;
-  padding-right: 10px;
-}
-
-a.accordion.active:after,
-button.accordion.active:after {
-  content: "\2796";
-  /* Unicode character for "minus" sign (-) */
-}
-
-/* hidden/shown utility classes */
-.hide {
-  display: none;
-}
-
-.hide-js {
-  display: block;
-
-  body.js-enabled & {
-    display: none;
-  }
-}
-
-.show-js {
-  display: none;
-  body.js-enabled & {
-    display: block;
-  }
-}
-
-// Tab nav
-nav.tabs {
-
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-  border-bottom: 2px solid $panel-colour;
-
-  & ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: table-row;
-
-    & li {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: table-cell;
-
-
-      & a, & span {
-        margin-left: 5px;
-        margin: 0 0 2px 5px;
-        display:  block;
-        background: $panel-colour;
-        text-decoration: none;
-        padding : 10px;
-        color: black;
-
-
-        &.active {
-          background: none;
-          border: 2px solid $panel-colour;
-          margin-bottom: 0;
-          padding-bottom: 12px;
-          border-bottom: 0;
-          position: relative;
-          text-decoration: none;
-          color: black;
-
-          &:after {
-            content :  ' ';
-            display: block;
-            position: absolute;
-            left: 0;
-            bottom: -3px;
-            width: 100%;
-            height: 3px;
-            background: $page-colour;
-            color: black;
-          }
-        }
-      }
-
-      &:first-child a {
-        margin-left: 0;
-      }
-    }
-  }
-}
-
-// Align title/utility nav right
-#global-header .header-proposition {
-  #proposition-menu {
-    #proposition-name {
-      @media screen and (min-width: 641px) {
-        float: right;
-      }
-    }
-    #proposition-links {
-      @media screen and (min-width: 641px) {
-        float: right;
-      }
-
-      li {
-        @media screen and (min-width: 641px) {
-          padding-left: 15px;
-          padding-right: 0;
-        }
-      }
-    }
-  }
-}
-
-.link-back {
-  &--space-above {
-    margin-top: 45px;
-  }
-}
-
-.heading-large {
-  &--tight-above {
-    margin-top: 15px;
-  }
-}
-
-/* Returns versions list */
-.version {
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.this-version {
-  border-color: $link-colour;
-}
-
-.survey-frame {
-  width: 1px;
-  min-width: 100%;
-  border: 0;
-}
-
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 250px;
-}
-
-.display-none {
-  display: none;
-}
+@import "utils";

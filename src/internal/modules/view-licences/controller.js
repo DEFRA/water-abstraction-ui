@@ -33,7 +33,7 @@ const getExpiredLicence = async (request, h) => {
     pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`
   };
 
-  return h.view('nunjucks/view-licences/expired-licence.njk', view, { layout: false });
+  return h.view('nunjucks/view-licences/expired-licence', view);
 };
 
 exports.getExpiredLicence = getExpiredLicence;

@@ -1,5 +1,5 @@
 .company-switcher {
-  // @include govuk-font($size: 16);
+  @include govuk-font($size: 16);
   border-bottom: 1px solid #bfc1c3;
 
   @media (min-width: 768px) {
@@ -7,10 +7,6 @@
   }
 
   padding: 15px 0;
-}
-
-.company-switcher b {
-  font-weight: 700;
 }
 
 

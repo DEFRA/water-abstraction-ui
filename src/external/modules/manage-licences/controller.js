@@ -11,9 +11,7 @@ const config = require('../../config');
  * @param {Object} h - the HAPI HTTP response
  */
 async function getManageLicences (request, h) {
-  return h.view('nunjucks/manage-licences/index.njk', request.view, {
-    layout: false
-  });
+  return h.view('nunjucks/manage-licences/index', request.view);
 }
 
 /**
@@ -64,9 +62,7 @@ async function getAccessList (request, h, context = {}) {
   const viewContext = Object.assign(request.view, context);
   viewContext.entity_id = entityId;
   viewContext.licenceAccess = await getLicenceAccessListViewModel(entityId);
-  return h.view('nunjucks/manage-licences/access-list.njk', viewContext, {
-    layout: false
-  });
+  return h.view('nunjucks/manage-licences/access-list', viewContext);
 }
 
 /**
@@ -77,9 +73,8 @@ async function getAccessList (request, h, context = {}) {
  */
 function getAddAccess (request, h, context = {}) {
   return h.view(
-    'nunjucks/manage-licences/add-access.njk',
-    { ...request.view, ...context },
-    { layout: false }
+    'nunjucks/manage-licences/add-access',
+    { ...request.view, ...context }
   );
 }
 
@@ -165,9 +160,9 @@ async function postAddAccess (request, h) {
     await services.idm.users.updateExternalId(user, crmEntityId);
 
     return h.view(
-      'nunjucks/manage-licences/add-access-success.njk',
-      viewContext,
-      { layout: false }
+      'nunjucks/manage-licences/add-access-success',
+      viewContext
+
     );
   } catch (err) {
     logger.errorWithJourney('Post add access error', err, request);
@@ -203,9 +198,9 @@ async function getRemoveAccess (request, reply, context = {}) {
     };
 
     return reply.view(
-      'nunjucks/manage-licences/remove-access.njk',
-      viewContext,
-      { layout: false }
+      'nunjucks/manage-licences/remove-access',
+      viewContext
+
     );
   } catch (error) {
     logger.errorWithJourney('Remove access error', error, request);
@@ -265,9 +260,8 @@ async function postRemoveAccess (request, h) {
   };
 
   return h.view(
-    'nunjucks/manage-licences/remove-access-success.njk',
-    view,
-    { layout: false }
+    'nunjucks/manage-licences/remove-access-success',
+    view
   );
 }
 
@@ -280,9 +274,8 @@ async function getChangeAccess (request, h) {
   viewContext.colleagueEntityRole = colleagueEntityRole;
 
   return h.view(
-    'nunjucks/manage-licences/change-access.njk',
-    viewContext,
-    { layout: false }
+    'nunjucks/manage-licences/change-access',
+    viewContext
   );
 };
 

@@ -14,7 +14,7 @@ async function getResetPassword (request, h, form) {
     form: form || resetForm(request.path),
     linkExpired: request.query.flash === 'resetLinkExpired'
   };
-  return h.view(request.config.view, view, { layout: false });
+  return h.view(request.config.view, view);
 }
 
 /**
@@ -46,7 +46,7 @@ async function postResetPassword (request, h) {
  * @param {Object} h - HAPI HTTP h interface
  */
 async function getResetSuccess (request, h) {
-  return h.view(request.config.view, request.view, { layout: false });
+  return h.view(request.config.view, request.view);
 }
 
 /**
@@ -62,7 +62,7 @@ async function getChangePassword (request, h) {
     if (!user) {
       throw new UserNotFoundError();
     }
-    return h.view('water/reset-password/reset_password_change_password', request.view);
+    return h.view('nunjucks/reset-password/change-password', request.view);
   } catch (error) {
     return h.redirect('/reset_password?flash=resetLinkExpired');
   }
@@ -88,7 +88,10 @@ async function postChangePassword (request, h) {
     // Check for form errors
     if (request.formError) {
       const errors = mapJoiPasswordError(request.formError);
-      return h.view('water/reset-password/reset_password_change_password', { ...request.view, errors });
+      return h.view(
+        'nunjucks/reset-password/change-password',
+        { ...request.view, errors }
+      );
     }
 
     // Validation OK - update password in IDM

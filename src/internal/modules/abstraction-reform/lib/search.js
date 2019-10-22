@@ -8,7 +8,7 @@ const { find, get } = require('lodash');
 
 const services = require('../../../lib/connectors/services');
 
-const perPage = 50;
+const perPage = 5;
 
 /**
  * Combines CRM document header data with AR licence details

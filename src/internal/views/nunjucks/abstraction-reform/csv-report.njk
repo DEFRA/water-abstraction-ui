@@ -1,0 +1,18 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+      <p class="govuk-body">
+        Download the latest abstraction reform data as a comma separated value file (CSV).
+      </p>
+
+      <a href="/digitise/report?download=1" class="govuk-button" role="button">Download file</a>
+
+    </div>
+  </div>
+{% endblock %}

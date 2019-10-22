@@ -39,11 +39,6 @@
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#communications">Communications</a>
           </li>
-          {% if showChargeVersions %}
-            <li class="govuk-tabs__list-item">
-              <a class="govuk-tabs__tab" href="#charge">Charge</a>
-            </li>
-          {% endif %}
         </ul>
 
         <section class="govuk-tabs__panel" id="returns">
@@ -52,12 +47,6 @@
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
-
-        {% if showChargeVersions %}
-          <section class="govuk-tabs__panel" id="charge">
-            {% include "nunjucks/view-licences/tabs/charge.njk" %}
-          </section>
-        {% endif %}
       </div>
     </div>
   </div>

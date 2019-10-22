@@ -2,7 +2,6 @@
 {% from "./tabs/macro.njk" import govukTabs %}
 {% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
 {% from "badge.njk" import badge %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -29,17 +28,15 @@
             </a>
           </li>
 
-          {% if returns.length > 0 %}
+          {% if returns.length %}
             <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#returns">Returns</a>
             </li>
           {% endif %}
 
-          {% if communications.length > 0 %}
-            <li class="govuk-tabs__list-item">
-              <a class="govuk-tabs__tab" href="#communications">Communications</a>
-            </li>
-          {% endif %}
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#communications">Communications</a>
+          </li>
 
           {% if showChargeVersions %}
             <li class="govuk-tabs__list-item">
@@ -52,19 +49,17 @@
           {% include "nunjucks/view-licences/tabs/summary.njk" %}
         </section>
 
-        {% if returns.length > 0 %}
+        {% if returns.length %}
           <section class="govuk-tabs__panel" id="returns">
             {% include "nunjucks/view-licences/tabs/returns.njk" %}
           </section>
         {% endif %}
 
-        {% if communications.length > 0 %}
-          <section class="govuk-tabs__panel" id="communications">
-            {% include "nunjucks/view-licences/tabs/communications.njk" %}
-          </section>
-        {% endif %}
+        <section class="govuk-tabs__panel" id="communications">
+          {% include "nunjucks/view-licences/tabs/communications.njk" %}
+        </section>
 
-        {% if (showChargeVersions and chargeVersions.length > 0) %}
+        {% if showChargeVersions %}
           <section class="govuk-tabs__panel" id="charge">
             {% include "nunjucks/view-licences/tabs/charge.njk" %}
           </section>

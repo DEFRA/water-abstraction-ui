@@ -6,7 +6,7 @@
  */
 const proxyToWaterService = request => {
   const { postToPath } = request.route.realm.pluginOptions;
-  return postToPath(request.params.tail);
+  return postToPath(request.params.tail, request.payload);
 };
 
 exports.proxyToWaterService = proxyToWaterService;

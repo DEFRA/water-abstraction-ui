@@ -62,7 +62,6 @@
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle) }}
       <form novalidate action="/account/update-password/new" method="post" class="form">
-        <input type="hidden" name="authtoken" value="{{authtoken}}">
         <input name="csrf_token" type="hidden" value="{{csrfToken}}" />
 
         {% set hasError = false %}

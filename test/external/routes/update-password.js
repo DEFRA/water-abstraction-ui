@@ -9,7 +9,6 @@ experiment('Check signin', () => {
   test('The page should have a links', async () => {
     const url = '/account/update-password';
     const method = 'GET';
-
     const route = routes.find(r => {
       return r.method === method && r.path === url;
     });

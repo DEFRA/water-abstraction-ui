@@ -4,11 +4,7 @@ const { formFactory, fields } = require('../../../../shared/lib/forms');
 const createNameField = (name) => {
   return fields.text('name', {
     label: 'Licence name',
-    hint: 'You can give this licence a name to help you find it more easily.',
-    attr: {
-      minlength: 2,
-      maxlength: 32
-    },
+    hint: 'You can give this licence a name to help you find it more easily. Choose a name that is 2-32 characters long.',
     errors: {
       'any.empty': {
         message: 'Enter a licence name'

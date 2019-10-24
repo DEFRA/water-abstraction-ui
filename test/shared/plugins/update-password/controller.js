@@ -5,7 +5,6 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const Joi = require('joi');
 
 const controller = require('shared/plugins/update-password/controller');
 
@@ -44,47 +43,26 @@ experiment('update password controller', () => {
     sandbox.restore();
   });
 
-  experiment('getConfirmPassword', () => {
-    beforeEach(async () => {
-      request.view = { foo: 'bar' };
-      await controller.getConfirmPassword(request, h);
-    });
-
-    test('uses the template specified in the config', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/update-password/enter-current.njk');
-    });
-
-    test('uses the view data from request.view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.foo).to.equal('bar');
-    });
-  });
-
+  // check the route exist to enter the new password
   experiment('postConfirmPassword', () => {
     experiment('when formError does not exist', () => {
       beforeEach(async () => {
-        request.payload.password = 'test-password';
+        request.payload.password = 'test-password1';
         request.defra = {
           userName: 'test-userName'
         };
-        await controller.postConfirmPassword(request, h);
+        await controller.postSetPassword(request, h);
       });
 
-      test('an auth token in added to session', async () => {
-        const [key, value] = request.yar.set.lastCall.args;
-        expect(key).to.equal('authToken');
-        expect(Joi.string().uuid().validate(value).error).to.be.null();
-      });
-
-      test('the user is redirected to a page to enter a new password', async () => {
-        const [template, view] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/update-password/enter-new.njk');
-        expect(Joi.string().uuid().validate(view.authToken).error).to.be.null();
+      test('the user is redirected to a success page', async () => {
+        console.log(h.redirect.lastCall.lastArg);
+        const template = h.redirect.lastCall.lastArg;
+        expect(template).to.equal('/account/update-password/success');
       });
     });
   });
 
+  // test the errors on the enter new password form
   experiment('when formError exists', () => {
     beforeEach(async () => {
       request = {
@@ -99,21 +77,16 @@ experiment('update password controller', () => {
         },
         view: {}
       };
-      await controller.postConfirmPassword(request, h);
+      await controller.postSetPassword(request, h);
     });
 
     test('the correct template is displayed', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/update-password/enter-current.njk');
-    });
-
-    test('an error object is passed in the options', async () => {
-      const [, options] = h.view.lastCall.args;
-      expect(options.error).to.be.an.object();
-      expect(options.error.name).to.equal('test-error');
+      expect(template).to.equal('nunjucks/update-password/enter-new.njk');
     });
   });
 
+  // test the success page template
   experiment('getPasswordUpdated', () => {
     beforeEach(async () => {
       request.view = { foo: 'bar' };

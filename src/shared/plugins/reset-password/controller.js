@@ -88,10 +88,9 @@ async function postChangePassword (request, h) {
     // Check for form errors
     if (request.formError) {
       const errors = mapJoiPasswordError(request.formError);
-      return h.view(
-        'nunjucks/reset-password/change-password',
-        { ...request.view, errors }
-      );
+      return h.view('nunjucks/reset-password/change-password', {
+        ...request.view, errors
+      });
     }
 
     // Validation OK - update password in IDM

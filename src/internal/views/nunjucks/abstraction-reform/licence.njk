@@ -1,17 +1,13 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "details/macro.njk" import govukDetails %}
-{% from "table/macro.njk" import govukTable %}
-{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "./nunjucks/abstraction-reform/macros/index.njk" import wr22Condition %}
 
 {% macro arComparisonTable(data) %}
-
   {% set options = data | mapARComparisonTable %}
-
   {{ govukTable(options) }}
-
 {% endmacro %}
-
 
 {% block content %}
 
@@ -19,9 +15,9 @@
 
   <!-- Warning for ar_user if no permission to edit this document -->
   {% if flash == 'locked' %}
-  {{ govukInsetText({
-    text: "You do not have permission to edit this licence."
-  }) }}
+    {{ govukInsetText({
+      text: "You do not have permission to edit this licence."
+    }) }}
   {% endif %}
 
   <!-- Main title -->
@@ -40,143 +36,137 @@
     {% endset %}
 
     {{ govukDetails({
-  summaryText: "Notes about these edits",
-  html: notes
+      summaryText: "Notes about these edits",
+      html: notes
     }) }}
   {% endif %}
 
   <!-- Main licence data  -->
   <h2 class="govuk-heading-m" id="licence">Licence data</h2>
   {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
-  </p>
+    <p>
+      <a href="/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
+    </p>
   {% endif %}
   {{ arComparisonTable(data.licence) }}
 
   <!-- Current licence version -->
   <h2 class="govuk-heading-m" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Current licence version</h2>
   {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
-  </p>
+    <p>
+      <a href="/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
+    </p>
   {% endif %}
   {{ arComparisonTable(data.currentVersion) }}
 
   <!-- Licence holder party -->
   <h2 class="govuk-heading-m" id="party-{{ data.party.base.ID }}">Licence holder party</h2>
   {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
-  </p>
+    <p>
+      <a href="/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
+    </p>
   {% endif %}
   {{ arComparisonTable(data.party) }}
 
   <!-- Licence holder address -->
   <h2 class="govuk-heading-m" id="address-{{ data.address.base.ID }}">Licence holder address</h2>
   {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
-  </p>
+    <p>
+      <a href="/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
+    </p>
   {% endif %}
   {{ arComparisonTable(data.address) }}
 
   <!-- Purposes -->
   {% for purpose in data.purposes %}
-  <h2 id="purpose-{{ purpose.base.ID }}" class="govuk-heading-m">Purpose {{ purpose.base.ID }}</h2>
-  {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
-      <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
-  </a>
-  </p>
-  {% endif %}
-  {{ arComparisonTable(purpose) }}
+    <h2 id="purpose-{{ purpose.base.ID }}" class="govuk-heading-m">Purpose {{ purpose.base.ID }}</h2>
+    {% if canEdit %}
+      <p>
+        <a href="/digitise/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
+          <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
+        </a>
+      </p>
+    {% endif %}
+    {{ arComparisonTable(purpose) }}
   {% endfor %}
 
-
   {% for point in data.points %}
-  <h2 id="point-{{ point.base.ID }}" class="govuk-heading-m">Point {{ point.base.ID }}</h2>
-  {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
-      <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
-    </a>
-  </p>
-  {% endif %}
-  {{ arComparisonTable(point) }}
+    <h2 id="point-{{ point.base.ID }}" class="govuk-heading-m">Point {{ point.base.ID }}</h2>
+    {% if canEdit %}
+      <p>
+        <a href="/digitise/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
+          <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
+        </a>
+      </p>
+    {% endif %}
+    {{ arComparisonTable(point) }}
   {% endfor %}
 
   {% for condition in data.conditions %}
-  <h2 id="condition-{{ condition.base.ID }}" class="govuk-heading-m">Condition {{ condition.base.ID }}</h2>
-  {% if canEdit %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
-      <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
-    </a>
-  </p>
-  {% endif %}
-  {{ arComparisonTable(condition) }}
+    <h2 id="condition-{{ condition.base.ID }}" class="govuk-heading-m">Condition {{ condition.base.ID }}</h2>
+    {% if canEdit %}
+      <p>
+        <a href="/digitise/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
+          <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
+        </a>
+      </p>
+    {% endif %}
+    {{ arComparisonTable(condition) }}
   {% endfor %}
-
 
   <h2 class="govuk-heading-m" id="further-conditions">Further conditions</h2>
 
-
   {% if data.arData.length %}
     {% for item in data.arData %}
-    <div class="govuk-grid-row" id="{{ item.id }}">
-      <div class="govuk-grid-column-one-third">
-      <p>{{ item.title }}
-        <br />
-        Linked to
-        <a href="/digitise/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
-          <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
-        </a>
-      </p>
+      <div class="govuk-grid-row" id="{{ item.id }}">
+        <div class="govuk-grid-column-one-third">
+          <p>{{ item.title }}
+            <br />
+            Linked to
+            <a href="/digitise/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
+              <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
+            </a>
+          </p>
 
-      {%if canEdit %}
-      <ul class="govuk-list">
-        <li>
-          <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/edit-data/{{ item.id }}#">
-            Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
-          </a>
-        </li>
-        <li>
-          <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/delete/{{ item.id }}#">
-            Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
-          </a>
-        </li>
-      </ul>
-      {% endif %}
-
+          {%if canEdit %}
+            <ul class="govuk-list">
+              <li>
+                <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/edit-data/{{ item.id }}#">
+                  Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+                </a>
+              </li>
+              <li>
+                <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/delete/{{ item.id }}#">
+                  Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+                </a>
+              </li>
+            </ul>
+          {% endif %}
+        </div>
+        <div class="govuk-grid-column-two-thirds govuk-body">
+          {{ wr22Condition(item) }}
+        </div>
       </div>
-      <div class="govuk-grid-column-two-thirds govuk-body">
-        {{ wr22Condition(item) }}
-      </div>
-    </div>
 
-    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
     {% endfor %}
   {% else %}
-  <p>No further conditions.</p>
+    <p>No further conditions.</p>
   {% endif %}
-
 
   {%if canEdit and data.conditions.length %}
-  <p>
-    <a href="/digitise/licence/{{ documentId }}/select-schema-category">Add a condition</a>
-  </p>
+    <p>
+      <a href="/digitise/licence/{{ documentId }}/select-schema-category">Add a condition</a>
+    </p>
   {% endif %}
 
-
   {%if canSubmit or canApprove %}
-  <div class="govuk-grid-row">
-     <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
         <h3 class="govuk-heading-m">Workflow</h3>
         {{ formRender(form) }}
       </div>
-  </div>
+    </div>
   {% endif %}
 
 {% endblock %}

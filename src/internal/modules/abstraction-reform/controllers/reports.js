@@ -14,10 +14,10 @@ const getCSVReport = async (request, h) => {
     return csvDownload(h, data, getReportFilename());
   }
 
-  return h.view(
-    'nunjucks/abstraction-reform/csv-report',
-    { ...view, back: '/notifications' }
-  );
+  return h.view('nunjucks/abstraction-reform/csv-report', {
+    ...view,
+    back: '/notifications'
+  });
 };
 
 exports.getCSVReport = getCSVReport;

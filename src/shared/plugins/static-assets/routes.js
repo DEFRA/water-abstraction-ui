@@ -28,7 +28,7 @@ module.exports = {
     },
     handler: {
       directory: {
-        path: 'node_modules/govuk-frontend/assets/',
+        path: 'node_modules/govuk-frontend/govuk/assets/',
         listing: false
       }
     }
@@ -45,7 +45,7 @@ module.exports = {
       }
     },
     handler: {
-      file: 'node_modules/govuk-frontend/all.js'
+      file: 'node_modules/govuk-frontend/govuk/all.js'
     }
   }
 };

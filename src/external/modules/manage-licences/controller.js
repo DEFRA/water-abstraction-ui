@@ -72,10 +72,9 @@ async function getAccessList (request, h, context = {}) {
  * @param {Object} [context] - additional view context data
  */
 function getAddAccess (request, h, context = {}) {
-  return h.view(
-    'nunjucks/manage-licences/add-access',
-    { ...request.view, ...context }
-  );
+  return h.view('nunjucks/manage-licences/add-access', {
+    ...request.view, ...context
+  });
 }
 
 /**
@@ -159,11 +158,7 @@ async function postAddAccess (request, h) {
     const user = await services.idm.users.findOneByEmail(email, config.idm.application);
     await services.idm.users.updateExternalId(user, crmEntityId);
 
-    return h.view(
-      'nunjucks/manage-licences/add-access-success',
-      viewContext
-
-    );
+    return h.view('nunjucks/manage-licences/add-access-success', viewContext);
   } catch (err) {
     logger.errorWithJourney('Post add access error', err, request);
     throw err;
@@ -259,10 +254,7 @@ async function postRemoveAccess (request, h) {
     colleague
   };
 
-  return h.view(
-    'nunjucks/manage-licences/remove-access-success',
-    view
-  );
+  return h.view('nunjucks/manage-licences/remove-access-success', view);
 }
 
 async function getChangeAccess (request, h) {
@@ -273,10 +265,7 @@ async function getChangeAccess (request, h) {
   const colleagueEntityRole = allAccessEntities.find(entity => entity.colleagueEntityID === request.params.colleagueEntityID);
   viewContext.colleagueEntityRole = colleagueEntityRole;
 
-  return h.view(
-    'nunjucks/manage-licences/change-access',
-    viewContext
-  );
+  return h.view('nunjucks/manage-licences/change-access', viewContext);
 };
 
 async function postChangeAccess (request, h) {

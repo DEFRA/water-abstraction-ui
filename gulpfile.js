@@ -21,7 +21,7 @@ const combineMinifyJs = (files, destination) => {
 gulp.task('combine-minify-js', () => {
   // All JS files that are required by front end in order
   const files = [
-    './node_modules/govuk-frontend/all.js',
+    './node_modules/govuk-frontend/govuk/all.js',
     './node_modules/iframe-resizer/js/iframeResizer.min.js',
     './src/shared/public/javascripts/abstraction-reform.js',
     './src/shared/public/javascripts/back-link.js',
@@ -48,8 +48,14 @@ gulp.task('copy-static-assets-orig', () => {
  */
 gulp.task('copy-govuk-frontend-images', () => {
   return gulp
-    .src('./node_modules/govuk-frontend/assets/images/*.*')
+    .src('./node_modules/govuk-frontend/govuk/assets/images/*.*')
     .pipe(gulp.dest(paths.public + '/images'));
+});
+
+gulp.task('copy-govuk-frontend-fonts', () => {
+  return gulp
+    .src('./node_modules/govuk-frontend/govuk/assets/fonts/*.*')
+    .pipe(gulp.dest(paths.public + '/fonts'));
 });
 
 /**
@@ -84,6 +90,7 @@ gulp.task('copy-static-styles', () => {
 
 gulp.task('copy-static-assets', gulp.series(
   'copy-govuk-frontend-images',
+  'copy-govuk-frontend-fonts',
   'copy-static-assets-orig',
   'combine-minify-js',
   'copy-static-javascript',

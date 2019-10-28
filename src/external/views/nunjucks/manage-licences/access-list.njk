@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
-{% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
 
@@ -18,12 +18,10 @@
         iconFallbackText: "Warning"
       }) }}
 
-
       {{ govukButton({
         href:"/manage_licences/add_access",
         text: "Give access"
       }) }}
-
     </div>
   </div>
 
@@ -57,31 +55,30 @@
     </tbody>
   </table>
 
-
   <div class="phone--show">
     <br />
     <h2 class="govuk-heading-m">Permission to access</h2>
-  {% for row in licenceAccess %}
-  <div>
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-    <h3 class="govuk-heading-s govuk-!-margin-bottom-1">
-      {{ row.name }}
-    </h3>
-    <p>
-      Access granted on {{ row.createdAt | date }}
-      <br />
-      {% if row.hasReturns %}
-      Can view licence details and submit returns
-      {% else %}
-      Can view licence details
-      {% endif %}
+    {% for row in licenceAccess %}
+      <div>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-1">
+          {{ row.name }}
+        </h3>
+        <p>
+          Access granted on {{ row.createdAt | date }}
+          <br />
+          {% if row.hasReturns %}
+          Can view licence details and submit returns
+          {% else %}
+          Can view licence details
+          {% endif %}
 
-
-      <br /><a href="/manage_licences/access/{{ row.colleagueEntityID }}/change" aria-hidden="false"
-         aria-label="Change access for {{ row.name }}" title="Change access for {{ row.name }}">Change</a>
-    </p>
-  </div>
-  {% endfor %}
+          <br />
+          <a href="/manage_licences/access/{{ row.colleagueEntityID }}/change" aria-hidden="false"
+            aria-label="Change access for {{ row.name }}" title="Change access for {{ row.name }}">Change</a>
+        </p>
+      </div>
+    {% endfor %}
   </div>
 {% endif %}
 

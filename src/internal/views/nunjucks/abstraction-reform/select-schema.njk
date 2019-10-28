@@ -1,10 +1,8 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "forms/header.njk" import formHeader %}
 {% from "forms/footer.njk" import formFooter %}
 {% from "forms/widget.njk" import formWidget %}
-
-
 
 {% macro arSchemaRadio(choice) %}
 {% set id = 'wr22_' + choice.value %}
@@ -30,28 +28,24 @@
 {% block content %}
 
   {{ formErrorSummary(form) }}
-
   {{ title(pageTitle) }}
 
   <!-- Warning for ar_user if no permission to edit this document -->
   {% if flash == 'locked' %}
-  {{ govukInsetText({
-    text: "You do not have permission to edit this licence."
-  }) }}
+    {{ govukInsetText({
+      text: "You do not have permission to edit this licence."
+    }) }}
   {% endif %}
-
 
   {{ formHeader(form.method, form.action) }}
 
   <h2 class="govuk-heading-m">{{ category.title }}</h2>
 
-
   {% set index = 0 %}
 
   {% for subcategory in category.subcategories %}
-
     {% if subcategory.title %}
-    <h3 class="govuk-heading-s">{{ subcategory.title }}</h3>
+      <h3 class="govuk-heading-s">{{ subcategory.title }}</h3>
     {% endif %}
 
     {% for schema in subcategory.schemas %}
@@ -60,13 +54,10 @@
     {% endfor %}
 
     <br />
-
   {% endfor %}
 
   {{ formWidget(form.fields[1], form) }}
   {{ formWidget(form.fields[2], form) }}
 
   {{ formFooter(form) }}
-
-
 {% endblock %}

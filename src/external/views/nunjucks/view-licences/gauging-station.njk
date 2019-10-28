@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "nunjucks/view-licences/macros/gauging-station-measurement.njk" import gaugingStationMeasurement %}
 {% from "nunjucks/view-licences/macros/licence-condition.njk" import licenceCondition %}
 {% from "nunjucks/view-licences/macros/point-string.njk" import pointString %}
@@ -22,37 +22,36 @@
     {% endif %}
   </div>
 
-    <div class="govuk-grid-row">
-      {% if hasGaugingStationMeasurement %}
-        {{ gaugingStationMeasurement(measure, riverLevel) }}
-      {% else %}
-        <div class="govuk-grid-column-full">
-          <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-            Sorry, there is no data available
-          </span>
-          <p class="govuk-body">
-            Please contact your <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening" target="_blank">local Environment Agency office</a> (link opens in a new tab) for the latest information.
-          </p>
-        </div>
-      {% endif %}
+  <div class="govuk-grid-row">
+    {% if hasGaugingStationMeasurement %}
+      {{ gaugingStationMeasurement(measure, riverLevel) }}
+    {% else %}
+      <div class="govuk-grid-column-full">
+        <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+          Sorry, there is no data available
+        </span>
+        <p class="govuk-body">
+          Please contact your <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening" target="_blank">local Environment Agency office</a> (link opens in a new tab) for the latest information.
+        </p>
+      </div>
+    {% endif %}
   </div>
   <br>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Details of your hands off flow condition(s)</h2>
-        {% if viewData.conditions.length == 0 %}
-          <p class="govuk-body">Sorry, we do not hold any information about your conditions on our system yet.</p>
-          <p>Please check the paper copy of your licence for this information.</p>
-        {% else %}
-          <div class="govuk-inset-text">
-            {% for condition in summary.conditions %}
-              {% if condition.isHof %}
-                {{ licenceCondition(condition)}}
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
-
+      {% if viewData.conditions.length == 0 %}
+        <p class="govuk-body">Sorry, we do not hold any information about your conditions on our system yet.</p>
+        <p>Please check the paper copy of your licence for this information.</p>
+      {% else %}
+        <div class="govuk-inset-text">
+          {% for condition in summary.conditions %}
+            {% if condition.isHof %}
+              {{ licenceCondition(condition)}}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

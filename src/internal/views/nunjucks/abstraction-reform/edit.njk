@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "input/macro.njk" import govukInput %}
-{% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
 
@@ -25,9 +25,8 @@
             })
           }}
         {% endfor %}
-        {{
-          govukButton({ text: "Submit changes" })
-        }}
+
+        {{ govukButton({ text: "Submit changes" }) }}
       </form>
     </div>
   </div>

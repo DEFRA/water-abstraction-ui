@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
 
@@ -16,43 +16,43 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-  {% for contact in summary.contacts %}
+    {% for contact in summary.contacts %}
 
-  {% set addressData %}
-    {% if contact.addressLine1 %}{{ contact.addressLine1 }}<br />{% endif %}
-    {% if contact.addressLine2 %}{{ contact.addressLine2 }}<br />{% endif %}
-    {% if contact.addressLine3 %}{{ contact.addressLine3 }}<br />{% endif %}
-    {% if contact.addressLine4 %}{{ contact.addressLine4 }}<br />{% endif %}
-    {% if contact.town %}{{ contact.town }}<br />{% endif %}
-    {% if contact.county %}{{ contact.county }}<br />{% endif %}
-    {% if contact.postcode %}{{ contact.postcode }}<br />{% endif %}
-    {{ contact.country }}
-  {% endset %}
+      {% set addressData %}
+        {% if contact.addressLine1 %}{{ contact.addressLine1 }}<br />{% endif %}
+        {% if contact.addressLine2 %}{{ contact.addressLine2 }}<br />{% endif %}
+        {% if contact.addressLine3 %}{{ contact.addressLine3 }}<br />{% endif %}
+        {% if contact.addressLine4 %}{{ contact.addressLine4 }}<br />{% endif %}
+        {% if contact.town %}{{ contact.town }}<br />{% endif %}
+        {% if contact.county %}{{ contact.county }}<br />{% endif %}
+        {% if contact.postcode %}{{ contact.postcode }}<br />{% endif %}
+        {{ contact.country }}
+      {% endset %}
 
-    <h3 class="govuk-heading-m">{{ contact.role }}</h3>
-    <hr class="govuk-section-break govuk-section-break--visible">
-    {{ govukSummaryList({
-      rows: [{
-          key: {
-            text: "Name",
-            classes:"govuk-!-font-weight-regular"
+      <h3 class="govuk-heading-m">{{ contact.role }}</h3>
+      <hr class="govuk-section-break govuk-section-break--visible">
+      {{ govukSummaryList({
+        rows: [{
+            key: {
+              text: "Name",
+              classes:"govuk-!-font-weight-regular"
+            },
+            value: {
+              text: contact.fullName
+            }
           },
-          value: {
-            text: contact.fullName
-          }
-        },
-        {
-          key: {
-            text: "Address",
-            classes:"govuk-!-font-weight-regular"
-          },
-          value: {
-            html: addressData
-          }
-        }]
-    }) }}
+          {
+            key: {
+              text: "Address",
+              classes:"govuk-!-font-weight-regular"
+            },
+            value: {
+              html: addressData
+            }
+          }]
+      }) }}
 
-  {% endfor %}
+    {% endfor %}
   </div>
 </div>
 

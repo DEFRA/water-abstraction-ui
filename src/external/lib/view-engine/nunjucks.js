@@ -23,8 +23,7 @@ module.exports = {
       options.path,
       `${options.path}/nunjucks/macros/`,
       'src/shared/view/nunjucks/macros/',
-      'node_modules/govuk-frontend/',
-      'node_modules/govuk-frontend/components/'
+      'node_modules/govuk-frontend/'
     ];
 
     const config = {

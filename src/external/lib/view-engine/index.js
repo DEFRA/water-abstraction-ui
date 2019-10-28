@@ -7,5 +7,6 @@ module.exports = {
   },
   path: './src/external/views',
   context: defaultContext,
-  isCached: process.env.NODE_ENV === 'production'
+  isCached: process.env.NODE_ENV === 'production',
+  defaultExtension: 'njk'
 };

@@ -2,7 +2,7 @@
 $govuk-global-styles: true;
 
 // Import GOV.UK Frontend
-@import "govuk-frontend/all";
+@import "govuk-frontend/govuk/all";
 
 // Patterns that aren't in Frontend
 @import "blocks/alert";

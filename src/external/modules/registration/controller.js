@@ -12,20 +12,16 @@ const services = require('../../lib/connectors/services');
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getRegisterStart = (request, h) => h.view(
-  'nunjucks/registration/start',
-  request.view
-);
+const getRegisterStart = (request, h) =>
+  h.view('nunjucks/registration/start', request.view);
 
 /**
  * Render form to get user email address
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getEmailAddress = (request, h) => h.view(
-  'nunjucks/registration/enter-email',
-  request.view
-);
+const getEmailAddress = (request, h) =>
+  h.view('nunjucks/registration/enter-email', request.view);
 
 const getUrlWithEmailParam = (email, options) => {
   if (options.includeEmail) {
@@ -105,23 +101,19 @@ const postEmailAddress = async (request, h, options = {}) => {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getRegisterSuccess = (request, h) => h.view(
-  'nunjucks/registration/email-sent',
-  {
+const getRegisterSuccess = (request, h) =>
+  h.view('nunjucks/registration/email-sent', {
     ...request.view,
     email: request.query.email
-  }
-);
+  });
 
 /**
  * Try sending email again
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getSendAgain = (request, h) => h.view(
-  'nunjucks/registration/email-resend',
-  request.view
-);
+const getSendAgain = (request, h) =>
+  h.view('nunjucks/registration/email-resend', request.view);
 
 /**
  * Send email again
@@ -143,10 +135,8 @@ const postSendAgain = (request, h) => {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getResentSuccess = (request, h) => h.view(
-  'nunjucks/registration/email-resent',
-  request.view
-);
+const getResentSuccess = (request, h) =>
+  h.view('nunjucks/registration/email-resent', request.view);
 
 exports.getRegisterStart = getRegisterStart;
 exports.getEmailAddress = getEmailAddress;

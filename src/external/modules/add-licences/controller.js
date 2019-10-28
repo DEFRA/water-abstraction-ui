@@ -36,10 +36,7 @@ const {
  * @param {Object} h - HAPI HTTP reply
  */
 async function getLicenceAdd (request, h) {
-  return h.view(
-    'nunjucks/add-licences/index',
-    request.view
-  );
+  return h.view('nunjucks/add-licences/index', request.view);
 }
 
 const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
@@ -245,10 +242,7 @@ async function postLicenceSelect (request, reply) {
  * @param {Object} h - HAPI HTTP toolkit
  */
 function getLicenceSelectError (request, h) {
-  return h.view(
-    'nunjucks/add-licences/select-licences-error',
-    request.view
-  );
+  return h.view('nunjucks/add-licences/select-licences-error', request.view);
 }
 
 const getUniqueAddresses = async selectedIds => {
@@ -453,10 +447,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} h - HAPI HTTP response toolkit
  */
 async function getSecurityCode (request, h) {
-  return h.view(
-    'nunjucks/add-licences/security-code',
-    request.view
-  );
+  return h.view('nunjucks/add-licences/security-code', request.view);
 }
 
 /**

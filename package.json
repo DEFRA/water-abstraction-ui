@@ -76,7 +76,7 @@
     "glob": "^7.1.4",
     "good": "^8.1.2",
     "good-winston": "^4.0.0",
-    "govuk-frontend": "^2.13.0",
+    "govuk-frontend": "^3.3.0",
     "hapi-auth-cookie": "^9.1.0",
     "hapi-auth-jwt2": "^8.6.1",
     "hapi-sanitize-payload": "^2.0.0",

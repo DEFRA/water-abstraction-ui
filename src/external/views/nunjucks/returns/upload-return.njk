@@ -1,7 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "details/macro.njk" import govukDetails %}
 {% from "forms/index.njk" import formRender %}
-{% from "back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "returns/return-purposes.njk" import returnPurposes %}
 
 {% macro timePeriod(line) %}
@@ -62,60 +62,50 @@
             {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
           </dd>
         </div>
-
       </dl>
 
+      {% for group in lines %}
 
+        <table class="govuk-table">
+          {% if group.title %}
+          <caption class="govuk-table__caption govuk-heading-m">{{ group.title }}</caption>
+          {% endif %}
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Date</th>
+              <th class="govuk-table__header govuk-table__header--numeric" scope="col">{{ return.reading.units | units }}</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
 
+            {% for line in group.lines %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell" scope="row">
+                {{ timePeriod(line) }}
+              </td>
+              <td class="govuk-table__cell govuk-table__header--numeric">{{ line.quantity | number }}</td>
+            </tr>
+            {% endfor %}
 
+          </tbody>
+        </table>
 
-  {% for group in lines %}
+      {% endfor %}
 
-    <table class="govuk-table">
-      {% if group.title %}
-      <caption class="govuk-table__caption govuk-heading-m">{{ group.title }}</caption>
-      {% endif %}
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Date</th>
-          <th class="govuk-table__header govuk-table__header--numeric" scope="col">{{ return.reading.units | units }}</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
+      <table class="govuk-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header borderless" scope="row">Total</th>
+            <td class="govuk-table__header govuk-table__header--numeric borderless" scope="row">{{ return.totalVolume | number }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        {% for line in group.lines %}
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">
-            {{ timePeriod(line) }}
-          </td>
-          <td class="govuk-table__cell govuk-table__header--numeric">{{ line.quantity | number }}</td>
-        </tr>
-        {% endfor %}
-
-      </tbody>
-    </table>
-
-  {% endfor %}
-
-  <table class="govuk-table">
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header borderless" scope="row">Total</th>
-        <td class="govuk-table__header govuk-table__header--numeric borderless" scope="row">{{ return.totalVolume | number }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-
-  {{ govukBackLink({
-    text: "Back",
-    href: back
-  }) }}
-
-
+      {{ govukBackLink({
+        text: "Back",
+        href: back
+      }) }}
+    </div>
   </div>
-</div>
-
-
 
 {% endblock %}

@@ -18,7 +18,7 @@ const getCommonBackLink = request => {
   const { licenceNumber } = request.licence.summary;
   return {
     back: `/licences/${documentId}`,
-    backText: `Licence number ${licenceNumber}`
+    backText: `Back`
   };
 };
 

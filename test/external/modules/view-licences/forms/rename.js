@@ -35,7 +35,7 @@ experiment('view licences rename form', () => {
     const input = form.fields.find(x => x.name === 'name');
     expect(input.options.widget).to.equal('text');
     expect(input.options.label).to.equal('Licence name');
-    expect(input.options.hint).to.equal('You can give this licence a name to help you find it more easily. Choose a name that is 2-32 characters long.');
+    expect(input.options.hint).to.equal('You can give this licence a name to help you find it more easily. Choose a name that is between 2 and 32 characters long.');
   });
 
   test('has a save button', async () => {

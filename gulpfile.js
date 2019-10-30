@@ -21,12 +21,12 @@ const combineMinifyJs = (files, destination) => {
 gulp.task('combine-minify-js', () => {
   // All JS files that are required by front end in order
   const files = [
-    './node_modules/govuk-frontend/govuk/all.js',
+    './src/shared/public/javascripts/jquery-3.3.1.min.js',
     './node_modules/iframe-resizer/js/iframeResizer.min.js',
+    './node_modules/govuk-frontend/govuk/all.js',
     './src/shared/public/javascripts/abstraction-reform.js',
     './src/shared/public/javascripts/back-link.js',
     './src/shared/public/javascripts/clickable-rows.js',
-    './src/shared/public/javascripts/jquery-3.3.1.min.js',
     './src/shared/public/javascripts/json-forms-toggle.js',
     './src/shared/public/javascripts/toggle-visibility.js'
   ];
@@ -76,7 +76,7 @@ gulp.task('copy-static-javascript', () => {
 /**
  * Copies assets from the sources to the public/stylesheets folder.
  *
- * These assets are not combined with other stylesheers to allow some stylesheers
+ * These assets are not combined with other stylesheets to allow some stylesheets
  * to be used in one page without the application.css having to increase for
  * all pages.
  */

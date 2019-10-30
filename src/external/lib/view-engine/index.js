@@ -1,5 +1,5 @@
 const nunjucksEngine = require('./nunjucks');
-const defaultContext = require('./default-context');
+const defaultContext = require('shared/view/default-context');
 
 module.exports = {
   engines: {

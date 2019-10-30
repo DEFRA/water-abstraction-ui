@@ -51,6 +51,11 @@ const pluginsArray = [
     options: require('internal/lib/view-licence-config')
   }, {
     plugin: require('shared/plugins/flow')
+  }, {
+    plugin: require('shared/plugins/reauth'),
+    options: {
+      reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
+    }
   }
 ];
 

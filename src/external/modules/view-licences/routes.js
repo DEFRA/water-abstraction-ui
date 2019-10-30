@@ -21,9 +21,6 @@ const getLicenceRename = {
       }
     },
     plugins: {
-      config: {
-        view: 'water/view-licences/rename'
-      },
       viewContext: {
         activeNavLink: 'view'
       },
@@ -55,9 +52,6 @@ const postLicenceRename = {
       }
     },
     plugins: {
-      config: {
-        view: 'water/view-licences/rename'
-      },
       viewContext: {
         activeNavLink: 'view'
       },

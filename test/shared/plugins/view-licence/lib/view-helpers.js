@@ -5,13 +5,13 @@ const { getLicencePageTitle, getCommonViewContext } = require('shared/plugins/vi
 
 experiment('pageTitle', () => {
   test('if licence has custom name, return "Licence number 1234"', async () => {
-    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/contact.njk', '1234', 'customName');
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/contact', '1234', 'customName');
     expect(pageHeading).to.equal('Licence number 1234');
     expect(pageTitle).to.equal('Contact details for customName');
   });
 
   test('if licence does not have custom name, return title for key', async () => {
-    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/points.njk', '1234');
+    const { pageTitle, pageHeading } = getLicencePageTitle('nunjucks/view-licences/points', '1234');
     expect(pageTitle).to.equal('Abstraction points for 1234');
     expect(pageHeading).to.equal('Abstraction points for licence number 1234');
   });

@@ -54,7 +54,7 @@ const _handler = async (request, h) => {
     pageTitle: 'Something went wrong'
   };
   const statusCode = getStatusCode(request);
-  return h.view('nunjucks/errors/error.njk', view, { layout: false }).code(statusCode);
+  return h.view('nunjucks/errors/error', view).code(statusCode);
 };
 
 const errorPlugin = {

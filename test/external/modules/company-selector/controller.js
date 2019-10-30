@@ -61,7 +61,7 @@ experiment('modules/company-selector/controller', () => {
 
     test('uses the correct nunjucks template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/auth/select-company.njk');
+      expect(template).to.equal('nunjucks/auth/select-company');
     });
 
     test('sets the page title in the view', async () => {
@@ -102,7 +102,7 @@ experiment('modules/company-selector/controller', () => {
     experiment('when form payload is invalid', () => {
       test('the form is displayed again', async () => {
         const [ template ] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/select-company.njk');
+        expect(template).to.equal('nunjucks/auth/select-company');
       });
 
       test('the form has errors', async () => {

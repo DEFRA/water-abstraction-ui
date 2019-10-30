@@ -20,7 +20,7 @@ const handleProcessing = (request, h, event) => {
     pageTitle: getPageTitle(event),
     text: 'Please wait while the mailing list is assembled. This may take a few minutes. The letters will not be sent yet.'
   };
-  return h.view('nunjucks/waiting/index.njk', view, { layout: false });
+  return h.view('nunjucks/waiting/index', view);
 };
 
 const handleReturnReminderError = (request, h) => {

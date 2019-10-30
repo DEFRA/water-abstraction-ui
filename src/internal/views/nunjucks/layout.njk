@@ -1,6 +1,6 @@
-{% extends "template.njk" %}
-{% from "phase-banner/macro.njk" import govukPhaseBanner %}
-{% from "back-link/macro.njk" import govukBackLink %}
+{% extends "govuk/template.njk" %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% from "main-nav.njk" import mainNav %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
@@ -13,13 +13,13 @@
     <meta name="format-detection" content="telephone=no">
 
   <!--[if !IE 8]><!-->
-    <link href="/public/stylesheets/v2/application.css" rel="stylesheet" />
+    <link href="/public/stylesheets/{{cssVersion}}/application.css" rel="stylesheet" />
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
   {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
   <!--[if IE 8]>
-    <link href="/govuk-frontend/all-ie8.css" rel="stylesheet" />
+    <link href="/govuk-frontend/govuk/all-ie8.css" rel="stylesheet" />
   <![endif]-->
 
   {# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
@@ -101,7 +101,7 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script nonce="{{ nonces.script }}" src="/public/javascripts/application-v2.all.min.js"></script>
+  <script nonce="{{ nonces.script }}" src="/public/javascripts/application.all.min.js"></script>
   <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->

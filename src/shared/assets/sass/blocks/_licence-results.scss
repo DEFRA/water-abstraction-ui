@@ -1,0 +1,93 @@
+
+
+// License results table / mobile tiles
+.licence-results {
+  @include govuk-font($size: 19);
+
+  @media screen and (min-width: 641px) {
+    display: table;
+    width: 100%;
+  }
+}
+
+
+// Header row with links to sort by licence number/name
+.licence-results__header {
+  @include govuk-font($size: 19, $weight: bold);
+
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid $govuk-border-colour;
+
+  @media screen and (min-width: 641px) {
+    display: table-row;
+  }
+}
+
+// Columns within table header
+.licence-results__header__column {
+  padding: 15px 0;
+  font-weight: bold;
+  width: 33%;
+
+  @media screen and (min-width: 641px) {
+    display: table-cell;
+    padding: 15px;
+    border-bottom: 1px solid $govuk-border-colour;
+
+    &:first-child {
+      width: 33.33%;
+      padding-left: 0;
+    }
+
+    &:last-child {
+      display: table-cell;
+      width: 33.33%;
+    }
+  }
+}
+
+.licence-result {
+  display: block;
+  border-bottom: 1px solid $govuk-border-colour;
+  padding: 15px 0 0 0;
+  text-decoration: none;
+
+  // If JS is enabled, user can click entire table row to view licence
+  // Hint to user this is possible by displaying hover state on table row
+  .js-enabled & {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  @media screen and (min-width: 641px) {
+    display: table-row;
+    padding: 0;
+  }
+}
+
+.licence-result__column {
+  // Display as table cell on desktop
+  @media screen and (min-width: 641px) {
+    color: $govuk-text-colour;
+    font-size: inherit;
+    display: table-cell;
+    border-bottom: 1px solid $govuk-border-colour;
+
+    padding: 15px;
+    font-weight: normal;
+
+    &:first-child {
+      width: 33.33%;
+      padding-left: 0;
+    }
+    &:last-child {
+      width: 33.33%;
+    }
+  }
+}
+
+.licence-result__column--description {
+  color: $govuk-text-colour;
+}

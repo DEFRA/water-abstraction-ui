@@ -18,9 +18,6 @@ exports.getWaiting = {
       }
     },
     plugins: {
-      config: {
-        view: 'water/view-licences/licence'
-      },
       viewContext: {
         activeNavLink: 'notifications'
       }

@@ -76,7 +76,7 @@ experiment('batch notifications controller', () => {
 
     test('renders the correct template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/batch-notifications/review.njk');
+      expect(template).to.equal('nunjucks/batch-notifications/review');
     });
 
     test('outputs correct data to view', async () => {
@@ -151,7 +151,7 @@ experiment('batch notifications controller', () => {
 
     test('renders the correct template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/batch-notifications/confirmation.njk');
+      expect(template).to.equal('nunjucks/batch-notifications/confirmation');
     });
 
     test('outputs correct data to view', async () => {

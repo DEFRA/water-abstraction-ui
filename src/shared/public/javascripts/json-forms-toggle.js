@@ -14,7 +14,7 @@
  * @return {String}      value
  */
 function getFieldValue (name) {
-  const $field = $('[name=' + name + ']');
+  var $field = $('[name=' + name + ']');
   if ($field.prop('tagName') === 'SELECT') {
     return $field.val();
   }

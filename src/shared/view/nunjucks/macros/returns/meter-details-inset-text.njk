@@ -1,23 +1,23 @@
-{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {%macro meterDetailsInsetText(return, endReading, isAdmin)%}
 
   {% set html %}
-    {%if return.meters[0].meterDetailsProvided%}              
+    {%if return.meters[0].meterDetailsProvided%}
       {{ return.meters[0].manufacturer }}<br>
-      {{ return.meters[0].serialNumber }}<br>        
-      {% if return.meters[0].multiplier == 10 %}        
+      {{ return.meters[0].serialNumber }}<br>
+      {% if return.meters[0].multiplier == 10 %}
         Has a ×10 display<br>
       {% endif %}
     {% endif %}
 
-    {%if return.reading.method == 'oneMeter' %}      
+    {%if return.reading.method == 'oneMeter' %}
           Start reading {{ return.meters[0].startReading }}<br>
-          End reading {{ endReading }}<br>      
+          End reading {{ endReading }}<br>
     {%endif%}
 
     {%if return.reading.type == 'estimated' %}
-      Estimated volumes      
+      Estimated volumes
     {%endif%}
   {% endset %}
 

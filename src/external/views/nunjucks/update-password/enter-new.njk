@@ -1,62 +1,20 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "button/macro.njk" import govukButton %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "google-analytics.njk" import sendEvent %}
 
-{% block mainNav %}
+{% from "password-error-item.njk" import passwordErrorItem %}
+{% from "password-error-summary.njk" import passwordErrorSummary %}
 
+{% block mainNav %}
 {% endblock %}
 
-{% macro errorItem(errors, key, text, isHint = false) %}
-  <li class="password-validation {{ ' password-validation-failure' if errors[key] }}">
-    <span class="{{ 'govuk-hint' if isHint }}">
-      {% if errors[key] %}
-        <span aria-hidden="true" class="validation-icon">&#10007;</span>
-        <span class="govuk-visually-hidden">Your password does not contain </span>
-      {% else %}
-        <span aria-hidden="true" class="validation-icon">&#10003;</span>
-        <span class="govuk-visually-hidden">Your password contains </span>
-      {% endif %}
-      {{ text }}
-    </span>
-  </li>
-{% endmacro %}
-
 {% block content %}
-
-  {% if errors.hasValidationErrors %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-          <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
-            <h2 class="govuk-error-summary__title" id="error-summary-title">
-              There is a problem
-            </h2>
-            <div class="govuk-error-summary__body">
-              <p>Your password must contain</p>
-              <ul class="govuk-list govuk-error-summary__list">
-                {{ errorItem(errors, 'passwordTooShort', '8 characters' )}}
-                {{ errorItem(errors, 'passwordHasNoSymbol', '1 symbol (like ?!£%)' )}}
-                {{ errorItem(errors, 'passwordHasNoUpperCase', '1 capital letter' )}}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ passwordErrorSummary(errors) }}
     </div>
-  {% endif %}
-
-  {% if (not errors.hasValidationErrors) and (errors.passwordsDontMatch or errors.noConfirmPassword) %}
-   {{
-      govukErrorSummary({
-        titleText: "There is a problem",
-        errorList: [
-          { text: "Re-enter your new password", href: "#password" },
-          { text: "Re-enter your new password", href: "#confirm-password" }
-        ]
-      })
-    }}
-  {% endif %}
+  </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -72,9 +30,9 @@
           <div class="govuk-hint">
             <p class="govuk-hint">Your new password must have at least:</p>
             <ul class="govuk-list govuk-error-summary__list">
-              {{ errorItem(errors, 'passwordTooShort', '8 characters', true )}}
-              {{ errorItem(errors, 'passwordHasNoSymbol', '1 symbol (like ?!£%)', true )}}
-              {{ errorItem(errors, 'passwordHasNoUpperCase', '1 capital letter', true )}}
+              {{ passwordErrorItem(errors, 'passwordTooShort', '8 characters', true )}}
+              {{ passwordErrorItem(errors, 'passwordHasNoSymbol', '1 symbol (like ?!£%)', true )}}
+              {{ passwordErrorItem(errors, 'passwordHasNoUpperCase', '1 capital letter', true )}}
             </ul>
           </div>
 

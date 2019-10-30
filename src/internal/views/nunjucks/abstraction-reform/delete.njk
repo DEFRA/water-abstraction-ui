@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "forms/header.njk" import formHeader %}
 {% from "forms/footer.njk" import formFooter %}
 {% from "forms/widget.njk" import formWidget %}
@@ -12,24 +12,19 @@
   {{ title(pageTitle) }}
 
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
 
-        <h2 class="govuk-heading-m">{{ schema.title }} {{ schema.category }}</h2>
+      {% set html = wr22Condition(data) | safe %}
 
-        {% set html = wr22Condition(data) | safe %}
-
-        {{ govukInsetText({
-          html: html
-        }) }}
-
+      {{ govukInsetText({
+        html: html
+      }) }}
     </div>
   </div>
 
   <p>You are about to remove this further condition.</p>
 
-
   {{ formRender(form) }}
-
-
 
 {% endblock %}

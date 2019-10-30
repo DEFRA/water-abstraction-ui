@@ -17,7 +17,7 @@ module.exports = {
           back: '/licences'
         },
         config: {
-          view: 'nunjucks/content/accessibility.njk'
+          view: 'nunjucks/content/accessibility'
         }
       }
     },
@@ -39,7 +39,7 @@ module.exports = {
           back: '/licences'
         },
         config: {
-          view: 'nunjucks/content/cookies.njk'
+          view: 'nunjucks/content/cookies'
         }
       }
     },
@@ -60,7 +60,7 @@ module.exports = {
           back: '/licences'
         },
         config: {
-          view: 'nunjucks/content/feedback.njk'
+          view: 'nunjucks/content/feedback'
         }
       }
     },
@@ -81,7 +81,7 @@ module.exports = {
           back: '/licences'
         },
         config: {
-          view: 'nunjucks/content/privacy-policy.njk'
+          view: 'nunjucks/content/privacy-policy'
         }
       }
     },

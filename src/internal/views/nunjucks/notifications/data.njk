@@ -1,0 +1,40 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "nunjucks/notifications/macros/widgets.njk" import widgetDate, widgetTextArea, widgetText %}
+{% block content %}
+
+  {% if error %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "There was a problem with some of the information entered",
+            errorList: errorList
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
+
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <form method="POST" action="{{ formAction }}">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+        {% for variable in task.config.variables %}
+          {{ widgetTextArea(variable, errorField, values) if variable.widget == "textarea" }}
+          {{ widgetText(variable, errorField, values) if variable.widget == "text" }}
+          {{ widgetDate(variable, errorField, values) if variable.widget == "date" }}
+        {% endfor %}
+
+        {{ govukButton({ text: "Continue "}) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -8,10 +8,7 @@ const payloadToContactDetails = payload =>
   pick(payload, ['name', 'jobTitle', 'tel', 'email', 'address']);
 
 const getContactFormView = (h, viewContext, form) => {
-  return h.view('nunjucks/form.njk', {
-    ...viewContext,
-    form
-  }, { layout: false });
+  return h.view('nunjucks/form', { ...viewContext, form });
 };
 
 const getUserData = request => get(request, 'defra.user.user_data', {});

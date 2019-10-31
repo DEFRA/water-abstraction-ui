@@ -121,7 +121,7 @@ experiment('errors plugin', () => {
 
       expect(h.view.callCount).to.equal(1);
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/errors/error.njk');
+      expect(template).to.equal('nunjucks/errors/error');
       expect(logger.error.callCount).to.equal(1);
     });
   });

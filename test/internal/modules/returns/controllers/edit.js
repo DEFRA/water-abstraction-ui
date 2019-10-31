@@ -109,9 +109,8 @@ experiment('returns edit controller: ', () => {
   });
 
   const testFormIsRendered = () => test('renders the correct template', async () => {
-    const [template, , options] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/returns/form.njk');
-    expect(options).to.equal({ layout: false });
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/returns/form');
   });
 
   const testRedirect = step => test('redirects to the correct URL', async () => {
@@ -1019,7 +1018,7 @@ experiment('returns edit controller: ', () => {
 
     test('renders correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/submitted.njk');
+      expect(template).to.equal('nunjucks/returns/submitted');
     });
 
     test('sets view return URL in view', async () => {

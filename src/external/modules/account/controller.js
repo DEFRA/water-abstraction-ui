@@ -25,7 +25,7 @@ const getAccount = async (request, h) => {
     ...request.view,
     userName: request.defra.userName
   };
-  return h.view('nunjucks/account/entry.njk', view, { layout: false });
+  return h.view('nunjucks/account/entry', view);
 };
 
 /**
@@ -63,7 +63,7 @@ const getChangeEmailLocked = async (request, h) => {
     ...request.view,
     back: '/account'
   };
-  return h.view('nunjucks/account/try-again-later.njk', view, { layout: false });
+  return h.view('nunjucks/account/try-again-later', view);
 };
 
 /**
@@ -76,7 +76,7 @@ const getEnterNewEmail = async (request, h, form) => {
     form: emailForm,
     back: '/account'
   };
-  return h.view('nunjucks/form-without-nav.njk', view, { layout: false });
+  return h.view('nunjucks/form-without-nav', view);
 };
 
 const postEnterNewEmailAPIRequest = async (userId, email) => {
@@ -141,7 +141,7 @@ const getVerifyEmail = async (request, h, form) => {
       back: '/account',
       newEmail: get(response, 'data.email')
     };
-    return h.view('nunjucks/account/verify.njk', view, { layout: false });
+    return h.view('nunjucks/account/verify', view);
   } catch (err) {
     return h.redirect('/account/change-email/enter-new-email');
   }
@@ -200,11 +200,11 @@ const postVerifyEmail = async (request, h) => {
 };
 
 const getSuccess = async (request, h) => {
-  return h.view('nunjucks/account/success.njk', request.view, { layout: false });
+  return h.view('nunjucks/account/success', request.view);
 };
 
 const getTryAgainLater = async (request, h) => {
-  return h.view('nunjucks/account/try-again-later.njk', request.view, { layout: false });
+  return h.view('nunjucks/account/try-again-later', request.view);
 };
 
 exports.getAccount = getAccount;

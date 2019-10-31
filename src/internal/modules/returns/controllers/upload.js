@@ -43,7 +43,7 @@ const getXmlUpload = (request, h) => {
     back: '/returns/upload-instructions'
   };
 
-  return h.view('nunjucks/returns/upload.njk', view, { layout: false });
+  return h.view('nunjucks/returns/upload', view);
 };
 
 /**
@@ -173,7 +173,7 @@ const getSpinnerPage = async (request, h) => {
       return h.redirect(path);
     }
 
-    return h.view('nunjucks/waiting/index.njk', request.view, { layout: false });
+    return h.view('nunjucks/waiting/index', request.view);
   } else {
     const err = Boom.notFound(`Upload event not found`, { eventId });
     logger.errorWithJourney('No event found with selected event_id and issuer', err, request, { eventId });
@@ -209,7 +209,7 @@ const getSummary = async (request, h) => {
       pageTitle: hasErrors(grouped) ? pageTitles.error : pageTitles.ok
     };
 
-    return h.view('nunjucks/returns/upload-summary.njk', view, { layout: false });
+    return h.view('nunjucks/returns/upload-summary', view);
   } catch (err) {
     const params = { eventId, options };
     logger.errorWithJourney(`Return upload error`, err, request, params);
@@ -239,7 +239,7 @@ const getSummaryReturn = async (request, h) => {
       lines: uploadSummaryHelpers.groupLines(ret)
     };
 
-    return h.view('nunjucks/returns/upload-return.njk', view, { layout: false });
+    return h.view('nunjucks/returns/upload-return', view);
   } catch (err) {
     const params = { eventId, returnId, options };
     logger.errorWithJourney(`Return upload error`, err, request, params);
@@ -279,7 +279,7 @@ const getSubmitted = async (request, h) => {
     ...request.view,
     pageTitle: `Returns submitted`
   };
-  return h.view('nunjucks/returns/upload-submitted.njk', view, { layout: false });
+  return h.view('nunjucks/returns/upload-submitted', view);
 };
 
 const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates ${year}.zip`;
@@ -310,7 +310,7 @@ const getCSVTemplates = async (request, h) => {
  */
 const getUploadInstructions = async (request, h) => {
   const { view } = request;
-  return h.view('nunjucks/returns/upload-instructions.njk', view, { layout: false });
+  return h.view('nunjucks/returns/upload-instructions', view);
 };
 
 exports.getXmlUpload = getXmlUpload;

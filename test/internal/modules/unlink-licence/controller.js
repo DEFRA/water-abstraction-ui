@@ -47,7 +47,7 @@ experiment('modules/unlink-licence/controller', () => {
 
     test('passes the expected template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/unlink-licence/confirm-unlink-licence.njk');
+      expect(template).to.equal('nunjucks/unlink-licence/confirm-unlink-licence');
     });
 
     test('view object contains the correct pageTitle', async () => {
@@ -113,7 +113,7 @@ experiment('modules/unlink-licence/controller', () => {
     experiment('when the form is not valid', async () => {
       test('the confirm unlink licence template is replayed', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/unlink-licence/confirm-unlink-licence.njk');
+        expect(template).to.equal('nunjucks/unlink-licence/confirm-unlink-licence');
       });
     });
   });
@@ -125,7 +125,7 @@ experiment('modules/unlink-licence/controller', () => {
 
     test('passes the expected template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/unlink-licence/unlink-licence-success.njk');
+      expect(template).to.equal('nunjucks/unlink-licence/unlink-licence-success');
     });
 
     test('view object contains the correct pageTitle', async () => {

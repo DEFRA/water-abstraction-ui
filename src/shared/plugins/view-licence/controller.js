@@ -19,7 +19,7 @@ async function getLicenceDetail (request, reply) {
       pageHeading
     };
 
-    return reply.view(request.config.view, view, { layout: false });
+    return reply.view(request.config.view, view);
   } catch (error) {
     throw errorMapper(error);
   }
@@ -82,7 +82,7 @@ const getLicenceGaugingStation = async (request, h) => {
     hasGaugingStationMeasurement: riverLevel && riverLevel.active && measure
   };
 
-  return h.view('nunjucks/view-licences/gauging-station.njk', view, { layout: false });
+  return h.view('nunjucks/view-licences/gauging-station', view);
 };
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
@@ -111,7 +111,7 @@ const getLicence = async (request, h) => {
     chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse()
   };
 
-  return h.view('nunjucks/view-licences/licence.njk', view, { layout: false });
+  return h.view('nunjucks/view-licences/licence', view);
 };
 
 const getAddressParts = notification => {
@@ -151,7 +151,7 @@ const getLicenceCommunication = async (request, h) => {
     isInternal: false
   };
 
-  return h.view('nunjucks/view-licences/communication.njk', viewContext, { layout: false });
+  return h.view('nunjucks/view-licences/communication', viewContext);
 };
 
 exports.getLicenceDetail = getLicenceDetail;

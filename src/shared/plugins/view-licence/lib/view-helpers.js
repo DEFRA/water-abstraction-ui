@@ -18,8 +18,7 @@ function getLicencePageTitle (view, licenceNumber, customName) {
     'gauging-station': `Gauging station`
   };
 
-  let key = view.split('/').pop();
-  if (key.slice(-4) === '.njk') key = key.slice(0, -4);
+  const key = view.split('/').pop();
 
   if (!titles[key]) {
     return {

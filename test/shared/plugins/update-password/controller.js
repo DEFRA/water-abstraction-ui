@@ -82,7 +82,7 @@ experiment('update password controller', () => {
 
     test('the correct template is displayed', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/update-password/enter-new.njk');
+      expect(template).to.equal('nunjucks/update-password/enter-new');
     });
   });
 
@@ -95,7 +95,7 @@ experiment('update password controller', () => {
 
     test('uses the correcttemplate', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/update-password/success.njk');
+      expect(template).to.equal('nunjucks/update-password/success');
     });
 
     test('uses the view data from request.view', async () => {

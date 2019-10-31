@@ -2,9 +2,9 @@
 {% from "title.njk" import title %}
 {% from "contact-details.njk" import contactDetails %}
 {% from "google-analytics.njk" import sendEvent %}
-{% from "textarea/macro.njk" import govukTextarea %}
-{% from "button/macro.njk" import govukButton %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
   {{ title(pageTitle) }}
@@ -58,7 +58,7 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <details class="govuk-details">
+        <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary">
           <span class="govuk-details__summary-text">Do you need help?</span>
         </summary>

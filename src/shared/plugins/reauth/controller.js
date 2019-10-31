@@ -12,7 +12,7 @@ const getConfirmPassword = async (request, h, form) => {
     form: form || confirmPasswordForm(request),
     back: '/account'
   };
-  return h.view('nunjucks/form-without-nav.njk', view, { layout: false });
+  return h.view('nunjucks/form-without-nav', view);
 };
 
 const isLockedHttpStatus = err => err.statusCode === 429;
@@ -80,7 +80,7 @@ const getPasswordLocked = async (request, h, form) => {
     ...request.view,
     back: '/account'
   };
-  return h.view('nunjucks/reauth/try-again-later.njk', view, { layout: false });
+  return h.view('nunjucks/reauth/try-again-later', view);
 };
 
 exports.getConfirmPassword = getConfirmPassword;

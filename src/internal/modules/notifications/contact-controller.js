@@ -25,7 +25,7 @@ const getNameAndJob = async (request, h, form) => {
     form: form || nameAndJobForm.form(request, contactDetails)
   };
 
-  return h.view('nunjucks/form.njk', view, { layout: false });
+  return h.view('nunjucks/form', view);
 };
 
 /**
@@ -58,7 +58,7 @@ const getDetails = async (request, h, form) => {
     form: form || detailsForm.form(request, contactDetails)
   };
 
-  return h.view('nunjucks/form.njk', view, { layout: false });
+  return h.view('nunjucks/form', view);
 };
 
 /**

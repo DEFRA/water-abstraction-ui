@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "inset-text/macro.njk" import govukInsetText %}
-{% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
 
@@ -46,7 +46,7 @@
         govukButton({
           text: "Create account",
           href: "/register",
-          classes: "govuk-button--start"
+          isStartButton: true
         })
       }}
 

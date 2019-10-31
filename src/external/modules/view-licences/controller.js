@@ -37,7 +37,7 @@ async function getLicences (request, h) {
   view.enableSearch = licenceCount > 5;
 
   if (request.formError) {
-    return h.view('water/view-licences/licences', request.view);
+    return h.view('nunjucks/view-licences/licences', request.view);
   }
 
   const companyId = request.yar.get('companyId');
@@ -61,7 +61,7 @@ async function getLicences (request, h) {
     throw error;
   }
 
-  return h.view('water/view-licences/licences', {
+  return h.view('nunjucks/view-licences/licences', {
     ...request.view,
     licenceData: data,
     pagination
@@ -79,7 +79,7 @@ const getLicenceRename = (request, h, form) => {
     form: form || renameLicenceForm(request, documentName),
     pageTitle: `Name licence ${request.licence.summary.licenceNumber}`
   };
-  return h.view('nunjucks/view-licences/rename.njk', view, { layout: false });
+  return h.view('nunjucks/view-licences/rename', view);
 };
 
 /**

@@ -64,7 +64,7 @@ experiment('internal view licences controller', () => {
     test('uses correct template', async () => {
       await controller.getExpiredLicence(request, h);
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/view-licences/expired-licence.njk');
+      expect(template).to.equal('nunjucks/view-licences/expired-licence');
     });
 
     test('outputs correct data to view', async () => {

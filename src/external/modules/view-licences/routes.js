@@ -50,7 +50,7 @@ const postLicenceRename = {
         documentId: VALID_GUID
       },
       payload: {
-        name: Joi.string().allow('').max(32),
+        name: Joi.string().allow(''),
         csrf_token: VALID_GUID
       }
     },

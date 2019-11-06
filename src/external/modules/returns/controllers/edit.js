@@ -12,7 +12,7 @@ const { STATUS_COMPLETED } = require('shared/modules/returns/models/WaterReturn'
 const { METHOD_VOLUMES, METHOD_ONE_METER } = require('shared/modules/returns/models/Reading');
 
 const services = require('../../../lib/connectors/services');
-const { addQuery } = require('shared/modules/returns/route-helpers');
+const { addQuery, errorRedirect } = require('shared/modules/returns/route-helpers');
 const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappers');
 
 /**
@@ -35,7 +35,7 @@ const postAmounts = async (request, h) => {
     );
     return h.redirect(path);
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_START);
 };
 
 /**
@@ -65,7 +65,7 @@ const postMethod = async (request, h) => {
     );
     return h.redirect(path);
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_METHOD);
 };
 
 /**
@@ -88,7 +88,7 @@ const postUnits = async (request, h) => {
     const path = addQuery(request, request.model.reading.isVolumes() ? STEP_QUANTITIES : STEP_METER_READINGS);
     return h.redirect(path);
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_UNITS);
 };
 
 /**
@@ -110,7 +110,7 @@ const postQuantities = async (request, h) => {
     const path = addQuery(request, request.model.reading.isMeasured() ? STEP_METER_DETAILS : STEP_CONFIRM);
     return h.redirect(path);
   }
-  return getAmounts(request, h);
+  return errorRedirect(request, h, STEP_QUANTITIES);
 };
 
 /**
@@ -131,7 +131,7 @@ const postMeterDetails = async (request, h) => {
     request.model.meter.setMeterDetails(details);
     return h.redirect(addQuery(request, STEP_CONFIRM));
   }
-  return getMeterDetails(request, h);
+  return errorRedirect(request, h, STEP_METER_DETAILS);
 };
 
 const getConfirmBackPath = request => {
@@ -178,7 +178,7 @@ const postConfirm = async (request, h) => {
 
     return h.redirect(addQuery(request, STEP_SUBMITTED));
   }
-  return getConfirm(request, h);
+  return errorRedirect(request, h, STEP_CONFIRM);
 };
 
 /**
@@ -199,7 +199,7 @@ const postMeterReset = async (request, h) => {
     request.model.reading.setMethod(meterReset ? METHOD_VOLUMES : METHOD_ONE_METER);
     return h.redirect(addQuery(request, STEP_UNITS));
   }
-  return getMeterReset(request, h);
+  return errorRedirect(request, h, STEP_METER_RESET);
 };
 
 /**
@@ -221,7 +221,7 @@ const postMeterReadings = async (request, h) => {
     request.model.meter.setMeterReadings(startReading, lines);
     return h.redirect(addQuery(request, STEP_METER_DETAILS));
   }
-  return getMeterReadings(request, h);
+  return errorRedirect(request, h, STEP_METER_READINGS);
 };
 
 /**

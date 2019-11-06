@@ -3,33 +3,21 @@
 {%macro meterDetailsInsetText(return, endReading, isAdmin)%}
 
   {% set html %}
-    {%if return.meters[0].meterDetailsProvided%}
-      <div class="meta__row">
-        <dd class="meta__value">{{ return.meters[0].manufacturer }}</dd>
-      </div>
-      <div class="meta__row">
-        <dd class="meta__value">{{ return.meters[0].serialNumber }}</dd>
-      </div>
-      {% if return.meters[0].multiplier == 10 %}
-        <div class="meta__row">
-          <dd class="meta__value">Has a ×10 display</dd>
-        </div>
+    {%if return.meters[0].meterDetailsProvided%}              
+      {{ return.meters[0].manufacturer }}<br>
+      {{ return.meters[0].serialNumber }}<br>        
+      {% if return.meters[0].multiplier == 10 %}        
+        Has a ×10 display<br>
       {% endif %}
     {% endif %}
 
-    {%if return.reading.method == 'oneMeter' %}
-      <div class="meta__row">
-        <dd class="meta__value">Start reading {{ return.meters[0].startReading }}</dd>
-      </div>
-      <div class="meta__row">
-        <dd class="meta__value">End reading {{ endReading }}</dd>
-      </div>
+    {%if return.reading.method == 'oneMeter' %}      
+          Start reading {{ return.meters[0].startReading }}<br>
+          End reading {{ endReading }}<br>      
     {%endif%}
 
     {%if return.reading.type == 'estimated' %}
-      <div class="meta__row">
-        <dd class="meta__value">Estimated volumes</dd>
-      </div>
+      Estimated volumes      
     {%endif%}
   {% endset %}
 

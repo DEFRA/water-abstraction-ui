@@ -92,6 +92,7 @@ experiment('shared flow plugin: ', () => {
 
     beforeEach(async () => {
       request = {
+        view: {},
         path: '/test',
         route: {
           settings: {
@@ -102,6 +103,11 @@ experiment('shared flow plugin: ', () => {
               }
             }
           }
+        },
+        yar: {
+          set: sandbox.stub(),
+          get: sandbox.stub(),
+          clear: sandbox.stub()
         }
       };
     });
@@ -146,6 +152,20 @@ experiment('shared flow plugin: ', () => {
         test('returns h.continue', async () => {
           const result = await plugin._onPreHandler(request, h);
           expect(result).to.equal(h.continue);
+        });
+
+        experiment('when there is a form in error state in the session', () => {
+          const errorForm = {
+            errors: ['oh no!']
+          };
+          beforeEach(async () => {
+            request.yar.get.returns(errorForm);
+          });
+
+          test('places the form in error state in request.view', async () => {
+            await plugin._onPreHandler(request, h);
+            expect(request.view.form).to.equal(errorForm);
+          });
         });
       });
 

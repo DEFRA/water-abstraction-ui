@@ -1,4 +1,4 @@
-{% macro contactDetails(emailAddress, isSingleSpaced) %}
+{% macro contactDetails(email, isSingleSpaced) %}
 
   {% set openingPTag%}
     {% if isSingleSpaced %}
@@ -9,7 +9,7 @@
   {% endset %}
 
   {{openingPTag | safe}}
-    Email: {{ emailAddress | urlize | safe }}
+    Email: {{ email | default('enquiries@environment-agency.gov.uk', true) | urlize | safe }}
   </p>
 
   {{openingPTag | safe}}

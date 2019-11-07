@@ -13,7 +13,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Accessibility',
+          pageTitle: 'Accessibility statement for Manage your water abstraction or impoundment licence online',
           back: '/licences'
         },
         config: {

@@ -1,13 +1,27 @@
-{% macro contactDetails() %}
+{% macro contactDetails(emailAddress, isSingleSpaced) %}
 
-  <p>Email: {{ 'enquiries@environment-agency.gov.uk' | urlize | safe }}</p>
+  {% set openingPTag%}
+    {% if isSingleSpaced %}
+    <p class="govuk-body govuk-!-margin-bottom-0">
+    {% else %}
+    <p>
+    {% endif %}
+  {% endset %}
 
-  <p>Telephone: <a href="tel:03708506506">03708 506 506</a></p>
+  {{openingPTag | safe}}
+    Email: {{ emailAddress | urlize | safe }}
+  </p>
 
-  <p>Telephone from outside the UK: <a href="tel:+441142825312">+44 (0) 114 282 5312</a></p>
+  {{openingPTag | safe}}
+    Telephone: <a href="tel:03708506506">03708 506 506</a>
+  </p>
 
-  <p>Minicom (for the hard of hearing): <a href="tel:03702422549">03702 422 549</a></p>
+  {{openingPTag | safe}}
+    Telephone from outside the UK: <a href="tel:+441142825312">+44 114 282 5312</a>
+  </p>
 
-  <p>Lines are open Monday to Friday, 8am to 6pm (GMT).</p>
+  <p>
+    You can call us from 8am to 6pm, Monday to Friday.
+  </p>
 
 {% endmacro %}

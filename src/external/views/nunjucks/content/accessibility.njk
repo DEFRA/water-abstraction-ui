@@ -1,4 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "contact-details.njk" import contactDetails %}
 
 {% block content %}
 
@@ -7,19 +8,64 @@
 
       {{ title(pageTitle) }}
 
-      <h2 class="govuk-heading-m">Service accessibility statement</h2>
       <p>
-        We aim to make the Manage your water abstraction or impoundment licence
-        service as accessible and easy to use as possible. All of our web pages
-        are designed and tested to meet <a target="_blank" href="https://www.w3.org/WAI/standards-guidelines/wcag/">Web Content Accessibility Guidelines</a>
-        to level AA.
+        This service is run by the Environment Agency. We want as many people as possible to be able to use this website. 
+        For example, that means you should be able to:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>change colours, contrast levels and fonts</li>
+        <li>zoom in up to 200% without the text spilling off the screen</li>
+        <li>navigate most of the website using just a keyboard</li>
+        <li>navigate most of the website using speech recognition software</li>
+        <li>listen to most of the website using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)</li>
+      </ul>
+
+      <p>
+        We have also made the website text as simple as possible to understand.
       </p>
 
-      <h2 class="govuk-heading-m">How to contact us</h2>
       <p>
-        If you want to give feedback about this service or have any questions about
-        accessibility, please email us at <a href="mailTo:water_abstractiondigital@environment-agency.gov.uk">water_abstractiondigital@environment-agency.gov.uk</a>.
-        We will respond within 5 working days.
+        <a href="https://mcmw.abilitynet.org.uk/">AbilityNet</a> has advice on making your device easier to use if you have a disability.
+      </p>
+
+      <h2 class="govuk-heading-m">Reporting accessibility problems with this website</h2>
+
+      <p>
+        We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact us:
+      </p>
+
+      {{ contactDetails('enquiries@environment-agency.gov.uk', true)}}
+
+      <h2 class="govuk-heading-m">Enforcement procedure</h2>
+      <p>
+        The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) 
+        (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, 
+        <a href="https://www.equalityadvisoryservice.com/">contact the Equality Advisory and Support Service (EASS)</a>.
+      </p>
+
+      <h2 class="govuk-heading-m">Contacting us or visiting us in person</h2>
+      {{ contactDetails('enquiries@environment-agency.gov.uk', true)}}
+      <p>
+        If you visit our offices and need assistance or an interpreter, you should 
+        <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening">contact us</a> before you visit.
+      </p>
+
+      <h2 class="govuk-heading-m">Technical information about this website’s accessibility</h2>
+      <p>
+        The Environment Agency is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.
+      </p>
+      <p>
+        This website is fully compliant with the <a href="https://www.w3.org/TR/WCAG21/">Web Content Accessibility Guidelines version 2.1</a> AA standard.
+      </p>
+
+      <h2 class="govuk-heading-m">How we tested this website</h2>
+      <p>
+        The entire website at: <a href="https://www.gov.uk/guidance/manage-your-water-abstraction-or-impoundment-licences-online">
+        https://www.gov.uk/guidance/manage-your-water-abstraction-or-impoundment-licences-online</a>
+         was last tested by the Environment Agency on 20 September 2019.
+      </p>
+      <p>
+        This statement was prepared on 20 November 2019. It was last updated on 20 November 2019.
       </p>
     </div>
   </div>

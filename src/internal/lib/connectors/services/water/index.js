@@ -12,6 +12,7 @@ const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
+const BillingRegionsLookup = require('./BillingRegionsLookup');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -43,6 +44,7 @@ module.exports = config => ({
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   internalSearch: new InternalSearchService(config.services.water, logger),
+  billingRegionsLookUp: new BillingRegionsLookup(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),
@@ -55,5 +57,5 @@ module.exports = config => ({
   events: new EventsApiClient(config, logger),
   pendingImports: new PendingImportsApiClient(config, logger),
   picklists: new PicklistsApiClient(config, logger),
-  picklistItems: new PicklistItemsApiClient(config, logger)
+  picklistItems: new PicklistItemsApiClient(config, logger)  
 });

@@ -114,7 +114,7 @@ const postValidate = (form, values) => {
   return data;
 };
 
-const getPayload = (form, request) => form.method === 'POST'
+const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
   ? request.payload
   : request.query;
 

@@ -57,5 +57,5 @@ module.exports = config => ({
   events: new EventsApiClient(config, logger),
   pendingImports: new PendingImportsApiClient(config, logger),
   picklists: new PicklistsApiClient(config, logger),
-  picklistItems: new PicklistItemsApiClient(config, logger)  
+  picklistItems: new PicklistItemsApiClient(config, logger)
 });

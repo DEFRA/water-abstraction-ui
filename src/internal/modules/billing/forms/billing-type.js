@@ -11,8 +11,8 @@ const choices = [
     label: 'Supplementary'
   },
   {
-    value: 'two_part_tarriff',
-    label: 'Two-part tarriff'
+    value: 'two_part_tariff',
+    label: 'Two-part tariff'
   }];
 
 /**

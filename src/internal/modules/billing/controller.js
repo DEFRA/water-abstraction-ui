@@ -66,7 +66,7 @@ const getBillingBatchRegion = async (request, h) => {
     pageTitle: 'Select the region'
   };
 
-  const { data } = await services.water.billingRegionsLookUp.getBillingRegions();
+  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
 
   return h.view('nunjucks/form', {
     ...view,
@@ -83,31 +83,69 @@ const getBillingBatchRegion = async (request, h) => {
  * @param {*} h
  */
 const postBillingBatchRegion = async (request, h) => {
-  const { data } = await services.water.billingRegionsLookUp.getBillingRegions();
+  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, data), request, billingRegionFormSchema);
   const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
 
   if (billingRegionForm.isValid) {
-    // const { selectedBillingRegion } = forms.getValues(billingRegionForm);
-
-    console.log(selectedBillingRegion);
-
-    const { userId } = request.params;
+    const { userId } = request.defra;
     const { user_name: userEmail } = await services.idm.users.findOneById(userId);
-    console.log(`The users email is: ${userEmail}`);
-    const batch = {
-      'id': 1,
-      'type': 'supplemantary',
-      'region': 'Anglian'
-    };
-    return h.redirect(`/waiting/${batch.id}`);
-  }
 
+    const batch = {
+      'userEmail': userEmail,
+      'regionId': selectedBillingRegion,
+      'batchType': selectedBillingType,
+      'financialYear': new Date().getFullYear(),
+      'season': 'summer' // ('summer', 'winter', 'all year').required();
+    };
+    try {
+      const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+      return h.redirect(`/waiting/${event.event_id}`);
+    } catch (err) {
+      console.log(err);
+      if (err.statusCode === 409) {
+        // TODO: redirect to a summary page displaying details of existing bill run
+        return h.redirect('/billing/batch/exist');
+      }
+      throw err;
+    }
+  }
+  // if the form is invalid redirect back
   const key = uuid();
   request.yar.set(key, billingRegionForm);
   return h.redirect(`/billing/batch/region/${selectedBillingType}?form=` + key);
 };
 
+/**
+ * If the Bill run for the type and region exists then display the summary page
+ * @param {*} request
+ * @param {*} h
+ */
+const getBillingBatchExist = async (request, h) => {
+  const view = {
+    ...request.view,
+    pageTitle: 'A bill run already exist'
+  };
+
+  return h.view('nunjucks/billing/batch-exist', {
+    ...view,
+    back: '/billing/batch/region'
+  });
+};
+
+const getBillingBatchSummary = async (request, h) => {
+  const view = {
+    ...request.view,
+    pageTitle: 'The bill run has completed'
+  };
+
+  return h.view('nunjucks/billing/batch-summary', {
+    ...view
+  });
+};
+
+exports.getBillingBatchSummary = getBillingBatchSummary;
+exports.getBillingBatchExist = getBillingBatchExist;
 exports.getBillingBatchType = getBillingBatchType;
 exports.postBillingBatchType = postBillingBatchType;
 exports.getBillingBatchRegion = getBillingBatchRegion;

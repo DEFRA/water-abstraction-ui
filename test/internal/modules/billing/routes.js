@@ -7,7 +7,7 @@ const {
 
 const { scope } = require('internal/lib/constants');
 const routes = require('internal/modules/billing/routes');
-
+// testing routes exist and only accessible to users with billing role
 experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchType', () => {
     test('limits scope to users with billing role', async () => {
@@ -30,6 +30,18 @@ experiment('internal/modules/billing/routes', () => {
   experiment('.postBillingBatchRegion', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.postBillingBatchRegion.options.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
+  experiment('.getBillingBatchExist', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getBillingBatchExist.options.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
+  experiment('.getBillingBatchSummary', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getBillingBatchSummary.options.auth.scope)
         .to.only.include([scope.billing]);
     });
   });

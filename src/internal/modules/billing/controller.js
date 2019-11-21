@@ -75,6 +75,18 @@ const getBillingBatchRegion = async (request, h) => {
   });
 };
 
+const getBatchDetails = (billingRegionForm, userEmail) => {
+  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
+  const batch = {
+    'userEmail': userEmail,
+    'regionId': selectedBillingRegion,
+    'batchType': selectedBillingType,
+    'financialYear': new Date().getFullYear(),
+    'season': 'summer' // ('summer', 'winter', 'all year').required();
+  };
+  return batch;
+};
+
 /**
  * Step 2b received step 2a posted data
  * try to create a new billing run batch
@@ -85,19 +97,11 @@ const getBillingBatchRegion = async (request, h) => {
 const postBillingBatchRegion = async (request, h) => {
   const { data } = await services.water.billingBatchCreateService.getBillingRegions();
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, data), request, billingRegionFormSchema);
-  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
 
   if (billingRegionForm.isValid) {
     const { userId } = request.defra;
     const { user_name: userEmail } = await services.idm.users.findOneById(userId);
-
-    const batch = {
-      'userEmail': userEmail,
-      'regionId': selectedBillingRegion,
-      'batchType': selectedBillingType,
-      'financialYear': new Date().getFullYear(),
-      'season': 'summer' // ('summer', 'winter', 'all year').required();
-    };
+    const batch = getBatchDetails(billingRegionForm, userEmail);
     try {
       const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
       return h.redirect(`/waiting/${event.event_id}`);

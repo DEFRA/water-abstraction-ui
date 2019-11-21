@@ -87,6 +87,8 @@ const billrunsubTypeHandler = {
 
 const getEventHandler = event => {
   if (event.type === 'billing-batch') {
+    event.status = (event.status === 'batch:complete') ? 'complete' : event.status;
+    event.status = (event.status === 'batch:start') ? 'processing' : event.status;
     return get(billrunsubTypeHandler, ['billing', event.status]);
   }
   return get(subTypeHandlers, [event.subtype, event.status]);
@@ -95,10 +97,8 @@ const getEventHandler = event => {
 const getWaiting = async (request, h) => {
   const { eventId } = request.params;
   const { data: event, error } = await services.water.events.findOne(eventId);
-  // clean up the billing event data to work with this waiting process
+
   if (event.type === 'billing-batch') {
-    event.status = (event.status === 'batch:complete') ? 'complete' : event.status;
-    event.status = (event.status === 'batch:start') ? 'processing' : event.status;
     const { data } = await services.water.billingBatchCreateService.getBillingRegions();
     event.metadata.batch.region_name = getRegionName(data, event.metadata.batch.region_id);
   }

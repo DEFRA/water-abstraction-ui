@@ -16,7 +16,6 @@ const getPageTitle = (ev) => {
 const getRegionName = (regionsArray, regionId) => {
   // const result = words.filter(word => word.length > 6);
   const [ region ] = regionsArray.filter(region => region.regionId === regionId);
-  console.log(region);
   return region.name;
 };
 

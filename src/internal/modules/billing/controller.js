@@ -97,16 +97,16 @@ const getBatchDetails = (billingRegionForm, userEmail) => {
 const postBillingBatchRegion = async (request, h) => {
   const { data } = await services.water.billingBatchCreateService.getBillingRegions();
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, data), request, billingRegionFormSchema);
+  const { selectedBillingType } = forms.getValues(billingRegionForm);
 
   if (billingRegionForm.isValid) {
-    const { userId } = request.defra;
-    const { user_name: userEmail } = await services.idm.users.findOneById(userId);
-    const batch = getBatchDetails(billingRegionForm, userEmail);
     try {
+      const { userId } = request.defra;
+      const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+      const batch = getBatchDetails(billingRegionForm, userEmail);
       const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
       return h.redirect(`/waiting/${event.event_id}`);
     } catch (err) {
-      console.log(err);
       if (err.statusCode === 409) {
         // TODO: redirect to a summary page displaying details of existing bill run
         return h.redirect('/billing/batch/exist');

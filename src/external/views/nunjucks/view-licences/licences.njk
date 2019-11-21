@@ -1,0 +1,134 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "paginate.njk" import paginate %}
+{% from "sort-icon.njk" import sortIcon %}
+
+{% from "nunjucks/view-licences/macros/licence-disclaimer.njk" import licenceDisclaimer %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ title(pageTitle) }}
+
+      {% if showVerificationAlert %}
+        <div class="alert">
+          Have you received a security code by post? <a href="/security-code">Enter your code here</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if enableSearch %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form class="licence-search" novalidate method="GET" action="/licences" name="licenceSearch">
+          {{
+            govukInput({
+              label: {
+                text: "Enter licence number or name"
+              },
+              id: "licenceNumber",
+              name: "licenceNumber",
+              value: query.licenceNumber,
+              attributes: {
+                maxLength: 32
+              },
+              formGroup: {
+                classes: "licence-search__input-form-group"
+              }
+            })
+          }}
+
+          {{
+            govukButton({
+              id: "searchButton",
+              type: "submit",
+              text: "Search",
+              classes: "licence-search__submit"
+            })
+          }}
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if showResults %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <div class="licence-results" id="results">
+          <nav class="licence-results__header">
+            <div class="licence-results__header__column">
+              <a href="/licences?{{ query | sortQuery('licenceNumber') }}#results">
+                <span class="govuk-visually-hidden">Sort by licence number</span>
+                <span aria-hidden="true">Licence number</span>
+                {{ sortIcon(query, "licenceNumber") }}
+              </a>
+            </div>
+            <div class="licence-results__header__column">
+              <a href="/licences?{{ query | sortQuery('licenceNumber') }}#results">
+                <span class="govuk-visually-hidden">Sort by licence name</span>
+                <span aria-hidden="true">Licence name</span>
+                {{ sortIcon(query, "name") }}
+              </a>
+            </div>
+
+            <div class="licence-results__header__column">
+              <a href="/licences?{{ query | sortQuery('licenceNumber') }}#results">
+                <span class="govuk-visually-hidden">Sort by licence end date</span>
+                <span aria-hidden="true">End date</span>
+                {{ sortIcon(query, "expiryDate") }}
+              </a>
+            </div>
+          </nav>
+
+          {% if not licenceData %}
+            <div class="licence-result">
+              <h2 class="govuk-body licence-result__column">No results found.</h2>
+              <p class="licence-result__column licence-result__column--description"></p>
+              <div class="licence-result__column" aria-hidden="true"></div>
+            </div>
+          {% endif %}
+
+          {% for licence in licenceData %}
+            <div class="licence-result">
+              <h2 class="licence-result__column">
+                <a href="/licences/{{licence.document_id}}">
+                  <span class="govuk-visually-hidden">View licence </span>
+                  {{ licence.system_external_id }}
+                </a>
+              </h2>
+              <p class="licence-result__column licence-result__column--description">
+                {% if licence.document_name %}
+                  <span class="govuk-visually-hidden">Licence name </span>
+                {% else %}
+                  <span aria-hidden="true">-</span>
+                {% endif %}
+                {{licence.document_name}}
+              </p>
+              <p class="licence-result__column">
+                {% if licence.metadata.Expires %}
+                  <span class="govuk-visually-hidden">Licence expires </span>
+                {% else %}
+                  <span aria-hidden="true">-</span>
+                {% endif %}
+                {{ licence.metadata.Expires | date }}
+              </p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-padding-top-4">
+        {{ paginate(pagination, '/licences', query) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ licenceDisclaimer() }}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

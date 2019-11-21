@@ -1,4 +1,8 @@
 .badge {
+
+  font-family: "nta", Arial, sans-serif;
+  @include govuk-font($size: 19);
+
   min-width: 4rem;
   display: inline-block;
   text-align: center;
@@ -6,44 +10,28 @@
   font-weight: bold;
   padding: 5px 7px 1px 7px;
   vertical-align: middle;
-
-  color: #005ea5;
-  border: 1px solid #005ea5;
-  border-radius: 2px;
-
   letter-spacing: 1px;
-  text-decoration: none;
   text-transform: uppercase;
+  text-decoration: none;
+  color: govuk-colour("blue");
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: govuk-colour("blue");
+
+  @include govuk-media-query($until: tablet) {
+    padding-bottom:  3px;
+  }
 }
 
 .badge--error {
-  border: 1px solid $error-colour;
-  color: $error-colour;
+  border-color: govuk-colour("red");
+  color: govuk-colour("red");
 }
 
-.badge--success {
-  border: 1px solid $button-colour;
-  color: $button-colour;
-}
-
-.badge--completed {
-  border: 1px solid $link-colour;
-  color: $link-colour;
-}
-
-.badge--due {
-  border: 1px solid #df3034;
-  color: #df3034;
-}
-
-.badge--void {
-  border: 1px solid #b10e1e;
-  color: #b10e1e;
-}
-
-.badge--info {
-  border: 1px solid #6f777b;
-  color: #6f777b;
+.badge--dark {
+  border-color: $govuk-text-colour;
+  color: $govuk-text-colour;
 }
 
 .badge--no-wrap {

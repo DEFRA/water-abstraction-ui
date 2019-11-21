@@ -51,7 +51,7 @@ experiment('getNotification', () => {
 
   test('uses the expected view template', async () => {
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/notifications-reports/report.njk');
+    expect(template).to.equal('nunjucks/notifications-reports/report');
   });
 
   test('gets the event using the id param from the request', async () => {

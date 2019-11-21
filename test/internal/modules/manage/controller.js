@@ -34,7 +34,7 @@ experiment('manage - controller', () => {
     test('uses the correct template', async () => {
       await controller.getManageTab(request, h);
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/notifications/manage-tab.njk');
+      expect(template).to.equal('nunjucks/notifications/manage-tab');
     });
 
     test('view data includes arrays of links', async () => {
@@ -48,12 +48,6 @@ experiment('manage - controller', () => {
         'hofNotifications',
         'accounts'
       ]);
-    });
-
-    test('includes nunjucks options', async () => {
-      await controller.getManageTab(request, h);
-      const [, , options] = h.view.lastCall.args;
-      expect(options).to.equal({ layout: false });
     });
   });
 });

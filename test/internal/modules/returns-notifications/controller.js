@@ -61,7 +61,7 @@ experiment('postPreviewRecipients', () => {
       request.payload = { licenceNumbers: '' };
       await controller.postPreviewRecipients(request, h);
       const [viewName] = h.view.lastCall.args;
-      expect(viewName).to.equal('nunjucks/form.njk');
+      expect(viewName).to.equal('nunjucks/form');
     });
   });
 
@@ -85,7 +85,7 @@ experiment('postPreviewRecipients', () => {
     test('the confirm view is rendered', async () => {
       await controller.postPreviewRecipients(request, h);
       const [viewName] = h.view.lastCall.args;
-      expect(viewName).to.equal('nunjucks/returns-notifications/forms-confirm.njk');
+      expect(viewName).to.equal('nunjucks/returns-notifications/forms-confirm');
     });
 
     test('the found licences are added to the view', async () => {
@@ -157,7 +157,7 @@ experiment('getReturnsNotificationsStart', () => {
 
   test('the expected view template is used', async () => {
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/returns-notifications/notifications.njk');
+    expect(templateName).to.equal('nunjucks/returns-notifications/notifications');
   });
 
   test('view context is assigned a back link path', async () => {

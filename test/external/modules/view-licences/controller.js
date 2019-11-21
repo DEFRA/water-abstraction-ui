@@ -40,7 +40,7 @@ experiment('getLicences', () => {
   });
 
   experiment('view-licences/base', () => {
-    const viewName = 'water/view-licences/licences';
+    const viewName = 'nunjucks/view-licences/licences';
     let h;
 
     beforeEach(async () => {

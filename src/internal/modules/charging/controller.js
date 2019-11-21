@@ -1,8 +1,6 @@
 const services = require('internal/lib/connectors/services');
 const { logger } = require('../../logger');
 
-const viewOptions = { layout: false };
-
 const getLicenceNumber = request => request.licence.licence.licence_ref;
 
 const getEarliestEndDate = request => request.licence.licence.earliestEndDate;
@@ -33,7 +31,7 @@ const getChargeVersion = async (request, h) => {
       chargeVersion
     };
 
-    return h.view('nunjucks/charging/charge-version.njk', view, viewOptions);
+    return h.view('nunjucks/charging/charge-version', view);
   } catch (err) {
     logger.error(`getChargeVersion error`, err, { documentId, chargeVersionId });
     throw err;

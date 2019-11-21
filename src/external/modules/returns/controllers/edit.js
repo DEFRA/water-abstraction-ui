@@ -18,10 +18,10 @@ const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappe
 /**
  * Renders form for "Have you abstracted water in this return period?"
  */
-const getAmounts = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getAmounts = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: STEP_RETURNS
-}, { layout: false });
+});
 
 /**
  * Post handler for "Have you abstracted water in this return period?"
@@ -41,12 +41,12 @@ const postAmounts = async (request, h) => {
 /**
  * Get handler for method (meter/volumes/estimates)
  */
-const getMethod = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMethod = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request,
     request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_UNITS
   )
-}, { layout: false });
+});
 
 /**
  * Post handler for "Have you abstracted water in this return period?"
@@ -71,12 +71,12 @@ const postMethod = async (request, h) => {
 /**
  * Get handler for units
  */
-const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getUnits = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request,
     request.model.reading.isOneMeter() ? STEP_METER_RESET : STEP_METHOD
   )
-}, { layout: false });
+});
 
 /**
  * Post handler for units
@@ -94,10 +94,10 @@ const postUnits = async (request, h) => {
 /**
  * GET - volumes
  */
-const getQuantities = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getQuantities = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_UNITS)
-}, { layout: false });
+});
 
 /**
  * POST - volumes
@@ -116,10 +116,10 @@ const postQuantities = async (request, h) => {
 /**
  * Get meter details
  */
-const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, request.model.reading.isOneMeter() ? STEP_METER_READINGS : STEP_QUANTITIES)
-}, { layout: false });
+});
 
 /**
  * POST handler for meter details page
@@ -162,7 +162,7 @@ const getConfirm = async (request, h) => {
     makeChangePath: addQuery(request, path)
   };
 
-  return h.view('nunjucks/returns/confirm.njk', view, { layout: false });
+  return h.view('nunjucks/returns/confirm', view);
 };
 
 /**
@@ -185,10 +185,10 @@ const postConfirm = async (request, h) => {
  * Has the meter reset within this return cycle?  If so the user will have
  * to do the volumes route since meter reset is not currently supported
  */
-const getMeterReset = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterReset = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_METHOD)
-}, { layout: false });
+});
 
 /**
  * POST handler for meter reset
@@ -205,10 +205,10 @@ const postMeterReset = async (request, h) => {
 /**
  * GET form for meter readings
  */
-const getMeterReadings = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterReadings = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_UNITS)
-}, { layout: false });
+});
 
 /**
  * POST form for meter readings
@@ -234,12 +234,12 @@ const getSubmitted = async (request, h) => {
 
   const returnUrl = `/returns/return?id=${data.returnId}`;
 
-  return h.view('nunjucks/returns/submitted.njk', {
+  return h.view('nunjucks/returns/submitted', {
     ...request.view,
     data,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
-  }, { layout: false });
+  });
 };
 
 module.exports = {

@@ -1,0 +1,21 @@
+.licence-search__input-form-group {
+  width: 100%;
+  display: block;
+
+  @media screen and (min-width: 641px) {
+    width: 40%;
+    display: inline-block;
+  }
+}
+
+.licence-search__submit {
+  width: 100%;
+  display: block;
+
+  @media screen and (min-width: 641px) {
+    width: 20%;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 24px;
+  }
+}

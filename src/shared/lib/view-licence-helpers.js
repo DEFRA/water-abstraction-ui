@@ -15,10 +15,9 @@ const getCommonViewContext = request => {
 
 const getCommonBackLink = request => {
   const { documentId } = request.params;
-  const { licenceNumber } = request.licence.summary;
   return {
     back: `/licences/${documentId}`,
-    backText: `Licence number ${licenceNumber}`
+    backText: `Back`
   };
 };
 

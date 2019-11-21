@@ -68,7 +68,7 @@ experiment('getWaiting', () => {
         await controller.getWaiting(request, h);
 
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/waiting/index.njk');
+        expect(template).to.equal('nunjucks/waiting/index');
       });
 
       test('sets the correct page title', async () => {
@@ -108,7 +108,7 @@ experiment('getWaiting', () => {
         await controller.getWaiting(request, h);
 
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/waiting/index.njk');
+        expect(template).to.equal('nunjucks/waiting/index');
       });
 
       test('sets the correct page title', async () => {

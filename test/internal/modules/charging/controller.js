@@ -63,7 +63,7 @@ experiment('internal/modules/charging/controller', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/charging/charge-version.njk');
+        expect(template).to.equal('nunjucks/charging/charge-version');
       });
 
       test('outputs correct data to the view', async () => {
@@ -72,11 +72,6 @@ experiment('internal/modules/charging/controller', () => {
         expect(view.back).to.equal(`/licences/${documentId}#charge`);
         expect(view.pageTitle).to.equal(`Licence charge for ${licenceNumber}`);
         expect(view.chargeVersion).to.equal(chargeVersion);
-      });
-
-      test('uses the correct view options', async () => {
-        const [, , options] = h.view.lastCall.args;
-        expect(options).to.equal({ layout: false });
       });
     });
 

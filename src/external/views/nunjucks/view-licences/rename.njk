@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "nunjucks/view-licences/macros/licence-summary.njk" import licenceSummary %}
 
@@ -13,6 +13,6 @@
     {{ title('Name licence number ' + summary.licenceNumber) }}
   {% endif %}
 
-    {{ formRender(form) }}
+  {{ formRender(form) }}
 
 {% endblock %}

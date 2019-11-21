@@ -9,7 +9,7 @@ const getNotFoundError = (request, h) => {
     pageTitle: 'We cannot find that page'
   };
   return h
-    .view('nunjucks/errors/404.njk', view, { layout: false })
+    .view('nunjucks/errors/404', view)
     .code(404);
 };
 

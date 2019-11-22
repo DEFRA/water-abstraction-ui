@@ -31,7 +31,7 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'billrun')
     metadata: {
       name: 'test-event-name',
       batch: {
-        'region_id': 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'        
+        'region_id': 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
       }
     },
     subtype

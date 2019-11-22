@@ -40,6 +40,9 @@ const manageTabSkeleton = {
   ],
   accounts: [
     createLink('Create an internal account', '/account/create-user', scope.manageAccounts)
+  ],
+  billing: [
+    createLink('Create a bill run', '/billing/batch/type', scope.billing)
   ]
 };
 

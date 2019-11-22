@@ -19,7 +19,6 @@ const selectBillingRegionForm = (request, regions) => {
   const { billingType } = request.params;
   const action = '/billing/batch/region';
   const f = formFactory(action, 'POST');
-  console.log(regions);
 
   f.fields.push(fields.radio('selectedBillingRegion', {
     errors: {

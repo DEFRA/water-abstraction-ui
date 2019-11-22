@@ -104,12 +104,12 @@ experiment('internal/modules/billing/controller', () => {
         await controller.getBillingBatchExist(request, h);
       });
 
-      test('the expected view template is used for bill run type', async () => {
+      test('the expected view template is used for bill run exist', async () => {
         const [templateName] = h.view.lastCall.args;
         expect(templateName).to.equal('nunjucks/billing/batch-exist');
       });
 
-      test('view context is assigned a back link path for type', async () => {
+      test('view context is assigned a back link path for exist', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.back).to.equal('/billing/batch/region');
       });
@@ -120,7 +120,7 @@ experiment('internal/modules/billing/controller', () => {
         await controller.getBillingBatchSummary(request, h);
       });
 
-      test('the expected view template is used for bill run type', async () => {
+      test('the expected view template is used for bill run summary', async () => {
         const [templateName] = h.view.lastCall.args;
         expect(templateName).to.equal('nunjucks/billing/batch-summary');
       });

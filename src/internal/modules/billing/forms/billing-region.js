@@ -18,7 +18,8 @@ const selectBillingRegionForm = (request, regions) => {
   const { csrfToken } = request.view;
   const { billingType } = request.params;
   const action = '/billing/batch/region';
-  const f = formFactory(action, 'post');
+  const f = formFactory(action, 'POST');
+  console.log(regions);
 
   f.fields.push(fields.radio('selectedBillingRegion', {
     errors: {
@@ -35,7 +36,7 @@ const selectBillingRegionForm = (request, regions) => {
 };
 const billingRegionFormSchema = {
   csrf_token: Joi.string().uuid().required(),
-  selectedBillingRegion: Joi.string().required(),
+  selectedBillingRegion: Joi.string().uuid().required(),
   selectedBillingType: Joi.string().required()
 };
 

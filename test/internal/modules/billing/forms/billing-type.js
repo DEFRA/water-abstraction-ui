@@ -2,12 +2,15 @@ const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { selectBillingTypeForm, billingTypeFormSchema } = require('internal/modules/billing/forms/billing-type');
 const { findField, findButton } = require('../../../../lib/form-test');
+const Joi = require('@hapi/joi');
 
 const createRequest = () => ({
   view: {
     csrfToken: 'token'
   }
 });
+
+const { ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF } = require('internal/modules/billing/lib/bill-run-types');
 
 experiment('billing/forms/billing-type form', () => {
   test('sets the form method to POST', async () => {
@@ -34,27 +37,26 @@ experiment('billing/forms/billing-type form', () => {
   });
 });
 
-experiment('account/forms/billing-region schema', () => {
+experiment('account/forms/billing-type schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = billingTypeFormSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = billingTypeFormSchema.csrf_token.validate('pizza');
+      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('pizza');
       expect(result.error).to.exist();
     });
   });
 
   experiment('billing type', () => {
-    test('validates for a string', async () => {
-      const result = billingTypeFormSchema.selectedBillingType.validate('annual');
-      expect(result.error).to.be.null();
+    test('It should only allow valid billing types in the water service', async () => {
+      const result = Joi.describe(billingTypeFormSchema(createRequest()));
+      expect(result.children.selectedBillingType.valids).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
     });
-
     test('fails if blank', async () => {
-      const result = billingTypeFormSchema.selectedBillingType.validate();
+      const result = billingTypeFormSchema(createRequest()).selectedBillingType.validate();
       expect(result.error).to.exist();
     });
   });

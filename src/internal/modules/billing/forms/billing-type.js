@@ -1,23 +1,26 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+const { ANNUAL,
+  SUPPLEMENTARY,
+  TWO_PART_TARIFF } = require('../lib/bill-run-types');
 
 const choices = [
   {
-    value: 'annual',
+    value: ANNUAL,
     label: 'Annual'
   },
   {
-    value: 'supplementary',
+    value: SUPPLEMENTARY,
     label: 'Supplementary'
   },
   {
-    value: 'two_part_tariff',
+    value: TWO_PART_TARIFF,
     label: 'Two-part tariff'
   }];
 
 /**
  * Creates an object to represent the form for capturing the
- * new user's email address.
+ * bill run type i.e. annual...
  *
  * @param {Object} request The Hapi request object
  * @param {string} billRunType The type of bill run selected
@@ -32,6 +35,9 @@ const selectBillingTypeForm = (request) => {
     errors: {
       'any.required': {
         message: 'Which kind of bill run do you want to create?'
+      },
+      'any.allowOnly': {
+        message: 'You must select supplementary to continue'
       }
     },
     choices
@@ -42,9 +48,13 @@ const selectBillingTypeForm = (request) => {
   return f;
 };
 
-const billingTypeFormSchema = {
-  csrf_token: Joi.string().uuid().required(),
-  selectedBillingType: Joi.string().required()
+const billingTypeFormSchema = (request) => {
+  const validBillRunTypes = [ ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF ];
+
+  return {
+    csrf_token: Joi.string().uuid().required(),
+    selectedBillingType: Joi.string().required().valid(validBillRunTypes)
+  };
 };
 
 exports.selectBillingTypeForm = selectBillingTypeForm;

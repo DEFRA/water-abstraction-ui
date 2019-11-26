@@ -14,6 +14,7 @@ const sandbox = sinon.createSandbox();
 const getTestEventResponse = (status = 'processing', subtype = 'returnReminder') => ({
   data: {
     event_id: 'test-event-id',
+    type: 'notification',
     status,
     metadata: {
       name: 'test-event-name'
@@ -23,7 +24,7 @@ const getTestEventResponse = (status = 'processing', subtype = 'returnReminder')
   error: null
 });
 
-const getTestEventResponseBillRun = (status = 'processing', subtype = 'billrun') => ({
+const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') => ({
   data: {
     event_id: 'test-event-id',
     type: 'billing-batch',
@@ -179,7 +180,7 @@ experiment('getWaiting', () => {
   });
 });
 
-// ##### billing tests ###########
+// ##### billing event tests ###########
 experiment('getWaiting', () => {
   let request;
   let h;
@@ -222,7 +223,7 @@ experiment('getWaiting', () => {
 
     experiment('when the event status is processing for a bill run', () => {
       test('the waiting page is rendered', async () => {
-        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'billing'));
+        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'annual'));
         await controller.getWaiting(request, h);
 
         const [template] = h.view.lastCall.args;
@@ -230,11 +231,11 @@ experiment('getWaiting', () => {
       });
 
       test('sets the correct page title for a bill run', async () => {
-        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'billing'));
+        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'annual'));
         await controller.getWaiting(request, h);
 
         const [, context] = h.view.lastCall.args;
-        expect(context.pageTitle).to.equal('A bill run is being processed');
+        expect(context.pageTitle).to.equal('Midlands annual bill run');
       });
     });
 
@@ -248,13 +249,13 @@ experiment('getWaiting', () => {
       });
     });
 
-    experiment('when the event status is processed for a bill run', () => {
+    experiment('when the event status is complete for a bill run', () => {
       test('the user is redirected to the review page', async () => {
         services.water.events.findOne.resolves(getTestEventResponseBillRun('complete'));
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/billing/batch/summary?eventId=test-event-id');
+        expect(url).to.equal('/billing/batch/summary/test-event-id');
       });
     });
   });

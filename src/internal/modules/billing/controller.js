@@ -1,11 +1,14 @@
-// const config = require('internal/config');
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
+const { viewBillRunListForm } = require('./forms/bill-run-list');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
-// const { addQuery } = require('shared/modules/returns/route-helpers');
+const moment = require('moment');
+const queryString = require('querystring');
+const helpers=require('@envage/water-abstraction-helpers');
+
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -16,15 +19,10 @@ const { get } = require('lodash');
 const getBillingBatchType = async (request, h) => {
   const sessionForm = request.yar.get(get(request, 'query.form'));
   if (sessionForm) {
-    request.view.form = sessionForm;
     request.yar.clear(get(request, 'query.form'));
   }
-  const view = {
-    ...request.view,
-    pageTitle: `Which kind of bill run do you want to create?`
-  };
   return h.view('nunjucks/form', {
-    ...view,
+    ...request.view,
     back: '/manage',
     form: sessionForm || selectBillingTypeForm(request)
   });
@@ -36,7 +34,7 @@ const getBillingBatchType = async (request, h) => {
  * @param {*} h
  */
 const postBillingBatchType = async (request, h) => {
-  const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema);
+  const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema(request));
 
   if (billingTypeForm.isValid) {
     const { selectedBillingType } = forms.getValues(billingTypeForm);
@@ -45,8 +43,7 @@ const postBillingBatchType = async (request, h) => {
 
   const key = uuid();
   request.yar.set(key, billingTypeForm);
-
-  return h.redirect('/billing/batch/type' + '?form=' + key);
+  return h.redirect('/billing/batch/type?' + queryString.stringify({ form: key }));
 };
 
 /**
@@ -61,15 +58,10 @@ const getBillingBatchRegion = async (request, h) => {
     request.yar.clear(get(request, 'query.form'));
   }
 
-  const view = {
-    ...request.view,
-    pageTitle: 'Select the region'
-  };
-
   const { data } = await services.water.billingBatchCreateService.getBillingRegions();
 
   return h.view('nunjucks/form', {
-    ...view,
+    ...request.view,
     back: '/billing/batch/type',
     form: sessionForm || selectBillingRegionForm(request, data)
   });
@@ -77,12 +69,13 @@ const getBillingBatchRegion = async (request, h) => {
 
 const getBatchDetails = (billingRegionForm, userEmail) => {
   const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
+  const billRunDate = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
   const batch = {
     'userEmail': userEmail,
     'regionId': selectedBillingRegion,
     'batchType': selectedBillingType,
-    'financialYear': new Date().getFullYear(),
-    'season': 'summer' // ('summer', 'winter', 'all year').required();
+    'financialYear': billRunDate,
+    'season': 'all year' // ('summer', 'winter', 'all year').required();
   };
   return batch;
 };
@@ -117,7 +110,7 @@ const postBillingBatchRegion = async (request, h) => {
   // if the form is invalid redirect back
   const key = uuid();
   request.yar.set(key, billingRegionForm);
-  return h.redirect(`/billing/batch/region/${selectedBillingType}?form=` + key);
+  return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));
 };
 
 /**
@@ -126,28 +119,37 @@ const postBillingBatchRegion = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchExist = async (request, h) => {
-  const view = {
-    ...request.view,
-    pageTitle: 'A bill run already exist'
-  };
-
   return h.view('nunjucks/billing/batch-exist', {
-    ...view,
+    ...request.view,
     back: '/billing/batch/region'
   });
 };
 
 const getBillingBatchSummary = async (request, h) => {
-  const view = {
-    ...request.view,
-    pageTitle: 'The bill run has completed'
-  };
+  // get the event date for the bill run date
+  const billRunDate = moment();
+  const pageTitle = 'Anglian supplementary bill run';
 
   return h.view('nunjucks/billing/batch-summary', {
-    ...view
+    ...request.view,
+    billRunDate: billRunDate,
+    pageTitle: pageTitle
   });
 };
 
+/**
+ * @param {*} request
+ * @param {*} h
+ */
+const getBillingBillRunList = async (request, h) => {
+  return h.view('nunjucks/billing/bill-run-list', {
+    ...request.view,
+    back: '/manage',
+    form: viewBillRunListForm(request)
+  });
+};
+
+exports.getBillingBillRunList = getBillingBillRunList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
 exports.getBillingBatchType = getBillingBatchType;

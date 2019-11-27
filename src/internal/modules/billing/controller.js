@@ -113,21 +113,22 @@ const postBillingBatchRegion = async (request, h) => {
   const regions = await getBillingRegions();
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, billingRegionFormSchema);
 
-  if (billingRegionForm.isValid) {
-    try {
-      const event = await createBatch(request, billingRegionForm);
-      return h.redirect(`/waiting/${event}`);
-    } catch (err) {
-      if (err.statusCode === 409) {
-        return h.redirect('/billing/batch/exist');
-      }
-      throw err;
-    }
+  if (!billingRegionForm.isValid) {
+    const { selectedBillingType } = forms.getValues(billingRegionForm);
+    const key = uuid();
+    request.yar.set(key, billingRegionForm);
+    return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));
   }
-  const { selectedBillingType } = forms.getValues(billingRegionForm);
-  const key = uuid();
-  request.yar.set(key, billingRegionForm);
-  return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));
+
+  try {
+    const event = await createBatch(request, billingRegionForm);
+    return h.redirect(`/waiting/${event}`);
+  } catch (err) {
+    if (err.statusCode === 409) {
+      return h.redirect('/billing/batch/exist');
+    }
+    throw err;
+  }
 };
 
 /**

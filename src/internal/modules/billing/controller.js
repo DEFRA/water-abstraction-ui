@@ -27,6 +27,11 @@ const getBillingBatchType = async (request, h) => {
   });
 };
 
+const getBillingRegions = async () => {
+  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
+  return data;
+};
+
 /**
  * Step 1b - receive posted step 1a data
  * @param {*} request
@@ -57,12 +62,12 @@ const getBillingBatchRegion = async (request, h) => {
     request.yar.clear(get(request, 'query.form'));
   }
 
-  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
+  const regions = await getBillingRegions();
 
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/billing/batch/type',
-    form: sessionForm || selectBillingRegionForm(request, data)
+    form: sessionForm || selectBillingRegionForm(request, regions)
   });
 };
 
@@ -105,12 +110,13 @@ const createBatch = async (request, billingRegionForm) => {
  * @param {*} h
  */
 const postBillingBatchRegion = async (request, h) => {
-  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
-  const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, data), request, billingRegionFormSchema);
+  const regions = await getBillingRegions();
+  const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, billingRegionFormSchema);
 
   if (billingRegionForm.isValid) {
     try {
-      return h.redirect(`/waiting/${createBatch(request, billingRegionForm)}`);
+      const event = await createBatch(request, billingRegionForm);
+      return h.redirect(`/waiting/${event}`);
     } catch (err) {
       if (err.statusCode === 409) {
         return h.redirect('/billing/batch/exist');
@@ -118,7 +124,6 @@ const postBillingBatchRegion = async (request, h) => {
       throw err;
     }
   }
-  // if the form is invalid redirect back
   const { selectedBillingType } = forms.getValues(billingRegionForm);
   const key = uuid();
   request.yar.set(key, billingRegionForm);

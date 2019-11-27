@@ -85,9 +85,16 @@ const getUserEmail = async (request) => {
   return userEmail;
 };
 
-const createBatch = async (batch) => {
+/**
+ * get the user details and call the water service to create the batch
+ * @param {*} request
+ * @param {*} billingRegionForm
+ */
+const createBatch = async (request, billingRegionForm) => {
+  const userEmail = await getUserEmail(request);
+  const batch = getBatchDetails(billingRegionForm, userEmail);
   const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
-  return event;
+  return event.event_id;
 };
 
 /**
@@ -100,23 +107,19 @@ const createBatch = async (batch) => {
 const postBillingBatchRegion = async (request, h) => {
   const { data } = await services.water.billingBatchCreateService.getBillingRegions();
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, data), request, billingRegionFormSchema);
-  const { selectedBillingType } = forms.getValues(billingRegionForm);
 
   if (billingRegionForm.isValid) {
     try {
-      const userEmail = await getUserEmail(request);
-      const batch = getBatchDetails(billingRegionForm, userEmail);
-      const event = await createBatch(batch);
-      return h.redirect(`/waiting/${event.event_id}`);
+      return h.redirect(`/waiting/${createBatch(request, billingRegionForm)}`);
     } catch (err) {
       if (err.statusCode === 409) {
-        // TODO: redirect to a summary page displaying details of existing bill run
         return h.redirect('/billing/batch/exist');
       }
       throw err;
     }
   }
   // if the form is invalid redirect back
+  const { selectedBillingType } = forms.getValues(billingRegionForm);
   const key = uuid();
   request.yar.set(key, billingRegionForm);
   return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));

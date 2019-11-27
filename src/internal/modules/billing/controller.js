@@ -7,8 +7,7 @@ const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const moment = require('moment');
 const queryString = require('querystring');
-const helpers=require('@envage/water-abstraction-helpers');
-
+const helpers = require('@envage/water-abstraction-helpers');
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -69,15 +68,26 @@ const getBillingBatchRegion = async (request, h) => {
 
 const getBatchDetails = (billingRegionForm, userEmail) => {
   const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
-  const billRunDate = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
+  const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
   const batch = {
     'userEmail': userEmail,
     'regionId': selectedBillingRegion,
     'batchType': selectedBillingType,
-    'financialYear': billRunDate,
+    'financialYearEnding': financialYear,
     'season': 'all year' // ('summer', 'winter', 'all year').required();
   };
   return batch;
+};
+
+const getUserEmail = async (request) => {
+  const { userId } = request.defra;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+  return userEmail;
+};
+
+const createBatch = async (batch) => {
+  const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+  return event;
 };
 
 /**
@@ -94,10 +104,9 @@ const postBillingBatchRegion = async (request, h) => {
 
   if (billingRegionForm.isValid) {
     try {
-      const { userId } = request.defra;
-      const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+      const userEmail = await getUserEmail(request);
       const batch = getBatchDetails(billingRegionForm, userEmail);
-      const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+      const event = await createBatch(batch);
       return h.redirect(`/waiting/${event.event_id}`);
     } catch (err) {
       if (err.statusCode === 409) {
@@ -114,7 +123,7 @@ const postBillingBatchRegion = async (request, h) => {
 };
 
 /**
- * If the Bill run for the type and region exists then display the summary page
+ * If the Bill run for the type and region exists then display a basic summary page
  * @param {*} request
  * @param {*} h
  */

@@ -67,7 +67,7 @@
               </a>
             </div>
             <div class="licence-results__header__column">
-              <a href="/licences?{{ query | sortQuery('licenceNumber') }}#results">
+              <a href="/licences?{{ query | sortQuery('name') }}#results">
                 <span class="govuk-visually-hidden">Sort by licence name</span>
                 <span aria-hidden="true">Licence name</span>
                 {{ sortIcon(query, "name") }}
@@ -75,7 +75,7 @@
             </div>
 
             <div class="licence-results__header__column">
-              <a href="/licences?{{ query | sortQuery('licenceNumber') }}#results">
+              <a href="/licences?{{ query | sortQuery('expiryDate') }}#results">
                 <span class="govuk-visually-hidden">Sort by licence end date</span>
                 <span aria-hidden="true">End date</span>
                 {{ sortIcon(query, "expiryDate") }}

@@ -75,7 +75,14 @@ module.exports = {
       },
       description: 'View list of licences with facility to sort/filter',
       validate: {
-        query: VALID_LICENCE_QUERY
+        query: VALID_LICENCE_QUERY,
+        options: {
+          // Adding this flag will allow params outside of the VALID_LICENCE_QUERY
+          // keys, without adding them to query.params. This is required because
+          // a user could end up landing here with the _ga query param if they
+          // are coming via https://www.gov.uk/guidance/manage-your-water-abstraction-or-impoundment-licences-online
+          stripUnknown: true
+        }
       },
       plugins: {
         viewContext: {

@@ -65,7 +65,7 @@ const getNotificationsTitle = (ev) => {
 };
 
 const getRegionName = (regionsArray, regionId) => {
-  const [ region ] = regionsArray.filter(region => region.regionId === regionId);
+  const region = regionsArray.find(region => region.regionId === regionId);
   return region.name;
 };
 
@@ -80,7 +80,7 @@ const getWaiting = async (request, h) => {
 
   if (error) {
     const message = 'Unknown event type';
-    logger.error(message, { params: event });
+    logger.error(message, error, { params: event });
     throw new Error('Unknown event type');
   }
   throwIfError(error);

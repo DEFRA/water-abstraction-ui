@@ -9,6 +9,14 @@ const moment = require('moment');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 
+const getSessionForm = (request) => {
+  return request.yar.get(get(request, 'query.form'));
+};
+
+const clearSessionForm = (request) => {
+  request.yar.clear(get(request, 'query.form'));
+};
+
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -16,10 +24,9 @@ const helpers = require('@envage/water-abstraction-helpers');
  * @param {*} h
  */
 const getBillingBatchType = async (request, h) => {
-  const sessionForm = request.yar.get(get(request, 'query.form'));
-  if (sessionForm) {
-    request.yar.clear(get(request, 'query.form'));
-  }
+  const sessionForm = getSessionForm(request);
+  if (sessionForm) { clearSessionForm(request); }
+
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/manage',
@@ -56,11 +63,8 @@ const postBillingBatchType = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchRegion = async (request, h) => {
-  const sessionForm = request.yar.get(get(request, 'query.form'));
-  if (sessionForm) {
-    request.view.form = sessionForm;
-    request.yar.clear(get(request, 'query.form'));
-  }
+  const sessionForm = getSessionForm(request);
+  if (sessionForm) { clearSessionForm(request); }
 
   const regions = await getBillingRegions();
 
@@ -71,35 +75,17 @@ const getBillingBatchRegion = async (request, h) => {
   });
 };
 
-const getBatchDetails = (billingRegionForm, userEmail) => {
+const getBatchDetails = (request, billingRegionForm) => {
   const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
   const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
   const batch = {
-    'userEmail': userEmail,
+    'userEmail': request.defra.user.user_name,
     'regionId': selectedBillingRegion,
     'batchType': selectedBillingType,
     'financialYearEnding': financialYear,
     'season': 'all year' // ('summer', 'winter', 'all year').required();
   };
   return batch;
-};
-
-const getUserEmail = async (request) => {
-  const { userId } = request.defra;
-  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
-  return userEmail;
-};
-
-/**
- * get the user details and call the water service to create the batch
- * @param {*} request
- * @param {*} billingRegionForm
- */
-const createBatch = async (request, billingRegionForm) => {
-  const userEmail = await getUserEmail(request);
-  const batch = getBatchDetails(billingRegionForm, userEmail);
-  const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
-  return event.event_id;
 };
 
 /**
@@ -121,8 +107,9 @@ const postBillingBatchRegion = async (request, h) => {
   }
 
   try {
-    const event = await createBatch(request, billingRegionForm);
-    return h.redirect(`/waiting/${event}`);
+    const batch = getBatchDetails(request, billingRegionForm);
+    const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+    return h.redirect(`/waiting/${event.event_id}`);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect('/billing/batch/exist');

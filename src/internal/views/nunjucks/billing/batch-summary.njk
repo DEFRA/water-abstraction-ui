@@ -1,0 +1,13 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        {{ title(pageTitle, billRunDate | date('D MMMM YYYY')) }}
+        <p class="govuk-body">Bill run details to go here.</p>   
+    </div>
+  </div>
+
+{% endblock %}
+

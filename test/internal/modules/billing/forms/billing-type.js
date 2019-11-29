@@ -37,7 +37,7 @@ experiment('billing/forms/billing-type form', () => {
   });
 });
 
-experiment('account/forms/billing-type schema', () => {
+experiment('billing/forms/billing-type schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = billingTypeFormSchema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

@@ -61,7 +61,7 @@ const getBillingRegions = () => ({
   ]
 });
 
-experiment('getWaiting', () => {
+experiment('internal/modules/waiting/controller', () => {
   let request;
   let h;
 
@@ -180,8 +180,7 @@ experiment('getWaiting', () => {
   });
 });
 
-// ##### billing event tests ###########
-experiment('getWaiting', () => {
+experiment('internal/modules/waiting/controller', () => {
   let request;
   let h;
 

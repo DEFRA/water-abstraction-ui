@@ -32,7 +32,8 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') 
     metadata: {
       name: 'test-event-name',
       batch: {
-        'region_id': 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
+        billing_batch_id: 'test-batch-id',
+        region_id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
       }
     },
     subtype
@@ -43,20 +44,20 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') 
 const getBillingRegions = () => ({
   'data': [
     {
-      'regionId': '07ae7f3a-2677-4102-b352-cc006828948c',
-      'chargeRegionId': 'A',
-      'naldRegionId': 1,
-      'name': 'Anglian',
-      'dateCreated': '2019-11-05T12:10:35.164Z',
-      'dateUpdated': '2019-11-05T12:10:35.164Z'
+      regionId: '07ae7f3a-2677-4102-b352-cc006828948c',
+      chargeRegionId: 'A',
+      naldRegionId: 1,
+      name: 'Anglian',
+      dateCreated: '2019-11-05T12:10:35.164Z',
+      dateUpdated: '2019-11-05T12:10:35.164Z'
     },
     {
-      'regionId': 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
-      'chargeRegionId': 'B',
-      'naldRegionId': 2,
-      'name': 'Midlands',
-      'dateCreated': '2019-11-05T12:10:35.164Z',
-      'dateUpdated': '2019-11-05T12:10:35.164Z'
+      regionId: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
+      chargeRegionId: 'B',
+      naldRegionId: 2,
+      name: 'Midlands',
+      dateCreated: '2019-11-05T12:10:35.164Z',
+      dateUpdated: '2019-11-05T12:10:35.164Z'
     }
   ]
 });
@@ -254,7 +255,7 @@ experiment('internal/modules/waiting/controller', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/billing/batch/summary/test-event-id');
+        expect(url).to.equal('/billing/batch/test-batch-id/summary');
       });
     });
   });

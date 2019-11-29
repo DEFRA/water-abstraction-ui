@@ -35,7 +35,7 @@ const getBillingBatchType = async (request, h) => {
 };
 
 const getBillingRegions = async () => {
-  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
+  const { data } = await services.water.regions.getRegions();
   return data;
 };
 
@@ -138,7 +138,17 @@ const getBillingBatchSummary = async (request, h) => {
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
     billRunDate: billRunDate,
-    pageTitle: pageTitle
+    pageTitle: pageTitle,
+    batch: {
+      batchId: request.params.batchId,
+      billRunTotal: 12345.67,
+      invoices: { count: 12, total: 12345.67 + 987.65 },
+      creditNotes: { count: 1, total: 987.65 },
+      charges: [
+        { account: 123, contact: 'Mr A Parson', licences: [ { licenceRef: '111' }, { licenceRef: '111/1' } ], total: 1234.56, isCredit: false },
+        { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true }
+      ]
+    }
   });
 };
 
@@ -154,10 +164,44 @@ const getBillingBillRunList = async (request, h) => {
   });
 };
 
+const getBillingBatchCancel = async (request, h) => {
+  return h.view('nunjucks/billing/batch-cancel', {
+    ...request.view,
+    batch: request.defra.batch,
+    back: `/billing/batch/${request.defra.batch.id}/summary`
+  });
+};
+
+const postBillingBatchCancel = async (request, h) => {
+  // temporary stub implementation
+  return h.redirect('/billing/batch/list');
+};
+
+const getBillingBatchConfirm = async (request, h) => {
+  return h.view('nunjucks/billing/batch-confirm', {
+    ...request.view,
+    batch: request.defra.batch,
+    back: `/billing/batch/${request.defra.batch.id}/summary`
+  });
+};
+
+const postBillingBatchConfirm = async (request, h) => {
+  // temporary stub implementation
+  return h.redirect('/billing/batch/list');
+};
+
 exports.getBillingBillRunList = getBillingBillRunList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
+
 exports.getBillingBatchType = getBillingBatchType;
 exports.postBillingBatchType = postBillingBatchType;
+
 exports.getBillingBatchRegion = getBillingBatchRegion;
 exports.postBillingBatchRegion = postBillingBatchRegion;
+
+exports.getBillingBatchCancel = getBillingBatchCancel;
+exports.postBillingBatchCancel = postBillingBatchCancel;
+
+exports.getBillingBatchConfirm = getBillingBatchConfirm;
+exports.postBillingBatchConfirm = postBillingBatchConfirm;

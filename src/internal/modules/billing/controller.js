@@ -1,13 +1,15 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
-const { viewBillRunListForm } = require('./forms/bill-run-list');
+const { billRunListForm } = require('./forms/billing-batch-list');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const moment = require('moment');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
+const { getBatchList } = require('./services/batchService');
+const Regions = require('./lib/regions');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -152,15 +154,50 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
+const badge = {
+  processing: { status: 'orange', text: 'Building' },
+  complete: { status: 'green', text: 'Ready' },
+  sent: { status: 'blue', text: 'Sent' },
+  matching_returns: { status: 'green', text: 'Review' },
+  error: { status: 'red', text: 'Error' }
+};
+
+const getBatchType = (type) => {
+  const batchType = type.replace(/^\w/, c => c.toUpperCase());
+  return (batchType === 'Two_part_tarrif') ? 'Two-part tarrif' : batchType;
+};
+
+const mapBatchList = async (batchList) => {
+  const regions = Regions.fromRegions(await getBillingRegions());
+  const viewData = batchList.map(batch => ({
+    status: batch.status,
+    badge: badge[batch.status],
+    batchType: getBatchType(batch.metadata.batch.batch_type),
+    regionName: (regions.getById(batch.metadata.batch.region_id)).name,
+    dateCreated: batch.metadata.batch.date_created,
+    eventId: batch.event_id,
+    invoices: {
+      count: batch.metadata.batch.invoices.count,
+      total: batch.metadata.batch.invoices.total
+    }
+  }));
+  return viewData;
+};
+
 /**
  * @param {*} request
  * @param {*} h
  */
-const getBillingBillRunList = async (request, h) => {
-  return h.view('nunjucks/billing/bill-run-list', {
+const getBillingBatchList = async (request, h) => {
+  const { page } = request.query;
+  const { batchList: { data }, pagination } = getBatchList(page);
+  const batchList = await mapBatchList(data);
+  return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    back: '/manage',
-    form: viewBillRunListForm(request)
+    form: billRunListForm(request),
+    batches: batchList,
+    pagination,
+    query: '/'
   });
 };
 
@@ -190,7 +227,7 @@ const postBillingBatchConfirm = async (request, h) => {
   return h.redirect('/billing/batch/list');
 };
 
-exports.getBillingBillRunList = getBillingBillRunList;
+exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
 

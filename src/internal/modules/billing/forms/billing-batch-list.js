@@ -7,7 +7,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
  * @param {Object} request The Hapi request object
  * @param {string} billRunType The type of bill run selected
   */
-const viewBillRunListForm = (request) => {
+const billRunListForm = (request) => {
   const action = '/billing/batch/type';
   const { csrfToken } = request.view;
   const f = formFactory(action, 'GET');
@@ -16,4 +16,4 @@ const viewBillRunListForm = (request) => {
   return f;
 };
 
-exports.viewBillRunListForm = viewBillRunListForm;
+exports.billRunListForm = billRunListForm;

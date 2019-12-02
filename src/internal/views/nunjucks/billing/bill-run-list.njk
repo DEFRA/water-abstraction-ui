@@ -1,5 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
 {% block content %}
+{% from "paginate.njk" import paginate %}
 
 {{ title(pageTitle) }}
 {{ formRender(form) }}        
@@ -17,16 +19,28 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
+        {% for batch in batches %}
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">26 November 2019</td>
-          <td class="govuk-table__cell">Anglian</td>
-          <td class="govuk-table__cell">Supplementary</td>
-          <td class="govuk-table__cell">8</td>
-          <td class="govuk-table__cell">£5,460.00</td>
-          <td class="govuk-table__cell">Sent</td>
+          <td class="govuk-table__cell">
+            <a class="govuk-link" href="/waiting/{{batch.eventId}}">
+             {{ batch.dateCreated | date }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">{{ batch.regionName }}</td>
+          <td class="govuk-table__cell">{{ batch.batchType }}</td>
+          <td class="govuk-table__cell">{{ batch.bills }}</td>
+          <td class="govuk-table__cell">{{ batch.value }}</td>
+          {% if (batch.status === 'not sent') or (batch.status === 'complete') %}
+            <td class="govuk-table__cell"></td>            
+          {% else %}
+            <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
+          {% endif %}
         </tr>
+        {% endfor %}
       </tbody>
     </table>
+    {# paginate(pagination, path, params) #}
+    {{ paginate(pagination, '/billing/batch/list') }}
    </div>
 </div>
 {% endblock %}

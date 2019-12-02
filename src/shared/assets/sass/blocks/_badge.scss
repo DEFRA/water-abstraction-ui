@@ -37,3 +37,20 @@
 .badge--no-wrap {
   white-space: nowrap;
 }
+
+.badge--building {
+  border-color: govuk-colour("orange");
+  color: govuk-colour("orange");
+}
+
+.badge--sent {
+  border-color: govuk-colour("blue");
+  color: govuk-colour("blue");
+}
+
+.badge--review {
+  border-color: govuk-colour("orange");
+  color: govuk-colour("orange");
+}
+
+

@@ -17,6 +17,10 @@ const clearSessionForm = (request) => {
   request.yar.clear(get(request, 'query.form'));
 };
 
+const getRegionName = (regionId, regionsArray) => {
+  return (regionsArray.find(region => region.regionId === regionId)).name;
+};
+
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -142,18 +146,50 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
+const badge = {
+  processing: { status: 'building', text: 'Building' },
+  // complete: '',
+  sent: { status: 'sent', text: 'Sent' },
+  matching_returns: { status: 'review', text: 'Review' },
+  error: { status: 'error', text: 'Error' }
+};
+
+const getBatchType = (type) => {
+  const batchType = type.replace(/^\w/, c => c.toUpperCase());
+  return (batchType === 'Two_part_tarrif') ? 'Two-part tarrif' : batchType;
+};
+
+const mapBillRunList = async (billRunList) => {
+  const regions = await getBillingRegions();
+  const viewData = billRunList.map(list => ({
+    'status': list.status,
+    badge: badge[list.status],
+    'batchType': getBatchType(list.metadata.batch.batch_type),
+    'regionName': getRegionName(list.metadata.batch.region_id, regions),
+    'dateCreated': list.metadata.batch.date_created,
+    'eventId': list.event_id,
+    'bills': list.metadata.batch.bills,
+    'value': list.metadata.batch.value
+  }));
+  return viewData;
+};
+
 /**
  * @param {*} request
  * @param {*} h
  */
 const getBillingBillRunList = async (request, h) => {
+  const { page } = request.query;
+  const { billRunList: { data }, pagination } = services.water.billingBatchCreateService.getBillRunList(page);
+  const billRunList = await mapBillRunList(data);
   return h.view('nunjucks/billing/bill-run-list', {
     ...request.view,
-    back: '/manage',
-    form: viewBillRunListForm(request)
+    form: viewBillRunListForm(request),
+    batches: billRunList,
+    pagination,
+    query: '/'
   });
 };
-
 exports.getBillingBillRunList = getBillingBillRunList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;

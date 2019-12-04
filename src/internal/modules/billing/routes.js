@@ -81,7 +81,7 @@ if (isAcceptanceTestTarget) {
         description: 'displays the bill run summary',
         plugins: {
           viewContext: {
-            activeNavLink: 'manage'
+            activeNavLink: 'notifications'
           }
         },
         validate: {

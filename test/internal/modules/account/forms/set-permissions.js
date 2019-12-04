@@ -71,13 +71,13 @@ experiment('account/forms/set-permissions form', () => {
     expect(button.options.label).to.equal('Continue');
   });
 
-  test('sets newUserEmail field if newUser is true', () => {
+  test('sets newUserEmail field if newUser is true', async () => {
     const form = setPermissionsForm(createRequest(), '', true);
     const field = findField(form, 'newUserEmail');
     expect(field.value).to.equal('example@defra.gov.uk');
   });
 
-  test('does not set newUserEmail field if newUser is falsy', () => {
+  test('does not set newUserEmail field if newUser is falsy', async () => {
     const form = setPermissionsForm(createRequest());
     const field = findField(form, 'newUserEmail');
     expect(field).to.be.undefined();

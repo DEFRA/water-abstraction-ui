@@ -5,7 +5,7 @@ const moment = require('moment');
 
 experiment('helpers', () => {
   experiment('.isExpired', () => {
-    test('returns true if expiry time is falsey', () => {
+    test('returns true if expiry time is falsey', async () => {
       const result = helpers.isExpired();
       expect(result).to.equal(true);
     });
@@ -24,7 +24,7 @@ experiment('helpers', () => {
   });
 
   experiment('.getExpiryTime', () => {
-    test('returns a timestamp 10 minutes in the future', () => {
+    test('returns a timestamp 10 minutes in the future', async () => {
       const t = '2019-08-12T11:00:00';
       const result = helpers.getExpiryTime(t);
       expect(moment(result).diff(t, 'minutes')).to.equal(10);

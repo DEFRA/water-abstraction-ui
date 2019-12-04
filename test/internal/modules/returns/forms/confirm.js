@@ -34,12 +34,12 @@ experiment('internal confirmation form', () => {
     );
   });
 
-  test('it should be checked if isUnderQuery true', () => {
+  test('it should be checked if isUnderQuery true', async () => {
     const underQuery = findField(form, 'isUnderQuery');
     expect(underQuery.value).to.equal(['under_query']);
   });
 
-  test('it should not be checked if isUnderQuery true', () => {
+  test('it should not be checked if isUnderQuery true', async () => {
     form = confirmForm(request, { isUnderQuery: false });
     const underQuery = findField(form, 'isUnderQuery');
     expect(underQuery.value).to.equal([]);

@@ -158,7 +158,7 @@ const badge = {
   processing: { status: 'orange', text: 'Building' },
   complete: { status: 'green', text: 'Ready' },
   sent: { status: 'blue', text: 'Sent' },
-  matching_returns: { status: 'green', text: 'Review' },
+  matching_returns: { status: 'orange', text: 'Review' },
   error: { status: 'red', text: 'Error' }
 };
 

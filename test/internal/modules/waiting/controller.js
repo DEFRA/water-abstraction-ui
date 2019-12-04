@@ -41,7 +41,7 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') 
   error: null
 });
 
-const getBillingRegions = () => ({
+const getRegions = () => ({
   'data': [
     {
       regionId: '07ae7f3a-2677-4102-b352-cc006828948c',
@@ -187,7 +187,7 @@ experiment('internal/modules/waiting/controller', () => {
 
   beforeEach(async () => {
     sandbox.stub(services.water.events, 'findOne').resolves(getTestEventResponseBillRun());
-    sandbox.stub(services.water.billingBatchCreateService, 'getBillingRegions').resolves(getBillingRegions());
+    sandbox.stub(services.water.regions, 'getRegions').resolves(getRegions());
 
     h = {
       view: sandbox.spy(),

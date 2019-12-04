@@ -147,11 +147,11 @@ const getBillingBatchSummary = async (request, h) => {
 };
 
 const badge = {
-  processing: { status: 'building', text: 'Building' },
-  // complete: '',
-  sent: { status: 'sent', text: 'Sent' },
-  matching_returns: { status: 'review', text: 'Review' },
-  error: { status: 'error', text: 'Error' }
+  processing: { status: 'orange', text: 'Building' },
+  complete: { status: 'green', text: 'Ready' },
+  sent: { status: 'blue', text: 'Sent' },
+  matching_returns: { status: 'orange', text: 'Review' },
+  error: { status: 'red', text: 'Error' }
 };
 
 const getBatchType = (type) => {
@@ -168,8 +168,8 @@ const mapBillRunList = async (billRunList) => {
     'regionName': getRegionName(list.metadata.batch.region_id, regions),
     'dateCreated': list.metadata.batch.date_created,
     'eventId': list.event_id,
-    'bills': list.metadata.batch.bills,
-    'value': list.metadata.batch.value
+    'totalInvoices': list.metadata.batch.invoices.count,
+    'totalValue': list.metadata.batch.invoices.total
   }));
   return viewData;
 };
@@ -186,8 +186,7 @@ const getBillingBillRunList = async (request, h) => {
     ...request.view,
     form: viewBillRunListForm(request),
     batches: billRunList,
-    pagination,
-    query: '/'
+    pagination
   });
 };
 exports.getBillingBillRunList = getBillingBillRunList;

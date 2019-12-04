@@ -1,4 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms/');
+const Joi = require('@hapi/joi');
 
 /**
  * Creates an object to represent the form for capturing the
@@ -16,4 +17,9 @@ const viewBillRunListForm = (request) => {
   return f;
 };
 
+const viewBillRunListFormSchema = {
+  csrf_token: Joi.string().uuid().required()
+};
+
+exports.viewBillRunListFormSchema = viewBillRunListFormSchema;
 exports.viewBillRunListForm = viewBillRunListForm;

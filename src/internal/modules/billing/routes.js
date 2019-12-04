@@ -1,5 +1,7 @@
 const controller = require('./controller');
 const { billing } = require('internal/lib/constants').scope;
+const Joi = require('@hapi/joi');
+
 const allowedScopes = [billing];
 
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
@@ -95,6 +97,11 @@ if (isAcceptanceTestTarget) {
           viewContext: {
             pageTitle: 'Bill runs',
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          query: {
+            page: Joi.number().optional().default(1)
           }
         }
       }

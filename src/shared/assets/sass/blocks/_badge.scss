@@ -38,19 +38,22 @@
   white-space: nowrap;
 }
 
-.badge--building {
+.badge--orange {
   border-color: govuk-colour("orange");
   color: govuk-colour("orange");
 }
 
-.badge--sent {
+.badge--blue {
   border-color: govuk-colour("blue");
   color: govuk-colour("blue");
 }
 
-.badge--review {
-  border-color: govuk-colour("orange");
-  color: govuk-colour("orange");
+.badge--green {
+  border-color: govuk-colour("green");
+  color: govuk-colour("green");
 }
 
-
+.badge--red {
+  border-color: govuk-colour("red");
+  color: govuk-colour("red");
+}

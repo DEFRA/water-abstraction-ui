@@ -28,18 +28,13 @@
           </td>
           <td class="govuk-table__cell">{{ batch.regionName }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
-          <td class="govuk-table__cell">{{ batch.bills }}</td>
-          <td class="govuk-table__cell">{{ batch.value }}</td>
-          {% if (batch.status === 'not sent') or (batch.status === 'complete') %}
-            <td class="govuk-table__cell"></td>            
-          {% else %}
-            <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
-          {% endif %}
+          <td class="govuk-table__cell">{{ batch.totalInvoices }}</td>
+          <td class="govuk-table__cell">{{ batch.totalValue }}</td>
+          <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>          
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    {# paginate(pagination, path, params) #}
     {{ paginate(pagination, '/billing/batch/list') }}
    </div>
 </div>

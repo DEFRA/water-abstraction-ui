@@ -9,7 +9,6 @@ const create = config => {
     const requestDetails = pick(request, ['method', 'params', 'query', 'payload', 'url']);
     const paramsToLog = Object.assign(params, userJourney, { requestDetails });
 
-    logger.error('Request details for error', JSON.stringify(requestDetails));
     logger.error(msg, error, paramsToLog);
   };
 

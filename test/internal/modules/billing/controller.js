@@ -15,6 +15,12 @@ const controller = require('internal/modules/billing/controller');
 experiment('internal/modules/billing/controller', () => {
   let h, request;
 
+  beforeEach(async () => {
+    h = {
+      view: sandbox.stub()
+    };
+  });
+
   afterEach(async () => {
     sandbox.restore();
   });
@@ -43,8 +49,11 @@ experiment('internal/modules/billing/controller', () => {
 
     beforeEach(async () => {
       // sandbox.stub(logger, 'error');
-      sandbox.stub(services.water.billingBatchCreateService, 'getBillingRegions').resolves(billingRegions);
+      sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
       request = {
+        params: {
+          batchId: 'test-batch-id'
+        },
         payload: {
           csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
         },
@@ -60,10 +69,6 @@ experiment('internal/modules/billing/controller', () => {
           set: sandbox.stub(),
           clear: sandbox.stub()
         }
-      };
-
-      h = {
-        view: sandbox.stub()
       };
     });
 
@@ -124,6 +129,88 @@ experiment('internal/modules/billing/controller', () => {
         const [templateName] = h.view.lastCall.args;
         expect(templateName).to.equal('nunjucks/billing/batch-summary');
       });
+    });
+  });
+
+  experiment('.getBillingBatchCancel', () => {
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        },
+        defra: {
+          batch: {
+            id: 'test-batch-id',
+            dateCreated: '2019-12-02',
+            region: {
+              name: 'South West'
+            },
+            type: 'supplementary'
+          }
+        }
+      };
+
+      await controller.getBillingBatchCancel(request, h);
+    });
+
+    test('configures the back route', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+
+    test('passes the required batch data to the view', async () => {
+      const [, context] = h.view.lastCall.args;
+      const { batch } = context;
+
+      expect(batch.type).to.equal('supplementary');
+      expect(batch.id).to.equal('test-batch-id');
+      expect(batch.region.name).to.equal('South West');
+    });
+
+    test('configures the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-cancel');
+    });
+  });
+
+  experiment('.getBillingBatchConfirm', () => {
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        },
+        defra: {
+          batch: {
+            id: 'test-batch-id',
+            dateCreated: '2019-12-02',
+            region: {
+              name: 'South West'
+            },
+            type: 'supplementary'
+          }
+        }
+      };
+
+      await controller.getBillingBatchConfirm(request, h);
+    });
+
+    test('configures the back route', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+
+    test('passes the required batch data to the view', async () => {
+      const [, context] = h.view.lastCall.args;
+      const { batch } = context;
+
+      expect(batch.id).to.equal('test-batch-id');
+      expect(batch.type).to.equal('supplementary');
+      expect(batch.region.name).to.equal('South West');
+    });
+
+    test('configures the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-confirm');
     });
   });
 });

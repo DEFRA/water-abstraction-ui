@@ -19,12 +19,14 @@ const getBillingTitle = (event, regions) => {
 };
 
 const getWaitingForBilling = async (request, h, event) => {
-  const path = getRedirectPath({
-    'complete': '/billing/batch/summary'
-  }, event);
-  if (path) {
-    return h.redirect(path);
+  const statusPaths = {
+    'complete': `/billing/batch/${event.metadata.batch.billing_batch_id}/summary`
+  };
+
+  if (statusPaths[event.status]) {
+    return h.redirect(statusPaths[event.status]);
   }
+
   const { data } = await services.water.billingBatchCreateService.getBillingRegions();
 
   const view = {

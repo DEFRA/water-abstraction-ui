@@ -91,10 +91,10 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
-    getBillingBillRunList: {
+    getBillingBatchList: {
       method: 'GET',
       path: '/billing/batch/list',
-      handler: controller.getBillingBillRunList,
+      handler: controller.getBillingBatchList,
       config: {
         auth: { scope: allowedScopes },
         description: 'displays a list of past bill runs',
@@ -102,6 +102,11 @@ if (isAcceptanceTestTarget) {
           viewContext: {
             pageTitle: 'Bill runs',
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          query: {
+            page: Joi.number().default(1)
           }
         }
       }

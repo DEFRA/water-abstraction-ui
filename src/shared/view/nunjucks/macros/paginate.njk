@@ -9,10 +9,18 @@
     <p class="pagination__current-page">Page {{ pagination.page }} of {{ pagination.pageCount }}</p>
     <ul class="pagination__list">
       {% if pagination.page > 1 %}
-      <li class="pagination__previous"><a class="pagination__link" href="{{ previous }}">&#8592; Previous page</li>
+      <li class="pagination__previous">
+        <a class="pagination__link" href="{{ previous }}">
+          &#8592; {{ pagination.previousText | default('Previous page') }}
+        </a>
+      </li>
       {% endif %}
       {% if pagination.page < pagination.pageCount %}
-      <li class="pagination__next"><a class="pagination__link" href="{{ next }}">Next page &#8594;</a></li>
+      <li class="pagination__next">
+        <a class="pagination__link" href="{{ next }}">
+          {{ pagination.nextText | default('Next page') }} &#8594;
+        </a>
+      </li>
       {% endif %}
     </ul>
   </nav>

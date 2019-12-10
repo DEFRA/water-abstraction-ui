@@ -155,11 +155,11 @@ const getBillingBatchSummary = async (request, h) => {
 };
 
 const badge = {
-  processing: { status: 'orange', text: 'Building' },
-  complete: { status: 'green', text: 'Ready' },
-  sent: { status: 'blue', text: 'Sent' },
-  matching_returns: { status: 'orange', text: 'Review' },
-  error: { status: 'red', text: 'Error' }
+  processing: { status: 'warning', text: 'Building' },
+  complete: { status: 'success', text: 'Ready' },
+  sent: { text: 'Sent' },
+  matching_returns: { status: 'warning', text: 'Review' },
+  error: { status: 'error', text: 'Error' }
 };
 
 const getBatchType = (type) => {

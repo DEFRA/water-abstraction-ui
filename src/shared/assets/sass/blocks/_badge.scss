@@ -8,7 +8,7 @@
   text-align: center;
   margin: 0 auto;
   font-weight: bold;
-  padding: 5px 7px 1px 7px;
+  padding: 3px 7px 1px 7px;
   vertical-align: middle;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -37,22 +37,13 @@
 .badge--no-wrap {
   white-space: nowrap;
 }
-.badge--orange {
+
+.badge--warning {
   border-color: govuk-colour("orange");
   color: govuk-colour("orange");
 }
 
-.badge--blue {
-  border-color: govuk-colour("blue");
-  color: govuk-colour("blue");
-}
-
-.badge--green {
+.badge--success {
   border-color: govuk-colour("green");
   color: govuk-colour("green");
-}
-
-.badge--red {
-  border-color: govuk-colour("red");
-  color: govuk-colour("red");
 }

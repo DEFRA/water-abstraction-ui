@@ -103,7 +103,7 @@ experiment('internal returns controller', () => {
       test('should render the correct template', async () => {
         await controller.getLogReceipt(request, h);
         const [ template ] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/returns/form.njk');
+        expect(template).to.equal('nunjucks/returns/form');
       });
 
       test('should pass correct data to the view', async () => {
@@ -131,7 +131,7 @@ experiment('internal returns controller', () => {
         request.payload['dateReceived-day'] = 'not-a-day';
         await controller.postLogReceipt(request, h);
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/returns/form.njk');
+        expect(template).to.equal('nunjucks/returns/form');
       });
 
       test('should patch the return with the correct details when not under query', async () => {

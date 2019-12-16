@@ -1,7 +1,7 @@
 module.exports = {
   staticAssets: {
     method: 'GET',
-    path: '/public/{param*}',
+    path: '/public/{tail*}',
     config: {
       auth: false,
       cache: {
@@ -9,9 +9,18 @@ module.exports = {
       }
     },
     handler: {
-      directory: {
-        path: 'public/',
-        listing: false
+      file: {
+        path: function (request) {
+          if (request.params.tail.startsWith('stylesheets')) {
+            // stylesheet URLs contain the package.json version so that
+            // the cache can be totally busted between releases/
+            // index 0: 'stylesheets'
+            // index 1: the package version number
+            const afterVersion = request.params.tail.split('/').slice(2);
+            return `public/stylesheets/${afterVersion.join('/')}`;
+          }
+          return `public/${request.params.tail}`;
+        }
       }
     }
   },
@@ -28,7 +37,7 @@ module.exports = {
     },
     handler: {
       directory: {
-        path: 'node_modules/govuk-frontend/assets/',
+        path: 'node_modules/govuk-frontend/govuk/assets/',
         listing: false
       }
     }
@@ -45,7 +54,7 @@ module.exports = {
       }
     },
     handler: {
-      file: 'node_modules/govuk-frontend/all.js'
+      file: 'node_modules/govuk-frontend/govuk/all.js'
     }
   }
 };

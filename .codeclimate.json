@@ -9,6 +9,7 @@
     "src/**/*routes.js",
     "src/internal/config.js",
     "src/external/config.js",
-    "src/shared/public/javascripts"
+    "src/shared/public/javascripts",
+    "gulpfile.js"
   ]
 }

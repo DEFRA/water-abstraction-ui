@@ -11,13 +11,13 @@ experiment('getConfirmPassword route', () => {
   });
 });
 
-experiment('postConfirmPassword route', () => {
-  test('is configured to load user licence count', async () => {
-    const confirmPasswordRoute = routes.filter(route => route.path === '/account/update-password/verify');
-    const loaderConfig = confirmPasswordRoute[0].config.plugins.licenceLoader;
-    expect(loaderConfig.loadUserLicenceCount).to.be.true();
-  });
-});
+// experiment('postConfirmPassword route', () => {
+//   test('is configured to load user licence count', async () => {
+//     const confirmPasswordRoute = routes.filter(route => route.path === '/account/update-password/verify');
+//     const loaderConfig = confirmPasswordRoute[0].config.plugins.licenceLoader;
+//     expect(loaderConfig.loadUserLicenceCount).to.be.true();
+//   });
+// });
 
 experiment('postSetPassword', () => {
   test('is configured to load user licence count', async () => {

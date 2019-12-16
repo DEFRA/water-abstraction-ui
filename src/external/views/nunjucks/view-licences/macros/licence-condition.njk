@@ -1,4 +1,4 @@
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "point.njk" import point %}
 
 {% macro licenceCondition(condition) %}
@@ -30,7 +30,7 @@
               </dl>
             {% else %}
             <dd class="summary-list__value--nested-list">
-              <details>
+              <details data-module="govuk-details">
                 <summary>View your {{ condition.points[0].points.length }} abstraction points for {% if condition.points[0].points.length == 1 %}this condition{% else %}these conditions{% endif %}</summary>
                 <dl class="govuk-summary-list summary-list--nested-list">
                   {% for abstractionPoint in condition.points[0].points  %}

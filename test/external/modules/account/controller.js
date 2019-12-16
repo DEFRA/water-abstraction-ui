@@ -27,7 +27,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/account/entry.njk');
+      expect(template).to.equal('nunjucks/account/entry');
     });
 
     test('the userName is added to the view context', async () => {
@@ -106,17 +106,12 @@ experiment('modules/account/controller', () => {
 
     test('renders the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/account/try-again-later.njk');
+      expect(template).to.equal('nunjucks/account/try-again-later');
     });
 
     test('sets the correct back link in the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/account');
-    });
-
-    test('sets the correct nunjucks options', async () => {
-      const [, , options] = h.view.lastCall.args;
-      expect(options.layout).to.equal(false);
     });
   });
 
@@ -135,7 +130,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form-without-nav.njk');
+      expect(template).to.equal('nunjucks/form-without-nav');
     });
 
     test('the view data is passed through to the view', async () => {
@@ -250,7 +245,7 @@ experiment('modules/account/controller', () => {
 
       test('the expected view template is used', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form-without-nav.njk');
+        expect(template).to.equal('nunjucks/form-without-nav');
       });
 
       test('the view contains a form with errors', async () => {
@@ -299,7 +294,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/account/verify.njk');
+      expect(template).to.equal('nunjucks/account/verify');
     });
 
     test('the view data is passed through to the view', async () => {
@@ -396,7 +391,7 @@ experiment('modules/account/controller', () => {
 
       test('the form is re-rendered in an error state', async () => {
         const [template, view] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/account/verify.njk');
+        expect(template).to.equal('nunjucks/account/verify');
         expect(view.form.errors.length).to.equal(1);
       });
     });
@@ -443,7 +438,7 @@ experiment('modules/account/controller', () => {
 
       test('the expected view template is used', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/account/verify.njk');
+        expect(template).to.equal('nunjucks/account/verify');
       });
 
       test('the view contains a form with errors', async () => {
@@ -480,7 +475,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/account/success.njk');
+      expect(template).to.equal('nunjucks/account/success');
     });
 
     test('the view context is passed through', async () => {
@@ -506,7 +501,7 @@ experiment('modules/account/controller', () => {
 
     test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/account/try-again-later.njk');
+      expect(template).to.equal('nunjucks/account/try-again-later');
     });
 
     test('the view context is passed through', async () => {

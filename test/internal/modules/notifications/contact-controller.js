@@ -85,7 +85,7 @@ experiment('internal/modules/notifications/contact-controller.js', () => {
 
       test('renders the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form.njk');
+        expect(template).to.equal('nunjucks/form');
       });
     });
 
@@ -177,7 +177,7 @@ experiment('internal/modules/notifications/contact-controller.js', () => {
 
       test('renders the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form.njk');
+        expect(template).to.equal('nunjucks/form');
       });
     });
 

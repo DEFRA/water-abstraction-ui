@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "nunjucks/view-licences/macros/licence-summary.njk" import licenceSummary %}
 
@@ -7,13 +7,12 @@
 
   {{ formErrorSummary(form) }}
 
-  {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+  {% if summary.documentName.length %}
+    {{ title('Rename licence number ' + summary.licenceNumber) }}
+  {% else %}
+    {{ title('Name licence number ' + summary.licenceNumber) }}
+  {% endif %}
 
-  <div class="well">
-    {{ formRender(form) }}
-  </div>
-
-
-  {{ licenceSummary(documentId, summary, false )}}
+  {{ formRender(form) }}
 
 {% endblock %}

@@ -1,14 +1,14 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
-{% from "components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      {% if notMatched %}
+      {% if notMatched.length > 0 %}
         {{ title('Due returns could not be found for some licences:') }}
         <ul class="govuk-list govuk-list--bullet">
           {% for item in notMatched %}

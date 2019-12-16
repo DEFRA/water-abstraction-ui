@@ -5,7 +5,6 @@ module.exports = {
   csrf: require('shared/plugins/csrf'),
   cookieMessage: require('shared/plugins/cookie-message'),
   metaRedirect: require('shared/plugins/meta-redirect'),
-  redirect: require('shared/plugins/redirect'),
   secureHeaders: require('shared/plugins/secure-headers'),
 
   // licence details should be loaded before the view context is
@@ -29,7 +28,8 @@ module.exports = {
   acceptanceTestsProxy: {
     plugin: require('shared/plugins/acceptance-tests-proxy'),
     options: {
-      postToPath: path => services.water.acceptanceTests.postToPath(path)
+      postToPath: (path, payload) => services.water.acceptanceTests.postToPath(path, payload)
     }
-  }
+  },
+  csp: require('shared/plugins/csp')
 };

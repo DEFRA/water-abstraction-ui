@@ -26,49 +26,19 @@ module.exports = [
     path: '/account/update-password',
     handler: controller.getConfirmPassword,
     config: {
-      description: 'Update password: enter current password',
-      plugins: {
-        viewContext: {
-          pageTitle: 'Enter your current password',
-          activeNavLink: 'change-password'
-        },
-        licenceLoader: {
-          loadUserLicenceCount: true
-        }
-      }
-    }
-  },
-
-  {
-    method: 'POST',
-    path: '/account/update-password/verify',
-    config: {
-      description: 'Update password: verify current password',
-      validate: {
-        payload: {
-          password: Joi.string().max(128).allow(''),
-          csrf_token: VALID_GUID
-        }
-      },
+      description: 'Update password: enter new password',
       plugins: {
         viewContext: {
           pageTitle: 'Change your password',
           activeNavLink: 'change-password'
         },
-        formValidator: {
-          payload: {
-            password: VALID_PASSWORD,
-            csrf_token: VALID_GUID
-          }
-        },
         licenceLoader: {
           loadUserLicenceCount: true
-        }
+        },
+        reauth: true
       }
-    },
-    handler: controller.postConfirmPassword
+    }
   },
-
   {
     method: 'POST',
     path: '/account/update-password/new',
@@ -76,7 +46,6 @@ module.exports = [
       description: 'Update password: set new password',
       validate: {
         payload: {
-          authtoken: Joi.string().max(128),
           password: Joi.string().max(128).allow(''),
           confirmPassword: Joi.string().max(128).allow(''),
           csrf_token: Joi.string().guid().required()
@@ -91,8 +60,7 @@ module.exports = [
           payload: {
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD,
-            csrf_token: VALID_GUID,
-            authtoken: VALID_GUID
+            csrf_token: VALID_GUID
           },
           options: {
             abortEarly: false
@@ -100,7 +68,8 @@ module.exports = [
         },
         licenceLoader: {
           loadUserLicenceCount: true
-        }
+        },
+        reauth: true
       }
     },
     handler: controller.postSetPassword

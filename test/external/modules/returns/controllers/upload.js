@@ -135,7 +135,7 @@ experiment('upload controller', () => {
       await controller.getXmlUpload(request, h);
       const [template, view] = h.view.lastCall.args;
 
-      expect(template).to.equal('nunjucks/returns/upload.njk');
+      expect(template).to.equal('nunjucks/returns/upload');
       expect(view.form.action).to.equal('/returns/upload');
     });
   });
@@ -209,7 +209,7 @@ experiment('upload controller', () => {
       await controller.getSpinnerPage(request, h);
 
       const [path] = h.view.lastCall.args;
-      expect(path).to.equal(`nunjucks/waiting/index.njk`);
+      expect(path).to.equal(`nunjucks/waiting/index`);
     });
 
     test('throws a Boom 404 error if the event is not found', async () => {
@@ -260,7 +260,7 @@ experiment('upload controller', () => {
       test('should use the correct template', async () => {
         await controller.getSummary(request, h);
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/returns/upload-summary.njk');
+        expect(template).to.equal('nunjucks/returns/upload-summary');
       });
 
       test('should set the correct view data', async () => {
@@ -392,7 +392,7 @@ experiment('upload controller', () => {
         const request = createRequest();
         await controller.getSubmitted(request, h);
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/returns/upload-submitted.njk');
+        expect(template).to.equal('nunjucks/returns/upload-submitted');
       });
 
       test('should log an info message', async () => {
@@ -450,7 +450,7 @@ experiment('upload controller', () => {
 
     test('should render the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/upload-instructions.njk');
+      expect(template).to.equal('nunjucks/returns/upload-instructions');
     });
   });
 });

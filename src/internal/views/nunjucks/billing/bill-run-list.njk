@@ -1,0 +1,32 @@
+{% extends "./nunjucks/layout.njk" %}
+{% block content %}
+
+{{ title(pageTitle) }}
+{{ formRender(form) }}        
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Date</th>
+          <th class="govuk-table__header" scope="col">Region</th>
+          <th class="govuk-table__header" scope="col">Run type</th>
+          <th class="govuk-table__header" scope="col">Bills</th>
+          <th class="govuk-table__header" scope="col">Value</th>
+          <th class="govuk-table__header" scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">26 November 2019</td>
+          <td class="govuk-table__cell">Anglian</td>
+          <td class="govuk-table__cell">Supplementary</td>
+          <td class="govuk-table__cell">8</td>
+          <td class="govuk-table__cell">£5,460.00</td>
+          <td class="govuk-table__cell">Sent</td>
+        </tr>
+      </tbody>
+    </table>
+   </div>
+</div>
+{% endblock %}

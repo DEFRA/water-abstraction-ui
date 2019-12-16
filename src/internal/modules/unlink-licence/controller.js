@@ -5,13 +5,13 @@ const services = require('../../lib/connectors/services');
 const getUnlinkLicence = async (request, h, formFromPost) => {
   const { company: licenceData } = request.licence;
 
-  return h.view('nunjucks/unlink-licence/confirm-unlink-licence.njk', {
+  return h.view('nunjucks/unlink-licence/confirm-unlink-licence', {
     ...request.view,
     pageTitle: `Unlink licence ${licenceData.licenceNumber}`,
     back: `/user/${request.query.userId}/status`,
     licenceData,
     form: formFromPost || unlinkLicenceForm(request, licenceData)
-  }, { layout: false });
+  });
 };
 
 const postUnlinkLicence = async (request, h) => {
@@ -38,13 +38,13 @@ const postUnlinkLicence = async (request, h) => {
 const getUnlinkLicenceSuccess = async (request, h) => {
   const { licence_ref: licenceNumber } = request.licence.licence;
 
-  return h.view('nunjucks/unlink-licence/unlink-licence-success.njk', {
+  return h.view('nunjucks/unlink-licence/unlink-licence-success', {
     ...request.view,
     pageTitle: `Unlinked licence ${licenceNumber}`,
     licenceNumber,
     companyName: request.query.companyName,
     userPageUrl: `/user/${request.query.userId}/status`
-  }, { layout: false });
+  });
 };
 
 exports.getUnlinkLicence = getUnlinkLicence;

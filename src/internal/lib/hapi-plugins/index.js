@@ -3,7 +3,6 @@ module.exports = {
   csrf: require('shared/plugins/csrf'),
   cookieMessage: require('shared/plugins/cookie-message'),
   metaRedirect: require('shared/plugins/meta-redirect'),
-  redirect: require('shared/plugins/redirect'),
   secureHeaders: require('shared/plugins/secure-headers'),
 
   viewContext: {
@@ -18,5 +17,6 @@ module.exports = {
   noRobots: require('shared/plugins/no-robots'),
   staticAssets: require('shared/plugins/static-assets'),
   anonGoogleAnalytics: require('shared/plugins/anon-google-analytics'),
-  acceptanceTestsProxy: require('shared/plugins/acceptance-tests-proxy')
+  acceptanceTestsProxy: require('shared/plugins/acceptance-tests-proxy'),
+  csp: require('shared/plugins/csp')
 };

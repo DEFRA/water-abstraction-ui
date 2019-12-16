@@ -1,50 +1,50 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "point.njk" import point %}
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-  {% if summary.documentName %}
-    {% set licenceName %} Abstraction points for {{ summary.documentName }}{% endset %}
-    {{ title(licenceName, pageHeading) }}
-  {% else %}
-    {{ title(pageHeading) }}
-  {% endif %}
+    {% if summary.documentName %}
+      {% set licenceName %} Abstraction points for {{ summary.documentName }}{% endset %}
+      {{ title(licenceName, pageHeading) }}
+    {% else %}
+      {{ title(pageHeading) }}
+    {% endif %}
   </div>
 
   <div class="govuk-grid-column-full">
-  {% for abstractionPoint in summary.points %}
+    {% for abstractionPoint in summary.points %}
 
-  {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
-  {% set meansOfAbstraction %} {{ abstractionPoint.meansOfAbstraction }} {% endset %}
+    {% set gridReference %} {{ point(abstractionPoint) }} {% endset %}
+    {% set meansOfAbstraction %} {{ abstractionPoint.meansOfAbstraction }} {% endset %}
 
-    <h3 class="govuk-heading-m">{{ abstractionPoint.name }}</h3>
+      <h3 class="govuk-heading-m">{{ abstractionPoint.name }}</h3>
 
-    <hr class="govuk-section-break govuk-section-break--visible">
-    {{ govukSummaryList({
-      rows: [{
-          key: {
-            text: "Grid reference",
-            classes:"govuk-!-font-weight-regular"
+      <hr class="govuk-section-break govuk-section-break--visible">
+      {{ govukSummaryList({
+        rows: [{
+            key: {
+              text: "Grid reference",
+              classes:"govuk-!-font-weight-regular"
+            },
+            value: {
+              text: gridReference
+            }
           },
-          value: {
-            text: gridReference
-          }
-        },
-        {
-          key: {
-            text: "Means of abstraction",
-            classes:"govuk-!-font-weight-regular"
-          },
-          value: {
-            html: meansOfAbstraction
-          }
-        }]
-    }) }}
+          {
+            key: {
+              text: "Means of abstraction",
+              classes:"govuk-!-font-weight-regular"
+            },
+            value: {
+              html: meansOfAbstraction
+            }
+          }]
+      }) }}
 
-  {% endfor %}
+    {% endfor %}
   </div>
 </div>
 

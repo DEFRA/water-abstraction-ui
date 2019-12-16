@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "nunjucks/view-licences/macros/gauging-station-measurement.njk" import gaugingStationMeasurement %}
 {% from "nunjucks/view-licences/macros/licence-condition.njk" import licenceCondition %}
 {% from "nunjucks/view-licences/macros/point-string.njk" import pointString %}
@@ -8,33 +8,33 @@
 
   <div class="govuk-grid-row">
     {% if riverLevel %}
-    <div class="govuk-grid-column-two-thirds">
-      {% set heading %} Data from {{ riverLevel.label }}{% endset %}
-      {% set caption %} At National Grid Reference {{ pointString(riverLevel.ngr) }}{% endset %}
-      {{ title(heading, caption) }}
+      <div class="govuk-grid-column-two-thirds">
+        {% set heading %} Data from {{ riverLevel.label }}{% endset %}
+        {% set caption %} At National Grid Reference {{ pointString(riverLevel.ngr) }}{% endset %}
+        {{ title(heading, caption) }}
 
-      {{ govukWarningText({
-        text: "This data is for reference only. You should continue to use your
-          current monitoring methods to make abstraction decisions.",
-        iconFallbackText: "Warning"
-      }) }}
-    </div>
+        {{ govukWarningText({
+          text: "This data is for reference only. You should continue to use your
+            current monitoring methods to make abstraction decisions.",
+          iconFallbackText: "Warning"
+        }) }}
+      </div>
     {% endif %}
   </div>
 
-    <div class="govuk-grid-row">
-      {% if hasGaugingStationMeasurement %}
-        {{ gaugingStationMeasurement(measure, riverLevel) }}
-      {% else %}
-        <div class="govuk-grid-column-full">
-          <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-            Sorry, there is no data available
-          </span>
-          <p class="govuk-body">
-            Please contact your <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening" target="_blank">local Environment Agency office</a> (link opens in a new tab) for the latest information.
-          </p>
-        </div>
-      {% endif %}
+  <div class="govuk-grid-row">
+    {% if hasGaugingStationMeasurement %}
+      {{ gaugingStationMeasurement(measure, riverLevel) }}
+    {% else %}
+      <div class="govuk-grid-column-full">
+        <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+          Sorry, there is no data available
+        </span>
+        <p class="govuk-body">
+          Please contact your <a href="https://www.gov.uk/government/organisations/environment-agency/about/access-and-opening" target="_blank">local Environment Agency office</a> (link opens in a new tab) for the latest information.
+        </p>
+      </div>
+    {% endif %}
   </div>
   <br>
   <div class="govuk-grid-row">
@@ -52,7 +52,6 @@
             {% endfor %}
           </div>
         {% endif %}
-
     </div>
   </div>
 {% endblock %}

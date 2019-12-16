@@ -41,8 +41,9 @@ const form = () => {
 
   f.fields.push(createEmailField());
   f.fields.push(createPasswordField());
-  f.fields.push(fields.button(null, { label: 'Sign in',
-    controlClass: 'govuk-button govuk-button--start'
+  f.fields.push(fields.button(null, {
+    label: 'Sign in',
+    isStartButton: true
   }));
 
   return f;

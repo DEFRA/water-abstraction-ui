@@ -1,4 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "contact-details.njk" import contactDetails %}
 
 {% block content %}
 
@@ -6,7 +7,7 @@
     <div class="govuk-grid-column-two-thirds">
 
       {{ title(pageTitle) }}
-      <h2 class="govuk-heading-m">Applies from 30th October 2018</h2>
+      <h2 class="govuk-heading-m">Applies from 30 October 2018</h2>
 
       <p>
         The Environment Agency runs the Manage your water abstraction or
@@ -92,12 +93,9 @@
       </p>
 
       <p>
-        To claim commercial in confidence for this return contact the Waste
-        and Industry Regulatory Services on <a href="mailto:national-operator-returns@environment-agency.gov.uk">
-          national-operator-returns@environment-agency.gov.uk</a>,
-        or <span class="govuk-!-font-weight-bold">03708 506 506</span>.
+        To claim commercial in confidence contact the Waste and Industry Regulatory Services:
       </p>
-      <p>Lines are open Monday to Friday, 8am to 6pm (GMT).</p>
+      {{ contactDetails('national-operator-returns@environment-agency.gov.uk', true) }} 
     </div>
   </div>
 {% endblock %}

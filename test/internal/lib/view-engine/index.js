@@ -12,20 +12,16 @@ lab.experiment('viewEngine', () => {
     expect(viewEngine.engines).to.be.an.object();
   });
 
-  lab.test('There shoud be an HTML and a Nunjucks view engine', async () => {
-    expect(viewEngine.engines.html).to.be.an.object();
+  lab.test('There shoud be a Nunjucks view engine', async () => {
     expect(viewEngine.engines.njk).to.be.an.object();
   });
 
   lab.test('Options should be set on the view engine', async () => {
     const keys = [ 'engines',
       'path',
-      'layoutPath',
-      'partialsPath',
-      'layout',
       'context',
-      'isCached',
-      'defaultExtension' ];
+      'isCached'
+    ];
 
     expect(difference(keys, Object.keys(viewEngine))).to.have.length(0);
   });

@@ -1,9 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
 {% from "contact-details.njk" import contactDetails %}
-{% from "button/macro.njk" import govukButton %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "google-analytics.njk" import sendEvent %}
 
 {% block content %}
@@ -64,25 +64,22 @@
 
     </div>
 
-
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <details class="govuk-details">
+        <details class="govuk-details" data-module="govuk-details">
           <summary class="govuk-details__summary">
             <span class="govuk-details__summary-text">Not received your code?</span>
           </summary>
           <div class="govuk-details__text">
-          <p>
-            Allow up to 2-3 working days to receive your code by post.
-          </p>
-          <p>
-            If it has not arrived after that time, contact
-            us to request a new code.
-          </p>
-          {{ contactDetails() }}
+            <p>Allow up to 2-3 working days to receive your code by post.</p>
+            <p>
+              If it has not arrived after that time, contact
+              us to request a new code.
+            </p>
+            {{ contactDetails() }}
+          </div>
+        </details>
       </div>
-    </details>
-    </div>
     </div>
   </div>
 

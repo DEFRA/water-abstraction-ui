@@ -63,7 +63,7 @@ experiment('Auth plugin controller', () => {
 
       test('the correct template is used', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/sign-in.njk');
+        expect(template).to.equal('nunjucks/auth/sign-in');
       });
 
       test('the correct data is output to the view', async () => {
@@ -105,7 +105,7 @@ experiment('Auth plugin controller', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/signed-out.njk');
+        expect(template).to.equal('nunjucks/auth/signed-out');
       });
 
       test('outputs correct data to the view', async () => {
@@ -175,7 +175,7 @@ experiment('Auth plugin controller', () => {
         h.realm.pluginOptions.authenticate.resolves();
         await controller.postSignin(request, h);
         const [template, view] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/sign-in.njk');
+        expect(template).to.equal('nunjucks/auth/sign-in');
         expect(view.form.errors).to.have.length(2);
       });
     });
@@ -189,7 +189,7 @@ experiment('Auth plugin controller', () => {
 
       test('re-renders the form in error state', async () => {
         const [template, view] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/sign-in.njk');
+        expect(template).to.equal('nunjucks/auth/sign-in');
         expect(view.form.errors).to.have.length(1);
       });
     });

@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "point.njk" import point %}
-{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% block content %}
 
@@ -41,7 +41,7 @@
           </dl>
         {% else %}
         <dd class="summary-list__value--nested-list">
-          <details>
+          <details class="govuk-details" data-module="govuk-details">
             <summary>View your {{ purpose.points.length }} abstraction points for {{ purpose.name | lower }}</summary>
             <dl class="govuk-summary-list summary-list--nested-list">
               {% for abstractionPoint in purpose.points %}

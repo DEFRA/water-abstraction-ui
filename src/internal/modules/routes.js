@@ -15,6 +15,7 @@ const viewLicences = require('./view-licences/routes');
 const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
 const chargingRoutes = require('./charging/routes');
+const billingRoutes = require('./billing/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -34,5 +35,6 @@ module.exports = [
   ...require('./manage/routes'),
   ...Object.values(accountRoutes),
   ...Object.values(unlinkLicenceRoutes),
-  ...Object.values(chargingRoutes)
+  ...Object.values(chargingRoutes),
+  ...Object.values(billingRoutes)
 ];

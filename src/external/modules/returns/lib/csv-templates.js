@@ -1,4 +1,4 @@
-const { last, find, groupBy, lowerCase } = require('lodash');
+const { last, find, groupBy, lowerCase, get } = require('lodash');
 const helpers = require('@envage/water-abstraction-helpers');
 const { getLineLabel } = require('shared/modules/returns/forms/common');
 const moment = require('moment');
@@ -65,7 +65,8 @@ const initialiseCSV = (frequency, refDate) => {
  * @return {Array}          - a column of data to add to the CSV
  */
 const createReturnColumn = (ret, csvLines) => {
-  const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency, ret.metadata.isFinal);
+  const isFinal = get(ret, 'metadata.isFinal', false);
+  const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency, isFinal);
 
   // Iterate over all date rows in the CSV
   const lines = csvLines.map(line => {

@@ -16,6 +16,10 @@ ignore:
     - hapi-cookie > lodash:
         reason: No update for HAPI16
         expires: '2018-03-23T12:46:42.040Z'
+  SNYK-JS-USERAGENT-174737:
+    - '@hapi/scooter > useragent':
+        reason: No solution available
+        expires: '2020-01-15T14:43:49.707Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:lodash:20180130':

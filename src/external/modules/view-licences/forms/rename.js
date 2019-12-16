@@ -3,21 +3,17 @@ const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const createNameField = (name) => {
   return fields.text('name', {
-    label: 'Name this licence',
-    hint: 'You can give this licence a name to help you search for it more easily.',
-    attr: {
-      minlength: 2,
-      maxlength: 32
-    },
+    label: 'Licence name',
+    hint: 'You can give this licence a name to help you find it more easily. Choose a name that is between 2 and 32 characters long.',
     errors: {
       'any.empty': {
         message: 'Enter a licence name'
       },
       'string.min': {
-        message: 'Choose a name that is 2-32 characters long'
+        message: 'Choose a name that is between 2 and 32 characters long'
       },
       'string.max': {
-        message: 'Choose a name that is 2-32 characters long'
+        message: 'Choose a name that is between 2 and 32 characters long'
       }
     },
     controlClass: 'govuk-input--width-20'

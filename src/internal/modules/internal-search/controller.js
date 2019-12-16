@@ -42,7 +42,7 @@ const getSearchForm = async (request, h) => {
 
   view.form = form;
 
-  return h.view('nunjucks/internal-search/index.njk', view, { layout: false });
+  return h.view('nunjucks/internal-search/index', view);
 };
 
 const getRegisteredLicenceCount = companies => {
@@ -96,7 +96,7 @@ const getUserStatus = async (request, h, formFromPost) => {
     unlinkLicencePathTail: `unlink-licence?userId=${userId}`
   };
 
-  return h.view('nunjucks/internal-search/user-status.njk', view, { layout: false });
+  return h.view('nunjucks/internal-search/user-status', view);
 };
 
 const postUpdatePermissions = async (request, h) => {
@@ -121,12 +121,12 @@ const getUpdateSuccessful = async (request, h) => {
   const { userId } = request.params;
   const user = await services.idm.users.findOneById(userId);
 
-  return h.view('nunjucks/internal-search/update-permissions-success.njk', {
+  return h.view('nunjucks/internal-search/update-permissions-success', {
     ...request.view,
     updatedUser: user.user_name,
     updatedPermissions: getPermissionsLabelText(user),
     back: `/user/${userId}/status`
-  }, { layout: false });
+  });
 };
 
 exports.getSearchForm = getSearchForm;

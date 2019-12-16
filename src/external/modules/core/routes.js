@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { VALID_UTM } = require('shared/lib/validators');
 const controller = require('./controller');
 const loginHelpers = require('../../lib/login-helpers');
@@ -12,7 +13,21 @@ module.exports = {
     handler: controller.index,
     config: {
       validate: {
-        query: VALID_UTM
+        // this is a potential entry point from
+        // https://www.gov.uk/guidance/manage-your-water-abstraction-or-impoundment-licences-online
+        // which may include the _ga query param. In this route, keep the value to pass on in
+        // the redirect.
+        //
+        // Plus allow any other values that may appear but don't parse into request.query
+        // because they are of no use at the moment, but it prevents a 400 response if
+        // they appear (potentially via google analytics)
+        query: {
+          ...VALID_UTM,
+          _ga: Joi.any().optional()
+        },
+        options: {
+          stripUnknown: true
+        }
       }
     }
   },
@@ -29,6 +44,13 @@ module.exports = {
     }
   },
 
+  /**
+   * This is another route that could receive the _ga query param
+   * but this route validates no other params, so all are allowed.
+   *
+   * If ever a query param was validated here, ensure that the _ga
+   * param is also allowed.
+   */
   getWelcome: {
     method: 'GET',
     path: '/welcome',

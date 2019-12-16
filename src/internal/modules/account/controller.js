@@ -9,15 +9,7 @@ const isEnabledAccount = user => user && (user.enabled === true);
 
 const getCreateAccount = async (request, h, formFromPost) => {
   const form = formFromPost || createUserForm(request);
-
-  return h.view(
-    'nunjucks/form.njk',
-    {
-      ...request.view,
-      form
-    },
-    { layout: false }
-  );
+  return h.view('nunjucks/form', { ...request.view, form });
 };
 
 const applyEmailExistsError = (form, field) => {
@@ -50,15 +42,11 @@ const postCreateAccount = async (request, h) => {
 const getSetPermissions = async (request, h, formFromPost) => {
   const form = formFromPost || setPermissionsForm(request, null, true);
 
-  return h.view(
-    'nunjucks/form.njk',
-    {
-      ...request.view,
-      form,
-      back: '/account/create-user'
-    },
-    { layout: false }
-  );
+  return h.view('nunjucks/form', {
+    ...request.view,
+    form,
+    back: '/account/create-user'
+  });
 };
 
 const postSetPermissions = async (request, h) => {
@@ -91,15 +79,11 @@ const postSetPermissions = async (request, h) => {
 const getCreateAccountSuccess = async (request, h) => {
   const user = await services.idm.users.findOneById(request.params.userId);
 
-  return h.view(
-    'nunjucks/account/create-user-success.njk',
-    {
-      ...request.view,
-      userId: user.user_id,
-      email: user.user_name
-    },
-    { layout: false }
-  );
+  return h.view('nunjucks/account/create-user-success', {
+    ...request.view,
+    userId: user.user_id,
+    email: user.user_name
+  });
 };
 
 const getDeleteUserAccount = async (request, h, formFromPost) => {
@@ -114,7 +98,7 @@ const getDeleteUserAccount = async (request, h, formFromPost) => {
     back: `/user/${userId}/status`
   };
 
-  return h.view('nunjucks/form.njk', view, { layout: false });
+  return h.view('nunjucks/form', view);
 };
 
 const postDeleteUserAccount = async (request, h) => {
@@ -150,13 +134,13 @@ const getDeleteAccountSuccess = async (request, h) => {
   const { userId } = request.params;
   const { user_name: userEmail } = await services.idm.users.findOneById(userId);
 
-  return h.view('nunjucks/account/delete-user-success.njk', {
+  return h.view('nunjucks/account/delete-user-success', {
     ...request.view,
     deletedUser: {
       userEmail,
       userId
     }
-  }, { layout: false });
+  });
 };
 
 exports.getCreateAccount = getCreateAccount;

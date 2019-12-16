@@ -18,9 +18,6 @@ module.exports = allowedScopes => [
         }
       },
       plugins: {
-        config: {
-          view: 'water/view-licences/licence'
-        },
         licenceData: {
           load: {
             summary: true,
@@ -51,7 +48,7 @@ module.exports = allowedScopes => [
       },
       plugins: {
         config: {
-          view: 'nunjucks/view-licences/contact.njk'
+          view: 'nunjucks/view-licences/contact'
         },
         viewContext: {
           activeNavLink: 'view'
@@ -80,7 +77,7 @@ module.exports = allowedScopes => [
       },
       plugins: {
         config: {
-          view: 'nunjucks/view-licences/purposes.njk'
+          view: 'nunjucks/view-licences/purposes'
         },
         viewContext: {
           activeNavLink: 'view'
@@ -109,7 +106,7 @@ module.exports = allowedScopes => [
       },
       plugins: {
         config: {
-          view: 'nunjucks/view-licences/points.njk'
+          view: 'nunjucks/view-licences/points'
         },
         viewContext: {
           activeNavLink: 'view'
@@ -138,7 +135,7 @@ module.exports = allowedScopes => [
       },
       plugins: {
         config: {
-          view: 'nunjucks/view-licences/conditions.njk'
+          view: 'nunjucks/view-licences/conditions'
         },
         viewContext: {
           activeNavLink: 'view'
@@ -171,7 +168,7 @@ module.exports = allowedScopes => [
       },
       plugins: {
         config: {
-          view: 'nunjucks/view-licences/gauging-station.njk'
+          view: 'nunjucks/view-licences/gauging-station'
         },
         viewContext: {
           activeNavLink: 'view'

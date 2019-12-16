@@ -12,22 +12,16 @@ const services = require('../../lib/connectors/services');
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getRegisterStart = (request, h) => h.view(
-  'nunjucks/registration/start.njk',
-  request.view,
-  { layout: false }
-);
+const getRegisterStart = (request, h) =>
+  h.view('nunjucks/registration/start', request.view);
 
 /**
  * Render form to get user email address
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getEmailAddress = (request, h) => h.view(
-  'nunjucks/registration/enter-email.njk',
-  request.view,
-  { layout: false }
-);
+const getEmailAddress = (request, h) =>
+  h.view('nunjucks/registration/enter-email', request.view);
 
 const getUrlWithEmailParam = (email, options) => {
   if (options.includeEmail) {
@@ -62,7 +56,7 @@ const validateEmail = requestPayload => {
  */
 const postEmailAddress = async (request, h, options = {}) => {
   const defaults = {
-    template: 'nunjucks/registration/enter-email.njk',
+    template: 'nunjucks/registration/enter-email',
     redirect: '/success',
     includeEmail: true
   };
@@ -95,7 +89,7 @@ const postEmailAddress = async (request, h, options = {}) => {
     // Email was invalid - handle error
     if (error.name === 'ValidationError') {
       request.view.error = error;
-      return h.view(emailConfig.template, request.view, { layout: false });
+      return h.view(emailConfig.template, request.view);
     }
 
     throw error;
@@ -107,25 +101,19 @@ const postEmailAddress = async (request, h, options = {}) => {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getRegisterSuccess = (request, h) => h.view(
-  'nunjucks/registration/email-sent.njk',
-  {
+const getRegisterSuccess = (request, h) =>
+  h.view('nunjucks/registration/email-sent', {
     ...request.view,
     email: request.query.email
-  },
-  { layout: false }
-);
+  });
 
 /**
  * Try sending email again
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getSendAgain = (request, h) => h.view(
-  'nunjucks/registration/email-resend.njk',
-  request.view,
-  { layout: false }
-);
+const getSendAgain = (request, h) =>
+  h.view('nunjucks/registration/email-resend', request.view);
 
 /**
  * Send email again
@@ -135,7 +123,7 @@ const getSendAgain = (request, h) => h.view(
  */
 const postSendAgain = (request, h) => {
   const options = {
-    template: 'nunjucks/registration/email-resend.njk',
+    template: 'nunjucks/registration/email-resend',
     redirect: '/resent-success',
     includeEmail: false
   };
@@ -147,11 +135,8 @@ const postSendAgain = (request, h) => {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - Hapi Response Toolkit
  */
-const getResentSuccess = (request, h) => h.view(
-  'nunjucks/registration/email-resent.njk',
-  request.view,
-  { layout: false }
-);
+const getResentSuccess = (request, h) =>
+  h.view('nunjucks/registration/email-resent', request.view);
 
 exports.getRegisterStart = getRegisterStart;
 exports.getEmailAddress = getEmailAddress;

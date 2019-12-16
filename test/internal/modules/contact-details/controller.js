@@ -40,7 +40,7 @@ experiment('getContactInformation', () => {
 
     await controller.getContactInformation(request, h);
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/form.njk');
+    expect(templateName).to.equal('nunjucks/form');
   });
 
   test('renders the form view when contact details are empty', async () => {
@@ -54,7 +54,7 @@ experiment('getContactInformation', () => {
 
     await controller.getContactInformation(request, h);
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/form.njk');
+    expect(templateName).to.equal('nunjucks/form');
   });
 });
 
@@ -147,6 +147,6 @@ experiment('postContactInformation', () => {
 
     expect(services.idm.users.updateOne.callCount).to.equal(0);
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/form.njk');
+    expect(templateName).to.equal('nunjucks/form');
   });
 });

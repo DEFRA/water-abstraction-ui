@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
-const { VALID_RETURN_ID } = require('shared/lib/validators');
+const uuid = require('uuid/v4');
+const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
 
 const optionsSchema = {
   description: Joi.string(),
@@ -37,7 +38,8 @@ const createRoute = (method, path, handler, options) => {
       description: options.pageTitle,
       validate: {
         query: {
-          returnId: VALID_RETURN_ID
+          returnId: VALID_RETURN_ID,
+          error: OPTIONAL_GUID
         }
       },
       plugins: createPluginsOptions(options)
@@ -54,5 +56,20 @@ const addQuery = (request, path) => {
   return `${path}?returnId=${request.query.returnId}`;
 };
 
+/**
+ * Redirects user back to previous page in error state
+ * It stores the current state of the form in the session using a unique
+ * key, and then redirects to the supplied step
+ * @param {Object} request - hapi request instance
+ * @param {Object} h - hapi response toolkit
+ * @param {String} step - the step (URL path) to navigate to
+ */
+const errorRedirect = (request, h, step) => {
+  const key = uuid();
+  request.yar.set(key, request.view.form);
+  return h.redirect(addQuery(request, step) + '&error=' + key);
+};
+
 exports.createRoute = createRoute;
 exports.addQuery = addQuery;
+exports.errorRedirect = errorRedirect;

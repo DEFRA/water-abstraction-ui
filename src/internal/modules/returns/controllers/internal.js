@@ -67,12 +67,12 @@ const getInternalRouting = async (request, h, form) => {
   const data = waterReturn.toObject();
   const view = await helpers.getViewData(request, data);
 
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/form', {
     ...view,
     form: form || internalRoutingForm(request, data),
     return: data,
     back: STEP_LICENCES
-  }, { layout: false });
+  });
 };
 
 /**
@@ -117,12 +117,12 @@ const getLogReceipt = async (request, h, form) => {
   const data = waterReturn.toObject();
   const view = await helpers.getViewData(request, data);
 
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/form', {
     ...view,
     form: form || logReceiptForm(request, data),
     return: data,
     back: addQuery(request, STEP_INTERNAL_ROUTING)
-  }, { layout: false });
+  });
 };
 
 /**
@@ -181,12 +181,12 @@ const getSubmittedViewData = async (request) => {
  */
 const getReceiptLogged = async (request, h) => {
   const view = await getSubmittedViewData(request);
-  return h.view('nunjucks/returns/receipt-logged.njk', view, { layout: false });
+  return h.view('nunjucks/returns/receipt-logged', view);
 };
 
 const getQueryLogged = async (request, h) => {
   const view = await getSubmittedViewData(request);
-  return h.view('nunjucks/returns/query-logged.njk', view, { layout: false });
+  return h.view('nunjucks/returns/query-logged', view);
 };
 
 exports.getInternalRouting = getInternalRouting;

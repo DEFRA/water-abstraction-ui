@@ -10,7 +10,7 @@
   "scripts": {
     "install-assets": "gulp build",
     "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
-    "test": "lab",
+    "test": "snyk test && lab",
     "test:external": "lab ./test/external",
     "test:internal": "lab ./test/internal",
     "test:shared": "lab ./test/shared",
@@ -65,7 +65,7 @@
     "blipp": "^4.0.0",
     "bluebird": "^3.5.5",
     "comma-number": "^2.0.1",
-    "csv-parse": "^2.5.0",
+    "csv-parse": "^4.4.6",
     "csv-stringify": "^5.3.0",
     "debug": "^2.6.9",
     "deep-extend": "^0.6.0",

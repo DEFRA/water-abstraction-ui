@@ -3,13 +3,8 @@ const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-passw
 /**
  * Update password - enter current password
  */
-const getConfirmPassword = async (request, h) => {
-  return h.view(
-    'nunjucks/update-password/enter-new.njk',
-    { ...request.view },
-    { layout: false }
-  );
-};
+const getConfirmPassword = async (request, h) =>
+  h.view('nunjucks/update-password/enter-new', { ...request.view });
 
 /**
  * Update password form handler for signed-in user
@@ -21,11 +16,7 @@ async function postSetPassword (request, h) {
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);
-    return h.view(
-      'nunjucks/update-password/enter-new.njk',
-      { ...request.view, errors },
-      { layout: false }
-    );
+    return h.view('nunjucks/update-password/enter-new', { ...request.view, errors });
   }
 
   try {
@@ -48,11 +39,8 @@ async function postSetPassword (request, h) {
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply interface
  */
-const getPasswordUpdated = async (request, h) => h.view(
-  'nunjucks/update-password/success.njk',
-  request.view,
-  { layout: false }
-);
+const getPasswordUpdated = async (request, h) =>
+  h.view('nunjucks/update-password/success', request.view);
 
 exports.getConfirmPassword = getConfirmPassword;
 exports.postSetPassword = postSetPassword;

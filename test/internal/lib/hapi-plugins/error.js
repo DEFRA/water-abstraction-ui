@@ -51,6 +51,7 @@ experiment('errors plugin', () => {
     };
     sandbox.stub(logger, 'info');
     sandbox.stub(logger, 'error');
+    sandbox.stub(logger, 'errorWithJourney');
   });
 
   afterEach(async () => {
@@ -121,8 +122,8 @@ experiment('errors plugin', () => {
 
       expect(h.view.callCount).to.equal(1);
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/errors/error.njk');
-      expect(logger.error.callCount).to.equal(1);
+      expect(template).to.equal('nunjucks/errors/error');
+      expect(logger.errorWithJourney.callCount).to.equal(1);
     });
   });
 });

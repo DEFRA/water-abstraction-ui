@@ -19,11 +19,11 @@ const { getFinalReminderConfig } = require('./lib/helpers');
  * they wish to send return forms
  */
 const getSendForms = async (request, h, form) => {
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...request.view,
     back: '/manage',
     form: form || licenceNumbersForm(request)
-  }, { layout: false });
+  });
 };
 
 const isValidDateBeforeNow = val => {
@@ -91,13 +91,13 @@ const postPreviewRecipients = async (request, h) => {
       licenceNumbers: uniqueLicenceNumbers
     });
 
-    return h.view('nunjucks/returns-notifications/forms-confirm.njk', {
+    return h.view('nunjucks/returns-notifications/forms-confirm', {
       ...request.view,
       back: '/returns-notifications/forms',
       form: confirmForm,
       uniqueLicences,
       notMatched: difference(licenceNumbers, uniqueLicenceNumbers)
-    }, { layout: false });
+    });
   } else {
     return getSendForms(request, h, form);
   }
@@ -133,9 +133,9 @@ const postSendForms = async (request, h) => {
  * Success page for when flow completed
  */
 const getSendFormsSuccess = (request, h) => {
-  return h.view('nunjucks/returns-notifications/forms-success.njk', {
+  return h.view('nunjucks/returns-notifications/forms-success', {
     ...request.view
-  }, { layout: false });
+  });
 };
 
 /**
@@ -155,8 +155,7 @@ const getRemindersStartView = (request, isFinalReminder = false) => {
  */
 const getFinalReminder = async (request, h) => {
   const view = getRemindersStartView(request, true);
-  const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/final-reminder.njk', view, options);
+  return h.view('nunjucks/returns-notifications/final-reminder', view);
 };
 
 /**
@@ -180,7 +179,7 @@ const postSendFinalReminder = async (request, h) => {
     event
   };
 
-  return h.view('nunjucks/batch-notifications/confirmation.njk', view, { layout: false });
+  return h.view('nunjucks/batch-notifications/confirmation', view);
 };
 /**
  * First page of Return Reminders and Return Invitations flows
@@ -189,8 +188,7 @@ const postSendFinalReminder = async (request, h) => {
  */
 const getReturnsNotificationsStart = async (request, h) => {
   const view = getRemindersStartView(request);
-  const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/notifications.njk', view, options);
+  return h.view('nunjucks/returns-notifications/notifications', view);
 };
 /**
  * Returns the relevant batch notifications connector based on the current path

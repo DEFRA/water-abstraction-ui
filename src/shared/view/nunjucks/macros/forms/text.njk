@@ -1,7 +1,5 @@
-{# {% from "input/macro.njk" import govukInput %} #}
-{% from "textarea/macro.njk" import govukTextarea %}
-{% from "input/macro.njk" import govukInput %}
-
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% macro formTextWidget(field) %}
 
@@ -23,6 +21,5 @@
         {{ govukInput(options) }}
       {% endif %}
     {% endif %}
-
   {% endif %}
 {% endmacro %}

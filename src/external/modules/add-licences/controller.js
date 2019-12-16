@@ -36,11 +36,7 @@ const {
  * @param {Object} h - HAPI HTTP reply
  */
 async function getLicenceAdd (request, h) {
-  return h.view(
-    'nunjucks/add-licences/index.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/index', request.view);
 }
 
 const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
@@ -123,7 +119,7 @@ async function postLicenceAdd (request, reply) {
   } catch (err) {
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
-      return reply.view('nunjucks/add-licences/index.njk', viewContext, { layout: false });
+      return reply.view('nunjucks/add-licences/index', viewContext);
     }
 
     logger.info('Add licence error', err);
@@ -161,7 +157,7 @@ async function getLicenceSelect (request, reply) {
       text: licence.system_external_id
     }));
 
-    return reply.view('nunjucks/add-licences/select-licences.njk', viewContext, { layout: false });
+    return reply.view('nunjucks/add-licences/select-licences', viewContext);
   } catch (err) {
     reply.redirect('/add-licences?error=flow');
   }
@@ -246,11 +242,7 @@ async function postLicenceSelect (request, reply) {
  * @param {Object} h - HAPI HTTP toolkit
  */
 function getLicenceSelectError (request, h) {
-  return h.view(
-    'nunjucks/add-licences/select-licences-error.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/select-licences-error', request.view);
 }
 
 const getUniqueAddresses = async selectedIds => {
@@ -278,11 +270,11 @@ async function getAddressSelect (request, reply) {
   const { selectedIds } = getFlowDataFromSession(request);
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
-  return reply.view('nunjucks/form.njk', {
+  return reply.view('nunjucks/form', {
     ...view,
     back: '/select-licences',
     form: selectAddressForm(request, uniqueAddressLicences)
-  }, { layout: false });
+  });
 }
 
 const getEntityIdFromRequest = request => request.defra.entityId;
@@ -349,11 +341,11 @@ async function postAddressSelect (request, h) {
     return h.redirect('/add-addressee');
   }
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...request.view,
     back: '/select-licences',
     form
-  }, { layout: false });
+  });
 }
 
 /**
@@ -364,11 +356,11 @@ async function postAddressSelect (request, h) {
 function getFAO (request, h) {
   const { view } = request;
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...view,
     back: '/select-address',
     form: faoForm(request)
-  }, { layout: false });
+  });
 }
 
 /**
@@ -413,13 +405,13 @@ async function postFAO (request, h) {
 
     const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
 
-    return h.view('nunjucks/add-licences/verification-sent.njk', viewContext, { layout: false });
+    return h.view('nunjucks/add-licences/verification-sent', viewContext);
   }
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...request.view,
     form
-  }, { layout: false });
+  });
 }
 
 /**
@@ -455,11 +447,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} h - HAPI HTTP response toolkit
  */
 async function getSecurityCode (request, h) {
-  return h.view(
-    'nunjucks/add-licences/security-code.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/security-code', request.view);
 }
 
 /**
@@ -493,7 +481,7 @@ async function postSecurityCode (request, reply) {
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
       viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
-      return reply.view('nunjucks/add-licences/security-code.njk', viewContext, { layout: false });
+      return reply.view('nunjucks/add-licences/security-code', viewContext);
     }
 
     throw error;

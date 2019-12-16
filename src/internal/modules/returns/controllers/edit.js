@@ -28,10 +28,10 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 /**
  * GET - date received
  */
-const getDateReceived = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getDateReceived = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_INTERNAL_ROUTING)
-}, { layout: false });
+});
 
 /**
  * POST - date received
@@ -55,10 +55,10 @@ const postDateReceived = async (request, h) => {
 /**
  * GET - was water abstracted?
  */
-const getAmounts = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getAmounts = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_DATE_RECEIVED)
-}, { layout: false });
+});
 
 /**
  * POST - was water abstracted?
@@ -78,10 +78,10 @@ const postAmounts = async (request, h) => {
 /**
  * GET - method volumes/meter
  */
-const getMethod = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMethod = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_START)
-}, { layout: false });
+});
 
 /**
  * POST - method volumes/meter
@@ -98,10 +98,10 @@ const postMethod = async (request, h) => {
 /**
  * GET - units
  */
-const getUnits = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getUnits = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_METHOD)
-}, { layout: false });
+});
 
 /**
  * POST - units
@@ -119,10 +119,10 @@ const postUnits = async (request, h) => {
 /**
  * GET - meter details provided
  */
-const getMeterDetailsProvided = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterDetailsProvided = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_UNITS)
-}, { layout: false });
+});
 
 /**
  * POST - meter details provided
@@ -151,10 +151,10 @@ const postMeterDetailsProvided = async (request, h) => {
 /**
  * Get meter details
  */
-const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterDetails = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_METER_DETAILS_PROVIDED)
-}, { layout: false });
+});
 
 /**
  * POST handler for meter details page
@@ -173,10 +173,10 @@ const postMeterDetails = async (request, h) => {
 /**
  * GET - meter used
  */
-const getMeterUsed = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getMeterUsed = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_METER_DETAILS_PROVIDED)
-}, { layout: false });
+});
 
 /**
  * POST - meter used
@@ -200,10 +200,10 @@ const getMeterReadings = async (request, h) => {
   const back = request.model.meter.isMeterDetailsProvided()
     ? STEP_METER_DETAILS
     : STEP_METER_DETAILS_PROVIDED;
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/form', {
     ...request.view,
     back: addQuery(request, back)
-  }, { layout: false });
+  });
 };
 
 /**
@@ -227,10 +227,10 @@ const getSingleTotal = async (request, h) => {
   const path = request.model.meter.isMeterDetailsProvided()
     ? STEP_METER_DETAILS
     : STEP_METER_USED;
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/form', {
     ...request.view,
     back: addQuery(request, path)
-  }, { layout: false });
+  });
 };
 
 /**
@@ -249,10 +249,10 @@ const postSingleTotal = async (request, h) => {
 /**
  * GET - single total abstraction period
  */
-const getSingleTotalDates = async (request, h) => h.view('nunjucks/returns/form.njk', {
+const getSingleTotalDates = async (request, h) => h.view('nunjucks/returns/form', {
   ...request.view,
   back: addQuery(request, STEP_SINGLE_TOTAL)
-}, { layout: false });
+});
 
 /**
  * POST - single total abstraction period
@@ -277,10 +277,10 @@ const getQuantities = async (request, h) => {
   const path = request.model.reading.isSingleTotal()
     ? STEP_SINGLE_TOTAL_DATES
     : STEP_SINGLE_TOTAL;
-  return h.view('nunjucks/returns/form.njk', {
+  return h.view('nunjucks/returns/form', {
     ...request.view,
     back: addQuery(request, path)
-  }, { layout: false });
+  });
 };
 
 /**
@@ -323,7 +323,7 @@ const getConfirm = async (request, h) => {
     makeChangePath: addQuery(request, path)
   };
 
-  return h.view('nunjucks/returns/confirm.njk', view, { layout: false });
+  return h.view('nunjucks/returns/confirm', view);
 };
 
 /**
@@ -356,12 +356,12 @@ const getSubmitted = async (request, h) => {
 
   const returnUrl = `/returns/return?id=${data.returnId}`;
 
-  return h.view('nunjucks/returns/submitted.njk', {
+  return h.view('nunjucks/returns/submitted', {
     ...request.view,
     data,
     returnUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
-  }, { layout: false });
+  });
 };
 
 module.exports = {

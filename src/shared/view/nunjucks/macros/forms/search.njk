@@ -22,7 +22,7 @@
   <div class="search">
     <input class="search__input" id="{{field.name}}" name="{{ field.name }}" type="search"
     {% if field.options.hint %}aria-describedby="search-hint"{% endif %} value="{{ field.value }}" />
-    <button type="submit" class="search__button">Search</button>
+    <button type="submit" data-module="govuk-button" class="search__button">Search</button>
   </div>
 
 </div>

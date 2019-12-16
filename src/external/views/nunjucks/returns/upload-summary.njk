@@ -1,11 +1,10 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "details/macro.njk" import govukDetails %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "forms/index.njk" import formRender %}
 
 {% block content %}
 
   {{ title(pageTitle) }}
-
 
   {% if returnsWithErrors.length %}
   <div class="govuk-form-group govuk-form-group--error">
@@ -83,7 +82,4 @@
 
     {{ formRender(form) }}
   {% endif %}
-
-
-
 {% endblock %}

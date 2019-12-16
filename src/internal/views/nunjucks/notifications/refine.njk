@@ -1,0 +1,86 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+
+  {% if errors.noLicencesSelected %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "We need more information",
+            errorList: [{
+              href: "#checkbox-0",
+              text: "Please select at least one licence."
+            }]
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if licenceErrors.length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errorList
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
+
+  {{ title(pageTitle) }}
+
+  {% if pagination.pageCount == 0 %}
+    <p>Your search did not match any licences.</p>
+  {% endif %}
+
+  {% if pagination.pageCount > 1 %}
+    <div class="alert">
+      Your search returned more than {{ pagination.perPage }} licences.
+      Only the first {{ pagination.perPage }} licences can be selected below.
+    </div>
+  {% endif %}
+
+  {% if pagination.pageCount > 0 %}
+    <form method="POST" action="{{ formAction }}">
+      <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Licence number</th>
+            <th scope="col" class="govuk-table__header">Licence holder</th>
+            <th scope="col" class="govuk-table__header">Licence end</th>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for result in results %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" {{ "" if errors.noLicencesSelected else "checked" }} value="{{ result.system_external_id }}" type="checkbox" id="checkbox-{{loop.index0}}" name="system_external_id">
+                  <label class="govuk-label govuk-checkboxes__label" for="checkbox-{{loop.index0}}">
+                    {{result.system_external_id}}
+                  </label>
+                </div>
+              </td>
+              <td class="govuk-table__cell">
+                {{result.metadata.Forename}} {{result.metadata.Initials}} {{result.metadata.Name}}
+              </td>
+              <td class="govuk-table__cell">
+                {{ result.metadata.expires | date if result.metadata.expires else '-' }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {{ govukButton({ text: "Continue "}) }}
+    </form>
+  {% endif %}
+{% endblock %}

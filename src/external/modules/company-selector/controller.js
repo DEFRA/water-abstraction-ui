@@ -35,7 +35,7 @@ const renderForm = (request, h, form) => {
     back: getBackLink(request),
     pageTitle: 'Choose a licence holder'
   };
-  return h.view('nunjucks/auth/select-company.njk', view, { layout: false });
+  return h.view('nunjucks/auth/select-company', view);
 };
 
 /**

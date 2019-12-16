@@ -42,7 +42,7 @@ experiment('getSearchForm', () => {
     await controller.getSearchForm(request, h);
 
     const [template, view] = h.view.firstCall.args;
-    expect(template).to.equal('nunjucks/internal-search/index.njk');
+    expect(template).to.equal('nunjucks/internal-search/index');
     expect(view.form).to.be.an.object();
     expect(view.form.errors).to.be.empty();
     expect(view.returns).to.be.undefined();
@@ -251,7 +251,7 @@ experiment('getUpdateSuccessful', () => {
   test('passes the correct template', async () => {
     await controller.getUpdateSuccessful(request, h);
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/internal-search/update-permissions-success.njk');
+    expect(template).to.equal('nunjucks/internal-search/update-permissions-success');
   });
 
   test('view contains correct back link', async () => {

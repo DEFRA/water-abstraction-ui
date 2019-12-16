@@ -26,7 +26,7 @@ function getSignin (request, h, form) {
     showResetMessage: get(request, 'query.flash') === 'password-reset'
   };
 
-  return h.view('nunjucks/auth/sign-in.njk', view, { layout: false });
+  return h.view('nunjucks/auth/sign-in', view);
 }
 
 /**
@@ -47,7 +47,7 @@ async function getSignedOut (request, h) {
   const surveyType = { i: 'internal', e: 'external' };
   request.view.surveyType = surveyType[request.query.u] || 'anonymous';
   request.view.pageTitle = 'You are signed out';
-  return h.view('nunjucks/auth/signed-out.njk', request.view, { layout: false });
+  return h.view('nunjucks/auth/signed-out', request.view);
 }
 
 const resetIsRequired = user => !!parseInt(get(user, 'reset_required', false));

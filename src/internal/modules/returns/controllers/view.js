@@ -26,7 +26,7 @@ const getReturnsForLicence = async (request, h) => {
   view.back = `/licences/${documentId}`;
   view.backText = `Licence number ${view.document.system_external_id}`;
 
-  return h.view('nunjucks/returns/licence.njk', view, { layout: false });
+  return h.view('nunjucks/returns/licence', view);
 };
 
 /**
@@ -67,7 +67,7 @@ const getReturn = async (request, h) => {
     endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
   };
 
-  return h.view('nunjucks/returns/return.njk', view, { layout: false });
+  return h.view('nunjucks/returns/return', view);
 };
 
 module.exports = {

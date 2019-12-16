@@ -10,7 +10,7 @@
   "scripts": {
     "install-assets": "gulp build",
     "test:travis": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
-    "test": "snyk test && lab",
+    "test": "lab",
     "test:external": "lab ./test/external",
     "test:internal": "lab ./test/internal",
     "test:shared": "lab ./test/shared",

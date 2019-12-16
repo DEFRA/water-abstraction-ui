@@ -1,8 +1,6 @@
-{% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% extends "./nunjucks/layout.njk" %}
 {% from "forms/index.njk" import formRender %}
-
-
 
 {% block content %}
   {{ title(pageTitle) }}
@@ -18,7 +16,5 @@
     </div>
   </div>
 
-
   {{ formRender(form) }}
-
 {% endblock %}

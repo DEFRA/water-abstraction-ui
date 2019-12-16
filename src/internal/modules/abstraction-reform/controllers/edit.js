@@ -81,7 +81,7 @@ const getViewLicences = async (request, h) => {
     view.pagination = pagination;
   }
 
-  return h.view('water/abstraction-reform/index', view);
+  return h.view('nunjucks/abstraction-reform/licences', view);
 };
 
 /**
@@ -114,7 +114,7 @@ const getViewLicence = async (request, h) => {
     highlightAr: finalState.status === STATUS_IN_REVIEW
   };
 
-  return h.view('nunjucks/abstraction-reform/licence.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/licence', view);
 };
 
 /**
@@ -160,10 +160,11 @@ const getEditObject = async (request, h) => {
     pageTitle: `Edit ${type}`,
     formAction,
     data,
-    schema
+    schema,
+    back: `/digitise/licence/${documentId}`
   };
 
-  return h.view('water/abstraction-reform/edit', view);
+  return h.view('nunjucks/abstraction-reform/edit', view);
 };
 
 /**

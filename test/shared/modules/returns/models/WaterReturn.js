@@ -6,9 +6,12 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
+const { set } = require('lodash');
 
 const WaterReturn = require('shared/modules/returns/models/WaterReturn');
-const { METHOD_ONE_METER, METHOD_VOLUMES } = require('shared/modules/returns/models/Reading');
+const {
+  METHOD_ONE_METER, METHOD_VOLUMES, READING_TYPE_ESTIMATED, READING_TYPE_MEASURED
+} = require('shared/modules/returns/models/Reading');
 
 const createReturn = () => ({
   returnId: 'v1:5:01/123:1234:2018-11-01:2019-10-31',
@@ -27,7 +30,8 @@ const createReturn = () => ({
       periodStartMonth: 4,
       periodEndDay: 31,
       periodEndMonth: 10
-    }
+    },
+    isFinal: true
   },
   startDate: '2018-11-01',
   endDate: '2019-10-31',
@@ -49,6 +53,20 @@ experiment('WaterReturn', () => {
         expect(waterReturn[key]).to.equal(data[key]);
       });
     }
+
+    test('throws an error if metadata.isFinal is not a boolean', async () => {
+      const data = createReturn();
+      set(data, 'metadata.isFinal', 'not a boolean');
+      const func = () => new WaterReturn(data);
+      expect(func).to.throw();
+    });
+
+    test('does not throw an error if metadata.isFinal is undefined', async () => {
+      const data = createReturn();
+      set(data, 'metadata.isFinal', undefined);
+      const func = () => new WaterReturn(data);
+      expect(func).not.to.throw();
+    });
   });
 
   experiment('toObject', () => {
@@ -58,6 +76,34 @@ experiment('WaterReturn', () => {
       const result = waterReturn.toObject();
       expect(result).to.be.an.object();
       expect(result).to.include(keys);
+    });
+
+    test('omits lines, meters and reading when nil return', async () => {
+      const data = {
+        ...createReturn(),
+        isNil: true
+      };
+      const waterReturn = new WaterReturn(data);
+      const result = waterReturn.toObject();
+
+      expect(Object.keys(result)).to.not.include(['lines', 'meters', 'reading']);
+    });
+
+    test('meters array is empty when reading type is estimated', async () => {
+      const data = createReturn();
+      set(data, 'reading.type', READING_TYPE_ESTIMATED);
+      const waterReturn = new WaterReturn(data);
+      const result = waterReturn.toObject();
+      expect(result.meters).to.equal([]);
+    });
+
+    test('meters array contains a single meter object when reading type is measured', async () => {
+      const data = createReturn();
+      set(data, 'reading.type', READING_TYPE_MEASURED);
+      const waterReturn = new WaterReturn(data);
+      const result = waterReturn.toObject();
+      expect(result.meters).to.have.length(1);
+      expect(result.meters[0]).to.be.an.object();
     });
   });
 

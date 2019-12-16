@@ -67,6 +67,11 @@
             <td class="govuk-table__cell">1 minute</td>
           </tr>
           <tr>
+            <th class="govuk-table__header" scope="row">_gat_govuk_shared</th>
+            <td class="govuk-table__cell">Used to protect the Google Analytics server by limiting the number of requests being made.</td>
+            <td class="govuk-table__cell">1 minute</td>
+          </tr>
+          <tr>
             <th class="govuk-table__header" scope="row">__utma</th>
             <td class="govuk-table__cell">Tracks how often you use the service. The cookie is updated every time data is sent to Google Analytics.</td>
             <td class="govuk-table__cell">2 years after each visit to the service</td>
@@ -130,8 +135,13 @@
       <tbody>
         <tr>
           <th class="govuk-table__header" scope="row">sid</th>
-          <td class="govuk-table__cell">Used for session management.</td>
-          <td class="govuk-table__cell">24 hours</td>
+          <td class="govuk-table__cell">Used for authentication.</td>
+          <td class="govuk-table__cell">24 hours rolling, deleted on sign out</td>
+        </tr>
+        <tr>
+          <th class="govuk-table__header" scope="row">session</th>
+          <td class="govuk-table__cell">Used to store session data.</td>
+          <td class="govuk-table__cell">10 years, deleted on sign out</td>
         </tr>
       </tbody>
     </table>

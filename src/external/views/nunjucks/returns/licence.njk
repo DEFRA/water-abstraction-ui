@@ -1,0 +1,31 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "paginate.njk" import paginate %}
+{% from "returns/licence-returns-table.njk" import licenceReturnsTable %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if document.document_name %}
+        {% set licenceName %}
+        Returns for
+        {{ document.document_name }}{% endset %}
+        {% set pageTitleWithName %}
+        Licence Number
+        {{ document.system_external_id }}
+        {% endset %}
+        {{ title(licenceName, pageTitleWithName) }}
+      {% else %}
+        {{ title(pageTitle) }}
+      {% endif %}
+    </div>
+  </div>
+
+  {% if returns.length %}
+    {{ licenceReturnsTable(returns) }}
+  {% else %}
+    <p>No returns found.</p>
+  {% endif %}
+  {{ paginate(pagination, 'paginationUrl') }}
+</div>
+
+{% endblock %}

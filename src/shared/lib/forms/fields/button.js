@@ -1,7 +1,8 @@
 const buttonFactory = (name, options = {}, value) => {
   const defaults = {
     widget: 'button',
-    label: 'Submit'
+    label: 'Submit',
+    isStartButton: false
   };
   return {
     name,

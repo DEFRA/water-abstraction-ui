@@ -1,6 +1,7 @@
 const controller = require('./controller');
 
 module.exports = {
+
   getAccount: {
     method: 'GET',
     path: '/account',
@@ -9,34 +10,32 @@ module.exports = {
       description: 'Get the account settings entry page',
       plugins: {
         viewContext: {
-          pageTitle: 'Account settings'
+          pageTitle: 'Account settings',
+          activeNavLink: 'account-settings'
         }
       }
     }
   },
 
-  getConfirmPassword: {
+  getChangeEmail: {
     method: 'GET',
-    path: '/account/change-email/confirm-password',
-    handler: controller.getConfirmPassword,
+    path: '/account/change-email',
+    handler: controller.getChangeEmail,
     config: {
-      description: 'Gets page to confirm the users password',
-      plugins: {
-        viewContext: {
-          pageTitle: 'For security, confirm your password first'
-        }
-      }
+      description: 'Redirects user to correct page depending on status'
     }
   },
 
-  postConfirmPassword: {
-    method: 'POST',
-    path: '/account/change-email/confirm-password',
-    handler: controller.postConfirmPassword,
+  getChangeEmailLocked: {
+    method: 'GET',
+    path: '/account/change-email/locked',
+    handler: controller.getChangeEmailLocked,
     config: {
+      description: 'User cannot proceed with flow due to rate limit',
       plugins: {
         viewContext: {
-          pageTitle: 'For security, confirm your password first'
+          pageTitle: 'Try again later',
+          activeNavLink: 'account-settings'
         }
       }
     }
@@ -50,8 +49,10 @@ module.exports = {
       description: 'Gets page to confirm the users new email',
       plugins: {
         viewContext: {
-          pageTitle: 'Change your email address'
-        }
+          pageTitle: 'Change your email address',
+          activeNavLink: 'account-settings'
+        },
+        reauth: true
       }
     }
   },
@@ -63,8 +64,10 @@ module.exports = {
     config: {
       plugins: {
         viewContext: {
-          pageTitle: 'Change your email address'
-        }
+          pageTitle: 'Change your email address',
+          activeNavLink: 'account-settings'
+        },
+        reauth: true
       }
     }
   },
@@ -77,7 +80,8 @@ module.exports = {
       description: 'Gets page to enter the code sent to the proposed email',
       plugins: {
         viewContext: {
-          pageTitle: 'Verify your email address'
+          pageTitle: 'Verify your email address',
+          activeNavLink: 'account-settings'
         }
       }
     }
@@ -90,7 +94,8 @@ module.exports = {
     config: {
       plugins: {
         viewContext: {
-          pageTitle: 'Verify your email address'
+          pageTitle: 'Verify your email address',
+          activeNavLink: 'account-settings'
         }
       }
     }
@@ -104,7 +109,8 @@ module.exports = {
       description: 'Gets the success page for the change password flow',
       plugins: {
         viewContext: {
-          pageTitle: 'Your email address is changed'
+          pageTitle: 'Your email address is changed',
+          activeNavLink: 'account-settings'
         }
       }
     }
@@ -118,7 +124,8 @@ module.exports = {
       description: 'Gets the page after too many password attempts',
       plugins: {
         viewContext: {
-          pageTitle: 'Try again later'
+          pageTitle: 'Try again later',
+          activeNavLink: 'account-settings'
         }
       }
     }

@@ -52,7 +52,8 @@ experiment('Meter', () => {
     lines = new Lines([], {
       frequency: 'month',
       startDate: '2019-09-01',
-      endDate: '2019-11-30'
+      endDate: '2019-11-30',
+      isFinal: false
     });
   });
 
@@ -141,6 +142,19 @@ experiment('Meter', () => {
         expect(Object.keys(result)).to.only.include(
           ['meterDetailsProvided', 'manufacturer', 'serialNumber', 'multiplier']
         );
+      });
+    });
+
+    experiment('when the meter is initialised with empty data', () => {
+      let result;
+      beforeEach(async () => {
+        reading.isOneMeter.returns(false);
+        const meter = new Meter(reading, lines, {});
+        result = meter.toObject();
+      });
+
+      test('meterDetailsProvided is false', async () => {
+        expect(result.meterDetailsProvided).to.be.false();
       });
     });
   });

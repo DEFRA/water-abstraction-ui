@@ -1,4 +1,5 @@
 // Shared services
+const AcceptanceTestsService = require('shared/lib/connectors/services/water/AcceptanceTestsService');
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
@@ -12,6 +13,9 @@ const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiC
 const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient');
 const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient');
 
+// Services
+const ChangeEmailAddressService = require('./ChangeEmailAddressService');
+
 // API Clients
 const NotificationsApiClient = require('./NotificationsApiClient');
 
@@ -19,6 +23,7 @@ const { logger } = require('../../../../logger');
 
 module.exports = config => ({
   // Shared services
+  acceptanceTests: new AcceptanceTestsService(config.services.water, logger),
   communications: new CommunicationsService(config.services.water, logger),
   companies: new CompaniesService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
@@ -31,6 +36,9 @@ module.exports = config => ({
   events: new EventsApiClient(config, logger),
   gaugingStations: new GaugingStationsApiClient(config, logger),
   pendingImports: new PendingImportsApiClient(config, logger),
+
+  // Services
+  changeEmailAddress: new ChangeEmailAddressService(config.services.water, logger),
 
   // API Clients
   notifications: new NotificationsApiClient(config, logger)

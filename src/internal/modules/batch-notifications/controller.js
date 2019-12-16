@@ -39,8 +39,8 @@ const getReview = async (request, h) => {
     back,
     pageTitle
   };
-  const options = { layout: false };
-  return h.view('nunjucks/batch-notifications/review.njk', view, options);
+
+  return h.view('nunjucks/batch-notifications/review', view);
 };
 
 /**
@@ -51,7 +51,9 @@ const getReview = async (request, h) => {
 const mapCSVRow = message => ({
   ...message.personalisation,
   message_type: message.message_type,
-  recipient: message.recipient
+  recipient: message.recipient,
+  message_ref: message.message_ref,
+  licences: (message.licences || []).join(',')
 });
 
 /**
@@ -97,8 +99,8 @@ const getConfirmation = async (request, h) => {
     event: ev,
     pageTitle: confirmationTitle
   };
-  const options = { layout: false };
-  return h.view('nunjucks/batch-notifications/confirmation.njk', view, options);
+
+  return h.view('nunjucks/batch-notifications/confirmation', view);
 };
 
 exports.getReview = getReview;

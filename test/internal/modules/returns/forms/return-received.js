@@ -90,15 +90,9 @@ experiment('returnReceivedForm', () => {
     expect(dateField.value).to.equal(custom);
   });
 
-  // test('sets the data if provided', async () => {
-  //   data.receivedDate = 'custom';
-  //   data.customDate = '2018-04-07';
-  //   const form = returnReceivedForm(request, data);
-  //
-  //   const radio = findRadioField(form);
-  //   expect(radio.value).to.equal('custom');
-  //
-  //   // const dateField = findDateField(form);
-  //   // expect(dateField.value).to.equal('2018-04-07');
-  // });
+  test('if received date is empty, no choice is selected', async () => {
+    const form = returnReceivedForm(request, { receivedDate: null });
+    const radio = findRadioField(form);
+    expect(radio.value).to.be.undefined();
+  });
 });

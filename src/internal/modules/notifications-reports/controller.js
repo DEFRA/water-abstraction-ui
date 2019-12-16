@@ -31,11 +31,11 @@ async function getNotificationsList (request, reply) {
     return reply(error);
   }
 
-  return reply.view('nunjucks/notifications-reports/list.njk', {
+  return reply.view('nunjucks/notifications-reports/list', {
     ...request.view,
     pagination,
     events: data
-  }, { layout: false });
+  });
 }
 
 /**
@@ -66,7 +66,7 @@ async function getNotification (request, reply) {
     return reply(notificationError);
   }
 
-  return reply.view('nunjucks/notifications-reports/report.njk', {
+  return reply.view('nunjucks/notifications-reports/report', {
     ...request.view,
     event,
     task,
@@ -74,7 +74,7 @@ async function getNotification (request, reply) {
       badgeStatus: notifyToBadge(message.notify_status)
     })),
     back: '/notifications/report'
-  }, { layout: false });
+  });
 }
 
 exports.getNotificationsList = getNotificationsList;

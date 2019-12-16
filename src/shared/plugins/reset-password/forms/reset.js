@@ -21,8 +21,9 @@ const form = (action) => {
     }
   }));
 
-  f.fields.push(fields.button(null, { label: 'Continue',
-    controlClass: 'govuk-button govuk-button--start'
+  f.fields.push(fields.button(null, {
+    label: 'Continue',
+    isStartButton: true
   }));
 
   return f;

@@ -64,15 +64,15 @@ experiment('permissions', () => {
     });
   });
 
-  experiment('isInternalReturns', async () => {
-    test('it should return true if internal returns in scope', async () => {
+  experiment('isReturnsUser', async () => {
+    test('returns true if internal returns in scope', async () => {
       const request = createRequest([scope.internal, scope.returns]);
-      expect(permissions.isInternalReturns(request)).to.equal(true);
+      expect(permissions.isReturnsUser(request)).to.equal(true);
     });
 
-    test('it should return false if internal returns not in scope', async () => {
+    test('returns false if internal returns not in scope', async () => {
       const request = createRequest([scope.internal]);
-      expect(permissions.isInternalReturns(request)).to.equal(false);
+      expect(permissions.isReturnsUser(request)).to.equal(false);
     });
   });
 
@@ -254,6 +254,35 @@ experiment('permissions', () => {
     test('it should return false if no scopes', async () => {
       const request = createRequest([]);
       expect(permissions.isManageTab(request)).to.equal(false);
+    });
+  });
+
+  experiment('isManageAccounts', async () => {
+    test('it should return false if scopes empty', async () => {
+      const request = createRequest([]);
+      expect(permissions.isManageAccounts(request)).to.equal(false);
+    });
+
+    test('it should return true if scopes "manage_accounts"', async () => {
+      const request = createRequest(['manage_accounts']);
+      expect(permissions.isManageAccounts(request)).to.equal(true);
+    });
+  });
+
+  experiment('isCharging', async () => {
+    test('returns false if scopes empty', async () => {
+      const request = createRequest([]);
+      expect(permissions.isCharging(request)).to.equal(false);
+    });
+
+    test('it should return true if scopes "charging"', async () => {
+      const request = createRequest(['charging']);
+      expect(permissions.isCharging(request)).to.equal(true);
+    });
+
+    test('it should return true if scopes contains "charging"', async () => {
+      const request = createRequest(['charging', 'manage_accounts']);
+      expect(permissions.isCharging(request)).to.equal(true);
     });
   });
 });

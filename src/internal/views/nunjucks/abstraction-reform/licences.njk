@@ -1,0 +1,87 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "paginate.njk" import paginate %}
+
+{% block head %}
+  {{ super() }}
+
+  <style nonce="{{nonces.style}}">
+    .form-container {
+      display: flex;
+    }
+
+    .form-container input {
+      flex-grow: 1;
+      margin-right: 1em;
+    }
+  </style>
+{% endblock %}
+
+
+{% block content %}
+  {{ title(pageTitle) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="GET" action="/digitise">
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="q">
+            Search for a licence
+             <span class="govuk-hint">
+              You can search by email address, licence number or licence name
+            </span>
+          </label>
+
+          <div class="form-container">
+              <input class="govuk-input" id="q" name="q" type="text" value="{{ query.q }}">
+              <button class="govuk-button" data-module="govuk-button" type="submit">
+                Search
+              </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Licence number</th>
+            <th scope="col" class="govuk-table__header">Last editor</th>
+            <th scope="col" class="govuk-table__header">Last edit</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if licences %}
+            {% for licence in licences %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a class="govuk-link" href="/digitise/licence/{{ licence.id }}">
+                    {{ licence.licenceNumber }}
+                  </a>
+                </td>
+                <td class="govuk-table__cell">
+                  {{ licence.lastEdit.user.email if licence.lastEdit }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ licence.lastEdit.timestamp | date if licence.lastEdit }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ licence.status }}
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr class="govuk-table__row">
+              <td colspan="4">No results found.</td>
+            <tr>
+          {% endif %}
+        </tbody>
+      </table>
+      {{ paginate(pagination, '/digitise', query) }}
+    </div>
+  </div>
+{% endblock %}

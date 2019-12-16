@@ -1,12 +1,11 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "button/macro.njk" import govukButton %}
-{% from "input/macro.njk" import govukInput %}
-{% from "ga-send-event.njk" import sendEvent %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "google-analytics.njk" import sendEvent %}
 
 {% block content %}
   {% if error %}
-    {{ sendEvent(nonces.script, 'register_send_again_invalid_email_address') }}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         {{
@@ -62,3 +61,10 @@
   </div>
 
 {% endblock %}
+
+{% if error %}
+  {% block bodyEnd %}
+    {{ super() }}
+    {{ sendEvent(nonces.script, 'register_send_again_invalid_email_address') }}
+  {% endblock %}
+{% endif %}

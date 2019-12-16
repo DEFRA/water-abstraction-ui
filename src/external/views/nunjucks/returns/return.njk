@@ -1,0 +1,43 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "returns/not-current-version-warning.njk" import notCurrentVersionWarning %}
+{% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
+{% from "returns/return-header.njk" import returnHeader %}
+{% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
+{% from "contact-details.njk" import contactDetails %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ notCurrentVersionWarning(data) }}
+      {{ returnHeader(data, documentHeader, showMeta) }}
+    </div>
+
+    <div class="govuk-grid-column-full">
+      {% if isVoid %}
+        <h2 class="govuk-heading-l">This return has been made void</h2>
+      </div>
+    {% else %}
+      {% if data.isNil %}
+        <h2 class="govuk-heading-l">Nil return</h2>
+      {% else %}
+        <h2 class="govuk-heading-m">Abstraction volumes</h2>
+      {% endif %}
+    </div>
+
+    <div class="govuk-grid-column-full">
+      {% set contactDetailsHTML %} {{ contactDetails() }} {% endset %}
+      {{ govukDetails({
+        summaryText: "Do you need to make a change to a submitted return?",
+        html: contactDetailsHTML
+      }) }}
+
+      {{ meterDetailsInsetText(data, endReading) }}
+    </div>
+
+    {% if not data.isNil %}
+      {{ returnQuantitiesTable(data, lines, total, endReading) }}
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

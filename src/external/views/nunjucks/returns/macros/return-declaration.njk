@@ -1,12 +1,8 @@
-{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
-{% macro returnDeclaration(isAdmin) %}
-  {% if isAdmin == false %}
-
-    {{ govukWarningText({
-    text: "You confirm that all the details you are providing are correct to the best of your knowledge.",
-    iconFallbackText: "Warning"
-    }) }}
-
-  {%endif%}
+{% macro returnDeclaration() %}
+  {{ govukWarningText({
+  text: "You confirm that all the details you are providing are correct to the best of your knowledge.",
+  iconFallbackText: "Warning"
+  }) }}
 {%endmacro%}

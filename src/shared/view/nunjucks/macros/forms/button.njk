@@ -1,8 +1,11 @@
-{% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% macro formButtonWidget(field) %}
-{{ govukButton({
-  text: field.options.label,
-  classes: field.options.controlClass
-}) }}
+  {{
+    govukButton({
+      text: field.options.label,
+      classes: field.options.controlClass,
+      isStartButton: field.options.isStartButton
+    })
+  }}
 {% endmacro %}

@@ -11,7 +11,7 @@ const { externalUserWithLicences } = require('../../../shared/responses/water-se
 
 const userId = 'user_1';
 
-experiment('companys selector controller', () => {
+experiment('modules/company-selector/controller', () => {
   let request, h;
 
   const userData = externalUserWithLicences().data;
@@ -61,7 +61,7 @@ experiment('companys selector controller', () => {
 
     test('uses the correct nunjucks template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/auth/select-company.njk');
+      expect(template).to.equal('nunjucks/auth/select-company');
     });
 
     test('sets the page title in the view', async () => {
@@ -69,7 +69,15 @@ experiment('companys selector controller', () => {
       expect(pageTitle).to.equal('Choose a licence holder');
     });
 
-    test('sets the back link in the view', async () => {
+    test('does not show the back link if there is no company selected', async () => {
+      const [ , { back } ] = h.view.lastCall.args;
+      expect(back).to.be.false();
+    });
+
+    test('shows the back link if there is a company selected', async () => {
+      const request = createRequest();
+      request.defra.companyId = 'test-company-id';
+      await controller.getSelectCompany(request, h);
       const [ , { back } ] = h.view.lastCall.args;
       expect(back).to.equal('/licences');
     });
@@ -94,7 +102,7 @@ experiment('companys selector controller', () => {
     experiment('when form payload is invalid', () => {
       test('the form is displayed again', async () => {
         const [ template ] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/auth/select-company.njk');
+        expect(template).to.equal('nunjucks/auth/select-company');
       });
 
       test('the form has errors', async () => {

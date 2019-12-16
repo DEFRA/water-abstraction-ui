@@ -1,6 +1,6 @@
 {% from "details-when.njk" import detailsWhen %}
 
-{% macro companyLicences(licences) %}
+{% macro companyLicences(licences, userCanUnlinkLicences, unlinkLicencePathTail) %}
   {% if licences.length > 0 %}
     <h3 class="govuk-heading-m govuk-!-margin-0">
       {{ licences | length }} {{ 'licence' | pluralize(licences) }}
@@ -11,6 +11,7 @@
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Licence Number</th>
             <th class="govuk-table__header" scope="col">Licence Holder</th>
+            <th class="govuk-table__header" scope="col"></th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -20,6 +21,15 @@
               <a class="govuk-link" href="/licences/{{licence.documentId}}">{{licence.licenceRef}}</a>
             </td>
             <td class="govuk-table__cell">{{licence.licenceHolder}}</td>
+
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {% if userCanUnlinkLicences %}
+                <a class="govuk-link" href="/licences/{{licence.documentId}}/{{unlinkLicencePathTail}}">
+                  Unlink licence<span class="govuk-visually-hidden"> {{ licence.licenceRef }}</span>
+                </a>
+              {% endif %}
+            </td>
+
           </tr>
         {% endfor %}
         </tbody>

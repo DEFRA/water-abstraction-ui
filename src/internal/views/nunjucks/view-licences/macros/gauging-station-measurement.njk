@@ -1,70 +1,70 @@
-{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% macro gaugingStationMeasurement(measure, riverLevel) %}
-<div class="govuk-grid-column-two-thirds">
-  <div class="data">
-  {% if measure.unitName == 'm3/s'%}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third" data-unit="cms">
-      <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-        {{ measure.latestReading.value | flowConverter('cm','second') }}</span>
-      <span data-unit-label>Cubic metres per second</span>
-    </div>
-
-    <div class="govuk-grid-column-one-third" data-unit="mld">
-      <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-        {{ measure.latestReading.value | flowConverter('megalitre','day') }}</span>
-      <span data-unit-label>Megalitres per day</span>
-    </div>
-
-    <div class="govuk-grid-column-one-third" data-unit="cmd">
-      <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-        {{ measure.latestReading.value | flowConverter('cm','day') }}</span>
-      <span data-unit-label>Cubic metres per day</span>
-    </div>
-
-    <div class="display-none">
-      <label class="govuk-visually-hidden" for="unit-selector">Select units</label>
-      <select id="unit-selector" class="govuk-select form-control unit-selector" name="unit-selector">
-          <option selected value="cms">Cubic metres per second</option>
-          <option value="mld">Megalitres per day</option>
-          <option value="cmd">Cubic metres per day</option>
-      </select>
-    </div>
-  </div>
-  {% else %}
-    <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-      {{ measure | gaugingStationValue(riverLevel.stageScale) }}
-    </span>
-
-  {% endif %}
-
-  <p class="govuk-body govuk-body govuk-!-margin-bottom-0">
-    Instantaneous {{ measure.parameter }} recorded at
-    <span class="govuk-body govuk-!-font-weight-bold">
-      {{ measure.latestReading.dateTime | date('H:MMa') }} on {{ measure.latestReading.dateTime | date }}
-    </span>
-  </p>
-
-  {% if showFlowLink %}
-  <p>
-    <a href="{% if isAdmin %}/admin{% endif %}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
-  </p>
-  {% endif %}
-  {% if showLevelLink %}
-  <p>
-    <a href="{% if isAdmin %}/admin{% endif %}/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
-  </p>
-  {% endif %}
-  </div>
-</div>
-
-  {% if measure.unitName == 'm3/s'%}
   <div class="govuk-grid-column-two-thirds">
-    {{ govukInsetText({
-      text: "Please convert this reading if your condition is based on a different unit of measurement."
-    }) }}
+    <div class="data">
+      {% if measure.unitName == 'm3/s'%}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third" data-unit="cms">
+            <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+              {{ measure.latestReading.value | flowConverter('cm','second') }}</span>
+            <span data-unit-label>Cubic metres per second</span>
+          </div>
+
+          <div class="govuk-grid-column-one-third" data-unit="mld">
+            <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+              {{ measure.latestReading.value | flowConverter('megalitre','day') }}</span>
+            <span data-unit-label>Megalitres per day</span>
+          </div>
+
+          <div class="govuk-grid-column-one-third" data-unit="cmd">
+            <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+              {{ measure.latestReading.value | flowConverter('cm','day') }}</span>
+            <span data-unit-label>Cubic metres per day</span>
+          </div>
+
+          <div class="display-none">
+            <label class="govuk-visually-hidden" for="unit-selector">Select units</label>
+            <select id="unit-selector" class="govuk-select form-control unit-selector" name="unit-selector">
+                <option selected value="cms">Cubic metres per second</option>
+                <option value="mld">Megalitres per day</option>
+                <option value="cmd">Cubic metres per day</option>
+            </select>
+          </div>
+        </div>
+      {% else %}
+        <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
+          {{ measure | gaugingStationValue(riverLevel.stageScale) }}
+        </span>
+      {% endif %}
+
+      <p class="govuk-body govuk-body govuk-!-margin-bottom-0">
+        Instantaneous {{ measure.parameter }} recorded at
+        <span class="govuk-body govuk-!-font-weight-bold">
+          {{ measure.latestReading.dateTime | date('H:MMa') }} on {{ measure.latestReading.dateTime | date }}
+        </span>
+      </p>
+
+      {% if showFlowLink %}
+        <p>
+          <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
+        </p>
+      {% endif %}
+
+      {% if showLevelLink %}
+        <p>
+          <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
+        </p>
+      {% endif %}
+    </div>
   </div>
+
+  {% if measure.unitName == 'm3/s'%}
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukInsetText({
+        text: "Please convert this reading if your condition is based on a different unit of measurement."
+      }) }}
+    </div>
   {% endif %}
 
 {% endmacro %}

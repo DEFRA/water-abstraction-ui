@@ -1,0 +1,34 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{%macro meterDetailsInsetText(return, endReading, isAdmin)%}
+
+  {% set html %}
+    {%if return.meters[0].meterDetailsProvided%}
+      {{ return.meters[0].manufacturer }}<br>
+      {{ return.meters[0].serialNumber }}<br>
+      {% if return.meters[0].multiplier == 10 %}
+        Has a ×10 display<br>
+      {% endif %}
+    {% endif %}
+
+    {%if return.reading.method == 'oneMeter' %}
+          Start reading {{ return.meters[0].startReading }}<br>
+          End reading {{ endReading }}<br>
+    {%endif%}
+
+    {%if return.reading.type == 'estimated' %}
+      Estimated volumes
+    {%endif%}
+  {% endset %}
+
+  {%if return.meters[0].meterDetailsProvided%}
+    <h4 class="govuk-heading-s">
+      {{ "Meter details" if isAdmin else "Your meter" }}
+    </h4>
+  {%endif%}
+
+  {% if html | trim | length %}
+    {{ govukInsetText({ html: html }) }}
+  {% endif %}
+
+{%endmacro%}

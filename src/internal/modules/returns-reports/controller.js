@@ -18,12 +18,12 @@ const getReturns = async (request, h) => {
 
   const [currentCycle, ...rest] = cyclesWithStats.reverse();
 
-  return h.view('nunjucks/returns-reports/index.njk', {
+  return h.view('nunjucks/returns-reports/index', {
     ...request.view,
     currentCycle,
     cycles: rest,
     csvPath: `/returns-reports/download/${currentCycle.endDate}`
-  }, { layout: false });
+  });
 };
 
 /**

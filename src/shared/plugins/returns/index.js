@@ -35,15 +35,15 @@ const checkAccess = (request, documentHeader) => {
  */
 const preHandler = async (request, h) => {
   const { returnId } = request.query;
+  const licenceNumber = returnId.split(':')[2];
+  const { pluginOptions } = h.realm;
 
-  const [, , licenceNumber] = returnId.split(':');
-
-  const documentHeader = await h.realm.pluginOptions.getDocumentHeader(licenceNumber);
+  const documentHeader = await pluginOptions.getDocumentHeader(licenceNumber, pluginOptions.includeExpired);
   if (!documentHeader) {
     throw Boom.notFound(`Licence ${licenceNumber} not found in CRM`);
   }
 
-  if (h.realm.pluginOptions.checkAccess) {
+  if (pluginOptions.checkAccess) {
     checkAccess(request, documentHeader);
   }
 
@@ -62,7 +62,8 @@ const returnsPlugin = {
   register: (server, options) => {
     Joi.assert(options, {
       getDocumentHeader: Joi.func().required(),
-      checkAccess: Joi.boolean().required()
+      checkAccess: Joi.boolean().required(),
+      includeExpired: Joi.boolean().default(false)
     });
 
     server.ext({

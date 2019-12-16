@@ -43,7 +43,9 @@ experiment('batch notifications controller', () => {
       foo: 'bar'
     },
     recipient: 'n/a',
-    message_type: 'letter'
+    message_type: 'letter',
+    message_ref: 'template_1',
+    licences: ['licence_1', 'licence_2']
   }];
 
   beforeEach(async () => {
@@ -74,7 +76,7 @@ experiment('batch notifications controller', () => {
 
     test('renders the correct template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/batch-notifications/review.njk');
+      expect(template).to.equal('nunjucks/batch-notifications/review');
     });
 
     test('outputs correct data to view', async () => {
@@ -108,7 +110,13 @@ experiment('batch notifications controller', () => {
       expect(csv.csvDownload.callCount).to.equal(1);
       const [, data, filename] = csv.csvDownload.lastCall.args;
       expect(filename).to.equal('Returns: reminder - ABC.csv');
-      expect(data).to.equal([ { foo: 'bar', message_type: 'letter', recipient: 'n/a' } ]);
+      expect(data).to.equal([ {
+        foo: 'bar',
+        message_type: 'letter',
+        message_ref: 'template_1',
+        licences: 'licence_1,licence_2',
+        recipient: 'n/a'
+      } ]);
     });
   });
 
@@ -143,7 +151,7 @@ experiment('batch notifications controller', () => {
 
     test('renders the correct template', async () => {
       const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/batch-notifications/confirmation.njk');
+      expect(template).to.equal('nunjucks/batch-notifications/confirmation');
     });
 
     test('outputs correct data to view', async () => {

@@ -18,10 +18,11 @@ const { getFinalReminderConfig } = require('./lib/helpers');
  * Renders a page for the user to input a list of licences to whom
  * they wish to send return forms
  */
-const getSendForms = async (request, h) => {
-  return h.view('water/returns-notifications/forms', {
+const getSendForms = async (request, h, form) => {
+  return h.view('nunjucks/form', {
     ...request.view,
-    form: licenceNumbersForm(request)
+    back: '/manage',
+    form: form || licenceNumbersForm(request)
   });
 };
 
@@ -90,17 +91,15 @@ const postPreviewRecipients = async (request, h) => {
       licenceNumbers: uniqueLicenceNumbers
     });
 
-    return h.view('water/returns-notifications/forms-confirm', {
+    return h.view('nunjucks/returns-notifications/forms-confirm', {
       ...request.view,
+      back: '/returns-notifications/forms',
       form: confirmForm,
       uniqueLicences,
       notMatched: difference(licenceNumbers, uniqueLicenceNumbers)
     });
   } else {
-    return h.view('water/returns-notifications/forms', {
-      ...request.view,
-      form
-    });
+    return getSendForms(request, h, form);
   }
 };
 
@@ -134,7 +133,7 @@ const postSendForms = async (request, h) => {
  * Success page for when flow completed
  */
 const getSendFormsSuccess = (request, h) => {
-  return h.view('water/returns-notifications/forms-success', {
+  return h.view('nunjucks/returns-notifications/forms-success', {
     ...request.view
   });
 };
@@ -156,8 +155,7 @@ const getRemindersStartView = (request, isFinalReminder = false) => {
  */
 const getFinalReminder = async (request, h) => {
   const view = getRemindersStartView(request, true);
-  const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/final-reminder.njk', view, options);
+  return h.view('nunjucks/returns-notifications/final-reminder', view);
 };
 
 /**
@@ -181,7 +179,7 @@ const postSendFinalReminder = async (request, h) => {
     event
   };
 
-  return h.view('nunjucks/batch-notifications/confirmation.njk', view, { layout: false });
+  return h.view('nunjucks/batch-notifications/confirmation', view);
 };
 /**
  * First page of Return Reminders and Return Invitations flows
@@ -190,8 +188,7 @@ const postSendFinalReminder = async (request, h) => {
  */
 const getReturnsNotificationsStart = async (request, h) => {
   const view = getRemindersStartView(request);
-  const options = { layout: false };
-  return h.view('nunjucks/returns-notifications/notifications.njk', view, options);
+  return h.view('nunjucks/returns-notifications/notifications', view);
 };
 /**
  * Returns the relevant batch notifications connector based on the current path

@@ -1,10 +1,10 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
 {% from "contact-details.njk" import contactDetails %}
-{% from "ga-send-event.njk" import sendEvent %}
-{% from "textarea/macro.njk" import govukTextarea %}
-{% from "button/macro.njk" import govukButton %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "google-analytics.njk" import sendEvent %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
   {{ title(pageTitle) }}
@@ -32,12 +32,6 @@
           }) }}
       {% endif %}
 
-      {% set eventAction = "add_licence_licence_not_found_error" if error.name === 'LicenceNotFoundError' %}
-      {% set eventAction = "add_licence_licence_similarity_error" if error.name === 'LicenceSimilarityError' %}
-      {% set eventAction = "add_licence_licence_missing_error" if error.name === 'LicenceMissingError' %}
-      {% set eventAction = "add_licence_validation_error" if error.name === 'ValidationError' %}
-      {{ sendEvent(nonces.script, eventAction) }}
-
       <form method="POST" novalidate action="/add-licences">
 
         <input name="csrf_token" type="hidden" value="{{ csrfToken }}" />
@@ -64,7 +58,7 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <details class="govuk-details">
+        <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary">
           <span class="govuk-details__summary-text">Do you need help?</span>
         </summary>
@@ -77,4 +71,10 @@
     </div>
 
   </div>
+{% endblock %}
+
+
+{% block bodyEnd %}
+  {{ super() }}
+  {{ sendEvent(nonces.script, error.name) }}
 {% endblock %}

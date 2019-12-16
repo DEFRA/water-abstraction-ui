@@ -72,7 +72,7 @@ const getSelectSchemaCategory = async (request, h) => {
     back: `/digitise/licence/${documentId}#further-conditions`
   };
 
-  return h.view('nunjucks/abstraction-reform/select-schema-category.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/select-schema-category', view);
 };
 
 const postSelectSchemaCategory = async (request, h) => {
@@ -112,7 +112,7 @@ const getSelectSchema = async (request, h) => {
     back: `/digitise/licence/${documentId}/select-schema-category`
   };
 
-  return h.view('nunjucks/abstraction-reform/select-schema.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/select-schema', view);
 };
 
 /**
@@ -162,7 +162,7 @@ const getAddData = async (request, h) => {
     schema,
     back: `/digitise/licence/${documentId}/select-schema/${slug}`
   };
-  return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/edit-data', view);
 };
 
 /**
@@ -221,7 +221,7 @@ const getEditData = async (request, h) => {
     back: `/digitise/licence/${documentId}#${id}`
   };
 
-  return h.view('nunjucks/abstraction-reform/edit-data.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/edit-data', view);
 };
 
 /**
@@ -282,7 +282,7 @@ const getDeleteData = async (request, h) => {
     form
   };
 
-  return h.view('nunjucks/abstraction-reform/delete.njk', view, { layout: false });
+  return h.view('nunjucks/abstraction-reform/delete', view);
 };
 
 /**

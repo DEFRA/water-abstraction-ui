@@ -1,0 +1,6 @@
+{% macro returnPurposes(return) %}
+  {% for purpose in return.metadata.purposes %}
+    {{ ', ' if not loop.first }}
+    {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
+  {% endfor %}
+{% endmacro %}

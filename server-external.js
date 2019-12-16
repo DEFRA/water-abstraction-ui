@@ -54,7 +54,8 @@ async function start () {
       plugin: require('shared/plugins/returns'),
       options: {
         getDocumentHeader: connectors.crm.documents.getWaterLicence.bind(connectors.crm.documents),
-        checkAccess: true
+        checkAccess: true,
+        includeExpired: false
       }
     }, {
       plugin: require('shared/plugins/licence-data'),
@@ -65,6 +66,11 @@ async function start () {
     },
     {
       plugin: require('shared/plugins/flow')
+    }, {
+      plugin: require('shared/plugins/reauth'),
+      options: {
+        reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
+      }
     }]);
 
     // Set up Nunjucks view engine

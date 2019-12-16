@@ -6,7 +6,7 @@ const {
 const { filter } = require('lodash');
 const { form: quantitiesForm } = require('internal/modules/returns/forms/quantities');
 
-const createRequest = (isInternal = true) => {
+const createRequest = () => {
   return {
     view: {
       csrfToken: 'test-csrf-token'
@@ -16,7 +16,7 @@ const createRequest = (isInternal = true) => {
     },
     auth: {
       credentials: {
-        scope: isInternal ? 'internal' : 'external'
+        scope: 'internal'
       }
     }
   };
@@ -49,7 +49,7 @@ const isParagraph = (field) => {
 };
 
 experiment('quantitiesForm', () => {
-  const internalExpectedText = ['Volumes entered should be calculated manually.', 'Take into consideration the x10 display.'];
+  const internalExpectedText = ['Volumes entered should be calculated manually.', 'Take into consideration the ×10 display.'];
 
   test('adds internal help text for internal users', async () => {
     const form = quantitiesForm(createRequest(), createReturn());

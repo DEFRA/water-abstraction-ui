@@ -1,8 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
 
-{% block mainNav %}
-{% endblock %}
-
 {% block content %}
 
   <div class="govuk-grid-row">
@@ -14,9 +11,7 @@
       </p>
       <p>
         <a href="/user/{{ userId }}/status" class="govuk-link">
-          View the user page
-        </a>
-        for
+          View the user page</a> for
         <span class="govuk-!-font-weight-bold">{{ email }}</span>.
       </p>
     </div>

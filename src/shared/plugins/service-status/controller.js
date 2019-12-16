@@ -26,11 +26,10 @@ const getServiceStatus = async (request, h) => {
 
   return request.query.format === 'json'
     ? serviceStatus
-    : h.view(
-      'nunjucks/service-status/index.njk',
-      { ...request.view, ...serviceStatus },
-      { layout: false }
-    );
+    : h.view('nunjucks/service-status/index', {
+      ...request.view,
+      ...serviceStatus
+    });
 };
 
 exports.getServiceStatus = getServiceStatus;

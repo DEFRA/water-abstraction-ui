@@ -24,7 +24,7 @@ experiment('getContactInformation', () => {
     sandbox.restore();
   });
 
-  test('renders the form view', async () => {
+  test('renders the form view when contact details have been set previously', async () => {
     const request = {
       defra: {
         user: {
@@ -40,7 +40,21 @@ experiment('getContactInformation', () => {
 
     await controller.getContactInformation(request, h);
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/form.njk');
+    expect(templateName).to.equal('nunjucks/form');
+  });
+
+  test('renders the form view when contact details are empty', async () => {
+    const request = {
+      defra: {
+        user: {
+        }
+      },
+      view: {}
+    };
+
+    await controller.getContactInformation(request, h);
+    const [templateName] = h.view.lastCall.args;
+    expect(templateName).to.equal('nunjucks/form');
   });
 });
 
@@ -71,6 +85,7 @@ experiment('postContactInformation', () => {
         csrf_token: '00000000-0000-0000-0000-000000000000'
       },
       defra: {
+        userId: 'test-user-id',
         user: {
           user_id: 'test-user-id',
           user_data: {
@@ -132,6 +147,6 @@ experiment('postContactInformation', () => {
 
     expect(services.idm.users.updateOne.callCount).to.equal(0);
     const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/form.njk');
+    expect(templateName).to.equal('nunjucks/form');
   });
 });

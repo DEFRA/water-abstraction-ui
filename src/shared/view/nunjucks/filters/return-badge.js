@@ -1,11 +1,7 @@
-const titleCase = require('title-case');
-const moment = require('moment');
+'use strict';
 
-const isReturnPastDueDate = returnRow => {
-  const dueDate = moment(returnRow.due_date, 'YYYY-MM-DD');
-  const today = moment().startOf('day');
-  return dueDate.isBefore(today);
-};
+const { isReturnPastDueDate } = require('../../../lib/returns/dates');
+const { getBadge } = require('../../../lib/returns/badge');
 
 /**
  * Gets badge object to render for return row
@@ -16,20 +12,7 @@ const returnBadge = ret => {
   const isPastDueDate = isReturnPastDueDate(ret);
   const { status } = ret;
 
-  const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
-
-  const styles = {
-    overdue: 'success',
-    due: 'due',
-    received: 'completed',
-    completed: 'completed',
-    void: 'void'
-  };
-
-  return {
-    text: titleCase(viewStatus),
-    status: styles[viewStatus]
-  };
+  return getBadge(status, isPastDueDate);
 };
 
 exports.returnBadge = returnBadge;

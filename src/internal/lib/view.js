@@ -50,12 +50,7 @@ function viewContextDefaults (request) {
   viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
 
   viewContext.customTitle = null;
-  viewContext.insideHeader = '';
-  viewContext.headerClass = 'with-proposition';
-  viewContext.topOfPage = null;
   viewContext.head = `<meta name="format-detection" content="telephone=no"><meta name="robots" content="noindex, nofollow">`;
-  viewContext.bodyStart = null;
-  viewContext.afterHeader = null;
   viewContext.path = request.path;
 
   viewContext.csrfToken = request.yar.get('csrfToken');
@@ -63,14 +58,13 @@ function viewContextDefaults (request) {
   viewContext.labels = {};
   viewContext.labels.licences = 'Your licences';
 
-  // Are we in admin view?  Add a flag for templates
-  viewContext.isAdmin = true;
   viewContext.isTestMode = process.env.TEST_MODE;
 
   // Set navigation links
   viewContext.mainNavLinks = getMainNav(request);
   viewContext.propositionLinks = getPropositionLinks(request);
 
+  viewContext.showCookieMessage = !(request.state.seen_cookie_message === 'yes');
   viewContext.user = request.auth.credentials;
 
   viewContext.tracking = getTracking(request.defra);

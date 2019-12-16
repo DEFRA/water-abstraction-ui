@@ -21,7 +21,7 @@ const hasScope = (request, scope) => {
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
 // Returns
-const isInternalReturns = request => hasScope(request, scope.returns);
+const isReturnsUser = request => hasScope(request, scope.returns);
 const isBulkReturnNotifications = request => hasScope(request, scope.bulkReturnNotifications);
 
 // Abstraction reform / digitise!
@@ -45,9 +45,15 @@ const isBasicUser = request => {
 
 const isManageTab = request => hasScope(request, scope.hasManageTab);
 
+const isManageAccounts = request => hasScope(request, scope.manageAccounts);
+
+const isCharging = request => hasScope(request, scope.charging);
+
+const isBilling = request => hasScope(request, scope.billing);
+
 exports.hasScope = hasScope;
 exports.isAuthenticated = isAuthenticated;
-exports.isInternalReturns = isInternalReturns;
+exports.isReturnsUser = isReturnsUser;
 exports.isBulkReturnNotifications = isBulkReturnNotifications;
 exports.isARUser = isARUser;
 exports.isARApprover = isARApprover;
@@ -56,3 +62,6 @@ exports.isHofOrRenewalNotifications = isHofOrRenewalNotifications;
 exports.isAnyNotifications = isAnyNotifications;
 exports.isBasicUser = isBasicUser;
 exports.isManageTab = isManageTab;
+exports.isManageAccounts = isManageAccounts;
+exports.isCharging = isCharging;
+exports.isBilling = isBilling;

@@ -36,12 +36,10 @@ const {
  * @param {Object} h - HAPI HTTP reply
  */
 async function getLicenceAdd (request, h) {
-  return h.view(
-    'nunjucks/add-licences/index.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/index', request.view);
 }
+
+const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
 
 /**
  * Post handler for adding licences
@@ -121,10 +119,10 @@ async function postLicenceAdd (request, reply) {
   } catch (err) {
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err;
-      return reply.view('nunjucks/add-licences/index.njk', viewContext, { layout: false });
+      return reply.view('nunjucks/add-licences/index', viewContext);
     }
 
-    logger.errorWithJourney('Add licence error', err, request);
+    logger.info('Add licence error', err);
     throw err;
   }
 }
@@ -143,7 +141,7 @@ async function getLicenceSelect (request, reply) {
   }
 
   try {
-    const { documentIds } = request.yar.get('addLicenceFlow');
+    const { documentIds } = getFlowDataFromSession(request);
 
     // Get unverified licences from DB
     const { data, error } = await services.crm.documents.getUnregisteredLicencesByIds(documentIds);
@@ -159,7 +157,7 @@ async function getLicenceSelect (request, reply) {
       text: licence.system_external_id
     }));
 
-    return reply.view('nunjucks/add-licences/select-licences.njk', viewContext, { layout: false });
+    return reply.view('nunjucks/add-licences/select-licences', viewContext);
   } catch (err) {
     reply.redirect('/add-licences?error=flow');
   }
@@ -182,7 +180,7 @@ async function postLicenceSelect (request, reply) {
   const { entityId } = request.defra;
 
   try {
-    const { documentIds } = request.yar.get('addLicenceFlow');
+    const { documentIds } = getFlowDataFromSession(request);
 
     const selectedIds = verifySelectedLicences(documentIds, licences);
 
@@ -244,11 +242,7 @@ async function postLicenceSelect (request, reply) {
  * @param {Object} h - HAPI HTTP toolkit
  */
 function getLicenceSelectError (request, h) {
-  return h.view(
-    'nunjucks/add-licences/select-licences-error.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/select-licences-error', request.view);
 }
 
 const getUniqueAddresses = async selectedIds => {
@@ -273,14 +267,14 @@ async function getAddressSelect (request, reply) {
   const { view } = request;
 
   // Load from session
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
   const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
 
-  return reply.view('nunjucks/form.njk', {
+  return reply.view('nunjucks/form', {
     ...view,
     back: '/select-licences',
     form: selectAddressForm(request, uniqueAddressLicences)
-  }, { layout: false });
+  });
 }
 
 const getEntityIdFromRequest = request => request.defra.entityId;
@@ -333,25 +327,25 @@ const getLicence = async documentId => {
  */
 async function postAddressSelect (request, h) {
   const { selectedAddressId } = request.payload;
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
 
   const uniqueAddresses = await getUniqueAddresses(selectedIds);
   const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
 
   if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
-    const flowData = request.yar.get('addLicenceFlow');
+    const flowData = getFlowDataFromSession(request);
     flowData.selectedAddressId = selectedAddressId;
     request.yar.set('addLicenceFlow', flowData);
 
     return h.redirect('/add-addressee');
   }
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...request.view,
     back: '/select-licences',
     form
-  }, { layout: false });
+  });
 }
 
 /**
@@ -362,11 +356,11 @@ async function postAddressSelect (request, h) {
 function getFAO (request, h) {
   const { view } = request;
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...view,
     back: '/select-address',
     form: faoForm(request)
-  }, { layout: false });
+  });
 }
 
 /**
@@ -382,7 +376,7 @@ async function postFAO (request, h) {
   const entityId = getEntityIdFromRequest(request);
 
   // Load session data
-  const { selectedIds } = request.yar.get('addLicenceFlow');
+  const { selectedIds } = getFlowDataFromSession(request);
 
   const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
 
@@ -411,13 +405,13 @@ async function postFAO (request, h) {
 
     const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
 
-    return h.view('nunjucks/add-licences/verification-sent.njk', viewContext, { layout: false });
+    return h.view('nunjucks/add-licences/verification-sent', viewContext);
   }
 
-  return h.view('nunjucks/form.njk', {
+  return h.view('nunjucks/form', {
     ...request.view,
     form
-  }, { layout: false });
+  });
 }
 
 /**
@@ -453,11 +447,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} h - HAPI HTTP response toolkit
  */
 async function getSecurityCode (request, h) {
-  return h.view(
-    'nunjucks/add-licences/security-code.njk',
-    request.view,
-    { layout: false }
-  );
+  return h.view('nunjucks/add-licences/security-code', request.view);
 }
 
 /**
@@ -491,12 +481,29 @@ async function postSecurityCode (request, reply) {
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
       viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId);
       viewContext.error = error;
-      return reply.view('nunjucks/add-licences/security-code.njk', viewContext, { layout: false });
+      return reply.view('nunjucks/add-licences/security-code', viewContext);
     }
 
     throw error;
   }
 }
+
+/**
+ * Function to be used as a prehandler that ensures that the session contains
+ * data relating to the add licence flow. If not, then the user is redirected
+ * back to the start of the flow. This is here because there are user journeys
+ * seen in the error logs where on completion of the flow (where the session data
+ * is cleared) a user is going back to the previous page, which relies on the
+ * presence of the data in session.
+ *
+ * @param {Object} request HAPI request object
+ * @param {Object} h HAPI response toolkit
+ */
+const ensureSessionDataPreHandler = (request, h) => {
+  return getFlowDataFromSession(request)
+    ? h.continue
+    : h.redirect('/add-licences').takeover();
+};
 
 exports.getLicenceAdd = getLicenceAdd;
 exports.postLicenceAdd = postLicenceAdd;
@@ -514,3 +521,5 @@ exports.postFAO = postFAO;
 
 exports.getSecurityCode = getSecurityCode;
 exports.postSecurityCode = postSecurityCode;
+
+exports.ensureSessionDataPreHandler = ensureSessionDataPreHandler;

@@ -1,0 +1,16 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+
+
+{% block mainNav %}{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+      <p>You have tried to enter your password too many times.</p>
+      <p>Please try again tomorrow.</p>
+      <p><a href="/licences">View licences</a></p>
+    </div>
+  </div>
+{% endblock %}

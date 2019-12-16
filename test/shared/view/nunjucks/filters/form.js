@@ -196,6 +196,14 @@ experiment('mapFormCheckbox', () => {
   test('It should set the item value property', async () => {
     expect(result.items[0].value).to.equal(checkboxField.options.choices[0].value);
   });
+
+  test('It should set the item html property', async () => {
+    const htmlCheckbox = checkboxField;
+    htmlCheckbox.options.choices[0].label = undefined;
+    htmlCheckbox.options.choices[0].htmlLabel = 'label with <strong>html</strong>';
+    const resultWithHtml = mapFormCheckbox(htmlCheckbox);
+    expect(resultWithHtml.items[0].html).to.equal(htmlCheckbox.options.choices[0].htmlLabel);
+  });
 });
 
 experiment('mapFormDropdownField', () => {

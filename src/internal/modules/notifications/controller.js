@@ -1,6 +1,7 @@
 'use strict';
 
 const { Promise } = require('bluebird');
+const { sumBy, parseInt } = require('lodash');
 const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');
 const { forceArray } = require('shared/lib/array-helpers');
@@ -8,17 +9,36 @@ const services = require('../../lib/connectors/services');
 const { licenceValidator } = require('./lib/licence-validator');
 const { checkAccess } = require('./lib/permission');
 
+const createErrorList = error =>
+  error.map(err => ({ text: err.message, href: `#${err.field}` }));
+
+const getParsedParams = request => ({
+  id: parseInt(request.params.id),
+  step: parseInt(request.query.step),
+  start: parseInt(request.query.start)
+});
+
+const getTaskConfigById = async request => {
+  const { id } = getParsedParams(request);
+  const { data, error } = services.water.taskConfigs.findOne(id);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 /**
   * Helper handler for start flow
   * @param {Object} request - HAPI HTTP request
   * @param {Number} request.params.id - the task ID
   * @param {Number} request.query.step - the step in the process - default to 0
-  * @param {Object} h - HAPI HTTP reply interface
+  * @param {Object} h - HAPI response toolkit
   * @param {Object} task - task config data from water service
   */
 async function getStartFlow (request, h, task) {
-  const { userId } = request.defra;
-  const context = await getContext(userId);
+  const context = await getContext(request.defra.userId);
   const state = null;
   const taskData = new TaskData(task, state, context);
   request.yar.set('notificationsFlow', taskData.getData());
@@ -36,42 +56,35 @@ async function getStartFlow (request, h, task) {
  * @param {Object} request - HAPI HTTP request
  * @param {Number} request.params.id - the task ID
  * @param {Number} request.query.step - the step in the process - default to 0
- * @param {Object} reply - HAPI HTTP reply interface
+ * @param {Object} h - HAPI response toolkit
  */
-async function getStep (request, reply) {
+async function getStep (request, h) {
   // Get selected task config
-  const id = parseInt(request.params.id, 10);
-  const step = parseInt(request.query.step, 10);
-  const start = parseInt(request.query.start, 10);
-
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    throw new Error(taskConfigError);
-  }
+  const { step, start } = getParsedParams(request);
+  const task = await getTaskConfigById(request);
 
   checkAccess(request, task);
 
   if (start) {
-    return getStartFlow(request, reply, task);
+    return getStartFlow(request, h, task);
   }
 
-  const { userId } = request.defra;
-  const context = await getContext(userId);
+  const context = await getContext(request.defra.userId);
   const state = request.yar.get('notificationsFlow');
 
   const taskData = new TaskData(task, state, context);
-  return renderStep(request, reply, taskData, step);
+  return renderStep(request, h, taskData, step);
 }
 
 /**
  * Generic renderStep handler - used by both the GET handler, and the POST
  * handler if there is a validation issue
  * @param {Object} request - HAPI request interface
- * @param {Object} reply - HAPI reply interface
+ * @param {Object} h - HAPI response toolkit
  * @param {Object} taskData - the current task state object
  * @param {Number} index - the step to show (index of the steps array)
  */
-async function renderStep (request, reply, taskData, index) {
+async function renderStep (request, h, taskData, index) {
   const { task } = taskData;
 
   const step = task.config.steps[index];
@@ -90,13 +103,11 @@ async function renderStep (request, reply, taskData, index) {
 
   const view = {
     ...request.view,
-    task,
-    index,
     step,
     formAction: `/notifications/${task.task_config_id}?step=${index}`,
     pageTitle: task.config.title
   };
-  return reply.view('water/notifications/step', view);
+  return h.view('nunjucks/notifications/step', view);
 }
 
 /**
@@ -105,14 +116,11 @@ async function renderStep (request, reply, taskData, index) {
  * @param {String} request.query.step - step in the task
  * @param {String} request.payload.data - JSON payload storing flow state
  */
-async function postStep (request, reply) {
+async function postStep (request, h) {
   // Get selected task config
-  const id = parseInt(request.params.id, 10);
-  const step = parseInt(request.query.step, 10);
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    return reply(taskConfigError);
-  }
+  const { id, step } = getParsedParams(request);
+  const task = await getTaskConfigById(request);
+
   checkAccess(request, task);
 
   // Update task data
@@ -125,7 +133,12 @@ async function postStep (request, reply) {
   // If validation error, re-render current step
   if (error) {
     request.view.error = error;
-    return renderStep(request, reply, taskData, step);
+    request.view.errorList = createErrorList(error);
+    request.view.errorField = error.reduce((acc, err) => {
+      acc[err.field] = { text: err.message };
+      return acc;
+    }, {});
+    return renderStep(request, h, taskData, step);
   }
 
   // Redirect to next step
@@ -133,7 +146,7 @@ async function postStep (request, reply) {
     ? `/notifications/${id}?step=${step + 1}`
     : `/notifications/${id}/refine`;
 
-  return reply.redirect(nextAction);
+  return h.redirect(nextAction);
 }
 
 /**
@@ -143,13 +156,11 @@ async function postStep (request, reply) {
  * @param {String} request.params.id - task config ID
  * @param {String} request.query.data - JSON data for current task state
  */
-async function getRefine (request, reply) {
+async function getRefine (request, h) {
   // Get selected task config
-  const id = parseInt(request.params.id, 10);
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    return reply(taskConfigError);
-  }
+  const { id } = getParsedParams(request);
+  const task = await getTaskConfigById(request);
+
   checkAccess(request, task);
 
   // Load data from previous step(s)
@@ -159,15 +170,13 @@ async function getRefine (request, reply) {
   const filter = taskData.getFilter();
 
   // Get documents data from CRM
-  const { error, data, pagination } = await services.crm.documents.findMany(filter, {
-    system_external_id: +1
-  }, {
-    page: 1,
-    perPage: 300
-  });
+  const { error, data, pagination } = await services.crm.documents.findMany(filter,
+    { system_external_id: +1 },
+    { page: 1, perPage: 300 }
+  );
 
   if (error) {
-    return reply(error);
+    return error;
   }
 
   const query = taskData.exportQuery();
@@ -177,19 +186,17 @@ async function getRefine (request, reply) {
   task.config.steps.forEach(step => {
     step.widgets.forEach(widget => {
       if (widget.replay && query[widget.name]) {
-        replay.push({
-          label: widget.replay,
-          value: query[widget.name]
-        });
+        replay.push({ label: widget.replay, value: query[widget.name] });
       }
     });
   });
+
+  const licenceErrors = licenceValidator(filter, data);
 
   const view = {
     ...request.view,
     pagination,
     results: data,
-    task,
     formAction: `/notifications/${id}/refine`,
     back: `/notifications/${id}/step?step=${task.config.steps.length - 1}`,
     query,
@@ -198,10 +205,11 @@ async function getRefine (request, reply) {
     errors: {
       [request.query.flash]: true
     },
-    licenceErrors: licenceValidator(filter, data)
+    licenceErrors,
+    errorList: createErrorList(licenceErrors)
   };
 
-  return reply.view('water/notifications/refine', view);
+  return h.view('nunjucks/notifications/refine', view);
 }
 
 /**
@@ -210,13 +218,11 @@ async function getRefine (request, reply) {
  * @param {String} request.params.id - task config ID
  * @param {String} request.query.data - JSON task state
  */
-async function postRefine (request, reply) {
+async function postRefine (request, h) {
   // Get selected task config
   const id = parseInt(request.params.id, 10);
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    return reply(taskConfigError);
-  }
+  const task = await getTaskConfigById(request);
+
   checkAccess(request, task);
 
   // Load data from previous step(s)
@@ -231,7 +237,7 @@ async function postRefine (request, reply) {
 
   // If no licences selected, display same screen again with error message
   if (licenceNumbers.length === 0) {
-    return reply.redirect(`/notifications/${id}/refine?flash=noLicencesSelected`);
+    return h.redirect(`/notifications/${id}/refine?flash=noLicencesSelected`);
   }
 
   // Redirect to next step - either confirm or template variable entry
@@ -239,17 +245,17 @@ async function postRefine (request, reply) {
     ? `/notifications/${id}/data`
     : `/notifications/${id}/preview`;
 
-  return reply.redirect(redirectUrl);
+  return h.redirect(redirectUrl);
 }
 
 /**
  * Render variable handler - used by both the GET handler, and the POST
  * handler if there is a validation issue
  * @param {Object} request - HAPI request interface
- * @param {Object} reply - HAPI reply interface
+ * @param {Object} h - HAPI response toolkit
  * @param {Object} taskData - the current task state object
  */
-async function renderVariableData (request, reply, taskData) {
+async function renderVariableData (request, h, taskData) {
   const { task } = taskData;
   checkAccess(request, task);
 
@@ -262,7 +268,7 @@ async function renderVariableData (request, reply, taskData) {
     back: `/notifications/${task.task_config_id}/refine`
   };
 
-  return reply.view('water/notifications/data', view);
+  return h.view('nunjucks/notifications/data', view);
 }
 
 /**
@@ -271,21 +277,16 @@ async function renderVariableData (request, reply, taskData) {
  * @param {String} request.params.id - task config ID
  * @param {String} request.query.data - JSON for task state
  */
-async function getVariableData (request, reply) {
-  const { id } = request.params;
-
+async function getVariableData (request, h) {
   // Find the requested task
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    return reply(taskConfigError);
-  }
+  const task = await getTaskConfigById(request);
 
   checkAccess(request, task);
 
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'));
 
-  return renderVariableData(request, reply, taskData);
+  return renderVariableData(request, h, taskData);
 }
 
 /**
@@ -294,14 +295,11 @@ async function getVariableData (request, reply) {
  * @param {String} request.payload.data - current task state JSON
  * @param {Object} request.payload - contains additional custom fields as defined in task config
  */
-async function postVariableData (request, reply) {
+async function postVariableData (request, h) {
   const id = parseInt(request.params.id, 10);
 
   // Find the requested task
-  const { data: task, error: taskConfigError } = await services.water.taskConfigs.findOne(id);
-  if (taskConfigError) {
-    return reply(taskConfigError);
-  }
+  const task = await getTaskConfigById(request);
 
   checkAccess(request, task);
 
@@ -315,11 +313,12 @@ async function postVariableData (request, reply) {
   // Re-render variable screen
   if (error) {
     request.view.error = error;
-    return renderVariableData(request, reply, taskData);
-  } else {
-    // Redirect to next step
-    return reply.redirect(`/notifications/${id}/preview`);
+    request.view.errorList = createErrorList(error);
+    return renderVariableData(request, h, taskData);
   }
+
+  // Redirect to next step
+  return h.redirect(`/notifications/${id}/preview`);
 }
 
 /**
@@ -327,11 +326,8 @@ async function postVariableData (request, reply) {
  * @param {Array} previewData
  * @return {Number} number of licences
  */
-function countPreviewLicences (previewData) {
-  return previewData.reduce((acc, row) => {
-    return acc + row.contact.licences.length;
-  }, 0);
-};
+const countPreviewLicences = previewData =>
+  sumBy(previewData, row => row.contact.licences.length);
 
 /**
  * A shared function for use by getPreview / postSend
@@ -383,7 +379,7 @@ async function getSendViewContext (id, data, sender) {
  * @param {String} request.params.id - task config ID
  * @param {String} request.query.data - JSON encoded string of task state
  */
-async function getPreview (request, reply) {
+async function getPreview (request, h) {
   const { id } = request.params;
 
   const view = {
@@ -393,7 +389,7 @@ async function getPreview (request, reply) {
 
   checkAccess(request, view.task);
 
-  return reply.view('water/notifications/preview', view);
+  return h.view('nunjucks/notifications/preview', view);
 }
 
 /**
@@ -403,7 +399,7 @@ async function getPreview (request, reply) {
  * @param {String} request.params.id - task config ID
  * @param {String} request.payload.data - JSON encoded string of task state
  */
-async function postSend (request, reply) {
+async function postSend (request, h) {
   const { id } = request.params;
 
   // Get email address of current user
@@ -419,14 +415,18 @@ async function postSend (request, reply) {
   // Flow is completed - delete state in session store
   request.yar.clear('notificationsFlow');
 
-  return reply.view('water/notifications/sent', view);
+  return h.view('nunjucks/notifications/sent', view);
 }
 
 exports.getStep = getStep;
 exports.postStep = postStep;
+
 exports.getRefine = getRefine;
 exports.postRefine = postRefine;
+
 exports.getVariableData = getVariableData;
 exports.postVariableData = postVariableData;
+
 exports.getPreview = getPreview;
+
 exports.postSend = postSend;

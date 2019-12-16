@@ -5,29 +5,6 @@ const { scope } = require('../../../lib/constants');
 const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
 
 module.exports = {
-  getAllReturns: {
-    method: 'GET',
-    path: '/returns',
-    handler: controller.getReturns,
-    config: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Displays a list of returns for the current licence holder',
-      validate: {
-        query: {
-          page: Joi.number().default(1)
-        }
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Your returns',
-          activeNavLink: 'returns'
-        }
-      }
-    }
-  },
-
   getReturnsForLicence: {
     method: 'GET',
     path: '/licences/{documentId}/returns',

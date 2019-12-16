@@ -5,6 +5,7 @@ const sandbox = require('sinon').createSandbox();
 const controller = require('internal/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
+const { URL } = require('url');
 
 const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
@@ -12,6 +13,8 @@ const { STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_METER_DETAILS_PROVIDED, STEP_METER_USED, STEP_SINGLE_TOTAL,
   STEP_SINGLE_TOTAL_DATES
 } = require('shared/modules/returns/steps');
+
+const { READING_TYPE_MEASURED } = require('shared/modules/returns/models/Reading');
 
 const csrfToken = '3d44ea7a-2cc0-455f-84c9-ee2c33b3470e';
 const returnId = 'v1:1:123/456:1234:2018-04-01:2019-03-30';
@@ -81,7 +84,12 @@ const createRequest = (isValid = true) => ({
     },
     csrfToken
   },
-  model: createModel()
+  model: createModel(),
+  yar: {
+    set: sandbox.stub(),
+    get: sandbox.stub(),
+    clear: sandbox.stub()
+  }
 });
 
 experiment('returns edit controller: ', () => {
@@ -101,9 +109,18 @@ experiment('returns edit controller: ', () => {
   });
 
   const testFormIsRendered = () => test('renders the correct template', async () => {
-    const [template, , options] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/returns/form.njk');
-    expect(options).to.equal({ layout: false });
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/returns/form');
+  });
+
+  const testRedirect = step => test('redirects to the correct URL', async () => {
+    const [path] = h.redirect.lastCall.args;
+
+    const url = new URL(path, 'http://localhost:8008');
+
+    expect(url.searchParams.get('error')).to.be.a.string().length(36);
+    expect(url.searchParams.get('returnId')).to.equal(returnId);
+    expect(url.pathname).to.equal(step);
   });
 
   experiment('getDateReceived', () => {
@@ -174,7 +191,7 @@ experiment('returns edit controller: ', () => {
         await controller.postDateReceived(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_DATE_RECEIVED);
     });
   });
 
@@ -240,7 +257,7 @@ experiment('returns edit controller: ', () => {
         await controller.postAmounts(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_START);
     });
   });
 
@@ -292,7 +309,7 @@ experiment('returns edit controller: ', () => {
         await controller.postMethod(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METHOD);
     });
   });
 
@@ -343,7 +360,7 @@ experiment('returns edit controller: ', () => {
         await controller.postUnits(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_UNITS);
     });
   });
 
@@ -379,13 +396,24 @@ experiment('returns edit controller: ', () => {
         ).to.equal(true);
       });
 
-      test('redirects to meter details if meter details provided', async () => {
-        forms.getValues.returns({
-          meterDetailsProvided: true
+      experiment('when meter details are provided', () => {
+        beforeEach(async () => {
+          forms.getValues.returns({
+            meterDetailsProvided: true
+          });
+          await controller.postMeterDetailsProvided(request, h);
         });
-        await controller.postMeterDetailsProvided(request, h);
-        expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
-          .to.equal(true);
+
+        test('sets reading type to measured', async () => {
+          expect(request.model.reading.setReadingType.calledWith(
+            READING_TYPE_MEASURED
+          )).to.equal(true);
+        });
+
+        test('redirects to meter details if meter details provided', async () => {
+          expect(h.redirect.calledWith(`${STEP_METER_DETAILS}?returnId=${returnId}`))
+            .to.equal(true);
+        });
       });
 
       test('redirects to meter used if volumes and meter details not provided', async () => {
@@ -407,6 +435,15 @@ experiment('returns edit controller: ', () => {
         expect(h.redirect.calledWith(`${STEP_METER_READINGS}?returnId=${returnId}`))
           .to.equal(true);
       });
+    });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterDetailsProvided(request, h);
+      });
+
+      testRedirect(STEP_METER_DETAILS_PROVIDED);
     });
   });
 
@@ -489,10 +526,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postMeterDetails(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METER_DETAILS);
     });
   });
 
@@ -546,7 +583,7 @@ experiment('returns edit controller: ', () => {
         await controller.postMeterUsed(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_METER_USED);
     });
   });
 
@@ -604,6 +641,15 @@ experiment('returns edit controller: ', () => {
     test('redirects to the confirmation page', async () => {
       expect(h.redirect.calledWith(`${STEP_CONFIRM}?returnId=${returnId}`))
         .to.equal(true);
+    });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postMeterReadings(request, h);
+      });
+
+      testRedirect(STEP_METER_READINGS);
     });
   });
 
@@ -689,7 +735,7 @@ experiment('returns edit controller: ', () => {
         await controller.postSingleTotal(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_SINGLE_TOTAL);
     });
   });
 
@@ -756,7 +802,7 @@ experiment('returns edit controller: ', () => {
         await controller.postSingleTotalDates(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_SINGLE_TOTAL_DATES);
     });
   });
 
@@ -817,10 +863,10 @@ experiment('returns edit controller: ', () => {
     experiment('when form is invalid', async () => {
       beforeEach(async () => {
         const request = createRequest(false);
-        await controller.postUnits(request, h);
+        await controller.postQuantities(request, h);
       });
 
-      testFormIsRendered();
+      testRedirect(STEP_QUANTITIES);
     });
   });
 
@@ -952,6 +998,15 @@ experiment('returns edit controller: ', () => {
       expect(h.redirect.calledWith(`${STEP_SUBMITTED}?returnId=${returnId}`))
         .to.equal(true);
     });
+
+    experiment('when form is invalid', async () => {
+      beforeEach(async () => {
+        const request = createRequest(false);
+        await controller.postConfirm(request, h);
+      });
+
+      testRedirect(STEP_CONFIRM);
+    });
   });
 
   experiment('getSubmitted', () => {
@@ -963,7 +1018,7 @@ experiment('returns edit controller: ', () => {
 
     test('renders correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns/submitted.njk');
+      expect(template).to.equal('nunjucks/returns/submitted');
     });
 
     test('sets view return URL in view', async () => {

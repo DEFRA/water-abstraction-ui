@@ -72,11 +72,6 @@ experiment('reset password controller', () => {
       expect(template).to.equal('test-template');
     });
 
-    test('sets the layout view option to false', async () => {
-      const [, , options] = h.view.lastCall.args;
-      expect(options.layout).to.equal(false);
-    });
-
     test('uses the view data from request.view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.foo).to.equal('bar');
@@ -155,7 +150,7 @@ experiment('reset password controller', () => {
 
       test('a message is logged with request.log', async () => {
         const [level, message, error] = request.log.lastCall.args;
-        expect(level).to.equal('error');
+        expect(level).to.equal('debug');
         expect(message).to.equal('Reset password error');
         expect(error).to.be.an.object();
       });
@@ -180,11 +175,6 @@ experiment('reset password controller', () => {
       const [ , view ] = h.view.lastCall.args;
       expect(view).to.equal(request.view);
     });
-
-    test('sets the layout view option to false', async () => {
-      const [ , , options ] = h.view.lastCall.args;
-      expect(options).to.equal({ layout: false });
-    });
   });
 
   experiment('getChangePassword', () => {
@@ -199,7 +189,7 @@ experiment('reset password controller', () => {
       });
       test('the correct template is displayed', async () => {
         const [ template ] = h.view.lastCall.args;
-        expect(template).to.equal('water/reset-password/reset_password_change_password');
+        expect(template).to.equal('nunjucks/reset-password/change-password');
       });
 
       test('the request.view object is output to the view', async () => {
@@ -234,7 +224,7 @@ experiment('reset password controller', () => {
       await controller.postChangePassword(request, h);
 
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('water/reset-password/reset_password_change_password');
+      expect(view).to.equal('nunjucks/reset-password/change-password');
     });
 
     test('redirects to reset expired if password not updated', async () => {

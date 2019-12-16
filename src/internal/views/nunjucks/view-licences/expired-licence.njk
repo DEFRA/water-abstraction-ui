@@ -1,5 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "./tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% from "badge.njk" import badge %}
 {% from "nunjucks/view-licences/macros/ended-licence-warning.njk" import endedLicenceWarning %}
 
@@ -30,7 +30,7 @@
         {% include "nunjucks/view-licences/tabs/communications.njk" %}
       {% endset %}
 
-      <div class="govuk-tabs" data-module="tabs">
+      <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">Contents</h2>
         <ul class="govuk-tabs__list">
           <li class="govuk-tabs__list-item">
@@ -39,6 +39,11 @@
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#communications">Communications</a>
           </li>
+          {% if showChargeVersions %}
+            <li class="govuk-tabs__list-item">
+              <a class="govuk-tabs__tab" href="#charge">Charge</a>
+            </li>
+          {% endif %}
         </ul>
 
         <section class="govuk-tabs__panel" id="returns">
@@ -47,6 +52,12 @@
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
+
+        {% if showChargeVersions %}
+          <section class="govuk-tabs__panel" id="charge">
+            {% include "nunjucks/view-licences/tabs/charge.njk" %}
+          </section>
+        {% endif %}
       </div>
     </div>
   </div>

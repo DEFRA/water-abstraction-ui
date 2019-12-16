@@ -1,0 +1,59 @@
+{% from "badge.njk" import badge %}
+{% from "returns/return-purposes.njk" import returnPurposes %}
+
+{% macro licenceReturnsTable(returns) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="table__header--tall" scope="col">Return Period</th>
+            <th class="table__header--tall" scope="col">Purpose</th>
+            <th class="table__header--tall" scope="col">Site description</th>
+            <th class="table__header--tall" scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for returnsByYear in returns %}
+            {% for return in returnsByYear.returns %}
+              <tr class="govuk-table__row" {{'data-clickable' if return.path }}>
+                <th class="table__cell--tall govuk-!-font-weight-regular">
+                  <h3 class="govuk-visually-hidden">Return Period</h3>
+                  {% if return.path %}
+                    <a href="{{return.path}}">
+                      <span class="govuk-visually-hidden">{{ "Edit" if return.isEdit else "View" }}
+                        return from</span>
+                    {% endif %}
+                    {{ return.start_date | returnPeriod(return.end_date) }}
+                    {% if return.path %}
+                      <span class="govuk-visually-hidden">
+                        for {{ returnPurposes(return) }}
+                        at
+                        {{ return.metadata.description | titleCase }}
+                      </span>
+                    </a>
+                  {%endif %}
+                </th>
+                <td class="table__cell--tall">
+                  <h4 class="govuk-visually-hidden">Purpose</h4>
+                  {{ returnPurposes(return) }}
+                </td>
+                <td class="table__cell--tall">
+                  <h4 class="govuk-visually-hidden">Site description</h4>
+                  <span class="truncate">
+                    {{ return.metadata.description | titleCase }}
+                  </span>
+                </td>
+                <td class="table__cell--tall">
+                  <h4 class="govuk-visually-hidden">Status</h4>
+                  {{ badge(return | returnBadge) }}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}

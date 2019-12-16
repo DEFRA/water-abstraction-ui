@@ -1,0 +1,26 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ formErrorSummary(form) }}
+      {{ title('Are you sure you want to unlink this licence?') }}
+      {% set warningText %}
+      {{ licenceData.companyName }}
+      will no longer be able to manage this licence.
+      {% endset %}
+      {{ govukWarningText({
+          text: warningText,
+          iconFallbackText: "Warning"
+        }) }}
+      </div>
+      <div class="govuk-grid-column-full">
+        {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

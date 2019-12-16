@@ -1,0 +1,16 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% set pageHeading %}You have unlinked licence {{licenceNumber}} from {{companyName}} {% endset %}
+      {{ title(pageHeading) }}
+      <p>
+        <a href="{{userPageUrl}}">View the user page</a>
+      </p>
+    </div>
+  </div>
+
+{% endblock %}

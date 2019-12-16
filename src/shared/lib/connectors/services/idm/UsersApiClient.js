@@ -70,6 +70,12 @@ class UsersApiClient extends APIClient {
     return user;
   }
 
+  async findOneById (userId) {
+    const { data: user, error } = await this.findOne(userId);
+    throwIfError(error);
+    return user;
+  };
+
   /**
    * Update the external_id field for the given user
    * @param {object} user - The user
@@ -145,6 +151,23 @@ class UsersApiClient extends APIClient {
   updatePassword (application, userId, password) {
     return this.updateOne(userId, { password });
   }
+
+  /**
+   * Reauthenticate the user.  The user is signed in but we need them to
+   * re-enter the password for security
+   * @param  {Number} userId      - user ID of the user logged in to application
+   * @param  {String} password    - password
+   * @return {<Promise>}
+   */
+  reauthenticate (userId, password) {
+    const uri = urlJoin(this.config.endpoint, `${userId}/reauthenticate`);
+    const options = {
+      body: {
+        password
+      }
+    };
+    return serviceRequest.post(uri, options);
+  };
 }
 
 module.exports = UsersApiClient;

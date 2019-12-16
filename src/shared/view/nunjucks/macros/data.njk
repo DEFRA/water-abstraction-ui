@@ -1,0 +1,6 @@
+{% macro data (header, subHeader, isLarge = true) %}
+  <div class="govuk-!-font-weight-bold govuk-body">
+    <div class="govuk-!-font-size-{{ '80' if isLarge else '48' }}">{{ header }}</div>
+    <div class="govuk-!-font-size-24">{{ subHeader }}</div>
+  </div>
+{% endmacro %}

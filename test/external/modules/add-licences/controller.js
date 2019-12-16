@@ -87,7 +87,7 @@ experiment('postAddressSelect', () => {
     await controller.postAddressSelect(request, h);
 
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/form.njk');
+    expect(template).to.equal('nunjucks/form');
   });
 
   experiment('when payload address id is not in the selected documents', () => {
@@ -170,7 +170,7 @@ experiment('postFAO', () => {
     await controller.postFAO(request, h);
 
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/add-licences/verification-sent.njk');
+    expect(template).to.equal('nunjucks/add-licences/verification-sent');
   });
 
   test('renders expected page if form is invalid', async () => {
@@ -178,7 +178,7 @@ experiment('postFAO', () => {
     await controller.postFAO(request, h);
 
     const [template] = h.view.lastCall.args;
-    expect(template).to.equal('nunjucks/form.njk');
+    expect(template).to.equal('nunjucks/form');
   });
 
   test('gets the company id user entity id', async () => {
@@ -214,7 +214,7 @@ experiment('postFAO', () => {
   test('renders the expected view', async () => {
     await controller.postFAO(request, h);
     const [viewName] = h.view.lastCall.args;
-    expect(viewName).to.equal('nunjucks/add-licences/verification-sent.njk');
+    expect(viewName).to.equal('nunjucks/add-licences/verification-sent');
   });
 
   test('passes the expected data to the view', async () => {
@@ -235,5 +235,44 @@ experiment('postFAO', () => {
 
     expect(request.yar.set.calledWith('companyName', 'test-company-name'))
       .to.be.true();
+  });
+});
+
+experiment('ensureSessionDataPreHandler', () => {
+  let request;
+  let h;
+  let takeoverSpy;
+
+  beforeEach(async () => {
+    takeoverSpy = sinon.spy();
+    request = {
+      yar: {
+        get: sinon.stub().returns()
+      }
+    };
+
+    h = {
+      continue: Symbol('test-continue'),
+      redirect: sinon.stub().returns({
+        takeover: takeoverSpy
+      })
+    };
+  });
+
+  experiment('when the data is in session', () => {
+    test('continue is returned', async () => {
+      request.yar.get.returns({ test: true });
+      const result = controller.ensureSessionDataPreHandler(request, h);
+      expect(result).to.equal(h.continue);
+    });
+  });
+
+  experiment('when the data is not found in the session', () => {
+    test('the user is redirected to the add-licences page', async () => {
+      controller.ensureSessionDataPreHandler(request, h);
+      const [redirect] = h.redirect.lastCall.args;
+      expect(redirect).to.equal('/add-licences');
+      expect(takeoverSpy.called).to.be.true();
+    });
   });
 });

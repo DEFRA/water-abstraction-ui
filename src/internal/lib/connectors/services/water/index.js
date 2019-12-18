@@ -23,7 +23,6 @@ const PendingImportsApiClient = require('shared/lib/connectors/services/water/Pe
 
 // API Clients
 const AbstractionReformAnalysisApiClient = require('./AbstractionReformAnalysisApiClient');
-const LookupsApiClient = require('./LookupsApiClient');
 const NotificationsApiClient = require('./NotificationsApiClient');
 const PicklistsApiClient = require('./PicklistsApiClient');
 const PicklistItemsApiClient = require('./PicklistItemsApiClient');
@@ -52,7 +51,6 @@ module.exports = config => ({
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),
-  lookups: new LookupsApiClient(config, logger),
   gaugingStations: new GaugingStationsApiClient(config, logger),
   notifications: new NotificationsApiClient(config, logger),
   taskConfigs: new TaskConfigsApiClient(config, logger),

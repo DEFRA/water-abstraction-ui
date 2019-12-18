@@ -122,7 +122,6 @@ experiment('modules/notifications/controller', async () => {
   beforeEach(() => {
     sandbox.stub(services.water.taskConfigs, 'findOne').resolves({ data: configData });
     sandbox.stub(services.idm.users, 'findOne').resolves({ data: { user_data: userData } });
-    sandbox.stub(services.water.lookups, 'findMany').resolves({ data: 'widget-data' });
   });
   afterEach(async () => {
     await sandbox.restore();

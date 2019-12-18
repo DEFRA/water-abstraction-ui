@@ -1,6 +1,5 @@
 'use strict';
 
-const { Promise } = require('bluebird');
 const { sumBy, parseInt } = require('lodash');
 const TaskData = require('./lib/task-data');
 const { getContext } = require('./lib/context');

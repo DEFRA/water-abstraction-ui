@@ -40,7 +40,7 @@ const getBatchList = (pageNumber) => {
       metadata: {
         batch: {
           season: 'all year',
-          status: 'processing',
+          status: 'complete',
           region_id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
           batch_type: 'supplementary',
           date_created: '2019-11-29T12:24:29.449Z',
@@ -58,7 +58,7 @@ const getBatchList = (pageNumber) => {
       metadata: {
         'batch': {
           season: 'all year',
-          status: 'processing',
+          status: 'sent',
           region_id: '1f57873f-7721-4c6c-a4e1-e935c14c4e42',
           batch_type: 'supplementary',
           date_created: '2019-11-29T12:25:03.368Z',
@@ -69,14 +69,14 @@ const getBatchList = (pageNumber) => {
           invoices: { count: 12, total: 12345.67 + 987.65 }
         }
       },
-      status: 'sent'
+      status: 'complete'
     },
     {
       event_id: 'a8f69d9f-46df-443e-8c29-25f39464e087',
       metadata: {
         batch: {
           season: 'all year',
-          status: 'processing',
+          status: 'error',
           region_id: '8f4f73a9-93d3-4e39-90cd-4913fdfcfcea',
           batch_type: 'supplementary',
           date_created: '2019-11-29T14:12:05.549Z',
@@ -94,7 +94,7 @@ const getBatchList = (pageNumber) => {
       metadata: {
         batch: {
           season: 'all year',
-          status: 'processing',
+          status: 'matching_returns',
           region_id: '897e37ca-c626-48c0-a9f0-055314cc84e5',
           batch_type: 'supplementary',
           date_created: '2019-11-29T14:13:32.158Z',
@@ -105,7 +105,7 @@ const getBatchList = (pageNumber) => {
           invoices: { count: 12, total: 12345.67 + 987.65 }
         }
       },
-      status: 'matching_returns' }
+      status: 'complete' }
     ]
   };
   const response = {

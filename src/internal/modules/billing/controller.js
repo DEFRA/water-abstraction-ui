@@ -1,14 +1,13 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
-const { batchListForm } = require('./forms/billing-batch-list');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const moment = require('moment');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
-const Regions = require('./lib/regions');
+const regions = require('./lib/regions');
 const batchService = require('./services/batchService');
 
 const getSessionForm = (request) => {
@@ -168,12 +167,12 @@ const getBatchType = (type) => {
 };
 
 const mapBatchList = async (batchList) => {
-  const regions = Regions.fromRegions(await getBillingRegions());
+  const regionsList = regions.fromRegions(await getBillingRegions());
   const viewData = batchList.map(batch => ({
     status: batch.status,
-    badge: badge[batch.status],
+    badge: badge[batch.metadata.batch.status],
     batchType: getBatchType(batch.metadata.batch.batch_type),
-    region: regions.getById(batch.metadata.batch.region_id),
+    region: regionsList.getById(batch.metadata.batch.region_id),
     dateCreated: batch.metadata.batch.date_created,
     eventId: batch.event_id,
     invoices: {
@@ -181,8 +180,6 @@ const mapBatchList = async (batchList) => {
       total: batch.metadata.batch.invoices.total
     }
   }));
-
-  console.log(viewData);
   return viewData;
 };
 
@@ -192,12 +189,10 @@ const mapBatchList = async (batchList) => {
  */
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query;
-  console.log(batchService.getBatchList(page));
   const { batchList: { data }, pagination } = batchService.getBatchList(page);
   const batchList = await mapBatchList(data);
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    form: batchListForm(request),
     batches: batchList,
     pagination
   });

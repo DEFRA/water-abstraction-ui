@@ -1,10 +1,17 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% block content %}
 
+
 {{ title(pageTitle) }}
-{{ formRender(form) }}        
+{{
+    govukButton({
+    text: "Create a bill run",
+    href: '/billing/batch/type'
+    })
+  }}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <table class="govuk-table">

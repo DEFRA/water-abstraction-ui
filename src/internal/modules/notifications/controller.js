@@ -89,18 +89,6 @@ async function renderStep (request, h, taskData, index) {
 
   const step = task.config.steps[index];
 
-  // Populate lookup data
-  step.widgets = await Promise.map(step.widgets, async (widget) => {
-    if (widget.lookup) {
-      const { data, error } = await services.water.lookups.findMany(widget.lookup.filter);
-      if (error) {
-        throw error;
-      }
-      widget.data = data;
-    }
-    return widget;
-  });
-
   const view = {
     ...request.view,
     step,

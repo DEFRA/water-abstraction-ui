@@ -20,7 +20,7 @@ const getParsedParams = request => ({
 
 const getTaskConfigById = async request => {
   const { id } = getParsedParams(request);
-  const { data, error } = services.water.taskConfigs.findOne(id);
+  const { data, error } = await services.water.taskConfigs.findOne(id);
 
   if (error) {
     throw error;

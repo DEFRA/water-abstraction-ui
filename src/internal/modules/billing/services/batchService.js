@@ -120,11 +120,6 @@ const getBatchList = (pageNumber) => {
     }
   };
 
-  // const nullresponse = {
-  //   batchList: { data: [] },
-  //   pagination: {}
-  // };
-
   return response;
 };
 

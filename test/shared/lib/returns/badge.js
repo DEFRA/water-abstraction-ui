@@ -37,7 +37,7 @@ experiment('shared/lib/returns/badge', () => {
 
     test('If return is completed, return received badge', async () => {
       expect(badge.getBadge('completed', false)).to.equal({
-        text: 'Completed',
+        text: 'Complete',
         status: undefined
       });
     });

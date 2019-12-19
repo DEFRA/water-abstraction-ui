@@ -4,7 +4,7 @@
 
   https://design-system.service.gov.uk/styles/typography/#section-break
 */
-.section-break__heavy {
+.section-break--heavy {
   @extend .govuk-section-break--visible;
   border-top: none;
   border-bottom: 2px solid $govuk-text-colour;

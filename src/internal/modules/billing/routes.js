@@ -106,7 +106,7 @@ if (isAcceptanceTestTarget) {
         },
         validate: {
           query: {
-            page: Joi.number().default(1)
+            page: Joi.number().integer().min(1).default(1)
           }
         }
       }

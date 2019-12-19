@@ -114,9 +114,7 @@ const getBatchList = (pageNumber) => {
       page: pageNumber,
       pageCount: 4,
       perPage: 2,
-      totalRows: 100,
-      nextText: 'Later',
-      previousText: 'Earlier'
+      totalRows: 100
     }
   };
 

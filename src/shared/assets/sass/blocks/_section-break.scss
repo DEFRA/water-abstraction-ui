@@ -1,0 +1,11 @@
+/**
+  Extends the section break style from the govuk design system
+  to add a thicker line
+
+  https://design-system.service.gov.uk/styles/typography/#section-break
+*/
+.section-break__heavy {
+  @extend .govuk-section-break--visible;
+  border-top: none;
+  border-bottom: 2px solid $govuk-text-colour;
+}

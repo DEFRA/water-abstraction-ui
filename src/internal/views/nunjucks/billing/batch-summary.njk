@@ -1,7 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal %}
-{% from "./nunjucks/billing/macros/heavy-line.njk" import heavyLine %}
 
 {% block content %}
 
@@ -48,7 +47,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-6">
-      {{ heavyLine() }}
+      <hr class="govuk-section-break section-break__heavy" />
     </div>
   </div>
   <div class="govuk-grid-row">

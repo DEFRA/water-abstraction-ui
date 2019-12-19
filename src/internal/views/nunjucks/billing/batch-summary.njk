@@ -6,11 +6,11 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
-      {{ title(pageTitle, billRunDate | date('D MMMM YYYY')) }}
+      {{ title(pageTitle, billRunDate | date('D MMMM YYYY'), false, true) }}
     </div>
   </div>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
       {{ billRunTotal(batch.billRunTotal) }}
     </div>
   </div>
@@ -47,7 +47,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-6">
-      <hr />
+      <hr class="govuk-section-break section-break--heavy" />
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -76,7 +76,7 @@
                   {% endfor %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                  {{ charge.total }}
+                  <span>£{{ charge.total | number}}</span>
                   {% if charge.isCredit %}
                     <div>Credit note</div>
                   {% endif %}

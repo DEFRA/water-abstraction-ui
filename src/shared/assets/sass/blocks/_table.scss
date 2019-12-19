@@ -12,6 +12,18 @@
     padding-left: 0;
 }
 
+.table__header--width-10 {
+  @extend .govuk-table__header;
+  
+    width: 10%;
+}
+
+.table__header--width-20 {
+  @extend .govuk-table__header;
+  
+    width: 20%;
+}
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -20,6 +32,7 @@
   @include govuk-typography-weight-regular;
   max-width: 250px;
 }
+
 
 .table__row--clickable {
   @extend .govuk-table__row !optional;

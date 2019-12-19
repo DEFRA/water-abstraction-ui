@@ -27,7 +27,7 @@ const getWaitingForBilling = async (request, h, event) => {
     return h.redirect(statusPaths[event.status]);
   }
 
-  const { data } = await services.water.billingBatchCreateService.getBillingRegions();
+  const { data } = await services.water.regions.getRegions();
 
   const view = {
     ...request.view,

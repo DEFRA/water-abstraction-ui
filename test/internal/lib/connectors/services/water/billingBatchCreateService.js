@@ -25,21 +25,11 @@ experiment('services/water/billingBatchCreateService', () => {
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post');
-    sandbox.stub(serviceRequest, 'get');
     service = new BillingBatchCreateService('http://127.0.0.1:8001/water/1.0');
   });
 
   afterEach(async () => {
     sandbox.restore();
-  });
-
-  experiment('.getBillingRegions', () => {
-    test('passes the expected URL to the service request', async () => {
-      await service.getBillingRegions();
-      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/regions';
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(expectedUrl);
-    });
   });
 
   experiment('.createBillingBatch', () => {

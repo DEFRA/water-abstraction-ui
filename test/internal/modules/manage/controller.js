@@ -46,7 +46,8 @@ experiment('manage - controller', () => {
         'returnNotifications',
         'licenceNotifications',
         'hofNotifications',
-        'accounts'
+        'accounts',
+        'billing'
       ]);
     });
   });

@@ -30,7 +30,8 @@ experiment('shared/lib/logger-factory', () => {
         userJourney: {
           'user-agent': 'safari'
         }
-      })
+      }),
+      url: 'http://example.com/testing'
     };
 
     beforeEach(async () => {
@@ -65,10 +66,8 @@ experiment('shared/lib/logger-factory', () => {
 
       expect(msg).to.equal('message');
       expect(error).to.equal(err);
-      expect(params).to.equal({
-        userJourney: {
-          'user-agent': 'safari'
-        }
+      expect(params.userJourney).to.equal({
+        'user-agent': 'safari'
       });
     });
 
@@ -87,7 +86,10 @@ experiment('shared/lib/logger-factory', () => {
       expect(error).to.equal(err);
       expect(parameters).to.equal({
         userJourney: { 'user-agent': 'safari' },
-        numbers: { one: 1 }
+        numbers: { one: 1 },
+        requestDetails: {
+          url: 'http://example.com/testing'
+        }
       });
     });
   });

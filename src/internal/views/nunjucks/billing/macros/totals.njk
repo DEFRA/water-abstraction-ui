@@ -19,3 +19,27 @@
 {% macro creditNoteTotal (numberOfItems, totalAmount) %}
   {{ billRunComponent(numberOfItems, 'credit note', totalAmount) }}
 {% endmacro %}
+
+{% macro invoiceComponent (text, totalAmount) %}
+  {% set subHeader %}
+    {{ text }}
+  {% endset %}
+
+  {{ data('£' + totalAmount | number, subHeader, false) }}
+{% endmacro %}
+
+{% macro invoiceTotal (totalAmount, credit) %}
+{% if credit %}
+  {{ data('£' + totalAmount + ' credit' | number, 'Bill amount') }}
+{% else %}
+  {{ data('£' + totalAmount | number, 'Bill amount') }}
+{% endif %}
+{% endmacro %}
+
+{% macro invoiceCreditsTotal (numberOfItems, totalAmount) %}
+  {{ invoiceComponent('Credits', totalAmount) }}
+{% endmacro %}
+
+{% macro invoiceDebitsTotal (numberOfItems, totalAmount) %}
+  {{ invoiceComponent('Dedits', totalAmount) }}
+{% endmacro %}

@@ -9,3 +9,8 @@
   border-top: none;
   border-bottom: 2px solid $govuk-text-colour;
 }
+
+.section-break--margin-7 {
+  @extend .govuk-section-break--visible;
+  margin-bottom: 40px;
+}

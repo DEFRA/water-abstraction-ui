@@ -91,6 +91,26 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+    getBillingBatchInvoice: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/summary/invoice/{invoiceId}',
+      handler: controller.getBillingBatchInvoice,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'displays the invoice for a specific bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid(),
+            invoiceId: Joi.string().uuid()
+          }
+        }
+      }
+    },
     getBillingBatchList: {
       method: 'GET',
       path: '/billing/batch/list',

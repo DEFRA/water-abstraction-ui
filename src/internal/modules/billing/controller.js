@@ -154,128 +154,58 @@ const getBillingBatchSummary = async (request, h) => {
 };
 
 const getBillingBatchInvoice = async (request, h) => {
-  const invoice = {
+  const invoice =
+  {
     id: '3e5add08-3e46-48b7-9325-b48ab1ddb363',
     account: {
-      number: '021545'
+      number: '021545',
+      companyName: 'Company name Ltd.',
+      contactAddress:
+        { name: 'Business department', addressLine1: 'Address Line 1', addressLine2: 'Address Line 2', county: 'Countyshire', postCode: 'Post Code' }
     },
-    licence: {
-      id: '3e5add08-3e46-48b7-9325-b48ab1ddb363',
-      ref: '03/28/60/0032',
-      holderAdresses: [
-        {
-          name: 'Licence Holder A',
-          addressLine1: 'Address Line 1',
-          addressLine2: 'Address Line 2',
-          county: 'Countyshire',
-          postCode: 'Post Code'
-        },
-        {
-          name: 'Licence Holder B',
-          addressLine1: 'Address Line 1',
-          addressLine2: 'Address Line 2',
-          county: 'Countyfordshire',
-          postCode: 'Post Code'
-        }
-      ],
-      contactAddresses: [
-        {
-          name: 'Business department',
-          addressLine1: 'Address Line 1',
-          addressLine2: 'Address Line 2',
-          county: 'Countyshire',
-          postCode: 'Post Code'
-        },
-        {
-          name: 'Fincance department',
-          addressLine1: 'Address Line 1',
-          addressLine2: 'Address Line 2',
-          county: 'Countyfordshire',
-          postCode: 'Post Code'
-        }
-      ]
-    },
-    header: {
-      credit: 987.21,
-      debit: 654.21,
-      total: 5465.56,
-      isCredit: false,
-      year: 2020
-    },
-    transactions: [
+    header: { credit: 987.21, debit: 654.21, total: 5465.56, isCredit: false, year: 2020 }, // totals for the licence for the year
+    licences: [ // many licences for an invoice
       {
-        transactionHeader: {
-          id: 1,
-          description: 'Spray irrigation, base licence',
-          startDate: '01 April',
-          endDate: '31 December',
-          code: 'S127 (Two-part tariff)',
-          credit: 321.45,
-          debit: 921.85,
-          isCredit: false,
-          totalAmount: 600.40 },
-        transactionLines:
-        [
-          { lineId: 1,
-            abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
-            chargeType: 'Standard charge',
-            loss: 'High Loss',
-            season: 'Summer',
-            source: 'Supported source',
-            billableDays: '61/300',
-            netAmount: 921.45,
-            isCredit: false },
-          { lineId: 1,
-            abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
-            chargeType: 'Compensation charge',
-            loss: 'High Loss',
-            season: 'Summer',
-            source: 'Supported source',
-            billableDays: '61/300',
-            netAmount: 321.45,
-            isCredit: true }
-        ]
-      },
-      {
-        transactionHeader: {
-          id: 1,
-          description: 'Spray irrigation, base licence',
-          startDate: '01 April',
-          endDate: '31 December',
-          code: 'S127 (Two-part tariff)',
-          credit: 321.45,
-          debit: 921.85,
-          isCredit: false,
-          totalAmount: 600.40 },
-        transactionLines:
-        [
-          { lineId: 1,
-            abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
-            chargeType: 'Standard charge',
-            loss: 'High Loss',
-            season: 'Summer',
-            source: 'Supported source',
-            billableDays: '61/300',
-            netAmount: 921.45,
-            isCredit: false },
-          { lineId: 1,
-            abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
-            chargeType: 'Compensation charge',
-            loss: 'High Loss',
-            season: 'Summer',
-            source: 'Supported source',
-            billableDays: '61/300',
-            netAmount: 321.45,
-            isCredit: true }
+        id: '3e5add08-3e46-48b7-9325-b48ab1ddb363',
+        ref: '03/28/60/0032',
+        year: '2020',
+        transactions: [ // many transactions per licence
+          {
+            header: { // summary of the transaction lines
+              id: 1,
+              description: 'Spray irrigation, base licence',
+              startDate: '01 April',
+              endDate: '31 December',
+              code: 'S127 (Two-part tariff)',
+              credit: 321.45,
+              debit: 921.85,
+              isCredit: false,
+              totalAmount: 600.40,
+              year: 2020
+            },
+            transactionLines: [ // many transactions
+              {
+                lineId: 1,
+                abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
+                chargeType: 'Standard charge',
+                loss: 'High Loss',
+                season: 'Summer',
+                source: 'Supported source',
+                billableDays: '61/300',
+                netAmount: 921.45,
+                isCredit: false
+              }
+            ]
+          }
         ]
       }
     ]
   };
+
   const batchId = request.params.batchId;
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
-    companyName: 'Test Company Name',
     pageTitle: 'January 2020 invoice',
     invoice
   });

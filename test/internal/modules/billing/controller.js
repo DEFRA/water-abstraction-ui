@@ -300,4 +300,38 @@ experiment('internal/modules/billing/controller', () => {
       expect(view).to.equal('nunjucks/billing/batch-list');
     });
   });
+
+  experiment('.getBillingBatchInvoice', () => {
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        }
+      };
+
+      await controller.getBillingBatchInvoice(request, h);
+    });
+
+    test('passes the required invoice data to the view', async () => {
+      const [, context] = h.view.lastCall.args;
+      const { invoice } = context;
+      console.log(invoice);
+      expect(invoice).includes('account');
+      expect(invoice).includes('header');
+      expect(invoice).includes('licences');
+      expect(invoice.licences).to.be.array();
+      expect(invoice.licences[0].transactions).to.be.array();
+      expect(invoice.licences[0].transactions[0].transactionLines).to.be.array();
+    });
+
+    test('configures the back route', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+
+    test('configures the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-invoice');
+    });
+  });
 });

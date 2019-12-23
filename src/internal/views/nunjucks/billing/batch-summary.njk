@@ -2,6 +2,26 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal %}
 
+{% macro batchLicenceNumbers(licences) %}
+  {% if licences.length > 4 %}
+    <p class="govuk-body govuk-!-margin-bottom-1">{{ licences.length }} licences</p>
+    <details class="govuk-details govuk-!-margin-bottom-0" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">View licences</span>
+      </summary>
+      <div class="govuk-details__text">
+        {% for licence in licences %}
+          <div>{{ licence.licenceRef }}</div>
+        {% endfor %}
+      </div>
+    </details>
+  {% else %}
+    {% for licence in licences %}
+      <div>{{ licence.licenceRef }}</div>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
 
   <div class="govuk-grid-row">
@@ -71,9 +91,7 @@
                 </th>
                 <td class="govuk-table__cell">{{ charge.contact }}</td>
                 <td class="govuk-table__cell">
-                  {% for licence in charge.licences %}
-                    <div>{{ licence.licenceRef }}</div>
-                  {% endfor %}
+                  {{ batchLicenceNumbers(charge.licences) }}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                   <span>£{{ charge.total | number}}</span>

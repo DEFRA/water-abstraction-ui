@@ -142,12 +142,13 @@ const getBillingBatchSummary = async (request, h) => {
     pageTitle: pageTitle,
     batch: {
       batchId: request.params.batchId,
-      billRunTotal: 12345.67,
-      invoices: { count: 12, total: 12345.67 + 987.65 },
+      billRunTotal: 12445.78,
+      invoices: { count: 12, total: 12445.78 + 987.65 },
       creditNotes: { count: 1, total: 987.65 },
       charges: [
         { account: 123, contact: 'Mr A Parson', licences: [ { licenceRef: '111' }, { licenceRef: '111/1' } ], total: 1234.56, isCredit: false },
-        { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true }
+        { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true },
+        { account: 1234, contact: 'Ms A Farson', licences: [ { licenceRef: '11' }, { licenceRef: '22' }, { licenceRef: '33' }, { licenceRef: '44' }, { licenceRef: '55' } ], total: 100.11, isCredit: false }
       ]
     }
   });

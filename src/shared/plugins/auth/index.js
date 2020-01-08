@@ -23,6 +23,10 @@ module.exports = {
           return options.onSignOut(request, h);
         };
 
+        request.handleUnauthorized = async (request, h) => {
+          return options.onUnauthorized(request, h);
+        };
+
         // Continue processing request
         return h.continue;
       }

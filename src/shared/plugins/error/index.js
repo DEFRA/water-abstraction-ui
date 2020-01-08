@@ -6,8 +6,6 @@
  *
  * @module lib/hapi-error-plugin
  */
-const { contextDefaults } = require('../view');
-const { logger } = require('../../logger');
 const { get, pick } = require('lodash');
 
 const getStatusCode = request => get(request, 'response.output.statusCode');
@@ -27,6 +25,7 @@ const isUnauthorized = request => {
 
 const _handler = async (request, h) => {
   const res = request.response;
+  const { pluginOptions } = h.realm;
 
   if (isIgnored(request) || !res.isBoom || is404(request)) {
     return h.continue;
@@ -34,21 +33,21 @@ const _handler = async (request, h) => {
 
   // Destroy session for CSRF error
   if (isCsrfError(request)) {
-    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     return request.logOut();
   }
 
-  // Unauthorised - redirect to sign in
+  // Unauthorised - redirect to welcome
   if (isUnauthorized(request)) {
-    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-    return h.redirect('/signin');
+    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+    return request.handleUnauthorized(request, h);
   }
 
-  logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
+  pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
 
   // Render 500 page
   const view = {
-    ...contextDefaults(request),
+    ...pluginOptions.contextDefaults(request),
     pageTitle: 'Something went wrong'
   };
   const statusCode = getStatusCode(request);

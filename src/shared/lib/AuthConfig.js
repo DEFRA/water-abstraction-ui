@@ -57,6 +57,9 @@ class AuthConfig {
   onSignOut (request, h) {
   }
 
+  onUnauthorized (request, h) {
+  }
+
   async _mapUserRequestData (request, user) {
     const entityId = get(user, 'external_id');
     const userScopes = get(user, 'roles', []);

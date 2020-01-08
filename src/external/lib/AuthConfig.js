@@ -31,6 +31,10 @@ class AuthConfig extends AuthConfigBase {
     return h.metaRedirect(path);
   }
 
+  onUnauthorized (request, h) {
+    return h.redirect('/welcome');
+  }
+
   async _mapUserRequestData (request, user) {
     const entityId = get(user, 'external_id');
     const companyId = request.yar.get('companyId');

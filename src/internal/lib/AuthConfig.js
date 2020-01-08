@@ -12,6 +12,10 @@ class AuthConfig extends AuthConfigBase {
   onSignOut (request, h) {
     return h.metaRedirect(`/signed-out?u=i`);
   }
+
+  onUnauthorized (request, h) {
+    return h.redirect('/signin');
+  }
 }
 
 module.exports = AuthConfig;

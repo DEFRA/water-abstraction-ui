@@ -6,8 +6,8 @@ const Boom = require('@hapi/boom');
 
 const sandbox = sinon.createSandbox();
 
-const plugin = require('internal/lib/hapi-plugins/error');
-const { logger } = require('internal/logger');
+const plugin = require('shared/plugins/error');
+const { logger } = require('external/logger');
 
 const createRequest = (error = {}) => {
   return {
@@ -30,7 +30,8 @@ const createRequest = (error = {}) => {
     state: {
       seen_cookie_message: 'yes'
     },
-    logOut: sandbox.stub()
+    logOut: sandbox.stub(),
+    handleUnauthorized: sandbox.stub().returns()
   };
 };
 
@@ -47,11 +48,21 @@ experiment('errors plugin', () => {
       view: sandbox.stub().returns({
         code
       }),
-      continue: 'continue'
+      continue: 'continue',
+      realm: {
+        pluginOptions: {
+          logger: {
+            info: sandbox.stub(),
+            error: sandbox.stub(),
+            errorWithJourney: sandbox.stub()
+          },
+          contextDefaults: sandbox.stub()
+        }
+      }
     };
-    sandbox.stub(logger, 'info');
-    sandbox.stub(logger, 'error');
-    sandbox.stub(logger, 'errorWithJourney');
+    // sandbox.stub(logger, 'info');
+    // sandbox.stub(logger, 'error');
+    // sandbox.stub(logger, 'errorWithJourney');
   });
 
   afterEach(async () => {
@@ -92,20 +103,20 @@ experiment('errors plugin', () => {
       expect(result).to.equal(h.continue);
     });
 
-    test('logs and redirects to signin for 401 unauthorized', async () => {
+    test('logs and calls request.handleUnauthorized for 401 unauthorized', async () => {
       const request = createRequest(Boom.unauthorized());
       await plugin._handler(request, h);
-      expect(logger.info.callCount).to.equal(1);
-      const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/signin');
+      expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
+      const [ passedRequest ] = request.handleUnauthorized.lastCall.args;
+      expect(passedRequest).to.equal(request);
     });
 
-    test('logs redirects to signin for 403 forbidden', async () => {
+    test('logs and calls request.handleUnauthorized for 403 forbidden', async () => {
       const request = createRequest(Boom.forbidden());
       await plugin._handler(request, h);
-      expect(logger.info.callCount).to.equal(1);
-      const [ path ] = h.redirect.lastCall.args;
-      expect(path).to.equal('/signin');
+      expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
+      const [passedRequest] = request.handleUnauthorized.lastCall.args;
+      expect(passedRequest).to.equal(request);
     });
 
     test('calls request.logOut() for CSRF error', async () => {
@@ -113,7 +124,7 @@ experiment('errors plugin', () => {
       set(request, 'response.data.isCsrfError', true);
       await plugin._handler(request, h);
       expect(request.logOut.callCount).to.equal(1);
-      expect(logger.info.callCount).to.equal(1);
+      expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
     });
 
     test('logs error and renders error page for other error types', async () => {
@@ -123,7 +134,7 @@ experiment('errors plugin', () => {
       expect(h.view.callCount).to.equal(1);
       const [ template ] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/errors/error');
-      expect(logger.errorWithJourney.callCount).to.equal(1);
+      expect(h.realm.pluginOptions.logger.errorWithJourney.callCount).to.equal(1);
     });
   });
 });

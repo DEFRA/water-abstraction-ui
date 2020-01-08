@@ -7,7 +7,6 @@ const Boom = require('@hapi/boom');
 const sandbox = sinon.createSandbox();
 
 const plugin = require('shared/plugins/error');
-const { logger } = require('external/logger');
 
 const createRequest = (error = {}) => {
   return {

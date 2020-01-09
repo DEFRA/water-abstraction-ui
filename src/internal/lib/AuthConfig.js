@@ -1,4 +1,6 @@
 const AuthConfigBase = require('shared/lib/AuthConfig');
+const { logger } = require('internal/logger');
+const { pick } = require('lodash');
 
 class AuthConfig extends AuthConfigBase {
   ifAuthenticated (request, h) {
@@ -14,6 +16,7 @@ class AuthConfig extends AuthConfigBase {
   }
 
   onUnauthorized (request, h) {
+    logger.info(pick(request.response, ['error', 'message', 'statusCode', 'stack']));
     return h.redirect('/signin');
   }
 }

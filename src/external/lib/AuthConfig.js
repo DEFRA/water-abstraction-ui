@@ -1,6 +1,7 @@
-const { get } = require('lodash');
+const { get, pick } = require('lodash');
 const loginHelpers = require('./login-helpers');
 const AuthConfigBase = require('shared/lib/AuthConfig');
+const { logger } = require('external/logger');
 
 const getUniqueCompanyIds = (entityRoles = []) => {
   const allIds = entityRoles.map(er => er.company_entity_id);
@@ -32,6 +33,7 @@ class AuthConfig extends AuthConfigBase {
   }
 
   onUnauthorized (request, h) {
+    logger.info(pick(request.response, ['error', 'message', 'statusCode', 'stack']));
     return h.redirect('/welcome');
   }
 

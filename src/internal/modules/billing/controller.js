@@ -135,6 +135,7 @@ const getBillingBatchSummary = async (request, h) => {
   // get the event date for the bill run date
   const billRunDate = moment();
   const pageTitle = 'Anglian supplementary bill run';
+  const { referer = '' } = request.headers;
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
@@ -149,7 +150,11 @@ const getBillingBatchSummary = async (request, h) => {
         { account: 123, contact: 'Mr A Parson', licences: [ { licenceRef: '111' }, { licenceRef: '111/1' } ], total: 1234.56, isCredit: false },
         { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true }
       ]
-    }
+    },
+
+    // only show the back link from the list page, so not to offer the link
+    // as part of the batch creation flow.
+    back: referer.endsWith('/billing/batch/list') ? referer : false
   });
 };
 

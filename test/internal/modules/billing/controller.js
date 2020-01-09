@@ -54,6 +54,7 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id'
         },
+        headers: {},
         payload: {
           csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
         },
@@ -298,6 +299,38 @@ experiment('internal/modules/billing/controller', () => {
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
       expect(view).to.equal('nunjucks/billing/batch-list');
+    });
+  });
+
+  experiment('.getBillingBatchSummary', () => {
+    test('does not include the back link if previous page was not /billing/batch/list', async () => {
+      const request = {
+        headers: {
+          referer: 'https://example.com/no/back/link/here/please'
+        },
+        params: {
+          batchId: 'test-batch'
+        }
+      };
+
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.be.false();
+    });
+
+    test('includes the back link if previous page was /billing/batch/list', async () => {
+      const request = {
+        headers: {
+          referer: 'https://example.com/billing/batch/list'
+        },
+        params: {
+          batchId: 'test-batch'
+        }
+      };
+
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('https://example.com/billing/batch/list');
     });
   });
 });

@@ -195,6 +195,9 @@ experiment('internal/modules/waiting/controller', () => {
     };
 
     request = {
+      query: {
+        back: 0
+      },
       params: {
         eventId: 'test-event-id'
       }
@@ -255,7 +258,7 @@ experiment('internal/modules/waiting/controller', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/billing/batch/test-batch-id/summary');
+        expect(url).to.equal('/billing/batch/test-batch-id/summary?back=0');
       });
     });
   });

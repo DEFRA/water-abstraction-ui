@@ -27,7 +27,7 @@ const _handler = async (request, h) => {
   const res = request.response;
   const { pluginOptions } = h.realm;
 
-  if (isIgnored(request) || !res.isBoom || is404(request)) {
+  if (isIgnored(request) || !res.isBoom) {
     return h.continue;
   }
 
@@ -39,19 +39,20 @@ const _handler = async (request, h) => {
 
   // Unauthorised - redirect to welcome
   if (isUnauthorized(request)) {
-    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     return request.handleUnauthorized(request, h);
   }
 
   pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
 
-  // Render 500 page
+  // Render 404 or 500 page depending on statusCode
   const view = {
-    ...pluginOptions.contextDefaults(request),
+    ...request.view,
     pageTitle: 'Something went wrong'
   };
+
+  const template = is404(request) ? 'nunjucks/errors/404' : 'nunjucks/errors/error';
   const statusCode = getStatusCode(request);
-  return h.view('nunjucks/errors/error', view).code(statusCode);
+  return h.view(template, view).code(statusCode);
 };
 
 const errorPlugin = {

@@ -89,12 +89,6 @@ experiment('errors plugin', () => {
       expect(result).to.equal(h.continue);
     });
 
-    test('returns h.continue for 404 not found', async () => {
-      const request = createRequest(Boom.notFound());
-      const result = await plugin._handler(request, h);
-      expect(result).to.equal(h.continue);
-    });
-
     test('returns h.continue if ignore is set in plugin config', async () => {
       const request = createRequest(Boom.forbidden());
       set(request, 'route.settings.plugins.errorPlugin.ignore', true);
@@ -105,7 +99,6 @@ experiment('errors plugin', () => {
     test('logs and calls request.handleUnauthorized for 401 unauthorized', async () => {
       const request = createRequest(Boom.unauthorized());
       await plugin._handler(request, h);
-      expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
       const [ passedRequest ] = request.handleUnauthorized.lastCall.args;
       expect(passedRequest).to.equal(request);
     });
@@ -113,7 +106,6 @@ experiment('errors plugin', () => {
     test('logs and calls request.handleUnauthorized for 403 forbidden', async () => {
       const request = createRequest(Boom.forbidden());
       await plugin._handler(request, h);
-      expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
       const [passedRequest] = request.handleUnauthorized.lastCall.args;
       expect(passedRequest).to.equal(request);
     });
@@ -124,6 +116,16 @@ experiment('errors plugin', () => {
       await plugin._handler(request, h);
       expect(request.logOut.callCount).to.equal(1);
       expect(h.realm.pluginOptions.logger.info.callCount).to.equal(1);
+    });
+
+    test('logs error and renders 404 page', async () => {
+      const request = createRequest(Boom.notFound());
+      await plugin._handler(request, h);
+
+      expect(h.view.callCount).to.equal(1);
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/errors/404');
+      expect(h.realm.pluginOptions.logger.errorWithJourney.callCount).to.equal(1);
     });
 
     test('logs error and renders error page for other error types', async () => {

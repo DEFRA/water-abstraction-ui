@@ -58,10 +58,7 @@ const pluginsArray = [
     }
   }, {
     plugin: require('shared/plugins/error'),
-    options: {
-      logger,
-      contextDefaults: require('./src/external/lib/view').contextDefaults
-    }
+    options: { logger }
   }
 ];
 

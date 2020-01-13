@@ -96,14 +96,14 @@ experiment('errors plugin', () => {
       expect(result).to.equal(h.continue);
     });
 
-    test('logs and calls request.handleUnauthorized for 401 unauthorized', async () => {
+    test('logs error and calls request.handleUnauthorized for 401 unauthorized', async () => {
       const request = createRequest(Boom.unauthorized());
       await plugin._handler(request, h);
       const [ passedRequest ] = request.handleUnauthorized.lastCall.args;
       expect(passedRequest).to.equal(request);
     });
 
-    test('logs and calls request.handleUnauthorized for 403 forbidden', async () => {
+    test('logs error and calls request.handleUnauthorized for 403 forbidden', async () => {
       const request = createRequest(Boom.forbidden());
       await plugin._handler(request, h);
       const [passedRequest] = request.handleUnauthorized.lastCall.args;

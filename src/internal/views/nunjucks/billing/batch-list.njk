@@ -29,15 +29,15 @@
         {% for batch in batches %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
-            <a class="govuk-link" href="/waiting/{{batch.eventId}}">
+            <a class="govuk-link" href="/billing/batch/{{batch.id}}/summary">
              {{ batch.dateCreated | date }}
             </a>
           </td>
           <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.invoices.count }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{'£' + batch.invoices.total | number }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch.badge) }}</td>          
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{'£' + batch.value | number }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch.badge) }}</td>
         </tr>
         {% endfor %}
       </tbody>

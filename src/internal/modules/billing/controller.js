@@ -4,7 +4,6 @@ const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/bi
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
-const moment = require('moment');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const regions = require('./lib/regions');
@@ -132,23 +131,25 @@ const getBillingBatchExist = async (request, h) => {
 };
 
 const getBillingBatchSummary = async (request, h) => {
-  // get the event date for the bill run date
-  const billRunDate = moment();
-  const pageTitle = 'Anglian supplementary bill run';
+  const { batchId } = request.params;
+  const { batch, invoices, totals } = await batchService.getBatchInvoices(batchId);
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
-    billRunDate: billRunDate,
-    pageTitle: pageTitle,
+    pageTitle: `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`,
     batch: {
-      batchId: request.params.batchId,
-      billRunTotal: 12345.67,
-      invoices: { count: 12, total: 12345.67 + 987.65 },
-      creditNotes: { count: 1, total: 987.65 },
-      charges: [
-        { account: 123, contact: 'Mr A Parson', licences: [ { licenceRef: '111' }, { licenceRef: '111/1' } ], total: 1234.56, isCredit: false },
-        { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true }
-      ]
+      batchId,
+      billRunDate: batch.billRunDate,
+      totals,
+      charges: invoices.map(invoice => {
+        return {
+          account: invoice.invoiceAccount.accountNumber,
+          contact: invoice.invoiceAccount.company.name,
+          licences: invoice.invoiceLicences.map(il => il.licence.licenceNumber),
+          total: invoice.totals.totalValue,
+          isCredit: invoice.totals.totalCredits > invoice.totals.totalInvoices
+        };
+      })
     },
 
     // only show the back link from the list page, so not to offer the link
@@ -161,7 +162,7 @@ const badge = {
   processing: { status: 'warning', text: 'Building' },
   complete: { status: 'success', text: 'Ready' },
   sent: { text: 'Sent' },
-  matching_returns: { status: 'warning', text: 'Review' },
+  review: { status: 'warning', text: 'Review' },
   error: { status: 'error', text: 'Error' }
 };
 
@@ -172,32 +173,27 @@ const getBatchType = (type) => {
 
 const mapBatchList = async (batchList) => {
   const regionsList = regions.fromRegions(await getBillingRegions());
-  const viewData = batchList.map(batch => ({
-    status: batch.status,
-    badge: badge[batch.metadata.batch.status],
-    batchType: getBatchType(batch.metadata.batch.batch_type),
-    region: regionsList.getById(batch.metadata.batch.region_id),
-    dateCreated: batch.metadata.batch.date_created,
-    eventId: batch.event_id,
-    invoices: {
-      count: batch.metadata.batch.invoices.count,
-      total: batch.metadata.batch.invoices.total
-    }
-  }));
-  return viewData;
+
+  // TODO: Replace random billing with calcuated numbers
+  return batchList.map(batch => {
+    batch.badge = badge[batch.status];
+    batch.batchType = getBatchType(batch.type);
+    batch.region = regionsList.getById(batch.region.id);
+    batch.billCount = Math.round(Math.random() * 50);
+    batch.value = (Math.random() * 10000).toFixed(2);
+    return batch;
+  });
 };
 
-/**
- * @param {*} request
- * @param {*} h
- */
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query;
-  const { batchList: { data }, pagination } = batchService.getBatchList(page);
-  const batchList = await mapBatchList(data);
+  const { data, pagination } = await batchService.getBatchList(page, 10);
+
+  const batches = await mapBatchList(data);
+
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    batches: batchList,
+    batches,
     pagination
   });
 };

@@ -40,96 +40,83 @@ experiment('internal/modules/billing/controller', () => {
     h = {
       view: sandbox.stub()
     };
+
+    sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
+    sandbox.stub(batchService, 'getBatchList');
+    sandbox.stub(batchService, 'getBatchInvoices');
+
+    request = {
+      params: {
+        batchId: 'test-batch-id'
+      },
+      query: {},
+      payload: {
+        csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
+      },
+      view: {},
+      log: sandbox.spy(),
+      defra: {
+        userName: 'test-user@example.com'
+      },
+      yar: {
+        get: sandbox.stub().returns({
+          // form object or null depending on test
+        }),
+        set: sandbox.stub(),
+        clear: sandbox.stub()
+      }
+    };
   });
 
   afterEach(async () => {
     sandbox.restore();
   });
 
-  experiment('getRegions', () => {
+  experiment('ui flow tests for ui bill run type flow forms', () => {
     beforeEach(async () => {
-      // sandbox.stub(logger, 'error');
-      sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
-      request = {
-        params: {
-          batchId: 'test-batch-id'
-        },
-        query: {},
-        payload: {
-          csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
-        },
-        view: {},
-        log: sandbox.spy(),
-        defra: {
-          userName: 'test-user@example.com'
-        },
-        yar: {
-          get: sandbox.stub().returns({
-            // form object or null depending on test
-          }),
-          set: sandbox.stub(),
-          clear: sandbox.stub()
-        }
-      };
+      await controller.getBillingBatchType(request, h);
     });
 
-    experiment('ui flow tests for ui bill run type flow forms', () => {
-      beforeEach(async () => {
-        await controller.getBillingBatchType(request, h);
-      });
-
-      test('the expected view template is used for bill run type', async () => {
-        const [templateName] = h.view.lastCall.args;
-        expect(templateName).to.equal('nunjucks/form');
-      });
-
-      test('view context is assigned a back link path for type', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.back).to.equal('/manage');
-      });
+    test('the expected view template is used for bill run type', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/form');
     });
 
-    experiment('ui flow tests for ui bill run region flow forms', () => {
-      beforeEach(async () => {
-        await controller.getBillingBatchRegion(request, h);
-      });
+    test('view context is assigned a back link path for type', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/manage');
+    });
+  });
 
-      test('the expected view template is used for bill run type', async () => {
-        const [templateName] = h.view.lastCall.args;
-        expect(templateName).to.equal('nunjucks/form');
-      });
-
-      test('view context is assigned a back link path for type', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.back).to.equal('/billing/batch/type');
-      });
+  experiment('ui flow tests for ui bill run region flow forms', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchRegion(request, h);
     });
 
-    experiment('ui flow tests for ui bill run exist', () => {
-      beforeEach(async () => {
-        await controller.getBillingBatchExist(request, h);
-      });
-
-      test('the expected view template is used for bill run exist', async () => {
-        const [templateName] = h.view.lastCall.args;
-        expect(templateName).to.equal('nunjucks/billing/batch-exist');
-      });
-
-      test('view context is assigned a back link path for exist', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.back).to.equal('/billing/batch/region');
-      });
+    test('the expected view template is used for bill run type', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/form');
     });
 
-    experiment('ui flow tests for ui bill run summary', () => {
-      beforeEach(async () => {
-        await controller.getBillingBatchSummary(request, h);
-      });
+    test('view context is assigned a back link path for type', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/type');
+    });
+  });
 
-      test('the expected view template is used for bill run summary', async () => {
-        const [templateName] = h.view.lastCall.args;
-        expect(templateName).to.equal('nunjucks/billing/batch-summary');
-      });
+  experiment('ui flow tests for ui bill run exist', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchExist(request, h);
+    });
+
+    test('the expected view template is used for bill run exist', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/batch-exist');
+    });
+
+    test('view context is assigned a back link path for exist', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/region');
     });
   });
 
@@ -216,62 +203,40 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchList', () => {
-    const getBatchList = (pageNumber) => {
-      const batchList = {
-        data:
-        [ { event_id: '83a18e3d-473d-4b36-8c8a-0b1c373dac21',
-          metadata: {
-            batch:
-            { season: 'all year',
-              status: 'processing',
-              region_id: '07ae7f3a-2677-4102-b352-cc006828948c',
-              batch_type: 'supplementary',
-              date_created: '2019-11-29T12:24:06.585Z',
-              date_updated: '2019-11-29T12:24:06.585Z',
-              billing_batch_id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2',
-              to_financial_year_ending: 2020,
-              from_financial_year_ending: 2014,
-              invoices: { count: 12, total: 12345.67 + 987.65 }
-            }
-          },
-          status: 'processing'
-        },
-        { event_id: '7e53df2e-5dcf-45d5-9a67-79ea57c122ec',
-          metadata: {
-            batch: {
-              season: 'all year',
-              status: 'processing',
-              region_id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
-              batch_type: 'two_part_tarrif',
-              date_created: '2019-11-29T12:24:29.449Z',
-              date_updated: '2019-11-29T12:24:29.449Z',
-              billing_batch_id: 'b456f227-46c0-4354-a923-ad449671ad5d',
-              to_financial_year_ending: 2020,
-              from_financial_year_ending: 2014,
-              invoices: { count: 12, total: 12345.67 + 987.65 }
-            }
-          },
-          status: 'complete'
-        }
-        ]
-      };
-      const response = {
-        batchList,
-        pagination: {
-          page: pageNumber,
-          pageCount: 4,
-          perPage: 2,
-          totalRows: 100,
-          nextText: 'Later',
-          previousText: 'Earlier'
-        }
-      };
-
-      return response;
-    };
+    let batchesResponse;
 
     beforeEach(async () => {
-      sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
+      batchesResponse = {
+        data: [
+          {
+            season: 'all year',
+            status: 'processing',
+            region: {
+              id: '07ae7f3a-2677-4102-b352-cc006828948c'
+            },
+            type: 'supplementary',
+            dateCreated: '2019-11-29T12:24:06.585Z',
+            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2'
+          },
+          {
+            season: 'all year',
+            status: 'processing',
+            region: {
+              id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
+            },
+            type: 'two_part_tarrif',
+            dateCreated: '2019-11-29T12:24:29.449Z',
+            id: 'b456f227-46c0-4354-a923-ad449671ad5d'
+          }
+        ],
+        pagination: {
+          page: 1,
+          pageCount: 4,
+          perPage: 2,
+          totalRows: 8
+        }
+      };
+
       request = {
         query: {
           page: ''
@@ -281,8 +246,8 @@ experiment('internal/modules/billing/controller', () => {
         }
       };
 
+      batchService.getBatchList.resolves(batchesResponse);
       await controller.getBillingBatchList(request, h);
-      sandbox.stub(batchService, 'getBatchList').resolves(getBatchList());
     });
 
     test('passes the required batch list data to the view', async () => {
@@ -292,8 +257,6 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].batchType).to.equal('Supplementary');
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
-      expect(batches[0].invoices.total).to.equal(13333.32);
-      expect(batches[0].invoices.count).to.equal(12);
     });
 
     test('configures the expected view template', async () => {
@@ -303,14 +266,121 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchSummary', () => {
+    let batchInvoicesResult;
+
+    beforeEach(async () => {
+      batchInvoicesResult = {
+        batch: {
+          type: 'two_part_tariff',
+          billRunDate: (new Date(2000, 0, 1)).toISOString(),
+          region: {
+            name: 'Test Region'
+          }
+        },
+        invoices: [
+          {
+            invoiceAccount: {
+              accountNumber: 'A1',
+              company: {
+                name: 'Comp A'
+              }
+            },
+            invoiceLicences: [{ licence: { licenceNumber: '111' } }],
+            totals: {
+              totalValue: 111,
+              totalCredits: 111,
+              totalInvoices: 222
+            }
+
+          }, {
+            invoiceAccount: {
+              accountNumber: 'B2',
+              company: {
+                name: 'Comp B'
+              }
+            },
+            invoiceLicences: [
+              { licence: { licenceNumber: '222' } },
+              { licence: { licenceNumber: '222/222' } }
+            ],
+            totals: {
+              totalValue: -111,
+              totalCredits: 333,
+              totalInvoices: 222
+            }
+
+          }
+        ],
+        totals: {
+          totalValue: 111,
+          totalInvoices: 2,
+          totalCredits: 1,
+          numberOfInvoices: 2,
+          numberOfCredits: 0
+        }
+      };
+      batchService.getBatchInvoices.resolves(batchInvoicesResult);
+    });
+
+    test('the expected view template is used for bill run summary', async () => {
+      const request = {
+        params: { batchId: 'test-batch' },
+        query: {}
+      };
+
+      await controller.getBillingBatchSummary(request, h);
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/batch-summary');
+    });
+
+    experiment('the view model is populated with', () => {
+      let view;
+
+      beforeEach(async () => {
+        const request = {
+          params: { batchId: 'test-batch' },
+          query: {}
+        };
+
+        await controller.getBillingBatchSummary(request, h);
+        ([, view] = h.view.lastCall.args);
+      });
+
+      test('the page title including the region name and batch type', async () => {
+        expect(view.pageTitle).to.equal('Test Region two part tariff bill run');
+      });
+
+      test('the batch id', async () => {
+        expect(view.batch.batchId).to.equal('test-batch');
+      });
+
+      test('the batch bill run date', async () => {
+        expect(view.batch.billRunDate).to.equal('2000-01-01T00:00:00.000Z');
+      });
+
+      test('the batch totals', async () => {
+        expect(view.batch.totals).to.equal(batchInvoicesResult.totals);
+      });
+
+      test('the charges summary from the batch invoices', async () => {
+        expect(view.batch.charges[0].account).to.equal(batchInvoicesResult.invoices[0].invoiceAccount.accountNumber);
+        expect(view.batch.charges[0].contact).to.equal(batchInvoicesResult.invoices[0].invoiceAccount.company.name);
+        expect(view.batch.charges[0].licences).to.equal(['111']);
+        expect(view.batch.charges[0].total).to.equal(batchInvoicesResult.invoices[0].totals.totalValue);
+        expect(view.batch.charges[0].isCredit).to.be.false();
+
+        expect(view.batch.charges[1].account).to.equal(batchInvoicesResult.invoices[1].invoiceAccount.accountNumber);
+        expect(view.batch.charges[1].contact).to.equal(batchInvoicesResult.invoices[1].invoiceAccount.company.name);
+        expect(view.batch.charges[1].licences).to.equal(['222', '222/222']);
+        expect(view.batch.charges[1].total).to.equal(batchInvoicesResult.invoices[1].totals.totalValue);
+        expect(view.batch.charges[1].isCredit).to.be.true();
+      });
+    });
+
     test('does not include the back link if the "back" query param is zero', async () => {
       const request = {
-        query: {
-          back: 0
-        },
-        params: {
-          batchId: 'test-batch'
-        }
+        query: { back: 0 },
+        params: { batchId: 'test-batch' }
       };
 
       await controller.getBillingBatchSummary(request, h);
@@ -320,12 +390,8 @@ experiment('internal/modules/billing/controller', () => {
 
     test('includes the back link if "back" query param is 1', async () => {
       const request = {
-        query: {
-          back: 1
-        },
-        params: {
-          batchId: 'test-batch'
-        }
+        query: { back: 1 },
+        params: { batchId: 'test-batch' }
       };
 
       await controller.getBillingBatchSummary(request, h);

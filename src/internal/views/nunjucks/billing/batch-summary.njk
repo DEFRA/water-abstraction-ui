@@ -6,20 +6,20 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
-      {{ title(pageTitle, billRunDate | date('D MMMM YYYY'), false, true) }}
+      {{ title(pageTitle, batch.billRunDate | date('D MMMM YYYY'), false, true) }}
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
-      {{ billRunTotal(batch.billRunTotal) }}
+      {{ billRunTotal(batch.totals.totalValue) }}
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-margin-bottom-6">
-      {{ invoicesTotal(batch.invoices.count, batch.invoices.total) }}
+      {{ invoicesTotal(batch.totals.numberOfInvoices, batch.totals.totalInvoices) }}
     </div>
     <div class="govuk-grid-column-one-third">
-      {{ creditNoteTotal(batch.creditNotes.count, batch.creditNotes.total) }}
+      {{ creditNoteTotal(batch.totals.numberOfCredits, batch.totals.totalCredits) }}
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -72,7 +72,7 @@
                 <td class="govuk-table__cell">{{ charge.contact }}</td>
                 <td class="govuk-table__cell">
                   {% for licence in charge.licences %}
-                    <div>{{ licence.licenceRef }}</div>
+                    <div>{{ licence }}</div>
                   {% endfor %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">

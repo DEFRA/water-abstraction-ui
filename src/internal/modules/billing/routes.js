@@ -185,6 +185,19 @@ if (isAcceptanceTestTarget) {
           }
         }
       }
+    },
+    getTransactionsCSV: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/transactions-csv',
+      handler: controller.getTransactionsCSV,
+      config: {
+        auth: { scope: allowedScopes },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid().required()
+          }
+        }
+      }
     }
   };
 };

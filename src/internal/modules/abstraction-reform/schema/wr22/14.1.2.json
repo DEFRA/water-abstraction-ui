@@ -1,0 +1,22 @@
+{
+    "id": "/wr22/14.1.2",
+    "type": "object",
+    "title": "14.1.2",
+    "category": "Groundwater conditions",
+    "subcategory": "Borehole construction and controls",
+    "description": "No abstraction shall take place unless the Licence Holder has completed the borehole headworks such that: The borehole is sealed with a capping plate to prevent the ingress of potentially contaminating materials or substances.",
+    "properties": {
+      "nald_condition": {
+        "$ref": "water://licences/conditions.json",
+        "label": "NALD condition",
+        "errors": {
+          "required": {
+            "message": "Select a NALD condition"
+          }
+        }
+      }
+    },
+    "required": [
+      "nald_condition"
+    ]
+  }

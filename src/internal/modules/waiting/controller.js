@@ -20,7 +20,7 @@ const getBillingTitle = (event, regions) => {
 
 const getWaitingForBilling = async (request, h, event) => {
   const statusPaths = {
-    'complete': `/billing/batch/${event.metadata.batch.billing_batch_id}/summary`
+    complete: `/billing/batch/${event.metadata.batch.billing_batch_id}/summary?back=${request.query.back}`
   };
 
   if (statusPaths[event.status]) {

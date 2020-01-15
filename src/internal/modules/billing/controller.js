@@ -111,7 +111,7 @@ const postBillingBatchRegion = async (request, h) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm);
     const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.event_id}`);
+    return h.redirect(`/waiting/${event.event_id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect('/billing/batch/exist');
@@ -150,7 +150,11 @@ const getBillingBatchSummary = async (request, h) => {
         { account: 123, contact: 'Mr A Parson', licences: [ { licenceRef: '111' }, { licenceRef: '111/1' } ], total: 1234.56, isCredit: false },
         { account: 1234, contact: 'Mrs B Darson', licences: [ { licenceRef: '222' }, { licenceRef: '222/1' } ], total: 1333.56, isCredit: true }
       ]
-    }
+    },
+
+    // only show the back link from the list page, so not to offer the link
+    // as part of the batch creation flow.
+    back: request.query.back && '/billing/batch/list'
   });
 };
 

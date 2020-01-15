@@ -15,6 +15,9 @@ exports.getWaiting = {
     validate: {
       params: {
         eventId: Joi.string().uuid().required()
+      },
+      query: {
+        back: Joi.number().integer().default(1).optional()
       }
     },
     plugins: {

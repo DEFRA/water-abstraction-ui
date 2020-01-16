@@ -233,10 +233,9 @@ const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params;
 
   const { data } = await services.water.billingBatches.getInvoicesForBatch(batchId);
-  const batch = await batchService.getBatch(batchId);
 
   const csv = await transactionsCSV.createCSV(data);
-  const fileName = transactionsCSV.getCSVFileName(batch);
+  const fileName = transactionsCSV.getCSVFileName(request.defra.batch);
 
   return h.response(csv)
     .header('Content-type', 'application/csv')

@@ -199,7 +199,8 @@ if (isAcceptanceTestTarget) {
           params: {
             batchId: Joi.string().uuid().required()
           }
-        }
+        },
+        pre: [{ method: preHandlers.loadBatch }]
       }
     }
   };

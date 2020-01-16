@@ -311,8 +311,8 @@ experiment('internal/modules/billing/controller', () => {
   experiment('getTransactionsCSV', () => {
     let batch, invoicesForBatch;
     beforeEach(async () => {
-      request = { params: { batchId: 'test-batch-id' } };
       batch = { id: 'test-batch-id' };
+      request = { params: { batchId: 'test-batch-id' }, defra: { batch } };
       invoicesForBatch = { data: { id: 'test-d', error: null } };
       sandbox.stub(services.water.billingBatches, 'getInvoicesForBatch').resolves(invoicesForBatch);
       sandbox.stub(batchService, 'getBatch').resolves(batch);
@@ -325,12 +325,6 @@ experiment('internal/modules/billing/controller', () => {
     test('calls billingBatches service with batchId', () => {
       const [batchId] = services.water.billingBatches.getInvoicesForBatch.lastCall.args;
       expect(services.water.billingBatches.getInvoicesForBatch.calledOnce).to.be.true();
-      expect(batchId).to.equal(request.params.batchId);
-    });
-
-    test('calls batchService with batchId', () => {
-      const [batchId] = batchService.getBatch.lastCall.args;
-      expect(batchService.getBatch.calledOnce).to.be.true();
       expect(batchId).to.equal(request.params.batchId);
     });
 

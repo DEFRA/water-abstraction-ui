@@ -45,4 +45,10 @@ experiment('internal/modules/billing/routes', () => {
         .to.only.include([scope.billing]);
     });
   });
+  experiment('.getTransactionsCSV', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getTransactionsCSV.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
 });

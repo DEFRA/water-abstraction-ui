@@ -18,11 +18,6 @@ const isIgnored = request =>
 const isCsrfError = request =>
   get(request, 'response.data.isCsrfError', false);
 
-const isUnauthorized = request => {
-  const statusCode = getStatusCode(request);
-  return (statusCode >= 401 && statusCode <= 403);
-};
-
 const _handler = async (request, h) => {
   const res = request.response;
   const { pluginOptions } = h.realm;
@@ -35,11 +30,6 @@ const _handler = async (request, h) => {
   if (isCsrfError(request)) {
     pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     return request.logOut();
-  }
-
-  // Unauthorised - redirect to welcome
-  if (isUnauthorized(request)) {
-    return request.handleUnauthorized(request, h);
   }
 
   pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));

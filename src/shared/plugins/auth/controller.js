@@ -9,6 +9,14 @@ const { handleRequest, setValues } = require('shared/lib/forms');
 
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
 
+const getStatusCode = request => get(request, 'response.output.statusCode');
+
+const checkIfAuthorized = (request, h) => {
+  const statusCode = getStatusCode(request);
+  if (statusCode >= 401 && statusCode <= 403) {
+    return request.handleUnauthorized(request, h);
+  }
+};
 /**
  * View signin page
  * @param {Object} request - the HAPI HTTP request
@@ -91,3 +99,4 @@ exports.getSignin = getSignin;
 exports.getSignout = getSignout;
 exports.getSignedOut = getSignedOut;
 exports.postSignin = postSignin;
+exports.checkIfAuthorized = checkIfAuthorized;

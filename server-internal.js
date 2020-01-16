@@ -56,6 +56,9 @@ const pluginsArray = [
     options: {
       reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
     }
+  }, {
+    plugin: require('shared/plugins/error'),
+    options: { logger }
   }
 ];
 

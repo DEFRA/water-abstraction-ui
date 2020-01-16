@@ -23,7 +23,7 @@ module.exports = {
           return options.onSignOut(request, h);
         };
 
-        request.handleUnauthorized = async (request, h) => {
+        request.handleUnauthorized = async () => {
           return options.onUnauthorized(request, h);
         };
 

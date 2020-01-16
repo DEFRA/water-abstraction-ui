@@ -54,6 +54,7 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id'
         },
+        query: {},
         payload: {
           csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
         },
@@ -298,6 +299,38 @@ experiment('internal/modules/billing/controller', () => {
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
       expect(view).to.equal('nunjucks/billing/batch-list');
+    });
+  });
+
+  experiment('.getBillingBatchSummary', () => {
+    test('does not include the back link if the "back" query param is zero', async () => {
+      const request = {
+        query: {
+          back: 0
+        },
+        params: {
+          batchId: 'test-batch'
+        }
+      };
+
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(0);
+    });
+
+    test('includes the back link if "back" query param is 1', async () => {
+      const request = {
+        query: {
+          back: 1
+        },
+        params: {
+          batchId: 'test-batch'
+        }
+      };
+
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/list');
     });
   });
 });

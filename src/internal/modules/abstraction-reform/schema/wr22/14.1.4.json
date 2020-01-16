@@ -1,0 +1,22 @@
+{
+    "id": "/wr22/14.1.4",
+    "type": "object",
+    "title": "14.1.4",
+    "category": "Groundwater conditions",
+    "subcategory": "Borehole construction and controls",
+    "description": "No abstraction shall take place unless the Licence Holder has completed the borehole headworks such that: A dip tube, with removable cap, shall be installed in the borehole so that a cable dipper can be lowered to record the lowest water level without fouling any installed equipment.",
+    "properties": {
+      "nald_condition": {
+        "$ref": "water://licences/conditions.json",
+        "label": "NALD condition",
+        "errors": {
+          "required": {
+            "message": "Select a NALD condition"
+          }
+        }
+      }
+    },
+    "required": [
+      "nald_condition"
+    ]
+  }

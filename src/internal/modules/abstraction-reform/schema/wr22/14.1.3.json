@@ -1,0 +1,22 @@
+{
+    "id": "/wr22/14.1.3",
+    "type": "object",
+    "title": "14.1.3",
+    "category": "Groundwater conditions",
+    "subcategory": "Borehole construction and controls",
+    "description": "No abstraction shall take place unless the Licence Holder has completed the borehole headworks such that: Where the borehole is installed in a chamber, the chamber shall be provided with a system of drainage to prevent the accumulation of standing water in the chamber.",
+    "properties": {
+      "nald_condition": {
+        "$ref": "water://licences/conditions.json",
+        "label": "NALD condition",
+        "errors": {
+          "required": {
+            "message": "Select a NALD condition"
+          }
+        }
+      }
+    },
+    "required": [
+      "nald_condition"
+    ]
+  }

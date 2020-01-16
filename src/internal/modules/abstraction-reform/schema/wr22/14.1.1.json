@@ -1,0 +1,22 @@
+{
+    "id": "/wr22/14.1.1",
+    "type": "object",
+    "title": "14.1.1",
+    "category": "Groundwater conditions",
+    "subcategory": "Borehole construction and controls",
+    "description": "No abstraction shall take place unless the Licence Holder has completed the borehole headworks such that: The borehole is located in a suitable building or in a vented chamber with safe access for measuring the water level in the borehole and reading the meter.",
+    "properties": {
+      "nald_condition": {
+        "$ref": "water://licences/conditions.json",
+        "label": "NALD condition",
+        "errors": {
+          "required": {
+            "message": "Select a NALD condition"
+          }
+        }
+      }
+    },
+    "required": [
+      "nald_condition"
+    ]
+  }

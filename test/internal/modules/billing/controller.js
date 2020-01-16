@@ -12,6 +12,7 @@ const sandbox = sinon.createSandbox();
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controller');
 const batchService = require('internal/modules/billing/services/batchService');
+const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 
 const billingRegions = {
   'data': [
@@ -33,12 +34,17 @@ const billingRegions = {
     }
   ]
 };
+
+const secondHeader = sandbox.stub();
+const header = sandbox.stub().returns({ header: secondHeader });
+
 experiment('internal/modules/billing/controller', () => {
   let h, request;
 
   beforeEach(async () => {
     h = {
-      view: sandbox.stub()
+      view: sandbox.stub(),
+      response: sandbox.stub().returns({ header })
     };
   });
 
@@ -299,6 +305,54 @@ experiment('internal/modules/billing/controller', () => {
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
       expect(view).to.equal('nunjucks/billing/batch-list');
+    });
+  });
+
+  experiment('getTransactionsCSV', () => {
+    let batch, invoicesForBatch;
+    beforeEach(async () => {
+      batch = { id: 'test-batch-id' };
+      request = { params: { batchId: 'test-batch-id' }, defra: { batch } };
+      invoicesForBatch = { data: { id: 'test-d', error: null } };
+      sandbox.stub(services.water.billingBatches, 'getInvoicesForBatch').resolves(invoicesForBatch);
+      sandbox.stub(batchService, 'getBatch').resolves(batch);
+      sandbox.stub(transactionsCSV, 'createCSV').resolves('csv-data');
+      sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
+
+      await controller.getTransactionsCSV(request, h);
+    });
+
+    test('calls billingBatches service with batchId', () => {
+      const [batchId] = services.water.billingBatches.getInvoicesForBatch.lastCall.args;
+      expect(services.water.billingBatches.getInvoicesForBatch.calledOnce).to.be.true();
+      expect(batchId).to.equal(request.params.batchId);
+    });
+
+    test('calls transactionsCSV.createCSV with data returned from billingBatches services', () => {
+      const [data] = transactionsCSV.createCSV.lastCall.args;
+      expect(transactionsCSV.createCSV.calledOnce).to.be.true();
+      expect(data).to.equal(invoicesForBatch.data);
+    });
+
+    test('calls transactionsCSV.getCSVFileName with data returned from batchService', () => {
+      const [data] = transactionsCSV.getCSVFileName.lastCall.args;
+      expect(transactionsCSV.getCSVFileName.calledOnce).to.be.true();
+      expect(data).to.equal(batch);
+    });
+
+    test('calls h.response with csv data', () => {
+      const [csv] = h.response.lastCall.args;
+      expect(csv).to.equal('csv-data');
+    });
+
+    test('calls h.response with expected headers', () => {
+      const [typeHeader, contentType] = header.lastCall.args;
+      expect(typeHeader).to.equal('Content-type');
+      expect(contentType).to.equal('application/csv');
+
+      const [fileHeader, fileName] = secondHeader.lastCall.args;
+      expect(fileHeader).to.equal('Content-disposition');
+      expect(fileName).to.equal('attachment; filename="fileName"');
     });
   });
 

@@ -8,6 +8,7 @@ const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const regions = require('./lib/regions');
 const batchService = require('./services/batchService');
+const transactionsCSV = require('./services/transactions-csv');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -282,6 +283,19 @@ const postBillingBatchConfirm = async (request, h) => {
   return h.redirect('/billing/batch/list');
 };
 
+const getTransactionsCSV = async (request, h) => {
+  const { batchId } = request.params;
+
+  const { data } = await services.water.billingBatches.getInvoicesForBatch(batchId);
+
+  const csv = await transactionsCSV.createCSV(data);
+  const fileName = transactionsCSV.getCSVFileName(request.defra.batch);
+
+  return h.response(csv)
+    .header('Content-type', 'application/csv')
+    .header('Content-disposition', `attachment; filename="${fileName}"`);
+};
+
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
@@ -298,3 +312,5 @@ exports.postBillingBatchCancel = postBillingBatchCancel;
 
 exports.getBillingBatchConfirm = getBillingBatchConfirm;
 exports.postBillingBatchConfirm = postBillingBatchConfirm;
+
+exports.getTransactionsCSV = getTransactionsCSV;

@@ -1,4 +1,4 @@
-{% macro title(title, caption, subheading, xlHeading = false) %}
+{% macro title(title, caption, subheading, xlHeading = false, marginBottomZero = false) %}
   {% if subheading %}
     <span class="govuk-caption-l">{{ caption }}</span>
     <h1 class="{{ 'govuk-heading-xl' if xlHeading else 'govuk-heading-l' }} govuk-!-margin-bottom-0">
@@ -7,7 +7,7 @@
     <h1 class="govuk-heading-s">{{ subheading }}</h1>
   {% elseif caption %}
     <span class="govuk-caption-l">{{ caption }}</span>
-    <h1 class={{ 'govuk-heading-xl' if xlHeading else 'govuk-heading-l' }}>
+    <h1 class="{{ 'govuk-heading-xl' if xlHeading else 'govuk-heading-l' }} {{ 'govuk-!-margin-bottom-0' if marginBottomZero }}">
       {{ title }}
     </h1>
   {% else %}

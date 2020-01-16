@@ -12,6 +12,18 @@
     padding-left: 0;
 }
 
+.table__cell--totals {
+  @extend .govuk-table__cell;
+  
+    border-bottom: 0
+}
+
+.table__row--totals {
+  @extend .govuk-table__row !optional;
+
+  border-top: solid;
+}
+
 .table__header--width-10 {
   @extend .govuk-table__header;
   

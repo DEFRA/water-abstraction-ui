@@ -71,6 +71,9 @@ async function start () {
       options: {
         reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
       }
+    }, {
+      plugin: require('shared/plugins/error'),
+      options: { logger }
     }]);
 
     // Set up Nunjucks view engine

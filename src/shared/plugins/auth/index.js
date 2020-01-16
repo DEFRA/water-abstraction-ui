@@ -1,8 +1,22 @@
 'use strict';
 
 const routes = require('./routes');
+const { get } = require('lodash');
 
-module.exports = {
+const getStatusCode = request => get(request, 'response.output.statusCode');
+
+const checkIfAuthorized = (request, h) => {
+  const statusCode = getStatusCode(request);
+  if (statusCode >= 401 && statusCode <= 403) {
+    return request.handleUnauthorized(request, h);
+  }
+};
+
+const _preResponseHandler = async (request, h) => {
+  return checkIfAuthorized(request, h) || h.continue();
+};
+
+const authPlugin = {
   name: 'authPlugin',
   version: '1.0.0',
   register: async function (server, options) {
@@ -30,6 +44,12 @@ module.exports = {
         // Continue processing request
         return h.continue;
       }
+    }, {
+      type: 'onPreResponse',
+      method: _preResponseHandler
     });
   }
 };
+
+module.exports = authPlugin;
+module.exports._preResponseHandler = _preResponseHandler;

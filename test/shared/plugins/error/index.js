@@ -29,8 +29,7 @@ const createRequest = (error = {}) => {
     state: {
       seen_cookie_message: 'yes'
     },
-    logOut: sandbox.stub(),
-    handleUnauthorized: sandbox.stub().returns()
+    logOut: sandbox.stub()
   };
 };
 
@@ -54,14 +53,10 @@ experiment('errors plugin', () => {
             info: sandbox.stub(),
             error: sandbox.stub(),
             errorWithJourney: sandbox.stub()
-          },
-          contextDefaults: sandbox.stub()
+          }
         }
       }
     };
-    // sandbox.stub(logger, 'info');
-    // sandbox.stub(logger, 'error');
-    // sandbox.stub(logger, 'errorWithJourney');
   });
 
   afterEach(async () => {
@@ -94,20 +89,6 @@ experiment('errors plugin', () => {
       set(request, 'route.settings.plugins.errorPlugin.ignore', true);
       const result = await plugin._handler(request, h);
       expect(result).to.equal(h.continue);
-    });
-
-    test('logs error and calls request.handleUnauthorized for 401 unauthorized', async () => {
-      const request = createRequest(Boom.unauthorized());
-      await plugin._handler(request, h);
-      const [ passedRequest ] = request.handleUnauthorized.lastCall.args;
-      expect(passedRequest).to.equal(request);
-    });
-
-    test('logs error and calls request.handleUnauthorized for 403 forbidden', async () => {
-      const request = createRequest(Boom.forbidden());
-      await plugin._handler(request, h);
-      const [passedRequest] = request.handleUnauthorized.lastCall.args;
-      expect(passedRequest).to.equal(request);
     });
 
     test('calls request.logOut() for CSRF error', async () => {

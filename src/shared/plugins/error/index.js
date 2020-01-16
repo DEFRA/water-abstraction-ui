@@ -6,8 +6,6 @@
  *
  * @module lib/hapi-error-plugin
  */
-const { contextDefaults } = require('../view');
-const { logger } = require('../../logger');
 const { get, pick } = require('lodash');
 
 const getStatusCode = request => get(request, 'response.output.statusCode');
@@ -20,39 +18,31 @@ const isIgnored = request =>
 const isCsrfError = request =>
   get(request, 'response.data.isCsrfError', false);
 
-const isUnauthorized = request => {
-  const statusCode = getStatusCode(request);
-  return (statusCode >= 401 && statusCode <= 403);
-};
-
 const _handler = async (request, h) => {
   const res = request.response;
+  const { pluginOptions } = h.realm;
 
-  if (isIgnored(request) || !res.isBoom || is404(request)) {
+  if (isIgnored(request) || !res.isBoom) {
     return h.continue;
   }
 
   // Destroy session for CSRF error
   if (isCsrfError(request)) {
-    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
+    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
     return request.logOut();
   }
 
-  // Unauthorised - redirect to sign in
-  if (isUnauthorized(request)) {
-    logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-    return h.redirect('/signin');
-  }
+  pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
 
-  logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
-
-  // Render 500 page
+  // Render 404 or 500 page depending on statusCode
   const view = {
-    ...contextDefaults(request),
+    ...request.view,
     pageTitle: 'Something went wrong'
   };
+
+  const template = is404(request) ? 'nunjucks/errors/404' : 'nunjucks/errors/error';
   const statusCode = getStatusCode(request);
-  return h.view('nunjucks/errors/error', view).code(statusCode);
+  return h.view(template, view).code(statusCode);
 };
 
 const errorPlugin = {

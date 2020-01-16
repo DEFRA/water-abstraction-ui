@@ -21,7 +21,6 @@ module.exports = {
   formValidator: require('./form-validator'),
   anonGoogleAnalytics: require('shared/plugins/anon-google-analytics'),
   companySelection: require('./company-selection'),
-  error: require('./error'),
   noRobots: require('shared/plugins/no-robots'),
   staticAssets: require('shared/plugins/static-assets'),
   userJourney: require('shared/plugins/user-journey'),

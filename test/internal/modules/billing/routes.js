@@ -48,6 +48,11 @@ experiment('internal/modules/billing/routes', () => {
   experiment('.getTransactionsCSV', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.getTransactionsCSV.config.auth.scope)
+    });
+  });
+  experiment('.getBillingBatchInvoice', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getBillingBatchInvoice.config.auth.scope)
         .to.only.include([scope.billing]);
     });
   });

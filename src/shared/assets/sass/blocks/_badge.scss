@@ -3,7 +3,7 @@
   font-family: "nta", Arial, sans-serif;
   @include govuk-font($size: 19);
 
-  min-width: 4rem;
+  min-width: 7.5rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
@@ -39,8 +39,8 @@
 }
 
 .badge--warning {
-  border-color: govuk-colour("orange");
-  color: govuk-colour("orange");
+  border-color: #b65929;
+  color: #b65929;
 }
 
 .badge--success {

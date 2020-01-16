@@ -54,6 +54,7 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id'
         },
+        query: {},
         payload: {
           csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
         },
@@ -301,37 +302,35 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.getBillingBatchInvoice', () => {
-    beforeEach(async () => {
-      request = {
+  experiment('.getBillingBatchSummary', () => {
+    test('does not include the back link if the "back" query param is zero', async () => {
+      const request = {
+        query: {
+          back: 0
+        },
         params: {
-          batchId: 'test-batch-id'
+          batchId: 'test-batch'
         }
       };
 
-      await controller.getBillingBatchInvoice(request, h);
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(0);
     });
 
-    test('passes the required invoice data to the view', async () => {
-      const [, context] = h.view.lastCall.args;
-      const { invoice } = context;
-      console.log(invoice);
-      expect(invoice).includes('account');
-      expect(invoice).includes('header');
-      expect(invoice).includes('licences');
-      expect(invoice.licences).to.be.array();
-      expect(invoice.licences[0].transactions).to.be.array();
-      expect(invoice.licences[0].transactions[0].transactionLines).to.be.array();
-    });
+    test('includes the back link if "back" query param is 1', async () => {
+      const request = {
+        query: {
+          back: 1
+        },
+        params: {
+          batchId: 'test-batch'
+        }
+      };
 
-    test('configures the back route', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
-    });
-
-    test('configures the expected view template', async () => {
-      const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-invoice');
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/list');
     });
   });
 });

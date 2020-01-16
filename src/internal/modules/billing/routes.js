@@ -87,6 +87,9 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: Joi.string().uuid()
+          },
+          query: {
+            back: Joi.number().integer().default(1).optional()
           }
         }
       }

@@ -1,3 +1,5 @@
+'use strict';
+
 const {
   experiment,
   test,
@@ -9,7 +11,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const services = require('internal/lib/connectors/services');
-const batchService = require('internal/modules/billing/services/batchService');
+const batchService = require('internal/modules/billing/services/batch-service');
 
 experiment('internal/modules/billing/services/batchService', () => {
   beforeEach(async () => {

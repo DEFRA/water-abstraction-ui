@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const controller = require('./controller');
 const { billing } = require('internal/lib/constants').scope;
@@ -91,7 +93,10 @@ if (isAcceptanceTestTarget) {
           query: {
             back: Joi.number().integer().default(1).optional()
           }
-        }
+        },
+        pre: [
+          preHandlers.redirectToWaitingIfEventNotComplete
+        ]
       }
     },
     getBillingBatchInvoice: {

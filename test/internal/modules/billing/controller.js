@@ -1,3 +1,5 @@
+'use strict';
+
 const { expect } = require('@hapi/code');
 const {
   experiment,
@@ -11,7 +13,7 @@ const sandbox = sinon.createSandbox();
 
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controller');
-const batchService = require('internal/modules/billing/services/batchService');
+const batchService = require('internal/modules/billing/services/batch-service');
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 
 const billingRegions = {

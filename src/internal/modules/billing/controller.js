@@ -1,3 +1,5 @@
+'use strict';
+
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
@@ -7,7 +9,7 @@ const { get } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const regions = require('./lib/regions');
-const batchService = require('./services/batchService');
+const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
 
 const getSessionForm = (request) => {
@@ -286,7 +288,7 @@ const postBillingBatchConfirm = async (request, h) => {
 const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params;
 
-  const { data } = await services.water.billingBatches.getInvoicesForBatch(batchId);
+  const { data } = await services.water.billingBatches.getBatchInvoices(batchId);
 
   const csv = await transactionsCSV.createCSV(data);
   const fileName = transactionsCSV.getCSVFileName(request.defra.batch);

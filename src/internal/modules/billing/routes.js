@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const controller = require('./controller');
 const { billing } = require('internal/lib/constants').scope;
@@ -23,6 +25,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     postBillingBatchType: {
       method: 'POST',
       path: '/billing/batch/type',
@@ -48,6 +51,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     postBillingBatchRegion: {
       method: 'POST',
       path: '/billing/batch/region',
@@ -57,6 +61,7 @@ if (isAcceptanceTestTarget) {
         description: 'post handler for receiving the selected region'
       }
     },
+
     getBillingBatchExist: {
       method: 'GET',
       path: '/billing/batch/exist',
@@ -72,6 +77,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getBillingBatchSummary: {
       method: 'GET',
       path: '/billing/batch/{batchId}/summary',
@@ -91,9 +97,13 @@ if (isAcceptanceTestTarget) {
           query: {
             back: Joi.number().integer().default(1).optional()
           }
-        }
+        },
+        pre: [
+          preHandlers.redirectToWaitingIfEventNotComplete
+        ]
       }
     },
+
     getBillingBatchInvoice: {
       method: 'GET',
       path: '/billing/batch/{batchId}/summary/invoice/{invoiceId}',
@@ -114,6 +124,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getBillingBatchList: {
       method: 'GET',
       path: '/billing/batch/list',
@@ -134,6 +145,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getBillingBatchConfirm: {
       method: 'GET',
       path: '/billing/batch/{batchId}/confirm',
@@ -154,6 +166,7 @@ if (isAcceptanceTestTarget) {
         pre: [{ method: preHandlers.loadBatch }]
       }
     },
+
     postBillingBatchConfirm: {
       method: 'POST',
       path: '/billing/batch/{batchId}/confirm',
@@ -192,6 +205,7 @@ if (isAcceptanceTestTarget) {
         pre: [{ method: preHandlers.loadBatch }]
       }
     },
+
     postBillingBatchCancel: {
       method: 'POST',
       path: '/billing/batch/{batchId}/cancel',
@@ -209,6 +223,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getTransactionsCSV: {
       method: 'GET',
       path: '/billing/batch/{batchId}/transactions-csv',

@@ -19,7 +19,7 @@ const createPlugins = (config, logger, connectors) => ([
     options: config.blipp
   },
   {
-    plugin: require('good'),
+    plugin: require('@hapi/good'),
     options: { ...config.good,
       reporters: {
         winston: [new GoodWinston({ winston: logger })]

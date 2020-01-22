@@ -1,3 +1,7 @@
+const uuid = require('uuid/v4');
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+
 const {
   experiment,
   beforeEach,
@@ -5,38 +9,63 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const sandbox = require('sinon').createSandbox();
 
 const BillingBatchService = require('internal/lib/connectors/services/water/BillingBatchService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
 
-const batchId = 'batchId0-9427-47dd-9034-e8c7e218c806';
-
-experiment('services/water/BillingBatchService', async () => {
+experiment('services/water/BillingBatchService', () => {
   let service;
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get');
-    service = new BillingBatchService('http://127.0.0.1:8001/water/1.0');
+    service = new BillingBatchService('https://example.com/water/1.0');
   });
 
-  afterEach(async () => sandbox.restore());
+  afterEach(async () => {
+    sandbox.restore();
+  });
 
-  experiment('.getBatch', async () => {
+  experiment('.getBatch', () => {
     test('passes the expected URL to the service request', async () => {
-      await service.getBatch(batchId);
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/billing/batches/${batchId}`;
+      const id = uuid();
+
+      await service.getBatch(id);
+
       const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(expectedUrl);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}`);
     });
   });
 
-  experiment('.getInvoicesForBatch', async () => {
+  experiment('.getBatchInvoices', () => {
     test('passes the expected URL to the service request', async () => {
-      await service.getInvoicesForBatch(batchId);
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/billing/batches/${batchId}/invoices`;
+      const id = uuid();
+
+      await service.getBatchInvoices(id);
+
       const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(expectedUrl);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices`);
+    });
+  });
+
+  experiment('.getBatches', () => {
+    let page;
+    let perPage;
+
+    beforeEach(async () => {
+      page = 2;
+      perPage = 10;
+      await service.getBatches(page, perPage);
+    });
+
+    test('passes the expected URL to the service request', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches`);
+    });
+
+    test('passes the pagination params on the query string', async () => {
+      const [, options] = serviceRequest.get.lastCall.args;
+      expect(options.qs.page).to.equal(page);
+      expect(options.qs.perPage).to.equal(perPage);
     });
   });
 });

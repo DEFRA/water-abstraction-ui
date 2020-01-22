@@ -1,3 +1,5 @@
+'use strict';
+
 const {
   experiment,
   test,
@@ -8,7 +10,8 @@ const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const batchService = require('internal/modules/billing/services/batchService');
+const eventService = require('internal/modules/billing/services/event-service');
+const batchService = require('internal/modules/billing/services/batch-service');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
 experiment('internal/modules/billing/pre-handlers', () => {
@@ -17,6 +20,8 @@ experiment('internal/modules/billing/pre-handlers', () => {
       id: 'test-batch-id',
       type: 'annual'
     });
+
+    sandbox.stub(eventService, 'getEventForBatch').resolves();
   });
 
   afterEach(async () => {
@@ -49,6 +54,43 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
     test('the handler returns h.continue', async () => {
       expect(result).to.equal('continue');
+    });
+  });
+
+  experiment('.redirectToWaitingIfEventNotComplete', () => {
+    let request;
+    let h;
+
+    beforeEach(async () => {
+      request = {
+        defra: {},
+        params: {
+          batchId: 'test-batch-id'
+        }
+      };
+      h = {
+        continue: 'continue',
+        redirect: sandbox.spy()
+      };
+    });
+
+    test('redirects to waiting if the event is not in the complete state', async () => {
+      eventService.getEventForBatch.resolves({
+        event_id: 'test-event-id',
+        status: 'not-completed'
+      });
+
+      await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
+      expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
+    });
+
+    test('continues if the status of the event is completed', async () => {
+      eventService.getEventForBatch.resolves({
+        status: 'complete'
+      });
+
+      const result = await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
+      expect(result).to.equal(h.continue);
     });
   });
 });

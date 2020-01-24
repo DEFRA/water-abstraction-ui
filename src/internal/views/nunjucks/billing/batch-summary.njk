@@ -67,7 +67,7 @@
             {% for charge in batch.charges %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  <a class="govuk-link" href="#">{{ charge.account }}</a>
+                  <a class="govuk-link" href="/billing/batch/{{batch.batchId}}/invoice/{{charge.invoiceId}}">{{ charge.account }}</a>
                 </th>
                 <td class="govuk-table__cell">{{ charge.contact }}</td>
                 <td class="govuk-table__cell">

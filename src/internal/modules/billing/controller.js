@@ -146,6 +146,7 @@ const getBillingBatchSummary = async (request, h) => {
       totals,
       charges: invoices.map(invoice => {
         return {
+          invoiceId: invoice.id,
           account: invoice.invoiceAccount.accountNumber,
           contact: invoice.invoiceAccount.company.name,
           licences: invoice.invoiceLicences.map(il => il.licence.licenceNumber),

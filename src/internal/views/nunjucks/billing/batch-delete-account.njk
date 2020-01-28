@@ -1,0 +1,27 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle, account.dateCreated | date('D MMMM YYYY'), false, false) }}
+      <div class="govuk-inset-text">
+        <div>Account {{ account.accountNumber }}</div>
+        <div>{{ account.companyName}}</div>
+        {% for licence in account.licences %}
+          <div>{{ licence.licenceRef }}</div>
+        {% endfor %}
+        <div>£{{ account.amount | number}}</div>
+      </div>
+      <form method="POST" action="/billing/batch/{{batch.id}}/removeAccount/{{account.id}}">
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        {{ govukButton({
+          text: "Remove invoice"
+        }) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

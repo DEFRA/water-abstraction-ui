@@ -111,7 +111,7 @@ const postBillingBatchRegion = async (request, h) => {
 
   try {
     const batch = getBatchDetails(request, billingRegionForm);
-    const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+    const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
     return h.redirect(`/waiting/${event.event_id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
@@ -299,6 +299,39 @@ const getTransactionsCSV = async (request, h) => {
     .header('Content-disposition', `attachment; filename="${fileName}"`);
 };
 
+/**
+ * Remove an invoice from the bill run
+ * @param {*} request
+ * @param {*} h
+ */
+const getBillingBatchDeleteAccount = async (request, h) => {
+  const batchId = request.params.batchId;
+  const invoiceId = request.params.invoiceId;
+  const { data } = await services.water.billingBatches.getBatchInvoice(batchId, invoiceId);
+  const account = {
+    id: data.invoiceAccount.id,
+    accountNumber: data.invoiceAccount.accountNumber,
+    companyName: data.invoiceAccount.company.name,
+    licences: data.invoiceLicences.map(invoiceLicence => ({ licenceRef: invoiceLicence.licence.licenceNumber })),
+    amount: data.totals.totalValue,
+    dateCreated: data.dateCreated
+  };
+  return h.view('nunjucks/billing/batch-delete-account', {
+    ...request.view,
+    pageTitle: 'You are about to remove this invoice from the bill run',
+    account,
+    batch: { id: request.params.batchId },
+    back: `/billing/batch/${batchId}/summary`
+  });
+};
+
+const postBillingBatchDeleteAccount = async (request, h) => {
+  const accountId = request.params.invoiceId;
+  const batchId = request.params.batchId;
+  await services.water.billingBatchService.deleteAccountFromBatch(batchId, accountId);
+  return h.redirect(`/billing/batch/${request.params.batchId}/summary`);
+};
+
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
@@ -315,5 +348,8 @@ exports.postBillingBatchCancel = postBillingBatchCancel;
 
 exports.getBillingBatchConfirm = getBillingBatchConfirm;
 exports.postBillingBatchConfirm = postBillingBatchConfirm;
+
+exports.getBillingBatchDeleteAccount = getBillingBatchDeleteAccount;
+exports.postBillingBatchDeleteAccount = postBillingBatchDeleteAccount;
 
 exports.getTransactionsCSV = getTransactionsCSV;

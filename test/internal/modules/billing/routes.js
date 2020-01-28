@@ -69,4 +69,18 @@ experiment('internal/modules/billing/routes', () => {
         .to.only.include([scope.billing]);
     });
   });
+
+  experiment('.getBillingBatchDeleteAccount', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getBillingBatchDeleteAccount.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
+
+  experiment('.postBillingBatchDeleteAccount', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.postBillingBatchDeleteAccount.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
 });

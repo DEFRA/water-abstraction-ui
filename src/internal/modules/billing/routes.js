@@ -237,6 +237,48 @@ if (isAcceptanceTestTarget) {
         },
         pre: [{ method: preHandlers.loadBatch }]
       }
+    },
+    getBillingBatchDeleteAccount: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/deleteAccount/{invoiceId}',
+      handler: controller.getBillingBatchDeleteAccount,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'request confirmation to remove invoice from bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid(),
+            invoiceId: Joi.string().uuid()
+          }
+        }
+      }
+    },
+    postBillingBatchDeleteAccount: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/deleteAccount/{accountId}',
+      handler: controller.postBillingBatchDeleteAccount,
+      config: {
+        auth: { scope: allowedScopes },
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid(),
+            accountId: Joi.string().uuid()
+          },
+          payload: {
+            csrf_token: Joi.string().uuid().required()
+          }
+        }
+      }
     }
   };
 };

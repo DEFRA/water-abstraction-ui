@@ -455,4 +455,61 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.back).to.equal('/billing/batch/list');
     });
   });
+
+  experiment('.getBillingBatchDeleteAccount', () => {
+    const invoice = { data: {
+      id: '1',
+      invoiceLicences: [
+        {
+          licence: {
+            id: 'licence-id',
+            licenceNumber: 'AG1234/56789'
+          }
+        }
+      ],
+      dateCreated: '2020-01-27T13:51:29.234Z',
+      totals: {
+        totalValue: '1234.56'
+      },
+      invoiceAccount: {
+        id: 'invoice-account-id',
+        accountNumber: 'A12345678A',
+        company: {
+          name: 'company-name'
+        }
+      }
+    }
+    };
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id',
+          invoiceId: 'test-invoice-id'
+        }
+      };
+
+      sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
+      await controller.getBillingBatchDeleteAccount(request, h);
+    });
+
+    test('configures the back route', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+
+    test('configures the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-delete-account');
+    });
+
+    test('the correct view data is populated', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.account.id).to.equal(invoice.data.invoiceAccount.id);
+      expect(view.account.accountNumber).to.equal(invoice.data.invoiceAccount.accountNumber);
+      expect(view.account.companyName).to.equal(invoice.data.invoiceAccount.company.name);
+      expect(view.account.licences[0].licenceRef).to.equal(invoice.data.invoiceLicences[0].licence.licenceNumber);
+      expect(view.account.amount).to.equal(invoice.data.totals.totalValue);
+      expect(view.account.dateCreated).to.equal(invoice.data.dateCreated);
+    });
+  });
 });

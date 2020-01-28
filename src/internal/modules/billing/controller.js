@@ -307,15 +307,7 @@ const getTransactionsCSV = async (request, h) => {
 const getBillingBatchDeleteAccount = async (request, h) => {
   const batchId = request.params.batchId;
   const invoiceId = request.params.invoiceId;
-  const { data } = await services.water.billingBatches.getBatchInvoice(batchId, invoiceId);
-  const account = {
-    id: data.invoiceAccount.id,
-    accountNumber: data.invoiceAccount.accountNumber,
-    companyName: data.invoiceAccount.company.name,
-    licences: data.invoiceLicences.map(invoiceLicence => ({ licenceRef: invoiceLicence.licence.licenceNumber })),
-    amount: data.totals.totalValue,
-    dateCreated: data.dateCreated
-  };
+  const account = await batchService.getBatchInvoice(batchId, invoiceId);
   return h.view('nunjucks/billing/batch-delete-account', {
     ...request.view,
     pageTitle: 'You are about to remove this invoice from the bill run',

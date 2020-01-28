@@ -68,7 +68,7 @@ const getBatchInvoices = async batchId => {
  * @param {*} batchId
  * @param {*} invoiceId
  */
-const getBatchInvoice = async (batchId, invoiceId) =>{
+const getBatchInvoice = async (batchId, invoiceId) => {
   const { data } = await dataService.water.billingBatches.getBatchInvoice(batchId, invoiceId);
   return {
     id: data.invoiceAccount.id,

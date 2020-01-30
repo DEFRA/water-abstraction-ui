@@ -17,5 +17,6 @@ module.exports = {
   staticAssets: require('shared/plugins/static-assets'),
   anonGoogleAnalytics: require('shared/plugins/anon-google-analytics'),
   acceptanceTestsProxy: require('shared/plugins/acceptance-tests-proxy'),
-  csp: require('shared/plugins/csp')
+  csp: require('shared/plugins/csp'),
+  internalUserId: require('./internal-user-id')
 };

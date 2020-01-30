@@ -1,10 +1,63 @@
 const services = require('../../lib/connectors/services');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { get } = require('lodash');
-const { logger } = require('../../logger');
 const Boom = require('@hapi/boom');
+const moment = require('moment');
+const { logger } = require('../../logger');
+const path = require('path');
 
-const getPageTitle = (ev) => {
+const getRedirectPath = (eventStatuses, ev) => {
+  if (ev.status in eventStatuses) {
+    return path.join(eventStatuses[ev.status], ev.event_id);
+  }
+};
+
+const getBillingTitle = (event, regions) => {
+  let title = getRegionName(regions, event.metadata.batch.region_id);
+  title += (event.subtype === 'two_part_tariff') ? ' two-part tariff' : ' ' + event.subtype;
+  return title + ' bill run';
+};
+
+const getWaitingForBilling = async (request, h, event) => {
+  const statusPaths = {
+    complete: `/billing/batch/${event.metadata.batch.billing_batch_id}/summary?back=${request.query.back}`
+  };
+
+  if (statusPaths[event.status]) {
+    return h.redirect(statusPaths[event.status]);
+  }
+
+  const { data } = await services.water.regions.getRegions();
+
+  const view = {
+    ...request.view,
+    pageTitle: getBillingTitle(event, data),
+    caption: moment(event.date_created).format('D MMM YYYY'),
+    waitingType: 'billRun'
+  };
+
+  return h.view('nunjucks/waiting/index', view);
+};
+
+const getWaitingForNotifications = async (request, h, event) => {
+  const path = getRedirectPath({
+    'processed': '/batch-notifications/review'
+  }, event);
+  if (path) {
+    return h.redirect(path);
+  }
+
+  const view = {
+    ...request.view,
+    pageTitle: getNotificationsTitle(event),
+    text: 'Please wait while the mailing list is assembled. This may take a few minutes. The letters will not be sent yet.',
+    waitingType: 'returns'
+  };
+
+  return h.view('nunjucks/waiting/index', view);
+};
+
+const getNotificationsTitle = (ev) => {
   const name = get(ev, 'subtype');
   const config = {
     returnReminder: 'Send returns reminders',
@@ -13,59 +66,32 @@ const getPageTitle = (ev) => {
   return config[name];
 };
 
-const handleProcessing = (request, h, event) => {
-  // Still processing, render the template which will refresh in 5 seconds.
-  const view = {
-    ...request.view,
-    pageTitle: getPageTitle(event),
-    text: 'Please wait while the mailing list is assembled. This may take a few minutes. The letters will not be sent yet.'
-  };
-  return h.view('nunjucks/waiting/index', view);
+const getRegionName = (regionsArray, regionId) => {
+  const region = regionsArray.find(region => region.regionId === regionId);
+  return region.name;
 };
 
-const handleReturnReminderError = (request, h) => {
-  throw Boom.badImplementation('Errored event.');
-};
-
-const handleReturnsRemindersProcessed = (request, h, event) => {
-  // Redirect to a new page showing a send button and a means
-  // of acquiring a csv download of all the recipients.
-  const { event_id: eventId } = event;
-  return h.redirect(`/batch-notifications/review/${eventId}`);
-};
-
-const subTypeHandlers = {
-  returnReminder: {
-    processing: handleProcessing,
-    processed: handleReturnsRemindersProcessed,
-    error: handleReturnReminderError
-  },
-  returnInvitation: {
-    processing: handleProcessing,
-    processed: handleReturnsRemindersProcessed,
-    error: handleReturnReminderError
-  }
-};
-
-const getEventHandler = event => {
-  return get(subTypeHandlers, [event.subtype, event.status]);
+const handlers = {
+  notification: getWaitingForNotifications,
+  'billing-batch': getWaitingForBilling
 };
 
 const getWaiting = async (request, h) => {
   const { eventId } = request.params;
   const { data: event, error } = await services.water.events.findOne(eventId);
 
-  throwIfError(error);
-
-  const handler = getEventHandler(event);
-
-  if (!handler) {
+  if (error) {
     const message = 'Unknown event type';
-    logger.error(message, { params: event });
+    logger.error(message, error, { params: event });
     throw new Error('Unknown event type');
   }
+  throwIfError(error);
 
-  return handler(request, h, event);
+  if (event.status === 'error') {
+    throw Boom.badImplementation('Errored event.');
+  }
+
+  return handlers[event.type](request, h, event);
 };
 
 exports.getWaiting = getWaiting;

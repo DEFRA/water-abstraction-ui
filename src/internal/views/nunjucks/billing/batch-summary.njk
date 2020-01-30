@@ -1,0 +1,96 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
+      {{ title(pageTitle, billRunDate | date('D MMMM YYYY'), false, true) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
+      {{ billRunTotal(batch.billRunTotal) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third govuk-!-margin-bottom-6">
+      {{ invoicesTotal(batch.invoices.count, batch.invoices.total) }}
+    </div>
+    <div class="govuk-grid-column-one-third">
+      {{ creditNoteTotal(batch.creditNotes.count, batch.creditNotes.total) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <section class="govuk-!-margin-bottom-6">
+        <p class="govuk-body">You can send this bill run on the next page.</p>
+        {{
+          govukButton({
+            text: "Confirm bill run",
+            href: '/billing/batch/' + batch.batchId + '/confirm'
+          })
+        }}
+        {{
+          govukButton({
+            text: "Cancel bill run",
+            href: '/billing/batch/' + batch.batchId + '/cancel',
+            classes: "govuk-button--secondary govuk-!-margin-left-1"
+          })
+        }}
+      </section>
+      <p class="govuk-body">
+        <a href="/billing/batch/{{batch.batchId}}/transactions-csv">Download this bill run</a>
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-!-margin-top-6">
+      <hr class="govuk-section-break section-break--heavy" />
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-!-margin-top-5">
+      {% if batch.charges.length > 0 %}
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Account</th>
+              <th scope="col" class="govuk-table__header">Contact</th>
+              <th scope="col" class="govuk-table__header">Licence</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for charge in batch.charges %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a class="govuk-link" href="#">{{ charge.account }}</a>
+                </th>
+                <td class="govuk-table__cell">{{ charge.contact }}</td>
+                <td class="govuk-table__cell">
+                  {% for licence in charge.licences %}
+                    <div>{{ licence.licenceRef }}</div>
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                  <span>£{{ charge.total | number}}</span>
+                  {% if charge.isCredit %}
+                    <div>Credit note</div>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                  <a class="govuk-link" href="#">Remove</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}
+

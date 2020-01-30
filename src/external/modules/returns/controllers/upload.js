@@ -143,7 +143,7 @@ const getUploadEvent = async (eventId, userName) => {
   };
 
   // Get data from event database
-  const { data: [ evt ], error } = await services.water.events.findMany(filter);
+  const { data: [evt], error } = await services.water.events.findMany(filter);
   throwIfError(error);
   return evt;
 };
@@ -300,6 +300,10 @@ const getCSVTemplates = async (request, h) => {
 
   // Fetch returns for current company
   const returns = await services.water.companies.getCurrentDueReturns(companyId);
+
+  if (returns.length === 0) {
+    throw Boom.notFound(`CSV templates error - no current due returns`, { companyId });
+  }
 
   const endDate = returns[0].endDate;
 

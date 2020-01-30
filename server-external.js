@@ -71,6 +71,9 @@ async function start () {
       options: {
         reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
       }
+    }, {
+      plugin: require('shared/plugins/error'),
+      options: { logger }
     }]);
 
     // Set up Nunjucks view engine
@@ -98,7 +101,12 @@ const processError = message => err => {
 
 process
   .on('unhandledRejection', processError('unhandledRejection'))
-  .on('uncaughtException', processError('uncaughtException'));
+  .on('uncaughtException', processError('uncaughtException'))
+  .on('SIGINT', async () => {
+    logger.info('stopping external ui');
+    await server.stop();
+    return process.exit(0);
+  });
 
 module.exports = server;
 start();

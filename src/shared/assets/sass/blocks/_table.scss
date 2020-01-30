@@ -12,6 +12,34 @@
     padding-left: 0;
 }
 
+.table__cell--totals {
+  @extend .govuk-table__cell;
+  
+    border-bottom: 0
+}
+
+.table__row--totals {
+  @extend .govuk-table__row !optional;
+
+  border-top: solid;
+}
+
+.table__header--width-10 {
+  @extend .govuk-table__header;
+  
+    width: 10%;
+}
+
+.table__header--width-20 {
+  @extend .govuk-table__header;
+  
+    width: 20%;
+}
+
+.table__header--center { 
+  text-align: center;
+}
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -20,6 +48,7 @@
   @include govuk-typography-weight-regular;
   max-width: 250px;
 }
+
 
 .table__row--clickable {
   @extend .govuk-table__row !optional;

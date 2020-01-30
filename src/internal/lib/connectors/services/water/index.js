@@ -12,6 +12,9 @@ const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
+const BillingBatchCreateService = require('./BillingBatchCreateService');
+const BillingBatchService = require('./BillingBatchService');
+const RegionsService = require('./RegionsService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -20,7 +23,6 @@ const PendingImportsApiClient = require('shared/lib/connectors/services/water/Pe
 
 // API Clients
 const AbstractionReformAnalysisApiClient = require('./AbstractionReformAnalysisApiClient');
-const LookupsApiClient = require('./LookupsApiClient');
 const NotificationsApiClient = require('./NotificationsApiClient');
 const PicklistsApiClient = require('./PicklistsApiClient');
 const PicklistItemsApiClient = require('./PicklistItemsApiClient');
@@ -43,10 +45,12 @@ module.exports = config => ({
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   internalSearch: new InternalSearchService(config.services.water, logger),
+  billingBatchCreateService: new BillingBatchCreateService(config.services.water, logger),
+  billingBatches: new BillingBatchService(config.services.water, logger),
+  regions: new RegionsService(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),
-  lookups: new LookupsApiClient(config, logger),
   gaugingStations: new GaugingStationsApiClient(config, logger),
   notifications: new NotificationsApiClient(config, logger),
   taskConfigs: new TaskConfigsApiClient(config, logger),

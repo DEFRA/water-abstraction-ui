@@ -3,12 +3,12 @@
   font-family: "nta", Arial, sans-serif;
   @include govuk-font($size: 19);
 
-  min-width: 4rem;
+  min-width: 7.5rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
   font-weight: bold;
-  padding: 5px 7px 1px 7px;
+  padding: 3px 7px 1px 7px;
   vertical-align: middle;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -36,4 +36,14 @@
 
 .badge--no-wrap {
   white-space: nowrap;
+}
+
+.badge--warning {
+  border-color: #b65929;
+  color: #b65929;
+}
+
+.badge--success {
+  border-color: govuk-colour("green");
+  color: govuk-colour("green");
 }

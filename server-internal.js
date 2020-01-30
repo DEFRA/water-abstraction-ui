@@ -56,6 +56,9 @@ const pluginsArray = [
     options: {
       reauthenticate: connectors.idm.users.reauthenticate.bind(connectors.idm.users)
     }
+  }, {
+    plugin: require('shared/plugins/error'),
+    options: { logger }
   }
 ];
 
@@ -100,7 +103,12 @@ const processError = message => err => {
 
 process
   .on('unhandledRejection', processError('unhandledRejection'))
-  .on('uncaughtException', processError('uncaughtException'));
+  .on('uncaughtException', processError('uncaughtException'))
+  .on('SIGINT', async () => {
+    logger.info('stopping internal ui');
+    await server.stop();
+    return process.exit(0);
+  });
 
 module.exports = server;
 start();

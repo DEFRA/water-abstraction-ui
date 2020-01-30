@@ -405,39 +405,60 @@ experiment('upload controller', () => {
     });
 
     experiment('getCSVTemplates', () => {
-      beforeEach(async () => {
-        const request = createRequest();
-        await controller.getCSVTemplates(request, h);
+      experiment('when there are returns', () => {
+        beforeEach(async () => {
+          const request = createRequest();
+          await controller.getCSVTemplates(request, h);
+        });
+
+        test('should get current due returns for the correct company', async () => {
+          expect(services.water.companies.getCurrentDueReturns.calledWith(companyId)).to.equal(true);
+        });
+
+        test('calls csvTemplates.createCSVData with the company returns', async () => {
+          expect(csvTemplates.createCSVData.calledWith(companyReturns)).to.equal(true);
+        });
+
+        test('calls csvTemplates.buildZip with CSV data and company name', async () => {
+          const { args } = csvTemplates.buildZip.lastCall;
+          expect(args[0]).to.equal(csvData);
+          expect(args[1]).to.equal(companyName);
+        });
+
+        test('responds with the zip stream', async () => {
+          expect(h.response.calledWith(zipObject)).to.equal(true);
+        });
+
+        test('sets the correct mime type header in the response', async () => {
+          const [key, value] = header.firstCall.args;
+          expect(key).to.equal('Content-type');
+          expect(value).to.equal('application/zip');
+        });
+
+        test('sets the correct content disposition in the response', async () => {
+          const [key, value] = header.secondCall.args;
+          expect(key).to.equal('Content-disposition');
+          expect(value).to.equal('attachment; filename=test co ltd return templates 2019.zip');
+        });
       });
 
-      test('should get current due returns for the correct company', async () => {
-        expect(services.water.companies.getCurrentDueReturns.calledWith(companyId)).to.equal(true);
-      });
+      experiment('when there are no returns', () => {
+        let request;
 
-      test('calls csvTemplates.createCSVData with the company returns', async () => {
-        expect(csvTemplates.createCSVData.calledWith(companyReturns)).to.equal(true);
-      });
+        beforeEach(async () => {
+          services.water.companies.getCurrentDueReturns.resolves([]);
+          request = createRequest();
+        });
 
-      test('calls csvTemplates.buildZip with CSV data and company name', async () => {
-        const { args } = csvTemplates.buildZip.lastCall;
-        expect(args[0]).to.equal(csvData);
-        expect(args[1]).to.equal(companyName);
-      });
-
-      test('responds with the zip stream', async () => {
-        expect(h.response.calledWith(zipObject)).to.equal(true);
-      });
-
-      test('sets the correct mime type header in the response', async () => {
-        const [key, value] = header.firstCall.args;
-        expect(key).to.equal('Content-type');
-        expect(value).to.equal('application/zip');
-      });
-
-      test('sets the correct content disposition in the response', async () => {
-        const [key, value] = header.secondCall.args;
-        expect(key).to.equal('Content-disposition');
-        expect(value).to.equal('attachment; filename=test co ltd return templates 2019.zip');
+        test('a Boom 404 error is thrown', async () => {
+          try {
+            await controller.getCSVTemplates(request, h);
+            fail();
+          } catch (err) {
+            expect(err.isBoom).to.be.true();
+            expect(err.output.statusCode).to.equal(404);
+          }
+        });
       });
     });
   });

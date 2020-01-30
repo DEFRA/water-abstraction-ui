@@ -9,7 +9,9 @@ const titleCase = require('title-case');
  * @return {Object}            - badge text and style
  */
 const getBadge = (status, isPastDueDate) => {
-  const viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
+  let viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
+
+  viewStatus = (viewStatus === 'completed') ? 'complete' : viewStatus;
 
   const styles = {
     overdue: 'error',

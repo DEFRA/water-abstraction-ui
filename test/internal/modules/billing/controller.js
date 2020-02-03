@@ -116,7 +116,8 @@ experiment('internal/modules/billing/controller', () => {
       sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
       await controller.postBillingBatchType(request, h);
       const [url] = h.redirect.lastCall.args;
-      expect(url.includes('/billing/batch/type?form=')).to.be.true();
+      expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
+      expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
     });
   });
 
@@ -165,7 +166,8 @@ experiment('internal/modules/billing/controller', () => {
       sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
       await controller.postBillingBatchRegion(request, h);
       const [url] = h.redirect.lastCall.args;
-      expect(url.includes('/billing/batch/region/supplementary?')).to.be.true();
+      expect(url.startsWith('/billing/batch/region/supplementary?')).to.be.true();
+      expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
     });
   });
 

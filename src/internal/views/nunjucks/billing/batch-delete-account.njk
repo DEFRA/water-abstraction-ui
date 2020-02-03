@@ -15,12 +15,7 @@
         {% endfor %}
         <div>£{{ account.amount | number}}</div>
       </div>
-      <form method="POST" action="/billing/batch/{{batch.id}}/removeAccount/{{account.id}}">
-        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-        {{ govukButton({
-          text: "Remove invoice"
-        }) }}
-      </form>
+      {{formRender(form)}}
     </div>
   </div>
 

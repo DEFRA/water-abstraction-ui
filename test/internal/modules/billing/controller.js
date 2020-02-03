@@ -10,7 +10,7 @@ const {
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-
+const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controller');
 const batchService = require('internal/modules/billing/services/batch-service');
@@ -80,7 +80,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.restore();
   });
 
-  experiment('ui flow tests for ui bill run type flow forms', () => {
+  experiment('getBillingBatchType', () => {
     beforeEach(async () => {
       await controller.getBillingBatchType(request, h);
     });
@@ -93,6 +93,79 @@ experiment('internal/modules/billing/controller', () => {
     test('view context is assigned a back link path for type', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/manage');
+    });
+  });
+
+  experiment('postBillingBatchType', () => {
+    beforeEach(async () => {
+      h = {
+        redirect: sandbox.spy()
+      };
+
+      sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
+    });
+
+    test('billingTypeForm is valid', async () => {
+      sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
+      await controller.postBillingBatchType(request, h);
+      const [url] = h.redirect.lastCall.args;
+      expect(url).to.equal('/billing/batch/region/supplementary');
+    });
+
+    test('billingTypeForm is NOT valid', async () => {
+      sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
+      await controller.postBillingBatchType(request, h);
+      const [url] = h.redirect.lastCall.args;
+      expect(url.includes('/billing/batch/type?form=')).to.be.true();
+    });
+  });
+
+  experiment('postBillingBatchRegion', () => {
+    const request = {
+      defra: { user: { user_name: 'test@user.za' }
+      },
+      view: { csrfToken: '211e17c9-d285-437b-94c5-adc33ed99dc8' },
+      params: { billingType: 'supplementary' },
+      yar: {
+        set: sandbox.stub()
+      }
+    };
+
+    const billingRegionFrom = { action: '/billing/batch/region',
+      method: 'POST',
+      isSubmitted: true,
+      isValid: true,
+      fields:
+     [ { name: 'selectedBillingRegion',
+       errors: [],
+       value: '6ad67f32-e75d-48c1-93d5-25a0e6263e78' },
+     { name: 'selectedBillingType',
+       value: 'supplementary' },
+     { name: 'csrf_token',
+       value: '211e17c9-d285-437b-94c5-adc33ed99dc8' } ]
+    };
+
+    beforeEach(async () => {
+      h = {
+        redirect: sandbox.spy()
+      };
+
+      sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
+    });
+
+    test('billingRegionFrom is valid redirects to waiting page', async () => {
+      sandbox.stub(forms, 'handleRequest').returns(billingRegionFrom);
+      sandbox.stub(services.water.billingBatches, 'createBillingBatch').resolves({ data: { event: { event_id: 'test-event-id' } } });
+      await controller.postBillingBatchRegion(request, h);
+      const [url] = h.redirect.lastCall.args;
+      expect(url).to.equal('/waiting/test-event-id?back=0');
+    });
+
+    test('billingRegionFrom is NOT valid redirects back to form', async () => {
+      sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
+      await controller.postBillingBatchRegion(request, h);
+      const [url] = h.redirect.lastCall.args;
+      expect(url.includes('/billing/batch/region/supplementary?')).to.be.true();
     });
   });
 
@@ -485,6 +558,9 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id',
           invoiceId: 'test-invoice-id'
+        },
+        view: {
+          csrfToken: 'token'
         }
       };
 
@@ -510,6 +586,29 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.account.licences[0].licenceRef).to.equal(invoice.data.invoiceLicences[0].licence.licenceNumber);
       expect(view.account.amount).to.equal(invoice.data.totals.totalValue);
       expect(view.account.dateCreated).to.equal(invoice.data.dateCreated);
+    });
+  });
+
+  experiment('.postBillingBatchDeleteAccount', () => {
+    beforeEach(async () => {
+      h = {
+        redirect: sandbox.spy()
+      };
+      request = {
+        params: {
+          batchId: 'test-batch-id',
+          accountId: 'invoice-account-id'
+        }
+      };
+
+      sandbox.stub(services.water.billingBatches, 'deleteAccountFromBatch').resolves(true);
+      await controller.postBillingBatchDeleteAccount(request, h);
+    });
+
+    test('redirects to the expected url', async () => {
+      const [url] = h.redirect.lastCall.args;
+      console.log(url);
+      expect(url).to.equal('/billing/batch/test-batch-id/summary');
     });
   });
 });

@@ -3,6 +3,7 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
+const { deleteAccountFromBatchForm } = require('./forms/billing-batch-delete-account');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
@@ -305,23 +306,22 @@ const getTransactionsCSV = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchDeleteAccount = async (request, h) => {
-  const batchId = request.params.batchId;
-  const invoiceId = request.params.invoiceId;
+  const { batchId, invoiceId } = request.params;
   const account = await batchService.getBatchInvoice(batchId, invoiceId);
   return h.view('nunjucks/billing/batch-delete-account', {
     ...request.view,
     pageTitle: 'You are about to remove this invoice from the bill run',
     account,
-    batch: { id: request.params.batchId },
+    form: deleteAccountFromBatchForm(request, account.id),
+    batch: { id: batchId },
     back: `/billing/batch/${batchId}/summary`
   });
 };
 
 const postBillingBatchDeleteAccount = async (request, h) => {
-  const accountId = request.params.invoiceId;
-  const batchId = request.params.batchId;
-  await services.water.billingBatchService.deleteAccountFromBatch(batchId, accountId);
-  return h.redirect(`/billing/batch/${request.params.batchId}/summary`);
+  const { accountId, batchId } = request.params;
+  await services.water.billingBatches.deleteAccountFromBatch(batchId, accountId);
+  return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 
 exports.getBillingBatchList = getBillingBatchList;

@@ -21,7 +21,7 @@
 .table__row--totals {
   @extend .govuk-table__row !optional;
 
-  border-top: solid;
+  border-top: 2px solid govuk-colour("black");  
 }
 
 .table__header--width-10 {

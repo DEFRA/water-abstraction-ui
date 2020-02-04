@@ -240,7 +240,7 @@ if (isAcceptanceTestTarget) {
     },
     getBillingBatchDeleteAccount: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/deleteAccount/{invoiceId}',
+      path: '/billing/batch/{batchId}/delete-account/{invoiceId}',
       handler: controller.getBillingBatchDeleteAccount,
       config: {
         auth: { scope: allowedScopes },
@@ -260,7 +260,7 @@ if (isAcceptanceTestTarget) {
     },
     postBillingBatchDeleteAccount: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/deleteAccount/{accountId}',
+      path: '/billing/batch/{batchId}/delete-account/{accountId}',
       handler: controller.postBillingBatchDeleteAccount,
       config: {
         auth: { scope: allowedScopes },

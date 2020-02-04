@@ -3,6 +3,7 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
+const { deleteAccountFromBatchForm } = require('./forms/billing-batch-delete-account');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
@@ -111,7 +112,7 @@ const postBillingBatchRegion = async (request, h) => {
 
   try {
     const batch = getBatchDetails(request, billingRegionForm);
-    const { data: { event } } = await services.water.billingBatchCreateService.createBillingBatch(batch);
+    const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
     return h.redirect(`/waiting/${event.event_id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
@@ -299,6 +300,30 @@ const getTransactionsCSV = async (request, h) => {
     .header('Content-disposition', `attachment; filename="${fileName}"`);
 };
 
+/**
+ * Remove an invoice from the bill run
+ * @param {*} request
+ * @param {*} h
+ */
+const getBillingBatchDeleteAccount = async (request, h) => {
+  const { batchId, invoiceId } = request.params;
+  const account = await batchService.getBatchInvoice(batchId, invoiceId);
+  return h.view('nunjucks/billing/batch-delete-account', {
+    ...request.view,
+    pageTitle: 'You are about to remove this invoice from the bill run',
+    account,
+    form: deleteAccountFromBatchForm(request, account.id),
+    batch: { id: batchId },
+    back: `/billing/batch/${batchId}/summary`
+  });
+};
+
+const postBillingBatchDeleteAccount = async (request, h) => {
+  const { accountId, batchId } = request.params;
+  await services.water.billingBatches.deleteAccountFromBatch(batchId, accountId);
+  return h.redirect(`/billing/batch/${batchId}/summary`);
+};
+
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExist = getBillingBatchExist;
@@ -315,5 +340,8 @@ exports.postBillingBatchCancel = postBillingBatchCancel;
 
 exports.getBillingBatchConfirm = getBillingBatchConfirm;
 exports.postBillingBatchConfirm = postBillingBatchConfirm;
+
+exports.getBillingBatchDeleteAccount = getBillingBatchDeleteAccount;
+exports.postBillingBatchDeleteAccount = postBillingBatchDeleteAccount;
 
 exports.getTransactionsCSV = getTransactionsCSV;

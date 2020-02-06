@@ -12,6 +12,7 @@ const helpers = require('@envage/water-abstraction-helpers');
 const regions = require('./lib/regions');
 const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
+const csv = require('internal/lib/csv-download');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -292,12 +293,9 @@ const getTransactionsCSV = async (request, h) => {
 
   const { data } = await services.water.billingBatches.getBatchInvoices(batchId);
 
-  const csv = await transactionsCSV.createCSV(data);
+  const csvData = await transactionsCSV.createCSV(data);
   const fileName = transactionsCSV.getCSVFileName(request.defra.batch);
-
-  return h.response(csv)
-    .header('Content-type', 'application/csv')
-    .header('Content-disposition', `attachment; filename="${fileName}"`);
+  return csv.csvDownload(h, csvData, fileName);
 };
 
 /**

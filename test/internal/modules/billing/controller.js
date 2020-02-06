@@ -15,6 +15,7 @@ const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controller');
 const batchService = require('internal/modules/billing/services/batch-service');
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
+const csv = require('internal/lib/csv-download');
 
 const billingRegions = {
   'data': [
@@ -349,15 +350,17 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('getTransactionsCSV', () => {
-    let batch, invoicesForBatch;
+    let batch, invoicesForBatch, csvData;
     beforeEach(async () => {
       batch = { id: 'test-batch-id' };
       request = { params: { batchId: 'test-batch-id' }, defra: { batch } };
       invoicesForBatch = { data: { id: 'test-d', error: null } };
+      csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
       sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(invoicesForBatch);
       sandbox.stub(batchService, 'getBatch').resolves(batch);
-      sandbox.stub(transactionsCSV, 'createCSV').resolves('csv-data');
+      sandbox.stub(transactionsCSV, 'createCSV').resolves(csvData);
       sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
+      sandbox.stub(csv, 'csvDownload');
 
       await controller.getTransactionsCSV(request, h);
     });
@@ -380,19 +383,10 @@ experiment('internal/modules/billing/controller', () => {
       expect(data).to.equal(batch);
     });
 
-    test('calls h.response with csv data', () => {
-      const [csv] = h.response.lastCall.args;
-      expect(csv).to.equal('csv-data');
-    });
-
-    test('calls h.response with expected headers', () => {
-      const [typeHeader, contentType] = header.lastCall.args;
-      expect(typeHeader).to.equal('Content-type');
-      expect(contentType).to.equal('application/csv');
-
-      const [fileHeader, fileName] = secondHeader.lastCall.args;
-      expect(fileHeader).to.equal('Content-disposition');
-      expect(fileName).to.equal('attachment; filename="fileName"');
+    test('calls csv.csvDownload with csv data and file name', () => {
+      const [, data, fileName] = csv.csvDownload.lastCall.args;
+      expect(data).to.equal(csvData);
+      expect(fileName).to.equal('fileName');
     });
   });
 

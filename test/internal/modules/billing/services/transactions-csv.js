@@ -150,13 +150,13 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('csvData starts with headings', async () => {
-      const columnHeadingsString = transactionsCSV._columnHeadings.join(',');
-      expect(csvData).to.startWith(columnHeadingsString);
+      expect(csvData[0]).to.equal(transactionsCSV._columnHeadings);
     });
 
     test('creates a line for each transaction', async () => {
       const licenceNumber = invoicesForBatch[0].invoiceLicences[0].licence.licenceNumber;
-      expect(csvData).to.contain([licenceNumber, licenceNumber]);
+      expect(csvData[1][0]).to.equal(licenceNumber);
+      expect(csvData[2][0]).to.equal(licenceNumber);
     });
   });
 
@@ -166,7 +166,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       // South West supplementary bill run 2020-01-14.csv
 
       const fileName = transactionsCSV.getCSVFileName(batch);
-
       expect(fileName).to.equal(expectedFileName);
     });
   });

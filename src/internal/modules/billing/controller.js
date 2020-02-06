@@ -295,9 +295,6 @@ const getTransactionsCSV = async (request, h) => {
   const csvData = await transactionsCSV.createCSV(data);
   const fileName = transactionsCSV.getCSVFileName(request.defra.batch);
   return csv.csvDownload(h, csvData, fileName);
-  // return h.response(csv)
-  //   .header('Content-type', 'application/csv')
-  //   .header('Content-disposition', `attachment; filename="${fileName}"`);
 };
 
 exports.getBillingBatchList = getBillingBatchList;

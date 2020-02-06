@@ -9,7 +9,7 @@
       {{ title(pageTitle) }}
       <div class="govuk-inset-text">
         <div>{{ batch.billRunDate | date }}</div>
-        <div>{{ batch.region.name}} {{ batch.type }} bill run</div>
+        <div>{{ batch.region.displayName}} {{ batch.type }} bill run</div>
       </div>
       <form method="post">
         <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />

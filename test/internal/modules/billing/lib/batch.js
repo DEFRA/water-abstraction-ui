@@ -1,3 +1,5 @@
+'use strict';
+
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -19,9 +21,10 @@ experiment('internal/modules/billing/lib/batch', () => {
   experiment('.setRegion', () => {
     test('sets the name and id', async () => {
       const batch = new Batch('test-batch-id', Date.now(), 'annual');
-      batch.setRegion('South West', 'test-region-id');
-      expect(batch.region.name).to.equal('South West');
+      batch.setRegion('test-region-id', 'South West', 'Display South West');
       expect(batch.region.id).to.equal('test-region-id');
+      expect(batch.region.name).to.equal('South West');
+      expect(batch.region.displayName).to.equal('Display South West');
     });
   });
 });

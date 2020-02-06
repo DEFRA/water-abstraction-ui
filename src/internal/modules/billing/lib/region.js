@@ -1,7 +1,10 @@
+'use strict';
+
 class Region {
-  constructor (id, name) {
+  constructor (id, name, displayName) {
     this.id = id;
     this.name = name;
+    this.displayName = displayName;
   }
 }
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -8,7 +10,7 @@ const batch = {
   billRunDate: '2020-01-14',
   type: 'supplementary',
   region: {
-    name: 'South West',
+    displayName: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
   }
 };
@@ -162,7 +164,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `${batch.region.name} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+      const expectedFileName = `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
       // South West supplementary bill run 2020-01-14.csv
 
       const fileName = transactionsCSV.getCSVFileName(batch);

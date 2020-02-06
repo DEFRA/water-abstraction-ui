@@ -18,22 +18,24 @@ const transactionsCSV = require('internal/modules/billing/services/transactions-
 const csv = require('internal/lib/csv-download');
 
 const billingRegions = {
-  'data': [
+  data: [
     {
-      'regionId': '07ae7f3a-2677-4102-b352-cc006828948c',
-      'chargeRegionId': 'A',
-      'naldRegionId': 1,
-      'name': 'Anglian',
-      'dateCreated': '2019-11-05T12:10:35.164Z',
-      'dateUpdated': '2019-11-05T12:10:35.164Z'
+      regionId: '07ae7f3a-2677-4102-b352-cc006828948c',
+      chargeRegionId: 'A',
+      naldRegionId: 1,
+      name: 'Anglian',
+      displayName: 'Anglian',
+      dateCreated: '2019-11-05T12:10:35.164Z',
+      dateUpdated: '2019-11-05T12:10:35.164Z'
     },
     {
-      'regionId': 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
-      'chargeRegionId': 'B',
-      'naldRegionId': 2,
-      'name': 'Midlands',
-      'dateCreated': '2019-11-05T12:10:35.164Z',
-      'dateUpdated': '2019-11-05T12:10:35.164Z'
+      regionId: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
+      chargeRegionId: 'B',
+      naldRegionId: 2,
+      name: 'Midlands',
+      displayName: 'Midlands',
+      dateCreated: '2019-11-05T12:10:35.164Z',
+      dateUpdated: '2019-11-05T12:10:35.164Z'
     }
   ]
 };
@@ -124,7 +126,8 @@ experiment('internal/modules/billing/controller', () => {
 
   experiment('postBillingBatchRegion', () => {
     const request = {
-      defra: { user: { user_name: 'test@user.za' }
+      defra: {
+        user: { user_name: 'test@user.za' }
       },
       view: { csrfToken: '211e17c9-d285-437b-94c5-adc33ed99dc8' },
       params: { billingType: 'supplementary' },
@@ -133,18 +136,26 @@ experiment('internal/modules/billing/controller', () => {
       }
     };
 
-    const billingRegionFrom = { action: '/billing/batch/region',
+    const billingRegionFrom = {
+      action: '/billing/batch/region',
       method: 'POST',
       isSubmitted: true,
       isValid: true,
-      fields:
-     [ { name: 'selectedBillingRegion',
-       errors: [],
-       value: '6ad67f32-e75d-48c1-93d5-25a0e6263e78' },
-     { name: 'selectedBillingType',
-       value: 'supplementary' },
-     { name: 'csrf_token',
-       value: '211e17c9-d285-437b-94c5-adc33ed99dc8' } ]
+      fields: [
+        {
+          name: 'selectedBillingRegion',
+          errors: [],
+          value: '6ad67f32-e75d-48c1-93d5-25a0e6263e78'
+        },
+        {
+          name: 'selectedBillingType',
+          value: 'supplementary'
+        },
+        {
+          name: 'csrf_token',
+          value: '211e17c9-d285-437b-94c5-adc33ed99dc8'
+        }
+      ]
     };
 
     beforeEach(async () => {
@@ -399,7 +410,8 @@ experiment('internal/modules/billing/controller', () => {
           type: 'two_part_tariff',
           billRunDate: (new Date(2000, 0, 1)).toISOString(),
           region: {
-            name: 'Test Region'
+            name: 'Test Region',
+            displayName: 'Test Region Display'
           }
         },
         invoices: [
@@ -472,7 +484,7 @@ experiment('internal/modules/billing/controller', () => {
       });
 
       test('the page title including the region name and batch type', async () => {
-        expect(view.pageTitle).to.equal('Test Region two part tariff bill run');
+        expect(view.pageTitle).to.equal('Test Region Display two part tariff bill run');
       });
 
       test('the batch id', async () => {
@@ -526,28 +538,29 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchDeleteAccount', () => {
-    const invoice = { data: {
-      id: '1',
-      invoiceLicences: [
-        {
-          licence: {
-            id: 'licence-id',
-            licenceNumber: 'AG1234/56789'
+    const invoice = {
+      data: {
+        id: '1',
+        invoiceLicences: [
+          {
+            licence: {
+              id: 'licence-id',
+              licenceNumber: 'AG1234/56789'
+            }
+          }
+        ],
+        dateCreated: '2020-01-27T13:51:29.234Z',
+        totals: {
+          totalValue: '1234.56'
+        },
+        invoiceAccount: {
+          id: 'invoice-account-id',
+          accountNumber: 'A12345678A',
+          company: {
+            name: 'company-name'
           }
         }
-      ],
-      dateCreated: '2020-01-27T13:51:29.234Z',
-      totals: {
-        totalValue: '1234.56'
-      },
-      invoiceAccount: {
-        id: 'invoice-account-id',
-        accountNumber: 'A12345678A',
-        company: {
-          name: 'company-name'
-        }
       }
-    }
     };
     beforeEach(async () => {
       request = {

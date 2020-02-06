@@ -1,3 +1,5 @@
+'use strict';
+
 const { omit } = require('lodash');
 const moment = require('moment');
 
@@ -77,7 +79,7 @@ const createCSV = async data => {
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.name} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+  return `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
 };
 
 exports._columnHeadings = columnHeadings;

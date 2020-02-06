@@ -314,7 +314,7 @@ const getCSVTemplates = async (request, h) => {
 
   return h.response(zip)
     .header('Content-type', 'application/zip')
-    .header('Content-disposition', `attachment; filename=${fileName}`);
+    .header('Content-disposition', `attachment; filename="${fileName}"`);
 };
 
 /**

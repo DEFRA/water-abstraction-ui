@@ -1,5 +1,3 @@
-const util = require('util');
-const csvStringify = util.promisify(require('csv-stringify'));
 const { omit } = require('lodash');
 const moment = require('moment');
 
@@ -61,7 +59,7 @@ const getInvoiceAccountData = invAcc => {
 const createCSV = async data => {
   const dataForCSV = [columnHeadings];
 
-  data.reduce((dataForCSV, dataObj) => {
+  return data.reduce((dataForCSV, dataObj) => {
     dataObj.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
         const csvLine = [
@@ -76,8 +74,6 @@ const createCSV = async data => {
 
     return dataForCSV;
   }, dataForCSV);
-
-  return csvStringify(dataForCSV);
 };
 
 const getCSVFileName = batch => {

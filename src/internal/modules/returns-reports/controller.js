@@ -1,8 +1,8 @@
-const csv = require('util').promisify(require('csv-stringify'));
 const helpers = require('@envage/water-abstraction-helpers');
 
 const services = require('../../lib/connectors/services');
 const { getReturnStats } = require('./lib/returns-stats');
+const csv = require('internal/lib/csv-download');
 
 const getCycleStats = async cycle => {
   cycle.stats = await getReturnStats(cycle.endDate);
@@ -44,13 +44,9 @@ const getDownloadReport = async (request, h) => {
     throw err;
   }
 
-  const str = await csv(data, { header: true });
-
   const filename = `returns-report-${cycleEndDate}.csv`;
 
-  return h.response(str)
-    .header('content-type', 'text/csv')
-    .header('content-disposition', `attachment; filename=${filename}`);
+  return csv.csvDownload(h, data, filename);
 };
 
 module.exports = {

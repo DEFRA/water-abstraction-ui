@@ -62,7 +62,8 @@ const mapCSVRow = message => ({
  * @return {String}    CSV filename
  */
 const getCSVFilename = ev => {
-  return `${ev.metadata.name} - ${ev.reference_code}.csv`;
+  const notificationName = ev.metadata.name.replace(':', '');
+  return `${notificationName} - ${ev.reference_code}.csv`;
 };
 
 /**

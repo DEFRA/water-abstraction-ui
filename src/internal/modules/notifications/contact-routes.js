@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('@hapi/joi');
 const contactController = require('./contact-controller');
 const constants = require('../../lib/constants');
@@ -36,10 +38,10 @@ module.exports = {
       description: 'Post handler for name and job title',
       validate: {
         payload: {
-          'csrf_token': Joi.string().guid().required(),
-          'redirect': Joi.string().allow(''),
-          'name': Joi.string().allow('').max(254),
-          'jobTitle': Joi.string().allow('').max(254)
+          csrf_token: Joi.string().guid().required(),
+          redirect: Joi.string().allow(''),
+          name: Joi.string().allow('').max(254),
+          jobTitle: Joi.string().allow('').max(254)
         }
       },
       plugins: {
@@ -76,10 +78,10 @@ module.exports = {
       description: 'Post handler for email/tel/address',
       validate: {
         payload: {
-          'csrf_token': Joi.string().guid().required(),
-          'tel': Joi.string().allow('').max(254),
-          'email': Joi.string().allow('').max(254),
-          'address': Joi.string().allow('').max(254)
+          csrf_token: Joi.string().guid().required(),
+          tel: Joi.string().allow('').max(254),
+          email: Joi.string().allow('').max(254),
+          address: Joi.string().allow('').max(254)
         }
       },
       plugins: {

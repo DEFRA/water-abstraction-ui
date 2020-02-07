@@ -84,11 +84,11 @@ const getBatchDetails = (request, billingRegionForm) => {
   const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
   const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
   const batch = {
-    'userEmail': request.defra.user.user_name,
-    'regionId': selectedBillingRegion,
-    'batchType': selectedBillingType,
-    'financialYearEnding': financialYear,
-    'season': 'all year' // ('summer', 'winter', 'all year').required();
+    userEmail: request.defra.user.user_name,
+    regionId: selectedBillingRegion,
+    batchType: selectedBillingType,
+    financialYearEnding: financialYear,
+    season: 'all year' // ('summer', 'winter', 'all year').required();
   };
   return batch;
 };
@@ -141,7 +141,7 @@ const getBillingBatchSummary = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
-    pageTitle: `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`,
+    pageTitle: `${batch.region.displayName} ${batch.type.replace(/_/g, ' ')} bill run`,
     batch: {
       batchId,
       billRunDate: batch.billRunDate,

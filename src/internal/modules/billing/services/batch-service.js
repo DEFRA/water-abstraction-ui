@@ -18,7 +18,7 @@ const getBatch = async batchId => {
   const region = Regions.fromRegions(regions).getById(batch.regionId);
 
   const batchModel = new Batch(batchId, batch.dateCreated, batch.batchType);
-  batchModel.setRegion(region.name, region.id);
+  batchModel.setRegion(region.id, region.name, region.displayName);
   batchModel.status = batch.status;
   return batchModel;
 };

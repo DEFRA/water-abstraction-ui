@@ -1,3 +1,5 @@
+'use strict';
+
 class Batch {
   /**
    * Creates a new batch object
@@ -16,12 +18,14 @@ class Batch {
   /**
    * Sets the region for the batch
    *
-   * @param {String} name The region name
    * @param {String} id The region id
+   * @param {String} name The region name
+   * @param {String} displayName The region display name
    */
-  setRegion (name, id) {
-    this.region.name = name;
+  setRegion (id, name, displayName) {
     this.region.id = id;
+    this.region.name = name;
+    this.region.displayName = displayName;
     return this;
   }
 }

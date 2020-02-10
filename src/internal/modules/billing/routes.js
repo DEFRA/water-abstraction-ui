@@ -106,7 +106,7 @@ if (isAcceptanceTestTarget) {
 
     getBillingBatchInvoice: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/summary/invoice/{invoiceId}',
+      path: '/billing/batch/{batchId}/invoice/{invoiceId}',
       handler: controller.getBillingBatchInvoice,
       config: {
         auth: { scope: allowedScopes },

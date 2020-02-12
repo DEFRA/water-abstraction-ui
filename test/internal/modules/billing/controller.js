@@ -8,8 +8,9 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sandbox = require('sinon').createSandbox();
+
+const { logger } = require('internal/logger');
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controller');
@@ -49,12 +50,16 @@ experiment('internal/modules/billing/controller', () => {
   beforeEach(async () => {
     h = {
       view: sandbox.stub(),
-      response: sandbox.stub().returns({ header })
+      response: sandbox.stub().returns({ header }),
+      redirect: sandbox.stub()
     };
 
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
+    sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
+    sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
     sandbox.stub(batchService, 'getBatchList');
     sandbox.stub(batchService, 'getBatchInvoices');
+    sandbox.stub(logger, 'info');
 
     request = {
       params: {
@@ -256,6 +261,34 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
+  experiment('.postBillingBatchCancel', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = { params: { batchId: 'test-batch-id' } };
+    });
+
+    test('the batch id is used to cancel the batch via the water service', async () => {
+      await controller.postBillingBatchCancel(request, h);
+      const [batchId] = services.water.billingBatches.cancelBatch.lastCall.args;
+      expect(batchId).to.equal('test-batch-id');
+    });
+
+    test('the user is redirected back to the list of batches', async () => {
+      await controller.postBillingBatchCancel(request, h);
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+
+    test('if the cancellation failed, the user is still redirected back to the list of batches', async () => {
+      services.water.billingBatches.cancelBatch.rejects();
+      await controller.postBillingBatchCancel(request, h);
+
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+  });
+
   experiment('.getBillingBatchConfirm', () => {
     beforeEach(async () => {
       request = {
@@ -294,6 +327,31 @@ experiment('internal/modules/billing/controller', () => {
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
       expect(view).to.equal('nunjucks/billing/batch-confirm');
+    });
+  });
+
+  experiment('.postBillingBatchConfirm', () => {
+    beforeEach(async () => {
+      const request = { params: { batchId: 'test-batch-id' } };
+      await controller.postBillingBatchConfirm(request, h);
+    });
+
+    test('the batch id is used to approve the batch via the water service', async () => {
+      const [batchId] = services.water.billingBatches.approveBatch.lastCall.args;
+      expect(batchId).to.equal('test-batch-id');
+    });
+
+    test('the user is redirected back to the list of batches', async () => {
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+
+    test('if the approval fails, the user is still redirected back to the list of batches', async () => {
+      services.water.billingBatches.approveBatch.rejects();
+      await controller.postBillingBatchConfirm(request, h);
+
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
     });
   });
 

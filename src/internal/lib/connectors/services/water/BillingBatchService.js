@@ -38,6 +38,30 @@ class BillingBatchService extends ServiceClient {
     const uri = this.joinUrl(`/billing/batches/${batchId}/account/${accountId}`);
     return this.serviceRequest.delete(uri);
   }
+
+  /**
+   * Cancels a batch via the water service which will delete the
+   * batch from the charge module, then from the billing_batch
+   * tables
+   *
+   * @param {String} batchId UUID of the batch to cancel
+   */
+  cancelBatch (batchId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}`);
+    return this.serviceRequest.delete(uri);
+  }
+
+  /**
+   * Approves and sends a batch via the charge module then
+   * marks the batch as sent. Any errors in the pipeline will
+   * cause the batch to be in the error state.
+   *
+   * @param {String} batchId UUID of the batch to apprive
+   */
+  approveBatch (batchId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}/approve`);
+    return this.serviceRequest.post(uri);
+  }
 }
 
 module.exports = BillingBatchService;

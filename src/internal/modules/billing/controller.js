@@ -233,7 +233,7 @@ const badge = {
 
 const getBatchType = (type) => {
   const batchType = type.replace(/^\w/, c => c.toUpperCase());
-  return (batchType === 'Two_part_tarrif') ? 'Two-part tarrif' : batchType;
+  return (batchType === 'Two_part_tariff') ? 'Two-part tariff' : batchType;
 };
 
 const mapBatchList = async (batchList) => {

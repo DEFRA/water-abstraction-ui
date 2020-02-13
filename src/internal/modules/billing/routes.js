@@ -62,17 +62,23 @@ if (isAcceptanceTestTarget) {
       }
     },
 
-    getBillingBatchExist: {
+    getBillingBatchExists: {
       method: 'GET',
-      path: '/billing/batch/exist',
-      handler: controller.getBillingBatchExist,
+      path: '/billing/batch/{batchId}/exists',
+      handler: controller.getBillingBatchExists,
       config: {
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }],
         auth: { scope: allowedScopes },
         description: 'If a bill run exist, warn user and display short summary',
         plugins: {
           viewContext: {
-            pageTitle: 'Bill run exist',
+            pageTitle: 'A bill run already exists',
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
           }
         }
       }
@@ -163,7 +169,7 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
 
@@ -202,7 +208,7 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
 
@@ -235,7 +241,7 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid().required()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
     getBillingBatchDeleteAccount: {

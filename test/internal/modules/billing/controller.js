@@ -62,6 +62,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(logger, 'info');
 
     request = {
+      pre: {},
       params: {
         batchId: 'test-batch-id'
       },
@@ -204,9 +205,12 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('ui flow tests for ui bill run exist', () => {
+  experiment('.getBillingBatchExists', () => {
     beforeEach(async () => {
-      await controller.getBillingBatchExist(request, h);
+      request.pre.batch = {
+        id: 'test-batch-id'
+      };
+      await controller.getBillingBatchExists(request, h);
     });
 
     test('the expected view template is used for bill run exist', async () => {
@@ -214,9 +218,19 @@ experiment('internal/modules/billing/controller', () => {
       expect(templateName).to.equal('nunjucks/billing/batch-exist');
     });
 
+    test('adds a date to the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.today).to.be.a.date();
+    });
+
     test('view context is assigned a back link path for exist', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/billing/batch/region');
+    });
+
+    test('adds the batch from the pre handler to the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.batch.id).to.equal('test-batch-id');
     });
   });
 
@@ -226,7 +240,7 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id'
         },
-        defra: {
+        pre: {
           batch: {
             id: 'test-batch-id',
             dateCreated: '2019-12-02',
@@ -295,7 +309,7 @@ experiment('internal/modules/billing/controller', () => {
         params: {
           batchId: 'test-batch-id'
         },
-        defra: {
+        pre: {
           batch: {
             id: 'test-batch-id',
             dateCreated: '2019-12-02',
@@ -425,7 +439,12 @@ experiment('internal/modules/billing/controller', () => {
     let batch, invoicesForBatch, csvData;
     beforeEach(async () => {
       batch = { id: 'test-batch-id' };
-      request = { params: { batchId: 'test-batch-id' }, defra: { batch } };
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        },
+        pre: { batch }
+      };
       invoicesForBatch = { data: { id: 'test-d', error: null } };
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
       sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(invoicesForBatch);

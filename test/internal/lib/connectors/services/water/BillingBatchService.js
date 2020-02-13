@@ -36,13 +36,35 @@ experiment('services/water/BillingBatchService', () => {
   });
 
   experiment('.getBatch', () => {
-    test('passes the expected URL to the service request', async () => {
-      const id = uuid();
+    let id;
 
-      await service.getBatch(id);
+    experiment('when the batch totals are not requested', () => {
+      beforeEach(async () => {
+        id = uuid();
+        await service.getBatch(id);
+      });
 
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}`);
+      test('passes the expected URL to the service request', async () => {
+        const [url] = serviceRequest.get.lastCall.args;
+        expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}`);
+      });
+
+      test('the totals query parameter is set to 0', async () => {
+        const [, options] = serviceRequest.get.lastCall.args;
+        expect(options).to.equal({ qs: { totals: 0 } });
+      });
+    });
+
+    experiment('when the batch totals are requested', () => {
+      beforeEach(async () => {
+        id = uuid();
+        await service.getBatch(id, true);
+      });
+
+      test('the totals query parameter is set to 0', async () => {
+        const [, options] = serviceRequest.get.lastCall.args;
+        expect(options).to.equal({ qs: { totals: 1 } });
+      });
     });
   });
 

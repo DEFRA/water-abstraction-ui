@@ -1,7 +1,7 @@
 {% from  "data.njk" import data %}
 
 {% macro billRunTotal (totalAmount) %}
-  {{ data('£' + totalAmount | number, 'Bill run total') }}
+  {{ data(totalAmount | charge, 'Bill run total') }}
 {% endmacro %}
 
 {% macro billRunComponent (numberOfItems, text, totalAmount) %}
@@ -9,7 +9,7 @@
     {{ numberOfItems }} {{ text | pluralize(numberOfItems != 1) }}
   {% endset %}
 
-  {{ data('£' + totalAmount | number, subHeader, false) }}
+  {{ data(totalAmount | charge, subHeader, false) }}
 {% endmacro %}
 
 {% macro invoicesTotal (numberOfItems, totalAmount) %}
@@ -25,14 +25,14 @@
     {{ text }}
   {% endset %}
 
-  {{ data('£' + totalAmount | number, subHeader, false) }}
+  {{ data(totalAmount | charge, subHeader, false) }}
 {% endmacro %}
 
 {% macro invoiceTotal (totalAmount, credit) %}
 {% if credit %}
-  {{ data('£' + totalAmount + ' credit' | number, 'Bill amount') }}
+  {{ data(totalAmount | charge, 'Bill amount') }}
 {% else %}
-  {{ data('£' + totalAmount | number, 'Bill amount') }}
+  {{ data(totalAmount | charge, 'Bill amount') }}
 {% endif %}
 {% endmacro %}
 

@@ -13,6 +13,7 @@ const regions = require('./lib/regions');
 const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
+const { logger } = require('internal/logger');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -265,7 +266,12 @@ const getBillingBatchCancel = async (request, h) => {
 };
 
 const postBillingBatchCancel = async (request, h) => {
-  // temporary stub implementation
+  const { batchId } = request.params;
+  try {
+    await services.water.billingBatches.cancelBatch(batchId);
+  } catch (err) {
+    logger.info(`Did not successfully delete batch ${batchId}`);
+  }
   return h.redirect('/billing/batch/list');
 };
 
@@ -278,7 +284,12 @@ const getBillingBatchConfirm = async (request, h) => {
 };
 
 const postBillingBatchConfirm = async (request, h) => {
-  // temporary stub implementation
+  const { batchId } = request.params;
+  try {
+    await services.water.billingBatches.approveBatch(batchId);
+  } catch (err) {
+    logger.info(`Did not successfully approve batch ${batchId}`);
+  }
   return h.redirect('/billing/batch/list');
 };
 

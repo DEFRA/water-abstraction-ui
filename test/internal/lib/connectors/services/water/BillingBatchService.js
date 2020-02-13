@@ -136,4 +136,22 @@ experiment('services/water/BillingBatchService', () => {
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/account/${accountId}`);
     });
   });
+
+  experiment('.approveBatch', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      await service.approveBatch(batchId);
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve`);
+    });
+  });
+
+  experiment('.cancelBatch', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      await service.cancelBatch(batchId);
+      const [url] = serviceRequest.delete.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}`);
+    });
+  });
 });

@@ -15,7 +15,6 @@ const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const sentenceCase = require('sentence-case');
-const titleCase = require('title-case');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));

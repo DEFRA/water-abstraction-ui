@@ -468,54 +468,37 @@ experiment('internal/modules/billing/controller', () => {
     beforeEach(async () => {
       batchInvoicesResult = {
         batch: {
+          id: 'test-batch-id',
+          dateCreated: '2000-01-01T00:00:00.000Z',
           type: 'two_part_tariff',
-          billRunDate: (new Date(2000, 0, 1)).toISOString(),
           region: {
-            name: 'Test Region',
-            displayName: 'Test Region Display'
+            id: 'test-region-1',
+            name: 'Anglian',
+            code: 'A'
+          },
+          totals: {
+            netTotal: 43434
           }
         },
         invoices: [
           {
-            invoiceAccount: {
-              accountNumber: 'A1',
-              company: {
-                name: 'Comp A'
-              }
-            },
-            invoiceLicences: [{ licence: { licenceNumber: '111' } }],
-            totals: {
-              totalValue: 111,
-              totalCredits: 111,
-              totalInvoices: 222
-            }
-
-          }, {
-            invoiceAccount: {
-              accountNumber: 'B2',
-              company: {
-                name: 'Comp B'
-              }
-            },
-            invoiceLicences: [
-              { licence: { licenceNumber: '222' } },
-              { licence: { licenceNumber: '222/222' } }
-            ],
-            totals: {
-              totalValue: -111,
-              totalCredits: 333,
-              totalInvoices: 222
-            }
-
-          }
-        ],
-        totals: {
-          totalValue: 111,
-          totalInvoices: 2,
-          totalCredits: 1,
-          numberOfInvoices: 2,
-          numberOfCredits: 0
-        }
+            id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+            accountNumber: 'A12345678A',
+            name: 'Test company 1',
+            netTotal: 12345,
+            licenceNumbers: [
+              '01/123/A'
+            ]
+          },
+          {
+            id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+            accountNumber: 'A89765432A',
+            name: 'Test company 2',
+            netTotal: -675467,
+            licenceNumbers: [
+              '04/567/B'
+            ]
+          }]
       };
       batchService.getBatchInvoices.resolves(batchInvoicesResult);
     });
@@ -545,33 +528,37 @@ experiment('internal/modules/billing/controller', () => {
       });
 
       test('the page title including the region name and batch type', async () => {
-        expect(view.pageTitle).to.equal('Test Region Display two part tariff bill run');
+        expect(view.pageTitle).to.equal('Anglian two part tariff bill run');
       });
 
-      test('the batch id', async () => {
-        expect(view.batch.batchId).to.equal('test-batch');
+      test('the batch data', async () => {
+        expect(view.batch).to.equal(batchInvoicesResult.batch);
       });
 
-      test('the batch bill run date', async () => {
-        expect(view.batch.billRunDate).to.equal('2000-01-01T00:00:00.000Z');
+      test('the first invoice, with isCredit flag false', async () => {
+        expect(view.invoices[0]).to.equal({
+          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+          accountNumber: 'A12345678A',
+          name: 'Test company 1',
+          netTotal: 12345,
+          licenceNumbers: [
+            '01/123/A'
+          ],
+          isCredit: false
+        });
       });
 
-      test('the batch totals', async () => {
-        expect(view.batch.totals).to.equal(batchInvoicesResult.totals);
-      });
-
-      test('the charges summary from the batch invoices', async () => {
-        expect(view.batch.charges[0].account).to.equal(batchInvoicesResult.invoices[0].invoiceAccount.accountNumber);
-        expect(view.batch.charges[0].contact).to.equal(batchInvoicesResult.invoices[0].invoiceAccount.company.name);
-        expect(view.batch.charges[0].licences).to.equal(['111']);
-        expect(view.batch.charges[0].total).to.equal(batchInvoicesResult.invoices[0].totals.totalValue);
-        expect(view.batch.charges[0].isCredit).to.be.false();
-
-        expect(view.batch.charges[1].account).to.equal(batchInvoicesResult.invoices[1].invoiceAccount.accountNumber);
-        expect(view.batch.charges[1].contact).to.equal(batchInvoicesResult.invoices[1].invoiceAccount.company.name);
-        expect(view.batch.charges[1].licences).to.equal(['222', '222/222']);
-        expect(view.batch.charges[1].total).to.equal(batchInvoicesResult.invoices[1].totals.totalValue);
-        expect(view.batch.charges[1].isCredit).to.be.true();
+      test('the second invoice, with isCredit flag true', async () => {
+        expect(view.invoices[1]).to.equal({
+          id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+          accountNumber: 'A89765432A',
+          name: 'Test company 2',
+          netTotal: -675467,
+          licenceNumbers: [
+            '04/567/B'
+          ],
+          isCredit: true
+        });
       });
     });
 

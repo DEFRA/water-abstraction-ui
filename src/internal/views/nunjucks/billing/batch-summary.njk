@@ -11,15 +11,15 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
-      {{ billRunTotal(batch.totals.totalValue) }}
+      {{ billRunTotal(batch.totals.netTotal) }}
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-margin-bottom-6">
-      {{ invoicesTotal(batch.totals.numberOfInvoices, batch.totals.totalInvoices) }}
+      {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
     </div>
     <div class="govuk-grid-column-one-third">
-      {{ creditNoteTotal(batch.totals.numberOfCredits, batch.totals.totalCredits) }}
+      {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -29,19 +29,19 @@
         {{
           govukButton({
             text: "Confirm bill run",
-            href: '/billing/batch/' + batch.batchId + '/confirm'
+            href: '/billing/batch/' + batch.id + '/confirm'
           })
         }}
         {{
           govukButton({
             text: "Cancel bill run",
-            href: '/billing/batch/' + batch.batchId + '/cancel',
+            href: '/billing/batch/' + batch.id + '/cancel',
             classes: "govuk-button--secondary govuk-!-margin-left-1"
           })
         }}
       </section>
       <p class="govuk-body">
-        <a href="/billing/batch/{{batch.batchId}}/transactions-csv">Download this bill run</a>
+        <a href="/billing/batch/{{batch.id}}/transactions-csv">Download this bill run</a>
       </p>
     </div>
   </div>
@@ -51,8 +51,10 @@
     </div>
   </div>
   <div class="govuk-grid-row">
+
+ 
     <div class="govuk-grid-column-full govuk-!-margin-top-5">
-      {% if batch.charges.length > 0 %}
+      {% if invoices.length > 0 %}
         <table class="govuk-table">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -64,25 +66,28 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            {% for charge in batch.charges %}
+            {% for invoice in invoices %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  <a class="govuk-link" href="/billing/batch/{{batch.batchId}}/invoice/{{charge.invoiceId}}">{{ charge.account }}</a>
+                  <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">{{ invoice.accountNumber }}</a>
                 </th>
-                <td class="govuk-table__cell">{{ charge.contact }}</td>
+                <td class="govuk-table__cell">{{ invoice.name }}</td>
                 <td class="govuk-table__cell">
-                  {% for licence in charge.licences %}
-                    <div>{{ licence }}</div>
+
+                  <ul class="govuk-list govuk-!-margin-0">
+                  {% for licence in invoice.licenceNumbers %}
+                    <li class="govuk-!-margin-0">{{ licence }}</li>
                   {% endfor %}
+                  </ul>
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                  <span>£{{ charge.total | number}}</span>
-                  {% if charge.isCredit %}
+                  <span>{{ invoice.netTotal | charge}}</span>
+                  {% if invoice.isCredit %}
                     <div>Credit note</div>
                   {% endif %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                  <a class="govuk-link" href="/billing/batch/{{batch.batchId}}/delete-account/{{charge.invoiceId}}">Remove</a>
+                  <a class="govuk-link" href="/billing/batch/{{batch.id}}/delete-account/{{invoice.id}}">Remove</a>
                 </td>
               </tr>
             {% endfor %}

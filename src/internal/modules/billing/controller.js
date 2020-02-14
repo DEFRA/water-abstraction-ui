@@ -14,6 +14,7 @@ const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
+const sentenceCase = require('sentence-case');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -225,10 +226,7 @@ const badge = {
   error: { status: 'error', text: 'Error' }
 };
 
-const getBatchType = (type) => {
-  const batchType = type.replace(/^\w/, c => c.toUpperCase());
-  return (batchType === 'Two_part_tarrif') ? 'Two-part tarrif' : batchType;
-};
+const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
 const mapBatchList = async (batchList) => {
   const regionsList = regions.fromRegions(await getBillingRegions());

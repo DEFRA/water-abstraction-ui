@@ -372,12 +372,12 @@ experiment('internal/modules/billing/controller', () => {
             id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2'
           },
           {
-            season: 'all year',
-            status: 'processing',
+            season: 'summer',
+            status: 'review',
             region: {
               id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
             },
-            type: 'two_part_tarrif',
+            type: 'two_part_tariff',
             dateCreated: '2019-11-29T12:24:29.449Z',
             id: 'b456f227-46c0-4354-a923-ad449671ad5d'
           }
@@ -410,6 +410,9 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].batchType).to.equal('Supplementary');
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
+      expect(batches[1].batchType).to.equal('Two-part tariff');
+      expect(batches[1].region.name).to.equal('Midlands');
+      expect(batches[1].status).to.equal('review');
     });
 
     test('configures the expected view template', async () => {
@@ -661,7 +664,6 @@ experiment('internal/modules/billing/controller', () => {
 
     test('redirects to the expected url', async () => {
       const [url] = h.redirect.lastCall.args;
-      console.log(url);
       expect(url).to.equal('/billing/batch/test-batch-id/summary');
     });
   });

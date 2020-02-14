@@ -139,29 +139,23 @@ const getBillingBatchExists = async (request, h) => {
   });
 };
 
+/**
+ * Shows a batch with its list of invoices
+ * together with their totals
+ * @param {String} request.params.batchId
+ */
 const getBillingBatchSummary = async (request, h) => {
   const { batchId } = request.params;
-  const { batch, invoices, totals } = await batchService.getBatchInvoices(batchId);
+  const { batch, invoices } = await batchService.getBatchInvoices(batchId);
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
-    pageTitle: `${batch.region.displayName} ${batch.type.replace(/_/g, ' ')} bill run`,
-    batch: {
-      batchId,
-      billRunDate: batch.billRunDate,
-      totals,
-      charges: invoices.map(invoice => {
-        return {
-          invoiceId: invoice.id,
-          account: invoice.invoiceAccount.accountNumber,
-          contact: invoice.invoiceAccount.company.name,
-          licences: invoice.invoiceLicences.map(il => il.licence.licenceNumber),
-          total: invoice.totals.totalValue,
-          isCredit: invoice.totals.totalCredits > invoice.totals.totalInvoices
-        };
-      })
-    },
-
+    pageTitle: `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`,
+    batch,
+    invoices: invoices.map(row => ({
+      ...row,
+      isCredit: row.netTotal < 0
+    })),
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && '/billing/batch/list'

@@ -1,9 +1,14 @@
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
 
 class BillingBatchService extends ServiceClient {
-  getBatch (batchId) {
+  getBatch (batchId, includeTotals = false) {
     const uri = this.joinUrl('billing/batches', batchId);
-    return this.serviceRequest.get(uri);
+    const options = {
+      qs: {
+        totals: includeTotals ? 1 : 0
+      }
+    };
+    return this.serviceRequest.get(uri, options);
   }
 
   getBatches (page, perPage) {

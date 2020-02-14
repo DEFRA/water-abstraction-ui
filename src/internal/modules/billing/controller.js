@@ -130,10 +130,12 @@ const postBillingBatchRegion = async (request, h) => {
  * @param {*} request
  * @param {*} h
  */
-const getBillingBatchExist = async (request, h) => {
+const getBillingBatchExists = async (request, h) => {
   return h.view('nunjucks/billing/batch-exist', {
     ...request.view,
-    back: '/billing/batch/region'
+    today: new Date(),
+    back: '/billing/batch/region',
+    batch: request.pre.batch
   });
 };
 
@@ -256,10 +258,11 @@ const getBillingBatchList = async (request, h) => {
 };
 
 const getBillingBatchCancel = async (request, h) => {
+  const { batch } = request.pre;
   return h.view('nunjucks/billing/batch-cancel', {
     ...request.view,
-    batch: request.defra.batch,
-    back: `/billing/batch/${request.defra.batch.id}/summary`
+    batch,
+    back: `/billing/batch/${batch.id}/summary`
   });
 };
 
@@ -274,10 +277,11 @@ const postBillingBatchCancel = async (request, h) => {
 };
 
 const getBillingBatchConfirm = async (request, h) => {
+  const { batch } = request.pre;
   return h.view('nunjucks/billing/batch-confirm', {
     ...request.view,
-    batch: request.defra.batch,
-    back: `/billing/batch/${request.defra.batch.id}/summary`
+    batch,
+    back: `/billing/batch/${batch.id}/summary`
   });
 };
 
@@ -297,7 +301,7 @@ const getTransactionsCSV = async (request, h) => {
   const { data } = await services.water.billingBatches.getBatchInvoices(batchId);
 
   const csvData = await transactionsCSV.createCSV(data);
-  const fileName = transactionsCSV.getCSVFileName(request.defra.batch);
+  const fileName = transactionsCSV.getCSVFileName(request.pre.batch);
   return csv.csvDownload(h, csvData, fileName);
 };
 
@@ -327,7 +331,7 @@ const postBillingBatchDeleteAccount = async (request, h) => {
 
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
-exports.getBillingBatchExist = getBillingBatchExist;
+exports.getBillingBatchExists = getBillingBatchExists;
 exports.getBillingBatchInvoice = getBillingBatchInvoice;
 
 exports.getBillingBatchType = getBillingBatchType;

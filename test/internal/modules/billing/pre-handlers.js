@@ -7,8 +7,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sandbox = require('sinon').createSandbox();
 
 const eventService = require('internal/modules/billing/services/event-service');
 const batchService = require('internal/modules/billing/services/batch-service');
@@ -30,30 +29,30 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
   experiment('.loadBatch', () => {
     let request;
-    let result;
-    let h;
 
     beforeEach(async () => {
       request = {
-        defra: {},
         params: {
           batchId: 'test-batch-id'
         }
       };
-      h = { continue: 'continue' };
-
-      result = await preHandlers.loadBatch(request, h);
     });
 
-    test('the batch is added to request.defra', async () => {
-      expect(request.defra.batch).to.equal({
+    test('the batch is returned from the handler', async () => {
+      const result = await preHandlers.loadBatch(request);
+      expect(result).to.equal({
         id: 'test-batch-id',
         type: 'annual'
       });
     });
 
-    test('the handler returns h.continue', async () => {
-      expect(result).to.equal('continue');
+    test('returns a Boom not found when the batch is not found', async () => {
+      batchService.getBatch.rejects();
+      const result = await preHandlers.loadBatch(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Batch not found for id: test-batch-id');
     });
   });
 

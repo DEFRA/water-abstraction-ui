@@ -14,7 +14,7 @@ experiment('charge Nunjucks filter', () => {
     expect(charge(0)).to.equal('£0.00');
   });
 
-  test('Formats negative charges correctly', async () => {
-    expect(charge(-353)).to.equal('-£3.53');
+  test('Removes the sign from negative charges', async () => {
+    expect(charge(-353)).to.equal('£3.53');
   });
 });

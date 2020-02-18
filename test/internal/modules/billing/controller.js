@@ -376,24 +376,58 @@ experiment('internal/modules/billing/controller', () => {
       batchesResponse = {
         data: [
           {
+            invoices: [],
+            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2',
+            type: 'supplementary',
             season: 'all year',
             status: 'processing',
-            region: {
-              id: '07ae7f3a-2677-4102-b352-cc006828948c'
-            },
-            type: 'supplementary',
             dateCreated: '2019-11-29T12:24:06.585Z',
-            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2'
+            dataUpdated: '2019-11-29T12:24:06.585Z',
+            startYear: {
+              yearEnding: 2020
+            },
+            endYear: {
+              yearEnding: 2020
+            },
+            region: {
+              type: 'region',
+              id: '07ae7f3a-2677-4102-b352-cc006828948c',
+              name: 'Anglian',
+              code: 'A',
+              numericCode: 1
+            },
+            totals: {
+              creditNoteCount: 0,
+              invoiceCount: 12,
+              netTotal: 4005
+            }
           },
           {
-            season: 'summer',
+            invoices: [],
+            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2',
+            type: 'Two-part tariff',
+            season: 'all year',
             status: 'review',
-            region: {
-              id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
+            dateCreated: '2019-11-29T12:24:06.585Z',
+            dataUpdated: '2019-11-29T12:24:06.585Z',
+            startYear: {
+              yearEnding: 2020
             },
-            type: 'two_part_tariff',
-            dateCreated: '2019-11-29T12:24:29.449Z',
-            id: 'b456f227-46c0-4354-a923-ad449671ad5d'
+            endYear: {
+              yearEnding: 2020
+            },
+            region: {
+              type: 'region',
+              id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
+              name: 'Midlands',
+              code: 'M',
+              numericCode: 2
+            },
+            totals: {
+              creditNoteCount: 0,
+              invoiceCount: 12,
+              netTotal: 4005
+            }
           }
         ],
         pagination: {
@@ -424,7 +458,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].batchType).to.equal('Supplementary');
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
-      expect(batches[1].batchType).to.equal('Two-part tariff');
+      expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
     });

@@ -221,8 +221,8 @@ const getBillingBatchInvoice = async (request, h) => {
 };
 
 const badge = {
-  processing: { status: 'warning', text: 'Building' },
-  complete: { status: 'success', text: 'Ready' },
+  processing: { status: 'warning', text: 'Buildng' },
+  ready: { status: 'success', text: 'Ready' },
   sent: { text: 'Sent' },
   review: { status: 'warning', text: 'Review' },
   error: { status: 'error', text: 'Error' }
@@ -232,14 +232,12 @@ const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : 
 
 const mapBatchList = async (batchList) => {
   const regionsList = regions.fromRegions(await getBillingRegions());
-
-  // TODO: Replace random billing with calcuated numbers
   return batchList.map(batch => {
     batch.badge = badge[batch.status];
     batch.batchType = getBatchType(batch.type);
     batch.region = regionsList.getById(batch.region.id);
-    batch.billCount = Math.round(Math.random() * 50);
-    batch.value = (Math.random() * 10000).toFixed(2);
+    batch.billCount = batch.totals.invoiceCount + batch.totals.creditNoteCount;
+    batch.value = batch.totals.netTotal;
     return batch;
   });
 };

@@ -397,10 +397,11 @@ experiment('internal/modules/billing/controller', () => {
               numericCode: 1
             },
             totals: {
-              creditNoteCount: 0,
+              creditNoteCount: 2,
               invoiceCount: 12,
               netTotal: 4005
-            }
+            },
+            externalId: 1234
           },
           {
             invoices: [],
@@ -422,11 +423,6 @@ experiment('internal/modules/billing/controller', () => {
               name: 'Midlands',
               code: 'M',
               numericCode: 2
-            },
-            totals: {
-              creditNoteCount: 0,
-              invoiceCount: 12,
-              netTotal: 4005
             }
           }
         ],
@@ -458,9 +454,11 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].batchType).to.equal('Supplementary');
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
+      expect(batches[0].billCount).to.equal(14);
       expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
+      expect(batches[1].billCount).to.equal(null);
     });
 
     test('configures the expected view template', async () => {

@@ -9,7 +9,6 @@ const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
-const regions = require('./lib/regions');
 const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
@@ -221,7 +220,7 @@ const getBillingBatchInvoice = async (request, h) => {
 };
 
 const badge = {
-  processing: { status: 'warning', text: 'Buildng' },
+  processing: { status: 'warning', text: 'Building' },
   ready: { status: 'success', text: 'Ready' },
   sent: { text: 'Sent' },
   review: { status: 'warning', text: 'Review' },
@@ -230,27 +229,26 @@ const badge = {
 
 const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
-const mapBatchList = async (batchList) => {
-  const regionsList = regions.fromRegions(await getBillingRegions());
-  return batchList.map(batch => {
-    batch.badge = badge[batch.status];
-    batch.batchType = getBatchType(batch.type);
-    batch.region = regionsList.getById(batch.region.id);
-    batch.billCount = batch.totals.invoiceCount + batch.totals.creditNoteCount;
-    batch.value = batch.totals.netTotal;
-    return batch;
-  });
-};
+/**
+ * Maps a batch for the batch list view, adding the badge, batch type and
+ * bill count
+ * @param {Object} batch
+ * @return {Object}
+ */
+const mapBatchListRow = batch => ({
+  ...batch,
+  badge: badge[batch.status],
+  batchType: getBatchType(batch.type),
+  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null
+});
 
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query;
   const { data, pagination } = await batchService.getBatchList(page, 10);
 
-  const batches = await mapBatchList(data);
-
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    batches,
+    batches: data.map(mapBatchListRow),
     pagination
   });
 };

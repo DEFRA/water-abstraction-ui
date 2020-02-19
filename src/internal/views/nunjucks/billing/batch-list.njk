@@ -11,6 +11,8 @@
     href: '/billing/batch/type'
   })
 }}
+
+{% if batches.length %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
   <h2 class="govuk-visually-hidden">Past and open bill runs</h2>
@@ -37,10 +39,10 @@
               {{ batch.dateCreated | date }}
             {% endif %}
           </td>
-          <td class="govuk-table__cell">{{ batch.region.displayName }}</td>
+          <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.value | charge }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge }}</td>
           <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
         </tr>
         {% endfor %}
@@ -49,4 +51,5 @@
     {{ paginate(pagination, '/billing/batch/list') }}
    </div>
 </div>
+{% endif %}
 {% endblock %}

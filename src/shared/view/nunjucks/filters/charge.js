@@ -1,3 +1,4 @@
+const { isNull, isUndefined } = require('lodash');
 const commaNumber = require('comma-number');
 
 /**
@@ -8,6 +9,9 @@ const commaNumber = require('comma-number');
  * @return {String} formatted number with £ prefix
  */
 const charge = value => {
+  if (isNull(value) || isUndefined(value)) {
+    return;
+  }
   const number = (Math.abs(value) / 100).toFixed(2);
   return `£${commaNumber(number)}`;
 };

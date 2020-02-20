@@ -1,3 +1,5 @@
+'use strict';
+
 const { withQueryStringSubset } = require('../../lib/url');
 
 /**

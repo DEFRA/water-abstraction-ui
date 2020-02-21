@@ -118,7 +118,7 @@ const postBillingBatchRegion = async (request, h) => {
     return h.redirect(`/waiting/${event.event_id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect('/billing/batch/exist');
+      return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
     }
     throw err;
   }

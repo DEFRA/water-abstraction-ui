@@ -55,7 +55,6 @@ experiment('update password controller', () => {
       });
 
       test('the user is redirected to a success page', async () => {
-        console.log(h.redirect.lastCall.lastArg);
         const template = h.redirect.lastCall.lastArg;
         expect(template).to.equal('/account/update-password/success');
       });

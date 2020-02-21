@@ -1,19 +1,18 @@
-const sinon = require('sinon');
+'use strict';
+
 const { set } = require('lodash');
 const { expect } = require('@hapi/code');
 const { beforeEach, experiment, test, afterEach } = exports.lab = require('@hapi/lab').script();
 const Boom = require('@hapi/boom');
 
-const sandbox = sinon.createSandbox();
+const sandbox = require('sinon').createSandbox();
 
 const plugin = require('shared/plugins/error');
 
 const createRequest = (error = {}) => {
   return {
     auth: {
-      credentials: {
-
-      }
+      credentials: {}
     },
     url: {
       path: '/some/path'
@@ -33,7 +32,7 @@ const createRequest = (error = {}) => {
   };
 };
 
-experiment('errors plugin', () => {
+experiment('shared/plugins/error', () => {
   let server, h, code;
 
   beforeEach(async () => {
@@ -104,8 +103,9 @@ experiment('errors plugin', () => {
       await plugin._handler(request, h);
 
       expect(h.view.callCount).to.equal(1);
-      const [template] = h.view.lastCall.args;
+      const [template, view] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/errors/404');
+      expect(view.pageTitle).to.equal('We cannot find that page');
       expect(h.realm.pluginOptions.logger.errorWithJourney.callCount).to.equal(1);
     });
 
@@ -114,8 +114,9 @@ experiment('errors plugin', () => {
       await plugin._handler(request, h);
 
       expect(h.view.callCount).to.equal(1);
-      const [ template ] = h.view.lastCall.args;
+      const [template, view] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/errors/error');
+      expect(view.pageTitle).to.equal('Something went wrong');
       expect(h.realm.pluginOptions.logger.errorWithJourney.callCount).to.equal(1);
     });
   });

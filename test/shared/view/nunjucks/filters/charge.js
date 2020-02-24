@@ -17,4 +17,12 @@ experiment('charge Nunjucks filter', () => {
   test('Removes the sign from negative charges', async () => {
     expect(charge(-353)).to.equal('£3.53');
   });
+
+  test('When the charge is undefined, return undefined', async () => {
+    expect(charge(undefined)).to.equal(undefined);
+  });
+
+  test('When the charge is null, return undefined', async () => {
+    expect(charge(null)).to.equal(undefined);
+  });
 });

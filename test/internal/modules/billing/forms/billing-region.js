@@ -1,3 +1,5 @@
+'use strict';
+
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { selectBillingRegionForm, billingRegionFormSchema } = require('internal/modules/billing/forms/billing-region');
@@ -10,6 +12,7 @@ const getBillingRegions = () => ({
       chargeRegionId: 'A',
       naldRegionId: 1,
       name: 'Anglian',
+      displayName: 'Anglian (Display)',
       dateCreated: '2019-11-05T12:10:35.164Z',
       dateUpdated: '2019-11-05T12:10:35.164Z'
     },
@@ -18,6 +21,7 @@ const getBillingRegions = () => ({
       chargeRegionId: 'B',
       naldRegionId: 2,
       name: 'Midlands',
+      displayName: 'Midlands (Display)',
       dateCreated: '2019-11-05T12:10:35.164Z',
       dateUpdated: '2019-11-05T12:10:35.164Z'
     }
@@ -52,6 +56,15 @@ experiment('billing/forms/billing-region form', () => {
     const form = selectBillingRegionForm(createRequest(), data);
     const radio = findField(form, 'selectedBillingRegion');
     expect(radio).to.exist();
+  });
+
+  test('the regions are displayed using the display name', async () => {
+    const { data: regions } = getBillingRegions();
+    const form = selectBillingRegionForm(createRequest(), regions);
+    const radio = findField(form, 'selectedBillingRegion');
+
+    expect(radio.options.choices[0].label).to.equal('Anglian (Display)');
+    expect(radio.options.choices[1].label).to.equal('Midlands (Display)');
   });
 
   test('has a billing type field with a value', async () => {

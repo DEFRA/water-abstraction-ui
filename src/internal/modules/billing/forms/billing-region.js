@@ -1,9 +1,11 @@
+'use strict';
+
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
 
 const mapChoices = regionsData =>
   regionsData.map(region => ({
-    label: region.name,
+    label: region.displayName,
     value: region.regionId
   }));
 

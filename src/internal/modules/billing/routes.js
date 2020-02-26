@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const controller = require('./controller');
 const { billing } = require('internal/lib/constants').scope;
@@ -23,6 +25,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     postBillingBatchType: {
       method: 'POST',
       path: '/billing/batch/type',
@@ -48,6 +51,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     postBillingBatchRegion: {
       method: 'POST',
       path: '/billing/batch/region',
@@ -57,21 +61,29 @@ if (isAcceptanceTestTarget) {
         description: 'post handler for receiving the selected region'
       }
     },
-    getBillingBatchExist: {
+
+    getBillingBatchExists: {
       method: 'GET',
-      path: '/billing/batch/exist',
-      handler: controller.getBillingBatchExist,
+      path: '/billing/batch/{batchId}/exists',
+      handler: controller.getBillingBatchExists,
       config: {
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }],
         auth: { scope: allowedScopes },
         description: 'If a bill run exist, warn user and display short summary',
         plugins: {
           viewContext: {
-            pageTitle: 'Bill run exist',
+            pageTitle: 'A bill run already exists',
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
           }
         }
       }
     },
+
     getBillingBatchSummary: {
       method: 'GET',
       path: '/billing/batch/{batchId}/summary',
@@ -91,12 +103,16 @@ if (isAcceptanceTestTarget) {
           query: {
             back: Joi.number().integer().default(1).optional()
           }
-        }
+        },
+        pre: [
+          preHandlers.redirectToWaitingIfEventNotComplete
+        ]
       }
     },
+
     getBillingBatchInvoice: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/summary/invoice/{invoiceId}',
+      path: '/billing/batch/{batchId}/invoice/{invoiceId}',
       handler: controller.getBillingBatchInvoice,
       config: {
         auth: { scope: allowedScopes },
@@ -114,6 +130,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getBillingBatchList: {
       method: 'GET',
       path: '/billing/batch/list',
@@ -134,6 +151,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getBillingBatchConfirm: {
       method: 'GET',
       path: '/billing/batch/{batchId}/confirm',
@@ -151,9 +169,10 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
+
     postBillingBatchConfirm: {
       method: 'POST',
       path: '/billing/batch/{batchId}/confirm',
@@ -189,9 +208,10 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
+
     postBillingBatchCancel: {
       method: 'POST',
       path: '/billing/batch/{batchId}/cancel',
@@ -209,6 +229,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+
     getTransactionsCSV: {
       method: 'GET',
       path: '/billing/batch/{batchId}/transactions-csv',
@@ -220,7 +241,49 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid().required()
           }
         },
-        pre: [{ method: preHandlers.loadBatch }]
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
+      }
+    },
+    getBillingBatchDeleteAccount: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/delete-account/{invoiceId}',
+      handler: controller.getBillingBatchDeleteAccount,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'request confirmation to remove invoice from bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid(),
+            invoiceId: Joi.string().uuid()
+          }
+        }
+      }
+    },
+    postBillingBatchDeleteAccount: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/delete-account/{accountId}',
+      handler: controller.postBillingBatchDeleteAccount,
+      config: {
+        auth: { scope: allowedScopes },
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid(),
+            accountId: Joi.string().uuid()
+          },
+          payload: {
+            csrf_token: Joi.string().uuid().required()
+          }
+        }
       }
     }
   };

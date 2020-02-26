@@ -1,3 +1,5 @@
+'use strict';
+
 const Region = require('./region');
 
 class Regions {
@@ -15,7 +17,7 @@ class Regions {
 
   static fromRegions (regions) {
     const modelRegions = regions.map(region => {
-      return new Region(region.regionId, region.name);
+      return new Region(region.regionId, region.name, region.displayName);
     });
 
     return new Regions(modelRegions);

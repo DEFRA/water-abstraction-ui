@@ -4,14 +4,15 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% block content %}
 
-
 {{ title(pageTitle) }}
 {{
-    govukButton({
+  govukButton({
     text: "Create a bill run",
     href: '/billing/batch/type'
-    })
-  }}
+  })
+}}
+
+{% if batches.length %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
   <h2 class="govuk-visually-hidden">Past and open bill runs</h2>
@@ -30,15 +31,19 @@
         {% for batch in batches %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
-            <a class="govuk-link" href="/waiting/{{batch.eventId}}">
-             {{ batch.dateCreated | date }}
-            </a>
+            {% if batch.badge.text != 'Sent' %}
+              <a class="govuk-link" href="/billing/batch/{{batch.id}}/summary">
+                {{ batch.dateCreated | date }}
+              </a>
+            {% else %}
+              {{ batch.dateCreated | date }}
+            {% endif %}
           </td>
           <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.invoices.count }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{'£' + batch.invoices.total | number }}</td>
-          <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>          
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge }}</td>
+          <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -46,4 +51,5 @@
     {{ paginate(pagination, '/billing/batch/list') }}
    </div>
 </div>
+{% endif %}
 {% endblock %}

@@ -1,3 +1,5 @@
+'use strict';
+
 const services = require('../../lib/connectors/services');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 const { get } = require('lodash');
@@ -13,9 +15,9 @@ const getRedirectPath = (eventStatuses, ev) => {
 };
 
 const getBillingTitle = (event, regions) => {
-  let title = getRegionName(regions, event.metadata.batch.region_id);
-  title += (event.subtype === 'two_part_tariff') ? ' two-part tariff' : ' ' + event.subtype;
-  return title + ' bill run';
+  const regionName = getRegionName(regions, event.metadata.batch.region_id);
+  const subType = event.subtype === 'two_part_tariff' ? 'two-part tariff' : event.subtype;
+  return `${regionName} ${subType} bill run`;
 };
 
 const getWaitingForBilling = async (request, h, event) => {
@@ -27,11 +29,11 @@ const getWaitingForBilling = async (request, h, event) => {
     return h.redirect(statusPaths[event.status]);
   }
 
-  const { data } = await services.water.regions.getRegions();
+  const { data: regions } = await services.water.regions.getRegions();
 
   const view = {
     ...request.view,
-    pageTitle: getBillingTitle(event, data),
+    pageTitle: getBillingTitle(event, regions),
     caption: moment(event.date_created).format('D MMM YYYY'),
     waitingType: 'billRun'
   };
@@ -40,9 +42,11 @@ const getWaitingForBilling = async (request, h, event) => {
 };
 
 const getWaitingForNotifications = async (request, h, event) => {
-  const path = getRedirectPath({
-    'processed': '/batch-notifications/review'
-  }, event);
+  const path = getRedirectPath(
+    { processed: '/batch-notifications/review' },
+    event
+  );
+
   if (path) {
     return h.redirect(path);
   }
@@ -66,9 +70,9 @@ const getNotificationsTitle = (ev) => {
   return config[name];
 };
 
-const getRegionName = (regionsArray, regionId) => {
-  const region = regionsArray.find(region => region.regionId === regionId);
-  return region.name;
+const getRegionName = (regions, regionId) => {
+  const region = regions.find(region => region.regionId === regionId);
+  return region.displayName;
 };
 
 const handlers = {

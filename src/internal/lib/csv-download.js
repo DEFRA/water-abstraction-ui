@@ -13,7 +13,7 @@ const csvDownload = async (h, data, filename = 'download.csv', opts = {}) => {
   const str = await csvStringify(data, options);
   return h.response(str)
     .header('Content-type', 'text/csv')
-    .header('Content-disposition', `attachment; filename=${filename}`);
+    .header('Content-disposition', `attachment; filename="${filename}"`);
 };
 
 module.exports = {

@@ -1,3 +1,5 @@
+'use strict';
+
 const {
   experiment,
   test,
@@ -5,10 +7,10 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sandbox = require('sinon').createSandbox();
 
-const batchService = require('internal/modules/billing/services/batchService');
+const eventService = require('internal/modules/billing/services/event-service');
+const batchService = require('internal/modules/billing/services/batch-service');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
 experiment('internal/modules/billing/pre-handlers', () => {
@@ -17,6 +19,8 @@ experiment('internal/modules/billing/pre-handlers', () => {
       id: 'test-batch-id',
       type: 'annual'
     });
+
+    sandbox.stub(eventService, 'getEventForBatch').resolves();
   });
 
   afterEach(async () => {
@@ -25,7 +29,35 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
   experiment('.loadBatch', () => {
     let request;
-    let result;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        }
+      };
+    });
+
+    test('the batch is returned from the handler', async () => {
+      const result = await preHandlers.loadBatch(request);
+      expect(result).to.equal({
+        id: 'test-batch-id',
+        type: 'annual'
+      });
+    });
+
+    test('returns a Boom not found when the batch is not found', async () => {
+      batchService.getBatch.rejects();
+      const result = await preHandlers.loadBatch(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Batch not found for id: test-batch-id');
+    });
+  });
+
+  experiment('.redirectToWaitingIfEventNotComplete', () => {
+    let request;
     let h;
 
     beforeEach(async () => {
@@ -35,20 +67,29 @@ experiment('internal/modules/billing/pre-handlers', () => {
           batchId: 'test-batch-id'
         }
       };
-      h = { continue: 'continue' };
-
-      result = await preHandlers.loadBatch(request, h);
+      h = {
+        continue: 'continue',
+        redirect: sandbox.spy()
+      };
     });
 
-    test('the batch is added to request.defra', async () => {
-      expect(request.defra.batch).to.equal({
-        id: 'test-batch-id',
-        type: 'annual'
+    test('redirects to waiting if the event is not in the complete state', async () => {
+      eventService.getEventForBatch.resolves({
+        event_id: 'test-event-id',
+        status: 'not-completed'
       });
+
+      await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
+      expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
     });
 
-    test('the handler returns h.continue', async () => {
-      expect(result).to.equal('continue');
+    test('continues if the status of the event is completed', async () => {
+      eventService.getEventForBatch.resolves({
+        status: 'complete'
+      });
+
+      const result = await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
+      expect(result).to.equal(h.continue);
     });
   });
 });

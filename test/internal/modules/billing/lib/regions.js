@@ -1,3 +1,5 @@
+'use strict';
+
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -8,16 +10,19 @@ experiment('modules/billing/lib/regions', () => {
   experiment('.fromRegions', () => {
     test('creates the expected object', async () => {
       const databaseRegions = [
-        { regionId: 'region-id-1', name: 'region-one' },
-        { regionId: 'region-id-2', name: 'region-two' }
+        { regionId: 'region-id-1', name: 'region-one', displayName: 'region-one-display' },
+        { regionId: 'region-id-2', name: 'region-two', displayName: 'region-two-display' }
       ];
 
       const regions = Regions.fromRegions(databaseRegions);
 
       expect(regions.regions).to.equal([
-        { id: 'region-id-1', name: 'region-one' },
-        { id: 'region-id-2', name: 'region-two' }
+        { id: 'region-id-1', name: 'region-one', displayName: 'region-one-display' },
+        { id: 'region-id-2', name: 'region-two', displayName: 'region-two-display' }
       ]);
+
+      expect(regions.regions[0]).to.be.instanceOf(Region);
+      expect(regions.regions[1]).to.be.instanceOf(Region);
     });
   });
 

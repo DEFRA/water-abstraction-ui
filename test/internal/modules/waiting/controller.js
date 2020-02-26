@@ -1,3 +1,5 @@
+'use strict';
+
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/waiting/controller');
 
@@ -42,12 +44,13 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') 
 });
 
 const getRegions = () => ({
-  'data': [
+  data: [
     {
       regionId: '07ae7f3a-2677-4102-b352-cc006828948c',
       chargeRegionId: 'A',
       naldRegionId: 1,
       name: 'Anglian',
+      displayName: 'Anglian',
       dateCreated: '2019-11-05T12:10:35.164Z',
       dateUpdated: '2019-11-05T12:10:35.164Z'
     },
@@ -56,6 +59,7 @@ const getRegions = () => ({
       chargeRegionId: 'B',
       naldRegionId: 2,
       name: 'Midlands',
+      displayName: 'Midlands',
       dateCreated: '2019-11-05T12:10:35.164Z',
       dateUpdated: '2019-11-05T12:10:35.164Z'
     }

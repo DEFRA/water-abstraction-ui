@@ -1,3 +1,5 @@
+'use strict';
+
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -8,7 +10,7 @@ const batch = {
   billRunDate: '2020-01-14',
   type: 'supplementary',
   region: {
-    name: 'South West',
+    displayName: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
   }
 };
@@ -150,23 +152,22 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('csvData starts with headings', async () => {
-      const columnHeadingsString = transactionsCSV._columnHeadings.join(',');
-      expect(csvData).to.startWith(columnHeadingsString);
+      expect(csvData[0]).to.equal(transactionsCSV._columnHeadings);
     });
 
     test('creates a line for each transaction', async () => {
       const licenceNumber = invoicesForBatch[0].invoiceLicences[0].licence.licenceNumber;
-      expect(csvData).to.contain([licenceNumber, licenceNumber]);
+      expect(csvData[1][0]).to.equal(licenceNumber);
+      expect(csvData[2][0]).to.equal(licenceNumber);
     });
   });
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `${batch.region.name} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+      const expectedFileName = `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
       // South West supplementary bill run 2020-01-14.csv
 
       const fileName = transactionsCSV.getCSVFileName(batch);
-
       expect(fileName).to.equal(expectedFileName);
     });
   });

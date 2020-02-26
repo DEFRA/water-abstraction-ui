@@ -109,7 +109,7 @@ experiment('batch notifications controller', () => {
     test('passes the correct data to csv download', async () => {
       expect(csv.csvDownload.callCount).to.equal(1);
       const [, data, filename] = csv.csvDownload.lastCall.args;
-      expect(filename).to.equal('Returns: reminder - ABC.csv');
+      expect(filename).to.equal('Returns reminder - ABC.csv');
       expect(data).to.equal([ {
         foo: 'bar',
         message_type: 'letter',

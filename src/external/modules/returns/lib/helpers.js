@@ -1,9 +1,9 @@
-/* eslint new-cap: "warn" */
+'use strict';
+
 const Boom = require('@hapi/boom');
 const moment = require('moment');
 const { get, isObject, last } = require('lodash');
 
-// const { isReturnsUser } = require('../../../lib/permissions');
 const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 
@@ -127,7 +127,7 @@ const isXmlUpload = async (licenceNumbers, refDate) => {
     licence_ref: { '$in': licenceNumbers }
   };
 
-  const requestPagination = { 'page': 1, 'perPage': 1 };
+  const requestPagination = { page: 1, perPage: 1 };
   const columns = ['return_id'];
 
   const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns);

@@ -1,5 +1,5 @@
-const util = require('util');
-const csvStringify = util.promisify(require('csv-stringify'));
+'use strict';
+
 const { omit } = require('lodash');
 const moment = require('moment');
 
@@ -61,7 +61,7 @@ const getInvoiceAccountData = invAcc => {
 const createCSV = async data => {
   const dataForCSV = [columnHeadings];
 
-  data.reduce((dataForCSV, dataObj) => {
+  return data.reduce((dataForCSV, dataObj) => {
     dataObj.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
         const csvLine = [
@@ -76,12 +76,10 @@ const createCSV = async data => {
 
     return dataForCSV;
   }, dataForCSV);
-
-  return csvStringify(dataForCSV);
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.name} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+  return `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
 };
 
 exports._columnHeadings = columnHeadings;

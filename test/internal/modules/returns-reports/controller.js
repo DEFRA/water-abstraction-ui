@@ -7,6 +7,7 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/returns-reports/controller');
 const services = require('internal/lib/connectors/services');
+const csv = require('internal/lib/csv-download');
 
 const request = {
   params: {
@@ -33,6 +34,7 @@ experiment('getDownloadReport', () => {
 
   beforeEach(async () => {
     sandbox.stub(services.returns.returns, 'getReport');
+    sandbox.stub(csv, 'csvDownload');
     h = {
       response: sinon.stub().returns({
         header: sinon.stub().returnsThis()
@@ -50,9 +52,11 @@ experiment('getDownloadReport', () => {
     expect(func()).to.reject();
   });
 
-  test('It should download a CSV if success response', async () => {
+  test('It should call csvDownload to create csv', async () => {
     services.returns.returns.getReport.resolves(successResponse);
     await controller.getDownloadReport(request, h);
-    expect(h.response.firstCall.args[0]).to.equal('return_id\nv1:123\n');
+    const [, data, filename] = csv.csvDownload.lastCall.args;
+    expect(data).to.equal(successResponse.data);
+    expect(filename).to.equal(`returns-report-${request.params.cycleEndDate}.csv`);
   });
 });

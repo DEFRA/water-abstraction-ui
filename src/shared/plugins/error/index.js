@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * HAPI error plugin
  * allows us to handle Joi errors and display an error page to the user
@@ -18,6 +20,19 @@ const isIgnored = request =>
 const isCsrfError = request =>
   get(request, 'response.data.isCsrfError', false);
 
+const getErrorPageTitle = request => {
+  return is404(request) ? 'We cannot find that page' : 'Something went wrong';
+};
+
+const getErrorPageContext = request => ({
+  ...request.view,
+  pageTitle: getErrorPageTitle(request)
+});
+
+const getErrorTemplate = request => {
+  return `nunjucks/errors/${is404(request) ? '404' : 'error'}`;
+};
+
 const _handler = async (request, h) => {
   const res = request.response;
   const { pluginOptions } = h.realm;
@@ -35,14 +50,10 @@ const _handler = async (request, h) => {
   pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
 
   // Render 404 or 500 page depending on statusCode
-  const view = {
-    ...request.view,
-    pageTitle: 'Something went wrong'
-  };
-
-  const template = is404(request) ? 'nunjucks/errors/404' : 'nunjucks/errors/error';
+  const context = getErrorPageContext(request);
+  const template = getErrorTemplate(request);
   const statusCode = getStatusCode(request);
-  return h.view(template, view).code(statusCode);
+  return h.view(template, context).code(statusCode);
 };
 
 const errorPlugin = {

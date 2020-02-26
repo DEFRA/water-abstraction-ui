@@ -8,6 +8,7 @@ const { get } = require('lodash');
 
 const services = require('external/lib/connectors/services');
 const helpers = require('external/modules/returns/lib/helpers');
+const permissions = require('external/lib/permissions');
 
 experiment('getLicenceReturns', () => {
   beforeEach(async () => {
@@ -29,7 +30,7 @@ experiment('getLicenceReturns', () => {
   });
 });
 
-experiment('isXmlUpload', () => {
+experiment('isBulkUpload', () => {
   afterEach(async () => {
     sandbox.restore();
   });
@@ -46,7 +47,7 @@ experiment('isXmlUpload', () => {
     });
 
     test('returns true for external XML Upload user', async () => {
-      const result = await helpers.isXmlUpload([]);
+      const result = await helpers.isBulkUpload([]);
       expect(result).to.equal(true);
     });
   });
@@ -62,11 +63,11 @@ experiment('isXmlUpload', () => {
           totalRows: 3
         }
       });
-      await helpers.isXmlUpload(['01/123', '04/567'], '2019-05-05');
+      await helpers.isBulkUpload(['01/123', '04/567'], '2019-05-05');
       filter = services.returns.returns.findMany.lastCall.args[0];
     });
 
-    test('have the GOR upload flag set', async () => {
+    test('have the bulk upload flag set', async () => {
       expect(filter['metadata->>isUpload']).to.equal('true');
     });
 
@@ -97,7 +98,7 @@ experiment('isXmlUpload', () => {
 
     experiment('for a summer return cycle', () => {
       beforeEach(async () => {
-        await helpers.isXmlUpload(['01/123', '04/567'], '2019-11-01');
+        await helpers.isBulkUpload(['01/123', '04/567'], '2019-11-01');
         filter = services.returns.returns.findMany.lastCall.args[0];
       });
 
@@ -129,7 +130,7 @@ experiment('isXmlUpload', () => {
       sandbox.restore();
     });
     test('returns false for regular external user', async () => {
-      const result = await helpers.isXmlUpload([]);
+      const result = await helpers.isBulkUpload([]);
       expect(result).to.equal(false);
     });
   });
@@ -160,5 +161,63 @@ experiment('getLicenceNumbers', () => {
     await helpers.getLicenceNumbers(request);
     const [ filter ] = services.crm.documents.findAll.lastCall.args;
     expect(get(filter, 'includeExpired')).to.be.undefined();
+  });
+});
+
+experiment('getReturnsViewData', async () => {
+  let request;
+  beforeEach(async () => {
+    request = {
+      params: { documentId: 'test-doc-id' },
+      query: { page: 1 },
+      view: { test: 'some-view-stuff' }
+    };
+
+    sandbox.stub(services.crm.documents, 'findAll').resolves([]);
+    sandbox.stub(services.returns.returns, 'findMany').resolves({ error: null, pagination: { totalRows: 1 } });
+    sandbox.stub(permissions, 'isReturnsUser').returns(true);
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('calls CRM with expected filter', async () => {
+    await helpers.getReturnsViewData(request);
+    const [filter] = services.crm.documents.findAll.lastCall.args;
+    expect(filter).to.contain({ document_id: request.params.documentId });
+  });
+
+  test('does not include documentId in CRM call if not provided', async () => {
+    request.params = {};
+    await helpers.getReturnsViewData(request);
+    const [filter] = services.crm.documents.findAll.lastCall.args;
+    expect(filter).not.to.contain({ document_id: request.params.documentId });
+  });
+
+  test('bulkUpload is true when isBulkUpload and isReturnsUser both return true', async () => {
+    const view = await helpers.getReturnsViewData(request);
+    expect(view.bulkUpload).to.be.true();
+  });
+
+  test('bulkUpload is false when isBulkUpload returns false', async () => {
+    services.returns.returns.findMany.resolves({ error: null, pagination: { totalRows: 0 } });
+    const view = await helpers.getReturnsViewData(request);
+    expect(view.bulkUpload).to.be.false();
+  });
+
+  test('bulkUpload is false when isReturnsUser returns false', async () => {
+    permissions.isReturnsUser.returns(false);
+    const view = await helpers.getReturnsViewData(request);
+    expect(view.bulkUpload).to.be.false();
+  });
+
+  test('returns the view with expected data', async () => {
+    const view = await helpers.getReturnsViewData(request);
+    expect(view).to.contain(request.view);
+    expect(view).to.contain('documents');
+    expect(view).to.contain('document');
+    expect(view.bulkUpload).to.be.boolean();
+    expect(view.returns).to.be.an.array();
   });
 });

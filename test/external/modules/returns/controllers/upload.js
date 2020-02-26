@@ -129,10 +129,10 @@ experiment('upload controller', () => {
     sandbox.restore();
   });
 
-  experiment('getXmlUpload', () => {
+  experiment('getBulkUpload', () => {
     test('it should display the upload xml page', async () => {
       const request = createRequest();
-      await controller.getXmlUpload(request, h);
+      await controller.getBulkUpload(request, h);
       const [template, view] = h.view.lastCall.args;
 
       expect(template).to.equal('nunjucks/returns/upload');
@@ -140,10 +140,10 @@ experiment('upload controller', () => {
     });
   });
 
-  experiment('postXmlUpload', () => {
+  experiment('postBulkUpload', () => {
     test('redirects to spinner page if there are no errors', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
-      await controller.postXmlUpload(createRequest(), h);
+      await controller.postBulkUpload(createRequest(), h);
 
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal(`/returns/processing-upload/processing/${eventId}`);
@@ -151,14 +151,14 @@ experiment('upload controller', () => {
 
     test('redirects to same page with virus error message if virus', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.VIRUS);
-      await controller.postXmlUpload(createRequest(), h);
+      await controller.postBulkUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=virus');
     });
 
     test('redirects to same page with file type message if unsupported file type', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
-      await controller.postXmlUpload(createRequest(), h);
+      await controller.postBulkUpload(createRequest(), h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=invalid-type');
     });
@@ -166,7 +166,7 @@ experiment('upload controller', () => {
     test('calls the water returns upload API with the correct file type', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       fileCheck.detectFileType.resolves('csv');
-      await controller.postXmlUpload(createRequest(), h);
+      await controller.postBulkUpload(createRequest(), h);
       const [data, user, fileType] = services.water.returns.postUpload.lastCall.args;
       expect(data).to.equal('fileData');
       expect(user).to.equal('user_1');
@@ -176,7 +176,7 @@ experiment('upload controller', () => {
     test('logs the journey data if there is an error', async () => {
       uploadHelpers.createDirectory.rejects();
       try {
-        await controller.postXmlUpload(createRequest());
+        await controller.postBulkUpload(createRequest());
       } catch (err) {
         expect(logger.errorWithJourney.called).to.be.true();
       }

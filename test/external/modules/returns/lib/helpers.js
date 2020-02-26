@@ -29,7 +29,7 @@ experiment('getLicenceReturns', () => {
   });
 });
 
-experiment('isXmlUpload', () => {
+experiment('isBulkUpload', () => {
   afterEach(async () => {
     sandbox.restore();
   });
@@ -46,7 +46,7 @@ experiment('isXmlUpload', () => {
     });
 
     test('returns true for external XML Upload user', async () => {
-      const result = await helpers.isXmlUpload([]);
+      const result = await helpers.isBulkUpload([]);
       expect(result).to.equal(true);
     });
   });
@@ -62,11 +62,11 @@ experiment('isXmlUpload', () => {
           totalRows: 3
         }
       });
-      await helpers.isXmlUpload(['01/123', '04/567'], '2019-05-05');
+      await helpers.isBulkUpload(['01/123', '04/567'], '2019-05-05');
       filter = services.returns.returns.findMany.lastCall.args[0];
     });
 
-    test('have the GOR upload flag set', async () => {
+    test('have the bulk upload flag set', async () => {
       expect(filter['metadata->>isUpload']).to.equal('true');
     });
 
@@ -97,7 +97,7 @@ experiment('isXmlUpload', () => {
 
     experiment('for a summer return cycle', () => {
       beforeEach(async () => {
-        await helpers.isXmlUpload(['01/123', '04/567'], '2019-11-01');
+        await helpers.isBulkUpload(['01/123', '04/567'], '2019-11-01');
         filter = services.returns.returns.findMany.lastCall.args[0];
       });
 
@@ -129,7 +129,7 @@ experiment('isXmlUpload', () => {
       sandbox.restore();
     });
     test('returns false for regular external user', async () => {
-      const result = await helpers.isXmlUpload([]);
+      const result = await helpers.isBulkUpload([]);
       expect(result).to.equal(false);
     });
   });

@@ -9,6 +9,7 @@ const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('external/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const { isReturnsUser } = require('external/lib/permissions');
 const helpers = require('@envage/water-abstraction-helpers');
 const badge = require('shared/lib/returns/badge');
 const dates = require('shared/lib/returns/dates');
@@ -106,12 +107,12 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
 };
 
 /**
- * Checks whether user uses XML Upload for a list of licence numbers
+ * Checks whether user uses bulk Upload for a list of licence numbers
  * @param {Array} licenceNumbers to check if isUpload flag is true
  * @param {String} [refDate] todays date, used for unit testing
- * @return {Promise<boolean>} if user has XML Upload functionality
+ * @return {Promise<boolean>} if user has bulk Upload functionality
  */
-const isXmlUpload = async (licenceNumbers, refDate) => {
+const isBulkUpload = async (licenceNumbers, refDate) => {
   const cycle = getCurrentCycle(refDate);
 
   const filter = {
@@ -223,15 +224,14 @@ const getReturnsViewData = async (request) => {
   const documents = await getLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
-  // WATER-2302 For now, the bulk upload link has been disabled
-  // const xmlUpload = await isXmlUpload(licenceNumbers);
-  // const externalReturns = isReturnsUser(request);
+  const bulkUpload = await isBulkUpload(licenceNumbers);
+  const externalReturns = isReturnsUser(request);
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
-    xmlUser: false, // xmlUpload && externalReturns,
+    bulkUpload: bulkUpload && externalReturns,
     returns: []
   };
 
@@ -248,7 +248,7 @@ const getReturnsViewData = async (request) => {
 
 exports.getLicenceNumbers = getLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
-exports.isXmlUpload = isXmlUpload;
+exports.isBulkUpload = isBulkUpload;
 exports.groupReturnsByYear = groupReturnsByYear;
 exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
 exports.getReturnsViewData = getReturnsViewData;

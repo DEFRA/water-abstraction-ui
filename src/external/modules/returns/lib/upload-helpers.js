@@ -23,7 +23,7 @@ const getErrorMessage = key => {
     'invalid-type': 'The selected file must be a CSV or XML file',
     virus: 'The selected file contains a virus',
     empty: 'The selected file has no returns data in it',
-    'invalid-date-format': 'Date format in left-hand column must only include DD/MM/YYYY'
+    'invalid-date-format': 'The date format must only include DD/MM/YYYY'
   };
   const defaultMessage = 'The selected file could not be uploaded – try again';
   return get(errorMessages, key, defaultMessage);

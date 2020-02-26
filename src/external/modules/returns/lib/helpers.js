@@ -9,7 +9,7 @@ const services = require('../../../lib/connectors/services');
 
 const { getReturnPath } = require('external/lib/return-path');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const { isReturnsUser } = require('external/lib/permissions');
+const permissions = require('external/lib/permissions');
 const helpers = require('@envage/water-abstraction-helpers');
 const badge = require('shared/lib/returns/badge');
 const dates = require('shared/lib/returns/dates');
@@ -225,7 +225,7 @@ const getReturnsViewData = async (request) => {
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const bulkUpload = await isBulkUpload(licenceNumbers);
-  const externalReturns = isReturnsUser(request);
+  const externalReturns = permissions.isReturnsUser(request);
 
   const view = {
     ...request.view,

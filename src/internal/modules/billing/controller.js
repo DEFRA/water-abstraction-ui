@@ -11,7 +11,6 @@ const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
-const documentsService = require('./services/documents-service');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('./lib/mappers');
@@ -171,7 +170,7 @@ const getBillingBatchInvoice = async (request, h) => {
   ]);
 
   const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
-  const documentIds = await documentsService.getDocumentIds(licenceNumbers);
+  const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,

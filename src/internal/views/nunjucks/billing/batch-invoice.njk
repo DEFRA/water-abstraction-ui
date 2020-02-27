@@ -2,20 +2,53 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal, invoiceCreditsTotal, invoiceDebitsTotal %}
+{% from "badge.njk" import badge %}
+{% from "crm/address.njk" import address %}
+
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
-        {{ title(pageTitle, invoice.account.companyName, false, true, true) }}
+        {{ title(invoice.invoiceAccount.company.name, 'Account ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
       </div>
+
+      <div class="govuk-body govuk-!-margin-bottom-4">
+        {{ badge(batch | batchBadge(true)) }}
+      </div>
+
+      <dl class="meta">
+        <div class="meta__row">
+          <dt class="meta__key">
+            Date created
+          </dt>
+          <dd class="meta__value">
+            {{ batch.dateCreated | date }}
+          </dd>
+        </div>
+        <div class="meta__row">
+          <dt class="meta__key">
+            Region
+          </dt>
+          <dd class="meta__value">
+            {# @TODO change to displayName #}
+            {{ batch.region.name }}
+          </dd>
+        </div>
+        <div class="meta__row">
+          <dt class="meta__key">
+            Bill run type
+          </dt>
+          <dd class="meta__value">
+            {{ batchType }}
+          </dd>
+        </div>
+      </dl>
+
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-          <p>{{invoice.account.contactAddress.name}}<br>
-          {{ invoice.account.contactAddress.addressLine1 }}<br>
-          {{ invoice.account.contactAddress.addressLine2 }}<br>
-          {{ invoice.account.contactAddress.county }}<br>
-          {{ invoice.account.contactAddress.postCode }}
+          <p>{{invoice.invoiceAccount.company.name}}<br>
+          {{ address(invoice.invoiceAccount.address)}}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",
@@ -23,109 +56,130 @@
         }}
       </div>
     </div>
-  </div>   
-  <h2 class="govuk-heading-l govuk-!-margin-bottom-0 govuk-visually-hidden">Total</h2>
+  </div>  
+
+  <!-- Net total -->
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-one-half">
-      <h3>{{ invoiceTotal(invoice.header.total,  invoice.header.isCredit) }}</h3>
-    </div>    
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-0">
+        Total
+      </h2>
+      <h3><span class="govuk-body govuk-!-font-size-80 govuk-!-font-weight-bold">{{ invoice.totals.netTotal | charge }}</span><br>
+      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">
+        {% if isCredit %}Credit note{% else %}Invoice{% endif %} amount
+      </span></h3>
+    </div>
   </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-one-half">
+      <h3><span class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{ invoice.totals.creditNoteValue | charge }}</span><br>
+      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">Credits</span></h3>
+    </div>
+
+    <div class="govuk-grid-column-one-half">
+      <h3><span class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{ invoice.totals.invoiceValue | charge }}</span><br>
+      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">Debits</span></h3>
+    </div>
+  </div>
+
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-margin-bottom-6">
-      <h3>{{ invoiceCreditsTotal('Credits', invoice.header.credit) }}</h3>
-    </div>
-    <div class="govuk-grid-column-one-third">
-      <h3>{{ invoiceDebitsTotal('Debits', invoice.header.debit) }}</h3>
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break section-break--heavy section-break--margin-7" />
+
+      {% for financialYear, licences in transactions %}
+      <h2 class="govuk-heading-xl">{{ financialYear }}</h2>
+
+        {% for licenceNumber, licence in licences %}
+          <h3 class="govuk-heading-l govuk-!-margin-bottom-0">Licence {{ licenceNumber }}</h3>
+          <p>
+            <a href="{{ licence.link }}">View licence</a>
+          </p>
+
+          {% for group in licence.chargeElements %}
+
+            {% set insetHtml %}
+              <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
+                {{ group.chargeElement.purposeUse.name }}, {{ group.chargeElement.description }}
+              </h4>
+              <p class="govuk-body">
+                {{ group.chargeElement.abstractionPeriod | abstractionPeriod }}
+              </p> 
+            {% endset %}
+
+            {{ govukInsetText({
+              html : insetHtml
+            }) }}
+
+            <table class="govuk-table">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Transaction detail</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable days</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Credit</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Debit</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+
+                {% for transaction in group.transactions %}
+                
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</h5>
+                    <p>{{ "Compensation" if transaction.isCompensationCharge else "Standard" }} charge</p>
+
+                    <ul class="govuk-list">
+                      <li>{{ group.chargeElement.loss | sentenceCase }} loss</li>
+                      <li>{{ group.chargeElement.season | sentenceCase }}</li>
+                      <li>{{ group.chargeElement.source | sentenceCase }} source</li>
+                      {% for agreement in transaction.agreements %}
+                      <li>{{ agreement.code }} agreement</li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">
+                    {{ transaction.billableDays}}/{{ transaction.authorisedDays }}
+                  </td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">
+                    {% if transaction.isCredit %}
+                    {{ transaction.value | charge }}
+                    {% endif %}
+                  </td>
+                 <td class="govuk-table__cell govuk-table__cell--numeric">
+                    {% if not transaction.isCredit %}
+                    {{ transaction.value | charge }}
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+               <tr class="govuk-table__row">
+                  <th scope="col" colspan="2" class="govuk-table__header">Credits</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric"><b>{{ group.totals.credits | charge }}</b></td>
+                  <td class="govuk-table__cell"></td>
+               </tr>
+                  <th scope="col" colspan="3" class="govuk-table__header">Debits</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric"><b>{{ group.totals.debits | charge }}</b></td>
+                </tr>
+               </tr>
+                  <th scope="col" colspan="3" class="govuk-table__header"></th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric"><b>{{ group.totals.netTotal | charge(true) }}</b></td>
+                </tr>
+              </tfoot>
+            </table>
+
+
+          {% endfor %}
+          
+        {% endfor %}
+
+
+
+      {% endfor %}
+
     </div>
   </div>
-  <hr class="govuk-section-break section-break--heavy section-break--margin-7" />
-  {% for licence in invoice.licences %}
-    {% for transaction in licence.transactions %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-          <h2 class="govuk-heading-xl">{{ licence.year }}</h2>
-          <section class="govuk-!-margin-bottom-9">
-            <h3 class="govuk-heading-l govuk-!-margin-bottom-0">Licence {{ licence.ref }}</h3>
-            <div class="govuk-body"><a href="/licences/{{ licence.id }}">View licence</a></div>
-          </section>        
-        {% set html %}
-          <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
-            {{ transaction.header.description }}
-          </h4>
-          <p class="govuk-body">
-            {{ transaction.header.startDate }} to {{ transaction.header.endDate }}<br>
-            {{ transaction.header.code }}
-          </p>         
-        {% endset %}
-        {{ govukInsetText({ html: html }) }}
-      </div>  
-    </div>
-    <div class="govuk-grid-row govuk-!-margin-bottom-0">
-      <div class="govuk-grid-column-full">
-        <table class="govuk-table">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th class="govuk-table__header table__header--width-30">Transaction detail</th>
-              <th class="govuk-table__header govuk-table__header--numeric table__header--width-20">Billable days</th>
-              <th class="govuk-table__header govuk-table__header--numeric table__header--width-20">Credit</th>
-              <th class="govuk-table__header govuk-table__header--numeric table__header--width-20">Debit</th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-          {% for transactionLine in transaction.transactionLines %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">
-                <div class="govuk-!-font-weight-bold">{{ transactionLine.abstractionPeriod.startDate }} to {{ transactionLine.abstractionPeriod.endDate }}</div>
-                  {{ transactionLine.chargeType }}<br><br>{{ transactionLine.loss }} <br> {{ transactionLine.season }}<br>{{ transactionLine.source }}
-              </td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ transactionLine.billableDays }}</td>
-            {% if transactionLine.isCredit %}
-              <td class="govuk-table__cell govuk-table__cell--numeric">£{{ transactionLine.netAmount | fixed(2) }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric"></td>
-            {% else %}
-              <td class="govuk-table__cell govuk-table__cell--numeric"></td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">£{{ transactionLine.netAmount | fixed(2) }}</td>
-            {% endif %}
-            </tr>
-          {% endfor %}       
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">
-                <div class="govuk-!-font-weight-bold">Credits</div>
-              </td>
-              <td class="govuk-table__cell"></td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">
-                <div class="govuk-!-font-weight-bold">£{{ transaction.header.credit | fixed(2) }}</div>
-              </td>
-              <td class="govuk-table__cell"></td>
-            </tr>
-            <tr class="govuk-table__row" >
-              <td class="govuk-table__cell"><div class="govuk-!-font-weight-bold">Debits</div></td>
-              <td class="govuk-table__cell"></td>          
-              <td class="govuk-table__cell"></td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">
-                <div class="govuk-!-font-weight-bold">£{{ transaction.header.debit | fixed(2) }}</div>
-              </td>      
-            </tr>
-            <tr class="table__row--totals">
-              <td class="table__cell--totals"></td>
-              <td class="table__cell--totals"></td>
-              {% if transaction.header.isCredit %}
-                <td class="table__cell--totals govuk-table__cell--numeric">
-                  <div class="govuk-!-font-weight-bold">£{{ transaction.header.totalAmount | fixed(2) }}</div>
-                </td>
-                <td class="table__cell--totals"></td>
-              {% else %}
-                <td class="table__cell--totals"></td>
-                <td class="table__cell--totals govuk-table__cell--numeric">
-                  <div class="govuk-!-font-weight-bold">£{{ transaction.header.totalAmount | fixed(2) }}</div>
-                </td>
-              {% endif %}
-            </tr>           
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% endfor %}
-  {% endfor %}
    
 {% endblock %}

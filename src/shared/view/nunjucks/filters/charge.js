@@ -8,12 +8,13 @@ const commaNumber = require('comma-number');
  * @param {Number} value - charge as an integer in pence
  * @return {String} formatted number with £ prefix
  */
-const charge = value => {
+const charge = (value, isSigned = false) => {
   if (isNil(value)) {
     return;
   }
+  const isNegative = Math.abs(value) < 0;
   const number = (Math.abs(value) / 100).toFixed(2);
-  return `£${commaNumber(number)}`;
+  return `${isSigned && isNegative ? '-' : ''}£${commaNumber(number)}`;
 };
 
 exports.charge = charge;

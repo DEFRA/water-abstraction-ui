@@ -14,12 +14,23 @@ experiment('abstractionPeriod Nunjucks filter', () => {
     expect(abstractionPeriod('31/12')).to.equal('31 December');
   });
 
-  test('If should return null if null argument', async () => {
-    expect(abstractionPeriod(null)).to.equal(null);
+  test('If should return undefined if null argument', async () => {
+    expect(abstractionPeriod(null)).to.be.undefined();
   });
 
   test('If should throw an error if invalid date', async () => {
     const func = () => abstractionPeriod('32/13');
     expect(func).to.throw();
+  });
+
+  test('It should return a formatted string if object provided', async () => {
+    const obj = {
+      startDay: 5,
+      startMonth: 7,
+      endDay: 23,
+      endMonth: 12
+    };
+    const str = abstractionPeriod(obj);
+    expect(str).to.equal('5 July to 23 December');
   });
 });

@@ -28,11 +28,11 @@ const spinnerConfig = {
 };
 
 /**
- * Upload xml return
+ * Upload bulk returns data
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
  */
-const getXmlUpload = (request, h) => {
+const getBulkUpload = (request, h) => {
   const f = uploadForm(request);
 
   const error = get(request, 'query.error');
@@ -63,11 +63,11 @@ const getRedirectPath = (status, eventId) => {
 };
 
 /**
- * Post handler for xml upload
+ * Post handler for bulk upload
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
  */
-async function postXmlUpload (request, h) {
+async function postBulkUpload (request, h) {
   let eventId, redirectPath;
   const localPath = uploadHelpers.getFile();
 
@@ -86,14 +86,14 @@ async function postXmlUpload (request, h) {
       const { userName } = request.defra;
       const fileData = await files.readFile(localPath);
 
-      // Send XML return data to API and get event ID for upload
+      // Send bulk return data to API and get event ID for upload
       const postData = await services.water.returns.postUpload(fileData.toString(), userName, type);
       eventId = get(postData, 'data.eventId');
     }
 
     redirectPath = getRedirectPath(status, eventId);
   } catch (error) {
-    logger.errorWithJourney('Error with XML upload checks', error, request);
+    logger.errorWithJourney('Error with bulk upload checks', error, request);
     throw error;
   } finally {
     // Delete temporary file
@@ -149,7 +149,7 @@ const getUploadEvent = async (eventId, userName) => {
 };
 
 /**
- * Waiting page to be diplayed whilst XML return is being processed,
+ * Waiting page to be diplayed whilst bulk return is being processed,
  * page refreshes every 5 seconds and checks the status of the event
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
@@ -279,13 +279,13 @@ const postSubmit = async (request, h) => {
  * Page to render a success message
  */
 const getSubmitted = async (request, h) => {
-  const { xmlUser } = await helpers.getReturnsViewData(request);
+  const { bulkUpload } = await helpers.getReturnsViewData(request);
   const { eventId } = request.params;
   logger.info(`Return upload submitted`, { eventId });
   const view = {
     ...request.view,
     pageTitle: `Returns submitted`,
-    xmlUser
+    bulkUpload
   };
   return h.view('nunjucks/returns/upload-submitted', view);
 };
@@ -326,8 +326,8 @@ const getUploadInstructions = async (request, h) => {
   return h.view('nunjucks/returns/upload-instructions', view);
 };
 
-exports.getXmlUpload = getXmlUpload;
-exports.postXmlUpload = postXmlUpload;
+exports.getBulkUpload = getBulkUpload;
+exports.postBulkUpload = postBulkUpload;
 exports.getSpinnerPage = getSpinnerPage;
 exports.getSummary = getSummary;
 exports.getSummaryReturn = getSummaryReturn;

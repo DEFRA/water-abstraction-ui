@@ -77,8 +77,8 @@ experiment('upload Helpers', () => {
       const output = await uploadHelpers.applyFormError(form, error, errorMessages);
       expect(output).to.equal(updated);
     });
-    test('Form is returned with notxml error message', async () => {
-      const error = 'notxml';
+    test('Form is returned with invalid-type error message', async () => {
+      const error = 'invalid-type';
       const updated = {
         ...form,
         errors: [{

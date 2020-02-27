@@ -7,15 +7,15 @@ const validators = require('shared/lib/validators');
 const allowedScopes = [scope.licenceHolder, scope.colleagueWithReturns];
 
 module.exports = {
-  getXmlUpload: {
+  getBulkUpload: {
     method: 'GET',
     path: '/returns/upload',
-    handler: controller.getXmlUpload,
+    handler: controller.getBulkUpload,
     config: {
       auth: {
         scope: allowedScopes
       },
-      description: 'Upload xml return',
+      description: 'Upload bulk return',
       plugins: {
         viewContext: {
           activeNavLink: 'returns'
@@ -23,15 +23,15 @@ module.exports = {
       }
     }
   },
-  postXmlUpload: {
+  postBulkUpload: {
     method: 'POST',
     path: '/returns/upload',
-    handler: controller.postXmlUpload,
+    handler: controller.postBulkUpload,
     config: {
       auth: {
         scope: allowedScopes
       },
-      description: 'Upload xml return',
+      description: 'Upload bulk return',
       payload: {
         output: 'stream',
         allow: 'multipart/form-data',

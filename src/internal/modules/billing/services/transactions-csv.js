@@ -1,15 +1,6 @@
 'use strict';
-
 const { omit } = require('lodash');
 const moment = require('moment');
-
-const columnHeadings = [
-  'licenceNumber', 'isCredit', 'isCompensationCharge', 'source', 'season', 'loss',
-  'description', 'agreements', 'chargePeriodStartDate', 'chargePeriodEndDate',
-  'authorisedDays', 'billableDays', 'absPeriodStartDate', 'absPeriodEndDate',
-  'authorisedAnnualQuantity', 'billableAnnualQuantity', 'address', 'company',
-  'invoiceAccountNumber', 'invoiceAccountCompany'
-];
 
 const getAbsStartAndEnd = absPeriod => {
   return {
@@ -24,68 +15,52 @@ const getTransactionData = trans => {
   const { absStart, absEnd } = getAbsStartAndEnd(trans.chargeElement.abstractionPeriod);
   const agreements = trans.agreements.join(', ');
 
-  return [
-    trans.value,
-    trans.isCredit.toString(),
-    trans.isCompensationCharge.toString(),
-    trans.chargeElement.source,
-    trans.chargeElement.season,
-    trans.chargeElement.loss,
-    trans.description,
+  return {
+    value: trans.value,
+    isCredit: trans.isCredit.toString(),
+    isCompensationCharge: trans.isCompensationCharge.toString(),
+    source: trans.chargeElement.source,
+    season: trans.chargeElement.season,
+    chargeElementPurpose: objToString(trans.chargeElement.purposeUse),
+    loss: trans.chargeElement.loss,
+    description: trans.description,
     agreements,
-    trans.chargePeriod.startDate,
-    trans.chargePeriod.endDate,
-    trans.authorisedDays,
-    trans.billableDays,
-    absStart,
-    absEnd,
-    trans.chargeElement.authorisedAnnualQuantity,
-    trans.chargeElement.billableAnnualQuantity
-  ];
-};
-
-const getInvoiceLicenceData = invLic => {
-  return [
-    objToString(invLic.address),
-    objToString(invLic.company)
-  ];
-};
-
-const getInvoiceAccountData = invAcc => {
-  return [
-    invAcc.accountNumber,
-    objToString(invAcc.company)
-  ];
+    chargePeriodStartDate: trans.chargePeriod.startDate,
+    chargePeriodEndDate: trans.chargePeriod.endDate,
+    authorisedDays: trans.authorisedDays,
+    billableDays: trans.billableDays,
+    absPeriodStartDate: absStart,
+    absPeriodEndDate: absEnd,
+    authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
+    billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity
+  };
 };
 
 const createCSV = async data => {
-  const dataForCSV = [columnHeadings];
-
+  const dataForCSV = [];
   return data.reduce((dataForCSV, dataObj) => {
     dataObj.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
-        const csvLine = [
-          invLic.licence.licenceNumber,
+        const csvLine = {
+          licenceNumber: invLic.licence.licenceNumber,
+          region: invLic.licence.region.name,
+          isWaterUndertaker: invLic.licence.isWaterUndertaker,
+          historicalArea: objToString(invLic.licence.historicalArea),
           ...getTransactionData(trans),
-          ...getInvoiceLicenceData(invLic),
-          ...getInvoiceAccountData(dataObj.invoiceAccount)
-        ];
+          invoiceAccountNumber: dataObj.invoiceAccount.accountNumber,
+          invoiceAccountCompanyName: dataObj.invoiceAccount.company.name,
+          invoiceAccountCompanyAddress: objToString(dataObj.invoiceAccount.company.address)
+        };
         dataForCSV.push(csvLine);
       });
     });
-
     return dataForCSV;
   }, dataForCSV);
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+  return `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
 };
-
-exports._columnHeadings = columnHeadings;
 exports._getTransactionData = getTransactionData;
-exports._getInvoiceLicenceData = getInvoiceLicenceData;
-exports._getInvoiceAccountData = getInvoiceAccountData;
-
 exports.createCSV = createCSV;
 exports.getCSVFileName = getCSVFileName;

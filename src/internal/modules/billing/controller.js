@@ -229,6 +229,11 @@ const badge = {
 
 const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
+const mapBatchLink = batch =>
+  ['processing', 'ready'].includes(batch.status)
+    ? `/billing/batch/${batch.id}/summary`
+    : null;
+
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
  * bill count
@@ -239,7 +244,8 @@ const mapBatchListRow = batch => ({
   ...batch,
   badge: badge[batch.status],
   batchType: getBatchType(batch.type),
-  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null
+  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
+  link: mapBatchLink(batch)
 });
 
 const getBillingBatchList = async (request, h) => {

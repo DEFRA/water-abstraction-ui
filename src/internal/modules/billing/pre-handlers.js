@@ -22,7 +22,7 @@ const redirectToWaitingIfEventNotComplete = async (request, h) => {
 
   return (event.status === 'complete')
     ? h.continue
-    : h.redirect(`/waiting/${event.event_id}`);
+    : h.redirect(`/waiting/${event.event_id}`).takeover();
 };
 
 exports.loadBatch = loadBatch;

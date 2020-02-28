@@ -4,6 +4,17 @@ const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
 
 /**
+ * Creates a link to the batch specified if the batch
+ * is in a suitable status
+ * @param {Object} batch
+ * @return {String}
+ */
+const mapBatchLink = batch =>
+  ['processing', 'ready'].includes(batch.status)
+    ? `/billing/batch/${batch.id}/summary`
+    : null;
+
+/**
  * Maps a batch for the batch list view, adding the badge, batch type and
  * bill count
  * @param {Object} batch
@@ -12,7 +23,8 @@ const helpers = require('@envage/water-abstraction-helpers');
 const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
-  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null
+  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
+  link: mapBatchLink(batch)
 });
 
 const mapTransaction = transaction => omit(transaction, ['chargeElement']);

@@ -69,18 +69,28 @@ experiment('internal/modules/billing/pre-handlers', () => {
       };
       h = {
         continue: 'continue',
-        redirect: sandbox.spy()
+        redirect: sandbox.stub().returnsThis(),
+        takeover: sandbox.spy()
       };
     });
 
-    test('redirects to waiting if the event is not in the complete state', async () => {
-      eventService.getEventForBatch.resolves({
-        event_id: 'test-event-id',
-        status: 'not-completed'
+    experiment('if the event is not in the complete state', () => {
+      beforeEach(async () => {
+        eventService.getEventForBatch.resolves({
+          event_id: 'test-event-id',
+          status: 'not-completed'
+        });
+
+        await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
       });
 
-      await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
-      expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
+      test('takes over the response', async () => {
+        expect(h.takeover.called).to.be.true();
+      });
+
+      test('redirects to waiting page', async () => {
+        expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
+      });
     });
 
     test('continues if the status of the event is completed', async () => {

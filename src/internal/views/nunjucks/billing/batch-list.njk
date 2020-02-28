@@ -31,8 +31,8 @@
         {% for batch in batches %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
-            {% if batch.badge.text != 'Sent' %}
-              <a class="govuk-link" href="/billing/batch/{{batch.id}}/summary">
+            {% if batch.link %}
+              <a class="govuk-link" href="{{ batch.link }}">
                 {{ batch.dateCreated | date }}
               </a>
             {% else %}

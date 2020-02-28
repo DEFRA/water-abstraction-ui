@@ -405,7 +405,7 @@ experiment('internal/modules/billing/controller', () => {
         data: [
           {
             invoices: [],
-            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2',
+            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1',
             type: 'supplementary',
             season: 'all year',
             status: 'processing',
@@ -483,10 +483,12 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
       expect(batches[0].billCount).to.equal(14);
+      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/summary');
       expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
       expect(batches[1].billCount).to.equal(null);
+      expect(batches[1].link).to.be.null();
     });
 
     test('configures the expected view template', async () => {

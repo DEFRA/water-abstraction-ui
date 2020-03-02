@@ -178,7 +178,7 @@ experiment('internal/modules/billing/controller', () => {
     test('billingRegionFrom is valid redirects to waiting page', async () => {
       services.water.billingBatches.createBillingBatch.resolves({
         data: {
-          event: { event_id: 'test-event-id' }
+          event: { eventId: 'test-event-id' }
         }
       });
 

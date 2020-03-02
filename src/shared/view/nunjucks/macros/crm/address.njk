@@ -1,0 +1,27 @@
+
+{% macro address(address) %}
+  {% if address.addressLine1 %}
+  {{ address.addressLine1 }}<br>
+  {% endif %}
+  {% if address.addressLine2 %}
+  {{ address.addressLine2 }}<br>
+  {% endif %}
+  {% if address.addressLine3 %}
+  {{ address.addressLine3 }}<br>
+  {% endif %}
+  {% if address.addressLine4 %}
+  {{ address.addressLine4 }}<br>
+  {% endif %}
+  {% if address.town %}
+  {{ address.town }}<br>
+  {% endif %}
+  {% if address.county %}
+  {{ address.county }}<br>
+  {% endif %}
+  {% if address.postcode %}
+  {{ address.postcode }}<br>
+  {% endif %}
+  {% if address.country %}
+  {{ address.country }}<br>
+  {% endif %}
+{% endmacro %}

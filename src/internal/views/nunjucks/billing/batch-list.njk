@@ -24,15 +24,15 @@
           <th class="govuk-table__header" scope="col">Run type</th>
           <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bills</th>
           <th class="govuk-table__header govuk-table__header--numeric table__header--width-20" scope="col">Value</th>
-          <th class="govuk-table__header table__header--width-15 table__header--center" scope="col">Status</th>
+          <th class="govuk-table__header govuk-table__header--numeric table__header--width-15" scope="col">Status</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
         {% for batch in batches %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
-            {% if batch.badge.text != 'Sent' %}
-              <a class="govuk-link" href="/billing/batch/{{batch.id}}/summary">
+            {% if batch.link %}
+              <a class="govuk-link" href="{{ batch.link }}">
                 {{ batch.dateCreated | date }}
               </a>
             {% else %}
@@ -43,7 +43,7 @@
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge }}</td>
-          <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
         </tr>
         {% endfor %}
       </tbody>

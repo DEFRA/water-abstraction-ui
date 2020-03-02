@@ -25,4 +25,8 @@ experiment('charge Nunjucks filter', () => {
   test('When the charge is null, return undefined', async () => {
     expect(charge(null)).to.equal(undefined);
   });
+
+  test('When the second argument is true, keeps the sign for negative charges', async () => {
+    expect(charge(-353, true)).to.equal('-£3.53');
+  });
 });

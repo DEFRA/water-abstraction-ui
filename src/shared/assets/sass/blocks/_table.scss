@@ -18,10 +18,9 @@
     border-bottom: 0
 }
 
-.table__row--totals {
-  @extend .govuk-table__row !optional;
-
+.table__header--totals {
   border-top: 2px solid govuk-colour("black");  
+  border-bottom: none;
 }
 
 .table__header--width-10 {

@@ -13,7 +13,7 @@ const batchService = require('./services/batch-service');
 const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
-const sentenceCase = require('sentence-case');
+const mappers = require('./lib/mappers');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -115,7 +115,7 @@ const postBillingBatchRegion = async (request, h) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm);
     const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.event_id}?back=0`);
+    return h.redirect(`/waiting/${event.eventId}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
@@ -162,85 +162,27 @@ const getBillingBatchSummary = async (request, h) => {
 };
 
 const getBillingBatchInvoice = async (request, h) => {
-  const invoice =
-  {
-    id: '3e5add08-3e46-48b7-9325-b48ab1ddb363',
-    account: {
-      number: '021545',
-      companyName: 'Company name Ltd.',
-      contactAddress:
-        { name: 'Business department', addressLine1: 'Address Line 1', addressLine2: 'Address Line 2', county: 'Countyshire', postCode: 'Post Code' }
-    },
-    header: { credit: 987.21, debit: 654.21, total: 5465.56, isCredit: false, year: 2020 }, // totals for the licence for the year
-    licences: [ // many licences for an invoice
-      {
-        id: '3e5add08-3e46-48b7-9325-b48ab1ddb363',
-        ref: '03/28/60/0032',
-        year: '2020',
-        transactions: [ // many transactions per licence
-          {
-            header: { // summary of the transaction lines
-              id: 1,
-              description: 'Spray irrigation, base licence',
-              startDate: '01 April',
-              endDate: '31 December',
-              code: 'S127 (Two-part tariff)',
-              credit: 321.45,
-              debit: 921.85,
-              isCredit: false,
-              totalAmount: 600.40,
-              year: 2020
-            },
-            transactionLines: [ // many transactions
-              {
-                lineId: 1,
-                abstractionPeriod: { startDate: '1 April', endDate: '31 December' },
-                chargeType: 'Standard charge',
-                loss: 'High Loss',
-                season: 'Summer',
-                source: 'Supported source',
-                billableDays: '61/300',
-                netAmount: 921.45,
-                isCredit: false
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  };
+  const { batchId, invoiceId } = request.params;
 
-  const batchId = request.params.batchId;
+  const [ batch, invoice ] = await Promise.all([
+    services.water.billingBatches.getBatch(batchId),
+    services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
+  ]);
+
+  const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
+  const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
+
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
     pageTitle: 'January 2020 invoice',
-    invoice
+    invoice,
+    batch,
+    batchType: mappers.mapBatchType(batch.type),
+    transactions: mappers.mapInvoiceTransactions(invoice, documentIds),
+    isCredit: invoice.totals.netTotal < 0
   });
 };
-
-const badge = {
-  processing: { status: 'warning', text: 'Building' },
-  ready: { status: 'success', text: 'Ready' },
-  sent: { text: 'Sent' },
-  review: { status: 'warning', text: 'Review' },
-  error: { status: 'error', text: 'Error' }
-};
-
-const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
-
-/**
- * Maps a batch for the batch list view, adding the badge, batch type and
- * bill count
- * @param {Object} batch
- * @return {Object}
- */
-const mapBatchListRow = batch => ({
-  ...batch,
-  badge: badge[batch.status],
-  batchType: getBatchType(batch.type),
-  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null
-});
 
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query;
@@ -248,7 +190,7 @@ const getBillingBatchList = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    batches: data.map(mapBatchListRow),
+    batches: data.map(mappers.mapBatchListRow),
     pagination
   });
 };

@@ -62,6 +62,26 @@ class DocumentsApiClient extends APIClient {
     }
     return document;
   };
+
+  /**
+   * Given an array of licence numbers, gets a map so they
+   * can be found in the CRM document headers
+   * @param {Array<String>} licenceNumbers
+   * @return {Promise<Map>} a map of document IDs keyed by licence number
+   */
+  async getDocumentIdMap (licenceNumbers = []) {
+    const { data } = await this.findMany(
+      {
+        system_external_id: { $in: licenceNumbers }
+      },
+      null,
+      { page: 1, perPage: Number.MAX_SAFE_INTEGER },
+      ['document_id', 'system_external_id']
+    );
+    return new Map(
+      data.map(doc => [doc.system_external_id, doc.document_id])
+    );
+  }
 }
 
 module.exports = DocumentsApiClient;

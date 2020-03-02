@@ -3,7 +3,6 @@
   font-family: "nta", Arial, sans-serif;
   @include govuk-font($size: 19);
 
-  min-width: 7.5rem;
   display: inline-block;
   text-align: center;
   margin: 0 auto;
@@ -46,4 +45,10 @@
 .badge--success {
   border-color: govuk-colour("green");
   color: govuk-colour("green");
+}
+
+.badge--large {
+  @include govuk-font($size: 24);
+  font-weight: bold;
+  border-width: 2px;
 }

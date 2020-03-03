@@ -44,12 +44,12 @@ const createCSV = async data => {
         const csvLine = {
           licenceNumber: invLic.licence.licenceNumber,
           region: invLic.licence.region.name,
-          isWaterUndertaker: invLic.licence.isWaterUndertaker,
-          historicalArea: objToString(invLic.licence.historicalArea),
+          isWaterUndertaker: invLic.licence.isWaterUndertaker.toString(),
+          historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
           invoiceAccountNumber: dataObj.invoiceAccount.accountNumber,
           invoiceAccountCompanyName: dataObj.invoiceAccount.company.name,
-          invoiceAccountCompanyAddress: objToString(dataObj.invoiceAccount.company.address)
+          invoiceAccountCompanyAddress: objToString(dataObj.invoiceAccount.address)
         };
         dataForCSV.push(csvLine);
       });

@@ -2,6 +2,7 @@
 
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
+const { omit } = require('lodash');
 
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 
@@ -203,8 +204,18 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       csvData = await transactionsCSV.createCSV(invoicesForBatch);
     });
 
-    test('csvData starts with headings', async () => {
+    test('csvData includes the all the required data keys', async () => {
       expect(Object.keys(csvData[0])).to.equal(expectedKeys);
+    });
+
+    test('includes the tail data', async () => {
+      expect(csvData[0].licenceNumber).to.equal('1/23/45/*S/6789');
+      expect(csvData[0].region).to.equal('Anglian');
+      expect(csvData[0].isWaterUndertaker).to.equal('false');
+      expect(csvData[0].historicalArea).to.equal('AREA');
+      expect(csvData[0].invoiceAccountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
+      expect(csvData[0].invoiceAccountCompanyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
+      expect(csvData[0].invoiceAccountCompanyAddress).to.equal(JSON.stringify(omit(invoicesForBatch[0].invoiceAccount.address, 'id')));
     });
 
     test('creates a line for each transaction', async () => {

@@ -171,6 +171,23 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
+  experiment('_getInvoiceAccountData', async () => {
+    const invoiceAccount = invoicesForBatch[0].invoiceAccount;
+    test('returns transaction data in expected order', async () => {
+      const invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
+      expect(invoiceAccountData.accountNumber).to.equal(invoiceAccount.accountNumber);
+      expect(invoiceAccountData.companyName).to.equal(invoiceAccount.company.name);
+      expect(invoiceAccountData.addressLine1).to.equal(invoiceAccount.address.addressLine1);
+      expect(invoiceAccountData.addressLine2).to.equal(invoiceAccount.address.addressLine2);
+      expect(invoiceAccountData.addressLine3).to.equal(invoiceAccount.address.addressLine3);
+      expect(invoiceAccountData.addressLine4).to.equal(invoiceAccount.address.addressLine4);
+      expect(invoiceAccountData.town).to.equal(invoiceAccount.address.town);
+      expect(invoiceAccountData.county).to.equal(invoiceAccount.address.county);
+      expect(invoiceAccountData.postcode).to.equal(invoiceAccount.address.postcode);
+      expect(invoiceAccountData.country).to.equal(invoiceAccount.address.country);
+    });
+  });
+
   experiment('.createCSV', async () => {
     let csvData;
     const expectedKeys = [
@@ -183,7 +200,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'isCompensationCharge',
       'source',
       'season',
-      'chargeElementPurpose',
+      'chargeElementPurposeCode',
+      'chargeElementPurposeName',
       'loss',
       'description',
       'agreements',
@@ -195,9 +213,16 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'absPeriodEndDate',
       'authorisedAnnualQuantity',
       'billableAnnualQuantity',
-      'invoiceAccountNumber',
-      'invoiceAccountCompanyName',
-      'invoiceAccountCompanyAddress'
+      'accountNumber',
+      'companyName',
+      'addressLine1',
+      'addressLine2',
+      'addressLine3',
+      'addressLine4',
+      'town',
+      'county',
+      'postcode',
+      'country'
     ];
 
     beforeEach(async () => {
@@ -213,9 +238,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(csvData[0].region).to.equal('Anglian');
       expect(csvData[0].isWaterUndertaker).to.equal('false');
       expect(csvData[0].historicalArea).to.equal('AREA');
-      expect(csvData[0].invoiceAccountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
-      expect(csvData[0].invoiceAccountCompanyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
-      expect(csvData[0].invoiceAccountCompanyAddress).to.equal(JSON.stringify(omit(invoicesForBatch[0].invoiceAccount.address, 'id')));
+      expect(csvData[0].accountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
+      expect(csvData[0].companyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
     });
 
     test('creates a line for each transaction', async () => {

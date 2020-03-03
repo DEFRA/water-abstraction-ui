@@ -1,5 +1,4 @@
 'use strict';
-const { omit } = require('lodash');
 const moment = require('moment');
 
 const getAbsStartAndEnd = absPeriod => {
@@ -8,8 +7,6 @@ const getAbsStartAndEnd = absPeriod => {
     absEnd: moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
   };
 };
-
-const objToString = obj => JSON.stringify(omit(obj, ['id', 'type']));
 
 const getTransactionData = trans => {
   const { absStart, absEnd } = getAbsStartAndEnd(trans.chargeElement.abstractionPeriod);
@@ -21,7 +18,8 @@ const getTransactionData = trans => {
     isCompensationCharge: trans.isCompensationCharge.toString(),
     source: trans.chargeElement.source,
     season: trans.chargeElement.season,
-    chargeElementPurpose: objToString(trans.chargeElement.purposeUse),
+    chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
+    chargeElementPurposeName: trans.chargeElement.purposeUse.name,
     loss: trans.chargeElement.loss,
     description: trans.description,
     agreements,
@@ -36,6 +34,21 @@ const getTransactionData = trans => {
   };
 };
 
+const getInvoiceAccountData = invoiceAccount => {
+  return {
+    accountNumber: invoiceAccount.accountNumber,
+    companyName: invoiceAccount.company.name,
+    addressLine1: invoiceAccount.address.addressLine1,
+    addressLine2: invoiceAccount.address.addressLine2,
+    addressLine3: invoiceAccount.address.addressLine3,
+    addressLine4: invoiceAccount.address.addressLine4,
+    town: invoiceAccount.address.town,
+    county: invoiceAccount.address.county,
+    postcode: invoiceAccount.address.postcode,
+    country: invoiceAccount.address.country
+  };
+};
+
 const createCSV = async data => {
   const dataForCSV = [];
   return data.reduce((dataForCSV, dataObj) => {
@@ -47,9 +60,7 @@ const createCSV = async data => {
           isWaterUndertaker: invLic.licence.isWaterUndertaker.toString(),
           historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
-          invoiceAccountNumber: dataObj.invoiceAccount.accountNumber,
-          invoiceAccountCompanyName: dataObj.invoiceAccount.company.name,
-          invoiceAccountCompanyAddress: objToString(dataObj.invoiceAccount.address)
+          ...getInvoiceAccountData(dataObj.invoiceAccount)
         };
         dataForCSV.push(csvLine);
       });
@@ -61,6 +72,7 @@ const createCSV = async data => {
 const getCSVFileName = batch => {
   return `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
 };
+exports._getInvoiceAccountData = getInvoiceAccountData;
 exports._getTransactionData = getTransactionData;
 exports.createCSV = createCSV;
 exports.getCSVFileName = getCSVFileName;

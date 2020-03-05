@@ -685,7 +685,7 @@ experiment('internal/modules/billing/controller', () => {
       ],
       dateCreated: '2020-01-27T13:51:29.234Z',
       totals: {
-        totalValue: '1234.56'
+        netTotal: '1234.56'
       },
       invoiceAccount: {
         id: 'invoice-account-id',
@@ -727,7 +727,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.account.accountNumber).to.equal(invoice.invoiceAccount.accountNumber);
       expect(view.account.companyName).to.equal(invoice.invoiceAccount.company.name);
       expect(view.account.licences[0].licenceRef).to.equal(invoice.invoiceLicences[0].licence.licenceNumber);
-      expect(view.account.amount).to.equal(invoice.totals.totalValue);
+      expect(view.account.amount).to.equal(invoice.totals.netTotal);
       expect(view.account.dateCreated).to.equal(invoice.dateCreated);
     });
   });

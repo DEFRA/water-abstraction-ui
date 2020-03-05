@@ -233,11 +233,15 @@ const postBillingBatchConfirm = async (request, h) => {
   return h.redirect('/billing/batch/list');
 };
 
+/**
+ * allows user to download all the invoices, transactions, company,
+ * licence and agreements data for a batch
+ * @param {*} request
+ * @param {*} h
+ */
 const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params;
-
-  const { data } = await services.water.billingBatches.getBatchInvoices(batchId);
-
+  const data = await services.water.billingBatches.getBatchInvoicesDetails(batchId);
   const csvData = await transactionsCSV.createCSV(data);
   const fileName = transactionsCSV.getCSVFileName(request.pre.batch);
   return csv.csvDownload(h, csvData, fileName);

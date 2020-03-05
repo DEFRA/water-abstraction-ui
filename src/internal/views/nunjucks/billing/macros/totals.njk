@@ -1,15 +1,31 @@
 {% from  "data.njk" import data %}
 
+{% macro chargeOrDash (value, isSigned = false) %}
+  {% if value %}
+    {{ value | charge(isSigned) }}
+  {% else %}
+    <span>-</span><span class=govuk-visually-hidden>Loading</span>
+  {% endif %}
+{% endmacro %}
+
 {% macro billRunTotal (totalAmount) %}
-  {{ data(totalAmount | charge(true), 'Bill run total') }}
+  <div class="govuk-!-font-weight-bold govuk-body">
+    <div class="govuk-!-font-size-80">
+      {{ chargeOrDash(totalAmount, true) }}
+    </div>
+    <div class="govuk-!-font-size-24">Bill run total</div>
+  </div>
 {% endmacro %}
 
 {% macro billRunComponent (numberOfItems, text, totalAmount) %}
-  {% set subHeader %}
-    {{ numberOfItems }} {{ text | pluralize(numberOfItems != 1) }}
-  {% endset %}
-
-  {{ data(totalAmount | charge, subHeader, false) }}
+  <div class="govuk-!-font-weight-bold govuk-body">
+    <div class="govuk-!-font-size-48">
+      {{ chargeOrDash(totalAmount) }}
+    </div>
+    <div class="govuk-!-font-size-24">
+      {{ numberOfItems | defaultTo(0) }} {{ text | pluralize(numberOfItems != 1) }}
+    </div>
+  </div>
 {% endmacro %}
 
 {% macro invoicesTotal (numberOfItems, totalAmount) %}

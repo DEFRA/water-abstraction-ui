@@ -1,3 +1,6 @@
+'use strict';
+
+const { isFinite } = require('lodash');
 const commaNumber = require('comma-number');
 
 /**
@@ -24,16 +27,19 @@ const maxPrecision = (number, decimalPlaces) => {
 /**
  * Moves the decimal 2 spaces left for a number and
  * adds an optional currency symbol
- * @param {Number} number
+ * @param {Number|String} number
  * @param {Boolean} isSigned
- * @param {CharacterData} currencySymbol
+ * @param {Boolean} showCurrency
  * @return {String}
  */
 const penceToPound = (number, isSigned = false, showCurrency = false) => {
-  if (typeof (number) !== 'number') {
+  const parsedNumber = parseFloat(number);
+
+  if (!isFinite(parsedNumber)) {
     return number;
   }
-  const sign = (parseFloat(number)) < 0 && isSigned ? '-' : '';
+
+  const sign = parsedNumber < 0 && isSigned ? '-' : '';
   const value = (Math.abs(number) / 100).toFixed(2);
   const currencySymbol = showCurrency ? '£' : '';
   return `${sign}${currencySymbol}${commaNumber(value)}`;

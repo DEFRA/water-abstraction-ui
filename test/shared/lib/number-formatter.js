@@ -30,21 +30,34 @@ experiment('Test number formatter helpers', () => {
     test('should return a value with 2 decimal places', async () => {
       expect(penceToPound(6678)).to.equal('66.78');
     });
+
     test('should not have the currency symbol if not provided', async () => {
       expect(penceToPound(6678, false)).to.equal('66.78');
     });
+
     test('should add the currency symbol if provided', async () => {
       expect(penceToPound(6678, false, '£')).to.equal('£66.78');
     });
+
     test('should still return a zero with 2 decimal places', async () => {
       expect(penceToPound(0)).to.equal('0.00');
     });
+
     test('should handle negative numbers', async () => {
       expect(penceToPound(-462, true)).to.equal('-4.62');
     });
 
     test('should add the currency symbol after the negative sign but before numbers', async () => {
       expect(penceToPound(-462, true, '£')).to.equal('-£4.62');
+    });
+
+    test('tolerates a string representation of a number', async () => {
+      expect(penceToPound('-462', true, '£')).to.equal('-£4.62');
+      expect(penceToPound('6678', false)).to.equal('66.78');
+    });
+
+    test('returns a bad numeric if passed', async () => {
+      expect(penceToPound('potatoes')).to.equal('potatoes');
     });
   });
 });

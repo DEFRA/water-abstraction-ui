@@ -30,13 +30,12 @@ const getBatchInvoices = async batchId => {
  */
 const getBatchInvoice = async (batchId, invoiceId) => {
   const data = await dataService.water.billingBatches.getBatchInvoice(batchId, invoiceId);
-
   return {
     id: data.invoiceAccount.id,
     accountNumber: data.invoiceAccount.accountNumber,
     companyName: data.invoiceAccount.company.name,
     licences: data.invoiceLicences.map(invoiceLicence => ({ licenceRef: invoiceLicence.licence.licenceNumber })),
-    amount: data.totals.totalValue,
+    amount: data.totals.netTotal,
     dateCreated: data.dateCreated
   };
 };

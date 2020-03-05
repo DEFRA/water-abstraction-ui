@@ -1,6 +1,5 @@
+const numberFormatter = require('../../../lib/number-formatter');
 const { isNil } = require('lodash');
-const commaNumber = require('comma-number');
-
 /**
  * Formats an integer charge value in pence
  * The sign is discarded as credits either appear in their own column or
@@ -13,9 +12,7 @@ const charge = (value, isSigned = false) => {
   if (isNil(value)) {
     return;
   }
-  const sign = (parseFloat(value)) < 0 && isSigned ? '-' : '';
-  const number = (Math.abs(value) / 100).toFixed(2);
-  return `${sign}£${commaNumber(number)}`;
+  return `${numberFormatter.penceToPound(value, isSigned, '£')}`;
 };
 
 exports.charge = charge;

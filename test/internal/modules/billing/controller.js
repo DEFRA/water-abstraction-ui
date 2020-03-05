@@ -518,7 +518,6 @@ experiment('internal/modules/billing/controller', () => {
       invoicesForBatch = [ { id: 'test-d', invoiceLicences: [], error: null } ];
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
       sandbox.stub(services.water.billingBatches, 'getBatchInvoicesDetails').resolves(invoicesForBatch);
-      // sandbox.stub(batchService, 'getBatch').resolves(batch);
       sandbox.stub(transactionsCSV, 'createCSV').resolves(csvData);
       sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
       sandbox.stub(csv, 'csvDownload');

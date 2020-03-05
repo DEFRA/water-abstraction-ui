@@ -25,7 +25,7 @@ const invoicesForBatch = [
           {
             value: 4005,
             isCredit: false,
-            agreements: [],
+            agreements: ['126', '127', '130W'],
             status: 'charge_created',
             id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
             authorisedDays: 152,
@@ -143,14 +143,14 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     const transaction = invoicesForBatch[0].invoiceLicences[0].transactions[0];
     test('returns transaction data in expected order', async () => {
       const transactionData = transactionsCSV._getTransactionData(transaction);
-      expect(transactionData.value).to.equal(transaction.value);
+      expect(transactionData.value).to.equal('40.05');
       expect(transactionData.isCredit).to.equal(transaction.isCredit.toString());
       expect(transactionData.isCompensationCharge).to.equal(transaction.isCompensationCharge.toString());
       expect(transactionData.source).to.equal(transaction.chargeElement.source);
       expect(transactionData.season).to.equal(transaction.chargeElement.season);
       expect(transactionData.loss).to.equal(transaction.chargeElement.loss);
       expect(transactionData.description).to.equal(transaction.description);
-      expect(transactionData.agreements[0]).to.equal(transaction.agreements[0]);
+      expect(transactionData.agreements).to.equal('126, 127, 130W');
       expect(transactionData.chargePeriodStartDate).to.equal(transaction.chargePeriod.startDate);
       expect(transactionData.chargePeriodEndDate).to.equal(transaction.chargePeriod.endDate);
       expect(transactionData.authorisedDays).to.equal(transaction.authorisedDays);

@@ -23,8 +23,6 @@ const PendingImportsApiClient = require('shared/lib/connectors/services/water/Pe
 // API Clients
 const AbstractionReformAnalysisApiClient = require('./AbstractionReformAnalysisApiClient');
 const NotificationsApiClient = require('./NotificationsApiClient');
-const PicklistsApiClient = require('./PicklistsApiClient');
-const PicklistItemsApiClient = require('./PicklistItemsApiClient');
 const TaskConfigsApiClient = require('./TaskConfigsApiClient');
 
 const { logger } = require('../../../../logger');
@@ -55,7 +53,5 @@ module.exports = config => ({
 
   // API Clients
   events: new EventsApiClient(config, logger),
-  pendingImports: new PendingImportsApiClient(config, logger),
-  picklists: new PicklistsApiClient(config, logger),
-  picklistItems: new PicklistItemsApiClient(config, logger)
+  pendingImports: new PendingImportsApiClient(config, logger)
 });

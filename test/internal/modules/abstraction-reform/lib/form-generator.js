@@ -1,17 +1,18 @@
+'use strict';
+
 require('dotenv').config();
 const sandbox = require('sinon').createSandbox();
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const {
   dereference,
-  picklistSchemaFactory,
-  schemaToForm, guessLabel,
+  schemaToForm,
+  guessLabel,
   addAttribute,
   createEnumField
 } = require('internal/modules/abstraction-reform/lib/form-generator');
 const { expect } = require('@hapi/code');
 const services = require('internal/lib/connectors/services');
-
-const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const conditionsResponse = {
   error: null,
@@ -47,49 +48,16 @@ const pointsResponse = {
 
 const data = require('./picklist-data.json');
 
-experiment('Test picklistSchemaFactory', () => {
-  test('It should generate a schema for picklists without IDs', async () => {
-    const { picklist, items } = data.noId;
-    const schema = picklistSchemaFactory(picklist, items);
-    expect(schema).to.equal({ type: 'string', enum: [ 'Red', 'Yellow', 'Blue' ] });
-  });
-
-  test('It should generate a schema for picklists with IDs', async () => {
-    const { picklist, items } = data.withId;
-    const schema = picklistSchemaFactory(picklist, items);
-
-    expect(schema).to.equal(
-      { type: 'object',
-        enum: [
-          { id: 'r', value: 'Red' },
-          { id: 'y', value: 'Yellow' },
-          { id: 'b', value: 'Blue' }
-        ]
-      }
-    );
-  });
-});
-
-experiment('Test dereference', () => {
-  beforeEach(async () => {
-    sandbox.stub(services.water.picklists, 'getPicklist').resolves(data.noId.picklist);
-    sandbox.stub(services.water.picklistItems, 'getPicklistItems').resolves(data.noId.items);
-  });
-
-  afterEach(async () => {
-    sandbox.restore();
-  });
-
+experiment('.dereference', () => {
   const schema = {
     type: 'object',
     properties: {
       name: { type: 'string' },
-      items: { $ref: 'water://picklists/some_ref.json' },
       ngr: { $ref: 'water://types/ngr.json' }
     }
   };
 
-  test('It should de-reference referenced picklists and types', async () => {
+  test('de-references the referenced types', async () => {
     const result = await dereference(schema);
 
     expect(result.properties.ngr.type).to.equal('string');

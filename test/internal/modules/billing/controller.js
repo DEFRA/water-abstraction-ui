@@ -668,26 +668,24 @@ experiment('internal/modules/billing/controller', () => {
 
   experiment('.getBillingBatchDeleteAccount', () => {
     const invoice = {
-      data: {
-        id: '1',
-        invoiceLicences: [
-          {
-            licence: {
-              id: 'licence-id',
-              licenceNumber: 'AG1234/56789'
-            }
+      id: '1',
+      invoiceLicences: [
+        {
+          licence: {
+            id: 'licence-id',
+            licenceNumber: 'AG1234/56789'
           }
-        ],
-        dateCreated: '2020-01-27T13:51:29.234Z',
-        totals: {
-          totalValue: '1234.56'
-        },
-        invoiceAccount: {
-          id: 'invoice-account-id',
-          accountNumber: 'A12345678A',
-          company: {
-            name: 'company-name'
-          }
+        }
+      ],
+      dateCreated: '2020-01-27T13:51:29.234Z',
+      totals: {
+        netTotal: '1234.56'
+      },
+      invoiceAccount: {
+        id: 'invoice-account-id',
+        accountNumber: 'A12345678A',
+        company: {
+          name: 'company-name'
         }
       }
     };
@@ -718,12 +716,12 @@ experiment('internal/modules/billing/controller', () => {
 
     test('the correct view data is populated', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.account.id).to.equal(invoice.data.invoiceAccount.id);
-      expect(view.account.accountNumber).to.equal(invoice.data.invoiceAccount.accountNumber);
-      expect(view.account.companyName).to.equal(invoice.data.invoiceAccount.company.name);
-      expect(view.account.licences[0].licenceRef).to.equal(invoice.data.invoiceLicences[0].licence.licenceNumber);
-      expect(view.account.amount).to.equal(invoice.data.totals.totalValue);
-      expect(view.account.dateCreated).to.equal(invoice.data.dateCreated);
+      expect(view.account.id).to.equal(invoice.invoiceAccount.id);
+      expect(view.account.accountNumber).to.equal(invoice.invoiceAccount.accountNumber);
+      expect(view.account.companyName).to.equal(invoice.invoiceAccount.company.name);
+      expect(view.account.licences[0].licenceRef).to.equal(invoice.invoiceLicences[0].licence.licenceNumber);
+      expect(view.account.amount).to.equal(invoice.totals.netTotal);
+      expect(view.account.dateCreated).to.equal(invoice.dateCreated);
     });
   });
 

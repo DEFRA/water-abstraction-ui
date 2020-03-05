@@ -29,12 +29,13 @@ const maxPrecision = (number, decimalPlaces) => {
  * @param {CharacterData} currencySymbol
  * @return {String}
  */
-const penceToPound = (number, isSigned = false, currencySymbol = '') => {
+const penceToPound = (number, isSigned = false, showCurrency = false) => {
   if (typeof (number) !== 'number') {
     return number;
   }
   const sign = (parseFloat(number)) < 0 && isSigned ? '-' : '';
   const value = (Math.abs(number) / 100).toFixed(2);
+  const currencySymbol = showCurrency ? '£' : '';
   return `${sign}${currencySymbol}${commaNumber(value)}`;
 };
 

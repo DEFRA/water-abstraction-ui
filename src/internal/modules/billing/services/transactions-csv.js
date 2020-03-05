@@ -1,5 +1,6 @@
 'use strict';
 const moment = require('moment');
+const numberFormatter = require('../../../../shared/lib/number-formatter');
 
 const getAbsStartAndEnd = absPeriod => {
   return {
@@ -11,9 +12,8 @@ const getAbsStartAndEnd = absPeriod => {
 const getTransactionData = trans => {
   const { absStart, absEnd } = getAbsStartAndEnd(trans.chargeElement.abstractionPeriod);
   const agreements = trans.agreements.join(', ');
-
   return {
-    value: trans.value,
+    value: numberFormatter.penceToPound(trans.value, true),
     isCredit: trans.isCredit.toString(),
     isCompensationCharge: trans.isCompensationCharge.toString(),
     source: trans.chargeElement.source,

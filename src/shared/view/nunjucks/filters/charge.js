@@ -12,7 +12,7 @@ const charge = (value, isSigned = false) => {
   if (isNil(value)) {
     return;
   }
-  return `${numberFormatter.penceToPound(value, isSigned, '£')}`;
+  return `${numberFormatter.penceToPound(value, isSigned, true)}`;
 };
 
 exports.charge = charge;

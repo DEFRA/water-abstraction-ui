@@ -1,7 +1,7 @@
 {% from  "data.njk" import data %}
 
 {% macro billRunTotal (totalAmount) %}
-  {{ data(totalAmount | charge, 'Bill run total') }}
+  {{ data(totalAmount | charge, 'Total') }}
 {% endmacro %}
 
 {% macro billRunComponent (numberOfItems, text, totalAmount) %}

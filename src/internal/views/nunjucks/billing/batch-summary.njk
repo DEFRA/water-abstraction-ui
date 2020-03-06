@@ -1,31 +1,44 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
+{% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal %}
 
 {% block content %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
-      {{ title(pageTitle, batch.billRunDate | date('D MMMM YYYY'), false, true) }}
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <section class="govuk-!-margin-bottom-6">
+        {{ title(pageTitle, 'Bill run ' + batch.externalId, null, true, true) }}
+      </section>
+      <p class="govuk-body">
+      {{ badge(batch | batchBadge(true)) }}
+      </p>
+      {{ batchMetadata(batch) }}
     </div>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
+  <div class="govuk-grid-row govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-!-margin-bottom-0">
       {{ billRunTotal(batch.totals.netTotal) }}
+      </h2>
     </div>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-margin-bottom-6">
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-one-half">
+    <h2>
       {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
+    </h2>
     </div>
-    <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-half">
+    <h2>
       {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
+    </h2>
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <section class="govuk-!-margin-bottom-6">
-        <p class="govuk-body">You can send this bill run on the next page.</p>
         {{
           govukButton({
             text: "Confirm bill run",

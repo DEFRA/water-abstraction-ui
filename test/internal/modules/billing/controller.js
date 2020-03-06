@@ -383,17 +383,17 @@ experiment('internal/modules/billing/controller', () => {
       expect(batchId).to.equal('test-batch-id');
     });
 
-    test('the user is redirected back to the list of batches', async () => {
+    test('the user is redirected back to the batch summary', async () => {
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
+      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary');
     });
 
-    test('if the approval fails, the user is still redirected back to the list of batches', async () => {
+    test('if the approval fails, the user is redirected to the batch summary, with a query parameter added', async () => {
       services.water.billingBatches.approveBatch.rejects();
       await controller.postBillingBatchConfirm(request, h);
 
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
+      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary?error=confirm');
     });
   });
 

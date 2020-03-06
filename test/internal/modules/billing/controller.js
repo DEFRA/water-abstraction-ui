@@ -498,36 +498,42 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('getTransactionsCSV', () => {
-    let batch, invoicesForBatch, csvData;
+    let invoicesForBatch, csvData, batch;
+    batch = {
+      id: 'test-batch-id',
+      dateCreated: '2019-12-02',
+      region: {
+        name: 'South West'
+      },
+      type: 'supplementary'
+    };
     beforeEach(async () => {
-      batch = { id: 'test-batch-id' };
       request = {
         params: {
           batchId: 'test-batch-id'
         },
         pre: { batch }
       };
-      invoicesForBatch = { data: { id: 'test-d', error: null } };
+
+      invoicesForBatch = [ { id: 'test-d', invoiceLicences: [], error: null } ];
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
-      sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(invoicesForBatch);
-      sandbox.stub(batchService, 'getBatch').resolves(batch);
+      sandbox.stub(services.water.billingBatches, 'getBatchInvoicesDetails').resolves(invoicesForBatch);
       sandbox.stub(transactionsCSV, 'createCSV').resolves(csvData);
       sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
       sandbox.stub(csv, 'csvDownload');
-
       await controller.getTransactionsCSV(request, h);
     });
 
     test('calls billingBatches service with batchId', () => {
-      const [batchId] = services.water.billingBatches.getBatchInvoices.lastCall.args;
-      expect(services.water.billingBatches.getBatchInvoices.calledOnce).to.be.true();
+      const [batchId] = services.water.billingBatches.getBatchInvoicesDetails.lastCall.args;
+      expect(services.water.billingBatches.getBatchInvoicesDetails.calledOnce).to.be.true();
       expect(batchId).to.equal(request.params.batchId);
     });
 
     test('calls transactionsCSV.createCSV with data returned from billingBatches services', () => {
-      const [data] = transactionsCSV.createCSV.lastCall.args;
+      const [ data ] = transactionsCSV.createCSV.lastCall.args;
       expect(transactionsCSV.createCSV.calledOnce).to.be.true();
-      expect(data).to.equal(invoicesForBatch.data);
+      expect(data).to.equal(invoicesForBatch);
     });
 
     test('calls transactionsCSV.getCSVFileName with data returned from batchService', () => {
@@ -679,7 +685,7 @@ experiment('internal/modules/billing/controller', () => {
       ],
       dateCreated: '2020-01-27T13:51:29.234Z',
       totals: {
-        totalValue: '1234.56'
+        netTotal: '1234.56'
       },
       invoiceAccount: {
         id: 'invoice-account-id',
@@ -721,7 +727,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.account.accountNumber).to.equal(invoice.invoiceAccount.accountNumber);
       expect(view.account.companyName).to.equal(invoice.invoiceAccount.company.name);
       expect(view.account.licences[0].licenceRef).to.equal(invoice.invoiceLicences[0].licence.licenceNumber);
-      expect(view.account.amount).to.equal(invoice.totals.totalValue);
+      expect(view.account.amount).to.equal(invoice.totals.netTotal);
       expect(view.account.dateCreated).to.equal(invoice.dateCreated);
     });
   });

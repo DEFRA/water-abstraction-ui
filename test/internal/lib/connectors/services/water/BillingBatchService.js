@@ -79,6 +79,17 @@ experiment('services/water/BillingBatchService', () => {
     });
   });
 
+  experiment('.getBatchInvoicesDetails', () => {
+    test('passes the expected URL to the service request', async () => {
+      const id = uuid();
+
+      await service.getBatchInvoicesDetails(id);
+
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices/details`);
+    });
+  });
+
   experiment('.getBatchInvoice', () => {
     test('passes the expected URL to the service request', async () => {
       const batchId = uuid();

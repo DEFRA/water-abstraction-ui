@@ -42,7 +42,7 @@
           <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge(true) }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
         </tr>
         {% endfor %}

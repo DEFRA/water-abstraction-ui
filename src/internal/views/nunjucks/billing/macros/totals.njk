@@ -21,25 +21,22 @@
 {% endmacro %}
 
 {% macro invoiceComponent (text, totalAmount) %}
-  {% set subHeader %}
-    {{ text }}
-  {% endset %}
-
-  {{ data(totalAmount | charge, subHeader, false) }}
+  {{ data(totalAmount | charge, text, false) }}
 {% endmacro %}
 
 {% macro invoiceTotal (totalAmount, credit) %}
 {% if credit %}
-  {{ data(totalAmount | charge, 'Bill amount') }}
+  {% set chargeAmount = totalAmount | charge %}
+  {{ data(chargeAmount + ' credit', 'Total') }}
 {% else %}
-  {{ data(totalAmount | charge, 'Bill amount') }}
+  {{ data(totalAmount | charge, 'Total') }}
 {% endif %}
 {% endmacro %}
 
-{% macro invoiceCreditsTotal (numberOfItems, totalAmount) %}
+{% macro invoiceCreditsTotal (totalAmount) %}
   {{ invoiceComponent('Credits', totalAmount) }}
 {% endmacro %}
 
-{% macro invoiceDebitsTotal (numberOfItems, totalAmount) %}
+{% macro invoiceDebitsTotal (totalAmount) %}
   {{ invoiceComponent('Debits', totalAmount) }}
 {% endmacro %}

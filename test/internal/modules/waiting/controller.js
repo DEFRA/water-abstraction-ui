@@ -15,7 +15,7 @@ const sandbox = sinon.createSandbox();
 
 const getTestEventResponse = (status = 'processing', subtype = 'returnReminder') => ({
   data: {
-    event_id: 'test-event-id',
+    id: 'test-event-id',
     type: 'notification',
     status,
     metadata: {
@@ -28,7 +28,7 @@ const getTestEventResponse = (status = 'processing', subtype = 'returnReminder')
 
 const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') => ({
   data: {
-    event_id: 'test-event-id',
+    id: 'test-event-id',
     type: 'billing-batch',
     status,
     metadata: {
@@ -179,6 +179,7 @@ experiment('internal/modules/waiting/controller', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
+        console.log(url);
         expect(url).to.equal('/batch-notifications/review/test-event-id');
       });
     });

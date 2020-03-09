@@ -1,7 +1,7 @@
 {% from  "data.njk" import data %}
 
 {% macro chargeOrDash (value, isSigned = false) %}
-  {% if value %}
+  {% if value | defaultTo(false) !== false %}
     {{ value | charge(isSigned) }}
   {% else %}
     <span>-</span><span class=govuk-visually-hidden>Loading</span>

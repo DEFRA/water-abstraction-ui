@@ -115,7 +115,7 @@ const postBillingBatchRegion = async (request, h) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm);
     const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.eventId}?back=0`);
+    return h.redirect(`/waiting/${event.id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);

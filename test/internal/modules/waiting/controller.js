@@ -179,7 +179,6 @@ experiment('internal/modules/waiting/controller', () => {
         await controller.getWaiting(request, h);
 
         const [url] = h.redirect.lastCall.args;
-        console.log(url);
         expect(url).to.equal('/batch-notifications/review/test-event-id');
       });
     });

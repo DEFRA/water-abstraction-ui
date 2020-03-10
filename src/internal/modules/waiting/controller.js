@@ -10,7 +10,7 @@ const path = require('path');
 
 const getRedirectPath = (eventStatuses, ev) => {
   if (ev.status in eventStatuses) {
-    return path.join(eventStatuses[ev.status], ev.id);
+    return path.join(eventStatuses[ev.status], ev.event_id || ev.id);
   }
 };
 

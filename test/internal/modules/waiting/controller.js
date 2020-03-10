@@ -141,6 +141,14 @@ experiment('internal/modules/waiting/controller', () => {
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal('/batch-notifications/review/test-event-id');
       });
+
+      test('the user is redirected to the review page when event id is found at event.event_id', async () => {
+        services.water.events.findOne.resolves({ data: { event_id: 'test-id', type: 'notification', status: 'processed' }, error: null });
+        await controller.getWaiting(request, h);
+
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/batch-notifications/review/test-id');
+      });
     });
   });
 

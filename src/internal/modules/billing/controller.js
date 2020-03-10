@@ -115,7 +115,7 @@ const postBillingBatchRegion = async (request, h) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm);
     const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.eventId}?back=0`);
+    return h.redirect(`/waiting/${event.id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
@@ -251,9 +251,10 @@ const getTransactionsCSV = async (request, h) => {
 const getBillingBatchDeleteAccount = async (request, h) => {
   const { batchId, invoiceId } = request.params;
   const account = await batchService.getBatchInvoice(batchId, invoiceId);
+
   return h.view('nunjucks/billing/batch-delete-account', {
     ...request.view,
-    pageTitle: 'You are about to remove this invoice from the bill run',
+    pageTitle: 'Remove this invoice from the bill run?',
     account,
     form: deleteAccountFromBatchForm(request, account.id),
     batch: { id: batchId },

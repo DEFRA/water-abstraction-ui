@@ -27,12 +27,12 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
     <h2>
-      {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
+      {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
     </h2>
     </div>
     <div class="govuk-grid-column-one-half">
     <h2>
-      {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
+      {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
     </h2>
     </div>
   </div>
@@ -84,7 +84,7 @@
                 <td class="govuk-table__cell">
                   <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">{{ invoice.accountNumber }}</a>
                 </th>
-                <td class="govuk-table__cell">{{ invoice.name }}</td>
+                <td class="govuk-table__cell">{{ invoice.name | titleCase }}</td>
                 <td class="govuk-table__cell">
 
                   <ul class="govuk-list govuk-!-margin-0">

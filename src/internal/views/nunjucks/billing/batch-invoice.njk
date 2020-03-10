@@ -11,7 +11,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
-        {{ title(invoice.invoiceAccount.company.name, 'Billing account ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
+        {{ title(invoice.invoiceAccount.company.name | titleCase, 'Billing account ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
       </div>
 
       <div class="govuk-body govuk-!-margin-bottom-4">
@@ -20,8 +20,8 @@
       {{ batchMetadata(batch)}}
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-          <p>{{invoice.invoiceAccount.company.name}}<br>
-          {{ address(invoice.invoiceAccount.address)}}
+          <p>{{ invoice.invoiceAccount.company.name | titleCase }}<br>
+          {{ address(invoice.invoiceAccount.address) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",
@@ -42,12 +42,12 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
       <h2>
-        {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
+        {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
       </h2>
     </div>
     <div class="govuk-grid-column-one-half">
       <h2>
-        {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
+        {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
       </h2>
     </div>
   </div>

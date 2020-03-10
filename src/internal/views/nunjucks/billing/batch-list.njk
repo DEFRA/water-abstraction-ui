@@ -2,6 +2,8 @@
 {% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+
 {% block content %}
 
 {{ title(pageTitle) }}
@@ -41,8 +43,16 @@
           </td>
           <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge(true) }}</td>
+
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount | defaultTo('-') }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {% if batch.status == 'error' %}
+              <span>-</span>
+            {% else %}
+              {{ chargeOrDash(batch.totals.netTotal, true) }}
+            {% endif %}
+          </td>
+
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
         </tr>
         {% endfor %}

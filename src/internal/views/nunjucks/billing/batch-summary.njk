@@ -1,11 +1,25 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal %}
+{% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal, chargeOrDash %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% block content %}
 
   {% if error %}
   {# display error message here if confirm batch failed #}
+  {% endif %}
+
+  {% if not batch.totals %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
+        {{
+          govukWarningText({
+            text: "Totals loading. Try refreshing the page in a few minutes.",
+            iconFallbackText: "Warning"
+          })
+        }}
+      </div>
+    </div>
   {% endif %}
 
   <div class="govuk-grid-row">
@@ -56,7 +70,7 @@
   </div>
   <div class="govuk-grid-row">
 
- 
+
     <div class="govuk-grid-column-full govuk-!-margin-top-5">
       {% if invoices.length > 0 %}
         <table class="govuk-table">
@@ -74,7 +88,7 @@
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">{{ invoice.accountNumber }}</a>
-                </th>
+                </td>
                 <td class="govuk-table__cell">{{ invoice.name }}</td>
                 <td class="govuk-table__cell">
 
@@ -85,7 +99,7 @@
                   </ul>
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                  <span>{{ invoice.netTotal | charge}}</span>
+                  {{ chargeOrDash(invoice.netTotal) }}
                   {% if invoice.isCredit %}
                     <div>Credit note</div>
                   {% endif %}

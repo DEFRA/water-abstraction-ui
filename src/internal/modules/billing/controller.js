@@ -260,6 +260,7 @@ const getTransactionsCSV = async (request, h) => {
  */
 const getBillingBatchDeleteAccount = async (request, h) => {
   const { batchId, invoiceId } = request.params;
+  const { batch } = request.pre;
   const account = await batchService.getBatchInvoice(batchId, invoiceId);
 
   return h.view('nunjucks/billing/batch-delete-account', {
@@ -267,7 +268,7 @@ const getBillingBatchDeleteAccount = async (request, h) => {
     pageTitle: 'Remove this invoice from the bill run?',
     account,
     form: deleteAccountFromBatchForm(request, account.id),
-    batch: { id: batchId },
+    batch,
     back: `/billing/batch/${batchId}/summary`
   });
 };

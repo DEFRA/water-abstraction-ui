@@ -183,7 +183,6 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid().required()
           },
           payload: {
-            batchId: Joi.string().uuid().required(),
             csrf_token: Joi.string().uuid().required()
           }
         }
@@ -247,7 +246,7 @@ if (isAcceptanceTestTarget) {
       handler: controller.getBillingBatchDeleteAccount,
       config: {
         auth: { scope: allowedScopes },
-        description: 'request confirmation to remove invoice from bill run',
+        description: 'Request confirmation to remove invoice from bill run',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -258,7 +257,8 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid(),
             invoiceId: Joi.string().uuid()
           }
-        }
+        },
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
     postBillingBatchDeleteAccount: {

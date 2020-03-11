@@ -27,6 +27,24 @@ const clearSessionForm = (request) => {
 
 const getBillRunPageTitle = batch => `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`;
 
+const getBillingRegions = async () => {
+  const { data } = await services.water.regions.getRegions();
+  return data;
+};
+
+const getBatchDetails = (request, billingRegionForm) => {
+  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
+  const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
+  const batch = {
+    userEmail: request.defra.user.user_name,
+    regionId: selectedBillingRegion,
+    batchType: selectedBillingType,
+    financialYearEnding: financialYear,
+    season: 'all year' // ('summer', 'winter', 'all year').required();
+  };
+  return batch;
+};
+
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -42,11 +60,6 @@ const getBillingBatchType = async (request, h) => {
     back: '/manage',
     form: sessionForm || selectBillingTypeForm(request)
   });
-};
-
-const getBillingRegions = async () => {
-  const { data } = await services.water.regions.getRegions();
-  return data;
 };
 
 /**
@@ -83,19 +96,6 @@ const getBillingBatchRegion = async (request, h) => {
     back: '/billing/batch/type',
     form: sessionForm || selectBillingRegionForm(request, regions)
   });
-};
-
-const getBatchDetails = (request, billingRegionForm) => {
-  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
-  const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
-  const batch = {
-    userEmail: request.defra.user.user_name,
-    regionId: selectedBillingRegion,
-    batchType: selectedBillingType,
-    financialYearEnding: financialYear,
-    season: 'all year' // ('summer', 'winter', 'all year').required();
-  };
-  return batch;
 };
 
 /**

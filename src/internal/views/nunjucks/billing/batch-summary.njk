@@ -27,7 +27,10 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <section class="govuk-!-margin-bottom-6">
-        {{ title(pageTitle, 'Bill run ' + batch.externalId, null, true, true) }}
+      {% set caption %}
+        {{ 'Bill run ' + batch.externalId if batch.externalId else null }}
+      {% endset %}
+        {{ title(pageTitle, caption, null, true, true) }}
       </section>
       <p class="govuk-body">
       {{ badge(batch | batchBadge(true)) }}

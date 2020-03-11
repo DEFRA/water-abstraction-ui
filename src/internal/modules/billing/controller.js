@@ -4,6 +4,7 @@ const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
 const { deleteAccountFromBatchForm } = require('./forms/billing-batch-delete-account');
+const { cancelOrConfirmBatchForm } = require('./forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
@@ -14,6 +15,7 @@ const transactionsCSV = require('./services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('./lib/mappers');
+const titleCase = require('title-case');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -22,6 +24,8 @@ const getSessionForm = (request) => {
 const clearSessionForm = (request) => {
   request.yar.clear(get(request, 'query.form'));
 };
+
+const getBillRunPageTitle = batch => `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`;
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -149,7 +153,7 @@ const getBillingBatchSummary = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
-    pageTitle: `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`,
+    pageTitle: getBillRunPageTitle(batch),
     batch,
     invoices: invoices.map(row => ({
       ...row,
@@ -175,7 +179,7 @@ const getBillingBatchInvoice = async (request, h) => {
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
-    pageTitle: 'January 2020 invoice',
+    pageTitle: `Bill for ${titleCase(invoice.invoiceAccount.company.name)}`,
     invoice,
     batch,
     batchType: mappers.mapBatchType(batch.type),
@@ -197,9 +201,12 @@ const getBillingBatchList = async (request, h) => {
 
 const getBillingBatchCancel = async (request, h) => {
   const { batch } = request.pre;
-  return h.view('nunjucks/billing/batch-cancel', {
+  return h.view('nunjucks/billing/batch-cancel-or-confirm', {
     ...request.view,
     batch,
+    pageTitle: 'You are about to cancel this bill run',
+    secondTitle: getBillRunPageTitle(batch),
+    form: cancelOrConfirmBatchForm(request, 'cancel'),
     back: `/billing/batch/${batch.id}/summary`
   });
 };
@@ -216,9 +223,12 @@ const postBillingBatchCancel = async (request, h) => {
 
 const getBillingBatchConfirm = async (request, h) => {
   const { batch } = request.pre;
-  return h.view('nunjucks/billing/batch-confirm', {
+  return h.view('nunjucks/billing/batch-cancel-or-confirm', {
     ...request.view,
     batch,
+    pageTitle: 'You are about to send this bill run',
+    secondTitle: getBillRunPageTitle(batch),
+    form: cancelOrConfirmBatchForm(request, 'confirm'),
     back: `/billing/batch/${batch.id}/summary`
   });
 };

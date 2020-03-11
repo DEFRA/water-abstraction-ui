@@ -11,7 +11,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
-        {{ title(invoice.invoiceAccount.company.name | titleCase, 'Billing account ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
+        {{ title(pageTitle, 'Bill ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
       </div>
 
       <div class="govuk-body govuk-!-margin-bottom-4">

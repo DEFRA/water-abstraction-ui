@@ -1,11 +1,11 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 
 /**
- * Creates an object to represent the form for capturing the
- * new user's email address.
+ * Creates an object to represent the form for removing an
+ * account from a billing batch
  *
  * @param {Object} request The Hapi request object
- * @param  {Array} regions array of billing regions
+ * @param  {String} accountId guid of account to remove
   */
 const deleteAccountFromBatchForm = (request, accountId) => {
   const { csrfToken } = request.view;

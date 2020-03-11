@@ -14,7 +14,9 @@
       <p class="govuk-body">
       {{ badge(batch | batchBadge(true)) }}
       </p>
-      {{ batchMetadata(batch) }}
+      <div class="govuk-grid-row">
+        {{ batchMetadata(batch) }}
+      </div>
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-3">

@@ -160,7 +160,6 @@ if (isAcceptanceTestTarget) {
         auth: { scope: allowedScopes },
         plugins: {
           viewContext: {
-            pageTitle: 'You are about to send this bill run',
             activeNavLink: 'notifications'
           }
         },
@@ -199,7 +198,6 @@ if (isAcceptanceTestTarget) {
         auth: { scope: allowedScopes },
         plugins: {
           viewContext: {
-            pageTitle: 'You are about to cancel this bill run',
             activeNavLink: 'notifications'
           }
         },
@@ -223,7 +221,6 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid().required()
           },
           payload: {
-            batchId: Joi.string().uuid().required(),
             csrf_token: Joi.string().uuid().required()
           }
         }

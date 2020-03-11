@@ -7,114 +7,158 @@ const transactionsCSV = require('internal/modules/billing/services/transactions-
 
 const batch = {
   id: '8ed86390-3557-4cbb-a43f-bd31db5ae119',
-  billRunDate: '2020-01-14',
+  dateCreated: '2020-01-14',
   type: 'supplementary',
   region: {
-    displayName: 'South West',
+    name: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
   }
 };
-const chargeElement = {
-  source: 'unsupported',
-  season: 'all year',
-  loss: 'medium',
-  abstractionPeriod: {
-    startDay: 1,
-    startMonth: 4,
-    endDay: 31,
-    endMonth: 10
-  },
-  authorisedAnnualQuantity: 498,
-  billableAnnualQuantity: null
-};
 
-const invoicesForBatch = [{
-  id: '8ed86390-3557-4cbb-a43f-bd31db5ae119',
-  invoiceLicences: [{
-    transactions: [{
-      value: -1421,
-      isCredit: true,
-      authorisedDays: 182,
-      billableDays: 56,
-      agreements: [],
-      chargePeriod: {
-        startDate: '2019-04-01',
-        endDate: '2020-03-31'
+const invoicesForBatch = [
+  {
+    id: '0817794f-b5b4-47e8-8172-3411bd6165bd',
+    invoiceLicences: [
+      {
+        id: 'e93c4697-f288-491e-b9fe-6cab333bbef5',
+        transactions: [
+          {
+            value: 4005,
+            isCredit: false,
+            agreements: ['126', '127', '130W'],
+            status: 'charge_created',
+            id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
+            authorisedDays: 152,
+            billableDays: 152,
+            description: 'The description - with 007',
+            transactionKey: 'efab988ba55a9f3a729c672cf76aaee6',
+            externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
+            chargePeriod: {
+              startDate: '2019-04-01',
+              endDate: '2020-03-31'
+            },
+            isCompensationCharge: false,
+            chargeElement: {
+              id: '13597728-0390-48b3-8c97-adbc17b6111a',
+              source: 'unsupported',
+              season: 'winter',
+              loss: 'high',
+              abstractionPeriod: {
+                startDay: 1,
+                startMonth: 11,
+                endDay: 31,
+                endMonth: 3
+              },
+              authorisedAnnualQuantity: '9.1',
+              billableAnnualQuantity: '9.1',
+              purposeUse: {
+                type: 'use',
+                code: '420',
+                name: 'Spray Irrigation - Storage'
+              }
+            },
+            volume: 9.1
+          },
+          {
+            value: 4006,
+            isCredit: false,
+            agreements: [],
+            status: 'charge_created',
+            id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
+            authorisedDays: 152,
+            billableDays: 152,
+            description: 'The description - with 007',
+            transactionKey: 'efab988ba55a9f3a729c672cf76aaee6',
+            externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
+            chargePeriod: {
+              startDate: '2019-04-01',
+              endDate: '2020-03-31'
+            },
+            isCompensationCharge: false,
+            chargeElement: {
+              id: '13597728-0390-48b3-8c97-adbc17b6111a',
+              source: 'unsupported',
+              season: 'winter',
+              loss: 'high',
+              abstractionPeriod: {
+                startDay: 1,
+                startMonth: 11,
+                endDay: 31,
+                endMonth: 3
+              },
+              authorisedAnnualQuantity: '9.1',
+              billableAnnualQuantity: '9.1',
+              purposeUse: {
+                type: 'use',
+                code: '420',
+                name: 'Spray Irrigation - Storage'
+              }
+            },
+            volume: 9.1
+          }
+        ],
+        licence: {
+          id: '31679203-f2e5-4d35-b0d1-fcb2745268aa',
+          licenceNumber: '1/23/45/*S/6789',
+          isWaterUndertaker: false,
+          region: {
+            type: 'region',
+            id: '6ad67f32-e75d-48c1-93d5-25a0e6263e78',
+            name: 'Anglian',
+            code: 'A',
+            numericCode: 1
+          },
+          historicalArea: {
+            type: 'EAAR',
+            code: 'AREA'
+          }
+        }
+      }
+    ],
+    invoiceAccount: {
+      id: '2f3853a0-61f0-49e4-81ca-60c1a49f665d',
+      accountNumber: 'A12345678A',
+      company: {
+        id: 'e8f5db63-fa46-4b25-b193-4f48733524aa',
+        name: 'R G Applehead & sons LTD',
+        type: 'organisation'
       },
-      isCompensationCharge: false,
-      description: 'credit following licence changes',
-      chargeElement: chargeElement
-    }, {
-      value: 1285,
-      isCredit: false,
-      authorisedDays: 182,
-      billableDays: 56,
-      agreements: ['130U'],
-      chargePeriod: {
-        startDate: '2019-04-01',
-        endDate: '2020-03-31'
-      },
-      isCompensationCharge: false,
-      description: 'charge following licence changes',
-      chargeElement: chargeElement
-    }],
-    id: '27b5b202-287b-4314-a013-b2b6d904161f',
-    address: {
-      id: '8fc7a9fd-7e2a-4fd3-9c1c-372ae78b52b4',
-      address_1: 'Unit 1, South West Business Park',
-      address_2: '78 Testing Road',
-      town: 'Bristol',
-      county: 'Bristol',
-      postcode: 'BS1 2AB'
-    },
-    company: {
-      id: '530d40da-7355-44ba-9468-5500d3e8fe47',
-      type: 'organisation',
-      name: 'South West Water Ltd'
-    },
-    contact: {
-      id: 'fd690f49-9f2c-4e1b-8ed3-885868c14a32',
-      salutation: 'Mr',
-      firstName: 'Bob',
-      lastName: 'Jones'
-    },
-    licence: {
-      id: 'e99cdef3-e264-4e1f-bf58-1fe6b22c8d78',
-      licenceNumber: '01/234/567'
-    }
-  }],
-  invoiceAccount: {
-    id: 'a764b68a-0167-4f8c-82b1-da08824c2683',
-    accountNumber: 'A12345678A',
-    company: {
-      id: '530d40da-7355-44ba-9468-5500d3e8fe47',
-      type: 'organisation',
-      name: 'South West Water Ltd'
+      address: {
+        id: '6f9dfbd6-b534-442c-bf30-cb32a53b9a6c',
+        town: 'Apple',
+        county: 'Appleshire',
+        country: null,
+        postcode: 'AP9 8RG',
+        addressLine1: 'Little  Orchard',
+        addressLine2: 'Orchard lane',
+        addressLine3: 'Orchard Hill',
+        addressLine4: 'The Royal Gala Valey'
+      }
     }
   }
-}];
+];
 
 experiment('internal/modules/billing/services/transactions-csv', async () => {
   experiment('_getTransactionData', async () => {
-    const transaction = invoicesForBatch[0].invoiceLicences[0].transactions[1];
+    const transaction = invoicesForBatch[0].invoiceLicences[0].transactions[0];
     test('returns transaction data in expected order', async () => {
       const transactionData = transactionsCSV._getTransactionData(transaction);
-      expect(transactionData[0]).to.equal(transaction.value);
-      expect(transactionData[1]).to.equal(transaction.isCredit.toString());
-      expect(transactionData[2]).to.equal(transaction.isCompensationCharge.toString());
-      expect(transactionData[3]).to.equal(transaction.chargeElement.source);
-      expect(transactionData[4]).to.equal(transaction.chargeElement.season);
-      expect(transactionData[5]).to.equal(transaction.chargeElement.loss);
-      expect(transactionData[6]).to.equal(transaction.description);
-      expect(transactionData[7]).to.equal(transaction.agreements[0]);
-      expect(transactionData[8]).to.equal(transaction.chargePeriod.startDate);
-      expect(transactionData[9]).to.equal(transaction.chargePeriod.endDate);
-      expect(transactionData[10]).to.equal(transaction.authorisedDays);
-      expect(transactionData[11]).to.equal(transaction.billableDays);
-      expect(transactionData[12]).to.equal('1 Apr');
-      expect(transactionData[13]).to.equal('31 Oct');
-      expect(transactionData[14]).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
-      expect(transactionData[15]).to.equal(transaction.chargeElement.billableAnnualQuantity);
+      expect(transactionData.value).to.equal('40.05');
+      expect(transactionData.isCredit).to.equal(transaction.isCredit.toString());
+      expect(transactionData.isCompensationCharge).to.equal(transaction.isCompensationCharge.toString());
+      expect(transactionData.source).to.equal(transaction.chargeElement.source);
+      expect(transactionData.season).to.equal(transaction.chargeElement.season);
+      expect(transactionData.loss).to.equal(transaction.chargeElement.loss);
+      expect(transactionData.description).to.equal(transaction.description);
+      expect(transactionData.agreements).to.equal('126, 127, 130W');
+      expect(transactionData.chargePeriodStartDate).to.equal(transaction.chargePeriod.startDate);
+      expect(transactionData.chargePeriodEndDate).to.equal(transaction.chargePeriod.endDate);
+      expect(transactionData.authorisedDays).to.equal(transaction.authorisedDays);
+      expect(transactionData.billableDays).to.equal(transaction.billableDays);
+      expect(transactionData.absPeriodStartDate).to.equal('1 Nov');
+      expect(transactionData.absPeriodEndDate).to.equal('31 Mar');
+      expect(transactionData.authorisedAnnualQuantity).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
+      expect(transactionData.billableAnnualQuantity).to.equal(transaction.chargeElement.billableAnnualQuantity);
     });
 
     test('handles mutliple agreements', async () => {
@@ -122,51 +166,91 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
         ...transaction,
         agreements: ['126', '127', '130W']
       });
-      expect(transactionData[7]).to.equal('126, 127, 130W');
+      expect(transactionData.agreements).to.equal('126, 127, 130W');
     });
   });
 
-  experiment('_getInvoiceLicenceData', async () => {
-    let invoiceLicenceData;
-    beforeEach(async () => {
-      invoiceLicenceData = transactionsCSV._getInvoiceLicenceData(invoicesForBatch[0].invoiceLicences[0]);
-    });
-
-    test('returns expected address data as string', () => {
-      const { id, ...address } = invoicesForBatch[0].invoiceLicences[0].address;
-      const expectedAddressString = JSON.stringify(address);
-      expect(invoiceLicenceData[0]).to.equal(expectedAddressString);
-    });
-
-    test('returns expected company data as string', () => {
-      const { id, type, ...company } = invoicesForBatch[0].invoiceLicences[0].company;
-      const expectedCompanyString = JSON.stringify(company);
-      expect(invoiceLicenceData[1]).to.equal(expectedCompanyString);
+  experiment('_getInvoiceAccountData', async () => {
+    const invoiceAccount = invoicesForBatch[0].invoiceAccount;
+    test('returns transaction data in expected order', async () => {
+      const invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
+      expect(invoiceAccountData.accountNumber).to.equal(invoiceAccount.accountNumber);
+      expect(invoiceAccountData.companyName).to.equal(invoiceAccount.company.name);
+      expect(invoiceAccountData.addressLine1).to.equal(invoiceAccount.address.addressLine1);
+      expect(invoiceAccountData.addressLine2).to.equal(invoiceAccount.address.addressLine2);
+      expect(invoiceAccountData.addressLine3).to.equal(invoiceAccount.address.addressLine3);
+      expect(invoiceAccountData.addressLine4).to.equal(invoiceAccount.address.addressLine4);
+      expect(invoiceAccountData.town).to.equal(invoiceAccount.address.town);
+      expect(invoiceAccountData.county).to.equal(invoiceAccount.address.county);
+      expect(invoiceAccountData.postcode).to.equal(invoiceAccount.address.postcode);
+      expect(invoiceAccountData.country).to.equal(invoiceAccount.address.country);
     });
   });
 
   experiment('.createCSV', async () => {
     let csvData;
+    const expectedKeys = [
+      'licenceNumber',
+      'region',
+      'isWaterUndertaker',
+      'historicalArea',
+      'value',
+      'isCredit',
+      'isCompensationCharge',
+      'source',
+      'season',
+      'chargeElementPurposeCode',
+      'chargeElementPurposeName',
+      'loss',
+      'description',
+      'agreements',
+      'chargePeriodStartDate',
+      'chargePeriodEndDate',
+      'authorisedDays',
+      'billableDays',
+      'absPeriodStartDate',
+      'absPeriodEndDate',
+      'authorisedAnnualQuantity',
+      'billableAnnualQuantity',
+      'accountNumber',
+      'companyName',
+      'addressLine1',
+      'addressLine2',
+      'addressLine3',
+      'addressLine4',
+      'town',
+      'county',
+      'postcode',
+      'country'
+    ];
+
     beforeEach(async () => {
       csvData = await transactionsCSV.createCSV(invoicesForBatch);
     });
 
-    test('csvData starts with headings', async () => {
-      expect(csvData[0]).to.equal(transactionsCSV._columnHeadings);
+    test('csvData includes the all the required data keys', async () => {
+      expect(Object.keys(csvData[0])).to.equal(expectedKeys);
+    });
+
+    test('includes the tail data', async () => {
+      expect(csvData[0].licenceNumber).to.equal('1/23/45/*S/6789');
+      expect(csvData[0].region).to.equal('Anglian');
+      expect(csvData[0].isWaterUndertaker).to.equal('false');
+      expect(csvData[0].historicalArea).to.equal('AREA');
+      expect(csvData[0].accountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
+      expect(csvData[0].companyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
     });
 
     test('creates a line for each transaction', async () => {
       const licenceNumber = invoicesForBatch[0].invoiceLicences[0].licence.licenceNumber;
-      expect(csvData[1][0]).to.equal(licenceNumber);
-      expect(csvData[2][0]).to.equal(licenceNumber);
+      expect(csvData[0].licenceNumber).to.equal(licenceNumber);
+      expect(csvData[1].licenceNumber).to.equal(licenceNumber);
     });
   });
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
-      // South West supplementary bill run 2020-01-14.csv
-
+      const expectedFileName = `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
       const fileName = transactionsCSV.getCSVFileName(batch);
       expect(fileName).to.equal(expectedFileName);
     });

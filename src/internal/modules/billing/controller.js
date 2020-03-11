@@ -149,6 +149,7 @@ const getBillingBatchExists = async (request, h) => {
  */
 const getBillingBatchSummary = async (request, h) => {
   const { batchId } = request.params;
+  const { error } = request.query;
   const { batch, invoices } = await batchService.getBatchInvoices(batchId);
 
   return h.view('nunjucks/billing/batch-summary', {
@@ -159,6 +160,10 @@ const getBillingBatchSummary = async (request, h) => {
       ...row,
       isCredit: row.netTotal < 0
     })),
+    // This error string comes from the query param, and will allow us
+    // to display a suitable alert to the user e.g. when a batch cannot
+    // be approved
+    error,
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && '/billing/batch/list'
@@ -235,19 +240,25 @@ const getBillingBatchConfirm = async (request, h) => {
 
 const postBillingBatchConfirm = async (request, h) => {
   const { batchId } = request.params;
+  const redirectPath = `/billing/batch/${batchId}/summary`;
   try {
     await services.water.billingBatches.approveBatch(batchId);
   } catch (err) {
     logger.info(`Did not successfully approve batch ${batchId}`);
+    return h.redirect(`${redirectPath}?error=confirm`);
   }
-  return h.redirect('/billing/batch/list');
+  return h.redirect(redirectPath);
 };
 
+/**
+ * allows user to download all the invoices, transactions, company,
+ * licence and agreements data for a batch
+ * @param {*} request
+ * @param {*} h
+ */
 const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params;
-
-  const { data } = await services.water.billingBatches.getBatchInvoices(batchId);
-
+  const data = await services.water.billingBatches.getBatchInvoicesDetails(batchId);
   const csvData = await transactionsCSV.createCSV(data);
   const fileName = transactionsCSV.getCSVFileName(request.pre.batch);
   return csv.csvDownload(h, csvData, fileName);

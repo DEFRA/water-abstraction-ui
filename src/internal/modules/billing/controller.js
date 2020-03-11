@@ -204,17 +204,20 @@ const getBillingBatchList = async (request, h) => {
   });
 };
 
-const getBillingBatchCancel = async (request, h) => {
+const billingBatchAction = (request, h, action) => {
   const { batch } = request.pre;
+  const titleAction = (action === 'confirm') ? 'send' : 'cancel';
   return h.view('nunjucks/billing/batch-cancel-or-confirm', {
     ...request.view,
     batch,
-    pageTitle: 'You are about to cancel this bill run',
+    pageTitle: `You are about to ${titleAction} this bill run`,
     secondTitle: getBillRunPageTitle(batch),
-    form: cancelOrConfirmBatchForm(request, 'cancel'),
+    form: cancelOrConfirmBatchForm(request, action),
     back: `/billing/batch/${batch.id}/summary`
   });
 };
+
+const getBillingBatchCancel = async (request, h) => billingBatchAction(request, h, 'cancel');
 
 const postBillingBatchCancel = async (request, h) => {
   const { batchId } = request.params;
@@ -226,17 +229,7 @@ const postBillingBatchCancel = async (request, h) => {
   return h.redirect('/billing/batch/list');
 };
 
-const getBillingBatchConfirm = async (request, h) => {
-  const { batch } = request.pre;
-  return h.view('nunjucks/billing/batch-cancel-or-confirm', {
-    ...request.view,
-    batch,
-    pageTitle: 'You are about to send this bill run',
-    secondTitle: getBillRunPageTitle(batch),
-    form: cancelOrConfirmBatchForm(request, 'confirm'),
-    back: `/billing/batch/${batch.id}/summary`
-  });
-};
+const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm');
 
 const postBillingBatchConfirm = async (request, h) => {
   const { batchId } = request.params;

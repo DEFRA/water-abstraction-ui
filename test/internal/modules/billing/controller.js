@@ -553,7 +553,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view).to.equal('nunjucks/billing/batch-cancel-or-confirm');
     });
 
-    test('passes the expedcted data in the view context', async () => {
+    test('passes the expected data in the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);

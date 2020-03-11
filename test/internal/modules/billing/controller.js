@@ -375,7 +375,11 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchInvoice', () => {
+    let docIds;
     beforeEach(async () => {
+      docIds = new Map();
+      docIds.set('12/34/56', 'test-docuemnt-id');
+      sandbox.stub(services.crm.documents, 'getDocumentIdMap').resolves(docIds);
       await controller.getBillingBatchInvoice(request, h);
     });
 

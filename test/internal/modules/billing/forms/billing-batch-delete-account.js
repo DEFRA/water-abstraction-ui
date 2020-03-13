@@ -29,6 +29,6 @@ experiment('billing/forms/billing-batch-delete-account form', () => {
   test('has a submit button', async () => {
     const form = deleteAccountFromBatchForm(request, accountId);
     const button = findButton(form);
-    expect(button.options.label).to.equal('Remove invoice');
+    expect(button.options.label).to.equal('Remove bill');
   });
 });

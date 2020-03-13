@@ -168,7 +168,6 @@ experiment('modules/billing/lib/mappers', () => {
     let data;
     beforeEach(async () => {
       result = mappers.mapInvoiceTransactions(invoice, documentIdMap);
-      console.log(JSON.stringify(result, null, 2));
     });
 
     test('items are grouped first by financial year', () => {

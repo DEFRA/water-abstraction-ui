@@ -4,51 +4,24 @@
 {% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal, invoiceCreditsTotal, invoiceDebitsTotal %}
 {% from "badge.njk" import badge %}
 {% from "crm/address.njk" import address %}
+{% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
-        {{ title(invoice.invoiceAccount.company.name, 'Billing account ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
+        {{ title(pageTitle, 'Bill ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
       </div>
 
       <div class="govuk-body govuk-!-margin-bottom-4">
         {{ badge(batch | batchBadge(true)) }}
       </div>
-
-      <dl class="meta">
-        <div class="meta__row">
-          <dt class="meta__key">
-            Date created
-          </dt>
-          <dd class="meta__value">
-            {{ batch.dateCreated | date }}
-          </dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">
-            Region
-          </dt>
-          <dd class="meta__value">
-            {# @TODO change to displayName #}
-            {{ batch.region.name }}
-          </dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">
-            Bill run type
-          </dt>
-          <dd class="meta__value">
-            {{ batchType }}
-          </dd>
-        </div>
-      </dl>
-
+      {{ batchMetadata(batch)}}
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-          <p>{{invoice.invoiceAccount.company.name}}<br>
-          {{ address(invoice.invoiceAccount.address)}}
+          <p>{{ invoice.invoiceAccount.company.name | titleCase }}<br>
+          {{ address(invoice.invoiceAccount.address) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",
@@ -60,26 +33,22 @@
 
   <!-- Net total -->
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
-    <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-l govuk-!-margin-bottom-0">
-        Total
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-!-margin-bottom-0">
+      {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
       </h2>
-      <h3><span class="govuk-body govuk-!-font-size-80 govuk-!-font-weight-bold">{{ invoice.totals.netTotal | charge }}</span><br>
-      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">
-        {% if isCredit %}Credit note{% else %}Invoice{% endif %} amount
-      </span></h3>
     </div>
   </div>
-
-  <div class="govuk-grid-row govuk-!-margin-bottom-3">
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
-      <h3><span class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{ invoice.totals.creditNoteValue | charge }}</span><br>
-      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">Credits</span></h3>
+      <h2>
+        {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
+      </h2>
     </div>
-
     <div class="govuk-grid-column-one-half">
-      <h3><span class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{ invoice.totals.invoiceValue | charge }}</span><br>
-      <span class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">Debits</span></h3>
+      <h2>
+        {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
+      </h2>
     </div>
   </div>
 

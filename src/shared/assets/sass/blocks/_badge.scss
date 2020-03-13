@@ -48,7 +48,9 @@
 }
 
 .badge--large {
-  @include govuk-font($size: 24);
+  @include govuk-font($size: 27);
   font-weight: bold;
   border-width: 2px;
+  border-radius: 4px;
+  padding: 4px 8px;
 }

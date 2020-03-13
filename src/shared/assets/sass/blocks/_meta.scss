@@ -7,8 +7,6 @@
 .meta__key {
   @extend .govuk-summary-list__key;
 
-  color:  $govuk-secondary-text-colour;
-
   @include govuk-media-query($from: tablet) {
 
     font-weight: 400;
@@ -18,6 +16,7 @@
   }
 
 }
+
 .meta__value {
   @extend .govuk-summary-list__value;
 

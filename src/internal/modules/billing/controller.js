@@ -269,7 +269,7 @@ const getBillingBatchDeleteAccount = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-delete-account', {
     ...request.view,
-    pageTitle: 'Remove this invoice from the bill run?',
+    pageTitle: 'You are about to remove this bill from the bill run',
     account,
     form: deleteAccountFromBatchForm(request, account.id),
     batch,

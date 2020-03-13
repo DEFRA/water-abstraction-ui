@@ -644,7 +644,7 @@ experiment('internal/modules/billing/controller', () => {
     test('sets the correct view data', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
-      expect(context.pageTitle).to.equal('Remove this invoice from the bill run?');
+      expect(context.pageTitle).to.equal('You are about to remove this bill from the bill run');
       expect(context.account.id).to.equal('invoice-account-id');
       expect(context.account.accountNumber).to.equal('A12345678A');
       expect(context.form).to.be.an.object();

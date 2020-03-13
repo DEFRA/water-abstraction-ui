@@ -13,7 +13,7 @@ const deleteAccountFromBatchForm = (request, accountId) => {
   const action = `/billing/batch/${batchId}/delete-account/${accountId}`;
   const f = formFactory(action, 'POST');
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Remove invoice' }));
+  f.fields.push(fields.button(null, { label: 'Remove bill' }));
   return f;
 };
 

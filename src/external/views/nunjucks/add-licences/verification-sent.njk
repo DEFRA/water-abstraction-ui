@@ -8,7 +8,7 @@
       {{ title(pageTitle) }}
 
       <p class="govuk-body">
-        Your letter containing a security code and instructions will be sent by 1st Class post to:
+        We will send a security code to you straight away, using first-class mail to:
       </p>
 
       {%set addressText%}
@@ -24,9 +24,6 @@
       {{ govukInsetText({
         html: addressText
       }) }}
-      <p class="govuk-body">
-        You should receive it within 2 to 3 days
-      </p>
 
       <p class="govuk-body">
         {%if licenceCount %}

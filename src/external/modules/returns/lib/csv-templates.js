@@ -1,3 +1,5 @@
+'use strict';
+
 const { last, find, groupBy, lowerCase, get } = require('lodash');
 const helpers = require('@envage/water-abstraction-helpers');
 const { getLineLabel } = require('shared/modules/returns/forms/common');
@@ -49,6 +51,8 @@ const initialiseCSV = (frequency, refDate) => {
   return [
     ['Licence number'],
     ['Return reference'],
+    ['Site description'],
+    ['Purpose'],
     ['Nil return Y/N'],
     ['Did you use a meter Y/N'],
     ['Meter make'],
@@ -77,6 +81,8 @@ const createReturnColumn = (ret, csvLines) => {
   return [
     ret.licenceNumber,
     ret.returnRequirement,
+    ret.siteDescription,
+    ret.purposes.join('\n'),
     '',
     '',
     '',
@@ -116,7 +122,7 @@ const createCSVData = returns => {
   // Group returns by frequency
   const grouped = groupBy(returns, ret => ret.frequency);
 
-  for (let frequency in grouped) {
+  for (const frequency in grouped) {
     // Initialise the 2D array
     data[frequency] = initialiseCSV(frequency);
 

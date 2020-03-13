@@ -18,6 +18,11 @@
   }
 
 }
+
+.meta__key--black {
+   color: $govuk-text-colour;
+}
+
 .meta__value {
   @extend .govuk-summary-list__value;
 

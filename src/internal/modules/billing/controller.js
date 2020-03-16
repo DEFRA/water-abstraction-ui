@@ -118,7 +118,7 @@ const postBillingBatchRegion = async (request, h) => {
     return h.redirect(`/waiting/${event.event_id}?back=0`);
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect('/billing/batch/exist');
+      return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
     }
     throw err;
   }
@@ -229,6 +229,11 @@ const badge = {
 
 const getBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
+const mapBatchLink = batch =>
+  ['processing', 'ready'].includes(batch.status)
+    ? `/billing/batch/${batch.id}/summary`
+    : null;
+
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
  * bill count
@@ -239,7 +244,8 @@ const mapBatchListRow = batch => ({
   ...batch,
   badge: badge[batch.status],
   batchType: getBatchType(batch.type),
-  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null
+  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
+  link: mapBatchLink(batch)
 });
 
 const getBillingBatchList = async (request, h) => {

@@ -9,6 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
+const uuid = require('uuid/v4');
 
 const { logger } = require('internal/logger');
 const forms = require('shared/lib/forms');
@@ -130,7 +131,7 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('postBillingBatchRegion', () => {
+  experiment('.postBillingBatchRegion', () => {
     const request = {
       defra: {
         user: { user_name: 'test@user.za' }
@@ -170,22 +171,49 @@ experiment('internal/modules/billing/controller', () => {
       };
 
       sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
+      sandbox.stub(forms, 'handleRequest').returns(billingRegionFrom);
+      sandbox.stub(services.water.billingBatches, 'createBillingBatch');
     });
 
     test('billingRegionFrom is valid redirects to waiting page', async () => {
-      sandbox.stub(forms, 'handleRequest').returns(billingRegionFrom);
-      sandbox.stub(services.water.billingBatches, 'createBillingBatch').resolves({ data: { event: { event_id: 'test-event-id' } } });
+      services.water.billingBatches.createBillingBatch.resolves({
+        data: {
+          event: { event_id: 'test-event-id' }
+        }
+      });
+
       await controller.postBillingBatchRegion(request, h);
+
       const [url] = h.redirect.lastCall.args;
       expect(url).to.equal('/waiting/test-event-id?back=0');
     });
 
     test('billingRegionFrom is NOT valid redirects back to form', async () => {
-      sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
+      forms.handleRequest.returns({ isValid: false });
+
       await controller.postBillingBatchRegion(request, h);
+
       const [url] = h.redirect.lastCall.args;
       expect(url.startsWith('/billing/batch/region/supplementary?')).to.be.true();
       expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+    });
+
+    experiment('when the batch already exists', () => {
+      test('the user is redirected to the batch-exists page', async () => {
+        const id = uuid();
+        services.water.billingBatches.createBillingBatch.rejects({
+          statusCode: 409,
+          error: {
+            existingBatch: { id }
+          }
+        });
+
+        await controller.postBillingBatchRegion(request, h);
+
+        const [url] = h.redirect.lastCall.args;
+
+        expect(url).to.equal(`/billing/batch/${id}/exists`);
+      });
     });
   });
 
@@ -377,7 +405,7 @@ experiment('internal/modules/billing/controller', () => {
         data: [
           {
             invoices: [],
-            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2',
+            id: '8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1',
             type: 'supplementary',
             season: 'all year',
             status: 'processing',
@@ -455,10 +483,12 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
       expect(batches[0].billCount).to.equal(14);
+      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/summary');
       expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
       expect(batches[1].billCount).to.equal(null);
+      expect(batches[1].link).to.be.null();
     });
 
     test('configures the expected view template', async () => {

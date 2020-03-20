@@ -1,0 +1,226 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
+{% from "paginate.njk" import paginate %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-two-thirds">
+    <section class="govuk-!-margin-bottom-6">
+      {% set caption %}
+        {{ 'Bill run ' + batch.externalId if batch.externalId else null }}
+      {% endset %}
+        {{ title(pageTitle, 'This is the caption', null, true, true) }}
+    </section>
+      <p class="govuk-body">
+        {{ badge(batch | batchBadge(false)) }}
+      </p>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-two-thirds">
+      <section class="meta-data__row">
+        <div class="meta-data__container">
+          <div class="meta-data__label">
+            Date created
+          </div>
+          <div class="meta-data__value">
+            5 March 2020
+          </div>
+        <div>
+      </div></div></section>
+      <section class="meta-data__row">
+        <div class="meta-data__container">
+          <div class="meta-data__label">
+            Region
+          </div>
+          <div class="meta-data__value">
+            Anglian
+          </div>
+        <div>
+      </div></div></section>
+      <section class="meta-data__row">
+        <div class="meta-data__container">
+          <div class="meta-data__label">
+            Bill run type
+          </div>
+          <div class="meta-data__value">
+            Two-part tariff
+          </div>
+        <div>
+      </div></div></section>
+
+    </div>
+  </div>
+
+  
+  <section class="govuk-!-margin-bottom-6">
+    <a href="confirm-cancel-bills?type=Two-part tariff" class="wrls-faux-button wrls-faux-button--inline wrls-faux-button--secondary">Cancel bill run</a>
+  </section>
+  
+
+  <section class="govuk-!-margin-bottom-9">
+
+  <h2 class="govuk-heading-l" id="issuesTitle">3 licences have data issues</h2>
+
+        <!-- invoices table -->
+        <div class="table govuk-!-margin-bottom-6" id="dataIssues">                                                <!-- a table -->
+
+          <div class="table__row--head">
+            <div class="table__cell bold-small">
+              Licence
+            </div>
+            <div class="table__cell bold-small">
+              Licence holder
+            </div>
+            <div class="table__cell bold-small">
+              Issue
+            </div>
+            <div class="table__cell bold-small numbers column--10">
+              Action
+            </div>
+
+          </div>
+
+          
+          <!-- table row -->
+
+          <div class="table__row--selectable govuk-!-margin-bottom-6">
+            <div class="table__cell">
+              <h2 class="screen-reader-only">
+                Row 1
+              </h2>
+              <h3 class="table__context">
+                Licence
+              </h3>
+              <p class="table__row--text">
+                AN32/12/102
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Licence holder
+              </h3>
+              <p>
+                Sam Mendoza
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Issue
+              </h3>
+              <p>
+                Incomplete returns
+              </p>
+            </div>
+            <div class="table__cell numbers">
+              <h3 class="table__context">
+                Action
+              </h3>
+              <p class="table__row--text">
+                <a href="two-part-bill-issue-incomplete-returns">
+                  Review <span class="screen-reader-only">the bill for licence AN01/60/0032</span>
+                </a>
+              </p>
+            </div>
+          </div>
+
+          
+          
+          <div class="table__row--selectable govuk-!-margin-bottom-6">
+            <div class="table__cell">
+              <h2 class="screen-reader-only">
+                Row 2
+              </h2>
+              <h3 class="table__context">
+                Licence
+              </h3>
+              <p class="table__row--text">
+                AN01/68/60/0032
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Licence holder
+              </h3>
+              <p>
+                Sam Mendoza
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Issue
+              </h3>
+              <p>
+                Over abstraction
+              </p>
+            </div>
+            <div class="table__cell numbers">
+              <h3 class="table__context">
+                Action
+              </h3>
+              <p class="table__row--text">
+                <a href="two-part-bill-issue">
+                  Review <span class="screen-reader-only">the bill for licence AN01/68/60/0032</span> <span class="screen-reader-only">the bill for licence AN01/60/0032</span>
+                </a>
+              </p>
+            </div>
+          </div>
+          
+          
+          <div class="table__row--selectable table__row table__row--last govuk-!-margin-bottom-6">
+            <div class="table__cell">
+              <h2 class="screen-reader-only">
+                Row 3
+              </h2>
+              <h3 class="table__context">
+                Licence
+              </h3>
+              <p class="table__row--text">
+                AN02/26/001/2
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Licence holder
+              </h3>
+              <p>
+                Lord Ashley Crofters
+              </p>
+            </div>
+            <div class="table__cell">
+              <h3 class="table__context">
+                Issue
+              </h3>
+              <p>
+                Received but not processed
+              </p>
+            </div>
+            <div class="table__cell numbers">
+              <h3 class="table__context">
+                Action
+              </h3>
+              <p class="table__row--text">
+                <a href="two-part-bill-issue-not-processed">
+                  Review <span class="screen-reader-only">the bill for licence AN02/26/001/2</span>
+                </a>
+              </p>
+            </div>
+          </div>
+          
+        </div>
+
+      </section>
+
+<section class="govuk-!-margin-bottom-0v">
+<h2 class="govuk-heading-l" id="readyTitle">
+  975 licences are ready for billing
+</h2>
+<p class="govuk-body govuk-!-margin-bottom-9">
+<a href="two-part-view" class="govuk-link">View licences ready for billing</a>
+</p>
+</section>
+{% endblock %}
+

@@ -39,9 +39,9 @@ class ReturnsService extends ServiceClient {
     * @param {String} type - the file type, supported is 'xml', 'csv'
     * @return {string} - JSON containing, eventId, filename, location, etc
     */
-  postUpload (fileData, userName, type = 'xml') {
+  postUpload (fileData, userName, companyId, type = 'csv') {
     const url = this.joinUrl('returns/upload', type.toLowerCase());
-    return this.serviceRequest.post(url, { body: { fileData, userName } });
+    return this.serviceRequest.post(url, { body: { fileData, userName, companyId } });
   }
 
   /**
@@ -71,7 +71,7 @@ class ReturnsService extends ServiceClient {
    * @return {Promise} resolves with array of returns
    */
   async getUploadPreview (eventId, qs, returnId) {
-    const uri = this.joinUrl('returns/upload-preview', eventId, returnId || '');
+    const uri = this.joinUrl('returns/upload-preview', eventId, returnId);
     const response = await this.serviceRequest.get(uri, { qs });
     return responseHandler(response);
   }

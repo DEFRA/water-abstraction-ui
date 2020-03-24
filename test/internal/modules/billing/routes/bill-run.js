@@ -10,7 +10,6 @@ const routes = require('internal/modules/billing/routes/bill-run');
 experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchSummary', () => {
     test('uses the redirectToWaitingIfEventNotCompleted pre handler', async () => {
-      console.log(routes);
       const routePreHandlers = routes.getBillingBatchSummary.config.pre;
       expect(routePreHandlers).to.contain(preHandlers.redirectToWaitingIfEventNotComplete);
     });

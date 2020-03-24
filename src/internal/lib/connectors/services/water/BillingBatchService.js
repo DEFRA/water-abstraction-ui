@@ -26,6 +26,11 @@ class BillingBatchService extends ServiceClient {
     return this.serviceRequest.get(uri);
   }
 
+  getBatchLicences (batchId) {
+    const uri = this.joinUrl('billing/batches', batchId, 'licences');
+    return this.serviceRequest.get(uri);
+  }
+
   /**
    * Gets all the invoices related accounts, licences,
    * transactions, agreements and company data for a batch

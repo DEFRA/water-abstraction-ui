@@ -1,12 +1,11 @@
-// Two part tariff billing routes to go here
+'use strict';
 
-// const Joi = require('joi');
+const Joi = require('joi');
 const controller = require('../controllers/two-part-tariff');
 const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
 
-// const preHandlers = require('../pre-handlers');
 if (isAcceptanceTestTarget) {
   module.exports = {
     getBillingTwoPartTariffReview: {
@@ -20,6 +19,11 @@ if (isAcceptanceTestTarget) {
           viewContext: {
             pageTitle: 'Review licences with returns data issues',
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
           }
         }
       }

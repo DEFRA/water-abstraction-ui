@@ -1,4 +1,3 @@
-// TODO definition of error codes reqiured
 const services = require('internal/lib/connectors/services');
 
 const messages = {
@@ -14,19 +13,9 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : messages[code];
 }, null);
 
-/**
- * Remove an invoice from the bill run
- * @param {*} request
- * @param {*} h
- */
 const getTwoPartTariffReview = async (request, h) => {
-  //   GET /water/1.0/billing/batches/{batchId}/licences
-  const { batchId } = request.params;
-  // get the invoice data
-  const [ batch, licencesData ] = await Promise.all([
-    services.water.billingBatches.getBatch(batchId),
-    services.water.billingBatches.getBatchLicences(batchId)
-  ]);
+  const { batch } = request.pre;
+  const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);
 
   // gets 2pt matching error messages and define error types
   const licences = licencesData.map(licence => ({
@@ -38,8 +27,6 @@ const getTwoPartTariffReview = async (request, h) => {
   const totals = licences.reduce((acc, row) => ({
     errors: acc.errors + (row.twoPartTariffStatuses ? 1 : 0)
   }), { errors: 0 });
-
-  // todo -- redirect if no errors
 
   return h.view('nunjucks/billing/two-part-tariff-review', {
     ...request.view,

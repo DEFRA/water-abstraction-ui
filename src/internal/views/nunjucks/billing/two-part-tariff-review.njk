@@ -10,9 +10,9 @@
   <div class="govuk-grid-column-two-thirds">
     <section class="govuk-!-margin-bottom-6">
       {% set caption %}
-        {{ 'Bill run ' + batch.externalId if batch.externalId else null }}
+        {{ batch.region.name + ' two-part tariff bill run' }}
       {% endset %}
-        {{ title(pageTitle, 'This is the caption', null, true, true) }}
+        {{ title(pageTitle, caption, null, true, true) }}
     </section>
   </div>
 </div>
@@ -26,7 +26,7 @@
       </div>
   </div>
 </div>
- 
+{% if totals.errors > 0 %}
 <section class="govuk-!-margin-bottom-6">
   {{
     govukButton({
@@ -36,16 +36,14 @@
     })
   }}
 </section>
-
 <section class="govuk-!-margin-bottom-9">
   <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.errors }} licences have data issues</h2>
   <div class="table govuk-!-margin-bottom-6" id="dataIssues">
-    {% if licences.length > 0 %}
       <table class="govuk-table">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header">Licence</th>
-            <th scope="col" class="govuk-table__header">Licence Holder</th>
+            <th scope="col" class="govuk-table__header">Licence holder</th>
             <th scope="col" class="govuk-table__header">Issue</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
           </tr>
@@ -55,7 +53,7 @@
             {% if licence.twoPartTariffStatuses.length > 0 %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  {{ licence.licenceNumber }}
+                  {{ licence.licenceRef }}
                 </td>
                 <td class="govuk-table__cell">
                   {{ licence.licenceHolder.salutation }}
@@ -74,9 +72,9 @@
           {% endfor %}
         </tbody>
       </table>
-    {% endif %}
   <div>
 </section>
+{% endif %}
 <section class="govuk-!-margin-bottom-0v">
 <h2 class="govuk-heading-l" id="readyTitle">
   {{ licences.length - totals.errors}} licences are ready for billing
@@ -85,5 +83,23 @@
 <a href="#" class="govuk-link">View licences ready for billing</a>
 </p>
 </section>
+{% if totals.errors <= 0 %}
+  <section class="govuk-!-margin-bottom-6">
+    <p class="govuk-body">You have resolved all returns data issues. Continue to generate bills.</p>
+    {{
+      govukButton({
+        text: "Continue",
+        href: '#'
+      })
+    }}
+    {{
+      govukButton({
+        text: "Cancel bill run",
+        href: '/billing/batch/' + batch.id + '/cancel',
+        classes: "govuk-button--secondary govuk-!-margin-left-1"
+      })
+    }}
+  </section>
+{% endif %}
 {% endblock %}
 

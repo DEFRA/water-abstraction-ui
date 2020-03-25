@@ -5,7 +5,6 @@ const controller = require('../controllers/bill-run');
 const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
-
 const preHandlers = require('../pre-handlers');
 if (isAcceptanceTestTarget) {
   module.exports = {
@@ -100,8 +99,7 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           },
           query: {
-            back: Joi.number().integer().default(1).optional(),
-            error: Joi.string().valid(['confirm']).optional()
+            back: Joi.number().integer().default(1).optional()
           }
         },
         pre: [

@@ -9,6 +9,7 @@ const {
 const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
+const uuid = require('uuid/v4');
 
 experiment('DocumentsApiClient', () => {
   let logger;
@@ -92,6 +93,62 @@ experiment('DocumentsApiClient', () => {
       const [filter] = client.findMany.lastCall.args;
       expect(filter.system_external_id).to.equal('test');
       expect(filter.includeExpired).to.be.true();
+    });
+  });
+
+  experiment('.getDocumentIdMap', async () => {
+    let map;
+    const LICENCE_A = '01/123';
+    const LICENCE_B = '02/345';
+    const response = {
+      data: [
+        {
+          document_id: uuid(),
+          system_external_id: LICENCE_A
+        },
+        {
+          document_id: uuid(),
+          system_external_id: LICENCE_B
+        }
+      ]
+    };
+    beforeEach(async () => {
+      client.findMany.resolves(response);
+      map = await client.getDocumentIdMap([LICENCE_A, LICENCE_B]);
+    });
+
+    test('call to .find uses correct filter', async () => {
+      const [ filter ] = client.findMany.lastCall.args;
+      expect(filter).to.equal({
+        system_external_id: {
+          $in: [LICENCE_A, LICENCE_B]
+        }
+      });
+    });
+
+    test('call to .find does not define a sort order', async () => {
+      const [ , sort ] = client.findMany.lastCall.args;
+      expect(sort).to.be.null();
+    });
+
+    test('call to .find gets all available records', async () => {
+      const [ , , pagination ] = client.findMany.lastCall.args;
+      expect(pagination).to.equal({
+        page: 1,
+        perPage: 9007199254740991
+      });
+    });
+
+    test('call to .find only requests the columns needed', async () => {
+      const [ , , , columns ] = client.findMany.lastCall.args;
+      expect(columns).to.only.include(['system_external_id', 'document_id']);
+    });
+
+    test('resolved with a map of licence numbers to document IDs', async () => {
+      expect(map instanceof Map).to.be.true();
+      expect(map.size).to.equal(2);
+      expect(map.get(LICENCE_A)).to.equal(response.data[0].document_id);
+      expect(map.get(LICENCE_B)).to.equal(response.data[1].document_id);
     });
   });
 });

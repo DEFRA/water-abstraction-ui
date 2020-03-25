@@ -242,13 +242,13 @@ experiment('postReturnsNotificationsStart', () => {
 
     sandbox.stub(services.water.batchNotifications, 'prepareReturnsReminders').resolves({
       data: {
-        eventId: 'test-event-id'
+        id: 'test-event-id'
       }
     });
 
     sandbox.stub(services.water.batchNotifications, 'prepareReturnsInvitations').resolves({
       data: {
-        eventId: 'test-event-id'
+        id: 'test-event-id'
       }
     });
   });

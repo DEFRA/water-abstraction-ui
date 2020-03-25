@@ -223,7 +223,7 @@ const postReturnsNotificationsStart = async (request, h) => {
   // get the event id from the water service and redirect
   const { data: event } = await getNotificationsData(request);
 
-  return h.redirect(`/waiting/${event.eventId}`);
+  return h.redirect(`/waiting/${event.id}`);
 };
 
 exports.getSendForms = getSendForms;

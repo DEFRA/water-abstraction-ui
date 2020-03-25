@@ -41,6 +41,65 @@ const billingRegions = {
     }
   ]
 };
+const batchData = {
+  id: 'test-batch-id',
+  dateCreated: '2000-01-01T00:00:00.000Z',
+  type: 'supplementary',
+  region: {
+    id: 'test-region-1',
+    name: 'Anglian',
+    code: 'A'
+  },
+  totals: {
+    netTotal: 43434
+  }
+};
+
+const invoice = {
+  id: '1',
+  invoiceLicences: [
+    {
+      id: 'invoice-licence-id',
+      transactions: [],
+      licence: {
+        licenceNumber: '12/34/56'
+      }
+    }],
+  dateCreated: '2020-01-27T13:51:29.234Z',
+  totals: {
+    netTotal: '1234.56'
+  },
+  invoiceAccount: {
+    id: 'invoice-account-id',
+    accountNumber: 'A12345678A',
+    company: {
+      name: 'COMPANY NAME'
+    }
+  }
+};
+
+const batchInvoicesResult = {
+  batch: batchData,
+  invoices: [
+    {
+      id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+      accountNumber: 'A12345678A',
+      name: 'Test company 1',
+      netTotal: 12345,
+      licenceNumbers: [
+        '01/123/A'
+      ]
+    },
+    {
+      id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+      accountNumber: 'A89765432A',
+      name: 'Test company 2',
+      netTotal: -675467,
+      licenceNumbers: [
+        '04/567/B'
+      ]
+    }]
+};
 
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
@@ -56,25 +115,31 @@ experiment('internal/modules/billing/controller', () => {
     };
 
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
+    sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
+    sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
     sandbox.stub(batchService, 'getBatchList');
+    sandbox.stub(batchService, 'getBatchInvoice').resolves({ id: 'invoice-account-id', accountNumber: 'A12345678A' });
     sandbox.stub(batchService, 'getBatchInvoices');
     sandbox.stub(logger, 'info');
 
     request = {
-      pre: {},
+      pre: { batch: batchData },
       params: {
-        batchId: 'test-batch-id'
+        batchId: 'test-batch-id',
+        invoiceId: 'test-invoice-id'
       },
-      query: {},
+      query: { back: 0 },
       payload: {
         csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
       },
-      view: {},
+      view: { foo: 'bar' },
       log: sandbox.spy(),
       defra: {
-        userName: 'test-user@example.com'
+        user: {
+          user_name: 'test-user@example.com'
+        }
       },
       yar: {
         get: sandbox.stub().returns({
@@ -90,7 +155,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.restore();
   });
 
-  experiment('getBillingBatchType', () => {
+  experiment('.getBillingBatchType', () => {
     beforeEach(async () => {
       await controller.getBillingBatchType(request, h);
     });
@@ -106,12 +171,8 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('postBillingBatchType', () => {
+  experiment('.postBillingBatchType', () => {
     beforeEach(async () => {
-      h = {
-        redirect: sandbox.spy()
-      };
-
       sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
     });
 
@@ -131,18 +192,23 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.postBillingBatchRegion', () => {
-    const request = {
-      defra: {
-        user: { user_name: 'test@user.za' }
-      },
-      view: { csrfToken: '211e17c9-d285-437b-94c5-adc33ed99dc8' },
-      params: { billingType: 'supplementary' },
-      yar: {
-        set: sandbox.stub()
-      }
-    };
+  experiment('.getBillingBatchRegion', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchRegion(request, h);
+    });
 
+    test('the expected view template is used for bill run type', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/form');
+    });
+
+    test('view context is assigned a back link path for type', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/type');
+    });
+  });
+
+  experiment('.postBillingBatchRegion', () => {
     const billingRegionFrom = {
       action: '/billing/batch/region',
       method: 'POST',
@@ -166,10 +232,6 @@ experiment('internal/modules/billing/controller', () => {
     };
 
     beforeEach(async () => {
-      h = {
-        redirect: sandbox.spy()
-      };
-
       sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
       sandbox.stub(forms, 'handleRequest').returns(billingRegionFrom);
       sandbox.stub(services.water.billingBatches, 'createBillingBatch');
@@ -178,7 +240,7 @@ experiment('internal/modules/billing/controller', () => {
     test('billingRegionFrom is valid redirects to waiting page', async () => {
       services.water.billingBatches.createBillingBatch.resolves({
         data: {
-          event: { event_id: 'test-event-id' }
+          event: { id: 'test-event-id' }
         }
       });
 
@@ -217,22 +279,6 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('ui flow tests for ui bill run region flow forms', () => {
-    beforeEach(async () => {
-      await controller.getBillingBatchRegion(request, h);
-    });
-
-    test('the expected view template is used for bill run type', async () => {
-      const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/form');
-    });
-
-    test('view context is assigned a back link path for type', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/billing/batch/type');
-    });
-  });
-
   experiment('.getBillingBatchExists', () => {
     beforeEach(async () => {
       request.pre.batch = {
@@ -262,138 +308,107 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.getBillingBatchCancel', () => {
+  experiment('.getBillingBatchSummary', () => {
     beforeEach(async () => {
-      request = {
-        params: {
-          batchId: 'test-batch-id'
-        },
-        pre: {
-          batch: {
-            id: 'test-batch-id',
-            dateCreated: '2019-12-02',
-            region: {
-              name: 'South West'
-            },
-            type: 'supplementary'
-          }
-        }
-      };
-
-      await controller.getBillingBatchCancel(request, h);
+      batchService.getBatchInvoices.resolves(batchInvoicesResult);
+      await controller.getBillingBatchSummary(request, h);
     });
 
-    test('configures the back route', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    test('the expected view template is used for bill run summary', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/batch-summary');
     });
 
-    test('passes the required batch data to the view', async () => {
-      const [, context] = h.view.lastCall.args;
-      const { batch } = context;
+    experiment('the view model is populated with', () => {
+      let view;
 
-      expect(batch.type).to.equal('supplementary');
-      expect(batch.id).to.equal('test-batch-id');
-      expect(batch.region.name).to.equal('South West');
+      beforeEach(async () => {
+        ([, view] = h.view.lastCall.args);
+      });
+
+      test('the page title including the region name and batch type', async () => {
+        expect(view.pageTitle).to.equal('Anglian supplementary bill run');
+      });
+
+      test('the batch data', async () => {
+        expect(view.batch).to.equal(batchInvoicesResult.batch);
+      });
+
+      test('the first invoice, with isCredit flag false', async () => {
+        expect(view.invoices[0]).to.equal({
+          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+          accountNumber: 'A12345678A',
+          name: 'Test company 1',
+          netTotal: 12345,
+          licenceNumbers: [
+            '01/123/A'
+          ],
+          isCredit: false
+        });
+      });
+
+      test('the second invoice, with isCredit flag true', async () => {
+        expect(view.invoices[1]).to.equal({
+          id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+          accountNumber: 'A89765432A',
+          name: 'Test company 2',
+          netTotal: -675467,
+          licenceNumbers: [
+            '04/567/B'
+          ],
+          isCredit: true
+        });
+      });
     });
 
-    test('configures the expected view template', async () => {
-      const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-cancel');
+    test('does not include the back link if the "back" query param is zero', async () => {
+      await controller.getBillingBatchSummary(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(0);
+    });
+
+    test('includes the back link if "back" query param is 1', async () => {
+      await controller.getBillingBatchSummary({ ...request, query: { back: 1 } }, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/list');
     });
   });
 
-  experiment('.postBillingBatchCancel', () => {
-    let request;
-
+  experiment('.getBillingBatchInvoice', () => {
+    let docIds;
     beforeEach(async () => {
-      request = { params: { batchId: 'test-batch-id' } };
+      docIds = new Map();
+      docIds.set('12/34/56', 'test-docuemnt-id');
+      sandbox.stub(services.crm.documents, 'getDocumentIdMap').resolves(docIds);
+      await controller.getBillingBatchInvoice(request, h);
     });
 
-    test('the batch id is used to cancel the batch via the water service', async () => {
-      await controller.postBillingBatchCancel(request, h);
-      const [batchId] = services.water.billingBatches.cancelBatch.lastCall.args;
-      expect(batchId).to.equal('test-batch-id');
+    test('calls getBatch in billingBatches service with batchId', async () => {
+      const [batchId] = services.water.billingBatches.getBatch.lastCall.args;
+      expect(batchId).to.equal(request.params.batchId);
     });
 
-    test('the user is redirected back to the list of batches', async () => {
-      await controller.postBillingBatchCancel(request, h);
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
+    test('calls getBatchInvoice in billingBatches service with batchId and invoiceId', async () => {
+      const [batchId, invoiceId] = services.water.billingBatches.getBatchInvoice.lastCall.args;
+      expect(batchId).to.equal(request.params.batchId);
+      expect(invoiceId).to.equal(request.params.invoiceId);
     });
 
-    test('if the cancellation failed, the user is still redirected back to the list of batches', async () => {
-      services.water.billingBatches.cancelBatch.rejects();
-      await controller.postBillingBatchCancel(request, h);
-
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
-    });
-  });
-
-  experiment('.getBillingBatchConfirm', () => {
-    beforeEach(async () => {
-      request = {
-        params: {
-          batchId: 'test-batch-id'
-        },
-        pre: {
-          batch: {
-            id: 'test-batch-id',
-            dateCreated: '2019-12-02',
-            region: {
-              name: 'South West'
-            },
-            type: 'supplementary'
-          }
-        }
-      };
-
-      await controller.getBillingBatchConfirm(request, h);
+    test('the expected view template is used', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/batch-invoice');
     });
 
-    test('configures the back route', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
-    });
-
-    test('passes the required batch data to the view', async () => {
-      const [, context] = h.view.lastCall.args;
-      const { batch } = context;
-
-      expect(batch.id).to.equal('test-batch-id');
-      expect(batch.type).to.equal('supplementary');
-      expect(batch.region.name).to.equal('South West');
-    });
-
-    test('configures the expected view template', async () => {
-      const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-confirm');
-    });
-  });
-
-  experiment('.postBillingBatchConfirm', () => {
-    beforeEach(async () => {
-      const request = { params: { batchId: 'test-batch-id' } };
-      await controller.postBillingBatchConfirm(request, h);
-    });
-
-    test('the batch id is used to approve the batch via the water service', async () => {
-      const [batchId] = services.water.billingBatches.approveBatch.lastCall.args;
-      expect(batchId).to.equal('test-batch-id');
-    });
-
-    test('the user is redirected back to the list of batches', async () => {
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
-    });
-
-    test('if the approval fails, the user is still redirected back to the list of batches', async () => {
-      services.water.billingBatches.approveBatch.rejects();
-      await controller.postBillingBatchConfirm(request, h);
-
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/list');
+    test('the expected data', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view).to.contain({ foo: 'bar' });
+      expect(view.back).to.equal(`/billing/batch/${request.params.batchId}/summary`);
+      expect(view.pageTitle).to.equal('Bill for Company Name');
+      expect(view.invoice).to.equal(invoice);
+      expect(view.batch).to.equal(batchData);
+      expect(view.batchType).to.equal('Supplementary');
+      expect(view.transactions).to.be.an.object();
+      expect(view.isCredit).to.be.false();
     });
   });
 
@@ -462,15 +477,6 @@ experiment('internal/modules/billing/controller', () => {
         }
       };
 
-      request = {
-        query: {
-          page: ''
-        },
-        view: {
-          csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
-        }
-      };
-
       batchService.getBatchList.resolves(batchesResponse);
       await controller.getBillingBatchList(request, h);
     });
@@ -497,43 +503,125 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('getTransactionsCSV', () => {
-    let batch, invoicesForBatch, csvData;
+  experiment('.getBillingBatchCancel', () => {
     beforeEach(async () => {
-      batch = { id: 'test-batch-id' };
-      request = {
-        params: {
-          batchId: 'test-batch-id'
-        },
-        pre: { batch }
-      };
-      invoicesForBatch = { data: { id: 'test-d', error: null } };
+      await controller.getBillingBatchCancel(request, h);
+    });
+
+    test('passes the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-cancel-or-confirm');
+    });
+
+    test('passes the expedcted data in the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context).to.contain({ foo: 'bar' });
+      expect(context.batch).to.equal(batchData);
+      expect(context.pageTitle).to.equal('You are about to cancel this bill run');
+      expect(context.secondTitle).to.equal(`${batchData.region.name} ${batchData.type} bill run`);
+      expect(context.form).to.be.an.object();
+      expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel`);
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+  });
+
+  experiment('.postBillingBatchCancel', () => {
+    test('the batch id is used to cancel the batch via the water service', async () => {
+      await controller.postBillingBatchCancel(request, h);
+      const [batchId] = services.water.billingBatches.cancelBatch.lastCall.args;
+      expect(batchId).to.equal('test-batch-id');
+    });
+
+    test('the user is redirected back to the list of batches', async () => {
+      await controller.postBillingBatchCancel(request, h);
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+
+    test('if the cancellation failed, the user is still redirected back to the list of batches', async () => {
+      services.water.billingBatches.cancelBatch.rejects();
+      await controller.postBillingBatchCancel(request, h);
+
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+  });
+
+  experiment('.getBillingBatchConfirm', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchConfirm(request, h);
+    });
+
+    test('passes the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-cancel-or-confirm');
+    });
+
+    test('passes the expected data in the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context).to.contain({ foo: 'bar' });
+      expect(context.batch).to.equal(batchData);
+      expect(context.pageTitle).to.equal('You are about to send this bill run');
+      expect(context.secondTitle).to.equal(`${batchData.region.name} ${batchData.type} bill run`);
+      expect(context.form).to.be.an.object();
+      expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/confirm`);
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+  });
+
+  experiment('.postBillingBatchConfirm', () => {
+    beforeEach(async () => {
+      await controller.postBillingBatchConfirm(request, h);
+    });
+
+    test('the batch id is used to approve the batch via the water service', async () => {
+      const [batchId] = services.water.billingBatches.approveBatch.lastCall.args;
+      expect(batchId).to.equal('test-batch-id');
+    });
+
+    test('the user is redirected back to the batch summary', async () => {
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary');
+    });
+
+    test('if the approval fails, the user is redirected to the batch summary, with a query parameter added', async () => {
+      services.water.billingBatches.approveBatch.rejects();
+      await controller.postBillingBatchConfirm(request, h);
+
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary?error=confirm');
+    });
+  });
+
+  experiment('getTransactionsCSV', () => {
+    let invoicesForBatch, csvData;
+
+    beforeEach(async () => {
+      invoicesForBatch = [ { id: 'test-d', invoiceLicences: [], error: null } ];
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
-      sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(invoicesForBatch);
-      sandbox.stub(batchService, 'getBatch').resolves(batch);
+      sandbox.stub(services.water.billingBatches, 'getBatchInvoicesDetails').resolves(invoicesForBatch);
       sandbox.stub(transactionsCSV, 'createCSV').resolves(csvData);
       sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
       sandbox.stub(csv, 'csvDownload');
-
       await controller.getTransactionsCSV(request, h);
     });
 
     test('calls billingBatches service with batchId', () => {
-      const [batchId] = services.water.billingBatches.getBatchInvoices.lastCall.args;
-      expect(services.water.billingBatches.getBatchInvoices.calledOnce).to.be.true();
+      const [batchId] = services.water.billingBatches.getBatchInvoicesDetails.lastCall.args;
+      expect(services.water.billingBatches.getBatchInvoicesDetails.calledOnce).to.be.true();
       expect(batchId).to.equal(request.params.batchId);
     });
 
     test('calls transactionsCSV.createCSV with data returned from billingBatches services', () => {
-      const [data] = transactionsCSV.createCSV.lastCall.args;
+      const [ data ] = transactionsCSV.createCSV.lastCall.args;
       expect(transactionsCSV.createCSV.calledOnce).to.be.true();
-      expect(data).to.equal(invoicesForBatch.data);
+      expect(data).to.equal(invoicesForBatch);
     });
 
     test('calls transactionsCSV.getCSVFileName with data returned from batchService', () => {
       const [data] = transactionsCSV.getCSVFileName.lastCall.args;
       expect(transactionsCSV.getCSVFileName.calledOnce).to.be.true();
-      expect(data).to.equal(batch);
+      expect(data).to.equal(batchData);
     });
 
     test('calls csv.csvDownload with csv data and file name', () => {
@@ -543,172 +631,9 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.getBillingBatchSummary', () => {
-    let batchInvoicesResult;
-
-    beforeEach(async () => {
-      batchInvoicesResult = {
-        batch: {
-          id: 'test-batch-id',
-          dateCreated: '2000-01-01T00:00:00.000Z',
-          type: 'two_part_tariff',
-          region: {
-            id: 'test-region-1',
-            name: 'Anglian',
-            code: 'A'
-          },
-          totals: {
-            netTotal: 43434
-          }
-        },
-        invoices: [
-          {
-            id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
-            accountNumber: 'A12345678A',
-            name: 'Test company 1',
-            netTotal: 12345,
-            licenceNumbers: [
-              '01/123/A'
-            ]
-          },
-          {
-            id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
-            accountNumber: 'A89765432A',
-            name: 'Test company 2',
-            netTotal: -675467,
-            licenceNumbers: [
-              '04/567/B'
-            ]
-          }]
-      };
-      batchService.getBatchInvoices.resolves(batchInvoicesResult);
-    });
-
-    test('the expected view template is used for bill run summary', async () => {
-      const request = {
-        params: { batchId: 'test-batch' },
-        query: {}
-      };
-
-      await controller.getBillingBatchSummary(request, h);
-      const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/billing/batch-summary');
-    });
-
-    experiment('the view model is populated with', () => {
-      let view;
-
-      beforeEach(async () => {
-        const request = {
-          params: { batchId: 'test-batch' },
-          query: {}
-        };
-
-        await controller.getBillingBatchSummary(request, h);
-        ([, view] = h.view.lastCall.args);
-      });
-
-      test('the page title including the region name and batch type', async () => {
-        expect(view.pageTitle).to.equal('Anglian two part tariff bill run');
-      });
-
-      test('the batch data', async () => {
-        expect(view.batch).to.equal(batchInvoicesResult.batch);
-      });
-
-      test('the first invoice, with isCredit flag false', async () => {
-        expect(view.invoices[0]).to.equal({
-          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
-          accountNumber: 'A12345678A',
-          name: 'Test company 1',
-          netTotal: 12345,
-          licenceNumbers: [
-            '01/123/A'
-          ],
-          isCredit: false
-        });
-      });
-
-      test('the second invoice, with isCredit flag true', async () => {
-        expect(view.invoices[1]).to.equal({
-          id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
-          accountNumber: 'A89765432A',
-          name: 'Test company 2',
-          netTotal: -675467,
-          licenceNumbers: [
-            '04/567/B'
-          ],
-          isCredit: true
-        });
-      });
-    });
-
-    test('does not include the back link if the "back" query param is zero', async () => {
-      const request = {
-        query: { back: 0 },
-        params: { batchId: 'test-batch' }
-      };
-
-      await controller.getBillingBatchSummary(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal(0);
-    });
-
-    test('includes the back link if "back" query param is 1', async () => {
-      const request = {
-        query: { back: 1 },
-        params: { batchId: 'test-batch' }
-      };
-
-      await controller.getBillingBatchSummary(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/billing/batch/list');
-    });
-  });
-
   experiment('.getBillingBatchDeleteAccount', () => {
-    const invoice = {
-      data: {
-        id: '1',
-        invoiceLicences: [
-          {
-            licence: {
-              id: 'licence-id',
-              licenceNumber: 'AG1234/56789'
-            }
-          }
-        ],
-        dateCreated: '2020-01-27T13:51:29.234Z',
-        totals: {
-          totalValue: '1234.56'
-        },
-        invoiceAccount: {
-          id: 'invoice-account-id',
-          accountNumber: 'A12345678A',
-          company: {
-            name: 'company-name'
-          }
-        }
-      }
-    };
     beforeEach(async () => {
-      request = {
-        params: {
-          batchId: 'test-batch-id',
-          invoiceId: 'test-invoice-id'
-        },
-        view: {
-          csrfToken: 'token'
-        }
-      };
-
-      sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
       await controller.getBillingBatchDeleteAccount(request, h);
-    });
-
-    test('configures the back route', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
 
     test('configures the expected view template', async () => {
@@ -716,29 +641,20 @@ experiment('internal/modules/billing/controller', () => {
       expect(view).to.equal('nunjucks/billing/batch-delete-account');
     });
 
-    test('the correct view data is populated', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.account.id).to.equal(invoice.data.invoiceAccount.id);
-      expect(view.account.accountNumber).to.equal(invoice.data.invoiceAccount.accountNumber);
-      expect(view.account.companyName).to.equal(invoice.data.invoiceAccount.company.name);
-      expect(view.account.licences[0].licenceRef).to.equal(invoice.data.invoiceLicences[0].licence.licenceNumber);
-      expect(view.account.amount).to.equal(invoice.data.totals.totalValue);
-      expect(view.account.dateCreated).to.equal(invoice.data.dateCreated);
+    test('sets the correct view data', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context).to.contain({ foo: 'bar' });
+      expect(context.pageTitle).to.equal('You are about to remove this bill from the bill run');
+      expect(context.account.id).to.equal('invoice-account-id');
+      expect(context.account.accountNumber).to.equal('A12345678A');
+      expect(context.form).to.be.an.object();
+      expect(context.batch).to.equal(batchData);
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
   });
 
   experiment('.postBillingBatchDeleteAccount', () => {
     beforeEach(async () => {
-      h = {
-        redirect: sandbox.spy()
-      };
-      request = {
-        params: {
-          batchId: 'test-batch-id',
-          accountId: 'invoice-account-id'
-        }
-      };
-
       sandbox.stub(services.water.billingBatches, 'deleteAccountFromBatch').resolves(true);
       await controller.postBillingBatchDeleteAccount(request, h);
     });

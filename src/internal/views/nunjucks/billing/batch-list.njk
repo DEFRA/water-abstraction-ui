@@ -2,6 +2,8 @@
 {% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+
 {% block content %}
 
 {{ title(pageTitle) }}
@@ -24,7 +26,7 @@
           <th class="govuk-table__header" scope="col">Run type</th>
           <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bills</th>
           <th class="govuk-table__header govuk-table__header--numeric table__header--width-20" scope="col">Value</th>
-          <th class="govuk-table__header table__header--width-15 table__header--center" scope="col">Status</th>
+          <th class="govuk-table__header govuk-table__header--numeric table__header--width-15" scope="col">Status</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -41,9 +43,17 @@
           </td>
           <td class="govuk-table__cell">{{ batch.region.name }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.totals.netTotal | charge }}</td>
-          <td class="govuk-table__cell">{{ badge(batch.badge) }}</td>
+
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount | defaultTo('-') }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {% if batch.status == 'error' %}
+              <span>-</span>
+            {% else %}
+              {{ chargeOrDash(batch.totals.netTotal, true) }}
+            {% endif %}
+          </td>
+
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -1,15 +1,6 @@
 'use strict';
-
-const { omit } = require('lodash');
 const moment = require('moment');
-
-const columnHeadings = [
-  'licenceNumber', 'isCredit', 'isCompensationCharge', 'source', 'season', 'loss',
-  'description', 'agreements', 'chargePeriodStartDate', 'chargePeriodEndDate',
-  'authorisedDays', 'billableDays', 'absPeriodStartDate', 'absPeriodEndDate',
-  'authorisedAnnualQuantity', 'billableAnnualQuantity', 'address', 'company',
-  'invoiceAccountNumber', 'invoiceAccountCompany'
-];
+const numberFormatter = require('../../../../shared/lib/number-formatter');
 
 const getAbsStartAndEnd = absPeriod => {
   return {
@@ -18,74 +9,70 @@ const getAbsStartAndEnd = absPeriod => {
   };
 };
 
-const objToString = obj => JSON.stringify(omit(obj, ['id', 'type']));
-
 const getTransactionData = trans => {
   const { absStart, absEnd } = getAbsStartAndEnd(trans.chargeElement.abstractionPeriod);
   const agreements = trans.agreements.join(', ');
-
-  return [
-    trans.value,
-    trans.isCredit.toString(),
-    trans.isCompensationCharge.toString(),
-    trans.chargeElement.source,
-    trans.chargeElement.season,
-    trans.chargeElement.loss,
-    trans.description,
+  return {
+    value: numberFormatter.penceToPound(trans.value, true),
+    isCredit: trans.isCredit.toString(),
+    isCompensationCharge: trans.isCompensationCharge.toString(),
+    source: trans.chargeElement.source,
+    season: trans.chargeElement.season,
+    chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
+    chargeElementPurposeName: trans.chargeElement.purposeUse.name,
+    loss: trans.chargeElement.loss,
+    description: trans.description,
     agreements,
-    trans.chargePeriod.startDate,
-    trans.chargePeriod.endDate,
-    trans.authorisedDays,
-    trans.billableDays,
-    absStart,
-    absEnd,
-    trans.chargeElement.authorisedAnnualQuantity,
-    trans.chargeElement.billableAnnualQuantity
-  ];
+    chargePeriodStartDate: trans.chargePeriod.startDate,
+    chargePeriodEndDate: trans.chargePeriod.endDate,
+    authorisedDays: trans.authorisedDays,
+    billableDays: trans.billableDays,
+    absPeriodStartDate: absStart,
+    absPeriodEndDate: absEnd,
+    authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
+    billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity
+  };
 };
 
-const getInvoiceLicenceData = invLic => {
-  return [
-    objToString(invLic.address),
-    objToString(invLic.company)
-  ];
-};
-
-const getInvoiceAccountData = invAcc => {
-  return [
-    invAcc.accountNumber,
-    objToString(invAcc.company)
-  ];
+const getInvoiceAccountData = invoiceAccount => {
+  return {
+    accountNumber: invoiceAccount.accountNumber,
+    companyName: invoiceAccount.company.name,
+    addressLine1: invoiceAccount.address.addressLine1,
+    addressLine2: invoiceAccount.address.addressLine2,
+    addressLine3: invoiceAccount.address.addressLine3,
+    addressLine4: invoiceAccount.address.addressLine4,
+    town: invoiceAccount.address.town,
+    county: invoiceAccount.address.county,
+    postcode: invoiceAccount.address.postcode,
+    country: invoiceAccount.address.country
+  };
 };
 
 const createCSV = async data => {
-  const dataForCSV = [columnHeadings];
-
+  const dataForCSV = [];
   return data.reduce((dataForCSV, dataObj) => {
     dataObj.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
-        const csvLine = [
-          invLic.licence.licenceNumber,
+        const csvLine = {
+          licenceNumber: invLic.licence.licenceNumber,
+          region: invLic.licence.region.name,
+          isWaterUndertaker: invLic.licence.isWaterUndertaker.toString(),
+          historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
-          ...getInvoiceLicenceData(invLic),
           ...getInvoiceAccountData(dataObj.invoiceAccount)
-        ];
+        };
         dataForCSV.push(csvLine);
       });
     });
-
     return dataForCSV;
   }, dataForCSV);
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.displayName} ${batch.type} bill run ${batch.billRunDate.slice(0, 10)}.csv`;
+  return `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
 };
-
-exports._columnHeadings = columnHeadings;
-exports._getTransactionData = getTransactionData;
-exports._getInvoiceLicenceData = getInvoiceLicenceData;
 exports._getInvoiceAccountData = getInvoiceAccountData;
-
+exports._getTransactionData = getTransactionData;
 exports.createCSV = createCSV;
 exports.getCSVFileName = getCSVFileName;

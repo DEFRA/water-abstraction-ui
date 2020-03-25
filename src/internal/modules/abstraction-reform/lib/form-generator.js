@@ -1,6 +1,6 @@
 const { URL } = require('url');
 const RefParser = require('json-schema-ref-parser');
-const { pick, isObject, each, get, cloneDeep } = require('lodash');
+const { isObject, each, get, cloneDeep } = require('lodash');
 const sentenceCase = require('sentence-case');
 const { formFactory, fields } = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
@@ -22,24 +22,6 @@ const createEnumsObject = (items, iteratee) => ({
   type: 'object',
   enum: items.map(iteratee)
 });
-
-/**
- * Given a picklist record and an array of picklist items loaded from the
- * water service, generates a JSON schema for this picklist data
- * @param {Object} picklist - picklist object from water service
- * @param {Array} items - picklist items from water service
- * @return {Object} JSON schema
- */
-const picklistSchemaFactory = (picklist, items) => {
-  if (picklist.id_required) {
-    return createEnumsObject(items, item => pick(item, 'id', 'value'));
-  }
-
-  return {
-    type: 'string',
-    enum: items.map(item => item.value)
-  };
-};
 
 const mapCondition = condition => ({ id: condition.id, value: mapConditionText(condition) });
 
@@ -69,18 +51,11 @@ const resolveLicences = async (ref, context) => {
   return licenceResolvers[ref](context, ref);
 };
 
-const resolvePicklists = async ref => {
-  const picklist = await services.water.picklists.getPicklist(ref);
-  const items = await services.water.picklistItems.getPicklistItems(ref);
-  return picklistSchemaFactory(picklist, items);
-};
-
 const resolveTypes = async ref => {
   return types[ref];
 };
 
 const hostLevelResolvers = {
-  picklists: resolvePicklists,
   licences: resolveLicences,
   types: resolveTypes
 };
@@ -315,7 +290,6 @@ const schemaToForm = (action, request, schema) => {
 
 module.exports = {
   dereference,
-  picklistSchemaFactory,
   schemaToForm,
   guessLabel,
   addAttribute,

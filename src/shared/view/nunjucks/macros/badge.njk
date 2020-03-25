@@ -1,6 +1,9 @@
 {% macro badge(param, status) %}
   {% if param | isObject %}
-    <strong class="badge {% if param.status %}badge--{{ param.status }}{% endif %} badge--no-wrap">{{ param.text }}</strong>
+    <strong class="badge badge--no-wrap  
+    {% if param.status %}badge--{{ param.status }}{% endif %} 
+    {% if param.size %}badge--{{ param.size }}{% endif %} 
+    ">{{ param.text }}</strong>
   {% else %}
     <strong class="badge {% if status %}badge--{{ status }}{% endif %} badge--no-wrap">{{ param }}</strong>
   {% endif %}

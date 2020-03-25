@@ -101,8 +101,7 @@ if (isAcceptanceTestTarget) {
             batchId: Joi.string().uuid()
           },
           query: {
-            back: Joi.number().integer().default(1).optional(),
-            error: Joi.string().valid(['confirm']).optional()
+            back: Joi.number().integer().default(1).optional()
           }
         },
         pre: [

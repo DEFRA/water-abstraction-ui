@@ -69,6 +69,7 @@ experiment('internal/modules/billing/controller', () => {
   };
 
   request = {
+    pre: { batch: batchData },
     params: {
       batchId: 'test-batch-id'
     }

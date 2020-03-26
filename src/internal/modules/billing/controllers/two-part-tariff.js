@@ -10,18 +10,14 @@ const messages = {
 };
 
 const getTotals = licences => {
-  const initVals = {
-    ready: 0,
-    errors: 0,
-    total: 0
-  };
-  const totalErrors = licences.reduce((acc, row) => ({
-    errors: acc.errors + (row.twoPartTariffStatuses.length > 0 ? 1 : 0)
-  }), initVals);
+
+  const errors = licences.reduce((acc, row) => (
+    acc + (row.twoPartTariffStatuses.length > 0 ? 1 : 0)
+  ), 0);
 
   const totals = {
-    ...totalErrors,
-    ready: licences.length - totalErrors.errors,
+    errors,
+    ready: licences.length - errors,
     total: licences.length
   };
   return totals;
@@ -49,7 +45,7 @@ const getTwoPartTariffAction = async (request, h, action) => {
   });
 };
 
-const getTwoPartTariffReview = async (request, h, action) => getTwoPartTariffAction(request, h, 'review');
+const getTwoPartTariffReview = async (request, h) => getTwoPartTariffAction(request, h, 'review');
 const getTwoPartTariffViewReady = async (request, h) => getTwoPartTariffAction(request, h, 'ready');
 
 module.exports.getTwoPartTariffReview = getTwoPartTariffReview;

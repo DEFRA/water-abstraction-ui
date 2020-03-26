@@ -134,7 +134,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   experiment('.getTwoPartTariffReady', () => {
     beforeEach(async () => {
       sandbox.stub(services.water.billingBatches, 'getBatchLicences').resolves(batchLicences);
-      await controller.getTwoPartTariffReady(request, h);
+      await controller.getTwoPartTariffViewReady(request, h);
     });
 
     test('uses the correct view template', async () => {

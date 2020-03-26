@@ -33,7 +33,7 @@ if (isAcceptanceTestTarget) {
     getBillingTwoPartTariffReady: {
       method: 'GET',
       path: '/billing/batch/{batchId}/two-part-tariff-ready',
-      handler: controller.getBillingTwoPartTariffReady,
+      handler: controller.getTwoPartTariffViewReady,
       config: {
         pre: [{ method: preHandlers.loadBatch, assign: 'batch' }],
         auth: { scope: allowedScopes },

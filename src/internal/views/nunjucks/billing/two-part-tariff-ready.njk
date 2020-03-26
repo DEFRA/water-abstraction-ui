@@ -74,7 +74,7 @@
         </thead>
         <tbody class="govuk-table__body">
           {% for licence in licences %}
-            {% if licence.twoPartTariffStatuses.length < 1 %}
+            {% if licence.twoPartTariffStatuses == Null %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   {{ licence.licenceRef }}

@@ -31,7 +31,7 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : messages[code];
 }, null);
 
-const getTwoPartTariffReview = async (request, h) => {
+const getTwoPartTariffAction = async (request, h, action) => {
   const { batch } = request.pre;
   const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);
   // gets 2pt matching error messages and define error types
@@ -40,7 +40,7 @@ const getTwoPartTariffReview = async (request, h) => {
     twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses)
   }));
 
-  return h.view('nunjucks/billing/two-part-tariff-review', {
+  return h.view('nunjucks/billing/two-part-tariff-' + action, {
     ...request.view,
     batch,
     licences,
@@ -49,18 +49,8 @@ const getTwoPartTariffReview = async (request, h) => {
   });
 };
 
-const getTwoPartTariffReady = async (request, h) => {
-  const { batch } = request.pre;
-  const licences = await services.water.billingBatches.getBatchLicences(batch.id);
-
-  return h.view('nunjucks/billing/two-part-tariff-ready', {
-    ...request.view,
-    batch,
-    licences,
-    totals: getTotals(licences),
-    back: `/billing/batch/list`
-  });
-};
+const getTwoPartTariffReview = async (request, h, action) => getTwoPartTariffAction(request, h, 'review');
+const getTwoPartTariffViewReady = async (request, h) => getTwoPartTariffAction(request, h, 'ready');
 
 module.exports.getTwoPartTariffReview = getTwoPartTariffReview;
-module.exports.getTwoPartTariffReady = getTwoPartTariffReady;
+module.exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;

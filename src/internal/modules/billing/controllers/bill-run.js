@@ -1,20 +1,20 @@
 'use strict';
 
 const uuid = require('uuid/v4');
-const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
-const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
-const { deleteAccountFromBatchForm } = require('./forms/billing-batch-delete-account');
-const { cancelOrConfirmBatchForm } = require('./forms/cancel-or-confirm-batch');
+const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
+const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
+const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-account');
+const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
-const batchService = require('./services/batch-service');
-const transactionsCSV = require('./services/transactions-csv');
+const batchService = require('../services/batch-service');
+const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
-const mappers = require('./lib/mappers');
+const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
 
 const getSessionForm = (request) => {

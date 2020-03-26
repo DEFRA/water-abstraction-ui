@@ -5,7 +5,7 @@ const { experiment, test } = exports.lab = require('@hapi/lab').script();
 
 const preHandlers = require('internal/modules/billing/pre-handlers');
 const { scope } = require('internal/lib/constants');
-const routes = require('internal/modules/billing/routes');
+const routes = require('internal/modules/billing/routes/bill-run');
 
 experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchSummary', () => {

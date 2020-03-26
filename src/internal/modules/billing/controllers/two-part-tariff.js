@@ -10,7 +10,6 @@ const messages = {
 };
 
 const getTotals = licences => {
-
   const errors = licences.reduce((acc, row) => (
     acc + (row.twoPartTariffStatuses.length > 0 ? 1 : 0)
   ), 0);

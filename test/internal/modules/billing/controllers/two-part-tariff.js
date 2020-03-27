@@ -60,7 +60,7 @@ const batchLicences = [
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
-experiment('internal/modules/billing/controller', () => {
+experiment('internal/modules/billing/controller/two-part-tariff', () => {
   let h, request;
   h = {
     view: sandbox.stub(),
@@ -81,7 +81,6 @@ experiment('internal/modules/billing/controller', () => {
 
   experiment('.getTwoPartTariffReview', () => {
     beforeEach(async () => {
-      sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
       sandbox.stub(services.water.billingBatches, 'getBatchLicences').resolves(batchLicences);
       await controller.getTwoPartTariffReview(request, h);
     });
@@ -103,8 +102,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.batch.type).to.equal('two-part-tariff');
       expect(view.batch.region.name).to.equal('Anglian');
     });
-    // 10: 'No returns submitted'
-    // twoPartTariffStatuses
+
     test('returns the correct licences to the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.licences).to.be.array();
@@ -115,7 +113,6 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.licences[0].licenceHolder.initials).to.equal('F S');
       expect(view.licences[0].licenceHolder.firstName).to.equal('forename');
       expect(view.licences[0].licenceHolder.lastName).to.equal('surname');
-      expect(view.licences[0].licenceHolder.lastName).to.equal('surname');
       expect(view.licences[0].twoPartTariffStatuses).to.equal('Multiple errors');
       expect(view.licences[1].twoPartTariffStatuses).to.equal('No returns submitted');
       expect(view.licences[2].twoPartTariffStatuses).to.equal(null);
@@ -124,6 +121,57 @@ experiment('internal/modules/billing/controller', () => {
     test('returns the correct totals to the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.totals.errors).to.equal(2);
+      expect(view.totals.ready).to.equal(1);
+      expect(view.totals.total).to.equal(3);
+    });
+
+    test('returns the correct back link to the view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/list');
+    });
+  });
+
+  experiment('.getTwoPartTariffReady', () => {
+    beforeEach(async () => {
+      sandbox.stub(services.water.billingBatches, 'getBatchLicences').resolves(batchLicences);
+      await controller.getTwoPartTariffViewReady(request, h);
+    });
+
+    test('uses the correct view template', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/two-part-tariff-ready');
+    });
+
+    test('returns the correct view data objects', async () => {
+      const keys = Object.keys(h.view.lastCall.args[1]);
+      expect(keys).to.equal(['batch', 'licences', 'totals', 'back']);
+    });
+
+    test('returns the correct batch data to the view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.batch.id).to.equal('test-batch-id');
+      expect(view.batch.dateCreated).to.equal('2000-01-01T00:00:00.000Z');
+      expect(view.batch.type).to.equal('two-part-tariff');
+      expect(view.batch.region.name).to.equal('Anglian');
+    });
+
+    test('returns the correct licences to the view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.licences).to.be.array();
+      expect(view.licences[0].licenceRef).to.equal('test-licence-ref-1');
+      expect(view.licences[0].licenceId).to.equal('test-licence-id-1');
+      expect(view.licences[0].licenceHolder).to.be.an.object();
+      expect(view.licences[0].licenceHolder.salutation).to.equal(null);
+      expect(view.licences[0].licenceHolder.initials).to.equal('F S');
+      expect(view.licences[0].licenceHolder.firstName).to.equal('forename');
+      expect(view.licences[0].licenceHolder.lastName).to.equal('surname');
+    });
+
+    test('returns the correct totals to the view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.totals.errors).to.equal(2);
+      expect(view.totals.ready).to.equal(1);
+      expect(view.totals.total).to.equal(3);
     });
 
     test('returns the correct back link to the view', async () => {

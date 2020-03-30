@@ -1,20 +1,20 @@
 'use strict';
 
 const uuid = require('uuid/v4');
-const { selectBillingTypeForm, billingTypeFormSchema } = require('./forms/billing-type');
-const { selectBillingRegionForm, billingRegionFormSchema } = require('./forms/billing-region');
-const { deleteAccountFromBatchForm } = require('./forms/billing-batch-delete-account');
-const { cancelOrConfirmBatchForm } = require('./forms/cancel-or-confirm-batch');
+const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
+const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
+const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-account');
+const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
 const { get } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
-const batchService = require('./services/batch-service');
-const transactionsCSV = require('./services/transactions-csv');
+const batchService = require('../services/batch-service');
+const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
-const mappers = require('./lib/mappers');
+const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
 
 const getSessionForm = (request) => {
@@ -149,7 +149,6 @@ const getBillingBatchExists = async (request, h) => {
  */
 const getBillingBatchSummary = async (request, h) => {
   const { batchId } = request.params;
-  const { error } = request.query;
   const { batch, invoices } = await batchService.getBatchInvoices(batchId);
 
   return h.view('nunjucks/billing/batch-summary', {
@@ -160,10 +159,7 @@ const getBillingBatchSummary = async (request, h) => {
       ...row,
       isCredit: row.netTotal < 0
     })),
-    // This error string comes from the query param, and will allow us
-    // to display a suitable alert to the user e.g. when a batch cannot
-    // be approved
-    error,
+    isEditable: batch.status === 'ready',
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && '/billing/batch/list'
@@ -233,14 +229,8 @@ const getBillingBatchConfirm = async (request, h) => billingBatchAction(request,
 
 const postBillingBatchConfirm = async (request, h) => {
   const { batchId } = request.params;
-  const redirectPath = `/billing/batch/${batchId}/summary`;
-  try {
-    await services.water.billingBatches.approveBatch(batchId);
-  } catch (err) {
-    logger.info(`Did not successfully approve batch ${batchId}`);
-    return h.redirect(`${redirectPath}?error=confirm`);
-  }
-  return h.redirect(redirectPath);
+  await services.water.billingBatches.approveBatch(batchId);
+  return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 
 /**

@@ -71,7 +71,7 @@ experiment('batchBadge Nunjucks filter', () => {
     });
 
     test('badge status is warning', async () => {
-      expect(badge.status).to.equal('warning');
+      expect(badge.status).to.equal('success');
     });
 
     test('badge is not large', async () => {

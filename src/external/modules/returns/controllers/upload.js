@@ -16,7 +16,7 @@ const helpers = require('../lib/helpers');
 
 const spinnerConfig = {
   processing: {
-    await: 'validated',
+    await: 'ready',
     path: '/returns/upload-summary',
     pageTitle: 'Uploading returns data'
   },
@@ -83,11 +83,11 @@ async function postBulkUpload (request, h) {
 
     // Upload to water service and get event ID
     if (status === uploadHelpers.fileStatuses.OK) {
-      const { userName } = request.defra;
+      const { userName, companyId } = request.defra;
       const fileData = await files.readFile(localPath);
 
       // Send bulk return data to API and get event ID for upload
-      const postData = await services.water.returns.postUpload(fileData.toString(), userName, type);
+      const postData = await services.water.returns.postUpload(fileData.toString(), userName, companyId, type);
       eventId = get(postData, 'data.eventId');
     }
 
@@ -195,14 +195,17 @@ const hasErrors = grouped => get(grouped, 'returnsWithErrors.length') > 0;
  */
 const getSummary = async (request, h) => {
   const { eventId } = request.params;
+  const { userName } = request.defra;
+
   const options = uploadSummaryHelpers.mapRequestOptions(request);
 
   try {
-    const returns = await services.water.returns.getUploadPreview(eventId, options);
-    const grouped = uploadSummaryHelpers.groupReturns(returns, eventId);
+    // get view data from event metadata
+    const evt = await getUploadEvent(eventId, userName);
+    const grouped = uploadSummaryHelpers.groupReturns(get(evt.metadata, 'validationResults'), eventId);
 
     if (isEmpty(grouped)) {
-      return h.redirect(`/returns/upload?error=empty`);
+      return h.redirect('/returns/upload?error=empty');
     }
 
     const form = confirmForm(request, get(grouped, 'returnsWithoutErrors.length', 0));

@@ -7,38 +7,38 @@ const badge = require('shared/lib/returns/badge');
 
 experiment('shared/lib/returns/badge', () => {
   experiment('getBadge', () => {
-    test('If return is overdue, return overdue badge', async () => {
+    test('If return is overdue, status is "warning"', async () => {
       expect(badge.getBadge('due', true)).to.equal({
         text: 'Overdue',
-        status: 'error'
+        status: 'warning'
       });
     });
 
-    test('If return is due, return due badge', async () => {
+    test('If return is due, status is "todo"', async () => {
       expect(badge.getBadge('due', false)).to.equal({
         text: 'Due',
-        status: 'error'
+        status: 'todo'
       });
     });
 
-    test('If return is void, return void badge', async () => {
+    test('If return is void, status is "inactive"', async () => {
       expect(badge.getBadge('void', false)).to.equal({
         text: 'Void',
-        status: 'dark'
+        status: 'inactive'
       });
     });
 
-    test('If return is received, return received badge', async () => {
+    test('If return is received, status is "success"', async () => {
       expect(badge.getBadge('received', false)).to.equal({
         text: 'Received',
-        status: undefined
+        status: 'success'
       });
     });
 
-    test('If return is completed, return received badge', async () => {
+    test('If return is completed, status is "success"', async () => {
       expect(badge.getBadge('completed', false)).to.equal({
         text: 'Complete',
-        status: undefined
+        status: 'success'
       });
     });
   });

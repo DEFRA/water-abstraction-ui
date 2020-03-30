@@ -14,9 +14,11 @@ const getBadge = (status, isPastDueDate) => {
   viewStatus = (viewStatus === 'completed') ? 'complete' : viewStatus;
 
   const styles = {
-    overdue: 'error',
-    due: 'error',
-    void: 'dark'
+    due: 'todo',
+    overdue: 'warning',
+    void: 'inactive',
+    received: 'success',
+    complete: 'success'
   };
 
   return {

@@ -1,10 +1,11 @@
 const { isObject, compact } = require('lodash');
 
 const colourMap = {
-  dark: 'govuk-tag--grey',
+  inactive: 'govuk-tag--grey',
   success: 'govuk-tag--green',
   error: 'govuk-tag--red',
-  warning: 'govuk-tag--orange'
+  warning: 'govuk-tag--orange',
+  todo: 'govuk-tag--blue'
 };
 
 const sizeMap = {

@@ -61,9 +61,11 @@ const getTransactionGroup = transaction => {
 };
 
 /**
- *
- * @param {*} batch
- * @param {*} invoiceLicence
+ * Decorates transactions with edit link and error message,
+ * then groups them by purpose/abstraction period
+ * @param {Object} batch
+ * @param {Object} invoiceLicence
+ * @return {Array} an array of transaction objects
  */
 const getTransactionGroups = (batch, invoiceLicence) => {
   // Add 2PT error message

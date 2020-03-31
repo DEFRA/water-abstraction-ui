@@ -1,0 +1,71 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "badge.njk" import badge %}
+{% from "paginate.njk" import paginate %}
+{% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+
+{% block content %}
+
+<div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-two-thirds">
+    <section class="govuk-!-margin-bottom-6">
+      {% set caption %}
+        {{ batch.region.name + ' two-part tariff bill run' }}
+      {% endset %}
+        {{ title(pageTitle, caption, null, true, true) }}
+    </section>
+
+
+    {{
+      govukButton({
+        text: "Remove from bill run",
+        href: removeLink,
+        classes: "govuk-button--secondary govuk-!-margin-left-1"
+      })
+    }}
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-full">
+
+    {% for group in transactionGroups %}
+
+      {% set insetText %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ group[0].chargeElement.purposeUse.name }}</h2>
+        <p class="govuk-body">{{ group[0].chargeElement.abstractionPeriod | abstractionPeriod }}</p>
+      {% endset %}
+
+      {{ govukInsetText({
+        html : insetText
+      }) }}
+
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Element description</th>
+            <th scope="col" class="govuk-table__header">Issue</th>
+            <th scope="col" class="govuk-table__header">Action</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for transaction in group %}
+          <tr class="govuk-table__row">
+            <td scope="row" class="govuk-table__cell">{{ transaction.chargeElement.description }}</td>
+            <td class="govuk-table__cell">{{ transaction.error | default ('-') }}</td>
+            <td class="govuk-table__cell"><a href="{{ transaction.changeLink }}">Change<span class="govuk-visually-hidden"> element {{ transaction.chargeElement.description }}</span></a></td>
+          </tr>
+          {% endfor %}
+  
+        </tbody>
+      </table>
+
+    {% endfor %}
+  </div>
+</div>
+
+
+{% endblock %}

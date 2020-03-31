@@ -113,11 +113,11 @@ const pushColumn = (data, column) => {
  * @param  {Array} returns - loaded from water service
  * @return {Object}
  */
-const createCSVData = returns => {
+const createCSVData = (returns, refDate) => {
   const data = {};
 
   // Get current return cycle dates
-  const { startDate, endDate } = getCurrentCycle();
+  const { startDate, endDate } = getCurrentCycle(refDate);
 
   // Group returns by frequency
   const grouped = groupBy(returns, ret => ret.frequency);

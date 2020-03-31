@@ -9,6 +9,8 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
+const uuid = require('uuid/v4');
+
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controllers/two-part-tariff');
 
@@ -177,6 +179,155 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('returns the correct back link to the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/billing/batch/list');
+    });
+  });
+
+  experiment('.getLicenceReview', () => {
+    const abstractionPeriods = {
+      allYear: {
+        startDay: 1,
+        startMonth: 1,
+        endDay: 31,
+        endMonth: 12
+      },
+      summer: {
+        startDay: 1,
+        startMonth: 5,
+        endDay: 31,
+        endMonth: 10
+      }
+    };
+
+    const purposes = {
+      a: {
+        code: '400',
+        name: 'Watering sunflowers'
+      },
+      b: {
+        code: '401',
+        name: 'Washing patios'
+      }
+    };
+
+    const invoiceLicence = {
+      id: uuid(),
+      licence: {
+        licenceNumber: '01/234/ABC'
+      },
+      transactions: [{
+        id: uuid(),
+        twoPartTariffError: 20,
+        chargeElement: {
+          description: 'Purpose A - borehole A',
+          purposeUse: purposes.a,
+          abstractionPeriod: abstractionPeriods.allYear
+        }
+      },
+      {
+        id: uuid(),
+        chargeElement: {
+          description: 'Purpose A - borehole B',
+          purposeUse: purposes.a,
+          abstractionPeriod: abstractionPeriods.allYear
+        }
+      },
+      {
+        id: uuid(),
+        chargeElement: {
+          description: 'Purpose A - borehole c',
+          purposeUse: purposes.a,
+          abstractionPeriod: abstractionPeriods.summer
+        }
+      },
+      {
+        id: uuid(),
+        chargeElement: {
+          description: 'Purpose B - borehole d',
+          purposeUse: purposes.b,
+          abstractionPeriod: abstractionPeriods.summer
+        }
+      }]
+    };
+
+    const request = {
+      pre: {
+        batch: {
+          id: uuid()
+        }
+      },
+      params: {
+        invoiceLicenceId: uuid()
+      },
+      view: {
+        foo: 'bar'
+      }
+    };
+
+    beforeEach(async () => {
+      sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence').resolves(invoiceLicence);
+      await controller.getLicenceReview(request, h);
+    });
+
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing/two-part-tariff-licence-review');
+    });
+
+    test('the invoiceLicence is loaded from the water service', async () => {
+      expect(services.water.billingInvoiceLicences.getInvoiceLicence.calledWith(
+        request.params.invoiceLicenceId
+      )).to.be.true();
+    });
+
+    test('the page title is set', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('Review returns data issues for 01/234/ABC');
+    });
+
+    test('other params on request.view are passed through unchanged', async () => {
+      const [, { foo }] = h.view.lastCall.args;
+      expect(foo).to.equal('bar');
+    });
+
+    test('the batch is set', async () => {
+      const [, { batch }] = h.view.lastCall.args;
+      expect(batch).to.equal(request.pre.batch);
+    });
+
+    test('transactions with same purpose and abstraction period are grouped', async () => {
+      const [, { transactionGroups }] = h.view.lastCall.args;
+      expect(transactionGroups).to.be.an.array().length(3);
+
+      const groups = transactionGroups.map(group => group.map(tx => tx.chargeElement.description));
+
+      expect(groups[0]).to.only.include(['Purpose A - borehole A', 'Purpose A - borehole B']);
+      expect(groups[1]).to.only.include(['Purpose A - borehole c']);
+      expect(groups[2]).to.only.include(['Purpose B - borehole d']);
+    });
+
+    test('grouped transactions have an edit link', async () => {
+      const [, { transactionGroups: [[{ editLink }]] }] = h.view.lastCall.args;
+      const expectedLink = [
+        `/billing/batch/${request.pre.batch.id}`,
+        `/two-part-tariff-licence-review/${invoiceLicence.id}`,
+        `/transaction/${invoiceLicence.transactions[0].id}`
+      ].join('');
+      expect(editLink).to.equal(expectedLink);
+    });
+
+    test('grouped transactions have a two-part tariff error message', async () => {
+      const [, { transactionGroups: [[{ error }]] }] = h.view.lastCall.args;
+      expect(error).to.equal('Under query');
+    });
+
+    test('a back link is set', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-review`);
+    });
+
+    test('a link to remove the invoice licence from the bill run is set', async () => {
+      const [, { removeLink }] = h.view.lastCall.args;
+      expect(removeLink).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-remove-licence/${invoiceLicence.id}`);
     });
   });
 });

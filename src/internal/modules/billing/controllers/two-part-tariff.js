@@ -69,7 +69,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   // Add 2PT error message
   const transactions = invoiceLicence.transactions.map(transaction => ({
     ...transaction,
-    changeLink: `billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`,
+    editLink: `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`,
     error: messages[transaction.twoPartTariffError]
   }));
 

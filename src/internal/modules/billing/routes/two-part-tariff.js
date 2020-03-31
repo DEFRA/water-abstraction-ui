@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('joi');
 const controller = require('../controllers/two-part-tariff');
 const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];

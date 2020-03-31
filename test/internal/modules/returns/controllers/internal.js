@@ -12,10 +12,14 @@ const uuid = require('uuid/v4');
 
 const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/returns/lib/helpers');
+const moment = require('moment');
 
 const controller = require('internal/modules/returns/controllers/internal');
 
 const returnId = 'test-return-id';
+
+// Create date in the past 12 months
+const receivedDate = moment().subtract(3, 'month');
 
 const createRequest = () => ({
   query: {
@@ -40,9 +44,9 @@ const createPostLogReceiptRequest = (isUnderQuery) => {
     ...request,
     payload: {
       csrf_token: request.view.csrfToken,
-      'dateReceived-day': '27',
-      'dateReceived-month': '3',
-      'dateReceived-year': '2019',
+      'dateReceived-day': receivedDate.format('D').toString(),
+      'dateReceived-month': receivedDate.format('MM').toString(),
+      'dateReceived-year': receivedDate.format('YYYY').toString(),
       isUnderQuery: isUnderQuery ? 'under_query' : undefined
     }
   };
@@ -138,7 +142,7 @@ experiment('internal returns controller', () => {
         await controller.postLogReceipt(request, h);
         const [ data ] = services.water.returns.patchReturn.lastCall.args;
 
-        expect(data.receivedDate).to.equal('2019-03-27');
+        expect(data.receivedDate).to.equal(receivedDate.format('YYYY-MM-DD'));
         expect(data.isUnderQuery).to.equal(false);
         expect(data.status).to.equal('received');
       });
@@ -147,7 +151,7 @@ experiment('internal returns controller', () => {
         request = createPostLogReceiptRequest(true);
         await controller.postLogReceipt(request, h);
         const [ data ] = services.water.returns.patchReturn.lastCall.args;
-        expect(data.receivedDate).to.equal('2019-03-27');
+        expect(data.receivedDate).to.equal(receivedDate.format('YYYY-MM-DD'));
         expect(data.isUnderQuery).to.equal(true);
         expect(data.status).to.equal('received');
       });

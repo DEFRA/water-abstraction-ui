@@ -62,7 +62,9 @@
                   {{ licence.licenceHolder.lastName }}
                 </td>
                 <td class="govuk-table__cell">
+                  {% if licence.twoPartTariffStatuses %}
                   {{ licence.twoPartTariffStatuses }}
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                   <a href="#" class="govuk-link">Review</a>

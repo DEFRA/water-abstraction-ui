@@ -1,5 +1,11 @@
-const { groupBy } = require('lodash');
+const { groupBy, find } = require('lodash');
+const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
+const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
+const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
+
+const sentenceCase = require('sentence-case');
+const forms = require('shared/lib/forms');
 
 const messages = {
   10: 'No returns submitted',
@@ -72,7 +78,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   const transactions = invoiceLicence.transactions.map(transaction => ({
     ...transaction,
     editLink: `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`,
-    error: messages[transaction.twoPartTariffError]
+    error: transaction.twoPartTariffError && messages[transaction.twoPartTariffStatus]
   }));
 
   // Group by purpose use and abs period
@@ -100,6 +106,134 @@ const getLicenceReview = async (request, h) => {
   });
 };
 
+const mapCondition = (conditionType, condition) => ({
+  title: sentenceCase(conditionType.displayTitle.replace('Aggregate condition', '')),
+  parameter1Label: conditionType.parameter1Label.replace('licence number', 'licence'),
+  parameter1: condition.parameter1,
+  parameter2Label: conditionType.parameter2Label,
+  parameter2: condition.parameter2,
+  text: condition.text
+});
+
+const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
+  conditionType.points.forEach(point => {
+    point.conditions.forEach(condition => {
+      acc.push(mapCondition(conditionType, condition));
+    });
+  });
+  return acc;
+}, []);
+
+/**
+ * Gets current data about the current licence version
+ * @param {String} licenceRef - licence number
+ * @return {Promise<Object>} resolves with licence summary and conditions
+ */
+const getCurrentLicenceData = async licenceRef => {
+  const doc = await services.crm.documents.getWaterLicence(licenceRef);
+  if (doc) {
+    const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
+
+    const aggregateConditions = mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
+
+    return {
+      returnsLink: `/licences/${doc.document_id}/returns`,
+      aggregateConditions,
+      aggregateQuantity: summary.data.aggregateQuantity
+    };
+  }
+};
+
+const getRequestTransaction = request => {
+  const { transactionId } = request.params;
+  const transaction = find(request.pre.invoiceLicence.transactions, { id: transactionId });
+  if (!transaction) {
+    throw Boom.notFound(`Transaction ${transactionId} not found`);
+  }
+  return transaction;
+};
+
+/**
+ * Allows user to set two-part tariff return quantities during
+ * two-part tariff review
+ */
+const getQuantities = async (request, h, form) => {
+  const { batch, invoiceLicence } = request.pre;
+
+  const transaction = getRequestTransaction(request);
+  const licenceData = await getCurrentLicenceData(invoiceLicence.licence.licenceNumber);
+
+  return h.view('nunjucks/billing/two-part-tariff-quantities', {
+    error: messages[transaction.twoPartTariffStatus],
+    invoiceLicence,
+    ...request.view,
+    pageTitle: `Review billable quantity ${transaction.chargeElement.description}`,
+    ...licenceData,
+    transaction,
+    form: form || twoPartTariffQuantityForm.form(request, transaction),
+    back: `/billing/batch/${batch.id}/two-part-tariff-review/${invoiceLicence.id}`
+  });
+};
+
+/**
+ * Gets the user-selected quantity from the form
+ * @param {Object} form - the set quantities form
+ * @param {Object} transaction - from water service
+ * @return {Number} returns the quantity selected by user
+ */
+const getFormQuantity = (form, transaction) => {
+  const { quantity, customQuantity } = forms.getValues(form);
+  if (quantity === 'authorised') {
+    return transaction.chargeElement.authorisedAnnualQuantity;
+  }
+  return customQuantity;
+};
+
+/**
+ * Post handler for quantities form
+ */
+const postQuantities = async (request, h) => {
+  const { batch, invoiceLicence } = request.pre;
+  const transaction = getRequestTransaction(request);
+
+  const form = forms.handleRequest(
+    twoPartTariffQuantityForm.form(request, transaction),
+    request,
+    twoPartTariffQuantityForm.schema(transaction)
+  );
+
+  if (form.isValid) {
+    const quantity = getFormQuantity(form, transaction);
+    const path = `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}/confirm?quantity=${quantity}`;
+    return h.redirect(path);
+  }
+  return getQuantities(request, h, form);
+};
+
+/**
+ * Confirmation step when quantity is selected
+ */
+const getQuantitiesConfirm = async (request, h) => {
+  const { batch, invoiceLicence } = request.pre;
+  const { quantity } = request.query;
+
+  const transaction = getRequestTransaction(request);
+
+  const form = twoPartTariffQuantityConfirmForm.form(request, quantity);
+
+  return h.view('nunjucks/billing/two-part-tariff-quantities-confirm', {
+    ...request.view,
+    quantity,
+    invoiceLicence,
+    form,
+    pageTitle: `You are about to set the billable quantity to ${quantity}ML`,
+    back: `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`
+  });
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
+exports.getQuantities = getQuantities;
+exports.postQuantities = postQuantities;
+exports.getQuantitiesConfirm = getQuantitiesConfirm;

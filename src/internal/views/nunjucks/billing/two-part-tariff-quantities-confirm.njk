@@ -1,0 +1,42 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% from "badge.njk" import badge %}
+
+
+{% block content %}
+
+<div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-two-thirds">
+    <section class="govuk-!-margin-bottom-6">
+      {% set caption %}
+        {{ invoiceLicence.licence.licenceNumber }}
+      {% endset %}
+      {{ title(pageTitle, caption) }}
+    </section>
+
+    <table class="govuk-table govuk-!-margin-bottom-9">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Charge period</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ quantity }}ML</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {{ formRender(form) }}
+  
+  </div>
+</div>
+
+
+
+{% endblock %}

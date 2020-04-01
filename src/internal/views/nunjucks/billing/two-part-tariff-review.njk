@@ -37,7 +37,7 @@
   }}
 </section>
 <section class="govuk-!-margin-bottom-9">
-  <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.errors }} licences have data issues</h2>
+  <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.errors }} {{ 'licence' | pluralize(totals.errors > 1) }} {{ 'has' | pluralize(totals.errors > 1) }} data issues</h2>
   <div class="table govuk-!-margin-bottom-6" id="dataIssues">
       <table class="govuk-table">
         <thead class="govuk-table__head">
@@ -77,7 +77,7 @@
 {% endif %}
 <section class="govuk-!-margin-bottom-0v">
 <h2 class="govuk-heading-l" id="readyTitle">
-  {{ totals.ready}} licences are ready for billing
+  {{ totals.ready}} {{ 'licence' | pluralize(totals.ready > 1) }} {{ 'is' | pluralize(totals.ready > 1) }} ready for billing
 </h2>
 <p class="govuk-body govuk-!-margin-bottom-9">
 <a href="/billing/batch/{{batch.id}}/two-part-tariff-ready" class="govuk-link">View licences ready for billing</a>

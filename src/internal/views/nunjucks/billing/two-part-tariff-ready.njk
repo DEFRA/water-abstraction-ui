@@ -37,9 +37,9 @@
     }}
     <div class="govuk-inset-text">
       <p class="govuk-body govuk-!-margin-bottom-0">
-        You need to review {{ totals.errors }} licences with returns data issues before you can continue
+        You need to review {{ totals.errors }} {{ 'licence' | pluralize(totals.errors > 1) }} with returns data issues before you can continue
       </p> 
-      <a href="/billing/batch/" + {{batchId}} + "/two-part-tariff-review" class="govuk-link">Review licences</a>
+      <a href="/billing/batch/{{batch.id}}/two-part-tariff-review" class="govuk-link">Review licences</a>
     </div>
   </section>
 {% else %}
@@ -62,7 +62,7 @@
 {% endif %}
 {% if totals.ready > 0 %}
 <section class="govuk-!-margin-bottom-9">
-  <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.ready }} licences are ready for billing</h2>
+  <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.ready }} {{ 'licence' | pluralize(totals.ready > 1) }} {{ 'is' | pluralize(totals.ready > 1) }} ready for billing</h2>
   <div class="table govuk-!-margin-bottom-6" id="dataIssues">
       <table class="govuk-table">
         <thead class="govuk-table__head">

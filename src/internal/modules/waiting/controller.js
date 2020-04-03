@@ -15,25 +15,23 @@ const getRedirectPath = (eventStatuses, ev) => {
 };
 
 const getBillingTitle = (event, regions) => {
-  const regionName = getRegionName(regions, event.metadata.batch.region_id);
+  const regionName = get(event, 'metadata.batch.region.displayName');
   const subType = event.subtype === 'two_part_tariff' ? 'two-part tariff' : event.subtype;
   return `${regionName} ${subType} bill run`;
 };
 
 const getWaitingForBilling = async (request, h, event) => {
   const statusPaths = {
-    complete: `/billing/batch/${event.metadata.batch.billing_batch_id}/summary?back=${request.query.back}`
+    complete: `/billing/batch/${event.metadata.batch.id}/summary?back=${request.query.back}`
   };
 
   if (statusPaths[event.status]) {
     return h.redirect(statusPaths[event.status]);
   }
 
-  const { data: regions } = await services.water.regions.getRegions();
-
   const view = {
     ...request.view,
-    pageTitle: getBillingTitle(event, regions),
+    pageTitle: getBillingTitle(event),
     caption: moment(event.date_created).format('D MMM YYYY'),
     waitingType: 'billRun'
   };
@@ -68,11 +66,6 @@ const getNotificationsTitle = (ev) => {
     returnInvitation: 'Send returns invitations'
   };
   return config[name];
-};
-
-const getRegionName = (regions, regionId) => {
-  const region = regions.find(region => region.regionId === regionId);
-  return region.displayName;
 };
 
 const handlers = {

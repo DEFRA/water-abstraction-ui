@@ -1,5 +1,5 @@
 'use strict';
-
+const { omit } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -132,13 +132,19 @@ experiment('modules/billing/lib/mappers', () => {
       });
     });
 
-    experiment('when batch.externalId is truthy', () => {
+    experiment('when batch.totals are set', () => {
       beforeEach(async () => {
         result = mappers.mapBatchListRow(batch);
       });
 
-      test('human-readable batch type is set', async () => {
-        expect(result.batchType).to.equal('Two-part tariff');
+      test('bill count is the sum of the invoices and credit note counts', async () => {
+        expect(result.billCount).to.equal(6);
+      });
+    });
+
+    experiment('when batch.totals are not set', () => {
+      beforeEach(async () => {
+        result = mappers.mapBatchListRow(omit(batch, 'totals'));
       });
 
       test('bill count is null', async () => {

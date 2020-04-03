@@ -34,36 +34,16 @@ const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') 
     metadata: {
       name: 'test-event-name',
       batch: {
-        billing_batch_id: 'test-batch-id',
-        region_id: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a'
+        id: 'test-batch-id',
+        regionId: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
+        region: {
+          displayName: 'Midlands'
+        }
       }
     },
     subtype
   },
   error: null
-});
-
-const getRegions = () => ({
-  data: [
-    {
-      regionId: '07ae7f3a-2677-4102-b352-cc006828948c',
-      chargeRegionId: 'A',
-      naldRegionId: 1,
-      name: 'Anglian',
-      displayName: 'Anglian',
-      dateCreated: '2019-11-05T12:10:35.164Z',
-      dateUpdated: '2019-11-05T12:10:35.164Z'
-    },
-    {
-      regionId: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
-      chargeRegionId: 'B',
-      naldRegionId: 2,
-      name: 'Midlands',
-      displayName: 'Midlands',
-      dateCreated: '2019-11-05T12:10:35.164Z',
-      dateUpdated: '2019-11-05T12:10:35.164Z'
-    }
-  ]
 });
 
 experiment('internal/modules/waiting/controller', () => {
@@ -199,7 +179,6 @@ experiment('internal/modules/waiting/controller', () => {
 
   beforeEach(async () => {
     sandbox.stub(services.water.events, 'findOne').resolves(getTestEventResponseBillRun());
-    sandbox.stub(services.water.regions, 'getRegions').resolves(getRegions());
 
     h = {
       view: sandbox.spy(),

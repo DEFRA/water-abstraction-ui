@@ -24,7 +24,7 @@
     <div class="govuk-grid-column-two-thirds">
       <section class="govuk-!-margin-bottom-6">
       {% set caption %}
-        {{ 'Bill run ' + batch.externalId if batch.externalId else null }}
+        {{ 'Bill run ' + batch.billRunId if batch.billRunId else null }}
       {% endset %}
         {{ title(pageTitle, caption, null, true, true) }}
       </section>

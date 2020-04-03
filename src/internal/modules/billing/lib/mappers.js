@@ -23,7 +23,7 @@ const mapBatchLink = batch =>
 const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
-  billCount: batch.externalId ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
+  billCount: batch.totals ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
   link: mapBatchLink(batch)
 });
 

@@ -6,7 +6,7 @@ const dataService = require('../../../lib/connectors/services');
 const getEventForBatch = async batchId => {
   const filter = {
     type: 'billing-batch',
-    "metadata->'batch'->>'billing_batch_id'": batchId
+    "metadata->'batch'->>'id'": batchId
   };
 
   const { data } = await dataService.water.events.findMany(filter);

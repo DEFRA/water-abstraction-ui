@@ -9,10 +9,14 @@ const helpers = require('@envage/water-abstraction-helpers');
  * @param {Object} batch
  * @return {String}
  */
-const mapBatchLink = batch =>
-  ['processing', 'ready'].includes(batch.status)
-    ? `/billing/batch/${batch.id}/summary`
-    : null;
+const mapBatchLink = batch => {
+  const links = {
+    processing: `/billing/batch/${batch.id}/summary`,
+    ready: `/billing/batch/${batch.id}/summary`,
+    review: `/billing/batch/${batch.id}/two-part-tariff-review`
+  };
+  return links[batch.status];
+};
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -86,6 +90,31 @@ const mapInvoiceTransactions = (invoice, documentIds) => {
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
+const mapCondition = (conditionType, condition) => ({
+  title: sentenceCase(conditionType.displayTitle.replace('Aggregate condition', '')),
+  parameter1Label: conditionType.parameter1Label.replace('licence number', 'licence'),
+  parameter1: condition.parameter1,
+  parameter2Label: conditionType.parameter2Label,
+  parameter2: condition.parameter2,
+  text: condition.text
+});
+
+/**
+ * Maps an array of conditions retrieved from licence summary water service call
+ * to the shape necessary for display on the two part tariff transaction review screen
+ * @param {Array} nested conditions
+ * @return {Array} flat list ready for view
+ */
+const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
+  conditionType.points.forEach(point => {
+    point.conditions.forEach(condition => {
+      acc.push(mapCondition(conditionType, condition));
+    });
+  });
+  return acc;
+}, []);
+
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceTransactions = mapInvoiceTransactions;
 exports.mapBatchType = mapBatchType;
+exports.mapConditions = mapConditions;

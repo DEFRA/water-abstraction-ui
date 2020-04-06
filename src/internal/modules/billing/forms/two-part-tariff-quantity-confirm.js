@@ -8,11 +8,11 @@ const twoPartTariffQuantityConfirmForm = (request, quantity) => {
 
   const { batchId, invoiceLicenceId, transactionId } = request.params;
 
-  const action = `/billing/batch/${batchId}/two-part-tariff-licence-review/${invoiceLicenceId}/transaction/${transactionId}/confirm`;
+  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${invoiceLicenceId}/transaction/${transactionId}/confirm`;
 
   const f = formFactory(action, 'POST');
 
-  f.fields.push(fields.hidden('value', quantity));
+  f.fields.push(fields.hidden('quantity', {}, quantity));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;

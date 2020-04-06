@@ -3,8 +3,8 @@ const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
+const mappers = require('../lib/mappers');
 
-const sentenceCase = require('sentence-case');
 const forms = require('shared/lib/forms');
 
 const messages = {
@@ -39,12 +39,14 @@ const getTwoPartTariffAction = async (request, h, action) => {
   // gets 2pt matching error messages and define error types
   const licences = licencesData.map(licence => ({
     ...licence,
-    twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses)
+    twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
+    link: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.billingInvoiceLicenceId}`
   }));
 
   return h.view('nunjucks/billing/two-part-tariff-' + action, {
     ...request.view,
     batch,
+    reviewLink: `/billing/batch/${batch.id}/two-part-tariff-review`,
     licences,
     totals: getTotals(licencesData),
     back: `/billing/batch/list`
@@ -77,7 +79,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   // Add 2PT error message
   const transactions = invoiceLicence.transactions.map(transaction => ({
     ...transaction,
-    editLink: `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`,
+    editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}`,
     error: transaction.twoPartTariffError && messages[transaction.twoPartTariffStatus]
   }));
 
@@ -106,24 +108,6 @@ const getLicenceReview = async (request, h) => {
   });
 };
 
-const mapCondition = (conditionType, condition) => ({
-  title: sentenceCase(conditionType.displayTitle.replace('Aggregate condition', '')),
-  parameter1Label: conditionType.parameter1Label.replace('licence number', 'licence'),
-  parameter1: condition.parameter1,
-  parameter2Label: conditionType.parameter2Label,
-  parameter2: condition.parameter2,
-  text: condition.text
-});
-
-const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
-  conditionType.points.forEach(point => {
-    point.conditions.forEach(condition => {
-      acc.push(mapCondition(conditionType, condition));
-    });
-  });
-  return acc;
-}, []);
-
 /**
  * Gets current data about the current licence version
  * @param {String} licenceRef - licence number
@@ -134,7 +118,7 @@ const getCurrentLicenceData = async licenceRef => {
   if (doc) {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
 
-    const aggregateConditions = mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
+    const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
 
     return {
       returnsLink: `/licences/${doc.document_id}/returns`,
@@ -157,7 +141,7 @@ const getRequestTransaction = request => {
  * Allows user to set two-part tariff return quantities during
  * two-part tariff review
  */
-const getQuantities = async (request, h, form) => {
+const getTransactionReview = async (request, h, form) => {
   const { batch, invoiceLicence } = request.pre;
 
   const transaction = getRequestTransaction(request);
@@ -192,7 +176,7 @@ const getFormQuantity = (form, transaction) => {
 /**
  * Post handler for quantities form
  */
-const postQuantities = async (request, h) => {
+const postTransactionReview = async (request, h) => {
   const { batch, invoiceLicence } = request.pre;
   const transaction = getRequestTransaction(request);
 
@@ -204,16 +188,16 @@ const postQuantities = async (request, h) => {
 
   if (form.isValid) {
     const quantity = getFormQuantity(form, transaction);
-    const path = `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}/confirm?quantity=${quantity}`;
+    const path = `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}/confirm?quantity=${quantity}`;
     return h.redirect(path);
   }
-  return getQuantities(request, h, form);
+  return getTransactionReview(request, h, form);
 };
 
 /**
  * Confirmation step when quantity is selected
  */
-const getQuantitiesConfirm = async (request, h) => {
+const getConfirmQuantity = async (request, h) => {
   const { batch, invoiceLicence } = request.pre;
   const { quantity } = request.query;
 
@@ -231,9 +215,22 @@ const getQuantitiesConfirm = async (request, h) => {
   });
 };
 
+/**
+ * Post handler for confirming billable volume
+ * Updates the quantity in the water service
+ */
+const postConfirmQuantity = async (request, h) => {
+  const { batch } = request.pre;
+  const transaction = getRequestTransaction(request);
+  const { quantity } = request.payload;
+  await services.water.billingTransactions.updateVolume(transaction.id, quantity);
+  return h.redirect(`/billing/batch/${batch.id}/two-part-tariff-review`);
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
-exports.getQuantities = getQuantities;
-exports.postQuantities = postQuantities;
-exports.getQuantitiesConfirm = getQuantitiesConfirm;
+exports.getTransactionReview = getTransactionReview;
+exports.postTransactionReview = postTransactionReview;
+exports.getConfirmQuantity = getConfirmQuantity;
+exports.postConfirmQuantity = postConfirmQuantity;

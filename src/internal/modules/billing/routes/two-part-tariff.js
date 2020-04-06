@@ -59,7 +59,7 @@ if (isAcceptanceTestTarget) {
     },
     getLicenceReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff-licence-review/{invoiceLicenceId}',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}',
       handler: controller.getLicenceReview,
       config: {
         pre,
@@ -78,10 +78,10 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
-    getQuantities: {
+    getTransactionReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff-licence-review/{invoiceLicenceId}/transaction/{transactionId}',
-      handler: controller.getQuantities,
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}',
+      handler: controller.getTransactionReview,
       config: {
         pre: [
           ...pre,
@@ -104,10 +104,10 @@ if (isAcceptanceTestTarget) {
       }
     },
 
-    postQuantities: {
+    postTransactionReview: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/two-part-tariff-licence-review/{invoiceLicenceId}/transaction/{transactionId}',
-      handler: controller.postQuantities,
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}',
+      handler: controller.postTransactionReview,
       config: {
         pre: [
           ...pre,
@@ -130,10 +130,10 @@ if (isAcceptanceTestTarget) {
       }
     },
 
-    getQuantitiesConfirm: {
+    getConfirmQuantity: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff-licence-review/{invoiceLicenceId}/transaction/{transactionId}/confirm',
-      handler: controller.getQuantitiesConfirm,
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}/confirm',
+      handler: controller.getConfirmQuantity,
       config: {
         pre: [
           ...pre,
@@ -153,6 +153,36 @@ if (isAcceptanceTestTarget) {
             transactionId: VALID_GUID
           },
           query: {
+            quantity: Joi.number().min(0).required()
+          }
+        }
+      }
+    },
+
+    postConfirmQuantity: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}/confirm',
+      handler: controller.postConfirmQuantity,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'review transaction quantities in TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            invoiceLicenceId: VALID_GUID,
+            transactionId: VALID_GUID
+          },
+          payload: {
+            csrf_token: VALID_GUID,
             quantity: Joi.number().min(0).required()
           }
         }

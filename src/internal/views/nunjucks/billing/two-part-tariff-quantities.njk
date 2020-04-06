@@ -97,7 +97,11 @@
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</td>
           <td class="govuk-table__cell">{{ transaction.chargeElement.authorisedAnnualQuantity }}ML</td>
-          <td class="govuk-table__cell">{{ transaction.chargeElement.billableAnnualQuantity }}ML</td>
+          <td class="govuk-table__cell">
+            {% if transaction.chargeElement.billableAnnualQuantity | isFinite %}
+              {{ transaction.chargeElement.billableAnnualQuantity }}ML
+            {% endif %}
+          </td>
           <td class="govuk-table__cell">{{ transaction.calculatedVolume ~ ' ML' if transaction.calculatedVolume | isFinite }}</td>
           <td class="govuk-table__cell">{{ error }}</td>
         </tr>

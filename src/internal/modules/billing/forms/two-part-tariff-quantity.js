@@ -9,7 +9,7 @@ const twoPartTariffQuantityForm = (request, transaction) => {
   const { batchId, invoiceLicenceId, transactionId } = request.params;
   const { authorisedAnnualQuantity } = transaction.chargeElement;
 
-  const action = `/billing/batch/${batchId}/two-part-tariff-licence-review/${invoiceLicenceId}/transaction/${transactionId}`;
+  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${invoiceLicenceId}/transaction/${transactionId}`;
 
   const f = formFactory(action, 'POST');
 

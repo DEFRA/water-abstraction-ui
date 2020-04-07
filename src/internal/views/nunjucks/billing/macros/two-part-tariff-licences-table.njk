@@ -12,26 +12,24 @@
     </thead>
     <tbody class="govuk-table__body">
       {% for licence in licences %}
-        {% if licence.twoPartTariffStatuses.length > 0 %}
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
-              {{ licence.licenceRef }}
-            </td>
-            <td class="govuk-table__cell">
-              {{ licence.licenceHolder.name }}
-            </td>
-            {% if includeIssues %}
-            <td class="govuk-table__cell">
-              {% if licence.twoPartTariffStatuses %}
-              {{ licence.twoPartTariffStatuses }}
-              {% endif %}
-            </td>
-            {% endif %}
-            <td class="govuk-table__cell govuk-table__cell--numeric">
-              <a href="{{ licence.link }}" class="govuk-link">Review</a>
-            </td>
-          </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {{ licence.licenceRef }}
+        </td>
+        <td class="govuk-table__cell">
+          {{ licence.licenceHolder.name }}
+        </td>
+        {% if includeIssues %}
+        <td class="govuk-table__cell">
+          {% if licence.twoPartTariffStatuses %}
+          {{ licence.twoPartTariffStatuses }}
+          {% endif %}
+        </td>
         {% endif %}
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          <a href="{{ licence.link }}" class="govuk-link">Review</a>
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>

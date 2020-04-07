@@ -5,7 +5,7 @@
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 
 {% from "./nunjucks/billing/macros/two-part-tariff-licences-table.njk" import twoPartTariffLicencesTable %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, twoPartTariffContinueButton %}
 {% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
 
 {% block content %}
@@ -37,11 +37,11 @@
           {% if totals.ready == 1 %}
           1 licence is ready for billing
           {% else %}
-          {{ totals.ready}} licences are ready for billing
+          {{ totals.ready }} licences are ready for billing
           {% endif %}
       </h2>
       <p class="govuk-body govuk-!-margin-bottom-9">
-      <a href="/billing/batch/{{batch.id}}/two-part-tariff-ready" class="govuk-link">View {{ 'licence' | pluralize (totals.ready) }} ready for billing</a>
+      <a href="{{ readyLink }}" class="govuk-link">View {{ 'licence' | pluralize (totals.ready) }} ready for billing</a>
       </p>
     </section>
   {% endif %}
@@ -49,14 +49,8 @@
   {% if totals.errors <= 0 %}
     <section class="govuk-!-margin-bottom-6">
       <p class="govuk-body">You have resolved all returns data issues. Continue to generate bills.</p>
-      {{
-        govukButton({
-          text: "Continue",
-          href: '#',
-          classes: 'govuk-!-margin-right-1'
-        })
-      }}
 
+      {{ twoPartTariffContinueButton(batch) }}
       {{ cancelBatchButton(batch) }}
 
     </section>

@@ -27,6 +27,7 @@ const batchData = {
 
 const batchLicences = [
   {
+    billingInvoiceLicenceId: 'invoice-licence-id-1',
     licenceRef: 'test-licence-ref-1',
     licenceId: 'test-licence-id-1',
     licenceHolder: {
@@ -36,9 +37,11 @@ const batchLicences = [
       firstName: 'forename',
       salutation: null
     },
+    twoPartTariffError: true,
     twoPartTariffStatuses: [10, 20, 30]
   },
   {
+    billingInvoiceLicenceId: 'invoice-licence-id-2',
     licenceRef: 'test-licence-ref-2',
     licenceId: 'test-licence-id-2',
     licenceHolder: {
@@ -48,15 +51,28 @@ const batchLicences = [
       firstName: 'First',
       salutation: null
     },
+    twoPartTariffError: true,
     twoPartTariffStatuses: [10]
   },
   {
+    billingInvoiceLicenceId: 'invoice-licence-id-3',
     licenceRef: 'test-licence-ref-3',
     licenceId: 'test-licence-id-3',
     licenceHolder: {
       id: 'licence-holder-3'
     },
+    twoPartTariffError: false,
     twoPartTariffStatuses: []
+  },
+  {
+    billingInvoiceLicenceId: 'invoice-licence-id-4',
+    licenceRef: 'test-licence-ref-4',
+    licenceId: 'test-licence-id-4',
+    licenceHolder: {
+      id: 'licence-holder-4'
+    },
+    twoPartTariffError: false,
+    twoPartTariffStatuses: [20, 30]
   }
 ];
 const secondHeader = sandbox.stub();
@@ -94,7 +110,13 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('returns the correct view data objects', async () => {
       const keys = Object.keys(h.view.lastCall.args[1]);
-      expect(keys).to.equal(['batch', 'licences', 'totals', 'back']);
+      expect(keys).to.include(['batch', 'reviewLink', 'readyLink', 'licences', 'totals', 'back']);
+    });
+
+    test('the links are correct', async () => {
+      const { readyLink, reviewLink } = h.view.lastCall.args[1];
+      expect(readyLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-ready');
+      expect(reviewLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
     });
 
     test('returns the correct batch data to the view', async () => {
@@ -105,26 +127,38 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(view.batch.region.name).to.equal('Anglian');
     });
 
-    test('returns the correct licences to the view', async () => {
+    test('returns the 2 licences with errors to the view', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.licences).to.be.array();
+      expect(view.licences).to.be.array().length(2);
+
       expect(view.licences[0].licenceRef).to.equal('test-licence-ref-1');
-      expect(view.licences[0].licenceId).to.equal('test-licence-id-1');
-      expect(view.licences[0].licenceHolder).to.be.an.object();
-      expect(view.licences[0].licenceHolder.salutation).to.equal(null);
-      expect(view.licences[0].licenceHolder.initials).to.equal('F S');
-      expect(view.licences[0].licenceHolder.firstName).to.equal('forename');
-      expect(view.licences[0].licenceHolder.lastName).to.equal('surname');
-      expect(view.licences[0].twoPartTariffStatuses).to.equal('Multiple errors');
-      expect(view.licences[1].twoPartTariffStatuses).to.equal('No returns submitted');
-      expect(view.licences[2].twoPartTariffStatuses).to.equal(null);
+      expect(view.licences[1].licenceRef).to.equal('test-licence-ref-2');
+    });
+
+    test('maps the first licence correctly', async () => {
+      const [licence] = h.view.lastCall.args[1].licences;
+      expect(licence.licenceRef).to.equal('test-licence-ref-1');
+      expect(licence.licenceId).to.equal('test-licence-id-1');
+      expect(licence.licenceHolder).to.be.an.object();
+      expect(licence.licenceHolder.salutation).to.equal(null);
+      expect(licence.licenceHolder.initials).to.equal('F S');
+      expect(licence.licenceHolder.firstName).to.equal('forename');
+      expect(licence.licenceHolder.lastName).to.equal('surname');
+      expect(licence.twoPartTariffStatuses).to.equal('Multiple errors');
+      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/invoice-licence-id-1');
+    });
+
+    test('maps the second licence correctly', async () => {
+      const [, licence] = h.view.lastCall.args[1].licences;
+      expect(licence.twoPartTariffStatuses).to.equal('No returns submitted');
     });
 
     test('returns the correct totals to the view', async () => {
       const [, view] = h.view.lastCall.args;
+      console.log(view.totals);
       expect(view.totals.errors).to.equal(2);
-      expect(view.totals.ready).to.equal(1);
-      expect(view.totals.total).to.equal(3);
+      expect(view.totals.ready).to.equal(2);
+      expect(view.totals.total).to.equal(4);
     });
 
     test('returns the correct back link to the view', async () => {
@@ -146,7 +180,13 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('returns the correct view data objects', async () => {
       const keys = Object.keys(h.view.lastCall.args[1]);
-      expect(keys).to.equal(['batch', 'licences', 'totals', 'back']);
+      expect(keys).to.include(['batch', 'reviewLink', 'readyLink', 'licences', 'totals', 'back']);
+    });
+
+    test('the links are correct', async () => {
+      const { readyLink, reviewLink } = h.view.lastCall.args[1];
+      expect(readyLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-ready');
+      expect(reviewLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
     });
 
     test('returns the correct batch data to the view', async () => {
@@ -159,21 +199,16 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('returns the correct licences to the view', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.licences).to.be.array();
-      expect(view.licences[0].licenceRef).to.equal('test-licence-ref-1');
-      expect(view.licences[0].licenceId).to.equal('test-licence-id-1');
-      expect(view.licences[0].licenceHolder).to.be.an.object();
-      expect(view.licences[0].licenceHolder.salutation).to.equal(null);
-      expect(view.licences[0].licenceHolder.initials).to.equal('F S');
-      expect(view.licences[0].licenceHolder.firstName).to.equal('forename');
-      expect(view.licences[0].licenceHolder.lastName).to.equal('surname');
+      expect(view.licences).to.be.array().length(2);
+      expect(view.licences[0].licenceRef).to.equal('test-licence-ref-3');
+      expect(view.licences[1].licenceRef).to.equal('test-licence-ref-4');
     });
 
     test('returns the correct totals to the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.totals.errors).to.equal(2);
-      expect(view.totals.ready).to.equal(1);
-      expect(view.totals.total).to.equal(3);
+      expect(view.totals.ready).to.equal(2);
+      expect(view.totals.total).to.equal(4);
     });
 
     test('returns the correct back link to the view', async () => {
@@ -216,7 +251,8 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       },
       transactions: [{
         id: uuid(),
-        twoPartTariffError: 20,
+        twoPartTariffError: true,
+        twoPartTariffStatus: 20,
         chargeElement: {
           description: 'Purpose A - borehole A',
           purposeUse: purposes.a,
@@ -309,7 +345,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       const [, { transactionGroups: [[{ editLink }]] }] = h.view.lastCall.args;
       const expectedLink = [
         `/billing/batch/${request.pre.batch.id}`,
-        `/two-part-tariff-licence-review/${invoiceLicence.id}`,
+        `/two-part-tariff/licence/${invoiceLicence.id}`,
         `/transaction/${invoiceLicence.transactions[0].id}`
       ].join('');
       expect(editLink).to.equal(expectedLink);
@@ -317,6 +353,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('grouped transactions have a two-part tariff error message', async () => {
       const [, { transactionGroups: [[{ error }]] }] = h.view.lastCall.args;
+      console.log(JSON.stringify(h.view.lastCall.args[1], null, 2));
       expect(error).to.equal('Under query');
     });
 

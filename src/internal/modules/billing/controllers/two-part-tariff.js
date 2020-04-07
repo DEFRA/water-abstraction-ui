@@ -18,7 +18,7 @@ const messages = {
 
 const getTotals = licences => {
   const errors = licences.reduce((acc, row) => (
-    acc + (row.twoPartTariffStatuses.length > 0 ? 1 : 0)
+    row.twoPartTariffError ? acc + 1 : acc
   ), 0);
 
   const totals = {
@@ -33,22 +33,34 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : messages[code];
 }, null);
 
+const getLicenceFilter = action => {
+  const isError = action === 'review';
+  return row => row.twoPartTariffError === isError;
+};
+
 const getTwoPartTariffAction = async (request, h, action) => {
   const { batch } = request.pre;
   const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);
+
+  // Get totals of licences with/without errors
+  const totals = getTotals(licencesData);
+
   // gets 2pt matching error messages and define error types
-  const licences = licencesData.map(licence => ({
-    ...licence,
-    twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-    link: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.billingInvoiceLicenceId}`
-  }));
+  const licences = licencesData
+    .filter(getLicenceFilter(action))
+    .map(licence => ({
+      ...licence,
+      twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
+      link: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.billingInvoiceLicenceId}`
+    }));
 
   return h.view('nunjucks/billing/two-part-tariff-' + action, {
     ...request.view,
     batch,
     reviewLink: `/billing/batch/${batch.id}/two-part-tariff-review`,
+    readyLink: `/billing/batch/${batch.id}/two-part-tariff-ready`,
     licences,
-    totals: getTotals(licencesData),
+    totals,
     back: `/billing/batch/list`
   });
 };

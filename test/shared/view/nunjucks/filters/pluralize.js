@@ -29,11 +29,23 @@ experiment('pluralize Nunjucks filter', () => {
     expect(pluralize('point', true)).to.equal('points');
   });
 
-  test('It should not pluralize word ending in y', async () => {
+  test('It should correctly pluralize word ending in y', async () => {
     expect(pluralize('daisy', true)).to.equal('daisies');
   });
 
-  test('It should not pluralize mouse', async () => {
+  test('It should correctly pluralize mouse', async () => {
     expect(pluralize('mouse', true)).to.equal('mice');
+  });
+
+  test('It should pluralize word if given number === 0', async () => {
+    expect(pluralize('mouse', 0)).to.equal('mice');
+  });
+
+  test('It should not pluralize word if given number === 1', async () => {
+    expect(pluralize('mouse', 1)).to.equal('mouse');
+  });
+
+  test('It should pluralize word if given number > 1', async () => {
+    expect(pluralize('mouse', 2)).to.equal('mice');
   });
 });

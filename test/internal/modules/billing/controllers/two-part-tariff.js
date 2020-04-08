@@ -837,25 +837,49 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   experiment('.postConfirmQuantity', () => {
     let request;
 
-    beforeEach(async () => {
-      request = getTransactionReviewRequest({
-        quantity: 10.4,
-        csrf_token: '00000000-0000-0000-0000-000000000000'
+    experiment('when the quantity is valid', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          quantity: 10.4,
+          csrf_token: '00000000-0000-0000-0000-000000000000'
+        });
+
+        await controller.postConfirmQuantity(request, h);
       });
 
-      await controller.postConfirmQuantity(request, h);
+      test('the transaction is updated', async () => {
+        expect(services.water.billingTransactions.updateVolume.calledWith(
+          request.params.transactionId, request.payload.quantity
+        )).to.be.true();
+      });
+
+      test('the user is redirected back to the licence review screen', async () => {
+        expect(h.redirect.calledWith(
+          '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
+        )).to.be.true();
+      });
     });
 
-    test('the transaction is updated', async () => {
-      expect(services.water.billingTransactions.updateVolume.calledWith(
-        request.params.transactionId, request.payload.quantity
-      )).to.be.true();
-    });
+    experiment('when the quantity is invalid', async () => {
+      let result;
 
-    test('the user is redirected back to the licence review screen', async () => {
-      expect(h.redirect.calledWith(
-        '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
-      )).to.be.true();
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          quantity: -24,
+          csrf_token: '00000000-0000-0000-0000-000000000000'
+        });
+
+        result = await controller.postConfirmQuantity(request, h);
+      });
+
+      test('the transaction is not updated', async () => {
+        expect(services.water.billingTransactions.updateVolume.called).to.be.false();
+      });
+
+      test('a bad request response is returned', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(400);
+      });
     });
   });
 });

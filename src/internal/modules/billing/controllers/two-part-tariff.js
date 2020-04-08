@@ -234,9 +234,17 @@ const getConfirmQuantity = async (request, h) => {
 const postConfirmQuantity = async (request, h) => {
   const { batch, invoiceLicence } = request.pre;
   const transaction = getRequestTransaction(request);
-  const { quantity } = request.payload;
-  await services.water.billingTransactions.updateVolume(transaction.id, quantity);
-  return h.redirect(`/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`);
+
+  const schema = twoPartTariffQuantityConfirmForm.schema(transaction);
+  const form = forms.handleRequest(twoPartTariffQuantityConfirmForm.form(request), request, schema);
+
+  if (form.isValid) {
+    const { quantity } = forms.getValues(form);
+    await services.water.billingTransactions.updateVolume(transaction.id, quantity);
+    return h.redirect(`/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`);
+  }
+
+  return Boom.badRequest();
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;

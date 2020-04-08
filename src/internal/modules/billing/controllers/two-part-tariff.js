@@ -232,11 +232,11 @@ const getConfirmQuantity = async (request, h) => {
  * Updates the quantity in the water service
  */
 const postConfirmQuantity = async (request, h) => {
-  const { batch } = request.pre;
+  const { batch, invoiceLicence } = request.pre;
   const transaction = getRequestTransaction(request);
   const { quantity } = request.payload;
   await services.water.billingTransactions.updateVolume(transaction.id, quantity);
-  return h.redirect(`/billing/batch/${batch.id}/two-part-tariff-review`);
+  return h.redirect(`/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`);
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;

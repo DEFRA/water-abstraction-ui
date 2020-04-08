@@ -134,6 +134,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
+    sandbox.stub(services.water.billingTransactions, 'updateVolume');
   });
 
   afterEach(async () => {
@@ -765,6 +766,96 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         const [path] = h.redirect.lastCall.args;
         expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id/confirm?quantity=12.43');
       });
+    });
+  });
+
+  experiment('.getConfirmQuantity', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = getTransactionReviewRequest();
+      request.query = { quantity: 10.4 };
+      await controller.getConfirmQuantity(request, h);
+    });
+
+    test('renders the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities-confirm');
+    });
+
+    test('outputs the correct page title to the view', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('You are about to set the billable quantity to 10.4ML');
+    });
+
+    test('outputs the correct back link to the view', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff-licence-review/test-invoice-licence-id/transaction/test-transaction-id');
+    });
+
+    test('outputs the quantity to the view', async () => {
+      const [, { quantity }] = h.view.lastCall.args;
+      expect(quantity).to.equal(request.query.quantity);
+    });
+
+    test('outputs the invoice licence to the view', async () => {
+      const [, { invoiceLicence }] = h.view.lastCall.args;
+      expect(invoiceLicence).to.be.an.object();
+      expect(invoiceLicence.id).to.equal('test-invoice-licence-id');
+    });
+
+    experiment('the form', () => {
+      let form;
+
+      beforeEach(async () => {
+        form = h.view.lastCall.args[1].form;
+      });
+
+      test('is an object', async () => {
+        expect(form).to.be.an.object();
+      });
+
+      test('has a hidden field for the CSRF token', async () => {
+        const field = form.fields.find(field => field.name === 'csrf_token');
+        expect(field.value).to.equal(request.view.csrfToken);
+      });
+
+      test('has a hidden field containing the quantity', async () => {
+        const field = form.fields.find(field => field.name === 'quantity');
+        expect(field.options.widget).to.equal('text');
+        expect(field.options.type).to.equal('hidden');
+        expect(field.value).to.equal(10.4);
+      });
+
+      test('has a continue button', async () => {
+        const field = form.fields.find(field => field.options.widget === 'button');
+        expect(field.options.label).to.equal('Continue');
+      });
+    });
+  });
+
+  experiment('.postConfirmQuantity', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = getTransactionReviewRequest({
+        quantity: 10.4,
+        csrf_token: '00000000-0000-0000-0000-000000000000'
+      });
+
+      await controller.postConfirmQuantity(request, h);
+    });
+
+    test('the transaction is updated', async () => {
+      expect(services.water.billingTransactions.updateVolume.calledWith(
+        request.params.transactionId, request.payload.quantity
+      )).to.be.true();
+    });
+
+    test('the user is redirected back to the licence review screen', async () => {
+      expect(h.redirect.calledWith(
+        '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
+      )).to.be.true();
     });
   });
 });

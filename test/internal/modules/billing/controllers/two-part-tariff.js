@@ -5,7 +5,8 @@ const {
   experiment,
   test,
   beforeEach,
-  afterEach
+  afterEach,
+  fail
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
@@ -93,13 +94,20 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     }
   };
 
+  beforeEach(async () => {
+    sandbox.stub(services.water.billingBatches, 'getBatchLicences');
+    sandbox.stub(services.crm.documents, 'getWaterLicence');
+    sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
+    sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
+  });
+
   afterEach(async () => {
     sandbox.restore();
   });
 
   experiment('.getTwoPartTariffReview', () => {
     beforeEach(async () => {
-      sandbox.stub(services.water.billingBatches, 'getBatchLicences').resolves(batchLicences);
+      services.water.billingBatches.getBatchLicences.resolves(batchLicences);
       await controller.getTwoPartTariffReview(request, h);
     });
 
@@ -155,7 +163,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('returns the correct totals to the view', async () => {
       const [, view] = h.view.lastCall.args;
-      console.log(view.totals);
       expect(view.totals.errors).to.equal(2);
       expect(view.totals.ready).to.equal(2);
       expect(view.totals.total).to.equal(4);
@@ -169,7 +176,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
   experiment('.getTwoPartTariffReady', () => {
     beforeEach(async () => {
-      sandbox.stub(services.water.billingBatches, 'getBatchLicences').resolves(batchLicences);
+      services.water.billingBatches.getBatchLicences.resolves(batchLicences);
       await controller.getTwoPartTariffViewReady(request, h);
     });
 
@@ -300,7 +307,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence').resolves(invoiceLicence);
+      services.water.billingInvoiceLicences.getInvoiceLicence.resolves(invoiceLicence);
       await controller.getLicenceReview(request, h);
     });
 
@@ -353,7 +360,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('grouped transactions have a two-part tariff error message', async () => {
       const [, { transactionGroups: [[{ error }]] }] = h.view.lastCall.args;
-      console.log(JSON.stringify(h.view.lastCall.args[1], null, 2));
       expect(error).to.equal('Under query');
     });
 
@@ -365,6 +371,276 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('a link to remove the invoice licence from the bill run is set', async () => {
       const [, { removeLink }] = h.view.lastCall.args;
       expect(removeLink).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-remove-licence/${invoiceLicence.id}`);
+    });
+  });
+
+  experiment('.getTransactionReview', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        view: {
+          csrfToken: 'csrf-token'
+        },
+        pre: {
+          batch: {
+            id: 'test-batch-id'
+          },
+          invoiceLicence: {
+            id: 'test-invoice-licence-id',
+            licence: {
+              licenceNumber: '01/123/ABC'
+            },
+            transactions: []
+          }
+        },
+        params: {
+          batchId: 'test-batch-id',
+          invoiceLicenceId: 'test-invoice-licence-id',
+          transactionId: 'test-transaction-id'
+        }
+      };
+
+      services.water.licences.getSummaryByDocumentId.resolves({
+
+      });
+    });
+
+    experiment('when the transaction is not present in the invoiceLicence', () => {
+      test('a boom 404 is thrown', async () => {
+        try {
+          await controller.getTransactionReview(request, h);
+          fail();
+        } catch (err) {
+          expect(err.isBoom).to.be.true();
+          expect(err.output.statusCode).to.equal(404);
+        }
+      });
+    });
+
+    experiment('when the transaction is present in the invoiceLicence', async () => {
+      beforeEach(async () => {
+        request.pre.invoiceLicence.transactions = [
+          {
+            id: 'test-transaction-id',
+            twoPartTariffStatus: 20,
+            chargeElement: {
+              description: 'Test description',
+              authorisedAnnualQuantity: 25.3
+            }
+          }
+        ];
+        services.crm.documents.getWaterLicence.resolves({
+          document_id: 'test-document_id'
+        });
+        services.water.licences.getSummaryByDocumentId.resolves({
+          data: {
+            'conditions': [
+              {
+                'code': 'AGG',
+                'subCode': 'LLL',
+                'displayTitle': 'Aggregate condition link between licences',
+                'parameter1Label': 'Linked licence number',
+                'parameter2Label': 'Aggregate quantity',
+                'points': [
+                  {
+                    'points': [
+                      {
+                        'ngr1': 'AB 111 111',
+                        'ngr2': 'AB 222 222',
+                        'ngr3': null,
+                        'ngr4': null,
+                        'name': 'Test point'
+                      }
+                    ],
+                    'conditions': [
+                      {
+                        'parameter1': '01/123/ABC',
+                        'parameter2': '20,000M3/YEAR',
+                        'text': 'AGGREGATE QTY SHALL NOT EXCEED 20,000M3/YEAR'
+                      },
+                      {
+                        'parameter1': '02/345/ABC',
+                        'parameter2': '800M3/DAY',
+                        'text': 'AGGREGATE QTY SHALL NOT EXCEED 800M3/DAY'
+                      }
+                    ]
+                  }
+                ],
+                'purpose': 'Spray Irrigation - Direct'
+              },
+              {
+                'code': 'EEL',
+                'subCode': 'REGS',
+                'displayTitle': 'Fish pass/screen - eel regs',
+                'parameter1Label': 'Type of pass or screen',
+                'parameter2Label': 'Location of pass or screen',
+                'points': [
+                  {
+                    'points': [
+                      {
+                        'ngr1': 'AB 111 111',
+                        'ngr2': 'AB 123 456',
+                        'ngr3': null,
+                        'ngr4': null,
+                        'name': 'Test point'
+                      }
+                    ],
+                    'conditions': [
+                      {
+                        'parameter1': null,
+                        'parameter2': '2MM',
+                        'text': 'SCREEN APERATURE NO LESS THAN 2MM'
+                      }
+                    ]
+                  }
+                ],
+                'purpose': 'Spray Irrigation - Direct'
+              }
+            ]
+          } });
+        await controller.getTransactionReview(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities');
+      });
+
+      test('sets an error message in the view', async () => {
+        const [, { error }] = h.view.lastCall.args;
+        expect(error).to.equal('Under query');
+      });
+
+      test('sets the invoice licence in the view', async () => {
+        const [, { invoiceLicence }] = h.view.lastCall.args;
+        expect(invoiceLicence).to.equal(request.pre.invoiceLicence);
+      });
+
+      test('existing properties in request.view are passed through', async () => {
+        const [, { csrfToken }] = h.view.lastCall.args;
+        expect(csrfToken).to.equal(request.view.csrfToken);
+      });
+
+      test('sets the page title', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal('Review billable quantity Test description');
+      });
+
+      test('sets a link to view returns', async () => {
+        const [, { returnsLink }] = h.view.lastCall.args;
+        expect(returnsLink).to.equal('/licences/test-document_id/returns');
+      });
+
+      experiment('view.aggregateConditions', () => {
+        let aggregateConditions;
+        beforeEach(async () => {
+          aggregateConditions = h.view.lastCall.args[1].aggregateConditions;
+        });
+
+        test('have non-aggregate conditions filtered out', async () => {
+          expect(aggregateConditions).to.be.an.array().length(2);
+        });
+
+        test('have a displayTitle with "Aggregate condition" removed and sentence-cased', async () => {
+          expect(aggregateConditions[0].title).to.equal('Link between licences');
+          expect(aggregateConditions[1].title).to.equal('Link between licences');
+        });
+
+        test('have a parameter1Label with "licence number" replaced with "licence"', async () => {
+          expect(aggregateConditions[0].parameter1Label).to.equal('Linked licence');
+          expect(aggregateConditions[1].parameter1Label).to.equal('Linked licence');
+        });
+
+        test('have the correct parameter1 value', async () => {
+          expect(aggregateConditions[0].parameter1).to.equal('01/123/ABC');
+          expect(aggregateConditions[1].parameter1).to.equal('02/345/ABC');
+        });
+
+        test('have the correct parameter2Label value', async () => {
+          expect(aggregateConditions[0].parameter2Label).to.equal('Aggregate quantity');
+          expect(aggregateConditions[1].parameter2Label).to.equal('Aggregate quantity');
+        });
+
+        test('have the correct parameter2 value', async () => {
+          expect(aggregateConditions[0].parameter2).to.equal('20,000M3/YEAR');
+          expect(aggregateConditions[1].parameter2).to.equal('800M3/DAY');
+        });
+
+        test('have the correct text', async () => {
+          expect(aggregateConditions[0].text).to.equal('AGGREGATE QTY SHALL NOT EXCEED 20,000M3/YEAR');
+          expect(aggregateConditions[1].text).to.equal('AGGREGATE QTY SHALL NOT EXCEED 800M3/DAY');
+        });
+      });
+
+      test('has the correct transaction', async () => {
+        const [, { transaction }] = h.view.lastCall.args;
+        expect(transaction).to.equal(request.pre.invoiceLicence.transactions[0]);
+      });
+
+      test('has a back link', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff-review/test-invoice-licence-id');
+      });
+
+      experiment('view.form', () => {
+        let form;
+        beforeEach(async () => {
+          form = h.view.lastCall.args[1].form;
+        });
+
+        test('is an object', async () => {
+          expect(form).to.be.an.object();
+        });
+
+        test('is a POST form', async () => {
+          expect(form.method).to.equal('POST');
+        });
+
+        test('has the correct action path', async () => {
+          expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id');
+        });
+
+        test('has a CSRF token', async () => {
+          const field = form.fields.find(row => row.name === 'csrf_token');
+          expect(field.value).to.equal(request.view.csrfToken);
+        });
+
+        experiment('has a radio field', async () => {
+          let field;
+          beforeEach(async () => {
+            field = form.fields.find(row => row.name === 'quantity');
+          });
+
+          test('with the correct UI widget', async () => {
+            expect(field.options.widget).to.equal('radio');
+          });
+
+          test('the first radio option is the annual auth quantity', async () => {
+            expect(field.options.choices[0].label).to.equal('Authorised (25.3ML)');
+            expect(field.options.choices[0].value).to.equal('authorised');
+          });
+
+          test('the second radio option is for a custom quantity', async () => {
+            expect(field.options.choices[1].label).to.equal('Custom (ML)');
+            expect(field.options.choices[1].value).to.equal('custom');
+          });
+
+          test('the custom option has a conditionally revealed field', async () => {
+            const subField = field.options.choices[1].fields[0];
+            expect(subField.name).to.equal('customQuantity');
+            expect(subField.options.label).to.equal('Billable quantity');
+            expect(subField.options.type).to.equal('number');
+            expect(subField.options.controlClass).to.equal('govuk-!-width-one-third');
+            expect(subField.value).to.be.undefined();
+          });
+        });
+
+        test('has a submit button', async () => {
+          const submit = form.fields.find(row => row.options.widget === 'button');
+          expect(submit.options.label).to.equal('Continue');
+        });
+      });
     });
   });
 });

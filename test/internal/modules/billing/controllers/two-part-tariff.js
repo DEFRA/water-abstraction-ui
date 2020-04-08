@@ -79,6 +79,41 @@ const batchLicences = [
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
+const getTransactionReviewRequest = payload => (
+  {
+    view: {
+      csrfToken: '00000000-0000-0000-0000-000000000000'
+    },
+    pre: {
+      batch: {
+        id: 'test-batch-id'
+      },
+      invoiceLicence: {
+        id: 'test-invoice-licence-id',
+        licence: {
+          licenceNumber: '01/123/ABC'
+        },
+        transactions: [
+          {
+            id: 'test-transaction-id',
+            twoPartTariffStatus: 20,
+            chargeElement: {
+              description: 'Test description',
+              authorisedAnnualQuantity: 25.3
+            }
+          }
+        ]
+      }
+    },
+    params: {
+      batchId: 'test-batch-id',
+      invoiceLicenceId: 'test-invoice-licence-id',
+      transactionId: 'test-transaction-id'
+    },
+    payload
+  }
+);
+
 experiment('internal/modules/billing/controller/two-part-tariff', () => {
   let h, request;
   h = {
@@ -378,35 +413,17 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     let request;
 
     beforeEach(async () => {
-      request = {
-        view: {
-          csrfToken: 'csrf-token'
-        },
-        pre: {
-          batch: {
-            id: 'test-batch-id'
-          },
-          invoiceLicence: {
-            id: 'test-invoice-licence-id',
-            licence: {
-              licenceNumber: '01/123/ABC'
-            },
-            transactions: []
-          }
-        },
-        params: {
-          batchId: 'test-batch-id',
-          invoiceLicenceId: 'test-invoice-licence-id',
-          transactionId: 'test-transaction-id'
-        }
-      };
-
+      request = getTransactionReviewRequest();
       services.water.licences.getSummaryByDocumentId.resolves({
 
       });
     });
 
     experiment('when the transaction is not present in the invoiceLicence', () => {
+      beforeEach(async () => {
+        request.pre.invoiceLicence.transactions = [];
+      });
+
       test('a boom 404 is thrown', async () => {
         try {
           await controller.getTransactionReview(request, h);
@@ -640,6 +657,113 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           const submit = form.fields.find(row => row.options.widget === 'button');
           expect(submit.options.label).to.equal('Continue');
         });
+      });
+    });
+  });
+  experiment('.postTransactionReview', () => {
+    let request;
+
+    experiment('when no radio button is selected', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          csrf_token: '00000000-0000-0000-0000-000000000000'
+        });
+        await controller.postTransactionReview(request, h);
+      });
+
+      test('the form is redisplayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities');
+      });
+
+      test('the form has an error', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form.errors).to.equal([{
+          name: 'quantity',
+          message: 'Select the billable quantity',
+          summary: 'Select the billable quantity'
+        }]);
+      });
+    });
+
+    experiment('when a custom quantity is <0', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          csrf_token: '00000000-0000-0000-0000-000000000000',
+          quantity: 'custom',
+          customQuantity: -4.42
+        });
+        await controller.postTransactionReview(request, h);
+      });
+
+      test('the form is redisplayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities');
+      });
+
+      test('the form has an error', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form.errors).to.equal([{
+          name: 'customQuantity',
+          message: 'The quantity must be zero or higher',
+          summary: 'The quantity must be zero or higher'
+        }]);
+      });
+    });
+
+    experiment('when a custom quantity is > annual authorised volume', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          csrf_token: '00000000-0000-0000-0000-000000000000',
+          quantity: 'custom',
+          customQuantity: 100.3
+        });
+        await controller.postTransactionReview(request, h);
+      });
+
+      test('the form is redisplayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities');
+      });
+
+      test('the form has an error', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form.errors).to.equal([{
+          name: 'customQuantity',
+          message: 'The quantity must be the same as or less than the authorised amount',
+          summary: 'The quantity must be the same as or less than the authorised amount'
+        }]);
+      });
+    });
+
+    experiment('when the annual authorised quantity is selected', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          csrf_token: '00000000-0000-0000-0000-000000000000',
+          quantity: 'authorised'
+        });
+        await controller.postTransactionReview(request, h);
+      });
+
+      test('the user is redirected to a confirmation page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id/confirm?quantity=25.3');
+      });
+    });
+
+    experiment('when a valid custom quantity is selected', async () => {
+      beforeEach(async () => {
+        request = getTransactionReviewRequest({
+          csrf_token: '00000000-0000-0000-0000-000000000000',
+          quantity: 'custom',
+          customQuantity: 12.43
+        });
+        await controller.postTransactionReview(request, h);
+      });
+
+      test('the user is redirected to a confirmation page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id/confirm?quantity=12.43');
       });
     });
   });

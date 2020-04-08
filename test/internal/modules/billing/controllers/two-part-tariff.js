@@ -194,7 +194,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('maps the second licence correctly', async () => {
       const [, licence] = h.view.lastCall.args[1].licences;
-      expect(licence.twoPartTariffStatuses).to.equal('No returns submitted');
+      expect(licence.twoPartTariffStatuses).to.equal('No returns received');
     });
 
     test('returns the correct totals to the view', async () => {
@@ -396,7 +396,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('grouped transactions have a two-part tariff error message', async () => {
       const [, { transactionGroups: [[{ error }]] }] = h.view.lastCall.args;
-      expect(error).to.equal('Under query');
+      expect(error).to.equal('Investigating query');
     });
 
     test('a back link is set', async () => {
@@ -527,7 +527,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('sets an error message in the view', async () => {
         const [, { error }] = h.view.lastCall.args;
-        expect(error).to.equal('Under query');
+        expect(error).to.equal('Investigating query');
       });
 
       test('sets the invoice licence in the view', async () => {

@@ -8,11 +8,11 @@ const mappers = require('../lib/mappers');
 const forms = require('shared/lib/forms');
 
 const messages = {
-  10: 'No returns submitted',
-  20: 'Under query',
-  30: 'Received',
-  40: 'Some returns are due',
-  50: 'Late returns',
+  10: 'No returns received',
+  20: 'Investigating query',
+  30: 'Returns received but not processed',
+  40: 'Some returns data outstanding',
+  50: 'Returns received late',
   60: 'Over abstraction'
 };
 

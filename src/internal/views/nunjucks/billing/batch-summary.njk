@@ -7,10 +7,6 @@
 
 {% block content %}
 
-  {% if error %}
-  {# display error message here if confirm batch failed #}
-  {% endif %}
-
   {% if not batch.totals %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
@@ -59,6 +55,9 @@
     </h2>
     </div>
   </div>
+
+  {% if isEditable %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <section class="govuk-!-margin-bottom-6">
@@ -81,6 +80,9 @@
       </p>
     </div>
   </div>
+
+  {% endif %}
+    
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-6">
       <hr class="govuk-section-break section-break--heavy" />
@@ -98,7 +100,9 @@
               <th scope="col" class="govuk-table__header">Contact</th>
               <th scope="col" class="govuk-table__header">Licence</th>
               <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
+              {% if isEditable %}
               <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody class="govuk-table__body">
@@ -121,9 +125,11 @@
                     <div>Credit note</div>
                   {% endif %}
                 </td>
+                {% if isEditable %}
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                   <a class="govuk-link" href="/billing/batch/{{batch.id}}/delete-account/{{invoice.id}}">Remove</a>
                 </td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>

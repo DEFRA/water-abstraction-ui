@@ -25,7 +25,7 @@ const getReturnQuantitiesPath = (ret, eventId) => {
 const mapReturn = (ret, eventId) => {
   return {
     ...ret,
-    returnRequirement: ret.returnRequirement || getReturnRequirmentFromId(ret.returnId),
+    returnRequirement: getReturnRequirmentFromId(ret.returnId),
     path: getReturnQuantitiesPath(ret, eventId)
   };
 };

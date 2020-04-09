@@ -70,15 +70,8 @@ experiment('return upload helpers', () => {
       const result = helpers.mapReturn(returns[0], eventId);
       expect(result).to.be.an.object();
     });
-    test('should use return requirement in return if available', async () => {
-      const ret = {
-        ...returns[0],
-        returnRequirement: 'foo'
-      };
-      const result = helpers.mapReturn(ret, eventId);
-      expect(result.returnRequirement).to.equal('foo');
-    });
-    test('should get return requirement from returnId if not set', async () => {
+
+    test('should get return requirement from returnId', async () => {
       const result = helpers.mapReturn(returns[0], eventId);
       expect(result.returnRequirement).to.equal('1234');
     });

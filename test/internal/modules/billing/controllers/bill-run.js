@@ -14,7 +14,7 @@ const uuid = require('uuid/v4');
 const { logger } = require('internal/logger');
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
-const controller = require('internal/modules/billing/controller');
+const controller = require('internal/modules/billing/controllers/bill-run');
 const batchService = require('internal/modules/billing/services/batch-service');
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 const csv = require('internal/lib/csv-download');
@@ -584,12 +584,10 @@ experiment('internal/modules/billing/controller', () => {
       expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary');
     });
 
-    test('if the approval fails, the user is redirected to the batch summary, with a query parameter added', async () => {
+    test('if the approval fails, the user is redirected to the batch summary, an error is thrown', async () => {
       services.water.billingBatches.approveBatch.rejects();
-      await controller.postBillingBatchConfirm(request, h);
-
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary?error=confirm');
+      const func = () => controller.postBillingBatchConfirm(request, h);
+      expect(func()).to.reject();
     });
   });
 

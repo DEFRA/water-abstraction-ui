@@ -1,5 +1,7 @@
 'use strict';
 
+const Joi = require('@hapi/joi');
+const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { selectBillingRegionForm, billingRegionFormSchema } = require('internal/modules/billing/forms/billing-region');
@@ -74,6 +76,16 @@ experiment('billing/forms/billing-region form', () => {
     expect(field.value).to.equal('annual');
   });
 
+  test('has a season field with a value', async () => {
+    const { data } = getBillingRegions();
+    const request = createRequest();
+    request.params.season = 'summer';
+
+    const form = selectBillingRegionForm(request, data);
+    const field = findField(form, 'selectedTwoPartTariffSeason');
+    expect(field.value).to.equal('summer');
+  });
+
   test('has a submit button', async () => {
     const { data } = getBillingRegions();
     const form = selectBillingRegionForm(createRequest(), data);
@@ -118,6 +130,44 @@ experiment('billing/forms/billing-region schema', () => {
 
     test('fails if blank', async () => {
       const result = billingRegionFormSchema.selectedBillingType.validate();
+      expect(result.error).to.exist();
+    });
+  });
+
+  experiment('selectedTwoPartTariffSeason', () => {
+    test('is not required if the billing type is annual', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingRegion: uuid(),
+        selectedBillingType: 'annual',
+        selectedTwoPartTariffSeason: ''
+      };
+
+      const result = Joi.validate(data, billingRegionFormSchema);
+      expect(result.error).not.to.exist();
+    });
+
+    test('passes for two part tariff when supplied', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingRegion: uuid(),
+        selectedBillingType: 'two_part_tariff',
+        selectedTwoPartTariffSeason: 'summer'
+      };
+
+      const result = Joi.validate(data, billingRegionFormSchema);
+      expect(result.error).not.to.exist();
+    });
+
+    test('fails when missing for two part tariff', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingRegion: uuid(),
+        selectedBillingType: 'two_part_tariff',
+        selectedTwoPartTariffSeason: ''
+      };
+
+      const result = Joi.validate(data, billingRegionFormSchema);
       expect(result.error).to.exist();
     });
   });

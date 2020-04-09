@@ -7,7 +7,7 @@ const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-ac
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
-const { get } = require('lodash');
+const { get, kebabCase } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const batchService = require('../services/batch-service');
@@ -17,6 +17,10 @@ const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
 const sentenceCase = require('sentence-case');
+const urlJoin = require('url-join');
+
+const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
+const seasons = require('../lib/seasons');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -33,15 +37,36 @@ const getBillingRegions = async () => {
   return data;
 };
 
+const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
+  const path = urlJoin(
+    '/billing/batch/region',
+    kebabCase(selectedBillingType),
+    kebabCase(selectedTwoPartTariffSeason)
+  );
+
+  return formKey
+    ? `${path}?${queryString.stringify({ form: formKey })}`
+    : path;
+};
+
 const getBatchDetails = (request, billingRegionForm) => {
-  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
-  const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
+  const {
+    selectedBillingType,
+    selectedBillingRegion,
+    selectedTwoPartTariffSeason
+  } = forms.getValues(billingRegionForm);
+
+  const financialYear = helpers.charging.getFinancialYear();
+  const financialYearEnding = selectedTwoPartTariffSeason === seasons.WINTER_AND_ALL_YEAR
+    ? financialYear - 1
+    : financialYear;
+
   const batch = {
     userEmail: request.defra.user.user_name,
     regionId: selectedBillingRegion,
     batchType: selectedBillingType,
-    financialYearEnding: financialYear,
-    season: 'all year' // ('summer', 'winter', 'all year').required();
+    financialYearEnding,
+    isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
   };
   return batch;
 };
@@ -72,8 +97,11 @@ const postBillingBatchType = async (request, h) => {
   const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema(request));
 
   if (billingTypeForm.isValid) {
-    const { selectedBillingType } = forms.getValues(billingTypeForm);
-    return h.redirect(`/billing/batch/region/${selectedBillingType}`);
+    const { selectedBillingType, twoPartTariffSeason } = forms.getValues(billingTypeForm);
+    return h.redirect(getRegionUrl(
+      selectedBillingType,
+      selectedBillingType === TWO_PART_TARIFF ? twoPartTariffSeason : ''
+    ));
   }
 
   const key = uuid();
@@ -111,10 +139,12 @@ const postBillingBatchRegion = async (request, h) => {
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, billingRegionFormSchema);
 
   if (!billingRegionForm.isValid) {
-    const { selectedBillingType } = forms.getValues(billingRegionForm);
+    const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
+
     const key = uuid();
     request.yar.set(key, billingRegionForm);
-    return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));
+
+    return h.redirect(getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason, key));
   }
 
   try {

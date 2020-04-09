@@ -21,7 +21,7 @@ experiment('services/water/BillingBatchService', () => {
     'regionId': 'selectedBillingRegion',
     'batchType': 'annual',
     'financialYear': new Date().getFullYear(),
-    'season': 'summer' // ('summer', 'winter', 'all year').required();
+    isSummer: true
   };
 
   beforeEach(async () => {

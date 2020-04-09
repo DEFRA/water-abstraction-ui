@@ -50,7 +50,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_1'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: 12.35
       }]
     },
     {
@@ -65,7 +67,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_2_a'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: null
       }, {
         value: 3456,
         chargePeriod: {
@@ -74,7 +78,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_2_b'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: 14.2
       }, {
         value: -363,
         isCredit: true,
@@ -84,7 +90,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_2_b'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: 12.35
       }, {
         value: 789,
         chargePeriod: {
@@ -93,7 +101,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_2_b'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: 12.35
       }, {
         value: 916,
         chargePeriod: {
@@ -102,7 +112,9 @@ const invoice = {
         },
         chargeElement: {
           id: 'charge_element_licence_2_b'
-        }
+        },
+        volume: 12.35,
+        calculatedVolume: 12.35
       }]
     }]
 };
@@ -201,12 +213,62 @@ experiment('modules/billing/lib/mappers', () => {
         test('has the correct transactions', async () => {
           expect(data.chargeElements[0].transactions[0]).to.equal({
             value: 924,
-            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' }
+            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
+            volume: 12.35,
+            calculatedVolume: 12.35,
+            isEdited: false
           });
         });
 
+        test('has the correct value', async () => {
+          const { value } = data.chargeElements[0].transactions[0];
+          expect(value).to.equal(924);
+        });
+
+        test('has the correct charge period', async () => {
+          const { chargePeriod } = data.chargeElements[0].transactions[0];
+          expect(chargePeriod).to.equal({ startDate: '2019-04-01', endDate: '2020-03-31' });
+        });
+
+        test('has the correct volumes', async () => {
+          const { volume, calculatedVolume } = data.chargeElements[0].transactions[0];
+          expect(volume).to.equal(12.35);
+          expect(calculatedVolume).to.equal(12.35);
+        });
+
+        test('has isEdited flag false because the two volumes are the same', async () => {
+          const { isEdited } = data.chargeElements[0].transactions[0];
+          expect(isEdited).to.be.false();
+        });
+
         test('has the correct totals', async () => {
-          expect(data.chargeElements[0].totals).to.equal({ debits: 924, credits: 0, netTotal: 924 });
+          const { totals } = data.chargeElements[0];
+          expect(totals).to.equal({ debits: 924, credits: 0, netTotal: 924 });
+        });
+      });
+
+      experiment('licence 2', () => {
+        beforeEach(async () => {
+          data = result['2020'][LICENCE_2];
+        });
+
+        test('has 2 x charge element', async () => {
+          expect(data.chargeElements.length).to.equal(2);
+        });
+
+        experiment('the first charge element', async () => {
+          test('has 1 x transaction', async () => {
+            expect(data.chargeElements[0].transactions).to.have.length(1);
+          });
+
+          experiment('the transaction', () => {
+            test('has isEdited flag true as the volume is different to the calculated volume', async () => {
+              const { volume, calculatedVolume, isEdited } = data.chargeElements[0].transactions[0];
+              expect(volume).to.equal(12.35);
+              expect(calculatedVolume).to.equal(null);
+              expect(isEdited).to.equal(true);
+            });
+          });
         });
       });
     });

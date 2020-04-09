@@ -31,7 +31,10 @@ const mapBatchListRow = batch => ({
   link: mapBatchLink(batch)
 });
 
-const mapTransaction = transaction => omit(transaction, ['chargeElement']);
+const mapTransaction = transaction => ({
+  ...omit(transaction, ['chargeElement']),
+  isEdited: transaction.calculatedVolume !== transaction.volume
+});
 
 const mapChargeElementTransactions = group => {
   const transactions = group.map(row => row.transaction);

@@ -10,7 +10,7 @@ const { VALID_GUID } = require('shared/lib/validators');
 
 const pre = [
   { method: preHandlers.loadBatch, assign: 'batch' },
-  { method: preHandlers.checkBatchIsTwoPartTariffReview }
+  { method: preHandlers.checkBatchStatusIsReview }
 ];
 
 if (isAcceptanceTestTarget) {

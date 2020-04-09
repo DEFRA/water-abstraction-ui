@@ -30,12 +30,12 @@ const redirectToWaitingIfEventNotComplete = async (request, h) => {
 const checkBatchStatus = async (request, h, status) => {
   const { batch } = request.pre;
   if (batch.status !== status) {
-    return Boom.badRequest(`Batch ${batch.id} has unexpected status ${batch.status}`);
+    return Boom.forbidden(`Batch ${batch.id} has unexpected status ${batch.status}`);
   }
   return h.continue;
 };
 
-const checkBatchIsTwoPartTariffReview = partialRight(checkBatchStatus, 'review');
+const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
 
 const loadInvoiceLicence = async request => {
   const { invoiceLicenceId } = request.params;
@@ -50,5 +50,5 @@ const loadInvoiceLicence = async request => {
 
 exports.loadBatch = loadBatch;
 exports.redirectToWaitingIfEventNotComplete = redirectToWaitingIfEventNotComplete;
-exports.checkBatchIsTwoPartTariffReview = checkBatchIsTwoPartTariffReview;
+exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
 exports.loadInvoiceLicence = loadInvoiceLicence;

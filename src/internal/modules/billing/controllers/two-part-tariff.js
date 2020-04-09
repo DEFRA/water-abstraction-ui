@@ -92,7 +92,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   const transactions = invoiceLicence.transactions.map(transaction => ({
     ...transaction,
     editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}`,
-    error: transaction.twoPartTariffError && messages[transaction.twoPartTariffStatus]
+    error: transaction.twoPartTariffError ? messages[transaction.twoPartTariffStatus] : null
   }));
 
   // Group by purpose use and abs period

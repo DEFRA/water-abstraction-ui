@@ -9,12 +9,14 @@
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle, null, null, true) }}
 
-      <span class="govuk-caption-l">Bill run {{  batch.billRunId }}</span>
+      <span class="govuk-caption-l">{{ batch.region.displayName }} bill run {{  batch.billRunId }}</span>
       <h2 class="govuk-heading-l">{{ secondTitle }}</h2>
-      <div class="govuk-grid-row govuk-!-margin-bottom-3">
+
+      <div class="govuk-!-margin-bottom-6">
         {{ batchMetadata(batch) }}
       </div>
-        {{ formRender(form) }}
+      
+      {{ formRender(form) }}
     </div>
   </div>
 

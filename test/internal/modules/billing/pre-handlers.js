@@ -14,6 +14,8 @@ const batchService = require('internal/modules/billing/services/batch-service');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
 experiment('internal/modules/billing/pre-handlers', () => {
+  let h;
+
   beforeEach(async () => {
     sandbox.stub(batchService, 'getBatch').resolves({
       id: 'test-batch-id',
@@ -21,6 +23,12 @@ experiment('internal/modules/billing/pre-handlers', () => {
     });
 
     sandbox.stub(eventService, 'getEventForBatch').resolves();
+
+    h = {
+      continue: 'continue',
+      redirect: sandbox.stub().returnsThis(),
+      takeover: sandbox.spy()
+    };
   });
 
   afterEach(async () => {
@@ -58,7 +66,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
   experiment('.redirectToWaitingIfEventNotComplete', () => {
     let request;
-    let h;
 
     beforeEach(async () => {
       request = {
@@ -66,11 +73,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
         params: {
           batchId: 'test-batch-id'
         }
-      };
-      h = {
-        continue: 'continue',
-        redirect: sandbox.stub().returnsThis(),
-        takeover: sandbox.spy()
       };
     });
 
@@ -100,6 +102,47 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
       const result = await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
       expect(result).to.equal(h.continue);
+    });
+  });
+
+  experiment('.checkBatchStatusIsReview', () => {
+    experiment('when the batch is in review status', () => {
+      let result;
+
+      beforeEach(async () => {
+        const request = {
+          pre: {
+            batch: {
+              status: 'review'
+            }
+          }
+        };
+        result = await preHandlers.checkBatchStatusIsReview(request, h);
+      });
+
+      test('the pre handler returns h.continue', async () => {
+        expect(result).to.equal(h.continue);
+      });
+    });
+
+    experiment('when the batch is not in review status', () => {
+      let result;
+
+      beforeEach(async () => {
+        const request = {
+          pre: {
+            batch: {
+              status: 'ready'
+            }
+          }
+        };
+        result = await preHandlers.checkBatchStatusIsReview(request, h);
+      });
+
+      test('the pre handler returns a Boom forbidden error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(403);
+      });
     });
   });
 });

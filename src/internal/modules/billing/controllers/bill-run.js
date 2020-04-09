@@ -16,6 +16,7 @@ const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
+const sentenceCase = require('sentence-case');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -25,7 +26,7 @@ const clearSessionForm = (request) => {
   request.yar.clear(get(request, 'query.form'));
 };
 
-const getBillRunPageTitle = batch => `${batch.region.name} ${batch.type.replace(/_/g, ' ')} bill run`;
+const getBillRunPageTitle = batch => `${sentenceCase(batch.type.replace(/_/g, ' '))} bill run`;
 
 const getBillingRegions = async () => {
   const { data } = await services.water.regions.getRegions();

@@ -1,18 +1,16 @@
 {% macro batchMetadata(batch) %}
-    <div class="govuk-grid-column-full">
-      <dl class="meta govuk-!-margin-bottom-3">
-        <div class="meta__row">
-          <dt class="meta__key">Date created</dt>
-          <dd class="meta__value">{{ batch.dateCreated | date }}</dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">Region</dt>
-          <dd class="meta__value">{{ batch.region.name }}</dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">Bill run type</dt>
-          <dd class="meta__value">{{ batch.type | sentenceCase }}</dd>
-        </div>
-      </dl>
+  <dl class="meta govuk-!-margin-bottom-3">
+    <div class="meta__row">
+      <dt class="meta__key">Date created</dt>
+      <dd class="meta__value">{{ batch.dateCreated | date }}</dd>
     </div>
+    <div class="meta__row">
+      <dt class="meta__key">Region</dt>
+      <dd class="meta__value">{{ batch.region.name }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">Bill run type</dt>
+      <dd class="meta__value">{{ batch.type | sentenceCase }}</dd>
+    </div>
+  </dl>
 {% endmacro %}

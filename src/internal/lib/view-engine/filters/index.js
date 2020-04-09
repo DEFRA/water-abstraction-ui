@@ -8,6 +8,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/charge'),
   ...require('shared/view/nunjucks/filters/date'),
   ...require('shared/view/nunjucks/filters/default-to'),
+  ...require('shared/view/nunjucks/filters/is-finite'),
   ...require('shared/view/nunjucks/filters/fixed'),
   ...require('shared/view/nunjucks/filters/flow-converter'),
   ...require('shared/view/nunjucks/filters/form'),

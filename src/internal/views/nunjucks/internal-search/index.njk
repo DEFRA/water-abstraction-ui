@@ -152,7 +152,7 @@
               <td class="govuk-table__cell">{{ doc.documentName }}</td>
               <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
               <td class="govuk-table__cell">
-                {{ doc.expires | date if doc.isCurrent else badge("Expired", "dark") }}
+                {{ doc.expires | date if doc.isCurrent else badge("Expired", "inactive") }}
               </td>
             </tr>
             {% endfor %}

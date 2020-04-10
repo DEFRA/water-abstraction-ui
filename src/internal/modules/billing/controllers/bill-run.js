@@ -186,7 +186,8 @@ const getBillingBatchInvoice = async (request, h) => {
     batch,
     batchType: mappers.mapBatchType(batch.type),
     transactions: mappers.mapInvoiceTransactions(invoice, documentIds),
-    isCredit: invoice.totals.netTotal < 0
+    isCredit: invoice.totals.netTotal < 0,
+    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`
   });
 };
 

@@ -410,6 +410,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.batchType).to.equal('Supplementary');
       expect(view.transactions).to.be.an.object();
       expect(view.isCredit).to.be.false();
+      expect(view.caption).to.equal('Billing account A12345678A');
     });
   });
 

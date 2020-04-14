@@ -406,7 +406,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('a link to remove the invoice licence from the bill run is set', async () => {
       const [, { removeLink }] = h.view.lastCall.args;
-      expect(removeLink).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-remove-licence/${invoiceLicence.id}`);
+      expect(removeLink).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`);
     });
   });
 

@@ -3,6 +3,7 @@ const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
+const confirmForm = require('../forms/confirm-form');
 const mappers = require('../lib/mappers');
 
 const forms = require('shared/lib/forms');
@@ -116,7 +117,7 @@ const getLicenceReview = async (request, h) => {
     batch,
     transactionGroups: getTransactionGroups(batch, invoiceLicence),
     back: `/billing/batch/${batch.id}/two-part-tariff-review`,
-    removeLink: `/billing/batch/${batch.id}/two-part-tariff-remove-licence/${invoiceLicence.id}`
+    removeLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`
   });
 };
 
@@ -247,6 +248,39 @@ const postConfirmQuantity = async (request, h) => {
   return Boom.badRequest();
 };
 
+/**
+ * Confirm removal of licence from TPT return
+ */
+const getRemoveLicence = async (request, h) => {
+  const { batch, invoiceLicence } = request.pre;
+
+  // Confirm form
+  const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`;
+  const form = confirmForm(request, action, 'Remove licence');
+
+  return h.view('nunjucks/billing/two-part-tariff-remove-licence', {
+    ...request.view,
+    ...request.pre,
+    form,
+    pageTitle: `You are about to remove this licence from the bill run`,
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`
+  });
+};
+
+/**
+ * Post handler for deleting licence from bill run
+ */
+const postRemoveLicence = async (request, h) => {
+  const { batchId, invoiceLicenceId } = request.params;
+
+  // Delete invoiceLicence from batch
+  await services.water.billingInvoiceLicences.deleteInvoiceLicence(invoiceLicenceId);
+
+  // Redirect
+  const path = `/billing/batch/${batchId}/two-part-tariff-review`;
+  return h.redirect(path);
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
@@ -254,3 +288,5 @@ exports.getTransactionReview = getTransactionReview;
 exports.postTransactionReview = postTransactionReview;
 exports.getConfirmQuantity = getConfirmQuantity;
 exports.postConfirmQuantity = postConfirmQuantity;
+exports.getRemoveLicence = getRemoveLicence;
+exports.postRemoveLicence = postRemoveLicence;

@@ -48,7 +48,19 @@ const loadInvoiceLicence = async request => {
   }
 };
 
+const loadInvoiceLicenceInvoice = async request => {
+  const { invoiceLicenceId } = request.params;
+
+  try {
+    const invoice = await services.water.billingInvoiceLicences.getInvoice(invoiceLicenceId);
+    return invoice;
+  } catch (err) {
+    return Boom.notFound(`Invoice not found for invoice licence id: ${invoiceLicenceId}`);
+  }
+};
+
 exports.loadBatch = loadBatch;
 exports.redirectToWaitingIfEventNotComplete = redirectToWaitingIfEventNotComplete;
 exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
 exports.loadInvoiceLicence = loadInvoiceLicence;
+exports.loadInvoiceLicenceInvoice = loadInvoiceLicenceInvoice;

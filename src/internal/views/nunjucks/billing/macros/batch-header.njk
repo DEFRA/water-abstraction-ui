@@ -1,20 +1,16 @@
-{% from "title.njk" import title %}
 {% from "badge.njk" import badge %}
 
 {% from "./batch-metadata.njk" import batchMetadata %}
+{% from "./batch-title.njk" import batchTitle %}
 
-{% macro batchHeader(pageTitle, batch) %}
+{% macro batchHeader(pageTitle, batch, isLargeHeading=true) %}
 
-{% set caption %}
-  {{ batch.region.displayName }} bill run {{ batch.billRunId }}
-{% endset %}
+
 
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-two-thirds">
 
-    <section class="govuk-!-margin-bottom-6">
-        {{ title(pageTitle, caption, null, true, true) }}
-    </section>
+    {{ batchTitle(pageTitle, batch, isLargeHeading) }}
 
     <p class="govuk-body">
       {{ badge(batch | batchBadge(true)) }}

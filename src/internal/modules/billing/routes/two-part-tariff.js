@@ -187,6 +187,59 @@ if (isAcceptanceTestTarget) {
           }
         }
       }
+    },
+
+    getRemoveLicence: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      handler: controller.getRemoveLicence,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' },
+          { method: preHandlers.loadInvoiceLicenceInvoice, assign: 'invoice' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'confirm remove licence from TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            invoiceLicenceId: VALID_GUID
+          }
+        }
+      }
+    },
+
+    postRemoveLicence: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      handler: controller.postRemoveLicence,
+      config: {
+        pre: [
+          ...pre
+          // { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' },
+          // { method: preHandlers.loadInvoiceLicenceInvoice, assign: 'invoice' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'confirm remove licence from TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            invoiceLicenceId: VALID_GUID
+          }
+        }
+      }
     }
+
   };
 };

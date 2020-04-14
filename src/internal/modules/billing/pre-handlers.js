@@ -3,17 +3,17 @@
 const Boom = require('boom');
 const { partialRight, partial } = require('lodash');
 
-const batchService = require('./services/batch-service');
 const eventService = require('./services/event-service');
-const services = require('../../lib/connectors/services');
+const { water } = require('../../lib/connectors/services');
 
-const getBatch = request => batchService.getBatch(request.params.batchId);
+const getBatch = request =>
+  water.billingBatches.getBatch(request.params.batchId);
 
 const getInvoiceLicence = request =>
-  services.water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
+  water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
 
 const getInvoiceLicenceInvoice = request =>
-  services.water.billingInvoiceLicences.getInvoice(request.params.invoiceLicenceId);
+  water.billingInvoiceLicences.getInvoice(request.params.invoiceLicenceId);
 
 const config = {
   loadBatch: {

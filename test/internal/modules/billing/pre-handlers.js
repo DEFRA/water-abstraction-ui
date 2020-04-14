@@ -10,16 +10,25 @@ const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
 const eventService = require('internal/modules/billing/services/event-service');
-const batchService = require('internal/modules/billing/services/batch-service');
+
+const { water } = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
 experiment('internal/modules/billing/pre-handlers', () => {
   let h;
 
   beforeEach(async () => {
-    sandbox.stub(batchService, 'getBatch').resolves({
+    sandbox.stub(water.billingBatches, 'getBatch').resolves({
       id: 'test-batch-id',
       type: 'annual'
+    });
+
+    sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
+      id: 'test-invoice-licence-id'
+    });
+
+    sandbox.stub(water.billingInvoiceLicences, 'getInvoice').resolves({
+      id: 'test-invoice-id'
     });
 
     sandbox.stub(eventService, 'getEventForBatch').resolves();
@@ -55,7 +64,7 @@ experiment('internal/modules/billing/pre-handlers', () => {
     });
 
     test('returns a Boom not found when the batch is not found', async () => {
-      batchService.getBatch.rejects();
+      water.billingBatches.getBatch.rejects();
       const result = await preHandlers.loadBatch(request);
 
       const { payload } = result.output;
@@ -143,6 +152,62 @@ experiment('internal/modules/billing/pre-handlers', () => {
         expect(result.isBoom).to.be.true();
         expect(result.output.statusCode).to.equal(403);
       });
+    });
+  });
+
+  experiment('.loadInvoiceLicence', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          invoiceLicenceId: 'test-invoice-licence-id'
+        }
+      };
+    });
+
+    test('the invoice licence is returned from the handler', async () => {
+      const result = await preHandlers.loadInvoiceLicence(request);
+      expect(result).to.equal({
+        id: 'test-invoice-licence-id'
+      });
+    });
+
+    test('returns a Boom not found when the batch is not found', async () => {
+      water.billingInvoiceLicences.getInvoiceLicence.rejects();
+      const result = await preHandlers.loadInvoiceLicence(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Invoice licence not found for invoiceLicenceId: test-invoice-licence-id');
+    });
+  });
+
+  experiment('.loadInvoiceLicenceInvoice', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          invoiceLicenceId: 'test-invoice-licence-id'
+        }
+      };
+    });
+
+    test('the invoice licence is returned from the handler', async () => {
+      const result = await preHandlers.loadInvoiceLicenceInvoice(request);
+      expect(result).to.equal({
+        id: 'test-invoice-id'
+      });
+    });
+
+    test('returns a Boom not found when the batch is not found', async () => {
+      water.billingInvoiceLicences.getInvoice.rejects();
+      const result = await preHandlers.loadInvoiceLicenceInvoice(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Invoice licence not found for invoiceLicenceId: test-invoice-licence-id');
     });
   });
 });

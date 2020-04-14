@@ -60,7 +60,7 @@ experiment('internal/modules/billing/pre-handlers', () => {
 
       const { payload } = result.output;
       expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Batch not found for id: test-batch-id');
+      expect(payload.message).to.equal('Batch not found for batchId: test-batch-id');
     });
   });
 

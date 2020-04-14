@@ -222,8 +222,6 @@ if (isAcceptanceTestTarget) {
       config: {
         pre: [
           ...pre
-          // { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' },
-          // { method: preHandlers.loadInvoiceLicenceInvoice, assign: 'invoice' }
         ],
         auth: { scope: allowedScopes },
         description: 'confirm remove licence from TPT batch',

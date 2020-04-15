@@ -12,8 +12,11 @@ const getBatch = request =>
 const getInvoiceLicence = request =>
   water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
 
-const getInvoiceLicenceInvoice = request =>
-  water.billingInvoiceLicences.getInvoice(request.params.invoiceLicenceId);
+const getInvoiceLicenceInvoice = request => {
+  const { batchId } = request.params;
+  const { invoiceId } = request.pre.invoiceLicence;
+  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
+};
 
 const config = {
   loadBatch: {
@@ -29,7 +32,7 @@ const config = {
   loadInvoiceLicenceInvoice: {
     connector: getInvoiceLicenceInvoice,
     key: 'invoiceLicenceId',
-    errorMessage: 'Invoice licence not found'
+    errorMessage: 'Invoice not found'
   }
 };
 

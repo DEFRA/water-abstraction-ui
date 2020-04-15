@@ -23,12 +23,12 @@ experiment('internal/modules/billing/pre-handlers', () => {
       type: 'annual'
     });
 
-    sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
-      id: 'test-invoice-licence-id'
+    sandbox.stub(water.billingBatches, 'getBatchInvoice').resolves({
+      id: 'test-invoice-id'
     });
 
-    sandbox.stub(water.billingInvoiceLicences, 'getInvoice').resolves({
-      id: 'test-invoice-id'
+    sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
+      id: 'test-invoice-licence-id'
     });
 
     sandbox.stub(eventService, 'getEventForBatch').resolves();
@@ -189,7 +189,13 @@ experiment('internal/modules/billing/pre-handlers', () => {
     beforeEach(async () => {
       request = {
         params: {
+          batchId: 'test-batch-id',
           invoiceLicenceId: 'test-invoice-licence-id'
+        },
+        pre: {
+          invoiceLicence: {
+            invoiceId: 'test-invoice-id'
+          }
         }
       };
     });
@@ -202,12 +208,12 @@ experiment('internal/modules/billing/pre-handlers', () => {
     });
 
     test('returns a Boom not found when the batch is not found', async () => {
-      water.billingInvoiceLicences.getInvoice.rejects();
+      water.billingBatches.getBatchInvoice.rejects();
       const result = await preHandlers.loadInvoiceLicenceInvoice(request);
 
       const { payload } = result.output;
       expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Invoice licence not found for invoiceLicenceId: test-invoice-licence-id');
+      expect(payload.message).to.equal('Invoice not found for invoiceLicenceId: test-invoice-licence-id');
     });
   });
 });

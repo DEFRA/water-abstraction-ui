@@ -36,15 +36,6 @@ experiment('services/water/BillingInvoiceLicenceService', () => {
     });
   });
 
-  experiment('.getInvoice', () => {
-    test('passes the expected URL to the service request', async () => {
-      const invoiceLicenceId = uuid();
-      await service.getInvoice(invoiceLicenceId);
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/invoice-licences/${invoiceLicenceId}/invoice`);
-    });
-  });
-
   experiment('.deleteInvoiceLicence', () => {
     test('passes the expected URL to the service request', async () => {
       const invoiceLicenceId = uuid();

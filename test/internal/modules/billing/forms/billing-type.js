@@ -1,8 +1,12 @@
+'use strict';
+
+const Joi = require('@hapi/joi');
+const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
+
 const { selectBillingTypeForm, billingTypeFormSchema } = require('internal/modules/billing/forms/billing-type');
 const { findField, findButton } = require('../../../../lib/form-test');
-const Joi = require('@hapi/joi');
 
 const createRequest = () => ({
   view: {
@@ -55,8 +59,53 @@ experiment('billing/forms/billing-type schema', () => {
       const result = Joi.describe(billingTypeFormSchema(createRequest()));
       expect(result.children.selectedBillingType.valids).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
     });
+
     test('fails if blank', async () => {
       const result = billingTypeFormSchema(createRequest()).selectedBillingType.validate();
+      expect(result.error).to.exist();
+    });
+  });
+
+  experiment('twoPartTariffSeason', () => {
+    test('is not required for an annual bill run', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingType: ANNUAL
+      };
+
+      const result = Joi.validate(data, billingTypeFormSchema());
+      expect(result.error).not.to.exist();
+    });
+
+    test('is valid if a season is selected', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingType: TWO_PART_TARIFF,
+        twoPartTariffSeason: 'summer'
+      };
+
+      const result = Joi.validate(data, billingTypeFormSchema());
+      expect(result.error).not.to.exist();
+    });
+
+    test('fails if no season is selected', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingType: TWO_PART_TARIFF
+      };
+
+      const result = Joi.validate(data, billingTypeFormSchema());
+      expect(result.error).to.exist();
+    });
+
+    test('fails if season is unexpected value', async () => {
+      const data = {
+        csrf_token: uuid(),
+        selectedBillingType: TWO_PART_TARIFF,
+        twoPartTariffSeason: 'spring'
+      };
+
+      const result = Joi.validate(data, billingTypeFormSchema());
       expect(result.error).to.exist();
     });
   });

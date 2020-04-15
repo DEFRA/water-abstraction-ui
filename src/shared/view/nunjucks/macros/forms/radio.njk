@@ -4,7 +4,6 @@
 {% from "./paragraph.njk" import formParagraphWidget %}
 
 {% macro formRadioWidget(field, form) %}
-
   {% set options = field | mapFormRadioField %}
 
   {% for choice in field.options.choices %}
@@ -24,11 +23,13 @@
           {{ formParagraphWidget(item, form) }}
         {% endif %}
 
+        {% if item.options.widget=='radio' %}
+          {{ formRadioWidget(item, form) }}
+        {% endif %}
       {% endset %}
       {% set options = options | setConditionalRadioField(outerLoop.index0, html) %}
     {% endfor %}
   {% endfor %}
 
   {{ govukRadios(options) }}
-
 {% endmacro %}

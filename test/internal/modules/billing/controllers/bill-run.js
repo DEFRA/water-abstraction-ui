@@ -18,6 +18,9 @@ const controller = require('internal/modules/billing/controllers/bill-run');
 const batchService = require('internal/modules/billing/services/batch-service');
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 const csv = require('internal/lib/csv-download');
+const helpers = require('@envage/water-abstraction-helpers');
+const billRunTypes = require('internal/modules/billing/lib/bill-run-types');
+const seasons = require('internal/modules/billing/lib/seasons');
 
 const billingRegions = {
   data: [
@@ -173,23 +176,67 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.postBillingBatchType', () => {
-    beforeEach(async () => {
-      sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
+    experiment('for a two part tariff bill run ', () => {
+      beforeEach(async () => {
+        sandbox.stub(forms, 'getValues').returns({
+          selectedBillingType: 'two_part_tariff',
+          twoPartTariffSeason: 'summer'
+        });
+      });
+
+      experiment('when the form is valid', () => {
+        test('the user is redirected to the expected URL including the season', async () => {
+          sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
+
+          await controller.postBillingBatchType(request, h);
+
+          const [url] = h.redirect.lastCall.args;
+          expect(url).to.equal('/billing/batch/region/two-part-tariff/summer');
+        });
+      });
+
+      experiment('when the form is not valid', () => {
+        test('the user is redirected to region page', async () => {
+          sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
+
+          await controller.postBillingBatchType(request, h);
+
+          const [url] = h.redirect.lastCall.args;
+          expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
+          expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+        });
+      });
     });
 
-    test('billingTypeForm is valid', async () => {
-      sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
-      await controller.postBillingBatchType(request, h);
-      const [url] = h.redirect.lastCall.args;
-      expect(url).to.equal('/billing/batch/region/supplementary');
-    });
+    experiment('for an annual bill run ', () => {
+      beforeEach(async () => {
+        sandbox.stub(forms, 'getValues').returns({
+          selectedBillingType: 'annual'
+        });
+      });
 
-    test('billingTypeForm is NOT valid', async () => {
-      sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
-      await controller.postBillingBatchType(request, h);
-      const [url] = h.redirect.lastCall.args;
-      expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
-      expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+      experiment('when the form is valid', () => {
+        test('the user is redirected to the expected URL', async () => {
+          sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
+
+          await controller.postBillingBatchType(request, h);
+
+          const [url] = h.redirect.lastCall.args;
+          expect(url).to.equal('/billing/batch/region/annual');
+        });
+      });
+
+      experiment('when the form is not valid', () => {
+        test('the user is redirected to region page', async () => {
+          sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
+
+          await controller.postBillingBatchType(request, h);
+
+          const [url] = h.redirect.lastCall.args;
+          expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
+          expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+        });
+      });
     });
   });
 
@@ -233,7 +280,11 @@ experiment('internal/modules/billing/controller', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(forms, 'getValues').returns({ selectedBillingType: 'supplementary' });
+      sandbox.stub(forms, 'getValues').returns({
+        selectedBillingType: 'supplementary',
+        selectedTwoPartTariffSeason: ''
+      });
+
       sandbox.stub(forms, 'handleRequest').returns(billingRegionFrom);
       sandbox.stub(services.water.billingBatches, 'createBillingBatch');
     });
@@ -276,6 +327,62 @@ experiment('internal/modules/billing/controller', () => {
         const [url] = h.redirect.lastCall.args;
 
         expect(url).to.equal(`/billing/batch/${id}/exists`);
+      });
+    });
+
+    experiment(`for all bill runs except winter two part tariff the finacial year is this year's`, () => {
+      const billRunCombinations = [
+        { billRunType: billRunTypes.ANNUAL },
+        { billRunType: billRunTypes.SUPPLEMENTARY },
+        { billRunType: billRunTypes.TWO_PART_TARIFF, season: seasons.SUMMER }
+      ];
+
+      billRunCombinations.forEach(combo => {
+        test(`the financial year for ${combo.billRunType} is this year`, async () => {
+          forms.getValues.returns({
+            selectedBillingType: combo.billRunType,
+            selectedTwoPartTariffSeason: combo.season
+          });
+
+          forms.handleRequest.returns({ isValid: true });
+          services.water.billingBatches.createBillingBatch.resolves({
+            data: {
+              event: {
+                id: uuid()
+              }
+            }
+          });
+
+          await controller.postBillingBatchRegion(request, h);
+
+          const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
+          const financialYear = helpers.charging.getFinancialYear(new Date());
+          expect(batch.financialYearEnding).to.equal(financialYear);
+        });
+      });
+    });
+
+    experiment(`for a winter two part tariff bill run`, () => {
+      test(`the financial year is the previous year`, async () => {
+        forms.getValues.returns({
+          selectedBillingType: billRunTypes.TWO_PART_TARIFF,
+          selectedTwoPartTariffSeason: seasons.WINTER_AND_ALL_YEAR
+        });
+
+        forms.handleRequest.returns({ isValid: true });
+        services.water.billingBatches.createBillingBatch.resolves({
+          data: {
+            event: {
+              id: uuid()
+            }
+          }
+        });
+
+        await controller.postBillingBatchRegion(request, h);
+
+        const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
+        const financialYear = helpers.charging.getFinancialYear(new Date());
+        expect(batch.financialYearEnding).to.equal(financialYear - 1);
       });
     });
   });

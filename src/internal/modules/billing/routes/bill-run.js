@@ -36,7 +36,7 @@ if (isAcceptanceTestTarget) {
 
     getBillingBatchRegion: {
       method: 'GET',
-      path: '/billing/batch/region/{billingType}',
+      path: '/billing/batch/region/{billingType}/{season?}',
       handler: controller.getBillingBatchRegion,
       config: {
         auth: { scope: allowedScopes },

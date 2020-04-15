@@ -121,3 +121,4 @@ exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceTransactions = mapInvoiceTransactions;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
+exports.mapBatchType = mapBatchType;

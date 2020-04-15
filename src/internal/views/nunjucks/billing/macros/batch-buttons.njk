@@ -35,3 +35,13 @@
     })
   }}
 {% endmacro %}
+
+{% macro downloadBatchButton(batch) %}
+  {{
+    govukButton({
+      text: "Download this bill run",
+      href: '/billing/batch/{{batch.id}}/transactions-csv',
+      classes: 'govuk-!-margin-right-1 govuk-button--secondary'
+    })
+  }}
+{% endmacro %}

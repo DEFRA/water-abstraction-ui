@@ -1,11 +1,22 @@
 'use strict';
 
+const Hapi = require('@hapi/hapi');
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
-
+const { cloneDeep } = require('lodash');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 const { scope } = require('internal/lib/constants');
 const routes = require('internal/modules/billing/routes/bill-run');
+
+const getServer = route => {
+  const server = Hapi.server();
+
+  const testRoute = cloneDeep(route);
+  testRoute.handler = (req, h) => h.response('Test handler').code(200);
+  testRoute.config.auth = false;
+  server.route(testRoute);
+  return server;
+};
 
 experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchSummary', () => {
@@ -33,6 +44,28 @@ experiment('internal/modules/billing/routes', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.getBillingBatchRegion.config.auth.scope)
         .to.only.include([scope.billing]);
+    });
+
+    test('accepts the season at the end of the path', async () => {
+      const server = getServer(routes.getBillingBatchRegion);
+      const request = {
+        url: '/billing/batch/region/two-part-tariff/summer'
+      };
+
+      const response = await server.inject(request);
+
+      expect(response.payload).to.equal('Test handler');
+    });
+
+    test('works with the season at the end of the path', async () => {
+      const server = getServer(routes.getBillingBatchRegion);
+      const request = {
+        url: '/billing/batch/region/annual'
+      };
+
+      const response = await server.inject(request);
+
+      expect(response.payload).to.equal('Test handler');
     });
   });
 

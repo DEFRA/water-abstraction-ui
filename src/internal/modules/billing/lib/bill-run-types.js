@@ -1,9 +1,5 @@
-const ANNUAL = 'annual';
-const SUPPLEMENTARY = 'supplementary';
-const TWO_PART_TARIFF = 'two_part_tariff';
+'use strict';
 
-module.exports = {
-  ANNUAL,
-  SUPPLEMENTARY,
-  TWO_PART_TARIFF
-};
+exports.ANNUAL = 'annual';
+exports.SUPPLEMENTARY = 'supplementary';
+exports.TWO_PART_TARIFF = 'two_part_tariff';

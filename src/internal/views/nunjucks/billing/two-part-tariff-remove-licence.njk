@@ -1,0 +1,27 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+
+{% block content %}
+
+<div class="govuk-grid-row govuk-!-margin-bottom-3">
+  <div class="govuk-grid-column-two-thirds">
+    {{ batchTitle(pageTitle, batch, false) }}
+
+    <dl class="meta govuk-!-margin-bottom-6">
+      <div class="meta__row">
+        <dt class="meta__key">Licence</dt>
+        <dd class="meta__value">{{ invoiceLicence.licence.licenceNumber }}</dd>
+      </div>
+      <div class="meta__row">
+        <dt class="meta__key">Billing contact</dt>
+        <dd class="meta__value">{{ invoice.invoiceAccount.company.name }}</dd>
+      </div>
+    </dl>
+
+    {{ formRender(form) }}
+
+  </div>
+</div>
+
+{% endblock %}
+

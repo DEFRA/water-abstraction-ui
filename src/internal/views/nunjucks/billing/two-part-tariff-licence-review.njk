@@ -6,24 +6,21 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+
 
 {% block content %}
 
 <div class="govuk-grid-row govuk-!-margin-bottom-0">
   <div class="govuk-grid-column-two-thirds">
-    <section class="govuk-!-margin-bottom-6">
-      {% set caption %}
-        {{ batch.region.name + ' two-part tariff bill run' }}
-      {% endset %}
-        {{ title(pageTitle, caption, null, true, true) }}
-    </section>
 
+    {{ batchTitle(pageTitle, batch) }}
 
     {{
       govukButton({
         text: "Remove from bill run",
         href: removeLink,
-        classes: "govuk-button--secondary govuk-!-margin-left-1"
+        classes: "govuk-button--secondary"
       })
     }}
   </div>

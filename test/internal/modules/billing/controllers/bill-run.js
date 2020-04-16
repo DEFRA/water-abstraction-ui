@@ -92,7 +92,8 @@ const batchInvoicesResult = {
       netTotal: 12345,
       licenceNumbers: [
         '01/123/A'
-      ]
+      ],
+      isWaterUndertaker: false
     },
     {
       id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
@@ -101,7 +102,8 @@ const batchInvoicesResult = {
       netTotal: -675467,
       licenceNumbers: [
         '04/567/B'
-      ]
+      ],
+      isWaterUndertaker: true
     }]
 };
 
@@ -442,29 +444,35 @@ experiment('internal/modules/billing/controller', () => {
         expect(view.batch).to.equal(batchInvoicesResult.batch);
       });
 
-      test('the first invoice, with isCredit flag false', async () => {
+      test('the first invoice, with isCredit flag true', async () => {
         expect(view.invoices[0]).to.equal({
-          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
-          accountNumber: 'A12345678A',
-          name: 'Test company 1',
-          netTotal: 12345,
-          licenceNumbers: [
-            '01/123/A'
-          ],
-          isCredit: false
-        });
-      });
-
-      test('the second invoice, with isCredit flag true', async () => {
-        expect(view.invoices[1]).to.equal({
           id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
           accountNumber: 'A89765432A',
+          isWaterUndertaker: true,
+          group: 'waterUndertakers',
           name: 'Test company 2',
           netTotal: -675467,
           licenceNumbers: [
             '04/567/B'
           ],
-          isCredit: true
+          isCredit: true,
+          sortValue: -675467
+        });
+      });
+
+      test('the second invoice, with isCredit flag false', async () => {
+        expect(view.invoices[1]).to.equal({
+          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+          accountNumber: 'A12345678A',
+          isWaterUndertaker: false,
+          group: 'otherAbstractors',
+          name: 'Test company 1',
+          netTotal: 12345,
+          licenceNumbers: [
+            '01/123/A'
+          ],
+          isCredit: false,
+          sortValue: -12345
         });
       });
     });

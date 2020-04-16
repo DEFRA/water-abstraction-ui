@@ -183,6 +183,8 @@ const mapInvoices = (batch, invoices) => {
   return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
 };
 
+const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
+
 /**
  * Shows a batch with its list of invoices
  * together with their totals
@@ -194,7 +196,7 @@ const getBillingBatchSummary = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
-    pageTitle: `${mappers.mapBatchType(batch.type)} bill run`,
+    pageTitle: getBillRunPageTitle(batch),
     subHeading: `${invoices.length} ${mappers.mapBatchType(batch.type).toLowerCase()} ${pluralize('bill', invoices)}`,
     batch,
     invoices: mapInvoices(batch, invoices),

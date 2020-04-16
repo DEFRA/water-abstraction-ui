@@ -37,10 +37,11 @@
 {% endmacro %}
 
 {% macro downloadBatchButton(batch) %}
+  {% set href %}/billing/batch/{{batch.id}}/transactions-csv{% endset %}
   {{
     govukButton({
       text: "Download this bill run",
-      href: '/billing/batch/{{batch.id}}/transactions-csv',
+      href: href,
       classes: 'govuk-!-margin-right-1 govuk-button--secondary'
     })
   }}

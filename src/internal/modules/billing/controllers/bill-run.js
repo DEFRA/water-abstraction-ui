@@ -191,8 +191,8 @@ const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill r
  * @param {String} request.params.batchId
  */
 const getBillingBatchSummary = async (request, h) => {
-  const { batchId } = request.params;
-  const { batch, invoices } = await batchService.getBatchInvoices(batchId);
+  const { batch } = request.pre;
+  const invoices = await services.water.billingBatches.getBatchInvoices(batch.id);
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,

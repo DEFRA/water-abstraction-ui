@@ -103,7 +103,8 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          preHandlers.redirectToWaitingIfEventNotComplete
+          preHandlers.redirectToWaitingIfEventNotComplete,
+          { method: preHandlers.loadBatch, assign: 'batch' }
         ]
       }
     },

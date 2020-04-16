@@ -44,7 +44,8 @@ const billingRegions = {
     }
   ]
 };
-const batchData = {
+
+const createBatchData = () => ({
   id: 'test-batch-id',
   dateCreated: '2000-01-01T00:00:00.000Z',
   type: 'supplementary',
@@ -57,7 +58,7 @@ const batchData = {
     netTotal: 43434
   },
   billRunId: 1234
-};
+});
 
 const invoice = {
   id: '1',
@@ -82,38 +83,63 @@ const invoice = {
   }
 };
 
-const batchInvoicesResult = {
-  batch: batchData,
-  invoices: [
-    {
-      id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
-      accountNumber: 'A12345678A',
-      name: 'Test company 1',
-      netTotal: 12345,
-      licenceNumbers: [
-        '01/123/A'
-      ],
-      isWaterUndertaker: false
-    },
-    {
-      id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
-      accountNumber: 'A89765432A',
-      name: 'Test company 2',
-      netTotal: -675467,
-      licenceNumbers: [
-        '04/567/B'
-      ],
-      isWaterUndertaker: true
-    }]
-};
+const batchInvoicesResult = [
+  {
+    id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+    accountNumber: 'A12345678A',
+    name: 'Test company 1',
+    netTotal: 12345,
+    licenceNumbers: [
+      '01/123/A'
+    ],
+    isWaterUndertaker: false
+  },
+  {
+    id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+    accountNumber: 'A89765432A',
+    name: 'Test company 2',
+    netTotal: -675467,
+    licenceNumbers: [
+      '04/567/B'
+    ],
+    isWaterUndertaker: true
+  }];
 
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
+const createRequest = () => ({
+  pre: { batch: createBatchData() },
+  params: {
+    batchId: 'test-batch-id',
+    invoiceId: 'test-invoice-id'
+  },
+  query: { back: 0 },
+  payload: {
+    csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
+  },
+  view: { foo: 'bar' },
+  log: sandbox.spy(),
+  defra: {
+    user: {
+      user_name: 'test-user@example.com'
+    }
+  },
+  yar: {
+    get: sandbox.stub().returns({
+      // form object or null depending on test
+    }),
+    set: sandbox.stub(),
+    clear: sandbox.stub()
+  }
+});
+
 experiment('internal/modules/billing/controller', () => {
-  let h, request;
+  let h, request, batchData;
 
   beforeEach(async () => {
+    batchData = createBatchData();
+
     h = {
       view: sandbox.stub(),
       response: sandbox.stub().returns({ header }),
@@ -123,38 +149,16 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
     sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
+    sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(batchInvoicesResult);
+
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
+
     sandbox.stub(batchService, 'getBatchList');
     sandbox.stub(batchService, 'getBatchInvoice').resolves({ id: 'invoice-account-id', accountNumber: 'A12345678A' });
-    sandbox.stub(batchService, 'getBatchInvoices');
     sandbox.stub(logger, 'info');
 
-    request = {
-      pre: { batch: batchData },
-      params: {
-        batchId: 'test-batch-id',
-        invoiceId: 'test-invoice-id'
-      },
-      query: { back: 0 },
-      payload: {
-        csrf_token: 'bfc56166-e983-4f01-90fe-f70c191017ca'
-      },
-      view: { foo: 'bar' },
-      log: sandbox.spy(),
-      defra: {
-        user: {
-          user_name: 'test-user@example.com'
-        }
-      },
-      yar: {
-        get: sandbox.stub().returns({
-          // form object or null depending on test
-        }),
-        set: sandbox.stub(),
-        clear: sandbox.stub()
-      }
-    };
+    request = createRequest();
   });
 
   afterEach(async () => {
@@ -419,74 +423,109 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchSummary', () => {
-    beforeEach(async () => {
-      batchService.getBatchInvoices.resolves(batchInvoicesResult);
-      await controller.getBillingBatchSummary(request, h);
-    });
-
-    test('the expected view template is used for bill run summary', async () => {
-      const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/billing/batch-summary');
-    });
-
-    experiment('the view model is populated with', () => {
-      let view;
-
+    experiment('when the batch type is annual', async () => {
       beforeEach(async () => {
-        ([, view] = h.view.lastCall.args);
+        request.pre.batch.type = 'annual';
+        await controller.getBillingBatchSummary(request, h);
       });
 
-      test('the page title including the region name and batch type', async () => {
-        expect(view.pageTitle).to.equal('Supplementary bill run');
-      });
+      experiment('the view model is populated with', () => {
+        let view;
 
-      test('the batch data', async () => {
-        expect(view.batch).to.equal(batchInvoicesResult.batch);
-      });
-
-      test('the first invoice, with isCredit flag true', async () => {
-        expect(view.invoices[0]).to.equal({
-          id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
-          accountNumber: 'A89765432A',
-          isWaterUndertaker: true,
-          group: 'waterUndertakers',
-          name: 'Test company 2',
-          netTotal: -675467,
-          licenceNumbers: [
-            '04/567/B'
-          ],
-          isCredit: true,
-          sortValue: -675467
+        beforeEach(async () => {
+          ([, view] = h.view.lastCall.args);
         });
-      });
 
-      test('the second invoice, with isCredit flag false', async () => {
-        expect(view.invoices[1]).to.equal({
-          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
-          accountNumber: 'A12345678A',
-          isWaterUndertaker: false,
-          group: 'otherAbstractors',
-          name: 'Test company 1',
-          netTotal: 12345,
-          licenceNumbers: [
-            '01/123/A'
-          ],
-          isCredit: false,
-          sortValue: -12345
+        test('invoices divided into 2 groups for water undertakers and other abstractors', async () => {
+          expect(view.invoices).to.be.an.object();
+          expect(view.invoices.waterUndertakers).to.be.an.array().length(1);
+          expect(view.invoices.otherAbstractors).to.be.an.array().length(1);
+        });
+
+        test('the "water undertakers" group only includes invoices where the flag is set', async () => {
+          expect(view.invoices.waterUndertakers[0].isWaterUndertaker).to.be.true();
+        });
+
+        test('the "other abstractors" group only includes invoices where the flag is cleared', async () => {
+          expect(view.invoices.otherAbstractors[0].isWaterUndertaker).to.be.false();
         });
       });
     });
 
-    test('does not include the back link if the "back" query param is zero', async () => {
-      await controller.getBillingBatchSummary(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal(0);
-    });
+    experiment('when the batch type is not annual', async () => {
+      beforeEach(async () => {
+        // batchService.getBatchInvoices.resolves(batchInvoicesResult);
+        await controller.getBillingBatchSummary(request, h);
+      });
 
-    test('includes the back link if "back" query param is 1', async () => {
-      await controller.getBillingBatchSummary({ ...request, query: { back: 1 } }, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/billing/batch/list');
+      test('the expected view template is used for bill run summary', async () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/batch-summary');
+      });
+
+      experiment('the view model is populated with', () => {
+        let view;
+
+        beforeEach(async () => {
+          ([, view] = h.view.lastCall.args);
+        });
+
+        test('the page title including the region name and batch type', async () => {
+          expect(view.pageTitle).to.equal('Supplementary bill run');
+        });
+
+        test('includes the correct sub-heading', async () => {
+          expect(view.subHeading).to.equal('2 supplementary bills');
+        });
+
+        test('the batch data', async () => {
+          expect(view.batch).to.equal(request.pre.batch);
+        });
+
+        test('the first invoice, with isCredit flag true', async () => {
+          expect(view.invoices[0]).to.equal({
+            id: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+            accountNumber: 'A89765432A',
+            isWaterUndertaker: true,
+            group: 'waterUndertakers',
+            name: 'Test company 2',
+            netTotal: -675467,
+            licenceNumbers: [
+              '04/567/B'
+            ],
+            isCredit: true,
+            sortValue: -675467
+          });
+        });
+
+        test('the second invoice, with isCredit flag false', async () => {
+          expect(view.invoices[1]).to.equal({
+            id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+            accountNumber: 'A12345678A',
+            isWaterUndertaker: false,
+            group: 'otherAbstractors',
+            name: 'Test company 1',
+            netTotal: 12345,
+            licenceNumbers: [
+              '01/123/A'
+            ],
+            isCredit: false,
+            sortValue: -12345
+          });
+        });
+      });
+
+      test('does not include the back link if the "back" query param is zero', async () => {
+        await controller.getBillingBatchSummary(request, h);
+        const [, view] = h.view.lastCall.args;
+        expect(view.back).to.equal(0);
+      });
+
+      test('includes the back link if "back" query param is 1', async () => {
+        await controller.getBillingBatchSummary({ ...request, query: { back: 1 } }, h);
+        const [, view] = h.view.lastCall.args;
+        expect(view.back).to.equal('/billing/batch/list');
+      });
     });
   });
 

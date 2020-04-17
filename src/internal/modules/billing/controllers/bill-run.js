@@ -3,7 +3,7 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
-const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-account');
+const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
@@ -235,11 +235,12 @@ const getBillingBatchList = async (request, h) => {
 const billingBatchAction = (request, h, action) => {
   const { batch } = request.pre;
   const titleAction = (action === 'confirm') ? 'send' : 'cancel';
-  return h.view('nunjucks/billing/batch-cancel-or-confirm', {
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     batch,
     pageTitle: `You are about to ${titleAction} this bill run`,
     secondTitle: getBillRunPageTitle(batch),
+    metadataType: 'batch',
     form: cancelOrConfirmBatchForm(request, action),
     back: `/billing/batch/${batch.id}/summary`
   });
@@ -288,13 +289,15 @@ const getBillingBatchDeleteAccount = async (request, h) => {
   const { batchId, invoiceId } = request.params;
   const { batch } = request.pre;
   const account = await batchService.getBatchInvoice(batchId, invoiceId);
+  const action = `/billing/batch/${batchId}/delete-account/${account.id}`;
 
-  return h.view('nunjucks/billing/batch-delete-account', {
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     pageTitle: 'You are about to remove this bill from the bill run',
     account,
-    form: deleteAccountFromBatchForm(request, account.id),
+    form: confirmForm(request, action, 'Remove bill'),
     batch,
+    metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });
 };

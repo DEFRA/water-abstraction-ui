@@ -1,6 +1,6 @@
 {% macro invoiceMetadata(account, licence) %}
-  <div class="govuk-grid-row govuk-!-margin-bottom-3">
-    <div class="govuk-grid-column-full">
+  {# <div class="govuk-grid-row govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-full"> #}
       <dl class="meta govuk-!-margin-bottom-3">
         <div class="meta__row">
           <dt class="meta__key">Account</dt>
@@ -21,6 +21,6 @@
           <dd class="meta__value">{{ account.amount | charge(true) }}</dd>
         </div>
       </dl>
-    </div>
-  </div>
+    {# </div>
+  </div> #}
 {% endmacro %}

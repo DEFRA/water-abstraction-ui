@@ -12,11 +12,11 @@
 
   {{ batchHeader(pageTitle, batch) }}
 
+  {% if totals.errors > 0 %}
   <section class="govuk-!-margin-bottom-6">
     {{ cancelBatchButton(batch) }}
   </section>
 
-  {% if totals.errors > 0 %}
     <section class="govuk-!-margin-bottom-9">
       <h2 class="govuk-heading-l" id="issuesTitle">
         {% if totals.errors == 1 %}
@@ -43,16 +43,6 @@
       <p class="govuk-body govuk-!-margin-bottom-9">
       <a href="{{ readyLink }}" class="govuk-link">View {{ 'licence' | pluralize (totals.ready) }} ready for billing</a>
       </p>
-    </section>
-  {% endif %}
-
-  {% if totals.errors <= 0 %}
-    <section class="govuk-!-margin-bottom-6">
-      <p class="govuk-body">You have resolved all returns data issues. Continue to generate bills.</p>
-
-      {{ twoPartTariffContinueButton(batch) }}
-      {{ cancelBatchButton(batch) }}
-
     </section>
   {% endif %}
 

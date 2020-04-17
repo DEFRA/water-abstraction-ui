@@ -8,7 +8,7 @@ const transactionsCSV = require('internal/modules/billing/services/transactions-
 const batch = {
   id: '8ed86390-3557-4cbb-a43f-bd31db5ae119',
   dateCreated: '2020-01-14',
-  type: 'supplementary',
+  type: 'two_part_tariff',
   region: {
     displayName: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
@@ -256,7 +256,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `South West supplementary bill run 2345.csv`;
+      const expectedFileName = `South West two-part tariff bill run 2345.csv`;
       const fileName = transactionsCSV.getCSVFileName(batch);
       expect(fileName).to.equal(expectedFileName);
     });

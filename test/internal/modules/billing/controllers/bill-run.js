@@ -454,7 +454,6 @@ experiment('internal/modules/billing/controller', () => {
 
     experiment('when the batch type is not annual', async () => {
       beforeEach(async () => {
-        // batchService.getBatchInvoices.resolves(batchInvoicesResult);
         await controller.getBillingBatchSummary(request, h);
       });
 

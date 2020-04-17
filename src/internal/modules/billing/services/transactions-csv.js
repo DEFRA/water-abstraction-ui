@@ -2,6 +2,7 @@
 const moment = require('moment');
 const numberFormatter = require('../../../../shared/lib/number-formatter');
 const { mapValues, isNull } = require('lodash');
+const mappers = require('../lib/mappers');
 
 const valueToString = (value, key) => isNull(value) ? '' : value.toString();
 const rowToStrings = row => mapValues(row, valueToString);
@@ -71,7 +72,8 @@ const createCSV = async data => {
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.displayName} ${batch.type} bill run ${batch.billRunId}.csv`;
+  const batchType = mappers.mapBatchType(batch.type);
+  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunId}.csv`;
 };
 exports._getInvoiceAccountData = getInvoiceAccountData;
 exports._getTransactionData = getTransactionData;

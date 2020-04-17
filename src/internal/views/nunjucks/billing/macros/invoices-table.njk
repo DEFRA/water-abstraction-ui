@@ -1,0 +1,96 @@
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "./totals.njk" import chargeOrDash %}
+
+{% macro tableHeader(isEditable) %}
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Account</th>
+      <th scope="col" class="govuk-table__header">Billing contact</th>
+      <th scope="col" class="govuk-table__header">Licence</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
+      {% if isEditable %}
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
+      {% endif %}
+    </tr>
+  </thead>
+{% endmacro %}
+
+{% macro billingAccountCell(invoice) %}
+  <td class="govuk-table__cell">
+    {{ invoice.accountNumber }}
+  </td>
+{% endmacro %}
+
+{% macro billingContactCell(invoice) %}
+  <td class="govuk-table__cell">
+    {{ invoice.name | titleCase }}
+  </td>
+{% endmacro %}
+
+{% macro billingLicencesList(invoice) %}
+  <ul class="govuk-list govuk-!-margin-0">
+  {% for licence in invoice.licenceNumbers %}
+    <li class="govuk-!-margin-0">{{ licence }}</li>
+  {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro licenceNumbersCell(invoice) %}
+
+  {% set list %}{{ billingLicencesList(invoice) }}{% endset %}
+
+  <td class="govuk-table__cell">
+  {% if invoice.licenceNumbers.length > 5 %}
+
+    {% set summaryText %}{{ invoice.licenceNumbers.length }} licences{% endset %}
+
+    {{ govukDetails({
+      summaryText: summaryText,
+      html : list,
+      classes: "govuk-!-margin-bottom-0"
+    }) }}
+
+  {% else %}
+    {{ list | safe }}
+  {% endif %}
+  </td>
+{% endmacro %}
+
+{% macro totalCell(invoice) %}
+  <td class="govuk-table__cell govuk-table__cell--numeric">
+    {{ chargeOrDash(invoice.netTotal) }}
+    {% if invoice.isCredit %}
+      <div>Credit note</div>
+    {% endif %}
+  </td>
+{% endmacro %}
+
+{% macro actionsCell(batch, invoice) %}
+  <td class="govuk-table__cell govuk-table__cell--numeric">
+    <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden"> invoice for {{ invoice.accountNumber }}</span></a>
+  </td>
+{% endmacro %}
+
+{% macro tableRow(batch, invoice, isEditable) %}
+  <tr class="govuk-table__row">
+    {{ billingAccountCell(invoice) }}
+    {{ billingContactCell(invoice) }}
+    {{ licenceNumbersCell(invoice) }}
+    {{ totalCell(invoice)}}
+    {% if isEditable %}
+      {{ actionsCell(batch, invoice) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro invoicesTable(batch, invoices, isEditable) %}
+  {% if invoices.length > 0 %}
+  <table class="govuk-table">
+    {{ tableHeader(isEditable) }}
+    <tbody class="govuk-table__body">
+      {% for invoice in invoices %}
+        {{ tableRow(batch, invoice, isEditable) }}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+{% endmacro %}

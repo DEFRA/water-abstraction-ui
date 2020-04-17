@@ -1,38 +1,40 @@
 'use strict';
 const moment = require('moment');
 const numberFormatter = require('../../../../shared/lib/number-formatter');
+const { mapValues, isNull } = require('lodash');
+const mappers = require('../lib/mappers');
+
+const valueToString = (value, key) => isNull(value) ? '' : value.toString();
+const rowToStrings = row => mapValues(row, valueToString);
 
 const getAbsStartAndEnd = absPeriod => {
   return {
-    absStart: moment().month(absPeriod.startMonth - 1).date(absPeriod.startDay).format('D MMM'),
-    absEnd: moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
+    absPeriodStartDate: moment().month(absPeriod.startMonth - 1).date(absPeriod.startDay).format('D MMM'),
+    absPeriodEndDate: moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
   };
 };
 
-const getTransactionData = trans => {
-  const { absStart, absEnd } = getAbsStartAndEnd(trans.chargeElement.abstractionPeriod);
-  const agreements = trans.agreements.join(', ');
-  return {
-    value: numberFormatter.penceToPound(trans.value, true),
-    isCredit: trans.isCredit.toString(),
-    isCompensationCharge: trans.isCompensationCharge.toString(),
-    source: trans.chargeElement.source,
-    season: trans.chargeElement.season,
-    chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
-    chargeElementPurposeName: trans.chargeElement.purposeUse.name,
-    loss: trans.chargeElement.loss,
-    description: trans.description,
-    agreements,
-    chargePeriodStartDate: trans.chargePeriod.startDate,
-    chargePeriodEndDate: trans.chargePeriod.endDate,
-    authorisedDays: trans.authorisedDays,
-    billableDays: trans.billableDays,
-    absPeriodStartDate: absStart,
-    absPeriodEndDate: absEnd,
-    authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
-    billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity
-  };
-};
+const getTransactionData = trans => ({
+  value: numberFormatter.penceToPound(trans.value, true),
+  isCredit: trans.isCredit,
+  isCompensationCharge: trans.isCompensationCharge,
+  source: trans.chargeElement.source,
+  season: trans.chargeElement.season,
+  loss: trans.chargeElement.loss,
+  chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
+  chargeElementPurposeName: trans.chargeElement.purposeUse.name,
+  description: trans.description,
+  agreements: trans.agreements.join(', '),
+  chargePeriodStartDate: trans.chargePeriod.startDate,
+  chargePeriodEndDate: trans.chargePeriod.endDate,
+  authorisedDays: trans.authorisedDays,
+  billableDays: trans.billableDays,
+  ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod),
+  authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
+  billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity,
+  calculatedVolume: trans.calculatedVolume,
+  volume: trans.volume
+});
 
 const getInvoiceAccountData = invoiceAccount => {
   return {
@@ -57,12 +59,12 @@ const createCSV = async data => {
         const csvLine = {
           licenceNumber: invLic.licence.licenceNumber,
           region: invLic.licence.region.name,
-          isWaterUndertaker: invLic.licence.isWaterUndertaker.toString(),
+          isWaterUndertaker: invLic.licence.isWaterUndertaker,
           historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
           ...getInvoiceAccountData(dataObj.invoiceAccount)
         };
-        dataForCSV.push(csvLine);
+        dataForCSV.push(rowToStrings(csvLine));
       });
     });
     return dataForCSV;
@@ -70,7 +72,8 @@ const createCSV = async data => {
 };
 
 const getCSVFileName = batch => {
-  return `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
+  const batchType = mappers.mapBatchType(batch.type);
+  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunId}.csv`;
 };
 exports._getInvoiceAccountData = getInvoiceAccountData;
 exports._getTransactionData = getTransactionData;

@@ -7,7 +7,7 @@ const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-ac
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
-const { get, kebabCase } = require('lodash');
+const { get, kebabCase, groupBy, sortBy } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const batchService = require('../services/batch-service');
@@ -16,7 +16,7 @@ const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
-const sentenceCase = require('sentence-case');
+const { pluralize } = require('shared/lib/pluralize');
 const urlJoin = require('url-join');
 
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
@@ -29,8 +29,6 @@ const getSessionForm = (request) => {
 const clearSessionForm = (request) => {
   request.yar.clear(get(request, 'query.form'));
 };
-
-const getBillRunPageTitle = batch => `${sentenceCase(batch.type.replace(/_/g, ' '))} bill run`;
 
 const getBillingRegions = async () => {
   const { data } = await services.water.regions.getRegions();
@@ -173,23 +171,36 @@ const getBillingBatchExists = async (request, h) => {
   });
 };
 
+const mapInvoice = invoice => ({
+  ...invoice,
+  isCredit: invoice.netTotal < 0,
+  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
+  sortValue: -Math.abs(invoice.netTotal)
+});
+
+const mapInvoices = (batch, invoices) => {
+  const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');
+  return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
+};
+
+const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
+
 /**
  * Shows a batch with its list of invoices
  * together with their totals
  * @param {String} request.params.batchId
  */
 const getBillingBatchSummary = async (request, h) => {
-  const { batchId } = request.params;
-  const { batch, invoices } = await batchService.getBatchInvoices(batchId);
+  const { batch } = request.pre;
+  const invoices = await services.water.billingBatches.getBatchInvoices(batch.id);
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
     pageTitle: getBillRunPageTitle(batch),
+    subHeading: `${invoices.length} ${mappers.mapBatchType(batch.type).toLowerCase()} ${pluralize('bill', invoices)}`,
     batch,
-    invoices: invoices.map(row => ({
-      ...row,
-      isCredit: row.netTotal < 0
-    })),
+    invoices: mapInvoices(batch, invoices),
+    isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.

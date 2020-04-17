@@ -8,11 +8,12 @@ const transactionsCSV = require('internal/modules/billing/services/transactions-
 const batch = {
   id: '8ed86390-3557-4cbb-a43f-bd31db5ae119',
   dateCreated: '2020-01-14',
-  type: 'supplementary',
+  type: 'two_part_tariff',
   region: {
-    name: 'South West',
+    displayName: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
-  }
+  },
+  billRunId: 2345
 };
 
 const invoicesForBatch = [
@@ -57,7 +58,8 @@ const invoicesForBatch = [
                 name: 'Spray Irrigation - Storage'
               }
             },
-            volume: 9.1
+            volume: 9.1,
+            calculatedVolume: 10.3
           },
           {
             value: 4006,
@@ -94,7 +96,8 @@ const invoicesForBatch = [
                 name: 'Spray Irrigation - Storage'
               }
             },
-            volume: 9.1
+            volume: 9.1,
+            calculatedVolume: null
           }
         ],
         licence: {
@@ -144,8 +147,9 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     test('returns transaction data in expected order', async () => {
       const transactionData = transactionsCSV._getTransactionData(transaction);
       expect(transactionData.value).to.equal('40.05');
-      expect(transactionData.isCredit).to.equal(transaction.isCredit.toString());
-      expect(transactionData.isCompensationCharge).to.equal(transaction.isCompensationCharge.toString());
+
+      expect(transactionData.isCredit).to.equal(false);
+      expect(transactionData.isCompensationCharge).to.equal(false);
       expect(transactionData.source).to.equal(transaction.chargeElement.source);
       expect(transactionData.season).to.equal(transaction.chargeElement.season);
       expect(transactionData.loss).to.equal(transaction.chargeElement.loss);
@@ -221,7 +225,9 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'town',
       'county',
       'postcode',
-      'country'
+      'country',
+      'volume',
+      'calculatedVolume'
     ];
 
     beforeEach(async () => {
@@ -229,7 +235,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('csvData includes the all the required data keys', async () => {
-      expect(Object.keys(csvData[0])).to.equal(expectedKeys);
+      expect(Object.keys(csvData[0])).to.include(expectedKeys);
     });
 
     test('includes the tail data', async () => {
@@ -250,7 +256,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `${batch.region.name} ${batch.type} bill run ${batch.dateCreated.slice(0, 10)}.csv`;
+      const expectedFileName = `South West two-part tariff bill run 2345.csv`;
       const fileName = transactionsCSV.getCSVFileName(batch);
       expect(fileName).to.equal(expectedFileName);
     });

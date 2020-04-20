@@ -22,7 +22,12 @@ experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchSummary', () => {
     test('uses the redirectToWaitingIfEventNotCompleted pre handler', async () => {
       const routePreHandlers = routes.getBillingBatchSummary.config.pre;
-      expect(routePreHandlers).to.contain(preHandlers.redirectToWaitingIfEventNotComplete);
+      expect(routePreHandlers[0]).to.equal(preHandlers.redirectToWaitingIfEventNotComplete);
+    });
+
+    test('uses the loadBatch pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchSummary.config.pre;
+      expect(routePreHandlers[1]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
     });
   });
 

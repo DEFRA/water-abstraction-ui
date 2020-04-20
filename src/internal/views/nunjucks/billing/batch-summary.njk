@@ -1,11 +1,15 @@
 {% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
 {% from "badge.njk" import badge %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal, chargeOrDash %}
-{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, sendBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, sendBatchButton, downloadBatchButton %}
+{% from "./nunjucks/billing/macros/invoices-table.njk" import invoicesTable %}
 
 
 {% block content %}
@@ -25,6 +29,7 @@
 
   {{ batchHeader(pageTitle, batch) }}
 
+
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-!-margin-bottom-0">
@@ -32,6 +37,8 @@
       </h2>
     </div>
   </div>
+
+  {% if batch.totals.creditNoteCount %}
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
     <h2>
@@ -44,6 +51,7 @@
     </h2>
     </div>
   </div>
+  {% endif %}
 
   {% if isEditable %}
 
@@ -55,9 +63,6 @@
         {{ cancelBatchButton(batch) }}
 
       </section>
-      <p class="govuk-body">
-        <a href="/billing/batch/{{batch.id}}/transactions-csv">Download this bill run</a>
-      </p>
     </div>
   </div>
 
@@ -65,56 +70,57 @@
     
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-6">
-      <hr class="govuk-section-break section-break--heavy" />
+
+      {% if isAnnual %}
+        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-5" />
+      {% else %}
+        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-9" />
+        <h2 class="govuk-heading-l">{{ subHeading }}</h2>
+      {% endif %}
+
+      {{ downloadBatchButton(batch) }}
     </div>
   </div>
+  
   <div class="govuk-grid-row">
 
-
     <div class="govuk-grid-column-full govuk-!-margin-top-5">
-      {% if invoices.length > 0 %}
-        <table class="govuk-table">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">Billing account</th>
-              <th scope="col" class="govuk-table__header">Contact</th>
-              <th scope="col" class="govuk-table__header">Licence</th>
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
-              {% if isEditable %}
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            {% for invoice in invoices %}
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell">
-                  <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">{{ invoice.accountNumber }}</a>
-                </td>
-                <td class="govuk-table__cell">{{ invoice.name | titleCase }}</td>
-                <td class="govuk-table__cell">
-                  <ul class="govuk-list govuk-!-margin-0">
-                  {% for licence in invoice.licenceNumbers %}
-                    <li class="govuk-!-margin-0">{{ licence }}</li>
-                  {% endfor %}
-                  </ul>
-                </td>
-                <td class="govuk-table__cell govuk-table__cell--numeric">
-                  {{ chargeOrDash(invoice.netTotal) }}
-                  {% if invoice.isCredit %}
-                    <div>Credit note</div>
-                  {% endif %}
-                </td>
-                {% if isEditable %}
-                <td class="govuk-table__cell govuk-table__cell--numeric">
-                  <a class="govuk-link" href="/billing/batch/{{batch.id}}/delete-account/{{invoice.id}}">Remove</a>
-                </td>
-                {% endif %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+
+      {% if isAnnual %}
+
+        {% set waterUndertakersHtml %}
+          <h2 class="govuk-heading-l">Water companies</h2> 
+          {{ invoicesTable(batch, invoices.waterUndertakers, isEditable )}}
+        {% endset %}
+
+        {% set otherAbstractorsHtml %}
+          <h2 class="govuk-heading-l">Other abstractors</h2> 
+          {{ invoicesTable(batch, invoices.otherAbstractors, isEditable )}}
+        {% endset %}
+
+        {{ govukTabs({
+          items: [
+            {
+              label: "Water companies",
+              id: "water-companies",
+              panel: {
+                html: waterUndertakersHtml
+              }
+            },
+            {
+             label: "Other abstractors",
+              id: "other-abstractors",
+              panel: {
+                html: otherAbstractorsHtml
+              }
+            }
+          ]
+        }) }}
+
+      {% else %}
+        {{ invoicesTable(batch, invoices, isEditable )}}
       {% endif %}
+
     </div>
   </div>
 

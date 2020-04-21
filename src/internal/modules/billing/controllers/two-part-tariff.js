@@ -117,9 +117,9 @@ const getLicenceReview = async (request, h) => {
     pageTitle: `Review returns data issues for ${invoiceLicence.licence.licenceNumber}`,
     ...request.view,
     batch,
+    invoiceLicence,
     transactionGroups: getTransactionGroups(batch, invoiceLicence),
-    back: `/billing/batch/${batch.id}/two-part-tariff-review`,
-    removeLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`
+    back: `/billing/batch/${batch.id}/two-part-tariff-review`
   });
 };
 
@@ -295,7 +295,7 @@ const getApproveReview = (request, h) => {
     batch,
     form,
     metadataType: 'batch',
-    pageTitle: `You are about to generate the two-part tariff bills`,
+    pageTitle: 'You are about to generate the two-part tariff bills',
     back: `/billing/batch/${batch.id}/two-part-tariff-ready`
   });
 };

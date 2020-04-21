@@ -5,11 +5,16 @@ const dataService = require('../../../lib/connectors/services');
 
 const getEventForBatch = async batchId => {
   const filter = {
-    type: 'billing-batch',
+    type: { $in: ['billing-batch', 'billing-batch:approve-review'] },
     "metadata->'batch'->>'id'": batchId
   };
 
-  const { data } = await dataService.water.events.findMany(filter);
+  const sort = {
+    created: -1
+  };
+
+  const { data } = await dataService.water.events.findMany(filter, sort);
+
   return get(data, '[0]', null);
 };
 

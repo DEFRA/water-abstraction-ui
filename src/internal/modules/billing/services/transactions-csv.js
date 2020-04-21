@@ -14,6 +14,8 @@ const getAbsStartAndEnd = absPeriod => {
   };
 };
 
+const getAgreementsString = agreements => agreements.map(agreement => agreement.code).join(', ');
+
 const getTransactionData = trans => ({
   value: numberFormatter.penceToPound(trans.value, true),
   isCredit: trans.isCredit,
@@ -24,7 +26,7 @@ const getTransactionData = trans => ({
   chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
   chargeElementPurposeName: trans.chargeElement.purposeUse.name,
   description: trans.description,
-  agreements: trans.agreements.join(', '),
+  agreements: getAgreementsString(trans.agreements),
   chargePeriodStartDate: trans.chargePeriod.startDate,
   chargePeriodEndDate: trans.chargePeriod.endDate,
   authorisedDays: trans.authorisedDays,
@@ -58,7 +60,7 @@ const createCSV = async data => {
       invLic.transactions.forEach(trans => {
         const csvLine = {
           licenceNumber: invLic.licence.licenceNumber,
-          region: invLic.licence.region.name,
+          region: invLic.licence.region.displayName,
           isWaterUndertaker: invLic.licence.isWaterUndertaker,
           historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),

@@ -26,10 +26,10 @@ const getTestEventResponse = (status = 'processing', subtype = 'returnReminder')
   error: null
 });
 
-const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual') => ({
+const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual', type = 'billing-batch') => ({
   data: {
     id: 'test-event-id',
-    type: 'billing-batch',
+    type,
     status,
     metadata: {
       name: 'test-event-name',
@@ -250,6 +250,34 @@ experiment('internal/modules/waiting/controller', () => {
 
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal('/billing/batch/test-batch-id/summary?back=0');
+      });
+    });
+
+    experiment('when the event status is processing for a tpt approve-review bill run', () => {
+      test('the waiting page is rendered', async () => {
+        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'two_part_tariff', 'billing-batch:approve-review'));
+        await controller.getWaiting(request, h);
+
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/waiting/index');
+      });
+
+      test('sets the correct page title for a tpt approve-review bill run', async () => {
+        services.water.events.findOne.resolves(getTestEventResponseBillRun('processing', 'two_part_tariff', 'billing-batch:approve-review'));
+        await controller.getWaiting(request, h);
+
+        const [, context] = h.view.lastCall.args;
+        expect(context.pageTitle).to.equal('Midlands two-part tariff bill run');
+      });
+    });
+
+    experiment('when the event status is review-ready for a tpt bill run', () => {
+      test('the user is redirected to the tpt review page', async () => {
+        services.water.events.findOne.resolves(getTestEventResponseBillRun('review-ready', 'two_part_tariff', 'billing-batch'));
+        await controller.getWaiting(request, h);
+
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
       });
     });
   });

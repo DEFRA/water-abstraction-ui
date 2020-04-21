@@ -7,6 +7,7 @@
 {% from "badge.njk" import badge %}
 {% from "crm/address.njk" import address %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeAccountFromBatchButton %}
 
 
 {% block content %}
@@ -53,6 +54,12 @@
       <h2>
         {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
       </h2>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      {{ removeAccountFromBatchButton(batch, invoice) }}
     </div>
   </div>
 

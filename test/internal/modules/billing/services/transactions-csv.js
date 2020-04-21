@@ -26,7 +26,7 @@ const invoicesForBatch = [
           {
             value: 4005,
             isCredit: false,
-            agreements: ['126', '127', '130W'],
+            agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }],
             status: 'charge_created',
             id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
             authorisedDays: 152,
@@ -108,6 +108,7 @@ const invoicesForBatch = [
             type: 'region',
             id: '6ad67f32-e75d-48c1-93d5-25a0e6263e78',
             name: 'Anglian',
+            displayName: 'Anglian',
             code: 'A',
             numericCode: 1
           },
@@ -168,7 +169,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     test('handles mutliple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
-        agreements: ['126', '127', '130W']
+        agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }]
       });
       expect(transactionData.agreements).to.equal('126, 127, 130W');
     });

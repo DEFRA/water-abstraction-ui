@@ -212,6 +212,19 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/billing/batch/list');
     });
+
+    experiment('when there are no errors', () => {
+      beforeEach(async () => {
+        const licencesWithoutErrors = batchLicences.filter(licence => !licence.twoPartTariffError);
+        services.water.billingBatches.getBatchLicences.resolves(licencesWithoutErrors);
+        await controller.getTwoPartTariffReview(request, h);
+      });
+
+      test('returns ready view template', () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/two-part-tariff-ready');
+      });
+    });
   });
 
   experiment('.getTwoPartTariffReady', () => {

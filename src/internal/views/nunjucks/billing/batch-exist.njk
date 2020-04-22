@@ -9,7 +9,7 @@
 
       <div class="govuk-inset-text">
         <p class="govuk-!-margin-0">{{ batch.billRunDate | date }}</p>
-        <p>{{ batch.region.displayName }} {{ batch.type }} bill run</p>
+        <p>{{ batch.region.displayName }} {{ batch.type | sentenceCase if batch.type != 'two_part_tariff' else "two-part tariff" }} bill run</p>
       </div>
 
       {{

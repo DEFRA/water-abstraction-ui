@@ -22,7 +22,8 @@ const getBillingTitle = (event, regions) => {
 
 const getWaitingForBilling = async (request, h, event) => {
   const statusPaths = {
-    complete: `/billing/batch/${event.metadata.batch.id}/summary?back=${request.query.back}`
+    complete: `/billing/batch/${event.metadata.batch.id}/summary?back=${request.query.back}`,
+    'review-ready': `/billing/batch/${event.metadata.batch.id}/two-part-tariff-review`
   };
 
   if (statusPaths[event.status]) {
@@ -70,7 +71,8 @@ const getNotificationsTitle = (ev) => {
 
 const handlers = {
   notification: getWaitingForNotifications,
-  'billing-batch': getWaitingForBilling
+  'billing-batch': getWaitingForBilling,
+  'billing-batch:approve-review': getWaitingForBilling
 };
 
 const getWaiting = async (request, h) => {

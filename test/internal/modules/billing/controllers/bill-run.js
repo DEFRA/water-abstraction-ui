@@ -665,7 +665,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('passes the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-cancel-or-confirm');
+      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
     });
 
     test('passes the expedcted data in the view context', async () => {
@@ -709,7 +709,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('passes the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-cancel-or-confirm');
+      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
     });
 
     test('passes the expected data in the view context', async () => {
@@ -791,7 +791,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/batch-delete-account');
+      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
     });
 
     test('sets the correct view data', async () => {

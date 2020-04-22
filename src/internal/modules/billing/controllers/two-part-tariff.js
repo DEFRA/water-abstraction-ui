@@ -45,6 +45,8 @@ const getTwoPartTariffAction = async (request, h, action) => {
 
   // Get totals of licences with/without errors
   const totals = getTotals(licencesData);
+  // if there are no errors, show ready page
+  if (totals.errors === 0) action = 'ready';
 
   // gets 2pt matching error messages and define error types
   const licences = licencesData
@@ -115,9 +117,9 @@ const getLicenceReview = async (request, h) => {
     pageTitle: `Review returns data issues for ${invoiceLicence.licence.licenceNumber}`,
     ...request.view,
     batch,
+    invoiceLicence,
     transactionGroups: getTransactionGroups(batch, invoiceLicence),
-    back: `/billing/batch/${batch.id}/two-part-tariff-review`,
-    removeLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`
+    back: `/billing/batch/${batch.id}/two-part-tariff-review`
   });
 };
 
@@ -258,10 +260,11 @@ const getRemoveLicence = async (request, h) => {
   const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`;
   const form = confirmForm(request, action, 'Remove licence');
 
-  return h.view('nunjucks/billing/two-part-tariff-remove-licence', {
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     ...request.pre,
     form,
+    metadataType: 'licence',
     pageTitle: `You are about to remove this licence from the bill run`,
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`
   });
@@ -281,6 +284,28 @@ const postRemoveLicence = async (request, h) => {
   return h.redirect(path);
 };
 
+const getApproveReview = (request, h) => {
+  const { batch } = request.pre;
+
+  const action = `/billing/batch/${batch.id}/approve-review`;
+  const form = confirmForm(request, action, 'Confirm');
+
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+    ...request.view,
+    batch,
+    form,
+    metadataType: 'batch',
+    pageTitle: 'You are about to generate the two-part tariff bills',
+    back: `/billing/batch/${batch.id}/two-part-tariff-ready`
+  });
+};
+
+const postApproveReview = async (request, h) => {
+  const { batchId } = request.params;
+  const { data: { event } } = await services.water.billingBatches.approveBatchReview(batchId);
+  return h.redirect(`/waiting/${event.id}?back=0`);
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
@@ -290,3 +315,5 @@ exports.getConfirmQuantity = getConfirmQuantity;
 exports.postConfirmQuantity = postConfirmQuantity;
 exports.getRemoveLicence = getRemoveLicence;
 exports.postRemoveLicence = postRemoveLicence;
+exports.getApproveReview = getApproveReview;
+exports.postApproveReview = postApproveReview;

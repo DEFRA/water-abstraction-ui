@@ -237,6 +237,53 @@ if (isAcceptanceTestTarget) {
           }
         }
       }
+    },
+
+    getApproveReview: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/approve-review',
+      handler: controller.getApproveReview,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadBatch, assign: 'batch' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'approve tpt review to continue bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID
+          }
+        }
+      }
+    },
+
+    postApproveReview: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/approve-review',
+      handler: controller.postApproveReview,
+      config: {
+        pre: [
+          ...pre
+        ],
+        auth: { scope: allowedScopes },
+        description: 'approve tpt review to continue bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID
+          }
+        }
+      }
     }
 
   };

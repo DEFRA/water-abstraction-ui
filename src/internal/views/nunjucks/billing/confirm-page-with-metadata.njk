@@ -1,0 +1,28 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+{% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
+{% from "./nunjucks/billing/macros/invoice-metadata.njk" import invoiceMetadata %}
+{% from "./nunjucks/billing/macros/licence-billing-contact-metadata.njk" import licenceBillingContactMetadata %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ batchTitle(pageTitle, batch, false) }}
+
+      <div class="govuk-!-margin-bottom-3">
+      {% if metadataType === 'batch' %}
+        {{ batchMetadata(batch) }}
+      {% elif metadataType === 'invoice' %}
+        {{ invoiceMetadata(account, licence) }}
+      {% elif metadataType === 'licence' %}
+        {{ licenceBillingContactMetadata(invoice, invoiceLicence) }}
+      {% endif %}
+      </div>
+      
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

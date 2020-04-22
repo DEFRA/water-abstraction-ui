@@ -6,11 +6,18 @@
     </div>
     <div class="meta__row">
       <dt class="meta__key">Region</dt>
-      <dd class="meta__value">{{ batch.region.name }}</dd>
+      <dd class="meta__value">{{ batch.region.displayName }}</dd>
     </div>
     <div class="meta__row">
       <dt class="meta__key">Bill run type</dt>
-      <dd class="meta__value">{{ batch.type | sentenceCase }}</dd>
+      <dd class="meta__value">
+      {% if batch.type == 'two_part_tariff' %}
+        Two-part tariff
+      {% else %}
+        {{ batch.type | sentenceCase }}
+      {% endif %}
+      
+      </dd>
     </div>
   </dl>
 {% endmacro %}

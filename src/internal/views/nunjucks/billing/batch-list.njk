@@ -41,7 +41,7 @@
               {{ batch.dateCreated | date }}
             {% endif %}
           </td>
-          <td class="govuk-table__cell">{{ batch.region.name }}</td>
+          <td class="govuk-table__cell">{{ batch.region.displayName }}</td>
           <td class="govuk-table__cell">{{ batch.batchType }}</td>
 
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount | defaultTo('-') }}</td>

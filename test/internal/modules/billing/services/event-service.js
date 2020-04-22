@@ -24,7 +24,8 @@ experiment('internal/modules/billing/services/eventService', () => {
 
     sandbox.stub(services.water.events, 'findMany').resolves({
       data: [
-        { event_id: eventId }
+        { event_id: eventId },
+        { event_id: 'older-event-id' }
       ]
     });
   });
@@ -38,8 +39,15 @@ experiment('internal/modules/billing/services/eventService', () => {
       await eventService.getEventForBatch(batchId);
 
       const [filter] = services.water.events.findMany.lastCall.args;
-      expect(filter.type).to.equal('billing-batch');
+      expect(filter.type).to.equal({ $in: ['billing-batch', 'billing-batch:approve-review'] });
       expect(filter["metadata->'batch'->>'id'"]).to.equal(batchId);
+    });
+
+    test('provides the expected sort order for the query', async () => {
+      await eventService.getEventForBatch(batchId);
+
+      const [, sort] = services.water.events.findMany.lastCall.args;
+      expect(sort).to.equal({ created: -1 });
     });
 
     test('returns null if no data is returned', async () => {
@@ -51,7 +59,7 @@ experiment('internal/modules/billing/services/eventService', () => {
       expect(result).to.be.null();
     });
 
-    test('returns the data if found', async () => {
+    test('returns the first event in results if found', async () => {
       const result = await eventService.getEventForBatch(batchId);
       expect(result.event_id).to.equal(eventId);
     });

@@ -76,10 +76,22 @@ class BillingBatchService extends ServiceClient {
    * marks the batch as sent. Any errors in the pipeline will
    * cause the batch to be in the error state.
    *
-   * @param {String} batchId UUID of the batch to apprive
+   * @param {String} batchId UUID of the batch to approve
    */
   approveBatch (batchId) {
     const uri = this.joinUrl(`/billing/batches/${batchId}/approve`);
+    return this.serviceRequest.post(uri);
+  }
+
+  /**
+   * Approves the review stage of a two part tariff batch, the water
+   * service will then kick off the next job to continue processing
+   * the batch
+   *
+   * @param {String} batchId UUID of the batch to approve review on
+   */
+  approveBatchReview (batchId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}/approve-review`);
     return this.serviceRequest.post(uri);
   }
 }

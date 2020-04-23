@@ -39,7 +39,7 @@ experiment('internal/modules/billing/services/eventService', () => {
 
       const [filter] = services.water.events.findMany.lastCall.args;
       expect(filter.type).to.equal('billing-batch');
-      expect(filter["metadata->'batch'->>'billing_batch_id'"]).to.equal(batchId);
+      expect(filter["metadata->'batch'->>'id'"]).to.equal(batchId);
     });
 
     test('returns null if no data is returned', async () => {

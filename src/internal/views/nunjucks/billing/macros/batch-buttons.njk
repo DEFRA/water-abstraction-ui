@@ -1,0 +1,37 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+
+
+{% macro cancelBatchButton(batch) %}
+  {% if batch.status in ['ready', 'review'] %}
+  {{
+    govukButton({
+      text: "Cancel bill run",
+      href: '/billing/batch/' + batch.id + '/cancel',
+      classes: "govuk-button--secondary"
+    })
+  }}
+  {% endif %}
+{% endmacro %}
+
+{% macro sendBatchButton(batch) %}
+  {% if batch.status in ['ready', 'review'] %}
+  {{
+    govukButton({
+      text: "Confirm bill run",
+      href: '/billing/batch/' + batch.id + '/confirm',
+      classes: "govuk-!-margin-right-1"
+    })
+  }}
+  {% endif %}
+{% endmacro %}
+
+{% macro twoPartTariffContinueButton(batch) %}
+  {{
+    govukButton({
+      text: "Continue",
+      href: '#',
+      classes: 'govuk-!-margin-right-1'
+    })
+  }}
+{% endmacro %}

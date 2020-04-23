@@ -70,11 +70,11 @@ experiment('mapFormErrorSummary', () => {
   });
 
   test('It should set the href to the first radio button in a list', async () => {
-    expect(result.errorList[1].href).to.equal('#radio_field-1');
+    expect(result.errorList[1].href).to.equal('#radio_field');
   });
 
   test('It should set the href to the first radio button in a list', async () => {
-    expect(result.errorList[2].href).to.equal('#checkbox_field-1');
+    expect(result.errorList[2].href).to.equal('#checkbox_field');
   });
 });
 

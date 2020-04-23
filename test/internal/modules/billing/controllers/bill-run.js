@@ -52,7 +52,8 @@ const batchData = {
   },
   totals: {
     netTotal: 43434
-  }
+  },
+  billRunId: 1234
 };
 
 const invoice = {
@@ -327,7 +328,7 @@ experiment('internal/modules/billing/controller', () => {
       });
 
       test('the page title including the region name and batch type', async () => {
-        expect(view.pageTitle).to.equal('Anglian supplementary bill run');
+        expect(view.pageTitle).to.equal('Supplementary bill run');
       });
 
       test('the batch data', async () => {
@@ -409,6 +410,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.batchType).to.equal('Supplementary');
       expect(view.transactions).to.be.an.object();
       expect(view.isCredit).to.be.false();
+      expect(view.caption).to.equal('Billing account A12345678A');
     });
   });
 
@@ -494,7 +496,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
       expect(batches[1].billCount).to.equal(null);
-      expect(batches[1].link).to.be.null();
+      expect(batches[1].link).to.be.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2/two-part-tariff-review');
     });
 
     test('configures the expected view template', async () => {
@@ -518,7 +520,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
       expect(context.pageTitle).to.equal('You are about to cancel this bill run');
-      expect(context.secondTitle).to.equal(`${batchData.region.name} ${batchData.type} bill run`);
+      expect(context.secondTitle).to.equal(`Supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
@@ -562,7 +564,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
       expect(context.pageTitle).to.equal('You are about to send this bill run');
-      expect(context.secondTitle).to.equal(`${batchData.region.name} ${batchData.type} bill run`);
+      expect(context.secondTitle).to.equal(`Supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/confirm`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');

@@ -3,97 +3,49 @@
 {% from "paginate.njk" import paginate %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, twoPartTariffContinueButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+{% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
+{% from "./nunjucks/billing/macros/two-part-tariff-licences-table.njk" import twoPartTariffLicencesTable  %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-two-thirds">
-    <section class="govuk-!-margin-bottom-6">
-      {% set caption %}
-        {{ batch.region.name + ' two-part tariff bill run' }}
-      {% endset %}
-        {{ title(pageTitle, caption, null, true, true) }}
-    </section>
-  </div>
-</div>
+
+{{ batchHeader(pageTitle, batch) }}
+
 <div class="govuk-grid-row govuk-!-margin-bottom-6">
-<div class="govuk-grid-column-two-thirds">
-      <p class="govuk-body">
-        {{ badge(batch | batchBadge(false)) }}
-      </p>
-      <div class="govuk-grid-row">
-        {{ batchMetadata(batch) }}
-      </div>
-  </div>
-</div>
+  <div class="govuk-grid-column-full">
 {% if totals.errors > 0 %}
   <section class="govuk-!-margin-bottom-6">
-    {{
-      govukButton({
-        text: "Cancel bill run",
-        href: '/billing/batch/' + batch.id + '/cancel',
-        classes: "govuk-button--secondary govuk-!-margin-left-1"
-      })
-    }}
+
+    {{ cancelBatchButton(batch) }}
+
     <div class="govuk-inset-text">
       <p class="govuk-body govuk-!-margin-bottom-0">
-        You need to review {{ totals.errors }} licences with returns data issues before you can continue
+        You need to review {{ totals.errors }} {{ 'licence' | pluralize (totals.errors) }} with returns data issues before you can continue
       </p> 
-      <a href="/billing/batch/" + {{batchId}} + "/two-part-tariff-review" class="govuk-link">Review licences</a>
+      <a href="{{ reviewLink }}" class="govuk-link">Review {{ 'licence' | pluralize (totals.errors) }}</a>
     </div>
   </section>
 {% else %}
   <section class="govuk-!-margin-bottom-6">
     <p class="govuk-body">You have resolved all returns data issues. Continue to generate bills.</p>
-    {{
-      govukButton({
-        text: "Continue",
-        href: '#'
-      })
-    }}
-    {{
-      govukButton({
-        text: "Cancel bill run",
-        href: '/billing/batch/' + batch.id + '/cancel',
-        classes: "govuk-button--secondary govuk-!-margin-left-1"
-      })
-    }}
+    {{ twoPartTariffContinueButton(batch) }} 
+    {{ cancelBatchButton(batch) }}
   </section>
 {% endif %}
+
 {% if totals.ready > 0 %}
 <section class="govuk-!-margin-bottom-9">
-  <h2 class="govuk-heading-l" id="issuesTitle">{{ totals.ready }} licences are ready for billing</h2>
-  <div class="table govuk-!-margin-bottom-6" id="dataIssues">
-      <table class="govuk-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Licence</th>
-            <th scope="col" class="govuk-table__header">Licence holder</th>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for licence in licences %}
-            {% if licence.twoPartTariffStatuses == Null %}
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell">
-                  {{ licence.licenceRef }}
-                </td>
-                <td class="govuk-table__cell">
-                  {{ licence.licenceHolder.salutation }}
-                  {{ licence.licenceHolder.initials }}
-                  {{ licence.licenceHolder.firstName }}
-                  {{ licence.licenceHolder.lastName }}
-                </td>
-                <td class="govuk-table__cell govuk-table__cell--numeric">
-                  <a href="#" class="govuk-link">Review</a>
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
-  <div>
+  <h2 class="govuk-heading-l" id="issuesTitle">
+    {% if totals.ready == 1 %}
+    1 licence is ready for billing
+    {% else %}
+    {{ totals.ready}} licences are ready for billing
+    {% endif %}
+  </h2>
+
+  {{ twoPartTariffLicencesTable(licences, false) }}
 </section>
 {% endif %}
 {% endblock %}

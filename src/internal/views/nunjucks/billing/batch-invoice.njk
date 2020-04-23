@@ -2,6 +2,8 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal, invoiceCreditsTotal, invoiceDebitsTotal %}
+{% from "./nunjucks/billing/macros/transactions-table.njk" import transactionsTable, twoPartTariffTransactionsTable %}
+
 {% from "badge.njk" import badge %}
 {% from "crm/address.njk" import address %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
@@ -11,13 +13,15 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
-        {{ title(pageTitle, 'Bill ' + invoice.invoiceAccount.accountNumber, false, true, true) }}
+        {{ title(pageTitle, caption, false, true, true) }}
       </div>
 
       <div class="govuk-body govuk-!-margin-bottom-4">
         {{ badge(batch | batchBadge(true)) }}
       </div>
+
       {{ batchMetadata(batch)}}
+      
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
           <p>{{ invoice.invoiceAccount.company.name | titleCase }}<br>
@@ -71,6 +75,7 @@
               <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
                 {{ group.chargeElement.purposeUse.name }}, {{ group.chargeElement.description }}
               </h4>
+              
               <p class="govuk-body">
                 {{ group.chargeElement.abstractionPeriod | abstractionPeriod }}
               </p> 
@@ -80,67 +85,11 @@
               html : insetHtml
             }) }}
 
-            <table class="govuk-table">
-              <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__header">Transaction detail</th>
-                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable days</th>
-                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Credit</th>
-                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Debit</th>
-                </tr>
-              </thead>
-              <tbody class="govuk-table__body">
-
-                {% for transaction in group.transactions %}
-                
-                <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">
-                    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</h5>
-                    <p>{{ "Compensation" if transaction.isCompensationCharge else "Standard" }} charge</p>
-
-                    <ul class="govuk-list">
-                      <li>{{ group.chargeElement.loss | sentenceCase }} loss</li>
-                      <li>{{ group.chargeElement.season | sentenceCase }}</li>
-                      <li>{{ group.chargeElement.source | sentenceCase }} source</li>
-                      {% for agreement in transaction.agreements %}
-                      <li>{{ agreement.code }} agreement</li>
-                      {% endfor %}
-                    </ul>
-                  </td>
-                  <td class="govuk-table__cell govuk-table__cell--numeric">
-                    {{ transaction.billableDays}}/{{ transaction.authorisedDays }}
-                  </td>
-                  <td class="govuk-table__cell govuk-table__cell--numeric">
-                    {% if transaction.isCredit %}
-                    {{ transaction.value | charge }}
-                    {% endif %}
-                  </td>
-                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                    {% if not transaction.isCredit %}
-                    {{ transaction.value | charge }}
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-              <tfoot>
-               <tr class="govuk-table__row">
-                  <th scope="row" colspan="2" class="govuk-table__header">Credits</th>
-                  <td class="govuk-table__header govuk-table__header--numeric"><b>{{ group.totals.credits | charge }}</b></td>
-                  <td class="govuk-table__header"></td>
-               </tr>
-                  <th scope="row" colspan="3" class="govuk-table__header">Debits</th>
-                  <td class="govuk-table__header govuk-table__header--numeric"><b>{{ group.totals.debits | charge }}</b></td>
-                </tr>
-               </tr>
-                  <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
-                    <span class="govuk-visually-hidden">Total</span>
-                  </th>
-                  <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ group.totals.netTotal | charge(true) }}</b></td>
-                </tr>
-              </tfoot>
-            </table>
-
+            {% if batch.type == 'two_part_tariff' %}
+              {{ twoPartTariffTransactionsTable(group) }}
+            {% else %}  
+              {{ transactionsTable(group) }}
+            {% endif %}
 
           {% endfor %}
           

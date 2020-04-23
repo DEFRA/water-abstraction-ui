@@ -8,6 +8,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/charge'),
   ...require('shared/view/nunjucks/filters/date'),
   ...require('shared/view/nunjucks/filters/default-to'),
+  ...require('shared/view/nunjucks/filters/is-finite'),
   ...require('shared/view/nunjucks/filters/fixed'),
   ...require('shared/view/nunjucks/filters/flow-converter'),
   ...require('shared/view/nunjucks/filters/form'),
@@ -24,6 +25,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/slice'),
   ...require('shared/view/nunjucks/filters/sort-new-direction'),
   ...require('shared/view/nunjucks/filters/sort-query'),
+  ...require('shared/view/nunjucks/filters/tag'),
   ...require('shared/view/nunjucks/filters/title-case'),
   ...require('shared/view/nunjucks/filters/unit-conversion'),
   ...require('shared/view/nunjucks/filters/units')

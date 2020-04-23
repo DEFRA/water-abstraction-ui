@@ -270,7 +270,7 @@ experiment('csv templates', () => {
         purposes: []
       }];
 
-      const csvData = csvTemplates.createCSVData(returns);
+      const csvData = csvTemplates.createCSVData(returns, '2019-03-31');
 
       // Daily
       expect(csvData.day[0][1]).to.equal('licence_1');

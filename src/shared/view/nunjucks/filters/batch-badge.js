@@ -1,10 +1,10 @@
 'use strict';
 
 const badge = {
-  processing: { status: 'warning', text: 'Building' },
-  ready: { status: 'success', text: 'Ready' },
-  sent: { text: 'Sent' },
-  review: { status: 'success', text: 'Review' },
+  processing: { status: 'inactive', text: 'Building' },
+  ready: { status: 'todo', text: 'Ready' },
+  sent: { status: 'success', text: 'Sent' },
+  review: { status: 'todo', text: 'Review' },
   error: { status: 'error', text: 'Error' }
 };
 

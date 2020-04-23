@@ -16,8 +16,8 @@ experiment('batchBadge Nunjucks filter', () => {
       expect(badge.text).to.equal('Building');
     });
 
-    test('badge status is warning', async () => {
-      expect(badge.status).to.equal('warning');
+    test('badge status is inactive', async () => {
+      expect(badge.status).to.equal('inactive');
     });
 
     test('badge is not large', async () => {
@@ -34,8 +34,8 @@ experiment('batchBadge Nunjucks filter', () => {
       expect(badge.text).to.equal('Ready');
     });
 
-    test('badge status is success', async () => {
-      expect(badge.status).to.equal('success');
+    test('badge status is todo', async () => {
+      expect(badge.status).to.equal('todo');
     });
 
     test('badge is not large', async () => {
@@ -52,8 +52,8 @@ experiment('batchBadge Nunjucks filter', () => {
       expect(badge.text).to.equal('Sent');
     });
 
-    test('badge status is default', async () => {
-      expect(badge.status).to.be.undefined();
+    test('badge status is success', async () => {
+      expect(badge.status).to.equal('success');
     });
 
     test('badge is not large', async () => {
@@ -70,8 +70,8 @@ experiment('batchBadge Nunjucks filter', () => {
       expect(badge.text).to.equal('Review');
     });
 
-    test('badge status is warning', async () => {
-      expect(badge.status).to.equal('success');
+    test('badge status is todo', async () => {
+      expect(badge.status).to.equal('todo');
     });
 
     test('badge is not large', async () => {

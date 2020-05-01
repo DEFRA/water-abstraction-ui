@@ -1,5 +1,4 @@
 {% macro invoiceMetadata(account, licence) %}
-    <div class="govuk-grid-column-full"> 
       <dl class="meta govuk-!-margin-bottom-3">
         <div class="meta__row">
           <dt class="meta__key">Account</dt>
@@ -10,15 +9,16 @@
           <dd class="meta__value">{{ account.companyName | titleCase }}</dd>
         </div>
         <div class="meta__row">
-          <dt class="meta__key">Bill run type</dt>
-          {% for licence in account.licences %}
-            <dd class="meta__value">{{ licence.licenceRef }}</dd>
-          {% endfor %}
+          <dt class="meta__key">{{ 'Licence' | pluralize(account.licences) }}</dt>
+          <dd class="meta__value">
+            {% for licence in account.licences %}
+              {{ licence.licenceRef }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </dd>
         </div>
         <div class="meta__row">
           <dt class="meta__key">Total</dt>
           <dd class="meta__value">{{ account.amount | charge(true) }}</dd>
         </div>
       </dl>
-  </div>
 {% endmacro %}

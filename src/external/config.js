@@ -118,7 +118,7 @@ module.exports = {
   },
 
   redis: {
-    url: process.env.REDIS_URI,
+    url: process.env.REDIS_URI || 'redis://127.0.0.1:6379',
     db: 0
   }
 };

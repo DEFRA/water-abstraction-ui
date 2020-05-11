@@ -59,7 +59,7 @@
     "@hapi/joi": "^15.1.1",
     "@hapi/scooter": "^5.1.0",
     "@hapi/vision": "^5.5.2",
-    "@hapi/yar": "^9.2.0",
+    "@hapi/yar": "^9.2.1",
     "accessible-autocomplete": "^1.6.2",
     "acorn": "^5.7.4",
     "ajv": "^6.12.0",

@@ -50,7 +50,7 @@ const createPlugins = (config, logger, connectors) => ([
 const createCache = config => {
   return [
     {
-      name: 'redis',
+
       provider: {
         constructor: CatboxRedis,
         options: config.redis

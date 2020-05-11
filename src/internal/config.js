@@ -122,5 +122,10 @@ module.exports = {
 
   viewLicence: {
     allowedScopes: [ internal ]
+  },
+
+  redis: {
+    url: process.env.REDIS_URI,
+    db: 1
   }
 };

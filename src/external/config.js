@@ -115,5 +115,10 @@ module.exports = {
       ttl: 10 * 365 * 24 * 60 * 60 * 1000
     },
     storeBlank: false
+  },
+
+  redis: {
+    url: process.env.REDIS_URI,
+    db: 0
   }
 };

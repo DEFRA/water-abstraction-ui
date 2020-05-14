@@ -1,0 +1,24 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
+
+{% block content %}
+
+  {{ govukErrorSummary({
+    titleText: "There is a problem with this bill run",
+    errorList: [
+      {
+        text: "There are no licences ready for this bill run. Check there are licences ready to be billed and try again."
+      }
+    ]
+  }) }}
+
+  {{ batchHeader(pageTitle, batch) }}
+
+  <p>
+    <a href="{{ back }}">Return to bill runs</a>
+  </p>
+
+{% endblock %}
+

@@ -1,10 +1,12 @@
 'use strict';
 
 const Boom = require('boom');
+const Joi = require('@hapi/joi');
+
 const { partialRight, partial } = require('lodash');
 
-const eventService = require('./services/event-service');
 const { water } = require('../../lib/connectors/services');
+const routing = require('./lib/routing');
 
 const getBatch = request =>
   water.billingBatches.getBatch(request.params.batchId);
@@ -56,15 +58,6 @@ const preHandler = async (config, request, h) => {
   }
 };
 
-const redirectToWaitingIfEventNotComplete = async (request, h) => {
-  const { batchId } = request.params;
-  const event = await eventService.getEventForBatch(batchId);
-
-  return (event.status === 'complete')
-    ? h.continue
-    : h.redirect(`/waiting/${event.event_id}`).takeover();
-};
-
 const checkBatchStatus = async (request, h, status) => {
   const { batch } = request.pre;
   if (batch.status !== status) {
@@ -75,8 +68,33 @@ const checkBatchStatus = async (request, h, status) => {
 
 const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
 
+const validBatchStatusSchema = Joi.array().min(1).required().items(
+  Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent')
+);
+
+/**
+ * Redirects the user if the batch is not in one of the allowed statuses
+ * The allowed statuses can be set in the route configuration
+ * With set with config.app.validBatchStatuses = ['processing', ...]
+ */
+const redirectOnBatchStatus = async (request, h) => {
+  const { batch } = request.pre;
+  const { validBatchStatuses } = request.route.settings.app;
+
+  Joi.assert(validBatchStatuses, validBatchStatusSchema, `Invalid batch statuses ${validBatchStatuses} in route definition, see config.app.validBatchStatuses`);
+
+  if (validBatchStatuses.includes(batch.status)) {
+    return h.continue;
+  }
+
+  // Redirect to the correct page for this batch
+  const path = routing.getBillingBatchRoute(batch, true, true);
+  return h.redirect(path).takeover();
+};
+
 exports.loadBatch = partial(preHandler, config.loadBatch);
-exports.redirectToWaitingIfEventNotComplete = redirectToWaitingIfEventNotComplete;
 exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
 exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
 exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
+
+exports.redirectOnBatchStatus = redirectOnBatchStatus;

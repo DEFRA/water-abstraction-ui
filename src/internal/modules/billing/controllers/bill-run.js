@@ -18,6 +18,9 @@ const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
 const { pluralize } = require('shared/lib/pluralize');
 const urlJoin = require('url-join');
+const moment = require('moment');
+const Boom = require('@hapi/boom');
+const routing = require('../lib/routing');
 
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
@@ -147,8 +150,10 @@ const postBillingBatchRegion = async (request, h) => {
 
   try {
     const batch = getBatchDetails(request, billingRegionForm);
-    const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.id}?back=0`);
+    const { data } = await services.water.billingBatches.createBillingBatch(batch);
+    console.log(data);
+    const path = routing.getBillingBatchRoute(data.batch, false);
+    return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
@@ -319,6 +324,46 @@ const postBillingBatchDeleteAccount = async (request, h) => {
   return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 
+/**
+ * Renders a 'waiting' page while the batch is processing.
+ * If the batch is in error, responds with a 500 error page.
+ * The redirectOnBatchStatus pre handler will have already redirected to the appropriate page
+ * if the batch is processed.
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ * @param {Number} request.query.back - whether to render back button
+ */
+const getBillingBatchProcessing = async (request, h) => {
+  const { batch } = request.pre;
+  const { back } = request.query;
+
+  // Render error page if batch has errored
+  if (batch.status === 'error') {
+    return Boom.badImplementation('Billing batch error');
+  }
+
+  return h.view('nunjucks/billing/batch-processing', {
+    ...request.view,
+    caption: moment(batch.createdAt).format('D M YYYY'),
+    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type)} bill run`,
+    back: back && `/billing/batch/list`
+  });
+};
+
+/**
+ * Renders an error page if the batch is empty - i.e. no transactions
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ */
+const getBillingBatchEmpty = async (request, h) => {
+  const { batch } = request.pre;
+
+  return h.view('nunjucks/billing/batch-empty', {
+    ...request.view,
+    pageTitle: getBillRunPageTitle(batch),
+    batch,
+    back: `/billing/batch/list`
+  });
+};
+
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchExists = getBillingBatchExists;
@@ -340,3 +385,6 @@ exports.getBillingBatchDeleteAccount = getBillingBatchDeleteAccount;
 exports.postBillingBatchDeleteAccount = postBillingBatchDeleteAccount;
 
 exports.getTransactionsCSV = getTransactionsCSV;
+
+exports.getBillingBatchProcessing = getBillingBatchProcessing;
+exports.getBillingBatchEmpty = getBillingBatchEmpty;

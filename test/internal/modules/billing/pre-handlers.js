@@ -9,8 +9,6 @@ const {
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
-const eventService = require('internal/modules/billing/services/event-service');
-
 const { water } = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
@@ -30,8 +28,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
     sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
       id: 'test-invoice-licence-id'
     });
-
-    sandbox.stub(eventService, 'getEventForBatch').resolves();
 
     h = {
       continue: 'continue',
@@ -70,47 +66,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
       const { payload } = result.output;
       expect(payload.statusCode).to.equal(404);
       expect(payload.message).to.equal('Batch not found for batchId: test-batch-id');
-    });
-  });
-
-  experiment('.redirectToWaitingIfEventNotComplete', () => {
-    let request;
-
-    beforeEach(async () => {
-      request = {
-        defra: {},
-        params: {
-          batchId: 'test-batch-id'
-        }
-      };
-    });
-
-    experiment('if the event is not in the complete state', () => {
-      beforeEach(async () => {
-        eventService.getEventForBatch.resolves({
-          event_id: 'test-event-id',
-          status: 'not-completed'
-        });
-
-        await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
-      });
-
-      test('takes over the response', async () => {
-        expect(h.takeover.called).to.be.true();
-      });
-
-      test('redirects to waiting page', async () => {
-        expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
-      });
-    });
-
-    test('continues if the status of the event is completed', async () => {
-      eventService.getEventForBatch.resolves({
-        status: 'complete'
-      });
-
-      const result = await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
-      expect(result).to.equal(h.continue);
     });
   });
 

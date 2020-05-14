@@ -298,14 +298,17 @@ experiment('internal/modules/billing/controller', () => {
     test('billingRegionFrom is valid redirects to waiting page', async () => {
       services.water.billingBatches.createBillingBatch.resolves({
         data: {
-          event: { id: 'test-event-id' }
+          batch: {
+            id: 'test-batch-id',
+            status: 'processing'
+          }
         }
       });
 
       await controller.postBillingBatchRegion(request, h);
 
       const [url] = h.redirect.lastCall.args;
-      expect(url).to.equal('/waiting/test-event-id?back=0');
+      expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
     });
 
     test('billingRegionFrom is NOT valid redirects back to form', async () => {
@@ -355,6 +358,9 @@ experiment('internal/modules/billing/controller', () => {
             data: {
               event: {
                 id: uuid()
+              },
+              batch: {
+                id: 'test-batch-id'
               }
             }
           });
@@ -380,6 +386,9 @@ experiment('internal/modules/billing/controller', () => {
           data: {
             event: {
               id: uuid()
+            },
+            batch: {
+              id: 'test-batch-id'
             }
           }
         });
@@ -644,7 +653,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].region.name).to.equal('Anglian');
       expect(batches[0].status).to.equal('processing');
       expect(batches[0].billCount).to.equal(14);
-      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/summary');
+      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/processing?back=1');
       expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');

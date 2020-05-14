@@ -97,6 +97,24 @@ experiment('batchBadge Nunjucks filter', () => {
     });
   });
 
+  experiment('when batch status is "empty"', () => {
+    beforeEach(async () => {
+      badge = batchBadge({ status: 'empty' });
+    });
+
+    test('badge text is "Error"', async () => {
+      expect(badge.text).to.equal('Error');
+    });
+
+    test('badge status is error', async () => {
+      expect(badge.status).to.equal('error');
+    });
+
+    test('badge is not large', async () => {
+      expect(badge.isLarge).to.be.undefined();
+    });
+  });
+
   experiment('when the second argument is true', () => {
     beforeEach(async () => {
       badge = batchBadge({ status: 'error' }, true);

@@ -171,4 +171,78 @@ experiment('internal/modules/billing/pre-handlers', () => {
       expect(payload.message).to.equal('Invoice not found for invoiceLicenceId: test-invoice-licence-id');
     });
   });
+
+  experiment('.redirectOnBatchStatus', () => {
+    let request;
+
+    test('throws an error if the route definition does not define valid statuses', async () => {
+      request = {
+        route: {
+          settings: {
+            app: {
+
+            }
+          }
+        }
+      };
+      const func = () => preHandlers.redirectOnBatchStatus(request, h);
+      expect(func()).to.reject();
+    });
+
+    test('throws an error if the route definition includes invalid statuses', async () => {
+      request = {
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['processing', 'procrastinating']
+            }
+          }
+        }
+      };
+      const func = () => preHandlers.redirectOnBatchStatus(request, h);
+      expect(func()).to.reject();
+    });
+
+    test('returns h.continue if the batch is in one of valid statuses defined on the route', async () => {
+      request = {
+        pre: {
+          batch: {
+            status: 'processing'
+          }
+        },
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['processing']
+            }
+          }
+        }
+      };
+      const result = await preHandlers.redirectOnBatchStatus(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('returns h.redirect if the batch is not in one of valid statuses defined on the route', async () => {
+      request = {
+        pre: {
+          batch: {
+            id: 'test-batch-id',
+            status: 'processing'
+          }
+        },
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['ready', 'sent']
+            }
+          }
+        }
+      };
+      await preHandlers.redirectOnBatchStatus(request, h);
+
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1');
+      expect(h.takeover.called).to.be.true();
+    });
+  });
 });

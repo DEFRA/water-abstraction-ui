@@ -26,26 +26,6 @@ const getTestEventResponse = (status = 'processing', subtype = 'returnReminder')
   error: null
 });
 
-const getTestEventResponseBillRun = (status = 'processing', subtype = 'annual', type = 'billing-batch') => ({
-  data: {
-    id: 'test-event-id',
-    type,
-    status,
-    metadata: {
-      name: 'test-event-name',
-      batch: {
-        id: 'test-batch-id',
-        regionId: 'd8a257d4-b5a9-4420-ad51-d4fbe07b0f1a',
-        region: {
-          displayName: 'Midlands'
-        }
-      }
-    },
-    subtype
-  },
-  error: null
-});
-
 experiment('internal/modules/waiting/controller', () => {
   let request;
   let h;

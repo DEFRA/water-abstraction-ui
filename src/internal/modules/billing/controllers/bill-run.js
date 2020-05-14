@@ -333,7 +333,7 @@ const postBillingBatchDeleteAccount = async (request, h) => {
  */
 const getBillingBatchProcessing = async (request, h) => {
   const { batch } = request.pre;
-  const { back } = request.query;
+  const back = !!request.query.back;
 
   // Render error page if batch has errored
   if (batch.status === 'error') {
@@ -342,8 +342,8 @@ const getBillingBatchProcessing = async (request, h) => {
 
   return h.view('nunjucks/billing/batch-processing', {
     ...request.view,
-    caption: moment(batch.createdAt).format('D M YYYY'),
-    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type)} bill run`,
+    caption: moment(batch.createdAt).format('D MMMM YYYY'),
+    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
     back: back && `/billing/batch/list`
   });
 };

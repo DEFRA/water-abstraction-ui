@@ -826,4 +826,121 @@ experiment('internal/modules/billing/controller', () => {
       expect(url).to.equal('/billing/batch/test-batch-id/summary');
     });
   });
+
+  experiment('.getBillingBatchProcessing', () => {
+    let result;
+
+    const createRequest = (status, back = 1) => ({
+      query: {
+        back
+      },
+      pre: {
+        batch: {
+          id: 'test-batch-id',
+          type: 'two_part_tariff',
+          status,
+          createdAt: '2020-02-01',
+          region: {
+            displayName: 'Anglian'
+          }
+        }
+      }
+    });
+
+    experiment('when the batch has "error" status', () => {
+      beforeEach(async () => {
+        const request = createRequest('error');
+        result = await controller.getBillingBatchProcessing(request, h);
+      });
+
+      test('a Boom 500 error is returned to render a standard technical problem page', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(500);
+      });
+    });
+
+    experiment('when the batch does not have "error" status', () => {
+      experiment('and the back query param is 1', () => {
+        beforeEach(async () => {
+          const request = createRequest('processing');
+          await controller.getBillingBatchProcessing(request, h);
+        });
+
+        test('the correct template is used', async () => {
+          const [template] = h.view.lastCall.args;
+          expect(template).to.equal('nunjucks/billing/batch-processing');
+        });
+
+        test('outputs the formatted batch creation date as the caption', async () => {
+          const [, { caption }] = h.view.lastCall.args;
+          expect(caption).to.equal('1 February 2020');
+        });
+
+        test('outputs the page title', async () => {
+          const [, { pageTitle }] = h.view.lastCall.args;
+          expect(pageTitle).to.equal('Anglian two-part tariff bill run');
+        });
+
+        test('back link is to the batch list page', async () => {
+          const [, { back }] = h.view.lastCall.args;
+          expect(back).to.equal('/billing/batch/list');
+        });
+      });
+
+      experiment('and the back query param is 0', () => {
+        beforeEach(async () => {
+          const request = createRequest('processing', 0);
+          await controller.getBillingBatchProcessing(request, h);
+        });
+
+        test('back link is false', async () => {
+          const [, { back }] = h.view.lastCall.args;
+          expect(back).to.be.false();
+        });
+      });
+    });
+  });
+
+  experiment('.getBillingBatchEmpty', () => {
+    let request;
+
+    const createRequest = () => ({
+      pre: {
+        batch: {
+          id: 'test-batch-id',
+          type: 'two_part_tariff',
+          status: 'empty',
+          createdAt: '2020-02-01',
+          region: {
+            displayName: 'Anglian'
+          }
+        }
+      }
+    });
+
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getBillingBatchEmpty(request, h);
+    });
+
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing/batch-empty');
+    });
+
+    test('outputs the page title to the view', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('Two-part tariff bill run');
+    });
+
+    test('outputs the batch from request.pre to the view', async () => {
+      const [, { batch }] = h.view.lastCall.args;
+      expect(batch).to.equal(request.pre.batch);
+    });
+
+    test('back link is to the batch list page', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal('/billing/batch/list');
+    });
+  });
 });

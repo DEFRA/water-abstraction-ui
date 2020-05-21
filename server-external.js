@@ -1,7 +1,7 @@
 require('dotenv').config();
 require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
-const { createPlugins, createCache } = require('./server-common');
+const { createPlugins } = require('./server-common');
 
 // -------------- Require vendor code -----------------
 const Hapi = require('@hapi/hapi');
@@ -25,9 +25,12 @@ const authPlugin = {
 };
 
 // Define server with REST API cache mechanism
+// @TODO replace with redis
 const server = Hapi.server({
   ...config.server,
-  cache: createCache(config)
+  cache: {
+    provider: require('shared/lib/catbox-rest-api')
+  }
 });
 
 /**

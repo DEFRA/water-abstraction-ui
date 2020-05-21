@@ -2,21 +2,7 @@ const { omit, flatMap, mapValues } = require('lodash');
 const groupArray = require('group-array');
 const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
-
-/**
- * Creates a link to the batch specified if the batch
- * is in a suitable status
- * @param {Object} batch
- * @return {String}
- */
-const mapBatchLink = batch => {
-  const links = {
-    processing: `/billing/batch/${batch.id}/summary`,
-    ready: `/billing/batch/${batch.id}/summary`,
-    review: `/billing/batch/${batch.id}/two-part-tariff-review`
-  };
-  return links[batch.status];
-};
+const routing = require('./routing');
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -28,7 +14,7 @@ const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
   billCount: batch.totals ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
-  link: mapBatchLink(batch)
+  link: routing.getBillingBatchRoute(batch)
 });
 
 const mapTransaction = transaction => ({

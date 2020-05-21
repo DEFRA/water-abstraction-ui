@@ -20,14 +20,19 @@ const getServer = route => {
 
 experiment('internal/modules/billing/routes', () => {
   experiment('.getBillingBatchSummary', () => {
-    test('uses the redirectToWaitingIfEventNotCompleted pre handler', async () => {
-      const routePreHandlers = routes.getBillingBatchSummary.config.pre;
-      expect(routePreHandlers[0]).to.equal(preHandlers.redirectToWaitingIfEventNotComplete);
-    });
-
     test('uses the loadBatch pre handler', async () => {
       const routePreHandlers = routes.getBillingBatchSummary.config.pre;
-      expect(routePreHandlers[1]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
+      expect(routePreHandlers[0]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
+    });
+
+    test('uses the redirectOnBatchStatus pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchSummary.config.pre;
+      expect(routePreHandlers[1]).to.equal({ method: preHandlers.redirectOnBatchStatus });
+    });
+
+    test('redirects unless batch status is "ready" or "sent"', async () => {
+      const { validBatchStatuses } = routes.getBillingBatchSummary.config.app;
+      expect(validBatchStatuses).to.equal(['ready', 'sent']);
     });
   });
 
@@ -126,6 +131,40 @@ experiment('internal/modules/billing/routes', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.postBillingBatchDeleteAccount.config.auth.scope)
         .to.only.include([scope.billing]);
+    });
+  });
+
+  experiment('.getBillingBatchProcessing', () => {
+    test('uses the loadBatch pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchProcessing.config.pre;
+      expect(routePreHandlers[0]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
+    });
+
+    test('uses the redirectOnBatchStatus pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchProcessing.config.pre;
+      expect(routePreHandlers[1]).to.equal({ method: preHandlers.redirectOnBatchStatus });
+    });
+
+    test('redirects unless batch status is "processing" or "error"', async () => {
+      const { validBatchStatuses } = routes.getBillingBatchProcessing.config.app;
+      expect(validBatchStatuses).to.equal(['processing', 'error']);
+    });
+  });
+
+  experiment('.getBillingBatchEmpty', () => {
+    test('uses the loadBatch pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchEmpty.config.pre;
+      expect(routePreHandlers[0]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
+    });
+
+    test('uses the redirectOnBatchStatus pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchEmpty.config.pre;
+      expect(routePreHandlers[1]).to.equal({ method: preHandlers.redirectOnBatchStatus });
+    });
+
+    test('redirects unless batch status is "empty"', async () => {
+      const { validBatchStatuses } = routes.getBillingBatchEmpty.config.app;
+      expect(validBatchStatuses).to.equal(['empty']);
     });
   });
 });

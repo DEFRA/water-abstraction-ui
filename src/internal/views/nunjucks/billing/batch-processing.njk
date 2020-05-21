@@ -2,17 +2,16 @@
 
 {% block content %}
 
-  {% if waitingType === 'returns' %}
-    {{ billRunDate }}    
-    {{ title(pageTitle) }}
 
+ 
+    {{ title(pageTitle, billRunDate | date('D MMMM YYYY')) }}
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <p class="govuk-body-l">{{ text | default('Please wait. This may take a few minutes.') }}</p>
+        <p class="govuk-body-l">Please wait. This may take a few minutes.</p>
       </div>
     </div>
     <img class="spinner" src="/public/images/ajax-loader.gif" alt="spinner">
     <meta http-equiv="refresh" content="10">
-  {% endif %}
 
 {% endblock %}

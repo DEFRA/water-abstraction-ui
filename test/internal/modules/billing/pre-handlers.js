@@ -9,8 +9,6 @@ const {
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
-const eventService = require('internal/modules/billing/services/event-service');
-
 const { water } = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/billing/pre-handlers');
 
@@ -30,8 +28,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
     sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
       id: 'test-invoice-licence-id'
     });
-
-    sandbox.stub(eventService, 'getEventForBatch').resolves();
 
     h = {
       continue: 'continue',
@@ -70,47 +66,6 @@ experiment('internal/modules/billing/pre-handlers', () => {
       const { payload } = result.output;
       expect(payload.statusCode).to.equal(404);
       expect(payload.message).to.equal('Batch not found for batchId: test-batch-id');
-    });
-  });
-
-  experiment('.redirectToWaitingIfEventNotComplete', () => {
-    let request;
-
-    beforeEach(async () => {
-      request = {
-        defra: {},
-        params: {
-          batchId: 'test-batch-id'
-        }
-      };
-    });
-
-    experiment('if the event is not in the complete state', () => {
-      beforeEach(async () => {
-        eventService.getEventForBatch.resolves({
-          event_id: 'test-event-id',
-          status: 'not-completed'
-        });
-
-        await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
-      });
-
-      test('takes over the response', async () => {
-        expect(h.takeover.called).to.be.true();
-      });
-
-      test('redirects to waiting page', async () => {
-        expect(h.redirect.calledWith('/waiting/test-event-id')).to.be.true();
-      });
-    });
-
-    test('continues if the status of the event is completed', async () => {
-      eventService.getEventForBatch.resolves({
-        status: 'complete'
-      });
-
-      const result = await preHandlers.redirectToWaitingIfEventNotComplete(request, h);
-      expect(result).to.equal(h.continue);
     });
   });
 
@@ -214,6 +169,80 @@ experiment('internal/modules/billing/pre-handlers', () => {
       const { payload } = result.output;
       expect(payload.statusCode).to.equal(404);
       expect(payload.message).to.equal('Invoice not found for invoiceLicenceId: test-invoice-licence-id');
+    });
+  });
+
+  experiment('.redirectOnBatchStatus', () => {
+    let request;
+
+    test('throws an error if the route definition does not define valid statuses', async () => {
+      request = {
+        route: {
+          settings: {
+            app: {
+
+            }
+          }
+        }
+      };
+      const func = () => preHandlers.redirectOnBatchStatus(request, h);
+      expect(func()).to.reject();
+    });
+
+    test('throws an error if the route definition includes invalid statuses', async () => {
+      request = {
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['processing', 'procrastinating']
+            }
+          }
+        }
+      };
+      const func = () => preHandlers.redirectOnBatchStatus(request, h);
+      expect(func()).to.reject();
+    });
+
+    test('returns h.continue if the batch is in one of valid statuses defined on the route', async () => {
+      request = {
+        pre: {
+          batch: {
+            status: 'processing'
+          }
+        },
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['processing']
+            }
+          }
+        }
+      };
+      const result = await preHandlers.redirectOnBatchStatus(request, h);
+      expect(result).to.equal(h.continue);
+    });
+
+    test('returns h.redirect if the batch is not in one of valid statuses defined on the route', async () => {
+      request = {
+        pre: {
+          batch: {
+            id: 'test-batch-id',
+            status: 'processing'
+          }
+        },
+        route: {
+          settings: {
+            app: {
+              validBatchStatuses: ['ready', 'sent']
+            }
+          }
+        }
+      };
+      await preHandlers.redirectOnBatchStatus(request, h);
+
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1');
+      expect(h.takeover.called).to.be.true();
     });
   });
 });

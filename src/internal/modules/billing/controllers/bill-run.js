@@ -3,7 +3,6 @@
 const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
-const { groupBy, sortBy } = require('lodash');
 const batchService = require('../services/batch-service');
 const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
@@ -13,18 +12,6 @@ const titleCase = require('title-case');
 const { pluralize } = require('shared/lib/pluralize');
 const moment = require('moment');
 const Boom = require('@hapi/boom');
-
-const mapInvoice = invoice => ({
-  ...invoice,
-  isCredit: invoice.netTotal < 0,
-  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
-  sortValue: -Math.abs(invoice.netTotal)
-});
-
-const mapInvoices = (batch, invoices) => {
-  const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');
-  return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
-};
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
 
@@ -42,7 +29,7 @@ const getBillingBatchSummary = async (request, h) => {
     pageTitle: getBillRunPageTitle(batch),
     subHeading: `${invoices.length} ${mappers.mapBatchType(batch.type).toLowerCase()} ${pluralize('bill', invoices)}`,
     batch,
-    invoices: mapInvoices(batch, invoices),
+    invoices: mappers.mapInvoices(batch, invoices),
     isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
     // only show the back link from the list page, so not to offer the link

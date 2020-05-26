@@ -1,5 +1,4 @@
 const { kebabCase } = require('lodash');
-const uuid = require('uuid/v4');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
 
@@ -58,8 +57,7 @@ const postBillingBatchType = async (request, h) => {
     ));
   }
 
-  const key = uuid();
-  request.yar.set(key, billingTypeForm);
+  const key = sessionForms.set(request, billingTypeForm);
   return h.redirect('/billing/batch/type?' + queryString.stringify({ form: key }));
 };
 
@@ -115,9 +113,7 @@ const postBillingBatchRegion = async (request, h) => {
   if (!billingRegionForm.isValid) {
     const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
 
-    const key = uuid();
-    request.yar.set(key, billingRegionForm);
-
+    const key = sessionForms.set(request, billingRegionForm);
     return h.redirect(getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason, key));
   }
 

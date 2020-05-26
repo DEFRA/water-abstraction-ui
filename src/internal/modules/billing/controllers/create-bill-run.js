@@ -1,4 +1,4 @@
-const { get, kebabCase } = require('lodash');
+const { kebabCase } = require('lodash');
 const uuid = require('uuid/v4');
 const urlJoin = require('url-join');
 const queryString = require('querystring');

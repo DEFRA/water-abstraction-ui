@@ -14,10 +14,7 @@ const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/b
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
-
-const getSessionForm = request => request.yar.get(get(request, 'query.form'));
-
-const clearSessionForm = request => request.yar.clear(get(request, 'query.form'));
+const sessionForms = require('../lib/session-forms');
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -38,13 +35,10 @@ const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey)
  * @param {*} h
  */
 const getBillingBatchType = async (request, h) => {
-  const sessionForm = getSessionForm(request);
-  if (sessionForm) { clearSessionForm(request); }
-
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/manage',
-    form: sessionForm || selectBillingTypeForm(request)
+    form: sessionForms.get(request, selectBillingTypeForm(request))
   });
 };
 
@@ -75,15 +69,12 @@ const postBillingBatchType = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchRegion = async (request, h) => {
-  const sessionForm = getSessionForm(request);
-  if (sessionForm) { clearSessionForm(request); }
-
   const { regions } = request.pre;
 
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/billing/batch/type',
-    form: sessionForm || selectBillingRegionForm(request, regions)
+    form: sessionForms.get(request, selectBillingRegionForm(request, regions))
   });
 };
 

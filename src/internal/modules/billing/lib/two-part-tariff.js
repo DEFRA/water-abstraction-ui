@@ -12,6 +12,7 @@ statusMessages.set(30, 'Returns received but not processed');
 statusMessages.set(40, 'Some returns data outstanding');
 statusMessages.set(50, 'Returns received late');
 statusMessages.set(60, 'Over abstraction');
+statusMessages.set(70, 'No returns for matching');
 
 const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : statusMessages.get(code);

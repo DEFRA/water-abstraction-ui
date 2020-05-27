@@ -115,7 +115,7 @@ const getTransactionReviewRequest = payload => (
 );
 
 experiment('internal/modules/billing/controller/two-part-tariff', () => {
-  let h, request;
+  let h, request, event;
   h = {
     view: sandbox.stub(),
     response: sandbox.stub().returns({ header }),
@@ -129,11 +129,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     }
   };
 
+  event = { id: 'test-event-id' };
+
   beforeEach(async () => {
     sandbox.stub(services.water.billingBatches, 'getBatchLicences');
+    sandbox.stub(services.water.billingBatches, 'approveBatchReview').resolves({ data: { event } });
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
+    sandbox.stub(services.water.billingInvoiceLicences, 'deleteInvoiceLicence');
     sandbox.stub(services.water.billingTransactions, 'updateVolume');
   });
 
@@ -207,6 +211,19 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('returns the correct back link to the view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/billing/batch/list');
+    });
+
+    experiment('when there are no errors', () => {
+      beforeEach(async () => {
+        const licencesWithoutErrors = batchLicences.filter(licence => !licence.twoPartTariffError);
+        services.water.billingBatches.getBatchLicences.resolves(licencesWithoutErrors);
+        await controller.getTwoPartTariffReview(request, h);
+      });
+
+      test('returns ready view template', () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/two-part-tariff-ready');
+      });
     });
   });
 
@@ -402,11 +419,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('a back link is set', async () => {
       const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-review`);
-    });
-
-    test('a link to remove the invoice licence from the bill run is set', async () => {
-      const [, { removeLink }] = h.view.lastCall.args;
-      expect(removeLink).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-remove-licence/${invoiceLicence.id}`);
     });
   });
 
@@ -880,6 +892,164 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         expect(result.isBoom).to.be.true();
         expect(result.output.statusCode).to.equal(400);
       });
+    });
+  });
+
+  experiment('.getRemoveLicence', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          invoiceLicenceId: 'test-invoice-licence-id'
+        },
+        pre: {
+          batch: {
+            id: 'test-batch-id'
+          },
+          invoiceLicence: {
+            id: 'test-invoice-licence-id'
+          }
+        },
+        view: {
+          crsfToken: 'test-token'
+        }
+      };
+      await controller.getRemoveLicence(request, h);
+    });
+
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing/confirm-page-with-metadata');
+    });
+
+    test('passes through data from request.view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.csrfToken).to.equal(request.view.csrfToken);
+    });
+
+    test('passes through data from request.pre', async () => {
+      const [, { batch, invoiceLicence }] = h.view.lastCall.args;
+      expect(batch).to.equal(request.pre.batch);
+      expect(invoiceLicence).to.equal(request.pre.invoiceLicence);
+    });
+
+    test('the form method and action is correct', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      expect(form.method).to.equal('POST');
+      expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/remove');
+    });
+
+    test('the form has a hidden field with the CSRF token', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = form.fields.find(field => field.name === 'csrf_token');
+      expect(field.value).to.equal(request.view.csrfToken);
+      expect(field.options.type).to.equal('hidden');
+    });
+
+    test('the form has a button with the text "Remove licence"', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = form.fields.find(field => field.options.widget === 'button');
+      expect(field.options.label).to.equal('Remove licence');
+    });
+
+    test('the page title is set correctly', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('You are about to remove this licence from the bill run');
+    });
+
+    test('sets the back link correctly', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id`);
+    });
+  });
+
+  experiment('.postRemoveLicence', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id',
+          invoiceLicenceId: 'test-invoice-licence-id'
+        }
+      };
+      await controller.postRemoveLicence(request, h);
+    });
+
+    test('calls the correct water API method to delete the licence from the batch', async () => {
+      expect(services.water.billingInvoiceLicences.deleteInvoiceLicence.calledWith(
+        'test-invoice-licence-id'
+      )).to.be.true();
+    });
+
+    test('redirects back to the two-part tariff review page', async () => {
+      expect(h.redirect.calledWith(
+        `/billing/batch/test-batch-id/two-part-tariff-review`
+      )).to.be.true();
+    });
+  });
+
+  experiment('.getApproveReview', () => {
+    let request;
+
+    beforeEach(() => {
+      request = {
+        pre: { batch: { id: 'test-batch-id' } },
+        view: { foo: 'bar' }
+      };
+
+      controller.getApproveReview(request, h);
+    });
+
+    test('uses the correct template', () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing/confirm-page-with-metadata');
+    });
+
+    test('passes the form to the view context', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form).to.be.an.object();
+    });
+
+    test('passes the correct page title to the view context', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.pageTitle).to.equal('You are about to generate the two-part tariff bills');
+    });
+
+    test('passes metadata type to the view context', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.metadataType).to.equal('batch');
+    });
+
+    test('passes back link to the view context', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-ready`);
+    });
+  });
+
+  experiment('.postApproveReview', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId: 'test-batch-id'
+        }
+      };
+      await controller.postApproveReview(request, h);
+    });
+
+    test('calls the correct water API method to approve batch reviewzs', async () => {
+      expect(services.water.billingBatches.approveBatchReview.calledWith(
+        'test-batch-id'
+      )).to.be.true();
+    });
+
+    test('redirects back to the waiting page', async () => {
+      expect(h.redirect.calledWith(
+        `/waiting/${event.id}?back=0`
+      )).to.be.true();
     });
   });
 });

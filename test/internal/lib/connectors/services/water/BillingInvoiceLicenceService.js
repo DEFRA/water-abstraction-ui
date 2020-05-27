@@ -18,6 +18,8 @@ experiment('services/water/BillingInvoiceLicenceService', () => {
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get');
+    sandbox.stub(serviceRequest, 'delete');
+
     service = new BillingInvoiceLicenceService('https://example.com/water/1.0');
   });
 
@@ -30,6 +32,15 @@ experiment('services/water/BillingInvoiceLicenceService', () => {
       const invoiceLicenceId = uuid();
       await service.getInvoiceLicence(invoiceLicenceId);
       const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/invoice-licences/${invoiceLicenceId}`);
+    });
+  });
+
+  experiment('.deleteInvoiceLicence', () => {
+    test('passes the expected URL to the service request', async () => {
+      const invoiceLicenceId = uuid();
+      await service.deleteInvoiceLicence(invoiceLicenceId);
+      const [url] = serviceRequest.delete.lastCall.args;
       expect(url).to.equal(`https://example.com/water/1.0/billing/invoice-licences/${invoiceLicenceId}`);
     });
   });

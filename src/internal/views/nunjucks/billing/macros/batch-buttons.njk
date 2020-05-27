@@ -1,7 +1,5 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-
-
 {% macro cancelBatchButton(batch) %}
   {% if batch.status in ['ready', 'review'] %}
   {{
@@ -26,12 +24,44 @@
   {% endif %}
 {% endmacro %}
 
+{% macro removeAccountFromBatchButton(batch, invoice) %}
+  {{
+    govukButton({
+      text: "Remove from bill run",
+      href: '/billing/batch/' + batch.id + '/delete-account/' + invoice.id,
+      classes: "govuk-button--secondary"
+    })
+  }}
+{% endmacro %}
+
+{% macro removeLicenceFromBatchButton(batch, invoiceLicence) %}
+    {{
+      govukButton({
+        text: "Remove from bill run",
+        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + invoiceLicence.id + '/remove',
+        classes: "govuk-button--secondary"
+      })
+    }}
+{% endmacro %}
+
 {% macro twoPartTariffContinueButton(batch) %}
   {{
     govukButton({
       text: "Continue",
-      href: '#',
+      href: '/billing/batch/' + batch.id + '/approve-review',
       classes: 'govuk-!-margin-right-1'
     })
   }}
 {% endmacro %}
+
+{% macro downloadBatchButton(batch) %}
+  {% set href %}/billing/batch/{{batch.id}}/transactions-csv{% endset %}
+  {{
+    govukButton({
+      text: "Download this bill run",
+      href: href,
+      classes: 'govuk-!-margin-right-1 govuk-button--secondary'
+    })
+  }}
+{% endmacro %}
+

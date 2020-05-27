@@ -36,7 +36,7 @@ if (isAcceptanceTestTarget) {
 
     getBillingBatchRegion: {
       method: 'GET',
-      path: '/billing/batch/region/{billingType}',
+      path: '/billing/batch/region/{billingType}/{season?}',
       handler: controller.getBillingBatchRegion,
       config: {
         auth: { scope: allowedScopes },
@@ -87,6 +87,9 @@ if (isAcceptanceTestTarget) {
       path: '/billing/batch/{batchId}/summary',
       handler: controller.getBillingBatchSummary,
       config: {
+        app: {
+          validBatchStatuses: ['ready', 'sent']
+        },
         auth: { scope: allowedScopes },
         description: 'displays the bill run summary',
         plugins: {
@@ -103,7 +106,8 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          preHandlers.redirectToWaitingIfEventNotComplete
+          { method: preHandlers.loadBatch, assign: 'batch' },
+          { method: preHandlers.redirectOnBatchStatus }
         ]
       }
     },
@@ -279,6 +283,61 @@ if (isAcceptanceTestTarget) {
             csrf_token: Joi.string().uuid().required()
           }
         }
+      }
+    },
+
+    getBillingBatchProcessing: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/processing',
+      handler: controller.getBillingBatchProcessing,
+      config: {
+        app: {
+          validBatchStatuses: ['processing', 'error']
+        },
+        auth: { scope: allowedScopes },
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
+          },
+          query: {
+            back: Joi.number().integer().default(1).optional()
+          }
+        },
+        pre: [
+          { method: preHandlers.loadBatch, assign: 'batch' },
+          { method: preHandlers.redirectOnBatchStatus }
+        ]
+      }
+    },
+
+    getBillingBatchEmpty: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/empty',
+      handler: controller.getBillingBatchEmpty,
+      config: {
+        app: {
+          validBatchStatuses: ['empty']
+        },
+        auth: { scope: allowedScopes },
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
+          }
+        },
+        pre: [
+          { method: preHandlers.loadBatch, assign: 'batch' },
+          { method: preHandlers.redirectOnBatchStatus }
+        ]
       }
     }
   };

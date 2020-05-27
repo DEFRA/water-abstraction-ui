@@ -187,6 +187,104 @@ if (isAcceptanceTestTarget) {
           }
         }
       }
+    },
+
+    getRemoveLicence: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      handler: controller.getRemoveLicence,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' },
+          { method: preHandlers.loadInvoiceLicenceInvoice, assign: 'invoice' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'confirm remove licence from TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            invoiceLicenceId: VALID_GUID
+          }
+        }
+      }
+    },
+
+    postRemoveLicence: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      handler: controller.postRemoveLicence,
+      config: {
+        pre: [
+          ...pre
+        ],
+        auth: { scope: allowedScopes },
+        description: 'confirm remove licence from TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            invoiceLicenceId: VALID_GUID
+          }
+        }
+      }
+    },
+
+    getApproveReview: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/approve-review',
+      handler: controller.getApproveReview,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadBatch, assign: 'batch' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'approve tpt review to continue bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID
+          }
+        }
+      }
+    },
+
+    postApproveReview: {
+      method: 'POST',
+      path: '/billing/batch/{batchId}/approve-review',
+      handler: controller.postApproveReview,
+      config: {
+        pre: [
+          ...pre
+        ],
+        auth: { scope: allowedScopes },
+        description: 'approve tpt review to continue bill run',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID
+          }
+        }
+      }
     }
+
   };
 };

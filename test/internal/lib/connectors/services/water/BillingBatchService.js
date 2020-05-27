@@ -21,7 +21,7 @@ experiment('services/water/BillingBatchService', () => {
     'regionId': 'selectedBillingRegion',
     'batchType': 'annual',
     'financialYear': new Date().getFullYear(),
-    'season': 'summer' // ('summer', 'winter', 'all year').required();
+    isSummer: true
   };
 
   beforeEach(async () => {
@@ -171,6 +171,15 @@ experiment('services/water/BillingBatchService', () => {
       await service.getBatchLicences(batchId);
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences`);
+    });
+  });
+
+  experiment('.approveBatchReview', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      await service.approveBatchReview(batchId);
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve-review`);
     });
   });
 });

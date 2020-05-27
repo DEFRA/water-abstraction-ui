@@ -1,8 +1,20 @@
-const { formFactory, fields } = require('shared/lib/forms/');
+'use strict';
+
 const Joi = require('@hapi/joi');
-const { ANNUAL,
+
+const { formFactory, fields } = require('shared/lib/forms/');
+const {
+  ANNUAL,
   SUPPLEMENTARY,
-  TWO_PART_TARIFF } = require('../lib/bill-run-types');
+  TWO_PART_TARIFF
+} = require('../lib/bill-run-types');
+
+const seasons = require('../lib/seasons');
+
+const seasonChoices = [
+  { value: seasons.SUMMER, label: 'Summer' },
+  { value: seasons.WINTER_AND_ALL_YEAR, label: 'Winter and All year' }
+];
 
 const choices = [
   {
@@ -15,8 +27,17 @@ const choices = [
   },
   {
     value: TWO_PART_TARIFF,
-    label: 'Two-part tariff'
-  }];
+    label: 'Two-part tariff',
+    fields: [
+      fields.radio('twoPartTariffSeason', {
+        errors: {
+          'any.required': { message: 'Select a season' }
+        },
+        choices: seasonChoices
+      })
+    ]
+  }
+];
 
 /**
  * Creates an object to represent the form for capturing the
@@ -49,11 +70,18 @@ const selectBillingTypeForm = (request) => {
 };
 
 const billingTypeFormSchema = (request) => {
-  const validBillRunTypes = [ ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF ];
+  const validBillRunTypes = [ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF];
 
   return {
     csrf_token: Joi.string().uuid().required(),
-    selectedBillingType: Joi.string().required().valid(validBillRunTypes)
+    selectedBillingType: Joi.string().required().valid(validBillRunTypes),
+    twoPartTariffSeason: Joi.string().when(
+      'selectedBillingType',
+      {
+        is: TWO_PART_TARIFF,
+        then: Joi.string().required().valid(Object.values(seasons))
+      }
+    )
   };
 };
 

@@ -3,11 +3,11 @@
 const uuid = require('uuid/v4');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
-const { deleteAccountFromBatchForm } = require('../forms/billing-batch-delete-account');
+const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const forms = require('shared/lib/forms');
-const { get } = require('lodash');
+const { get, kebabCase, groupBy, sortBy } = require('lodash');
 const queryString = require('querystring');
 const helpers = require('@envage/water-abstraction-helpers');
 const batchService = require('../services/batch-service');
@@ -16,7 +16,14 @@ const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
 const titleCase = require('title-case');
-const sentenceCase = require('sentence-case');
+const { pluralize } = require('shared/lib/pluralize');
+const urlJoin = require('url-join');
+const moment = require('moment');
+const Boom = require('@hapi/boom');
+const routing = require('../lib/routing');
+
+const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
+const seasons = require('../lib/seasons');
 
 const getSessionForm = (request) => {
   return request.yar.get(get(request, 'query.form'));
@@ -26,22 +33,41 @@ const clearSessionForm = (request) => {
   request.yar.clear(get(request, 'query.form'));
 };
 
-const getBillRunPageTitle = batch => `${sentenceCase(batch.type.replace(/_/g, ' '))} bill run`;
-
 const getBillingRegions = async () => {
   const { data } = await services.water.regions.getRegions();
   return data;
 };
 
+const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
+  const path = urlJoin(
+    '/billing/batch/region',
+    kebabCase(selectedBillingType),
+    kebabCase(selectedTwoPartTariffSeason)
+  );
+
+  return formKey
+    ? `${path}?${queryString.stringify({ form: formKey })}`
+    : path;
+};
+
 const getBatchDetails = (request, billingRegionForm) => {
-  const { selectedBillingType, selectedBillingRegion } = forms.getValues(billingRegionForm);
-  const financialYear = (new Date().getMonth > 3) ? helpers.charging.getFinancialYear() + 1 : helpers.charging.getFinancialYear();
+  const {
+    selectedBillingType,
+    selectedBillingRegion,
+    selectedTwoPartTariffSeason
+  } = forms.getValues(billingRegionForm);
+
+  const financialYear = helpers.charging.getFinancialYear();
+  const financialYearEnding = selectedTwoPartTariffSeason === seasons.WINTER_AND_ALL_YEAR
+    ? financialYear - 1
+    : financialYear;
+
   const batch = {
     userEmail: request.defra.user.user_name,
     regionId: selectedBillingRegion,
     batchType: selectedBillingType,
-    financialYearEnding: financialYear,
-    season: 'all year' // ('summer', 'winter', 'all year').required();
+    financialYearEnding,
+    isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
   };
   return batch;
 };
@@ -72,8 +98,11 @@ const postBillingBatchType = async (request, h) => {
   const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema(request));
 
   if (billingTypeForm.isValid) {
-    const { selectedBillingType } = forms.getValues(billingTypeForm);
-    return h.redirect(`/billing/batch/region/${selectedBillingType}`);
+    const { selectedBillingType, twoPartTariffSeason } = forms.getValues(billingTypeForm);
+    return h.redirect(getRegionUrl(
+      selectedBillingType,
+      selectedBillingType === TWO_PART_TARIFF ? twoPartTariffSeason : ''
+    ));
   }
 
   const key = uuid();
@@ -111,16 +140,19 @@ const postBillingBatchRegion = async (request, h) => {
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, billingRegionFormSchema);
 
   if (!billingRegionForm.isValid) {
-    const { selectedBillingType } = forms.getValues(billingRegionForm);
+    const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
+
     const key = uuid();
     request.yar.set(key, billingRegionForm);
-    return h.redirect(`/billing/batch/region/${selectedBillingType}?` + queryString.stringify({ form: key }));
+
+    return h.redirect(getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason, key));
   }
 
   try {
     const batch = getBatchDetails(request, billingRegionForm);
-    const { data: { event } } = await services.water.billingBatches.createBillingBatch(batch);
-    return h.redirect(`/waiting/${event.id}?back=0`);
+    const { data } = await services.water.billingBatches.createBillingBatch(batch);
+    const path = routing.getBillingBatchRoute(data.batch, false);
+    return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
@@ -143,23 +175,36 @@ const getBillingBatchExists = async (request, h) => {
   });
 };
 
+const mapInvoice = invoice => ({
+  ...invoice,
+  isCredit: invoice.netTotal < 0,
+  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
+  sortValue: -Math.abs(invoice.netTotal)
+});
+
+const mapInvoices = (batch, invoices) => {
+  const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');
+  return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
+};
+
+const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
+
 /**
  * Shows a batch with its list of invoices
  * together with their totals
  * @param {String} request.params.batchId
  */
 const getBillingBatchSummary = async (request, h) => {
-  const { batchId } = request.params;
-  const { batch, invoices } = await batchService.getBatchInvoices(batchId);
+  const { batch } = request.pre;
+  const invoices = await services.water.billingBatches.getBatchInvoices(batch.id);
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
     pageTitle: getBillRunPageTitle(batch),
+    subHeading: `${invoices.length} ${mappers.mapBatchType(batch.type).toLowerCase()} ${pluralize('bill', invoices)}`,
     batch,
-    invoices: invoices.map(row => ({
-      ...row,
-      isCredit: row.netTotal < 0
-    })),
+    invoices: mapInvoices(batch, invoices),
+    isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
@@ -205,11 +250,12 @@ const getBillingBatchList = async (request, h) => {
 const billingBatchAction = (request, h, action) => {
   const { batch } = request.pre;
   const titleAction = (action === 'confirm') ? 'send' : 'cancel';
-  return h.view('nunjucks/billing/batch-cancel-or-confirm', {
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     batch,
     pageTitle: `You are about to ${titleAction} this bill run`,
     secondTitle: getBillRunPageTitle(batch),
+    metadataType: 'batch',
     form: cancelOrConfirmBatchForm(request, action),
     back: `/billing/batch/${batch.id}/summary`
   });
@@ -258,13 +304,15 @@ const getBillingBatchDeleteAccount = async (request, h) => {
   const { batchId, invoiceId } = request.params;
   const { batch } = request.pre;
   const account = await batchService.getBatchInvoice(batchId, invoiceId);
+  const action = `/billing/batch/${batchId}/delete-account/${account.id}`;
 
-  return h.view('nunjucks/billing/batch-delete-account', {
+  return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     pageTitle: 'You are about to remove this bill from the bill run',
     account,
-    form: deleteAccountFromBatchForm(request, account.id),
+    form: confirmForm(request, action, 'Remove bill'),
     batch,
+    metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });
 };
@@ -273,6 +321,46 @@ const postBillingBatchDeleteAccount = async (request, h) => {
   const { accountId, batchId } = request.params;
   await services.water.billingBatches.deleteAccountFromBatch(batchId, accountId);
   return h.redirect(`/billing/batch/${batchId}/summary`);
+};
+
+/**
+ * Renders a 'waiting' page while the batch is processing.
+ * If the batch is in error, responds with a 500 error page.
+ * The redirectOnBatchStatus pre handler will have already redirected to the appropriate page
+ * if the batch is processed.
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ * @param {Number} request.query.back - whether to render back button
+ */
+const getBillingBatchProcessing = async (request, h) => {
+  const { batch } = request.pre;
+  const back = !!request.query.back;
+
+  // Render error page if batch has errored
+  if (batch.status === 'error') {
+    return Boom.badImplementation('Billing batch error');
+  }
+
+  return h.view('nunjucks/billing/batch-processing', {
+    ...request.view,
+    caption: moment(batch.createdAt).format('D MMMM YYYY'),
+    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
+    back: back && `/billing/batch/list`
+  });
+};
+
+/**
+ * Renders an error page if the batch is empty - i.e. no transactions
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ */
+const getBillingBatchEmpty = async (request, h) => {
+  const { batch } = request.pre;
+
+  return h.view('nunjucks/billing/batch-empty', {
+    ...request.view,
+    pageTitle: getBillRunPageTitle(batch),
+    batch,
+    back: `/billing/batch/list`
+  });
 };
 
 exports.getBillingBatchList = getBillingBatchList;
@@ -296,3 +384,6 @@ exports.getBillingBatchDeleteAccount = getBillingBatchDeleteAccount;
 exports.postBillingBatchDeleteAccount = postBillingBatchDeleteAccount;
 
 exports.getTransactionsCSV = getTransactionsCSV;
+
+exports.getBillingBatchProcessing = getBillingBatchProcessing;
+exports.getBillingBatchEmpty = getBillingBatchEmpty;

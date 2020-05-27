@@ -1,7 +1,9 @@
 'use strict';
 
 const { formFactory, fields } = require('shared/lib/forms/');
+const { snakeCase } = require('lodash');
 const Joi = require('@hapi/joi');
+const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 
 const mapChoices = regionsData =>
   regionsData.map(region => ({
@@ -18,7 +20,9 @@ const mapChoices = regionsData =>
   */
 const selectBillingRegionForm = (request, regions) => {
   const { csrfToken } = request.view;
-  const { billingType } = request.params;
+  const billingType = snakeCase(request.params.billingType);
+  const season = snakeCase(request.params.season);
+
   const action = '/billing/batch/region';
   const f = formFactory(action, 'POST');
 
@@ -30,15 +34,22 @@ const selectBillingRegionForm = (request, regions) => {
     },
     choices: mapChoices(regions)
   }));
+
   f.fields.push(fields.hidden('selectedBillingType', {}, billingType));
+  f.fields.push(fields.hidden('selectedTwoPartTariffSeason', {}, season));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;
 };
+
 const billingRegionFormSchema = {
   csrf_token: Joi.string().uuid().required(),
   selectedBillingRegion: Joi.string().uuid().required(),
-  selectedBillingType: Joi.string().required()
+  selectedBillingType: Joi.string().required(),
+  selectedTwoPartTariffSeason: Joi.string().allow('').when('selectedBillingType', {
+    is: TWO_PART_TARIFF,
+    then: Joi.string().required()
+  })
 };
 
 exports.selectBillingRegionForm = selectBillingRegionForm;

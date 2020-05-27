@@ -92,9 +92,19 @@ const redirectOnBatchStatus = async (request, h) => {
   return h.redirect(path).takeover();
 };
 
+/**
+ * Loads a list of available regions from water service
+ * @return {Promise<Array>}
+ */
+const loadRegions = async (request, h) => {
+  const { data } = await water.regions.getRegions();
+  return data;
+};
+
 exports.loadBatch = partial(preHandler, config.loadBatch);
 exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
 exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
 exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
 
 exports.redirectOnBatchStatus = redirectOnBatchStatus;
+exports.loadRegions = loadRegions;

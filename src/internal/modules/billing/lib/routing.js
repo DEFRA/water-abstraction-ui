@@ -23,4 +23,8 @@ const getBillingBatchRoute = (batch, isBackEnabled = true, isErrorRoutesIncluded
   return links[batch.status];
 };
 
+const getTwoPartTariffLicenceReviewRoute = (batch, licence) =>
+  `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.billingInvoiceLicenceId}`;
+
 exports.getBillingBatchRoute = getBillingBatchRoute;
+exports.getTwoPartTariffLicenceReviewRoute = getTwoPartTariffLicenceReviewRoute;

@@ -1,4 +1,4 @@
-const { omit, flatMap, mapValues } = require('lodash');
+const { omit, flatMap, mapValues, sortBy, groupBy } = require('lodash');
 const groupArray = require('group-array');
 const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
@@ -103,7 +103,20 @@ const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
   return acc;
 }, []);
 
+const mapInvoice = invoice => ({
+  ...invoice,
+  isCredit: invoice.netTotal < 0,
+  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
+  sortValue: -Math.abs(invoice.netTotal)
+});
+
+const mapInvoices = (batch, invoices) => {
+  const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');
+  return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
+};
+
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceTransactions = mapInvoiceTransactions;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
+exports.mapInvoices = mapInvoices;

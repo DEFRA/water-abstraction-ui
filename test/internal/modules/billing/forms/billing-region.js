@@ -3,7 +3,7 @@
 const Joi = require('@hapi/joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { selectBillingRegionForm, billingRegionFormSchema } = require('internal/modules/billing/forms/billing-region');
 const { findField, findButton } = require('../../../../lib/form-test');
 
@@ -95,41 +95,52 @@ experiment('billing/forms/billing-region form', () => {
 });
 
 experiment('billing/forms/billing-region schema', () => {
+  let schema;
+
+  beforeEach(async () => {
+    schema = billingRegionFormSchema(getBillingRegions().data);
+  });
+
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = billingRegionFormSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = schema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = billingRegionFormSchema.csrf_token.validate('pizza');
+      const result = schema.csrf_token.validate('pizza');
       expect(result.error).to.exist();
     });
   });
 
   experiment('region Id', () => {
-    test('validates for a uuid', async () => {
-      const result = billingRegionFormSchema.selectedBillingRegion.validate('c5afe238-fb77-4131-be80-384aaf245842');
+    test('validates for a valid region uuid', async () => {
+      const result = schema.selectedBillingRegion.validate(getBillingRegions().data[0].regionId);
       expect(result.error).to.be.null();
     });
 
+    test('fails for an invalid uuid', async () => {
+      const result = schema.selectedBillingRegion.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      expect(result.error).to.exist();
+    });
+
     test('fails for a string that is not a uuid', async () => {
-      const result = billingRegionFormSchema.selectedBillingRegion.validate('pizza');
+      const result = schema.selectedBillingRegion.validate('pizza');
       expect(result.error).to.exist();
     });
     test('fails if blank', async () => {
-      const result = billingRegionFormSchema.selectedBillingRegion.validate();
+      const result = schema.selectedBillingRegion.validate();
       expect(result.error).to.exist();
     });
   });
   experiment('billing type', () => {
     test('validates for a string', async () => {
-      const result = billingRegionFormSchema.selectedBillingType.validate('annual');
+      const result = schema.selectedBillingType.validate('annual');
       expect(result.error).to.be.null();
     });
 
     test('fails if blank', async () => {
-      const result = billingRegionFormSchema.selectedBillingType.validate();
+      const result = schema.selectedBillingType.validate();
       expect(result.error).to.exist();
     });
   });
@@ -138,36 +149,36 @@ experiment('billing/forms/billing-region schema', () => {
     test('is not required if the billing type is annual', async () => {
       const data = {
         csrf_token: uuid(),
-        selectedBillingRegion: uuid(),
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'annual',
         selectedTwoPartTariffSeason: ''
       };
 
-      const result = Joi.validate(data, billingRegionFormSchema);
+      const result = Joi.validate(data, schema);
       expect(result.error).not.to.exist();
     });
 
     test('passes for two part tariff when supplied', async () => {
       const data = {
         csrf_token: uuid(),
-        selectedBillingRegion: uuid(),
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'two_part_tariff',
         selectedTwoPartTariffSeason: 'summer'
       };
 
-      const result = Joi.validate(data, billingRegionFormSchema);
+      const result = Joi.validate(data, schema);
       expect(result.error).not.to.exist();
     });
 
     test('fails when missing for two part tariff', async () => {
       const data = {
         csrf_token: uuid(),
-        selectedBillingRegion: uuid(),
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'two_part_tariff',
         selectedTwoPartTariffSeason: ''
       };
 
-      const result = Joi.validate(data, billingRegionFormSchema);
+      const result = Joi.validate(data, schema);
       expect(result.error).to.exist();
     });
   });

@@ -29,7 +29,7 @@ const createBatchData = () => ({
   totals: {
     netTotal: 43434
   },
-  billRunId: 1234
+  billRunNumber: 1234
 });
 
 const invoice = {

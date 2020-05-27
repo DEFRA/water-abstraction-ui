@@ -62,6 +62,11 @@
             {{ statusRow('Status', virusScanner) }}
          </table>
 
+         <h2 class="govuk-heading-m">Cache connectivity</h2>
+         <table class="govuk-table">
+            {{ statusRow('Status', cacheConnection) }}
+         </table>
+
          <h2 class="govuk-heading-m">Service versions</h2>
          <table class="govuk-table">
             {{ statusRow('Water service', versions.waterService) }}

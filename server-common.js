@@ -1,6 +1,7 @@
 const GoodWinston = require('good-winston');
 const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
 const UpdatePasswordConfig = require('shared/lib/UpdatePasswordConfig');
+const CatboxRedis = require('@hapi/catbox-redis');
 
 const createPlugins = (config, logger, connectors) => ([
   require('@hapi/scooter'),
@@ -48,4 +49,17 @@ const createPlugins = (config, logger, connectors) => ([
   }
 ]);
 
+const createCache = config => {
+  return [
+    {
+
+      provider: {
+        constructor: CatboxRedis,
+        options: config.redis
+      }
+    }
+  ];
+};
+
 exports.createPlugins = createPlugins;
+exports.createCache = createCache;

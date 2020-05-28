@@ -13,7 +13,7 @@ const batch = {
     displayName: 'South West',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
   },
-  billRunId: 2345
+  billRunNumber: 2345
 };
 
 const invoicesForBatch = [

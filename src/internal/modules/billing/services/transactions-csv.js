@@ -75,7 +75,7 @@ const createCSV = async data => {
 
 const getCSVFileName = batch => {
   const batchType = mappers.mapBatchType(batch.type);
-  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunId}.csv`;
+  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`;
 };
 exports._getInvoiceAccountData = getInvoiceAccountData;
 exports._getTransactionData = getTransactionData;

@@ -41,7 +41,9 @@ const createPlugins = (config, logger, connectors) => ([
   {
     plugin: require('shared/plugins/service-status'),
     options: {
-      services: connectors
+      services: connectors,
+      redis: config.redis,
+      logger
     }
   }
 ]);

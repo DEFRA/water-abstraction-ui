@@ -29,7 +29,7 @@
   "devDependencies": {
     "@hapi/code": "^6.0.0",
     "@hapi/lab": "^19.1.0",
-    "auto-changelog": "^1.14.1",
+    "auto-changelog": "^1.16.4",
     "codecov": "^3.6.5",
     "del": "^3.0.0",
     "eslint": "^5.16.0",
@@ -40,11 +40,11 @@
     "eslint-plugin-standard": "^4.0.1",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "sinon": "^4.2.2",
-    "snyk": "^1.305.0"
+    "snyk": "^1.324.0"
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api/archive/v4.3.0.tar.gz",
@@ -60,7 +60,7 @@
     "@hapi/yar": "^9.2.0",
     "accessible-autocomplete": "^1.6.2",
     "acorn": "^5.7.4",
-    "ajv": "^6.12.0",
+    "ajv": "^6.12.2",
     "app-module-path": "^2.2.0",
     "archiver": "^3.0.3",
     "blankie": "^4.1.1",
@@ -90,8 +90,8 @@
     "lodash": "^4.17.15",
     "marked": "^0.7.0",
     "minimatch": "^3.0.4",
-    "mkdirp": "^0.5.1",
-    "moment": "^2.24.0",
+    "mkdirp": "^0.5.5",
+    "moment": "^2.26.0",
     "moment-timezone": "^0.5.28",
     "nunjucks": "^3.2.1",
     "path": "^0.12.7",

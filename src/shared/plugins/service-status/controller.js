@@ -7,14 +7,7 @@ const getRedisCacheStatus = async (redisConfig, logger) => {
   let result = 'Not connected';
 
   try {
-    const options = {
-      host: redisConfig.host,
-      port: redisConfig.port,
-      ...(redisConfig.password && { password: redisConfig.password }),
-      db: 0
-    };
-
-    const cache = new Catbox.Client(CatboxRedis, options);
+    const cache = new Catbox.Client(CatboxRedis, redisConfig);
     await cache.start();
 
     const key = { segment: 'serviceStatus', id: 'testStatus' };

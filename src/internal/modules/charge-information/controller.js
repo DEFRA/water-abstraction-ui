@@ -59,8 +59,6 @@ const postReason = async (request, h) => {
 const getStartDate = async (request, h) => {
   const { licence } = request.pre;
 
-  console.log(request.pre.draftChargeInformation);
-
   // Get reason form
   const form = sessionForms.get(request, forms.startDate.form(request));
 

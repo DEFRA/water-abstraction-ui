@@ -1,5 +1,3 @@
-const Joi = require('@hapi/joi');
-
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
@@ -79,10 +77,6 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
-        },
-        payload: {
-          csrf_token: VALID_GUID,
-          reason: VALID_GUID.optional()
         }
       },
       pre: [
@@ -140,13 +134,6 @@ module.exports = {
         params: {
           licenceId: VALID_GUID
         }
-        // payload: {
-        //   csrf_token: VALID_GUID
-        //   // startDate: Joi.string().optional(),
-        //   // 'customDate-day': Joi.string().optional(),
-        //   // 'customDate-month': Joi.string().optional(),
-        //   // 'customDate-year': Joi.string().optional()
-        // }
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },

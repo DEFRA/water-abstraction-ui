@@ -12,9 +12,12 @@ const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
+<<<<<<< HEAD
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
 
 const DATE_FORMAT = 'YYYY-MM-DD';
+=======
+>>>>>>> Move session forms implementation to global location
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(

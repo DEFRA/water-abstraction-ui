@@ -1,15 +1,11 @@
 const Joi = require('@hapi/joi');
-const { get, pullAt } = require('lodash');
+const { get } = require('lodash');
 const moment = require('moment');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 
 const DATE_FORMAT = 'D MMMM YYYY';
 const ISO_FORMAT = 'YYYY-MM-DD';
-
-const MIN_LICENCE_START = 'licence_start';
-const MIN_6_YEARS = '6_years';
 
 const createValues = (startDate, customDate) => ({ startDate, customDate });
 
@@ -21,7 +17,7 @@ const createValues = (startDate, customDate) => ({ startDate, customDate });
  * @return {Object}
  */
 const getValues = (request, licence, refDate) => {
-  const startDate = get(request, 'pre.draftChargeInformation.dateRange.startDate');
+  const startDate = get(request, 'pre.draftChargeInformation.startDate');
   if (!startDate) {
     return createValues();
   }
@@ -34,87 +30,26 @@ const getValues = (request, licence, refDate) => {
   return createValues('customDate', startDate);
 };
 
-const getDates = licence => {
-  const startDate = moment(licence.startDate);
-  const minDate = moment().subtract(6, 'years');
-  const isLicenceStart = startDate.isAfter(minDate);
-  return {
-    licenceStartDate: licence.startDate,
-    minDate: isLicenceStart ? licence.startDate : minDate.format(ISO_FORMAT),
-    minType: isLicenceStart ? MIN_LICENCE_START : MIN_6_YEARS,
-    maxDate: licence.endDate || '3000-01-01'
-  };
+const dateError = {
+  message: 'Enter a date in the right format, for example 31 3 2018',
+  summary: 'Enter a date in the right format'
 };
 
-const minErrors = {
-  [MIN_LICENCE_START]: 'You must enter a date after the licence start date',
-  [MIN_6_YEARS]: "Date must be today or up to six years' in the past"
-};
-
-const getCommomCustomDateErrors = dates => ({
-  'date.min': {
-    message: minErrors[dates.minType]
-  },
-  'date.max': {
-    message: 'You must enter a date before the licence end date'
-  }
-});
-
-const getStartDateCustomDataErrors = dates => ({
-  'any.required': {
-    message: 'Enter the charge information start date'
-  },
-  'date.base': {
-    message: 'Enter a real date for the charge information start date'
-  },
-  ...getCommomCustomDateErrors(dates)
-});
-
-const getEffectiveDateCustomDataErrors = dates => ({
-  'any.required': {
-    message: 'Enter the effective date'
-  },
-  'date.base': {
-    message: 'Enter a real date for the effective date'
-  },
-  ...getCommomCustomDateErrors(dates)
-});
-
-const getCustomStartDateField = (dates, value) => fields.date('customDate', {
+const getCustomDateField = value => fields.date('customDate', {
   label: 'Start date',
-  errors: getStartDateCustomDataErrors(dates)
+  errors: {
+    'any.required': dateError,
+    'string.isoDate': dateError,
+    'date.isoDate': dateError,
+    'date.base': dateError,
+    'date.min': {
+      message: 'Enter a date on or after the licence start date'
+    },
+    'date.max': {
+      message: 'Enter a date on or before the licence end date'
+    }
+  }
 }, value);
-
-const getCustomEffectiveDateField = (dates, value) => fields.date('customDate', {
-  label: 'Effective date',
-  errors: getEffectiveDateCustomDataErrors(dates)
-}, value);
-
-const getChoices = (dates, values, refDate, isChargeable) => {
-  const allChoices = [{
-    value: 'today',
-    label: 'Today',
-    hint: moment(refDate).format(DATE_FORMAT)
-  }, {
-    value: 'licenceStartDate',
-    label: 'Licence start date',
-    hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
-  },
-  {
-    divider: 'or'
-  },
-  {
-    value: 'customDate',
-    label: 'Another date',
-    fields: [
-      isChargeable
-        ? getCustomStartDateField(dates, values.customDate)
-        : getCustomEffectiveDateField(dates, values.customDate)
-    ]
-  }];
-
-  return dates.minType === MIN_LICENCE_START ? allChoices : pullAt(allChoices, [0, 3]);
-};
 
 /**
  *
@@ -123,29 +58,40 @@ const getChoices = (dates, values, refDate, isChargeable) => {
  */
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
-  const { licence, isChargeable } = request.pre;
+  const { licence } = request.pre;
 
-  const action = isChargeable
-    ? getActionUrl(request, routing.getStartDate(licence.id))
-    : getActionUrl(request, routing.getEffectiveDate(licence.id));
-
-  const errorMessage = isChargeable
-    ? 'Select charge information start date'
-    : 'Select effective date';
-
+  const action = routing.getStartDate(licence);
   const values = getValues(request, licence, refDate);
-  const dates = getDates(licence);
 
   const f = formFactory(action, 'POST');
 
   f.fields.push(fields.radio('startDate', {
     errors: {
       'any.required': {
-        message: errorMessage
+        message: 'Select a start date'
       }
     },
-    choices: getChoices(dates, values, refDate, isChargeable)
+    choices: [{
+      value: 'today',
+      label: 'Today',
+      hint: moment(refDate).format(DATE_FORMAT)
+    }, {
+      value: 'licenceStartDate',
+      label: 'Licence start date',
+      hint: moment(licence.startDate).format(DATE_FORMAT)
+    },
+    {
+      divider: 'or'
+    },
+    {
+      value: 'customDate',
+      label: 'Another date',
+      fields: [
+        getCustomDateField(values.customDate)
+      ]
+    }]
   }, values.startDate));
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -153,15 +99,14 @@ const selectStartDateForm = (request, refDate) => {
 };
 
 const selectStartDateSchema = (request) => {
-  const { licence } = request.pre;
-  const dates = getDates(licence);
-
+  const { startDate, endDate } = request.pre.licence;
+  const maxDate = endDate || '3000-01-01';
   return {
     csrf_token: Joi.string().uuid().required(),
     startDate: Joi.string().valid('today', 'licenceStartDate', 'customDate').required(),
     customDate: Joi.when('startDate', {
       is: 'customDate',
-      then: Joi.date().min(dates.minDate).max(dates.maxDate).required()
+      then: Joi.date().min(startDate).max(maxDate)
     })
   };
 };

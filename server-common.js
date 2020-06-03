@@ -40,6 +40,14 @@ const createPlugins = (config, logger, connectors) => ([
     options: new UpdatePasswordConfig(config, connectors)
   },
   {
+    plugin: require('shared/plugins/service-status'),
+    options: {
+      services: connectors,
+      redis: config.redis,
+      logger
+    }
+  },
+  {
     plugin: require('shared/lib/session-forms').plugin
   }
 ]);

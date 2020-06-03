@@ -27,13 +27,11 @@ const mapBadgeToTag = (param, status) => {
     ...(options.classes || [])
   ];
 
-  const { attributes } = options;
-
   // see https://design-system.service.gov.uk/components/tag/
   return {
     text: options.text,
     classes: compact(cssClasses).join(' '),
-    ...attributes && { attributes }
+    attributes: options.attributes
   };
 };
 

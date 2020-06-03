@@ -82,49 +82,6 @@ class LicencesService extends ServiceClient {
     const url = this.joinUrl('licences', licenceId);
     return getRequest(this.serviceRequest, url);
   }
-
-  getLicenceAgreements (licenceId) {
-    const url = this.joinUrl('licences', licenceId, 'agreements');
-    return getRequest(this.serviceRequest, url);
-  }
-
-  getLicenceVersions (licenceId) {
-    const url = this.joinUrl('licences', licenceId, 'versions');
-    return getRequest(this.serviceRequest, url);
-  }
-
-  getLicenceAccountsByRefAndDate (documentRef, date) {
-    const url = this.joinUrl('licences/licence-accounts');
-    const options = {
-      qs: {
-        documentRef,
-        date
-      }
-    };
-
-    return this.serviceRequest.get(url, options);
-  }
-
-  getInvoicesByLicenceId (licenceId, pagination) {
-    const url = this.joinUrl('licences', licenceId, 'invoices');
-    const options = { qs: pagination };
-    return this.serviceRequest.get(url, options);
-  }
-
-  getDocumentByLicenceId (licenceId) {
-    const url = this.joinUrl('licences', licenceId, 'document');
-    return getRequest(this.serviceRequest, url);
-  }
-
-  createAgreement (licenceId, body) {
-    const uri = this.joinUrl('licences', licenceId, 'agreements');
-    return this.serviceRequest.post(uri, { body });
-  }
-
-  getValidDocumentByLicenceIdAndDate (licenceId, date) {
-    const url = this.joinUrl('licences', licenceId, 'valid-documents', date);
-    return getRequest(this.serviceRequest, url);
-  }
 }
 
 module.exports = LicencesService;

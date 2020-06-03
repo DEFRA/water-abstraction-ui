@@ -1,32 +1,3 @@
-'use strict';
-
-const queryString = require('querystring');
-
-const createUrl = urlTail => licenceId => {
-  return `/licences/${licenceId}/charge-information/${urlTail}`;
-};
-
-exports.getChargeElementStep = (licenceId, elementId, step) => {
-  return createUrl(`charge-element/${elementId}/${step}`)(licenceId);
-};
-
-exports.getSubmitted = (licenceId, isChargeable) => {
-  const qs = queryString.stringify({ chargeable: isChargeable });
-  return createUrl(`submitted?${qs}`)(licenceId);
-};
-
-exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
-
-exports.getHandleBillingAccount = (licenceId, isCheckAnswers) => {
-  const qs = queryString.stringify({ returnToCheckData: isCheckAnswers });
-  return createUrl(`set-billing-account?${qs}`)(licenceId);
-};
-
-exports.getCheckData = createUrl('check');
-exports.getReason = createUrl('create');
-exports.getStartDate = createUrl('start-date');
-exports.getSelectBillingAccount = createUrl('billing-account');
-exports.getUseAbstractionData = createUrl('use-abstraction-data');
-exports.getEffectiveDate = createUrl('effective-date');
-exports.getNonChargeableReason = createUrl('non-chargeable-reason');
-exports.getCancelData = createUrl('cancel');
+exports.getTasklist = licence => `/licences/${licence.id}/charge-information/task-list`;
+exports.getReason = licence => `/licences/${licence.id}/charge-information/reason`;
+exports.getStartDate = licence => `/licences/${licence.id}/charge-information/start-date`;

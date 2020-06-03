@@ -30,9 +30,6 @@ const server = Hapi.server({
   cache: createCache(config)
 });
 
-// Add service connectors to request
-server.decorate('request', 'services', connectors);
-
 const pluginsArray = [
   ...common,
   ...Object.values(plugins),
@@ -63,25 +60,7 @@ const pluginsArray = [
     plugin: require('internal/modules/charge-information/plugins/charge-information')
   },
   {
-    plugin: require('shared/plugins/cached-service-request'),
-    options: {
-      services: connectors
-    }
-  }, {
-    plugin: require('internal/modules/address-entry/plugin')
-  }, {
-    plugin: require('internal/modules/contact-entry/plugin')
-  }, {
-    plugin: require('internal/modules/account-entry/plugin')
-  }, {
-    plugin: require('internal/modules/billing-accounts/plugin')
-  }, {
-    plugin: require('internal/modules/service-status'),
-    options: {
-      services: connectors,
-      redis: config.redis,
-      logger
-    }
+    plugin: require('internal/modules/charge-information/plugins/licences')
   }
 ];
 

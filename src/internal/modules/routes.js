@@ -14,11 +14,9 @@ const batchNotifications = require('./batch-notifications/routes');
 const viewLicences = require('./view-licences/routes');
 const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
+const chargingRoutes = require('./charging/routes');
 const billingRoutes = require('./billing/routes');
 const chargeInformationRoutes = require('./charge-information/routes');
-const agreementsRoutes = require('./agreements/routes');
-const kpiReporting = require('../../internal/modules/kpi-reporting/routes');
-const licences = require('../../internal/modules/licences/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -38,9 +36,7 @@ module.exports = [
   ...require('./manage/routes'),
   ...Object.values(accountRoutes),
   ...Object.values(unlinkLicenceRoutes),
+  ...Object.values(chargingRoutes),
   ...Object.values(billingRoutes),
-  ...Object.values(chargeInformationRoutes),
-  ...Object.values(agreementsRoutes),
-  ...Object.values(kpiReporting),
-  ...Object.values(licences)
+  ...Object.values(chargeInformationRoutes)
 ];

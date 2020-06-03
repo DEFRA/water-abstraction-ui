@@ -1,5 +1,3 @@
-'use strict';
-
 const { get } = require('lodash');
 const uuid = require('uuid/v4');
 const queryString = require('querystring');
@@ -31,31 +29,10 @@ const setSessionForm = (request, form) => {
   return key;
 };
 
-/**
- * Gets the part of the url path before the query separator
- * @param {String} path
- * @return {String}
- */
-const getPath = path => path.split('?')[0];
-
-/**
- * Sets the current state of the form in the session
- * and redirects to view the page again in an error state
- * @param {Object} form
- * @param {String} [customPath] - custom path for redirection (default is form action)
- * @param {Object} [customParams] - custom query params (default is request.query)
- */
-const postRedirectGet = function (form, customPath, customParams = null) {
-  // The key that identifies this form submission in the session data
+const postRedirectGet = function (form) {
   const key = setSessionForm(this.request, form);
-
-  const path = customPath || getPath(form.action);
-  const params = {
-    ...customParams || this.request.query,
-    form: key
-  };
-
-  return this.redirect(`${path}?${queryString.stringify(params)}`);
+  const path = `${form.action}?${queryString.stringify({ form: key })}`;
+  return this.redirect(path);
 };
 
 const postRedirectGetPlugin = {
@@ -72,4 +49,3 @@ const postRedirectGetPlugin = {
 exports.get = getSessionForm;
 exports.set = setSessionForm;
 exports.plugin = postRedirectGetPlugin;
-exports._postRedirectGet = postRedirectGet;

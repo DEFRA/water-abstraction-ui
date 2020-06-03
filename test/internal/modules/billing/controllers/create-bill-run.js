@@ -135,7 +135,7 @@ const createRequest = () => ({
   }
 });
 
-experiment('internal/modules/billing/controller', () => {
+experiment('internal/modules/billing/controllers/create-bill-run', () => {
   let h, request, batchData;
 
   beforeEach(async () => {
@@ -144,7 +144,8 @@ experiment('internal/modules/billing/controller', () => {
     h = {
       view: sandbox.stub(),
       response: sandbox.stub().returns({ header }),
-      redirect: sandbox.stub()
+      redirect: sandbox.stub(),
+      postRedirectGet: sandbox.stub()
     };
 
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
@@ -203,14 +204,13 @@ experiment('internal/modules/billing/controller', () => {
       });
 
       experiment('when the form is not valid', () => {
-        test('the user is redirected to region page', async () => {
+        test('the user is redirected to the billing batch type form', async () => {
           sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
 
           await controller.postBillingBatchType(request, h);
 
-          const [url] = h.redirect.lastCall.args;
-          expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
-          expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+          const [form] = h.postRedirectGet.lastCall.args;
+          expect(form).to.be.an.object();
         });
       });
     });
@@ -234,14 +234,13 @@ experiment('internal/modules/billing/controller', () => {
       });
 
       experiment('when the form is not valid', () => {
-        test('the user is redirected to region page', async () => {
+        test('the user is redirected to the billing batch type form', async () => {
           sandbox.stub(forms, 'handleRequest').returns({ isValid: false });
 
           await controller.postBillingBatchType(request, h);
 
-          const [url] = h.redirect.lastCall.args;
-          expect(url.startsWith('/billing/batch/type?form=')).to.be.true();
-          expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+          const [form] = h.postRedirectGet.lastCall.args;
+          expect(form).to.be.an.object();
         });
       });
     });
@@ -317,9 +316,8 @@ experiment('internal/modules/billing/controller', () => {
 
       await controller.postBillingBatchRegion(request, h);
 
-      const [url] = h.redirect.lastCall.args;
-      expect(url.startsWith('/billing/batch/region/supplementary?')).to.be.true();
-      expect(url).to.match(/[\d\w]{8}-[\d\w]{4}-[\d\w]{4}-[\d\w]{4}-[\d\w]{12}$/);
+      const [form] = h.postRedirectGet.lastCall.args;
+      expect(form).to.be.an.object();
     });
 
     experiment('when the batch already exists', () => {

@@ -23,13 +23,15 @@ const mapBadgeToTag = (param, status) => {
 
   const cssClasses = [
     colourMap[options.status] || 'govuk-tag--blue',
-    sizeMap[options.size]
+    sizeMap[options.size],
+    ...(options.classes || [])
   ];
 
   // see https://design-system.service.gov.uk/components/tag/
   return {
     text: options.text,
-    classes: compact(cssClasses).join(' ')
+    classes: compact(cssClasses).join(' '),
+    attributes: options.attributes
   };
 };
 

@@ -28,7 +28,8 @@ const createRequest = () => ({
   pre: {
     licence: {
       id: 'test-licence-id',
-      licenceNumber: '01/123'
+      licenceNumber: '01/123',
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     changeReasons: [{
       changeReasonId: 'test-reason-1',
@@ -327,7 +328,7 @@ experiment('internal/modules/charge-information/controller', () => {
         await controller.postReason(request, h);
       });
 
-      test('the draft charge information is updated', async () => {
+      test('the draft charge information is updated with the reason', async () => {
         const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
@@ -477,10 +478,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when the a start date has already been set to today', () => {
+    experiment("when the a start date has already been set to today's date", () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
         request.pre.draftChargeInformation.startDate = getISODate();
         await controller.getStartDate(request, h);
       });
@@ -495,7 +495,6 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to the licence start date', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
         request.pre.draftChargeInformation.startDate = request.pre.licence.startDate;
         await controller.getStartDate(request, h);
       });
@@ -510,7 +509,6 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to a custom date', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
         request.pre.draftChargeInformation.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
         await controller.getStartDate(request, h);
       });
@@ -525,6 +523,182 @@ experiment('internal/modules/charge-information/controller', () => {
         const { form } = h.view.lastCall.args[1];
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
         expect(field.value).to.equal(request.pre.draftChargeInformation.startDate);
+      });
+    });
+  });
+
+  experiment('.postStartDate', () => {
+    experiment('when "today" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'today'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(getISODate());
+      });
+
+      test('the user is redirected to the tasklist page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/task-list'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when "licenceStartDate" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'licenceStartDate'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(request.pre.licence.startDate);
+      });
+
+      test('the user is redirected to the tasklist page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/task-list'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when "customDate" is posted', () => {
+      const customDate = moment().subtract(1, 'year');
+
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': customDate.format('DD'),
+          'customDate-month': customDate.format('MM'),
+          'customDate-year': customDate.format('YYYY')
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(customDate.format('YYYY-MM-DD'));
+      });
+
+      test('the user is redirected to the tasklist page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/task-list'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when an invalid "customDate" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': 'Last',
+          'customDate-month': 'Tuesday',
+          'customDate-year': 'Or Wednesday'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('Enter a real date for the charge information start date');
+      });
+    });
+
+    experiment('when a custom date before the licence started is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': '1',
+          'customDate-month': '5',
+          'customDate-year': '1966'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+      });
+    });
+
+    experiment('when a custom date after the licence end date is posted', () => {
+      beforeEach(async () => {
+        const tomorrow = moment().add(1, 'day');
+
+        request = createRequest();
+        request.pre.licence.endDate = getISODate();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': tomorrow.format('DD'),
+          'customDate-month': tomorrow.format('MM'),
+          'customDate-year': tomorrow.format('YYYY')
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+      });
+    });
+
+    experiment('when a custom date more than 6 years ago is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = '1990-01-01';
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': '02',
+          'customDate-month': '01',
+          'customDate-year': '1990'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
+        expect(field.errors[0].message).to.equal("Date must be today or up to six years' in the past");
       });
     });
   });

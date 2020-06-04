@@ -16,8 +16,7 @@ const mapDataToTaskList = (data, licence) => ([{
     link: routing.getStartDate(licence)
   }, {
     text: 'Set up element',
-    badge: getBadge(data.chargeElements.length > 0, 'task-charge-elements'),
-    link: '/some/link'
+    badge: getBadge(data.chargeElements.length > 0, 'task-charge-elements')
   }]
 }, {
   heading: 'Billing contact',

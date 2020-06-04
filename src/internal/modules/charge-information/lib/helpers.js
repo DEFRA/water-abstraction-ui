@@ -1,5 +1,7 @@
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { reducer } = require('./reducer');
+const routing = require('./routing');
+const sessionForms = require('shared/lib/session-forms');
 
 const getPostedForm = (request, formContainer) => {
   const schema = formContainer.schema(request);
@@ -22,6 +24,18 @@ const createPostHandler = (formContainer, actionCreator, getRedirectPath) => asy
   return h.postRedirectGet(form);
 };
 
+const getDefaultView = (request, formContainer) => {
+  const { licence } = request.pre;
+  const form = sessionForms.get(request, formContainer.form(request));
+  return {
+    ...request.view,
+    caption: `Licence ${licence.licenceNumber}`,
+    form,
+    back: routing.getTasklist(licence)
+  };
+};
+
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
+exports.getDefaultView = getDefaultView;

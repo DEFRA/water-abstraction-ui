@@ -4,7 +4,7 @@ const mappers = require('./lib/mappers');
 const forms = require('./forms');
 const actions = require('./lib/actions');
 const routing = require('./lib/routing');
-const { getPostedForm, applyFormResponse } = require('./lib/helpers');
+const { createPostHandler } = require('./lib/helpers');
 
 /**
  * Displays a task-list page to guide the user through
@@ -44,14 +44,11 @@ const getReason = async (request, h) => {
   });
 };
 
-const postReason = async (request, h) => {
-  const form = getPostedForm(request, forms.reason);
-  if (form.isValid) {
-    await applyFormResponse(request, form, actions.setChangeReasonAction);
-    return h.redirect(routing.getTasklist(request.pre.licence));
-  }
-  return h.postRedirectGet(form);
-};
+const postReason = createPostHandler(
+  forms.reason,
+  actions.setChangeReasonAction,
+  request => routing.getTasklist(request.pre.licence)
+);
 
 /**
  * Select the start date for the new charge version
@@ -72,14 +69,11 @@ const getStartDate = async (request, h) => {
   });
 };
 
-const postStartDate = async (request, h) => {
-  const form = getPostedForm(request, forms.startDate);
-  if (form.isValid) {
-    await applyFormResponse(request, form, actions.setStartDate);
-    return h.redirect(routing.getTasklist(request.pre.licence));
-  }
-  return h.postRedirectGet(form);
-};
+const postStartDate = createPostHandler(
+  forms.startDate,
+  actions.setStartDate,
+  request => routing.getTasklist(request.pre.licence)
+);
 
 exports.getTasklist = getTaskList;
 exports.getReason = getReason;

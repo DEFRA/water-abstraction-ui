@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * A hapi plugin to get/set an object from the cache for creating
+ * a new charge version
+ */
+
 const generateChargeVersion = licenceId => ({
   licenceId,
   changeReason: null,
@@ -19,7 +26,7 @@ const createDraftChargeInformationPolicy = server => server.cache({
 });
 
 const chargeInformationPlugin = {
-  register: (server, options) => {
+  register: server => {
     const policy = createDraftChargeInformationPolicy(server);
     server.method('getDraftChargeInformation', licenceId => policy.get(licenceId));
     server.method('setDraftChargeInformation', (licenceId, data) => policy.set(licenceId, data));
@@ -32,3 +39,4 @@ const chargeInformationPlugin = {
 };
 
 module.exports = chargeInformationPlugin;
+module.exports._generateChargeVersion = generateChargeVersion;

@@ -27,7 +27,7 @@ const selectReasonForm = request => {
   f.fields.push(fields.radio('reason', {
     errors: {
       'any.required': {
-        message: 'Select a reason'
+        message: 'Select a reason for new charge information'
       }
     },
     choices: changeReasons.map(mapChoice)

@@ -20,11 +20,14 @@
           {% for task in item.tasks %}
             <li class="task-list__item">
               <span class="task-list__task-name">
+                {% if task.link %}
                 <a href="{{ task.link }}" {% if task.badge %}aria-describedby="{{ task.badge.attributes.id }}"{% endif %}>
                   {{ task.text }}
                 </a>
+                {% else %}
+                  {{ task.text }}
+                {% endif %}
               </span>
-
               {% if task.badge %}
               {{ badge(task.badge) }}   
               {% endif %}

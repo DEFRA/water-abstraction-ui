@@ -17,7 +17,7 @@ const errorHandler = (err, message) => {
 const loadLicence = async request => {
   const { licenceId } = request.params;
   try {
-    const data = request.server.methods.cachedServiceRequest('water.licences.getLicenceById', licenceId);
+    const data = await request.server.methods.cachedServiceRequest('water.licences.getLicenceById', licenceId);
     return data;
   } catch (err) {
     return errorHandler(err, `Licence ${licenceId} not found`);

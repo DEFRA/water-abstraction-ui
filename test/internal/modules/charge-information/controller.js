@@ -10,6 +10,8 @@ const {
 const sinon = require('sinon');
 const { find } = require('lodash');
 
+const uuid = require('uuid/v4');
+
 const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/charge-information/controller');
@@ -20,7 +22,7 @@ const createRequest = () => ({
   },
   view: {
     foo: 'bar',
-    csrfToken: 'csrf-token'
+    csrfToken: uuid()
   },
   pre: {
     licence: {
@@ -41,6 +43,11 @@ const createRequest = () => ({
   yar: {
     get: sandbox.stub(),
     set: sandbox.stub()
+  },
+  server: {
+    methods: {
+      setDraftChargeInformation: sandbox.stub()
+    }
   }
 });
 
@@ -49,7 +56,9 @@ experiment('internal/modules/charge-information/controller', () => {
 
   beforeEach(async () => {
     h = {
-      view: sandbox.stub()
+      view: sandbox.stub(),
+      postRedirectGet: sandbox.stub(),
+      redirect: sandbox.stub()
     };
   });
 
@@ -299,6 +308,50 @@ experiment('internal/modules/charge-information/controller', () => {
         const { form } = h.view.lastCall.args[1];
         const field = find(form.fields, { name: 'reason' });
         expect(field.value).to.equal('test-reason-1');
+      });
+    });
+  });
+
+  experiment('.getReason', () => {
+    experiment('when a valid reason is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          reason: 'test-reason-1'
+        };
+        await controller.postReason(request, h);
+      });
+
+      test('the draft charge information is updated', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
+      });
+
+      test('the user is redirected to the tasklist page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/task-list'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when no reason is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken
+        };
+        await controller.postReason(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('the form in error state is passed to the post-redirect-get handler', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].message).to.equal('Select a reason for new charge information');
       });
     });
   });

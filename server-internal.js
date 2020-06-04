@@ -60,7 +60,10 @@ const pluginsArray = [
     plugin: require('internal/modules/charge-information/plugins/charge-information')
   },
   {
-    plugin: require('internal/modules/charge-information/plugins/licences')
+    plugin: require('shared/plugins/cached-service-request'),
+    options: {
+      services: connectors
+    }
   }
 ];
 

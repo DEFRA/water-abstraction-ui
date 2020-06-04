@@ -88,9 +88,10 @@ const getLicenceRename = (request, h, form) => {
  * @param {String} request.payload.name - the new name for the licence
  * @param {Object} reply - the HAPI HTTP response
  */
-async function postLicenceRename (request, h) {
+const postLicenceRename = async (request, h) => {
   const { documentId } = request.params;
   const { documentName } = request.licence.summary;
+  const { userName } = request.defra;
   const form = handleRequest(renameLicenceForm(request, documentName), request, renameLicenceSchema, { abortEarly: true });
 
   // Validation error - redisplay form
@@ -100,11 +101,12 @@ async function postLicenceRename (request, h) {
 
   // Rename licence
   const { name } = getValues(form);
-  const { error } = await services.crm.documents.setLicenceName(documentId, name);
+  const rename = !!documentName;
+  const { error } = await services.water.documents.postLicenceRename(documentId, { name, rename, userName });
   throwIfError(error);
 
   return h.redirect(`/licences/${documentId}`);
-}
+};
 
 exports.getLicences = getLicences;
 exports.postLicenceRename = postLicenceRename;

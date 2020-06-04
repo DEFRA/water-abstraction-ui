@@ -173,3 +173,72 @@ experiment('getLicences', () => {
     });
   });
 });
+
+experiment('rename a licence', async () => {
+  const h = {
+    view: sandbox.stub(),
+    response: sandbox.stub(),
+    redirect: sandbox.stub()
+  };
+  const form = {};
+  const request = {
+    defra: {
+      userName: 'test-user'
+    },
+    params: {
+      documentId: 'doc-id'
+    },
+    licence: {
+      summary: {
+        documentName: 'doc-name',
+        licenceNumber: 'licence-ref'
+      }
+    },
+    view: {
+      csrfToken: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9'
+    },
+    payload: {
+      csrf_token: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+      name: 'test-licence-name'
+    }
+  };
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  experiment('getLicenceRename', async () => {
+    beforeEach(async () => {
+      await controller.getLicenceRename(request, h, form);
+    });
+    test('the expected view template is used for bill run type', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/view-licences/rename');
+    });
+
+    test('view context is assigned a back link path for type', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/licences/doc-id');
+    });
+    test('view context is assigned the correct page title', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.pageTitle).to.equal('Name licence licence-ref');
+    });
+  });
+
+  experiment('postLicenceRename', async () => {
+    beforeEach(async () => {
+      sandbox.stub(services.water.documents, 'postLicenceRename').resolves({ error: null });
+      await controller.postLicenceRename(request, h);
+    });
+
+    test('documents water service is called with the correct arguments', async () => {
+      const [, args] = services.water.documents.postLicenceRename.lastCall.args;
+      expect(args).to.equal({ name: 'test-licence-name', rename: true, userName: 'test-user' });
+    });
+
+    test('redirects to the correct url', async () => {
+      expect(h.redirect.lastCall.args).to.equal(['/licences/doc-id']);
+    });
+  });
+});

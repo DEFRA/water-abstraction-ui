@@ -8,6 +8,8 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
+const { find } = require('lodash');
+
 const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/charge-information/controller');
@@ -17,16 +19,28 @@ const createRequest = () => ({
     licenceId: 'test-licence-id'
   },
   view: {
-    foo: 'bar'
+    foo: 'bar',
+    csrfToken: 'csrf-token'
   },
   pre: {
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123'
     },
+    changeReasons: [{
+      changeReasonId: 'test-reason-1',
+      description: 'New licence'
+    }, {
+      changeReasonId: 'test-reason-2',
+      description: 'Transfer'
+    }],
     draftChargeInformation: {
       chargeElements: []
     }
+  },
+  yar: {
+    get: sandbox.stub(),
+    set: sandbox.stub()
   }
 });
 
@@ -202,6 +216,89 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(task.text).to.equal('Check charge information');
         expect(task.badge).to.be.undefined();
         expect(task.link).to.be.undefined();
+      });
+    });
+  });
+
+  experiment('.getReason', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getReason(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/form.njk');
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/task-list');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Select reason for new charge information');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has a form', async () => {
+      const { form } = h.view.lastCall.args[1];
+      expect(form).to.be.an.object();
+    });
+
+    test('the form action is correct', async () => {
+      const { form } = h.view.lastCall.args[1];
+      expect(form.action).to.equal('/licences/test-licence-id/charge-information/reason');
+    });
+
+    test('the form has a hidden CSRF field', async () => {
+      const { form } = h.view.lastCall.args[1];
+      const field = find(form.fields, { name: 'csrf_token' });
+      expect(field.value).to.equal(request.view.csrfToken);
+      expect(field.options.type).to.equal('hidden');
+    });
+
+    test('the form has a radio field for the change reasons', async () => {
+      const { form } = h.view.lastCall.args[1];
+      const field = find(form.fields, { name: 'reason' });
+      expect(field.options.widget).to.equal('radio');
+      expect(field.options.choices).to.be.an.array();
+      expect(field.options.choices[0].label).to.equal('New licence');
+      expect(field.options.choices[0].value).to.equal('test-reason-1');
+      expect(field.options.choices[1].label).to.equal('Transfer');
+      expect(field.options.choices[1].value).to.equal('test-reason-2');
+      expect(field.value).to.be.undefined();
+    });
+
+    test('the form has a continue button', async () => {
+      const { form } = h.view.lastCall.args[1];
+      const field = find(form.fields, field => field.options.widget === 'button');
+      expect(field.options.label).to.equal('Continue');
+    });
+
+    experiment('when a reason is set in the charge information', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.draftChargeInformation.changeReason = {
+          changeReasonId: 'test-reason-1'
+        };
+        await controller.getReason(request, h);
+      });
+
+      test('the radio field is selected', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'reason' });
+        expect(field.value).to.equal('test-reason-1');
       });
     });
   });

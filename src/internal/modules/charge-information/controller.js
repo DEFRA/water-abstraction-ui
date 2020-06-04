@@ -17,7 +17,7 @@ const getTaskList = async (request, h) => {
   const taskList = mappers.mapDataToTaskList(draftChargeInformation, licence);
 
   // Output to view
-  return h.view('nunjucks/charge-information/tasklist.njk', {
+  return h.view('nunjucks/charge-information/task-list.njk', {
     back: '/todo',
     pageTitle: 'Set up charge information',
     ...request.view,

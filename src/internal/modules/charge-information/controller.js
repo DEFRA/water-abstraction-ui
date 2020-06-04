@@ -1,10 +1,9 @@
-const sessionForms = require('shared/lib/session-forms');
 const mappers = require('./lib/mappers');
 
 const forms = require('./forms');
 const actions = require('./lib/actions');
 const routing = require('./lib/routing');
-const { createPostHandler } = require('./lib/helpers');
+const { createPostHandler, getDefaultView } = require('./lib/helpers');
 
 /**
  * Displays a task-list page to guide the user through
@@ -29,18 +28,9 @@ const getTaskList = async (request, h) => {
  * Select the reason for the creation of a new charge version
  */
 const getReason = async (request, h) => {
-  const { licence } = request.pre;
-
-  // Get reason form
-  const form = sessionForms.get(request, forms.reason.form(request));
-
-  // Output to view
   return h.view('nunjucks/charge-information/form.njk', {
-    ...request.view,
-    caption: `Licence ${licence.licenceNumber}`,
-    pageTitle: 'Select reason for new charge information',
-    form,
-    back: routing.getTasklist(licence)
+    ...getDefaultView(request, forms.reason),
+    pageTitle: 'Select reason for new charge information'
   });
 };
 
@@ -54,18 +44,9 @@ const postReason = createPostHandler(
  * Select the start date for the new charge version
  */
 const getStartDate = async (request, h) => {
-  const { licence } = request.pre;
-
-  // Get reason form
-  const form = sessionForms.get(request, forms.startDate.form(request));
-
-  // Output to view
   return h.view('nunjucks/charge-information/form.njk', {
-    ...request.view,
-    caption: `Licence ${licence.licenceNumber}`,
-    pageTitle: 'Set charge start date',
-    form,
-    back: routing.getTasklist(licence)
+    ...getDefaultView(request, forms.startDate),
+    pageTitle: 'Set charge start date'
   });
 };
 

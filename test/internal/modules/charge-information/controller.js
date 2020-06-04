@@ -9,6 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const { find } = require('lodash');
+const moment = require('moment');
 
 const uuid = require('uuid/v4');
 
@@ -50,6 +51,9 @@ const createRequest = () => ({
     }
   }
 });
+
+const getReadableDate = str => moment(str).format('D MMMM YYYY');
+const getISODate = str => moment(str).format('YYYY-MM-DD');
 
 experiment('internal/modules/charge-information/controller', () => {
   let request, h;
@@ -312,7 +316,7 @@ experiment('internal/modules/charge-information/controller', () => {
     });
   });
 
-  experiment('.getReason', () => {
+  experiment('.postReason', () => {
     experiment('when a valid reason is posted', () => {
       beforeEach(async () => {
         request = createRequest();
@@ -352,6 +356,175 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the form in error state is passed to the post-redirect-get handler', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         expect(form.errors[0].message).to.equal('Select a reason for new charge information');
+      });
+    });
+  });
+
+  experiment('.getStartDate', () => {
+    experiment('when the licence start date is in the past 6 years', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
+        await controller.getStartDate(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/charge-information/form.njk');
+      });
+
+      test('sets a back link', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-licence-id/charge-information/task-list');
+      });
+
+      test('has the page title', async () => {
+        const { pageTitle } = h.view.lastCall.args[1];
+        expect(pageTitle).to.equal('Set charge start date');
+      });
+
+      test('has a caption', async () => {
+        const { caption } = h.view.lastCall.args[1];
+        expect(caption).to.equal('Licence 01/123');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('has a form', async () => {
+        const { form } = h.view.lastCall.args[1];
+        expect(form).to.be.an.object();
+      });
+
+      test('the form action is correct', async () => {
+        const { form } = h.view.lastCall.args[1];
+        expect(form.action).to.equal('/licences/test-licence-id/charge-information/start-date');
+      });
+
+      test('the form has a hidden CSRF field', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'csrf_token' });
+        expect(field.value).to.equal(request.view.csrfToken);
+        expect(field.options.type).to.equal('hidden');
+      });
+
+      test('the form has a radio fields for today, licence start date and custom date', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' });
+        expect(field.options.widget).to.equal('radio');
+        expect(field.options.choices).to.be.an.array();
+
+        // Today
+        expect(field.options.choices[0].label).to.equal('Today');
+        expect(field.options.choices[0].value).to.equal('today');
+        expect(field.options.choices[0].hint).to.equal(getReadableDate());
+
+        // Licence start date
+        expect(field.options.choices[1].label).to.equal('Licence start date');
+        expect(field.options.choices[1].value).to.equal('licenceStartDate');
+        expect(field.options.choices[1].hint).to.equal(getReadableDate(request.pre.licence.startDate));
+
+        // Or divider
+        expect(field.options.choices[2].divider).to.equal('or');
+
+        // Custom date
+        expect(field.options.choices[3].label).to.equal('Another date');
+        expect(field.options.choices[3].value).to.equal('customDate');
+
+        expect(field.value).to.be.undefined();
+      });
+
+      test('has a conditional field for a custom date', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.options.widget).to.equal('date');
+        expect(field.options.label).to.equal('Start date');
+        expect(field.value).to.be.undefined();
+      });
+
+      test('the form has a continue button', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, field => field.options.widget === 'button');
+        expect(field.options.label).to.equal('Continue');
+      });
+    });
+
+    experiment('when the licence start date is > 6 years in the past', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = '1990-01-01';
+        await controller.getStartDate(request, h);
+      });
+
+      test('the form has a radio fields for today, and custom date', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' });
+        expect(field.options.widget).to.equal('radio');
+        expect(field.options.choices).to.be.an.array();
+
+        // Today
+        expect(field.options.choices[0].label).to.equal('Today');
+        expect(field.options.choices[0].value).to.equal('today');
+        expect(field.options.choices[0].hint).to.equal(getReadableDate());
+
+        // Custom date
+        expect(field.options.choices[1].label).to.equal('Another date');
+        expect(field.options.choices[1].value).to.equal('customDate');
+
+        expect(field.value).to.be.undefined();
+      });
+    });
+
+    experiment('when the a start date has already been set to today', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
+        request.pre.draftChargeInformation.startDate = getISODate();
+        await controller.getStartDate(request, h);
+      });
+
+      test('the "today" radio option is selected"', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' });
+        expect(field.value).to.equal('today');
+      });
+    });
+
+    experiment('when the a start date has already been set to the licence start date', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
+        request.pre.draftChargeInformation.startDate = request.pre.licence.startDate;
+        await controller.getStartDate(request, h);
+      });
+
+      test('the "today" radio option is selected"', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' });
+        expect(field.value).to.equal('licenceStartDate');
+      });
+    });
+
+    experiment('when the a start date has already been set to a custom date', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
+        request.pre.draftChargeInformation.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
+        await controller.getStartDate(request, h);
+      });
+
+      test('the "today" radio option is selected"', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' });
+        expect(field.value).to.equal('customDate');
+      });
+
+      test('the conditional field for custom date has a value', async () => {
+        const { form } = h.view.lastCall.args[1];
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.value).to.equal(request.pre.draftChargeInformation.startDate);
       });
     });
   });

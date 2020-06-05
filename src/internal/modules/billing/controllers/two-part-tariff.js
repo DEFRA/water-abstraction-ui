@@ -189,9 +189,7 @@ const postConfirmQuantity = async (request, h) => {
     // If all TPT errors are resolved, go to main TPT batch review screen
     // If there are still errors, go back to the licence page.
     const { transactions } = await services.water.billingInvoiceLicences.getInvoiceLicence(invoiceLicence.id);
-    const hasErrors = transactions.reduce((acc, transaction) => {
-      return acc || transaction.twoPartTariffError;
-    }, false);
+    const hasErrors = transactions.some(row => row.twoPartTariffError);
 
     const path = hasErrors
       ? routing.getTwoPartTariffLicenceReviewRoute(batch, invoiceLicence.id)

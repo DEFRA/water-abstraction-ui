@@ -234,7 +234,7 @@ experiment('rename a licence', async () => {
 
     test('documents water service is called with the correct arguments', async () => {
       const [, args] = services.water.documents.postLicenceRename.lastCall.args;
-      expect(args).to.equal({ name: 'test-licence-name', rename: true, userName: 'test-user' });
+      expect(args).to.equal({ documentName: 'test-licence-name', rename: true, userName: 'test-user' });
     });
 
     test('redirects to the correct url', async () => {

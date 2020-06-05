@@ -115,5 +115,13 @@ module.exports = {
       ttl: 10 * 365 * 24 * 60 * 60 * 1000
     },
     storeBlank: false
+  },
+
+  redis: {
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: process.env.REDIS_PORT || 6379,
+    password: process.env.REDIS_PASSWORD || '',
+    ...!isLocal && { tls: {} },
+    db: 0
   }
 };

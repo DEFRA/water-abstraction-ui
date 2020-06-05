@@ -1,38 +1,13 @@
-const { groupBy, find } = require('lodash');
+const { find, partialRight } = require('lodash');
 const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
 const confirmForm = require('../forms/confirm-form');
 const mappers = require('../lib/mappers');
+const twoPartTariff = require('../lib/two-part-tariff');
 
 const forms = require('shared/lib/forms');
-
-const messages = {
-  10: 'No returns received',
-  20: 'Investigating query',
-  30: 'Returns received but not processed',
-  40: 'Some returns data outstanding',
-  50: 'Returns received late',
-  60: 'Over abstraction'
-};
-
-const getTotals = licences => {
-  const errors = licences.reduce((acc, row) => (
-    row.twoPartTariffError ? acc + 1 : acc
-  ), 0);
-
-  const totals = {
-    errors,
-    ready: licences.length - errors,
-    total: licences.length
-  };
-  return totals;
-};
-
-const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
-  return acc ? 'Multiple errors' : messages[code];
-}, null);
 
 const getLicenceFilter = action => {
   const isError = action === 'review';
@@ -41,21 +16,19 @@ const getLicenceFilter = action => {
 
 const getTwoPartTariffAction = async (request, h, action) => {
   const { batch } = request.pre;
+
   const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);
 
   // Get totals of licences with/without errors
-  const totals = getTotals(licencesData);
+  const totals = twoPartTariff.getTotals(licencesData);
+
   // if there are no errors, show ready page
   if (totals.errors === 0) action = 'ready';
 
   // gets 2pt matching error messages and define error types
   const licences = licencesData
     .filter(getLicenceFilter(action))
-    .map(licence => ({
-      ...licence,
-      twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-      link: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.billingInvoiceLicenceId}`
-    }));
+    .map(licence => twoPartTariff.mapLicence(batch, licence));
 
   return h.view('nunjucks/billing/two-part-tariff-' + action, {
     ...request.view,
@@ -68,41 +41,8 @@ const getTwoPartTariffAction = async (request, h, action) => {
   });
 };
 
-const getTwoPartTariffReview = async (request, h) => getTwoPartTariffAction(request, h, 'review');
-const getTwoPartTariffViewReady = async (request, h) => getTwoPartTariffAction(request, h, 'ready');
-
-/**
- * Creates a unique group string for the given transaction, based on the
- * purpose and abstraction period
- * @param {Object} transaction
- * @return {String} unique key
- */
-const getTransactionGroup = transaction => {
-  const { chargeElement } = transaction;
-  const { startDay, startMonth, endDay, endMonth } = chargeElement.abstractionPeriod;
-  return `${chargeElement.purposeUse.code}_${startDay}_${startMonth}_${endDay}_${endMonth}`;
-};
-
-/**
- * Decorates transactions with edit link and error message,
- * then groups them by purpose/abstraction period
- * @param {Object} batch
- * @param {Object} invoiceLicence
- * @return {Array} an array of transaction objects
- */
-const getTransactionGroups = (batch, invoiceLicence) => {
-  // Add 2PT error message
-  const transactions = invoiceLicence.transactions.map(transaction => ({
-    ...transaction,
-    editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}`,
-    error: transaction.twoPartTariffError ? messages[transaction.twoPartTariffStatus] : null
-  }));
-
-  // Group by purpose use and abs period
-  return Object.values(
-    groupBy(transactions, getTransactionGroup)
-  );
-};
+const getTwoPartTariffReview = partialRight(getTwoPartTariffAction, 'review');
+const getTwoPartTariffViewReady = partialRight(getTwoPartTariffAction, 'ready');
 
 /**
  * Allows user to view issues with a single invoice licence
@@ -118,7 +58,7 @@ const getLicenceReview = async (request, h) => {
     ...request.view,
     batch,
     invoiceLicence,
-    transactionGroups: getTransactionGroups(batch, invoiceLicence),
+    transactionGroups: twoPartTariff.getTransactionGroups(batch, invoiceLicence),
     back: `/billing/batch/${batch.id}/two-part-tariff-review`
   });
 };
@@ -163,7 +103,7 @@ const getTransactionReview = async (request, h, form) => {
   const licenceData = await getCurrentLicenceData(invoiceLicence.licence.licenceNumber);
 
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
-    error: messages[transaction.twoPartTariffStatus],
+    error: twoPartTariff.statusMessages.get(transaction.twoPartTariffStatus),
     invoiceLicence,
     ...request.view,
     pageTitle: `Review billable quantity ${transaction.chargeElement.description}`,

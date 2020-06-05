@@ -2,7 +2,7 @@
 
 {% macro statusRow(headerText, value) %}
    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="row">{{ headerText }}</td>
+      <th class="govuk-table__header" scope="row">{{ headerText }}</th>
       <td class="govuk-table__cell govuk-table__cell--numeric">{{ value }}</td>
    </tr>
 {% endmacro %}
@@ -41,15 +41,30 @@
             {{ statusRow('Permits', permitRepo.permits) }}
          </table>
 
-         <h2 class="govuk-heading-m">Water Service</h2>
+         <h2 class="govuk-heading-m">Import</h2>
          <table class="govuk-table">
-            {{ statusRow('Pending imports', waterService.import.pending) }}
-            {{ statusRow('Completed imports', waterService.import.complete) }}
+            <tr class="govuk-table__row">
+               <th class="govuk-table__header" scope="row">Name</th>
+               <th class="govuk-table__header" scope="row">State</th>
+               <th class="govuk-table__header" scope="row">Count</th>
+            </tr>
+            {% for item in import.jobs.summary %}
+            <tr class="govuk-table__row">
+               <td class="govuk-table__cell govuk-table__cell">{{ item.name }}</td>
+               <td class="govuk-table__cell govuk-table__cell">{{ item.state }}</td>
+               <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.count }}</td>
+            </tr>
+            {% endfor %}
          </table>
 
          <h2 class="govuk-heading-m">Virus scanner</h2>
          <table class="govuk-table">
             {{ statusRow('Status', virusScanner) }}
+         </table>
+
+         <h2 class="govuk-heading-m">Cache connectivity</h2>
+         <table class="govuk-table">
+            {{ statusRow('Status', cacheConnection) }}
          </table>
 
          <h2 class="govuk-heading-m">Service versions</h2>

@@ -86,7 +86,8 @@ const getTransactionReviewRequest = payload => (
     },
     pre: {
       batch: {
-        id: 'test-batch-id'
+        id: 'test-batch-id',
+        status: 'review'
       },
       invoiceLicence: {
         id: 'test-invoice-licence-id',
@@ -115,7 +116,7 @@ const getTransactionReviewRequest = payload => (
 );
 
 experiment('internal/modules/billing/controller/two-part-tariff', () => {
-  let h, request, event;
+  let h, request;
   h = {
     view: sandbox.stub(),
     response: sandbox.stub().returns({ header }),
@@ -129,11 +130,14 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     }
   };
 
-  event = { id: 'test-event-id' };
-
   beforeEach(async () => {
     sandbox.stub(services.water.billingBatches, 'getBatchLicences');
-    sandbox.stub(services.water.billingBatches, 'approveBatchReview').resolves({ data: { event } });
+    sandbox.stub(services.water.billingBatches, 'approveBatchReview').resolves({ data: {
+      batch: {
+        id: 'test-batch-id',
+        status: 'processing'
+      }
+    } });
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
@@ -849,26 +853,64 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   experiment('.postConfirmQuantity', () => {
     let request;
 
-    experiment('when the quantity is valid', async () => {
+    experiment('when the quantity is valid', () => {
       beforeEach(async () => {
         request = getTransactionReviewRequest({
           quantity: 10.4,
           csrf_token: '00000000-0000-0000-0000-000000000000'
         });
-
-        await controller.postConfirmQuantity(request, h);
       });
 
-      test('the transaction is updated', async () => {
-        expect(services.water.billingTransactions.updateVolume.calledWith(
-          request.params.transactionId, request.payload.quantity
-        )).to.be.true();
+      experiment('when there are still other transactions with two-part tariff errors', () => {
+        beforeEach(async () => {
+          services.water.billingInvoiceLicences.getInvoiceLicence.resolves({
+            transactions: [{
+              twoPartTariffError: false
+            }, {
+              twoPartTariffError: true
+            }]
+          });
+
+          await controller.postConfirmQuantity(request, h);
+        });
+
+        test('the transaction is updated', async () => {
+          expect(services.water.billingTransactions.updateVolume.calledWith(
+            request.params.transactionId, request.payload.quantity
+          )).to.be.true();
+        });
+
+        test('the user is redirected back to the licence review screen', async () => {
+          expect(h.redirect.calledWith(
+            '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
+          )).to.be.true();
+        });
       });
 
-      test('the user is redirected back to the licence review screen', async () => {
-        expect(h.redirect.calledWith(
-          '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
-        )).to.be.true();
+      experiment('when all the two-part tariff errors have been resolved', () => {
+        beforeEach(async () => {
+          services.water.billingInvoiceLicences.getInvoiceLicence.resolves({
+            transactions: [{
+              twoPartTariffError: false
+            }, {
+              twoPartTariffError: false
+            }]
+          });
+
+          await controller.postConfirmQuantity(request, h);
+        });
+
+        test('the transaction is updated', async () => {
+          expect(services.water.billingTransactions.updateVolume.calledWith(
+            request.params.transactionId, request.payload.quantity
+          )).to.be.true();
+        });
+
+        test('the user is redirected back to the licence review screen', async () => {
+          expect(h.redirect.calledWith(
+            '/billing/batch/test-batch-id/two-part-tariff-review'
+          )).to.be.true();
+        });
       });
     });
 
@@ -1048,8 +1090,8 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('redirects back to the waiting page', async () => {
       expect(h.redirect.calledWith(
-        `/waiting/${event.id}?back=0`
-      )).to.be.true();
+        '/billing/batch/test-batch-id/processing?back=1'
+      ));
     });
   });
 });

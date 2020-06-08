@@ -6,6 +6,7 @@ const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quant
 const confirmForm = require('../forms/confirm-form');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
+const routing = require('../lib/routing');
 
 const forms = require('shared/lib/forms');
 
@@ -184,7 +185,17 @@ const postConfirmQuantity = async (request, h) => {
   if (form.isValid) {
     const { quantity } = forms.getValues(form);
     await services.water.billingTransactions.updateVolume(transaction.id, quantity);
-    return h.redirect(`/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`);
+
+    // If all TPT errors are resolved, go to main TPT batch review screen
+    // If there are still errors, go back to the licence page.
+    const { transactions } = await services.water.billingInvoiceLicences.getInvoiceLicence(invoiceLicence.id);
+    const hasErrors = transactions.some(row => row.twoPartTariffError);
+
+    const path = hasErrors
+      ? routing.getTwoPartTariffLicenceReviewRoute(batch, invoiceLicence.id)
+      : routing.getBillingBatchRoute(batch);
+
+    return h.redirect(path);
   }
 
   return Boom.badRequest();
@@ -242,8 +253,8 @@ const getApproveReview = (request, h) => {
 
 const postApproveReview = async (request, h) => {
   const { batchId } = request.params;
-  const { data: { event } } = await services.water.billingBatches.approveBatchReview(batchId);
-  return h.redirect(`/waiting/${event.id}?back=0`);
+  const { data: { batch } } = await services.water.billingBatches.approveBatchReview(batchId);
+  return h.redirect(routing.getBillingBatchRoute(batch));
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;

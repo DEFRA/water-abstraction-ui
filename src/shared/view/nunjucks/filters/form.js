@@ -164,14 +164,18 @@ const mapChoices = (field, prop = 'checked') => {
   const keyProperty = field.options.keyProperty || 'value';
   const labelProperty = field.options.labelProperty || 'label';
 
-  return field.options.choices.map(choice => ({
-    value: choice[keyProperty],
-    text: choice[labelProperty],
-    hint: {
-      text: choice.hint
-    },
-    [prop]: radioIsChecked(field, choice)
-  }));
+  return field.options.choices.map(choice => (
+    choice.divider
+      ? { divider: choice.divider }
+      : {
+        value: choice[keyProperty],
+        text: choice[labelProperty],
+        hint: {
+          text: choice.hint
+        },
+        [prop]: radioIsChecked(field, choice)
+      }
+  ));
 };
 
 /**

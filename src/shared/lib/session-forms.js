@@ -1,5 +1,6 @@
 const { get } = require('lodash');
 const uuid = require('uuid/v4');
+const queryString = require('querystring');
 
 /**
  * Gets a form from the session, or uses the default one if none found
@@ -28,5 +29,23 @@ const setSessionForm = (request, form) => {
   return key;
 };
 
+const postRedirectGet = function (form, customPath) {
+  const key = setSessionForm(this.request, form);
+  const path = `${customPath || form.action}?${queryString.stringify({ form: key })}`;
+  return this.redirect(path);
+};
+
+const postRedirectGetPlugin = {
+  register: (server) => {
+    server.decorate('toolkit', 'postRedirectGet', postRedirectGet);
+  },
+
+  pkg: {
+    name: 'postRedirectGetPlugin',
+    version: '1.0.0'
+  }
+};
+
 exports.get = getSessionForm;
 exports.set = setSessionForm;
+exports.plugin = postRedirectGetPlugin;

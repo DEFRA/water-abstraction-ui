@@ -46,6 +46,9 @@ const createPlugins = (config, logger, connectors) => ([
       redis: config.redis,
       logger
     }
+  },
+  {
+    plugin: require('shared/lib/session-forms').plugin
   }
 ]);
 

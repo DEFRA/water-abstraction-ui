@@ -56,6 +56,14 @@ const pluginsArray = [
   }, {
     plugin: require('shared/plugins/error'),
     options: { logger }
+  }, {
+    plugin: require('internal/modules/charge-information/plugins/charge-information')
+  },
+  {
+    plugin: require('shared/plugins/cached-service-request'),
+    options: {
+      services: connectors
+    }
   }
 ];
 

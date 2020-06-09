@@ -21,7 +21,7 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
 const mapLicence = (batch, licence) => ({
   ...licence,
   twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence)
+  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.billingInvoiceLicenceId)
 });
 
 const getTotals = licences => {

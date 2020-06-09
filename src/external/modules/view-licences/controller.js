@@ -1,5 +1,3 @@
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-
 const services = require('../../lib/connectors/services');
 
 const config = require('external/config');

@@ -101,10 +101,7 @@ const postLicenceRename = async (request, h) => {
 
   // Rename licence
   const { name } = getValues(form);
-  const rename = !!documentName;
-  const { error } = await services.water.documents.postLicenceRename(documentId, { documentName: name, rename, userName });
-  throwIfError(error);
-
+  await services.water.documents.postLicenceRename(documentId, { documentName: name, userName });
   return h.redirect(`/licences/${documentId}`);
 };
 

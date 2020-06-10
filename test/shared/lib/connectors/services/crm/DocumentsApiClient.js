@@ -62,17 +62,6 @@ experiment('DocumentsApiClient', () => {
     });
   });
 
-  experiment('.setLicenceName', () => {
-    test('passes the expected arguments to updateOne', async () => {
-      await client.setLicenceName('test-doc-id', 'new-name');
-      const [documentId, patch] = client.updateOne.lastCall.args;
-      expect(documentId).to.equal('test-doc-id');
-      expect(patch).to.equal({
-        document_name: 'new-name'
-      });
-    });
-  });
-
   experiment('.getWaterLicence', async () => {
     beforeEach(async () => {
       client.findMany.resolves({

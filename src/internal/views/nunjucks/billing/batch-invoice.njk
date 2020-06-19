@@ -5,7 +5,7 @@
 {% from "./nunjucks/billing/macros/transactions-table.njk" import transactionsTable, twoPartTariffTransactionsTable %}
 
 {% from "badge.njk" import badge %}
-{% from "crm/address.njk" import address %}
+{% from "crm/invoice-account-address.njk" import invoiceAccountAddress %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeAccountFromBatchButton %}
 
@@ -25,8 +25,7 @@
       
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-          <p>{{ invoice.invoiceAccount.company.name | titleCase }}<br>
-          {{ address(invoice.invoiceAccount.address) }}
+          {{ invoiceAccountAddress(invoice.invoiceAccount) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",

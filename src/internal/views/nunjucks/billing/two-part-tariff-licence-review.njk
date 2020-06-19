@@ -7,6 +7,7 @@
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeLicenceFromBatchButton %}
+{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import chargeElementQuantity, reportedVolume, billableVolume %}
 
 
 {% block content %}
@@ -36,6 +37,9 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header">Element description</th>
+            <th scope="col" class="govuk-table__header">Element quantities</th>
+            <th scope="col" class="govuk-table__header">Reported</th>
+            <th scope="col" class="govuk-table__header">Billable</th>
             <th scope="col" class="govuk-table__header">Issue</th>
             <th scope="col" class="govuk-table__header">Action</th>
           </tr>
@@ -44,6 +48,9 @@
           {% for transaction in group %}
           <tr class="govuk-table__row">
             <td scope="row" class="govuk-table__cell">{{ transaction.chargeElement.description }}</td>
+            <td class="govuk-table__cell">{{ chargeElementQuantity(transaction) }}</td>
+            <td class="govuk-table__cell">{{ reportedVolume(transaction) }}</td>
+            <td class="govuk-table__cell">{{ billableVolume(transaction) }}</td>
             <td class="govuk-table__cell">{{ transaction.error | default ('-') }}</td>
             <td class="govuk-table__cell"><a href="{{ transaction.editLink }}">Change<span class="govuk-visually-hidden"> element {{ transaction.chargeElement.description }}</span></a></td>
           </tr>

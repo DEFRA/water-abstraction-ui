@@ -34,7 +34,7 @@ experiment('services/water/BillingTransactionsService', () => {
 
     test('passes the expected URL to the service request', async () => {
       const [url] = serviceRequest.patch.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/transactions/${transactionId}`);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/transactions/${transactionId}/volume`);
     });
 
     test('passes the expected payload', async () => {

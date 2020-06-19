@@ -19,7 +19,7 @@ const mapBatchListRow = batch => ({
 
 const mapTransaction = transaction => ({
   ...omit(transaction, ['chargeElement']),
-  isEdited: transaction.calculatedVolume !== transaction.volume
+  isEdited: transaction.billingVolume.calculatedVolume !== transaction.billingVolume.volume
 });
 
 const mapChargeElementTransactions = group => {

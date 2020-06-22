@@ -49,6 +49,9 @@ const getTransactionGroup = transaction => {
   return `${chargeElement.purposeUse.code}_${startDay}_${startMonth}_${endDay}_${endMonth}`;
 };
 
+const getTransactionError = transaction =>
+  transaction.billingVolume.twoPartTariffError ? statusMessages.get(transaction.billingVolume.twoPartTariffStatus) : null;
+
 /**
  * Decorates transactions with edit link and error message,
  * then groups them by purpose/abstraction period
@@ -61,7 +64,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   const transactions = invoiceLicence.transactions.map(transaction => ({
     ...transaction,
     editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}`,
-    error: transaction.billingVolume.twoPartTariffError ? statusMessages.get(transaction.billingVolume.twoPartTariffStatus) : null
+    error: getTransactionError(transaction)
   }));
 
   // Group by purpose use and abs period
@@ -70,7 +73,7 @@ const getTransactionGroups = (batch, invoiceLicence) => {
   );
 };
 
-exports.statusMessages = statusMessages;
 exports.getTotals = getTotals;
 exports.mapLicence = mapLicence;
 exports.getTransactionGroups = getTransactionGroups;
+exports.getTransactionError = getTransactionError;

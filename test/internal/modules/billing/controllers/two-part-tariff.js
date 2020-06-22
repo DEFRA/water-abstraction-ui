@@ -97,7 +97,10 @@ const getTransactionReviewRequest = payload => (
         transactions: [
           {
             id: 'test-transaction-id',
-            twoPartTariffStatus: 20,
+            billingVolume: {
+              twoPartTariffError: true,
+              twoPartTariffStatus: 20
+            },
             chargeElement: {
               description: 'Test description',
               authorisedAnnualQuantity: 25.3
@@ -471,7 +474,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         request.pre.invoiceLicence.transactions = [
           {
             id: 'test-transaction-id',
-            twoPartTariffStatus: 20,
+            billingVolume: {
+              twoPartTariffError: true,
+              twoPartTariffStatus: 20
+            },
             chargeElement: {
               description: 'Test description',
               authorisedAnnualQuantity: 25.3

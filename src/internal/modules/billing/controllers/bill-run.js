@@ -126,26 +126,24 @@ const getTransactionsCSV = async (request, h) => {
  * @param {*} request
  * @param {*} h
  */
-const getBillingBatchDeleteAccount = async (request, h) => {
+const getBillingBatchDeleteInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
-  const { batch } = request.pre;
-  const account = await batchService.getBatchInvoice(batchId, invoiceId);
-  const action = `/billing/batch/${batchId}/delete-account/${account.id}`;
+
+  const action = `/billing/batch/${batchId}/delete-invoice/${invoiceId}`;
 
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
     pageTitle: 'You are about to remove this bill from the bill run',
-    account,
+    ...request.pre,
     form: confirmForm(request, action, 'Remove bill'),
-    batch,
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });
 };
 
-const postBillingBatchDeleteAccount = async (request, h) => {
-  const { accountId, batchId } = request.params;
-  await services.water.billingBatches.deleteAccountFromBatch(batchId, accountId);
+const postBillingBatchDeleteInvoice = async (request, h) => {
+  const { batchId, invoiceId } = request.params;
+  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId);
   return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 
@@ -199,8 +197,8 @@ exports.postBillingBatchCancel = postBillingBatchCancel;
 exports.getBillingBatchConfirm = getBillingBatchConfirm;
 exports.postBillingBatchConfirm = postBillingBatchConfirm;
 
-exports.getBillingBatchDeleteAccount = getBillingBatchDeleteAccount;
-exports.postBillingBatchDeleteAccount = postBillingBatchDeleteAccount;
+exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice;
+exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice;
 
 exports.getTransactionsCSV = getTransactionsCSV;
 

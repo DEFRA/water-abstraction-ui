@@ -9,7 +9,22 @@
       <th scope="col" class="govuk-table__header">Licence</th>
       <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
       {% if isEditable %}
-      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
+      {% endif %}
+    </tr>
+  </thead>
+{% endmacro %}
+
+{% macro tableHeaderSupplementary(isEditable) %}
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Account</th>
+      <th scope="col" class="govuk-table__header">Billing contact</th>
+      <th scope="col" class="govuk-table__header">Licence</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Financial year</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
+      {% if isEditable %}
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
       {% endif %}
     </tr>
   </thead>
@@ -29,9 +44,9 @@
 
 {% macro billingLicencesList(invoice) %}
   <ul class="govuk-list govuk-!-margin-0">
-  {% for licence in invoice.licenceNumbers %}
-    <li class="govuk-!-margin-0">{{ licence }}</li>
-  {% endfor %}
+    {% for licence in invoice.licenceNumbers %}
+      <li class="govuk-!-margin-0">{{ licence }}</li>
+    {% endfor %}
   </ul>
 {% endmacro %}
 
@@ -40,19 +55,20 @@
   {% set list %}{{ billingLicencesList(invoice) }}{% endset %}
 
   <td class="govuk-table__cell">
-  {% if invoice.licenceNumbers.length > 5 %}
+    {% if invoice.licenceNumbers.length > 5 %}
 
-    {% set summaryText %}{{ invoice.licenceNumbers.length }} licences{% endset %}
+      {% set summaryText %}{{ invoice.licenceNumbers.length }}
+      licences{% endset %}
 
-    {{ govukDetails({
+      {{ govukDetails({
       summaryText: summaryText,
       html : list,
       classes: "govuk-!-margin-bottom-0"
     }) }}
 
-  {% else %}
-    {{ list | safe }}
-  {% endif %}
+    {% else %}
+      {{ list | safe }}
+    {% endif %}
   </td>
 {% endmacro %}
 
@@ -67,7 +83,15 @@
 
 {% macro actionsCell(batch, invoice) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
-    <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden"> invoice for {{ invoice.accountNumber }}</span></a>
+    <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
+        invoice for
+        {{ invoice.accountNumber }}</span></a>
+  </td>
+{% endmacro %}
+
+{% macro financialYearCell(invoice) %}
+  <td class="govuk-table__cell govuk-table__cell--numeric">
+    {{ invoice.financialYearEnding }}
   </td>
 {% endmacro %}
 
@@ -80,17 +104,49 @@
     {% if isEditable %}
       {{ actionsCell(batch, invoice) }}
     {% endif %}
-{% endmacro %}
+  {% endmacro %}
 
-{% macro invoicesTable(batch, invoices, isEditable) %}
-  {% if invoices.length > 0 %}
-  <table class="govuk-table">
-    {{ tableHeader(isEditable) }}
-    <tbody class="govuk-table__body">
-      {% for invoice in invoices %}
-        {{ tableRow(batch, invoice, isEditable) }}
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
-{% endmacro %}
+  {% macro tableRowSupplementary(batch, invoice, isEditable) %}
+    <tr class="govuk-table__row">
+      {{ billingAccountCell(invoice) }}
+      {{ billingContactCell(invoice) }}
+      {{ licenceNumbersCell(invoice) }}
+      {{ financialYearCell(invoice) }}
+      {{ totalCell(invoice) }}
+      {% if isEditable %}
+        {{ actionsCell(batch, invoice) }}
+      {% endif %}
+    </tr>
+  {% endmacro %}
+
+  {% macro nonSupplementaryInvoicesTable(batch, invoices, isEditable) %}
+    <table class="govuk-table">
+      {{ tableHeader(isEditable) }}
+      <tbody class="govuk-table__body">
+        {% for invoice in invoices %}
+          {{ tableRow(batch, invoice, isEditable) }}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endmacro %}
+
+  {% macro supplementaryInvoicesTable(batch, invoices, isEditable) %}
+    <table class="govuk-table">
+      {{ tableHeaderSupplementary(isEditable) }}
+      <tbody class="govuk-table__body">
+        {% for invoice in invoices %}
+          {{ tableRowSupplementary(batch, invoice, isEditable) }}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endmacro %}
+
+  {% macro invoicesTable(batch, invoices, isEditable) %}
+    {% if invoices.length > 0 %}
+      {% if batch.type == 'supplementary' %}
+        {{ supplementaryInvoicesTable(batch, invoices, isEditable) }}
+      {% else %}
+        {{ nonSupplementaryInvoicesTable(batch, invoices, isEditable) }}
+      {% endif %}
+    {% endif %}
+  {% endmacro %}

@@ -1,24 +1,30 @@
-{% macro invoiceMetadata(account, licence) %}
-      <dl class="meta govuk-!-margin-bottom-3">
-        <div class="meta__row">
-          <dt class="meta__key">Account</dt>
-          <dd class="meta__value">{{ account.accountNumber }}</dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">Billing Contact</dt>
-          <dd class="meta__value">{{ account.companyName | titleCase }}</dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">{{ 'Licence' | pluralize(account.licences) }}</dt>
-          <dd class="meta__value">
-            {% for licence in account.licences %}
-              {{ licence.licenceRef }}{% if not loop.last %}, {% endif %}
-            {% endfor %}
-          </dd>
-        </div>
-        <div class="meta__row">
-          <dt class="meta__key">Total</dt>
-          <dd class="meta__value">{{ account.amount | charge(true) }}</dd>
-        </div>
-      </dl>
+{% macro invoiceMetadata(batch, invoice) %}
+  <dl class="meta govuk-!-margin-bottom-3">
+    <div class="meta__row">
+      <dt class="meta__key">Account</dt>
+      <dd class="meta__value">{{ invoice.invoiceAccount.accountNumber }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">Billing Contact</dt>
+      <dd class="meta__value">{{ invoice.invoiceAccount.company.name | titleCase }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">{{ 'Licence' | pluralize(invoice.invoiceLicences) }}</dt>
+      <dd class="meta__value">
+        {% for invoiceLicence in invoice.invoiceLicences %}
+          {{ invoiceLicence.licence.licenceNumber }}
+          {% if not loop.last %},
+          {% endif %}
+        {% endfor %}
+      </dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">Financial year</dt>
+      <dd class="meta__value">{{ invoice.financialYear.yearEnding }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key">Total</dt>
+      <dd class="meta__value">{{ invoice.totals.netTotal | charge(true) }}</dd>
+    </div>
+  </dl>
 {% endmacro %}

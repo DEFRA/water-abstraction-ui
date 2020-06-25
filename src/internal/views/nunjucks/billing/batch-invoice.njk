@@ -9,7 +9,7 @@ invoiceDebitsTotal %}
 {% from "badge.njk" import badge %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeAccountFromBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
@@ -59,7 +59,7 @@ invoiceDebitsTotal %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      {{ removeAccountFromBatchButton(batch, invoice) }}
+      {{ removeInvoiceFromBatchButton(batch, invoice) }}
     </div>
   </div>
 

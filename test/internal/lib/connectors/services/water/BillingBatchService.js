@@ -138,13 +138,13 @@ experiment('services/water/BillingBatchService', () => {
     });
   });
 
-  experiment('.deleteAccountFromBatch', () => {
+  experiment('.deleteInvoiceFromBatch', () => {
     test('passes the expected URL to the service request', async () => {
       const batchId = uuid();
-      const accountId = uuid();
-      await service.deleteAccountFromBatch(batchId, accountId);
+      const invoiceId = uuid();
+      await service.deleteInvoiceFromBatch(batchId, invoiceId);
       const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/account/${accountId}`);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`);
     });
   });
 

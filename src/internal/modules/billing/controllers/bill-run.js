@@ -128,13 +128,17 @@ const getTransactionsCSV = async (request, h) => {
  */
 const getBillingBatchDeleteInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
+  const { batch, invoice } = request.pre;
 
   const action = `/billing/batch/${batchId}/delete-invoice/${invoiceId}`;
 
+  const batchType = mappers.mapBatchType(batch.type).toLowerCase();
+
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
-    pageTitle: 'You are about to remove this bill from the bill run',
-    ...request.pre,
+    pageTitle: `You're about to remove this bill from the ${batchType} bill run`,
+    batch,
+    invoice,
     form: confirmForm(request, action, 'Remove bill'),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`

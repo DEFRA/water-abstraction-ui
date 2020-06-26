@@ -34,7 +34,7 @@ const getTransactionData = trans => ({
   ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod),
   authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
   billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity,
-  calculatedVolume: trans.billingVolume.calculatedVolume,
+  calculatedVolume: trans.billingVolume ? trans.billingVolume.calculatedVolume : null,
   volume: trans.volume
 });
 

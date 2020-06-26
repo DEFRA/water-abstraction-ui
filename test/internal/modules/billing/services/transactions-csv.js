@@ -170,14 +170,24 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(transactionData.absPeriodEndDate).to.equal('31 Mar');
       expect(transactionData.authorisedAnnualQuantity).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
       expect(transactionData.billableAnnualQuantity).to.equal(transaction.chargeElement.billableAnnualQuantity);
+      expect(transactionData.volume).to.equal(transaction.volume);
+      expect(transactionData.calculatedVolume).to.equal(transaction.billingVolume.calculatedVolume);
     });
 
-    test('handles mutliple agreements', async () => {
+    test('handles multiple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
         agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }]
       });
       expect(transactionData.agreements).to.equal('126, 127, 130W');
+    });
+
+    test('handles undefined billing volume', async () => {
+      const transactionData = transactionsCSV._getTransactionData({
+        ...transaction,
+        billingVolume: undefined
+      });
+      expect(transactionData.calculatedVolume).to.be.null();
     });
   });
 

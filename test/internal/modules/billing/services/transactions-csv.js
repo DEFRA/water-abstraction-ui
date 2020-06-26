@@ -59,7 +59,10 @@ const invoicesForBatch = [
               }
             },
             volume: 9.1,
-            calculatedVolume: 10.3
+            billingVolume: {
+              calculatedVolume: 10.3,
+              volume: 9.1
+            }
           },
           {
             value: 4006,
@@ -97,7 +100,10 @@ const invoicesForBatch = [
               }
             },
             volume: 9.1,
-            calculatedVolume: null
+            billingVolume: {
+              calculatedVolume: null,
+              volume: 9.1
+            }
           }
         ],
         licence: {

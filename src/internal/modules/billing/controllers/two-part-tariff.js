@@ -104,7 +104,7 @@ const getTransactionReview = async (request, h, form) => {
   const licenceData = await getCurrentLicenceData(invoiceLicence.licence.licenceNumber);
 
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
-    error: twoPartTariff.statusMessages.get(transaction.twoPartTariffStatus),
+    error: twoPartTariff.getTransactionError(transaction),
     invoiceLicence,
     ...request.view,
     pageTitle: `Review billable quantity ${transaction.chargeElement.description}`,

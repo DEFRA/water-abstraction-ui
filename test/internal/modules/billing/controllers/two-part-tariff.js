@@ -97,7 +97,10 @@ const getTransactionReviewRequest = payload => (
         transactions: [
           {
             id: 'test-transaction-id',
-            twoPartTariffStatus: 20,
+            billingVolume: {
+              twoPartTariffError: true,
+              twoPartTariffStatus: 20
+            },
             chargeElement: {
               description: 'Test description',
               authorisedAnnualQuantity: 25.3
@@ -315,12 +318,14 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       },
       transactions: [{
         id: uuid(),
-        twoPartTariffError: true,
-        twoPartTariffStatus: 20,
         chargeElement: {
           description: 'Purpose A - borehole A',
           purposeUse: purposes.a,
           abstractionPeriod: abstractionPeriods.allYear
+        },
+        billingVolume: {
+          twoPartTariffError: true,
+          twoPartTariffStatus: 20
         }
       },
       {
@@ -329,6 +334,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           description: 'Purpose A - borehole B',
           purposeUse: purposes.a,
           abstractionPeriod: abstractionPeriods.allYear
+        },
+        billingVolume: {
+          twoPartTariffError: false,
+          twoPartTariffStatus: null
         }
       },
       {
@@ -337,6 +346,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           description: 'Purpose A - borehole c',
           purposeUse: purposes.a,
           abstractionPeriod: abstractionPeriods.summer
+        },
+        billingVolume: {
+          twoPartTariffError: false,
+          twoPartTariffStatus: null
         }
       },
       {
@@ -345,6 +358,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           description: 'Purpose B - borehole d',
           purposeUse: purposes.b,
           abstractionPeriod: abstractionPeriods.summer
+        },
+        billingVolume: {
+          twoPartTariffError: false,
+          twoPartTariffStatus: null
         }
       }]
     };
@@ -457,7 +474,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         request.pre.invoiceLicence.transactions = [
           {
             id: 'test-transaction-id',
-            twoPartTariffStatus: 20,
+            billingVolume: {
+              twoPartTariffError: true,
+              twoPartTariffStatus: 20
+            },
             chargeElement: {
               description: 'Test description',
               authorisedAnnualQuantity: 25.3

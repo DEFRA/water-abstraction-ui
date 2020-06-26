@@ -41,17 +41,22 @@ const getTransactionData = trans => ({
 const getInvoiceAccountData = invoiceAccount => {
   return {
     accountNumber: invoiceAccount.accountNumber,
-    companyName: invoiceAccount.company.name,
-    addressLine1: invoiceAccount.address.addressLine1,
-    addressLine2: invoiceAccount.address.addressLine2,
-    addressLine3: invoiceAccount.address.addressLine3,
-    addressLine4: invoiceAccount.address.addressLine4,
-    town: invoiceAccount.address.town,
-    county: invoiceAccount.address.county,
-    postcode: invoiceAccount.address.postcode,
-    country: invoiceAccount.address.country
+    companyName: invoiceAccount.company.name
   };
 };
+
+const getInvoiceData = invoice => ({
+  contact: invoice.contact ? invoice.contact.fullName : null,
+  agentCompanyName: invoice.agentCompany ? invoice.agentCompany.name : null,
+  addressLine1: invoice.address.addressLine1,
+  addressLine2: invoice.address.addressLine2,
+  addressLine3: invoice.address.addressLine3,
+  addressLine4: invoice.address.addressLine4,
+  town: invoice.address.town,
+  county: invoice.address.county,
+  postcode: invoice.address.postcode,
+  country: invoice.address.country
+});
 
 const createCSV = async data => {
   const dataForCSV = [];
@@ -64,7 +69,8 @@ const createCSV = async data => {
           isWaterUndertaker: invLic.licence.isWaterUndertaker,
           historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
-          ...getInvoiceAccountData(dataObj.invoiceAccount)
+          ...getInvoiceAccountData(dataObj.invoiceAccount),
+          ...getInvoiceData(dataObj)
         };
         dataForCSV.push(rowToStrings(csvLine));
       });

@@ -20,6 +20,11 @@ const getInvoiceLicenceInvoice = request => {
   return water.billingBatches.getBatchInvoice(batchId, invoiceId);
 };
 
+const getInvoice = request => {
+  const { batchId, invoiceId } = request.params;
+  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
+};
+
 const config = {
   loadBatch: {
     connector: getBatch,
@@ -34,6 +39,11 @@ const config = {
   loadInvoiceLicenceInvoice: {
     connector: getInvoiceLicenceInvoice,
     key: 'invoiceLicenceId',
+    errorMessage: 'Invoice not found'
+  },
+  loadInvoice: {
+    connector: getInvoice,
+    key: 'invoiceId',
     errorMessage: 'Invoice not found'
   }
 };
@@ -67,6 +77,7 @@ const checkBatchStatus = async (request, h, status) => {
 };
 
 const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
+const checkBatchStatusIsReady = partialRight(checkBatchStatus, 'ready');
 
 const validBatchStatusSchema = Joi.array().min(1).required().items(
   Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent')
@@ -103,8 +114,11 @@ const loadRegions = async (request, h) => {
 
 exports.loadBatch = partial(preHandler, config.loadBatch);
 exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
+exports.checkBatchStatusIsReady = checkBatchStatusIsReady;
+
 exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
 exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
+exports.loadInvoice = partial(preHandler, config.loadInvoice);
 
 exports.redirectOnBatchStatus = redirectOnBatchStatus;
 exports.loadRegions = loadRegions;

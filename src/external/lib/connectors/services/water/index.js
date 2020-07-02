@@ -8,7 +8,7 @@ const ReturnsService = require('shared/lib/connectors/services/water/ReturnsServ
 const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLevelsService');
 const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
-const KpiReportingService = require('shared/lib/connectors/services/water/KpiReportingService'); 
+const KpiReportingService = require('shared/lib/connectors/services/water/KpiReportingService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');

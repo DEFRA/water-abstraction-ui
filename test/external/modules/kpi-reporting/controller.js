@@ -26,7 +26,7 @@ experiment('modules/account/controller', () => {
       await controller.getKPIDashboard(request, h);
     });
 
-    test('the expected view template is used', async () => {      
+    test('the expected view template is used', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/kpi-reporting/dashboard');
     });

@@ -1,0 +1,223 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle, caption) }}
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-l">Registrations</h2>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total</span>
+        <h3 class="govuk-heading-l">{{ registrations.totals.allTime }}</h3>
+      </div>
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total year to date</span>
+        <h3 class="govuk-heading-l">{{ registrations.totals.ytd }}</h3>
+      </div>
+    </div>
+    <table class="govuk-table">
+        <caption class="govuk-table__caption">Registrations by month</caption>
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th class="govuk-table__header" scope="col">
+                  Date
+                </th>
+                <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">
+                  Number of external registrations
+                </th>
+                <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">
+                  Number of internal registrations
+                </th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for month in registrations.monthly %}
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.external }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.internal }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-l">Accounts given delegated access</h2>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total</span>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.allTime }}</h3>
+      </div>
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total year to date</span>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.ytd }}</h3>
+      </div>
+    </div>
+    <table class="govuk-table">
+      <caption class="govuk-table__caption">Account access requests given by month</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Date</th>
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">
+            Number of account access requests given
+          </th>
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">
+            % change on previous month
+          </th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for month in delegatedAccess.monthly %}
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.change }}%</td>
+          </tr>
+        {% endfor %}    
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-l">Returns</h2>
+    <h3 class="govuk-heading-m">Returns recorded on the service</h3>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total</span>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime }}</h3>
+      </div>
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total year to date</span>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.ytd }}</h3>
+      </div>
+    </div>
+    <table class="govuk-table">
+      <caption class="govuk-table__caption">Returns recorded on the service by month</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Date</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number recorded</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number of paper forms requested</th>    
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+      {% for month in returnsMonthly.monthly %}
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.currentYear }}</th>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.return }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.request }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <h3 class="govuk-heading-m">Returns submitted</h3>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+      <span class="govuk-caption-l">Total</span>
+      <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime }}</h3>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <span class="govuk-caption-l">Total year to date</span>
+      <h3 class="govuk-heading-l">{{ returnsCycle1.total + returnsCycle2.total }}</h3>
+    </div>
+    <table class="govuk-table">  
+      <caption class="govuk-table__caption">Returns submitted by cycle date</caption>
+      <thead class="govuk-table__head">
+      <tr class="govuk-table__row">    
+        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Returns cycle date</th>    
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Total due</th>    
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number by post</th>    
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number by digital</th>    
+      </tr>
+      </thead>  
+      <tbody class="govuk-table__body">    
+        <tr class="govuk-table__row">      
+          <th class="govuk-table__header" scope="row">
+          {% if returnsCycle1.isSummer %}
+            13 October {{ returnsCycle1.endDate.slice(0,4) }}
+          {% else %}
+            28 April {{ returnsCycle1.endDate.slice(0,4) }}</th>
+          {% endif %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle1.due }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle1.internalLate }}
+          </td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle1.externalLate }}
+          </td>    
+        </tr>
+        <tr class="govuk-table__row">      
+          <th class="govuk-table__header" scope="row">
+          {% if returnsCycle2.isSummer %}
+            13 October {{ returnsCycle2.endDate.slice(0,4) }}
+          {% else %}
+            28 April {{ returnsCycle2.endDate.slice(0,4) }}</th>
+          {% endif %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle2.due }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle2.internalLate }}
+          </td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle2.externalLate }}
+          </td>   
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-l">Name added or changed on a licence</h2>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total</span>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.allTime }}</h3>
+      </div>
+      <div class="govuk-grid-column-one-quarter">
+        <span class="govuk-caption-l">Total year to date</span>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.ytd }}</h3>
+      </div>
+    </div>
+    <table class="govuk-table">  
+      <caption class="govuk-table__caption">Licence names added or changed by month</caption>  
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">    
+          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Date</th>    
+          <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number of licences with names added</th>    
+          <th class="govuk-table__header govuk-table__header--numeric" scope="col">% change on previous month</th>    
+          <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number of licence with names changed</th>    
+          <th class="govuk-table__header govuk-table__header--numeric" scope="col">% change on previous month</th>    
+        </tr>
+      </thead>  
+      <tbody class="govuk-table__body">
+      {% for month in licenceNames.monthly %}    
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.namedChange }}%</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamedChange }}%</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

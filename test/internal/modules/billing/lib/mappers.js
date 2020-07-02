@@ -52,7 +52,10 @@ const invoice = {
           id: 'charge_element_licence_1'
         },
         volume: 12.35,
-        calculatedVolume: 12.35
+        billingVolume: {
+          calculatedVolume: 12.35,
+          volume: 12.35
+        }
       }]
     },
     {
@@ -69,7 +72,10 @@ const invoice = {
           id: 'charge_element_licence_2_a'
         },
         volume: 12.35,
-        calculatedVolume: null
+        billingVolume: {
+          calculatedVolume: null,
+          volume: 12.35
+        }
       }, {
         value: 3456,
         chargePeriod: {
@@ -80,7 +86,10 @@ const invoice = {
           id: 'charge_element_licence_2_b'
         },
         volume: 12.35,
-        calculatedVolume: 14.2
+        billingVolume: {
+          calculatedVolume: 14.2,
+          volume: 12.35
+        }
       }, {
         value: -363,
         isCredit: true,
@@ -92,7 +101,10 @@ const invoice = {
           id: 'charge_element_licence_2_b'
         },
         volume: 12.35,
-        calculatedVolume: 12.35
+        billingVolume: {
+          calculatedVolume: 12.35,
+          volume: 12.35
+        }
       }, {
         value: 789,
         chargePeriod: {
@@ -103,7 +115,10 @@ const invoice = {
           id: 'charge_element_licence_2_b'
         },
         volume: 12.35,
-        calculatedVolume: 12.35
+        billingVolume: {
+          calculatedVolume: 12.35,
+          volume: 12.35
+        }
       }, {
         value: 916,
         chargePeriod: {
@@ -113,8 +128,7 @@ const invoice = {
         chargeElement: {
           id: 'charge_element_licence_2_b'
         },
-        volume: 12.35,
-        calculatedVolume: 12.35
+        volume: 12.35
       }]
     }]
 };
@@ -215,7 +229,10 @@ experiment('modules/billing/lib/mappers', () => {
             value: 924,
             chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
             volume: 12.35,
-            calculatedVolume: 12.35,
+            billingVolume: {
+              calculatedVolume: 12.35,
+              volume: 12.35
+            },
             isEdited: false
           });
         });
@@ -231,9 +248,10 @@ experiment('modules/billing/lib/mappers', () => {
         });
 
         test('has the correct volumes', async () => {
-          const { volume, calculatedVolume } = data.chargeElements[0].transactions[0];
+          const { volume, billingVolume } = data.chargeElements[0].transactions[0];
           expect(volume).to.equal(12.35);
-          expect(calculatedVolume).to.equal(12.35);
+          expect(billingVolume.calculatedVolume).to.equal(12.35);
+          expect(billingVolume.volume).to.equal(12.35);
         });
 
         test('has isEdited flag false because the two volumes are the same', async () => {
@@ -263,11 +281,21 @@ experiment('modules/billing/lib/mappers', () => {
 
           experiment('the transaction', () => {
             test('has isEdited flag true as the volume is different to the calculated volume', async () => {
-              const { volume, calculatedVolume, isEdited } = data.chargeElements[0].transactions[0];
+              const { volume, billingVolume, isEdited } = data.chargeElements[0].transactions[0];
               expect(volume).to.equal(12.35);
-              expect(calculatedVolume).to.equal(null);
+              expect(billingVolume.calculatedVolume).to.equal(null);
+              expect(billingVolume.volume).to.equal(12.35);
               expect(isEdited).to.equal(true);
             });
+          });
+        });
+
+        experiment('handles no billing volume', async () => {
+          test('has 1 x transaction', async () => {
+            const data = result['2021'][LICENCE_2];
+
+            expect(data.chargeElements[0].transactions[1].billingVolume).to.be.undefined();
+            expect(data.chargeElements[0].transactions[1].isEdited).to.be.false();
           });
         });
       });

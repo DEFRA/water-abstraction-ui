@@ -1,0 +1,23 @@
+{% macro chargeElementQuantity(transaction) %}
+  {% if transaction.chargeElement.billableAnnualQuantity | isFinite %}
+    {{ transaction.chargeElement.billableAnnualQuantity + 'ML'}} </br>
+    {{' (' + transaction.chargeElement.authorisedAnnualQuantity + 'ML authorised)' }}
+  {% else %}
+    {{ transaction.chargeElement.authorisedAnnualQuantity + 'ML authorised' }}
+  {% endif %}
+{% endmacro %}
+
+{% macro reportedVolume(transaction) %}
+  {% if transaction.billingVolume.calculatedVolume | isFinite %}
+    {{ transaction.billingVolume.calculatedVolume + 'ML' }}
+  {% endif %}
+{% endmacro %}
+
+{% macro billableVolume(transaction) %}
+  {% if transaction.billingVolume.volume | isFinite %}
+    {{ transaction.billingVolume.volume + 'ML' }}
+    {% if transaction.billingVolume.volume != transaction.billingVolume.calculatedVolume %}
+      {{ ' - edited' }}
+    {% endif %}
+  {% endif %}
+{% endmacro %}

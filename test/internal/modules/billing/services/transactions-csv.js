@@ -59,7 +59,10 @@ const invoicesForBatch = [
               }
             },
             volume: 9.1,
-            calculatedVolume: 10.3
+            billingVolume: {
+              calculatedVolume: 10.3,
+              volume: 9.1
+            }
           },
           {
             value: 4006,
@@ -97,7 +100,10 @@ const invoicesForBatch = [
               }
             },
             volume: 9.1,
-            calculatedVolume: null
+            billingVolume: {
+              calculatedVolume: null,
+              volume: 9.1
+            }
           }
         ],
         licence: {
@@ -126,18 +132,18 @@ const invoicesForBatch = [
         id: 'e8f5db63-fa46-4b25-b193-4f48733524aa',
         name: 'R G Applehead & sons LTD',
         type: 'organisation'
-      },
-      address: {
-        id: '6f9dfbd6-b534-442c-bf30-cb32a53b9a6c',
-        town: 'Apple',
-        county: 'Appleshire',
-        country: null,
-        postcode: 'AP9 8RG',
-        addressLine1: 'Little  Orchard',
-        addressLine2: 'Orchard lane',
-        addressLine3: 'Orchard Hill',
-        addressLine4: 'The Royal Gala Valey'
       }
+    },
+    address: {
+      id: '6f9dfbd6-b534-442c-bf30-cb32a53b9a6c',
+      town: 'Apple',
+      county: 'Appleshire',
+      country: 'UK',
+      postcode: 'AP9 8RG',
+      addressLine1: 'Little  Orchard',
+      addressLine2: 'Orchard lane',
+      addressLine3: 'Orchard Hill',
+      addressLine4: 'The Royal Gala Valey'
     }
   }
 ];
@@ -164,14 +170,24 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(transactionData.absPeriodEndDate).to.equal('31 Mar');
       expect(transactionData.authorisedAnnualQuantity).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
       expect(transactionData.billableAnnualQuantity).to.equal(transaction.chargeElement.billableAnnualQuantity);
+      expect(transactionData.volume).to.equal(transaction.volume);
+      expect(transactionData.calculatedVolume).to.equal(transaction.billingVolume.calculatedVolume);
     });
 
-    test('handles mutliple agreements', async () => {
+    test('handles multiple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
         agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }]
       });
       expect(transactionData.agreements).to.equal('126, 127, 130W');
+    });
+
+    test('handles undefined billing volume', async () => {
+      const transactionData = transactionsCSV._getTransactionData({
+        ...transaction,
+        billingVolume: undefined
+      });
+      expect(transactionData.calculatedVolume).to.be.null();
     });
   });
 
@@ -181,14 +197,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       const invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
       expect(invoiceAccountData.accountNumber).to.equal(invoiceAccount.accountNumber);
       expect(invoiceAccountData.companyName).to.equal(invoiceAccount.company.name);
-      expect(invoiceAccountData.addressLine1).to.equal(invoiceAccount.address.addressLine1);
-      expect(invoiceAccountData.addressLine2).to.equal(invoiceAccount.address.addressLine2);
-      expect(invoiceAccountData.addressLine3).to.equal(invoiceAccount.address.addressLine3);
-      expect(invoiceAccountData.addressLine4).to.equal(invoiceAccount.address.addressLine4);
-      expect(invoiceAccountData.town).to.equal(invoiceAccount.address.town);
-      expect(invoiceAccountData.county).to.equal(invoiceAccount.address.county);
-      expect(invoiceAccountData.postcode).to.equal(invoiceAccount.address.postcode);
-      expect(invoiceAccountData.country).to.equal(invoiceAccount.address.country);
     });
   });
 
@@ -219,6 +227,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'billableAnnualQuantity',
       'accountNumber',
       'companyName',
+      'agentCompanyName',
+      'contact',
       'addressLine1',
       'addressLine2',
       'addressLine3',
@@ -246,6 +256,17 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(csvData[0].historicalArea).to.equal('AREA');
       expect(csvData[0].accountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
       expect(csvData[0].companyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
+    });
+
+    test('includes the invoice address', async () => {
+      expect(csvData[0].addressLine1).to.equal(invoicesForBatch[0].address.addressLine1);
+      expect(csvData[0].addressLine2).to.equal(invoicesForBatch[0].address.addressLine2);
+      expect(csvData[0].addressLine3).to.equal(invoicesForBatch[0].address.addressLine3);
+      expect(csvData[0].addressLine4).to.equal(invoicesForBatch[0].address.addressLine4);
+      expect(csvData[0].town).to.equal(invoicesForBatch[0].address.town);
+      expect(csvData[0].county).to.equal(invoicesForBatch[0].address.county);
+      expect(csvData[0].postcode).to.equal(invoicesForBatch[0].address.postcode);
+      expect(csvData[0].country).to.equal(invoicesForBatch[0].address.country);
     });
 
     test('creates a line for each transaction', async () => {

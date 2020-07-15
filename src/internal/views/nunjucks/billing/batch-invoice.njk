@@ -1,14 +1,15 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
-{% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal, invoiceCreditsTotal, invoiceDebitsTotal %}
+{% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal,
+invoiceCreditsTotal,
+invoiceDebitsTotal %}
 {% from "./nunjucks/billing/macros/transactions-table.njk" import transactionsTable, twoPartTariffTransactionsTable %}
 
 {% from "badge.njk" import badge %}
-{% from "crm/address.njk" import address %}
+{% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeAccountFromBatchButton %}
-
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
@@ -22,11 +23,10 @@
       </div>
 
       {{ batchMetadata(batch)}}
-      
+
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-          <p>{{ invoice.invoiceAccount.company.name | titleCase }}<br>
-          {{ address(invoice.invoiceAccount.address) }}
+        {{ invoiceAddress(invoice) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",
@@ -34,13 +34,13 @@
         }}
       </div>
     </div>
-  </div>  
+  </div>
 
   <!-- Net total -->
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-!-margin-bottom-0">
-      {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
+        {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
       </h2>
     </div>
   </div>
@@ -59,19 +59,20 @@
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      {{ removeAccountFromBatchButton(batch, invoice) }}
+      {{ removeInvoiceFromBatchButton(batch, invoice) }}
     </div>
   </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <hr class="govuk-section-break section-break--heavy section-break--margin-7" />
+      <hr class="govuk-section-break section-break--heavy section-break--margin-7"/>
 
       {% for financialYear, licences in transactions %}
-      <h2 class="govuk-heading-xl">{{ financialYear }}</h2>
+        <h2 class="govuk-heading-xl">{{ financialYear }}</h2>
 
         {% for licenceNumber, licence in licences %}
-          <h3 class="govuk-heading-l govuk-!-margin-bottom-0">Licence {{ licenceNumber }}</h3>
+          <h3 class="govuk-heading-l govuk-!-margin-bottom-0">Licence
+            {{ licenceNumber }}</h3>
           <p>
             <a href="{{ licence.link }}">View licence</a>
           </p>
@@ -79,13 +80,14 @@
           {% for group in licence.chargeElements %}
 
             {% set insetHtml %}
-              <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
-                {{ group.chargeElement.purposeUse.name }}, {{ group.chargeElement.description }}
-              </h4>
-              
-              <p class="govuk-body">
-                {{ group.chargeElement.abstractionPeriod | abstractionPeriod }}
-              </p> 
+            <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
+              {{ group.chargeElement.purposeUse.name }},
+              {{ group.chargeElement.description }}
+            </h4>
+
+            <p class="govuk-body">
+              {{ group.chargeElement.abstractionPeriod | abstractionPeriod }}
+            </p>
             {% endset %}
 
             {{ govukInsetText({
@@ -94,19 +96,17 @@
 
             {% if batch.type == 'two_part_tariff' %}
               {{ twoPartTariffTransactionsTable(group) }}
-            {% else %}  
+            {% else %}
               {{ transactionsTable(group) }}
             {% endif %}
 
           {% endfor %}
-          
+
         {% endfor %}
-
-
 
       {% endfor %}
 
     </div>
   </div>
-   
+
 {% endblock %}

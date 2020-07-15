@@ -69,6 +69,34 @@ experiment('internal/modules/billing/pre-handlers', () => {
     });
   });
 
+  experiment('.loadInvoice', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          invoiceId: 'test-invoice-id'
+        }
+      };
+    });
+
+    test('the invoice is returned from the handler', async () => {
+      const result = await preHandlers.loadInvoice(request);
+      expect(result).to.equal({
+        id: 'test-invoice-id'
+      });
+    });
+
+    test('returns a Boom not found when the invoice is not found', async () => {
+      water.billingBatches.getBatchInvoice.rejects();
+      const result = await preHandlers.loadInvoice(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Invoice not found for invoiceId: test-invoice-id');
+    });
+  });
+
   experiment('.checkBatchStatusIsReview', () => {
     experiment('when the batch is in review status', () => {
       let result;
@@ -101,6 +129,47 @@ experiment('internal/modules/billing/pre-handlers', () => {
           }
         };
         result = await preHandlers.checkBatchStatusIsReview(request, h);
+      });
+
+      test('the pre handler returns a Boom forbidden error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(403);
+      });
+    });
+  });
+
+  experiment('.checkBatchStatusIsReady', () => {
+    experiment('when the batch is in ready status', () => {
+      let result;
+
+      beforeEach(async () => {
+        const request = {
+          pre: {
+            batch: {
+              status: 'ready'
+            }
+          }
+        };
+        result = await preHandlers.checkBatchStatusIsReady(request, h);
+      });
+
+      test('the pre handler returns h.continue', async () => {
+        expect(result).to.equal(h.continue);
+      });
+    });
+
+    experiment('when the batch is not in ready status', () => {
+      let result;
+
+      beforeEach(async () => {
+        const request = {
+          pre: {
+            batch: {
+              status: 'review'
+            }
+          }
+        };
+        result = await preHandlers.checkBatchStatusIsReady(request, h);
       });
 
       test('the pre handler returns a Boom forbidden error', async () => {

@@ -54,8 +54,8 @@ class BillingBatchService extends ServiceClient {
     return this.serviceRequest.post(uri, options);
   }
 
-  deleteAccountFromBatch (batchId, accountId) {
-    const uri = this.joinUrl(`/billing/batches/${batchId}/account/${accountId}`);
+  deleteInvoiceFromBatch (batchId, invoiceId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}/invoices/${invoiceId}`);
     return this.serviceRequest.delete(uri);
   }
 

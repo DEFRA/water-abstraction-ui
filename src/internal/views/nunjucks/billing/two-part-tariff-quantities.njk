@@ -2,6 +2,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import chargeElementQuantity, reportedVolume, billableVolume %}
 
 {% from "badge.njk" import badge %}
 
@@ -89,22 +90,18 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Charge period</th>
-          <th scope="col" class="govuk-table__header">Authorised</th>
-          <th scope="col" class="govuk-table__header">Billable</th>
+          <th scope="col" class="govuk-table__header">Element</th>
           <th scope="col" class="govuk-table__header">Reported</th>
+          <th scope="col" class="govuk-table__header">Billable</th>
           <th scope="col" class="govuk-table__header">Issue</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</td>
-          <td class="govuk-table__cell">{{ transaction.chargeElement.authorisedAnnualQuantity }}ML</td>
-          <td class="govuk-table__cell">
-            {% if transaction.chargeElement.billableAnnualQuantity | isFinite %}
-              {{ transaction.chargeElement.billableAnnualQuantity }}ML
-            {% endif %}
-          </td>
-          <td class="govuk-table__cell">{{ transaction.calculatedVolume ~ ' ML' if transaction.calculatedVolume | isFinite }}</td>
+          <td class="govuk-table__cell">{{ chargeElementQuantity(transaction) }}</td>
+          <td class="govuk-table__cell">{{ reportedVolume(transaction) }}</td>
+          <td class="govuk-table__cell">{{ billableVolume(transaction) }}</td>
           <td class="govuk-table__cell">{{ error }}</td>
         </tr>
       </tbody>

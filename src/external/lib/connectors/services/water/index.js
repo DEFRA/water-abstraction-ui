@@ -8,6 +8,7 @@ const ReturnsService = require('shared/lib/connectors/services/water/ReturnsServ
 const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLevelsService');
 const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
+const KpiReportingService = require('shared/lib/connectors/services/water/KpiReportingService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -33,6 +34,7 @@ module.exports = config => ({
   riverLevels: new RiverLevelsService(config.services.water, logger),
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
+  kpiReporting: new KpiReportingService(config.services.water, logger),
 
   // Shared API Clients
   events: new EventsApiClient(config, logger),

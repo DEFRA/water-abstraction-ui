@@ -46,4 +46,24 @@ experiment('services/water/CompaniesService', () => {
       expect(qs.isSummer).to.equal(cycle.isSummer);
     });
   });
+
+  // getContacts (entityId) {
+  //   const url = this.joinUrl('companies', entityId, 'contacts');
+  //   return this.serviceRequest.get(url);
+  // }
+
+  // getAddresses (entityId) {
+  //   const url = this.joinUrl('companies', entityId, 'addresses');
+  //   return this.serviceRequest.get(url);
+  // }
+
+  // getCompany (entityId) {
+  //   const url = this.joinUrl('companies', entityId);
+  //   return this.serviceRequest.get(url);
+  // }
+
+  // postInvoiceAccount (invoiceAccount) {
+  //   const url = this.joinUrl('companies', invoiceAccount.companyId, 'invoice-accounts');
+  //   return this.serviceRequest.post(url);
+  // }
 });

@@ -1,0 +1,82 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+{{ title(pageTitle, caption) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-full">
+        <section>
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Billing contact name
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ company.name }}<br>
+              </dd>
+              <dd class="govuk-summary-list__actions ">
+                <a class="govuk-link" href="./?redirectPath={{ session.viewData.redirectPath }}">
+                  Change<span class="govuk-visually-hidden">billing contact name</span>
+                </a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row ">
+              <dt class="govuk-summary-list__key">
+                Billing address
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ address.addressLine1 }}<br>
+                {% if address.addressLine2 %}
+                  {{ address.addressLine2 }}<br>
+                {% endif %}
+                {% if address.addressLine3 %}
+                  {{ address.addressLine3 }}<br>
+                {% endif %}
+                {% if address.addressLine4 %}
+                  {{ address.addressLine4 }}<br>
+                {% endif %}
+                {{ address.postcode }}
+              </dd>
+              <dd class="govuk-summary-list__actions ">
+                <a class="govuk-link" href="select-address">
+                  Change<span class="govuk-visually-hidden"> address</span>
+                </a>
+              </dd>
+            </div>
+
+            <div class="govuk-summary-list__row govuk-summary-list__row--last">
+              <dt class="govuk-summary-list__key">
+                FAO
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {% if session.agent === null %}
+                  No
+                {% else %}
+                  {{ session.agent }}
+                {% endif %}            
+              </dd>
+              <dd class="govuk-summary-list__actions ">
+                <a class="govuk-link" href="add-fao">
+                Change<span class="govuk-visually-hidden"> FAO</span>
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </div>
+    <form method="POST" action="/invoice-accounts/create/save-details" novalidate="">
+      <input type="hidden" name="regionId" value={{regionId}}>
+      <input type="hidden" name="companyId" value={{companyId}}>
+      <input type="hidden" name="csrf_token" value={{csrfToken}}>
+      <button class="govuk-button" data-module="govuk-button">
+        Continue
+      </button>      
+    </form>
+  </div>
+</div>
+    
+{% endblock %}

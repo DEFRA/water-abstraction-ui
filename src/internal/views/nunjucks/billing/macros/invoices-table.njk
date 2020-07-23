@@ -1,21 +1,19 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "./totals.njk" import chargeOrDash %}
 
-{% macro tableHeader(isEditable) %}
+{% macro tableHeader() %}
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Account</th>
       <th scope="col" class="govuk-table__header">Billing contact</th>
       <th scope="col" class="govuk-table__header">Licence</th>
       <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
-      {% if isEditable %}
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
-      {% endif %}
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
     </tr>
   </thead>
 {% endmacro %}
 
-{% macro tableHeaderSupplementary(isEditable) %}
+{% macro tableHeaderSupplementary() %}
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Account</th>
@@ -23,9 +21,7 @@
       <th scope="col" class="govuk-table__header">Licence</th>
       <th scope="col" class="govuk-table__header govuk-table__header--numeric">Financial year</th>
       <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total</th>
-      {% if isEditable %}
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
-      {% endif %}
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
     </tr>
   </thead>
 {% endmacro %}
@@ -95,58 +91,54 @@
   </td>
 {% endmacro %}
 
-{% macro tableRow(batch, invoice, isEditable) %}
+{% macro tableRow(batch, invoice) %}
   <tr class="govuk-table__row">
     {{ billingAccountCell(invoice) }}
     {{ billingContactCell(invoice) }}
     {{ licenceNumbersCell(invoice) }}
     {{ totalCell(invoice)}}
-    {% if isEditable %}
-      {{ actionsCell(batch, invoice) }}
-    {% endif %}
+    {{ actionsCell(batch, invoice) }}
   {% endmacro %}
 
-  {% macro tableRowSupplementary(batch, invoice, isEditable) %}
+  {% macro tableRowSupplementary(batch, invoice) %}
     <tr class="govuk-table__row">
       {{ billingAccountCell(invoice) }}
       {{ billingContactCell(invoice) }}
       {{ licenceNumbersCell(invoice) }}
       {{ financialYearCell(invoice) }}
       {{ totalCell(invoice) }}
-      {% if isEditable %}
-        {{ actionsCell(batch, invoice) }}
-      {% endif %}
+      {{ actionsCell(batch, invoice) }}
     </tr>
   {% endmacro %}
 
-  {% macro nonSupplementaryInvoicesTable(batch, invoices, isEditable) %}
+  {% macro nonSupplementaryInvoicesTable(batch, invoices) %}
     <table class="govuk-table">
-      {{ tableHeader(isEditable) }}
+      {{ tableHeader() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
-          {{ tableRow(batch, invoice, isEditable) }}
+          {{ tableRow(batch, invoice) }}
         {% endfor %}
       </tbody>
     </table>
   {% endmacro %}
 
-  {% macro supplementaryInvoicesTable(batch, invoices, isEditable) %}
+  {% macro supplementaryInvoicesTable(batch, invoices) %}
     <table class="govuk-table">
-      {{ tableHeaderSupplementary(isEditable) }}
+      {{ tableHeaderSupplementary() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
-          {{ tableRowSupplementary(batch, invoice, isEditable) }}
+          {{ tableRowSupplementary(batch, invoice) }}
         {% endfor %}
       </tbody>
     </table>
   {% endmacro %}
 
-  {% macro invoicesTable(batch, invoices, isEditable) %}
+  {% macro invoicesTable(batch, invoices) %}
     {% if invoices.length > 0 %}
       {% if batch.type == 'supplementary' %}
-        {{ supplementaryInvoicesTable(batch, invoices, isEditable) }}
+        {{ supplementaryInvoicesTable(batch, invoices) }}
       {% else %}
-        {{ nonSupplementaryInvoicesTable(batch, invoices, isEditable) }}
+        {{ nonSupplementaryInvoicesTable(batch, invoices) }}
       {% endif %}
     {% endif %}
   {% endmacro %}

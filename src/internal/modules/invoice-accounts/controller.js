@@ -12,6 +12,10 @@ const tempId = '00000000-0000-0000-0000-000000000000';
 const dataService = require('./lib/data-service');
 const urlJoin = require('url-join');
 
+const getCaption = (licenceNumber) => {
+  return licenceNumber ? `Licence ${licenceNumber}` : '';
+};
+
 const getCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { licenceId, redirectPath } = request.query;
@@ -19,12 +23,12 @@ const getCompany = async (request, h) => {
   const { licenceNumber } = licenceId ? await dataService.getLicenceById(licenceId) : { licenceNumber: null };
   const company = await dataService.getCompany(companyId);
   // The company name and licence number set here will be used in the select address page
-  const data = { viewData: { redirectPath, licenceNumber, companyName: company.name } };
+  const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: company.name } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
   const selectedCompany = session.agent ? await dataService.getCompany(session.agent) : company;
-  if (licenceNumber) { request.view.caption = `Licence ${licenceNumber}`; };
   return h.view('nunjucks/form', {
     ...request.view,
+    caption: getCaption(licenceNumber),
     pageTitle: 'Who should the bills go to?',
     back: '/manage',
     form: sessionForms.get(request, selectCompanyForm(request, company, selectedCompany))
@@ -63,10 +67,10 @@ const getAddress = async (request, h) => {
   const session = dataService.sessionManager(request, regionId, companyId);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
-  if (session.viewData.licenceNumber) { request.view.caption = `Licence ${session.viewData.licenceNumber}`; };
   const selectedAddress = session.address ? session.address.addressId : null;
   return h.view('nunjucks/form', {
     ...request.view,
+    caption: getCaption(session.viewData.licenceNumber),
     pageTitle: `Select an existing address for ${session.viewData.companyName}`,
     back: '/manage',
     form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddress))
@@ -90,9 +94,9 @@ const postAddress = async (request, h) => {
 const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
-  if (session.viewData.licenceNumber) { request.view.caption = `Licence ${session.viewData.licenceNumber}`; };
   return h.view('nunjucks/form', {
     ...request.view,
+    caption: getCaption(session.viewData.licenceNumber),
     pageTitle: 'Do you need to add an FAO?',
     back: '/manage',
     form: sessionForms.get(request, addFaoForm(request, !!session.contact))
@@ -132,9 +136,16 @@ const getCheckDetails = async (request, h) => {
     dataService.getCompanyAddresses(companyId)
   ]);
   const [ address ] = addresses.filter(address => (address.addressId = session.address.addressId));
-  if (session.viewData.licenceNumber) { request.view.caption = `Licence ${session.viewData.licenceNumber}`; };
   return h.view('nunjucks/invoice-accounts/check-details', {
-    ...request.view, pageTitle: 'Check billing account details', back: '/manage', session, companyId, regionId, company, address });
+    ...request.view,
+    caption: getCaption(session.viewData.licenceNumber),
+    pageTitle: 'Check billing account details',
+    back: '/manage',
+    session,
+    companyId,
+    regionId,
+    company,
+    address });
 };
 
 const postCheckDetails = async (request, h) => {

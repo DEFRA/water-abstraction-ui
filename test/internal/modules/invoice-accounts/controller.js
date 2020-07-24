@@ -31,7 +31,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   beforeEach(async => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
     sandbox.stub(dataService, 'getCompany').resolves({ name: companyName });
-    sandbox.stub(dataService, 'sessionManager').returns(sessionData(companyId, regionId, { viewData: { licenceNumber, companyName } }));
+    sandbox.stub(dataService, 'sessionManager').returns(sessionData(companyId, regionId, { viewData: { licenceNumber, licenceId, companyName } }));
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
@@ -79,7 +79,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(args[0]).to.equal(companyId);
     });
     test('calls sessionManager with the correct params', async () => {
-      const viewData = { viewData: { redirectPath: '/somewhere', licenceNumber, companyName } };
+      const viewData = { viewData: { redirectPath: '/somewhere', licenceNumber, licenceId, companyName } };
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
@@ -109,7 +109,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       delete request.query.licenceId;
       await controller.getCompany(request, h);
       const { caption } = h.view.lastCall.args[1];
-      expect(caption).to.equal(undefined);
+      expect(caption).to.equal('');
     });
   });
 

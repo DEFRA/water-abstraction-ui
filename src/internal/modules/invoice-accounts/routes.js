@@ -111,7 +111,7 @@ if (isAcceptanceTestTarget) {
     getCheckDetails: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/check-details',
-      handler: controller.getDetails,
+      handler: controller.getCheckDetails,
       config: {
         auth: { scope: allowedScopes },
         description: 'check and confirm invoice account details',
@@ -131,7 +131,7 @@ if (isAcceptanceTestTarget) {
     postCheckDetails: {
       method: 'POST',
       path: '/invoice-accounts/create/save-details',
-      handler: controller.postDetails,
+      handler: controller.postCheckDetails,
       config: {
         auth: { scope: allowedScopes },
         description: 'save invoice account details',

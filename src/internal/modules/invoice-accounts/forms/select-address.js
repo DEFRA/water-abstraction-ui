@@ -4,14 +4,21 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 
+const address = (address) => {
+  return [
+    address.addressLine1,
+    address.addressLine2,
+    address.addressLine3,
+    address.addressLine4,
+    address.town,
+    address.postcode
+  ].filter(item => item !== '' && item !== null);
+};
+
 const addressList = (addresses) => addresses.map(row => {
   return {
     value: row.id,
-    label: row.addressLine1 + ', ' +
-    (row.addressLine2 ? row.addressLine2 + ', ' : '') +
-    (row.addressLine3 ? row.addressLine3 + ', ' : '') +
-    (row.addressLine4 ? row.addressLine4 + ', ' : '') +
-    row.town + ', ' + row.postcode
+    label: (address(row)).join(', ')
   };
 });
 

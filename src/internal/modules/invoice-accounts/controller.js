@@ -6,11 +6,13 @@ const sessionForms = require('shared/lib/session-forms');
 const { selectCompanyForm, selectCompanyFormSchema } = require('./forms/select-company');
 const { selectAddressForm, selectAddressFormSchema } = require('./forms/select-address');
 const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
+const { checkDetailsForm } = require('./forms/check-details');
 const forms = require('shared/lib/forms');
 // tempId is used to determine if a new entity should be created.
 const tempId = '00000000-0000-0000-0000-000000000000';
 const dataService = require('./lib/data-service');
 const urlJoin = require('url-join');
+const { processCompanyFormData, processFaoFormData, getSelectedAddress } = require('./lib/helpers');
 
 const getCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
@@ -35,23 +37,11 @@ const getCompany = async (request, h) => {
   });
 };
 
-const processCompanyFormData = (request, regionId, companyId, formData) => {
-  const { selectedCompany, companySearch } = forms.getValues(formData);
-  if (selectedCompany === 'company_search') {
-    // TODO place holder -- route does not exist
-    return `company-search?filter=${companySearch}`;
-  } else {
-    const agentId = selectedCompany === companyId ? null : selectedCompany;
-    dataService.sessionManager(request, regionId, companyId, { agent: agentId });
-    return 'select-address';
-  }
-};
-
 const postCompany = async (request, h) => {
-  const { regionId, companyId } = request.payload;
+  const { regionId, companyId } = request.params;
   const company = await dataService.getCompany(companyId);
   const schema = selectCompanyFormSchema(request.payload);
-  const form = forms.handleRequest(selectCompanyForm(request, company, company), request, schema);
+  const form = forms.handleRequest(selectCompanyForm(request, company), request, schema);
   if (form.isValid) {
     const redirectPath = processCompanyFormData(request, regionId, companyId, form);
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
@@ -78,7 +68,7 @@ const getAddress = async (request, h) => {
 };
 
 const postAddress = async (request, h) => {
-  const { regionId, companyId } = request.payload;
+  const { regionId, companyId } = request.params;
   const addresses = await dataService.getCompanyAddresses(companyId);
   const schema = selectAddressFormSchema(request.payload);
   const form = forms.handleRequest(selectAddressForm(request, addresses), request, schema);
@@ -103,18 +93,8 @@ const getFao = async (request, h) => {
   });
 };
 
-const processFaoFormData = (request, regionId, companyId, addFao) => {
-  if (addFao === 'yes') {
-    // TODO path does not exist
-    return 'search-contact';
-  } else {
-    dataService.sessionManager(request, regionId, companyId, { contact: null });
-    return 'check-details';
-  }
-};
-
 const postFao = async (request, h) => {
-  const { regionId, companyId } = request.payload;
+  const { regionId, companyId } = request.params;
   const schema = addFaoFormSchema(request.payload);
   const form = forms.handleRequest(addFaoForm(request), request, schema);
   if (form.isValid) {
@@ -131,13 +111,11 @@ const getCheckDetails = async (request, h) => {
   if (Object.keys(session).length === 0 && session.constructor === Object) {
     throw boom.notFound('Session data not found');
   }
-  const [ company, addresses ] = await Promise.all([
-    dataService.getCompany(companyId),
-    dataService.getCompanyAddresses(companyId)
-  ]);
-  const [ address ] = addresses.filter(address => (address.addressId = session.address.addressId));
+  const selectedAddress = getSelectedAddress(companyId, session);
+  const company = await dataService.getCompany(companyId);
   return h.view('nunjucks/invoice-accounts/check-details', {
     ...request.view,
+    form: sessionForms.get(request, checkDetailsForm(request)),
     caption: getCaption(session.viewData.licenceNumber),
     pageTitle: 'Check billing account details',
     back: '/manage',
@@ -145,19 +123,20 @@ const getCheckDetails = async (request, h) => {
     companyId,
     regionId,
     company,
-    address });
+    selectedAddress });
 };
 
 const postCheckDetails = async (request, h) => {
-  const { regionId, companyId } = request.payload;
+  const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
   // TODO default start date added here - might need to create a screen for the user to select a date
   session.startDate = moment().format('YYYY-MM-DD');
   const redirectPath = session.viewData.redirectPath;
-  // remove no longer needed session data
+  // remove unnecesary session data
   delete session.viewData;
+  if (session.address.addressId === tempId) { delete session.address.addressId; };
 
-  const invoiceAcc = await dataService.saveInvoiceAccDetails(session);
+  const invoiceAcc = await dataService.saveInvoiceAccDetails({ regionId, companyId, ...session });
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });
   return h.redirect(path);

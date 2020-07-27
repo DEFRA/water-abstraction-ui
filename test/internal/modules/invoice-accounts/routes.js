@@ -23,7 +23,7 @@ experiment('internal/modules/invoice-accounts/routes', () => {
     });
     test('has the correct path', () => {
       expect(routes.postCompany.path)
-        .to.equal('/invoice-accounts/create/select-company');
+        .to.equal('/invoice-accounts/create/{regionId}/{companyId}');
     });
   });
 
@@ -45,7 +45,7 @@ experiment('internal/modules/invoice-accounts/routes', () => {
     });
     test('has the correct path', () => {
       expect(routes.postAddress.path)
-        .to.equal('/invoice-accounts/create/select-address');
+        .to.equal('/invoice-accounts/create/{regionId}/{companyId}/select-address');
     });
   });
 
@@ -67,7 +67,7 @@ experiment('internal/modules/invoice-accounts/routes', () => {
     });
     test('has the correct path', () => {
       expect(routes.postFao.path)
-        .to.equal('/invoice-accounts/create/add-fao');
+        .to.equal('/invoice-accounts/create/{regionId}/{companyId}/add-fao');
     });
   });
 
@@ -89,7 +89,7 @@ experiment('internal/modules/invoice-accounts/routes', () => {
     });
     test('has the correct path', () => {
       expect(routes.postCheckDetails.path)
-        .to.equal('/invoice-accounts/create/save-details');
+        .to.equal('/invoice-accounts/create/{regionId}/{companyId}/check-details');
     });
   });
 });

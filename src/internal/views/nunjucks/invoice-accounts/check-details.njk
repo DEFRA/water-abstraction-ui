@@ -1,7 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "crm/address.njk" import address %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+
 
 {% block content %}
-
 {{ title(pageTitle, caption) }}
 
 <div class="govuk-grid-row">
@@ -32,17 +34,7 @@
                 Billing address
               </dt>
               <dd class="govuk-summary-list__value">
-                {{ address.addressLine1 }}<br>
-                {% if address.addressLine2 %}
-                  {{ address.addressLine2 }}<br>
-                {% endif %}
-                {% if address.addressLine3 %}
-                  {{ address.addressLine3 }}<br>
-                {% endif %}
-                {% if address.addressLine4 %}
-                  {{ address.addressLine4 }}<br>
-                {% endif %}
-                {{ address.postcode }}
+                {{ address(selectedAddress) }}
               </dd>
               <dd class="govuk-summary-list__actions ">
                 <a class="govuk-link" href="select-address">
@@ -71,15 +63,8 @@
           </dl>
         </section>
       </div>
-    </div>
-    <form method="POST" action="/invoice-accounts/create/save-details" novalidate="">
-      <input type="hidden" name="regionId" value={{regionId}}>
-      <input type="hidden" name="companyId" value={{companyId}}>
-      <input type="hidden" name="csrf_token" value={{csrfToken}}>
-      <button class="govuk-button" data-module="govuk-button">
-        Continue
-      </button>      
-    </form>
+    </div>    
+    {{ formRender(form) }}
   </div>
 </div>
     

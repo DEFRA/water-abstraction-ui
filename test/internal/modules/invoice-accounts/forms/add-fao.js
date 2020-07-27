@@ -36,18 +36,6 @@ experiment('invoice-accounts/forms/add-fao form', () => {
     expect(csrf.value).to.equal(request.view.csrfToken);
   });
 
-  test('has region id field', async () => {
-    const form = addFaoForm(request);
-    const regionId = findField(form, 'regionId');
-    expect(regionId.value).to.equal(request.params.regionId);
-  });
-
-  test('has company id field', async () => {
-    const form = addFaoForm(request);
-    const companyId = findField(form, 'companyId');
-    expect(companyId.value).to.equal(request.params.companyId);
-  });
-
   test('has a FAO yes/no required field', async () => {
     const form = addFaoForm(request);
     const faoRequired = findField(form, 'faoRequired');
@@ -70,30 +58,6 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
 
     test('fails for a string that is not a uuid', async () => {
       const result = addFaoFormSchema(createRequest()).csrf_token.validate('notAGuid');
-      expect(result.error).to.exist();
-    });
-  });
-
-  experiment('region Id', () => {
-    test('validates for a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).regionId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).regionId.validate('the-moon');
-      expect(result.error).to.exist();
-    });
-  });
-
-  experiment('company Id', () => {
-    test('validates for a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).companyId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).companyId.validate('the-moon-farm');
       expect(result.error).to.exist();
     });
   });

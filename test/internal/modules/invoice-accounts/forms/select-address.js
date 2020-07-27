@@ -47,19 +47,6 @@ experiment('invoice-accounts/forms/select-address form', () => {
     const csrf = findField(form, 'csrf_token');
     expect(csrf.value).to.equal(request.view.csrfToken);
   });
-
-  test('has region id field', async () => {
-    const form = selectAddressForm(request, address);
-    const regionId = findField(form, 'regionId');
-    expect(regionId.value).to.equal(request.params.regionId);
-  });
-
-  test('has company id field', async () => {
-    const form = selectAddressForm(request, address);
-    const companyId = findField(form, 'companyId');
-    expect(companyId.value).to.equal(request.params.companyId);
-  });
-
   test('has a selectedAddress field', async () => {
     const form = selectAddressForm(request, address);
     const selectedAddress = findField(form, 'selectedAddress');
@@ -98,29 +85,6 @@ experiment('invoice-accounts/forms/select-address schema', () => {
 
     test('fails if blank', async () => {
       const result = selectAddressFormSchema(request).selectedAddress.validate();
-      expect(result.error).to.exist();
-    });
-  });
-  experiment('region Id', () => {
-    test('validates for a uuid', async () => {
-      const result = selectAddressFormSchema(createRequest()).regionId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = selectAddressFormSchema(createRequest()).regionId.validate('the-moon');
-      expect(result.error).to.exist();
-    });
-  });
-
-  experiment('company Id', () => {
-    test('validates for a uuid', async () => {
-      const result = selectAddressFormSchema(createRequest()).companyId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = selectAddressFormSchema(createRequest()).companyId.validate('the-moon-farm');
       expect(result.error).to.exist();
     });
   });

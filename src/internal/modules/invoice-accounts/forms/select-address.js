@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require('@hapi/joi');
-
+const urlJoin = require('url-join');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 const address = (address) => {
@@ -31,9 +31,9 @@ const addressList = (addresses) => addresses.map(row => {
   */
 const selectAddressForm = (request, addresses, selectedAddressId) => {
   const { csrfToken } = request.view;
-  const action = '/invoice-accounts/create/select-address';
-  const regionId = (request.params.regionId) ? request.params.regionId : '';
-  const companyId = request.params.companyId ? request.params.companyId : '';
+  const regionId = request.params.regionId || '';
+  const companyId = request.params.companyId || '';
+  const action = urlJoin('/invoice-accounts/create', regionId, companyId, 'select-address');
   const addressChoices = addressList(addresses);
   const f = formFactory(action, 'POST');
 
@@ -51,8 +51,6 @@ const selectAddressForm = (request, addresses, selectedAddressId) => {
       { value: 'new_address', label: 'Set up a new address' }
     ]
   }, ...addressChoices.filter(address => address.value === selectedAddressId)));
-  f.fields.push(fields.hidden('companyId', {}, companyId));
-  f.fields.push(fields.hidden('regionId', {}, regionId));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -62,8 +60,6 @@ const selectAddressForm = (request, addresses, selectedAddressId) => {
 const selectAddressFormSchema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    companyId: Joi.string().uuid().required(),
-    regionId: Joi.string().uuid().required(),
     selectedAddress: Joi.string().required().allow(['new_address', Joi.string().uuid()])
   };
 };

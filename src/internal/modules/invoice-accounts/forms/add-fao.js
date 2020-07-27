@@ -3,6 +3,7 @@
 const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
+const urlJoin = require('url-join');
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -12,10 +13,10 @@ const { formFactory, fields } = require('shared/lib/forms/');
   */
 const addFaoForm = (request, selected) => {
   const { csrfToken } = request.view;
-  const action = '/invoice-accounts/create/add-fao';
   // when the form is validated the regionId and companyId is set to ''
-  const regionId = (request.params.regionId) ? request.params.regionId : '';
-  const companyId = request.params.companyId ? request.params.companyId : '';
+  const regionId = request.params.regionId || '';
+  const companyId = request.params.companyId || '';
+  const action = urlJoin('/invoice-accounts/create', regionId, companyId, 'add-fao');
   const yes = { value: 'yes', label: 'Yes' };
   const no = { value: 'no', label: 'No' };
   const checkedOption = selected ? yes : no;
@@ -31,8 +32,6 @@ const addFaoForm = (request, selected) => {
     choices: [yes, no],
     hint: 'For example, FAO Sam Burridge or FAO Accounts department'
   }, checkedOption));
-  f.fields.push(fields.hidden('companyId', {}, companyId));
-  f.fields.push(fields.hidden('regionId', {}, regionId));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -42,8 +41,6 @@ const addFaoForm = (request, selected) => {
 const addFaoFormSchema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    companyId: Joi.string().uuid().required(),
-    regionId: Joi.string().uuid().required(),
     faoRequired: Joi.string().required().valid(['yes', 'no'])
   };
 };

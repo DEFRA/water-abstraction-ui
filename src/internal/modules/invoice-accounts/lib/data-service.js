@@ -2,7 +2,7 @@
 
 const hoek = require('@hapi/hoek');
 const services = require('../../../lib/connectors/services');
-
+const { uniqBy } = require('lodash');
 const sessionManager = (request, regionId, companyId, data = null) => {
   // get existing session data
   let sessionData = request.yar.get(`newInvoiceAccountFlow.${regionId}.${companyId}`);
@@ -21,12 +21,7 @@ const getCompany = async (companyId) => {
 const getCompanyAddresses = async (companyId) => {
   const companyAddresses = await services.water.companies.getAddresses(companyId);
   // get the unique list of addresses
-  const uniqueIds = new Set(companyAddresses.map(row => row.address.id));
-  const uniqueAddresses = Array.from(uniqueIds).map(id => {
-    const { address } = companyAddresses.find(row => row.address.id === id);
-    return address;
-  });
-
+  const uniqueAddresses = uniqBy(companyAddresses.map(row => row.address), 'id');
   return uniqueAddresses;
 };
 

@@ -41,18 +41,6 @@ experiment('invoice-accounts/forms/select-company form', () => {
     expect(csrf.value).to.equal(request.view.csrfToken);
   });
 
-  test('has region id field', async () => {
-    const form = selectCompanyForm(request, company, {});
-    const regionId = findField(form, 'regionId');
-    expect(regionId.value).to.equal(request.params.regionId);
-  });
-
-  test('has company id field', async () => {
-    const form = selectCompanyForm(request, company, {});
-    const companyId = findField(form, 'companyId');
-    expect(companyId.value).to.equal(request.params.companyId);
-  });
-
   test('has a selectedCompany type field', async () => {
     const form = selectCompanyForm(request, company, {});
     const selectCompany = findField(form, 'selectedCompany');
@@ -79,30 +67,6 @@ experiment('invoice-accounts/forms/select-company schema', () => {
     });
   });
 
-  experiment('region Id', () => {
-    test('validates for a uuid', async () => {
-      const result = selectCompanyFormSchema(createRequest()).regionId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = selectCompanyFormSchema(createRequest()).regionId.validate('the-moon');
-      expect(result.error).to.exist();
-    });
-  });
-
-  experiment('company Id', () => {
-    test('validates for a uuid', async () => {
-      const result = selectCompanyFormSchema(createRequest()).companyId.validate(uuid());
-      expect(result.error).to.be.null();
-    });
-
-    test('fails for a string that is not a uuid', async () => {
-      const result = selectCompanyFormSchema(createRequest()).companyId.validate('moon-water');
-      expect(result.error).to.exist();
-    });
-  });
-
   experiment('selected Company', () => {
     test('It should only allow uuid or company_search', async () => {
       const result = Joi.describe(selectCompanyFormSchema(createRequest()));
@@ -119,9 +83,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
     test('is not required if a company has been selected', async () => {
       const data = {
         csrf_token: uuid(),
-        selectedCompany: uuid(),
-        regionId: uuid(),
-        companyId: uuid()
+        selectedCompany: uuid()
       };
 
       const result = Joi.validate(data, selectCompanyFormSchema());
@@ -132,8 +94,6 @@ experiment('invoice-accounts/forms/select-company schema', () => {
       const data = {
         csrf_token: uuid(),
         selectedCompany: 'company_search',
-        regionId: uuid(),
-        companyId: uuid(),
         companySearch: 'some company name'
       };
       const result = Joi.validate(data, selectCompanyFormSchema());
@@ -144,8 +104,6 @@ experiment('invoice-accounts/forms/select-company schema', () => {
       const data = {
         csrf_token: uuid(),
         selectedCompany: 'company_search',
-        regionId: uuid(),
-        companyId: uuid(),
         companySearch: ''
       };
 

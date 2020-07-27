@@ -29,7 +29,7 @@ if (isAcceptanceTestTarget) {
           },
           query: {
             form: Joi.string().optional(),
-            redirectPath: Joi.string().optional(),
+            redirectPath: Joi.string().required(),
             licenceId: Joi.string().uuid().optional()
           }
         }
@@ -37,11 +37,23 @@ if (isAcceptanceTestTarget) {
     },
     postCompany: {
       method: 'POST',
-      path: '/invoice-accounts/create/select-company',
+      path: '/invoice-accounts/create/{regionId}/{companyId}',
       handler: controller.postCompany,
       config: {
         auth: { scope: allowedScopes },
-        description: 'select invoice account company contact'
+        description: 'select invoice account company contact',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          payload: {
+            csrf_token: VALID_GUID,
+            companySearch: Joi.string().allow(''),
+            selectedCompany: Joi.string().required().allow(['company_search', Joi.string().uuid()])
+
+          }
+        }
       }
     },
     getAddress: {
@@ -69,11 +81,21 @@ if (isAcceptanceTestTarget) {
     },
     postAddress: {
       method: 'POST',
-      path: '/invoice-accounts/create/select-address',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/select-address',
       handler: controller.postAddress,
       config: {
         auth: { scope: allowedScopes },
-        description: 'select invoice account address'
+        description: 'select invoice account address',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          payload: {
+            csrf_token: VALID_GUID,
+            selectedAddress: Joi.string().required().allow(['new_address', Joi.string().uuid()])
+          }
+        }
       }
     },
     getFao: {
@@ -101,11 +123,21 @@ if (isAcceptanceTestTarget) {
     },
     postFao: {
       method: 'POST',
-      path: '/invoice-accounts/create/add-fao',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/add-fao',
       handler: controller.postFao,
       config: {
         auth: { scope: allowedScopes },
-        description: 'select invoice account FAO'
+        description: 'select invoice account FAO',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          payload: {
+            csrf_token: VALID_GUID,
+            faoRequired: Joi.string().required().valid(['yes', 'no'])
+          }
+        }
       }
     },
     getCheckDetails: {
@@ -130,7 +162,7 @@ if (isAcceptanceTestTarget) {
     },
     postCheckDetails: {
       method: 'POST',
-      path: '/invoice-accounts/create/save-details',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/check-details',
       handler: controller.postCheckDetails,
       config: {
         auth: { scope: allowedScopes },
@@ -138,6 +170,15 @@ if (isAcceptanceTestTarget) {
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          payload: {
+            csrf_token: Joi.string().uuid().required()
           }
         }
       }

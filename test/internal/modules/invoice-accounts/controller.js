@@ -19,19 +19,30 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const licenceId = uuid();
   const licenceNumber = '01/123';
   const companyName = 'test company name';
+  const addressId = uuid();
   let h, request;
 
   const secondHeader = sandbox.stub();
   const header = sandbox.stub().returns({ header: secondHeader });
 
-  const sessionData = (companyId, regionId, data) => {
-    return { companyId, regionId, ...data };
+  const sessionData = () => {
+    return {
+      companyId,
+      regionId,
+      address: { addressId },
+      viewData: {
+        redirectPath: '/somewhere',
+        licenceNumber,
+        licenceId,
+        companyName
+      }
+    };
   };
 
   beforeEach(async => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
     sandbox.stub(dataService, 'getCompany').resolves({ name: companyName });
-    sandbox.stub(dataService, 'sessionManager').returns(sessionData(companyId, regionId, { viewData: { licenceNumber, licenceId, companyName } }));
+    sandbox.stub(dataService, 'sessionManager').returns(sessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
@@ -114,13 +125,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   });
 
   experiment('.postCompany', () => {
-    beforeEach(async () => {
-      request.payload = {
-        companyId,
-        regionId
-      };
-    });
-
     test('dataService.getCompany is called with the companyId', async () => {
       await controller.postCompany(request, h);
       const args = dataService.getCompany.lastCall.args;
@@ -206,13 +210,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   });
 
   experiment('.postAddress', () => {
-    beforeEach(async () => {
-      request.payload = {
-        companyId,
-        regionId
-      };
-    });
-
     test('dataService.getCompanyAddresses is called with the companyId', async () => {
       await controller.postAddress(request, h);
       const args = dataService.getCompanyAddresses.lastCall.args;
@@ -285,12 +282,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   });
 
   experiment('.postFao', () => {
-    beforeEach(async () => {
-      request.payload = {
-        companyId,
-        regionId
-      };
-    });
     experiment('when the form is valid', () => {
       test('and faoRequired = no the contact is set to null in the session data', async () => {
         forms.getValues.returns({ faoRequired: 'no' });
@@ -367,10 +358,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
   experiment('.postCheckDetails', () => {
     beforeEach(async () => {
-      request.payload = {
-        companyId,
-        regionId
-      };
       await controller.postCheckDetails(request, h);
     });
 
@@ -383,9 +370,10 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(args[3]).to.equal(undefined);
       expect(dataService.sessionManager.calledOnce).to.be.true();
     });
+
     test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
       const startDate = moment().format('YYYY-MM-DD');
-      const details = { companyId, regionId, startDate };
+      const details = { address: { addressId }, companyId, regionId, startDate };
       const [ args ] = dataService.saveInvoiceAccDetails.lastCall.args;
       expect(args).to.equal(details);
     });

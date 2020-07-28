@@ -7,7 +7,7 @@ const sessionManager = (request, regionId, companyId, data = null) => {
   // get existing session data
   let sessionData = request.yar.get(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   // merge the new with old data
-  sessionData = hoek.merge(sessionData || {}, { ...data });
+  sessionData = hoek.merge(sessionData || {}, data);
   // set the new session data
   request.yar.set(`newInvoiceAccountFlow.${regionId}.${companyId}`, sessionData);
   return sessionData;

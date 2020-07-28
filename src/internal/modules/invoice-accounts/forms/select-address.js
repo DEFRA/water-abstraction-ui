@@ -29,7 +29,7 @@ const addressList = (addresses) => addresses.map(row => {
  * @param {Array} addresses Array of all company address
  * @param {uuid} selectedAddressId address id stored in session data for pre-selected option
   */
-const selectAddressForm = (request, addresses, selectedAddressId) => {
+const selectAddressForm = (request, addresses, selectedAddressId = null) => {
   const { csrfToken } = request.view;
   const regionId = request.params.regionId || '';
   const companyId = request.params.companyId || '';

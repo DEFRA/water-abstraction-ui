@@ -131,7 +131,12 @@
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ returnsCycle1.total + returnsCycle2.total }}</h3>
+        <h3 class="govuk-heading-l">
+          {% if (returnsCycle1.total + returnsCycle2.total)   %}
+            {{ returnsCycle1.total + returnsCycle2.total }}</h3>
+          {% else %}
+            0
+          {% endif %}
       </div>
     </div>
     <table class="govuk-table">  
@@ -144,14 +149,16 @@
         <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number by digital</th>    
       </tr>
       </thead>  
-      <tbody class="govuk-table__body">    
+      <tbody class="govuk-table__body">
+        {% if returnsCycle1.endDate %}    
         <tr class="govuk-table__row">      
-          <th class="govuk-table__header" scope="row">
-          {% if returnsCycle1.isSummer %}
-            13 October {{ returnsCycle1.endDate.slice(0,4) }}
-          {% else %}
-            28 April {{ returnsCycle1.endDate.slice(0,4) }}</th>
-          {% endif %}
+          <th class="govuk-table__header" scope="row">          
+            {% if returnsCycle1.isSummer %}
+              13 October {{ returnsCycle1.endDate.slice(0,4) }}
+            {% else %}
+              28 April {{ returnsCycle1.endDate.slice(0,4) }}
+            {% endif %}
+          </th>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle1.due }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">
             On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle1.internalLate }}
@@ -160,13 +167,15 @@
             On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle1.externalLate }}
           </td>    
         </tr>
+        {% endif %}
+        {% if returnsCycle2.endDate %}
         <tr class="govuk-table__row">      
-          <th class="govuk-table__header" scope="row">
-          {% if returnsCycle2.isSummer %}
-            13 October {{ returnsCycle2.endDate.slice(0,4) }}
-          {% else %}
-            28 April {{ returnsCycle2.endDate.slice(0,4) }}</th>
-          {% endif %}
+          <th class="govuk-table__header" scope="row">          
+            {% if returnsCycle2.isSummer %}
+              13 October {{ returnsCycle2.endDate.slice(0,4) }}
+            {% else %}
+              28 April {{ returnsCycle2.endDate.slice(0,4) }}</th>
+            {% endif %}          
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle2.due }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">
             On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle2.internalLate }}
@@ -175,6 +184,7 @@
             On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle2.externalLate }}
           </td>   
         </tr>
+        {% endif %}
       </tbody>
     </table>
   </div>

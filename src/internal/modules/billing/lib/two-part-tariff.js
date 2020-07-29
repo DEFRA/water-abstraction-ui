@@ -21,7 +21,7 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
 const mapLicence = (batch, licence) => ({
   ...licence,
   twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.billingInvoiceLicenceId)
+  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId)
 });
 
 const getTotals = licences => {
@@ -38,42 +38,42 @@ const getTotals = licences => {
 };
 
 /**
- * Creates a unique group string for the given transaction, based on the
- * purpose and abstraction period
- * @param {Object} transaction
+ * Creates a unique group string for the given billing volume, based on the
+ * purpose and abstraction period of its charge element
+ * @param {Object} billingVolume
  * @return {String} unique key
  */
-const getTransactionGroup = transaction => {
-  const { chargeElement } = transaction;
+const getBillingVolumeGroup = billingVolume => {
+  const { chargeElement } = billingVolume;
   const { startDay, startMonth, endDay, endMonth } = chargeElement.abstractionPeriod;
   return `${chargeElement.purposeUse.code}_${startDay}_${startMonth}_${endDay}_${endMonth}`;
 };
 
-const getTransactionError = transaction =>
-  transaction.billingVolume.twoPartTariffError ? statusMessages.get(transaction.billingVolume.twoPartTariffStatus) : null;
+const getBillingVolumeError = billingVolume =>
+  billingVolume.twoPartTariffError ? statusMessages.get(billingVolume.twoPartTariffStatus) : null;
 
 /**
  * Decorates transactions with edit link and error message,
  * then groups them by purpose/abstraction period
  * @param {Object} batch
- * @param {Object} invoiceLicence
+ * @param {Array} billingVolumes
  * @return {Array} an array of transaction objects
  */
-const getTransactionGroups = (batch, invoiceLicence) => {
+const getBillingVolumeGroups = (batch, licence, billingVolumes) => {
   // Add 2PT error message
-  const transactions = invoiceLicence.transactions.map(transaction => ({
-    ...transaction,
-    editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}`,
-    error: getTransactionError(transaction)
+  const arr = billingVolumes.map(billingVolume => ({
+    ...billingVolume,
+    editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
+    error: getBillingVolumeError(billingVolume)
   }));
 
   // Group by purpose use and abs period
   return Object.values(
-    groupBy(transactions, getTransactionGroup)
+    groupBy(arr, getBillingVolumeGroup)
   );
 };
 
 exports.getTotals = getTotals;
 exports.mapLicence = mapLicence;
-exports.getTransactionGroups = getTransactionGroups;
-exports.getTransactionError = getTransactionError;
+exports.getBillingVolumeGroups = getBillingVolumeGroups;
+exports.getBillingVolumeError = getBillingVolumeError;

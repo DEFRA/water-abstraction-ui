@@ -27,49 +27,49 @@ const getRequest = (serviceRequest, url, options = {}) => {
 };
 
 class LicencesService extends ServiceClient {
-  getSummaryByDocumentId (documentId, options = {}) {
+  getSummaryByDocumentId(documentId, options = {}) {
     const url = this.joinUrl('documents', documentId, 'licence/summary');
     return getRequest(this.serviceRequest, url, options);
   }
 
-  getCommunicationsByDocumentId (documentId, options = {}) {
+  getCommunicationsByDocumentId(documentId, options = {}) {
     const url = this.joinUrl('documents', documentId, 'licence/communications');
     return getRequest(this.serviceRequest, url, options);
   }
 
-  getByDocumentId (documentId, options = {}) {
+  getByDocumentId(documentId, options = {}) {
     const url = this.joinUrl('documents', documentId, 'licence');
     return getRequest(this.serviceRequest, url, options);
   }
 
-  getConditionsByDocumentId (documentId) {
+  getConditionsByDocumentId(documentId) {
     const url = this.joinUrl('documents', documentId, 'licence/conditions');
     return getRequest(this.serviceRequest, url);
   }
 
-  getPointsByDocumentId (documentId) {
+  getPointsByDocumentId(documentId) {
     const url = this.joinUrl('documents', documentId, 'licence/points');
     return getRequest(this.serviceRequest, url);
   }
 
-  getUsersByDocumentId (documentId, options) {
+  getUsersByDocumentId(documentId, options) {
     const url = this.joinUrl('documents', documentId, 'licence/users');
     return getRequest(this.serviceRequest, url, options);
   }
 
-  async getPrimaryUserByDocumentId (documentId, options) {
+  async getPrimaryUserByDocumentId(documentId, options) {
     const userResponse = await this.getUsersByDocumentId(documentId, options);
     const users = userResponse.data || [];
     const primaryUser = users.find(user => user.roles.includes('primary_user'));
     return { data: primaryUser };
   }
 
-  getCompanyByDocumentId (documentId, options = {}) {
+  getCompanyByDocumentId(documentId, options = {}) {
     const url = this.joinUrl('documents', documentId, 'licence/company');
     return getRequest(this.serviceRequest, url, options);
   }
 
-  patchUnlinkLicence (documentId, callingUserId) {
+  patchUnlinkLicence(documentId, callingUserId) {
     const url = this.joinUrl('documents', documentId, 'unlink-licence');
     return this.serviceRequest.patch(url, {
       body: {
@@ -78,7 +78,7 @@ class LicencesService extends ServiceClient {
     });
   }
 
-  getLicenceById (licenceId) {
+  getLicenceById(licenceId) {
     const url = this.joinUrl('licences', licenceId);
     return getRequest(this.serviceRequest, url);
   }

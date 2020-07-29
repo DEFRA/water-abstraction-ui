@@ -36,11 +36,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeLicenceFromBatchButton(batch, invoiceLicence) %}
+{% macro removeLicenceFromBatchButton(batch, licence) %}
   {{
       govukButton({
         text: "Remove from bill run",
-        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + invoiceLicence.id + '/remove',
+        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + licence.id + '/remove',
         classes: "govuk-button--secondary"
       })
     }}

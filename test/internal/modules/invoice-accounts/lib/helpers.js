@@ -118,12 +118,12 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   });
 
   experiment('.getAgentCompany', () => {
-    test('returns the session agent company when the session address id === tempId', async () => {
+    test('returns the session agent company when the session agent companyId === tempId', async () => {
       const response = await helpers.getAgentCompany({ agent: { companyId: tempId, name: 'A Company Name' } });
       expect(response).to.equal({ companyId: tempId, name: 'A Company Name' });
     });
 
-    test('returns the agent company from the data service if the address != tempId', async () => {
+    test('returns the agent company from the data service if the agent companyId != tempId', async () => {
       const response = await helpers.getAgentCompany({ agent: { companyId: 'test-company-id', name: 'A Company Name' } });
       expect(response).to.equal(company);
     });

@@ -6,10 +6,10 @@ const urlJoin = require('url-join');
 const titleCase = require('title-case');
 
 const choices = (company, companySelected) => {
-  const options = [{ value: company.id, label: titleCase(company.name), hint: company.type }];
+  const options = [{ value: company.id, label: titleCase(company.name), hint: titleCase(company.type) }];
   // if an agent company was previously selected add this to the list of options
   if (companySelected && company.id !== companySelected.id) {
-    options.push({ value: companySelected.id, label: companySelected.name, hint: titleCase(companySelected.type) });
+    options.push({ value: companySelected.id, label: titleCase(companySelected.name), hint: titleCase(companySelected.type) });
   };
   return [
     ...options,

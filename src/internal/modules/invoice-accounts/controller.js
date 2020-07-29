@@ -9,6 +9,8 @@ const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
 const { checkDetailsForm } = require('./forms/check-details');
 const forms = require('shared/lib/forms');
 const titleCase = require('title-case');
+const { has, isEmpty } = require('lodash');
+
 // tempId is used to determine if a new entity should be created.
 const tempId = '00000000-0000-0000-0000-000000000000';
 const dataService = require('./lib/data-service');
@@ -32,7 +34,7 @@ const getCompany = async (request, h) => {
   // The company name and licence number set here will be used in the select address page
   const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: titleCase(company.name) } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
-  const selectedCompany = 'agent' in session && session.agent === null ? company : getAgentCompany(session);
+  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : getAgentCompany(session);
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(licenceNumber),
@@ -62,7 +64,7 @@ const getAddress = async (request, h) => {
   const session = dataService.sessionManager(request, regionId, companyId);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
-  const selectedAddressId = 'address' in session ? session.address.addressId : null;
+  const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(session.viewData.licenceNumber),
@@ -90,7 +92,7 @@ const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
   // TODO if selected contact is yes, additional contact data will need to be sent to the form
-  const selectedContact = 'agent' in session && session.contact === null ? 'no' : 'yes with contact details';
+  const selectedContact = has(session, 'agent') && session.contact === null ? 'no' : 'yes with contact details';
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(session.viewData.licenceNumber),

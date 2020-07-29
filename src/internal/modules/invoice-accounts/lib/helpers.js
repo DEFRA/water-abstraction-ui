@@ -1,5 +1,6 @@
 const dataService = require('./data-service');
 const forms = require('shared/lib/forms');
+const { has } = require('lodash');
 
 const tempId = '00000000-0000-0000-0000-000000000000';
 
@@ -36,7 +37,7 @@ const getSelectedAddress = async (companyId, session) => {
 };
 
 const getAgentCompany = (session) => {
-  if ('agent' in session) {
+  if (has(session, 'agent')) {
     return session.agent.companyId === tempId ? session.agent : dataService.getCompany(session.agent.companyId);
   } else { return null; }
 };

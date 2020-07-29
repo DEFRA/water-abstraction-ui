@@ -31,7 +31,7 @@ const addFaoForm = (request, selected) => {
         message: 'Select yes if you need to add a person or department as an FAO'
       }
     },
-    choices: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }],
+    choices: [options.no, options.yes],
     hint: 'For example, FAO Sam Burridge or FAO Accounts department'
   }, checkedOption));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

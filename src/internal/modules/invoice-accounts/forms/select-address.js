@@ -4,6 +4,7 @@ const Joi = require('@hapi/joi');
 const urlJoin = require('url-join');
 const { formFactory, fields } = require('shared/lib/forms/');
 const titleCase = require('title-case');
+const { isEmpty } = require('lodash');
 
 const address = (address) => {
   return [
@@ -13,7 +14,7 @@ const address = (address) => {
     titleCase(address.addressLine4),
     titleCase(address.town),
     address.postcode
-  ].filter(item => item !== '' && item !== null);
+  ].filter(item => !isEmpty(item));
 };
 
 const addressList = (addresses) => {

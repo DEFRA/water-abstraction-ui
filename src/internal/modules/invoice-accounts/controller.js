@@ -8,11 +8,16 @@ const { selectAddressForm, selectAddressFormSchema } = require('./forms/select-a
 const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
 const { checkDetailsForm } = require('./forms/check-details');
 const forms = require('shared/lib/forms');
+const titleCase = require('title-case');
 // tempId is used to determine if a new entity should be created.
 const tempId = '00000000-0000-0000-0000-000000000000';
 const dataService = require('./lib/data-service');
 const urlJoin = require('url-join');
-const { processCompanyFormData, processFaoFormData, getSelectedAddress } = require('./lib/helpers');
+const {
+  processCompanyFormData,
+  processFaoFormData,
+  getSelectedAddress,
+  getAgentCompany } = require('./lib/helpers');
 
 const getCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
@@ -25,9 +30,9 @@ const getCompany = async (request, h) => {
   const { licenceNumber } = licenceId ? await dataService.getLicenceById(licenceId) : { licenceNumber: null };
   const company = await dataService.getCompany(companyId);
   // The company name and licence number set here will be used in the select address page
-  const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: company.name } };
+  const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: titleCase(company.name) } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
-  const selectedCompany = session.agent ? await dataService.getCompany(session.agent) : company;
+  const selectedCompany = 'agent' in session && session.agent === null ? company : getAgentCompany(session);
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(licenceNumber),
@@ -57,13 +62,13 @@ const getAddress = async (request, h) => {
   const session = dataService.sessionManager(request, regionId, companyId);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
-  const selectedAddress = session.address ? session.address.addressId : null;
+  const selectedAddressId = 'address' in session ? session.address.addressId : null;
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(session.viewData.licenceNumber),
     pageTitle: `Select an existing address for ${session.viewData.companyName}`,
     back: '/manage',
-    form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddress))
+    form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddressId))
   });
 };
 
@@ -84,12 +89,14 @@ const postAddress = async (request, h) => {
 const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
+  // TODO if selected contact is yes, additional contact data will need to be sent to the form
+  const selectedContact = 'agent' in session && session.contact === null ? 'no' : 'yes with contact details';
   return h.view('nunjucks/form', {
     ...request.view,
     caption: getCaption(session.viewData.licenceNumber),
     pageTitle: 'Do you need to add an FAO?',
     back: '/manage',
-    form: sessionForms.get(request, addFaoForm(request, !!session.contact))
+    form: sessionForms.get(request, addFaoForm(request, selectedContact))
   });
 };
 
@@ -111,7 +118,7 @@ const getCheckDetails = async (request, h) => {
   if (Object.keys(session).length === 0 && session.constructor === Object) {
     throw boom.notFound('Session data not found');
   }
-  const selectedAddress = getSelectedAddress(companyId, session);
+  const selectedAddress = await getSelectedAddress(companyId, session);
   const company = await dataService.getCompany(companyId);
   return h.view('nunjucks/invoice-accounts/check-details', {
     ...request.view,

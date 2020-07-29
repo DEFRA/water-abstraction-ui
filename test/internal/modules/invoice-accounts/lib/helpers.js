@@ -16,7 +16,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   const formData = { test: 'data' };
   const tempId = '00000000-0000-0000-0000-000000000000';
   const address = {
-    addressId: uuid(),
+    id: uuid(),
     addressLine1: 'Rock Farm Partnership',
     addressLine2: 'The Studios',
     addressLine3: 'Courtyards',
@@ -27,11 +27,17 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     country: 'England',
     uprn: null
   };
+  const company = {
+    id: companyId,
+    name: 'A company name',
+    type: 'person'
+  };
 
   beforeEach(async () => {
     sandbox.stub(forms, 'getValues').returns({ selectedCompany: '', companySearch: '' });
     sandbox.stub(dataService, 'sessionManager').resolves({});
-    sandbox.stub(dataService, 'getCompanyAddresses').returns([address]);
+    sandbox.stub(dataService, 'getCompanyAddresses').returns([address, address]);
+    sandbox.stub(dataService, 'getCompany').resolves(company);
   });
 
   afterEach(async () => {
@@ -105,9 +111,21 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       expect(response).to.equal({ addressId: tempId, addressLine1: 'test' });
     });
 
-    test('returns the address from the data service is the address != tempId', async () => {
-      const response = await helpers.getSelectedAddress(companyId, { address: { addressId: address.addressId } });
+    test('returns the address from the data service if the address != tempId', async () => {
+      const response = await helpers.getSelectedAddress(companyId, { address: { addressId: address.id } });
       expect(response).to.equal(address);
+    });
+  });
+
+  experiment('.getAgentCompany', () => {
+    test('returns the session agent company when the session address id === tempId', async () => {
+      const response = await helpers.getAgentCompany({ agent: { companyId: tempId, name: 'A Company Name' } });
+      expect(response).to.equal({ companyId: tempId, name: 'A Company Name' });
+    });
+
+    test('returns the agent company from the data service if the address != tempId', async () => {
+      const response = await helpers.getAgentCompany({ agent: { companyId: 'test-company-id', name: 'A Company Name' } });
+      expect(response).to.equal(company);
     });
   });
 });

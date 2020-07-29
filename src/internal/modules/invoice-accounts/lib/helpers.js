@@ -30,11 +30,18 @@ const getSelectedAddress = async (companyId, session) => {
     return session.address;
   } else {
     const addresses = await dataService.getCompanyAddresses(companyId);
-    const [ selectedAddress ] = addresses.filter(address => (address.addressId === session.address.addressId));
+    const selectedAddress = addresses.find(address => (address.id === session.address.addressId));
     return selectedAddress;
   };
 };
 
+const getAgentCompany = (session) => {
+  if ('agent' in session) {
+    return session.agent.companyId === tempId ? session.agent : dataService.getCompany(session.agent.companyId);
+  } else { return null; }
+};
+
+exports.getAgentCompany = getAgentCompany;
 exports.getSelectedAddress = getSelectedAddress;
 exports.processFaoFormData = processFaoFormData;
 exports.processCompanyFormData = processCompanyFormData;

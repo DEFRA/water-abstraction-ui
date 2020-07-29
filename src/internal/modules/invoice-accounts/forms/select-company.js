@@ -3,12 +3,13 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const urlJoin = require('url-join');
+const titleCase = require('title-case');
 
 const choices = (company, companySelected) => {
-  const options = [{ value: company.id, label: company.name, hint: company.type }];
+  const options = [{ value: company.id, label: titleCase(company.name), hint: company.type }];
   // if an agent company was previously selected add this to the list of options
   if (companySelected && company.id !== companySelected.id) {
-    options.push({ value: companySelected.id, label: companySelected.name, hint: companySelected.type });
+    options.push({ value: companySelected.id, label: companySelected.name, hint: titleCase(companySelected.type) });
   };
   return [
     ...options,
@@ -38,10 +39,9 @@ const choices = (company, companySelected) => {
   */
 const selectCompanyForm = (request, company, companySelected = null) => {
   const { csrfToken } = request.view;
-  const regionId = request.params.regionId || '';
-  const companyId = request.params.companyId || '';
+  const { regionId, companyId } = request.params;
   const action = urlJoin('/invoice-accounts/create', regionId, companyId);
-  const checkedOption = companySelected ? { value: companySelected.id, label: companySelected.name, hint: companySelected.type } : null;
+  const checkedOption = companySelected ? { value: companySelected.id, label: titleCase(companySelected.name), hint: titleCase(companySelected.type) } : null;
   const f = formFactory(action, 'POST');
 
   f.fields.push(fields.radio('selectedCompany', {

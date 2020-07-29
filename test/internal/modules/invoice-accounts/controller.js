@@ -12,6 +12,7 @@ const sandbox = require('sinon').createSandbox();
 const dataService = require('internal/modules/invoice-accounts/lib/data-service');
 const forms = require('../../../../src/shared/lib/forms/index');
 const moment = require('moment');
+const titleCase = require('title-case');
 
 experiment('./internal/modules/invoice-accounts/controller', () => {
   const regionId = uuid();
@@ -90,7 +91,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(args[0]).to.equal(companyId);
     });
     test('calls sessionManager with the correct params', async () => {
-      const viewData = { viewData: { redirectPath: '/somewhere', licenceNumber, licenceId, companyName } };
+      const viewData = { viewData: { redirectPath: '/somewhere', licenceNumber, licenceId, companyName: titleCase(companyName) } };
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);

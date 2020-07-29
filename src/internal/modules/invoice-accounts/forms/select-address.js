@@ -3,24 +3,28 @@
 const Joi = require('@hapi/joi');
 const urlJoin = require('url-join');
 const { formFactory, fields } = require('shared/lib/forms/');
+const titleCase = require('title-case');
 
 const address = (address) => {
   return [
-    address.addressLine1,
-    address.addressLine2,
-    address.addressLine3,
-    address.addressLine4,
-    address.town,
+    titleCase(address.addressLine1),
+    titleCase(address.addressLine2),
+    titleCase(address.addressLine3),
+    titleCase(address.addressLine4),
+    titleCase(address.town),
     address.postcode
   ].filter(item => item !== '' && item !== null);
 };
 
-const addressList = (addresses) => addresses.map(row => {
-  return {
-    value: row.id,
-    label: (address(row)).join(', ')
-  };
-});
+const addressList = (addresses) => {
+  const addrList = addresses.map(row => {
+    return {
+      value: row.id,
+      label: (address(row)).join(', ')
+    };
+  });
+  return addrList.length > 0 ? [...addrList, { divider: 'or' }] : [];
+};
 
 /**
  * Returns the selected address id for the invoice account
@@ -31,8 +35,7 @@ const addressList = (addresses) => addresses.map(row => {
   */
 const selectAddressForm = (request, addresses, selectedAddressId = null) => {
   const { csrfToken } = request.view;
-  const regionId = request.params.regionId || '';
-  const companyId = request.params.companyId || '';
+  const { regionId, companyId } = request.params;
   const action = urlJoin('/invoice-accounts/create', regionId, companyId, 'select-address');
   const addressChoices = addressList(addresses);
   const f = formFactory(action, 'POST');
@@ -45,12 +48,9 @@ const selectAddressForm = (request, addresses, selectedAddressId = null) => {
     },
     choices: [
       ...addressChoices,
-      {
-        divider: 'or'
-      },
       { value: 'new_address', label: 'Set up a new address' }
     ]
-  }, ...addressChoices.filter(address => address.value === selectedAddressId)));
+  }, addressChoices.find(address => address.value === selectedAddressId)));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

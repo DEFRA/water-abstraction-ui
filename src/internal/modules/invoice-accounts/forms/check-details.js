@@ -12,8 +12,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
   */
 const checkDetailsForm = (request) => {
   const { csrfToken } = request.view;
-  const regionId = request.params.regionId || '';
-  const companyId = request.params.companyId || '';
+  const { regionId, companyId } = request.params;
   const action = urlJoin('/invoice-accounts/create', regionId, companyId, 'check-details');
   const f = formFactory(action, 'POST');
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

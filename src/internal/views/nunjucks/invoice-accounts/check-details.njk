@@ -17,7 +17,7 @@
                 Billing contact name
               </dt>
               <dd class="govuk-summary-list__value">
-                {{ company.name }}<br>
+                {{ company.name | titleCase }}<br>
               </dd>
               <dd class="govuk-summary-list__actions ">
                 {% if session.viewData.licenceNumber !== null %}

@@ -82,7 +82,7 @@
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total }}</td>
-            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.change }}%</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.change | fixed(2) }}%</td>
           </tr>
         {% endfor %}    
       </tbody>
@@ -178,10 +178,10 @@
             {% endif %}          
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle2.due }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle2.internalLate }}
+            On time {{ returnsCycle2.internalOnTime }}<br>Late {{ returnsCycle2.internalLate }}
           </td>
           <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle2.externalLate }}
+            On time {{ returnsCycle2.externalOnTime }}<br>Late {{ returnsCycle2.externalLate }}
           </td>   
         </tr>
         {% endif %}
@@ -219,9 +219,9 @@
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.namedChange }}%</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.namedChange | fixed(2) }}%</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamedChange }}%</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamedChange | fixed(2) }}%</td>
         </tr>
       {% endfor %}
       </tbody>

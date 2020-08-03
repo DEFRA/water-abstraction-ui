@@ -9,6 +9,10 @@ const widthClass = {
   5: { controlClass: 'govuk-input govuk-input--width-5' }
 };
 
+const getNameField = (name, message, label, value) => {
+  return fields.text(name, { ...widthClass[20], errors: { 'any.empty': { message } }, label }, value);
+};
+
 /**
  * Returns an object to create a new contact
  * @param {Object} request The Hapi request object
@@ -19,39 +23,12 @@ const createContactForm = (request, selectedContact = {}) => {
   const { regionId, companyId } = request.params;
   const action = urlJoin('/invoice-accounts/create', regionId, companyId, 'create-contact');
   const f = formFactory(action, 'POST');
-
-  f.fields.push(fields.text('title',
-    { ...widthClass[20],
-      label: 'Title (optional)'
-    }, selectedContact.title));
-
-  f.fields.push(fields.text('firstName',
-    { ...widthClass[20],
-      errors: { 'any.empty': { message: 'Enter a first name' } },
-      label: 'First name'
-    }, selectedContact.firstName));
-
-  f.fields.push(fields.text('middleInitials',
-    { ...widthClass[5],
-      label: 'Middle initials (optional)'
-    }, selectedContact.middleInitials));
-
-  f.fields.push(fields.text('lastName',
-    { ...widthClass[20],
-      errors: { 'any.empty': { message: 'Enter a last name' } },
-      label: 'Last name'
-    }, selectedContact.lastName));
-
-  f.fields.push(fields.text('suffix',
-    { ...widthClass[20],
-      label: 'Suffix (optional)'
-    }, selectedContact.suffix));
-
-  f.fields.push(fields.text('department',
-    { ...widthClass[20],
-      label: 'Department (optional)'
-    }, selectedContact.department));
-
+  f.fields.push(fields.text('title', { ...widthClass[20], label: 'Title (optional)' }, selectedContact.title));
+  f.fields.push(getNameField('firstName', 'Enter a first name', 'First name', selectedContact.firstName));
+  f.fields.push(fields.text('middleInitials', { ...widthClass[5], label: 'Middle initials (optional)' }, selectedContact.middleInitials));
+  f.fields.push(getNameField('lastName', 'Enter a last name', 'Last name', selectedContact.lastName));
+  f.fields.push(fields.text('suffix', { ...widthClass[20], label: 'Suffix (optional)' }, selectedContact.suffix));
+  f.fields.push(fields.text('department', { ...widthClass[20], label: 'Department (optional)' }, selectedContact.department));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;

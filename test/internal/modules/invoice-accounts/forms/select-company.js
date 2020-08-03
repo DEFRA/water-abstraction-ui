@@ -90,7 +90,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
       expect(result.error).not.to.exist();
     });
 
-    test('is valid if a season is selected', async () => {
+    test('is valid if a company name is entered', async () => {
       const data = {
         csrf_token: uuid(),
         selectedCompany: 'company_search',
@@ -106,7 +106,6 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         selectedCompany: 'company_search',
         companySearch: ''
       };
-
       const result = Joi.validate(data, selectCompanyFormSchema());
       expect(result.error).to.exist();
     });

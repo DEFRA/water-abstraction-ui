@@ -2,7 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const dataService = require('../../../../../src/internal/modules/invoice-accounts/lib/data-service');
+const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const uuid = require('uuid');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
@@ -88,7 +88,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   experiment('.processFaoFormData', () => {
     test('if addFao === yes', () => {
       const response = helpers.processFaoFormData(request, regionId, companyId, 'yes');
-      expect(response).to.equal('search-contact');
+      expect(response).to.equal('select-contact');
     });
 
     test('if addFao === no returns the correct redirect path element', () => {

@@ -1,8 +1,11 @@
-const dataService = require('./data-service');
+const dataService = require('../services/data-service');
 const forms = require('shared/lib/forms');
-const { has } = require('lodash');
-
+const { has, isEmpty } = require('lodash');
+const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
+const getFormTitleCaption = (licenceNumber) => {
+  return licenceNumber ? `Licence ${licenceNumber}` : '';
+};
 
 const processCompanyFormData = (request, regionId, companyId, formData) => {
   const { selectedCompany, companySearch } = forms.getValues(formData);
@@ -16,14 +19,36 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
   }
 };
 
+/**
+ * Identifies redirction route after addFao and saves empty
+ * contact in session if no FAO contact should be added
+ * @param {*} request Hapi request object
+ * @param {*} regionId
+ * @param {*} companyId
+ * @param {*} addFao - value selected in addFao form
+ * @returns redirection route
+ */
 const processFaoFormData = (request, regionId, companyId, addFao) => {
   if (addFao === 'yes') {
-    // TODO path does not exist
-    return 'search-contact';
+    return 'select-contact';
   } else {
     dataService.sessionManager(request, regionId, companyId, { contact: null });
     return 'check-details';
   }
+};
+
+const processSelectContactFormData = (request, regionId, companyId, selectedContact, department) => {
+  const session = dataService.sessionManager(request, regionId, companyId);
+  if (has(session, 'contact')) { dataService.sessionManager(request, regionId, companyId, { contact: null }); }
+  // if it is a new department contact
+  if (selectedContact === 'department') {
+    // if the contact exist then reset the contact to null
+    dataService.sessionManager(request, regionId, companyId, { contact: { type: 'department', department } });
+    // else save the existing contact id
+  } else {
+    // if the contact exist then reset the contact to null
+    dataService.sessionManager(request, regionId, companyId, { contact: { contactId: selectedContact } });
+  };
 };
 
 const getSelectedAddress = async (companyId, session) => {
@@ -42,7 +67,40 @@ const getAgentCompany = (session) => {
   } else { return null; }
 };
 
+const getName = (contact) => {
+  const name = [
+    contact.title,
+    contact.firstName,
+    contact.middleInitials,
+    contact.lastName,
+    contact.suffix
+  ].filter(item => !isEmpty(item)).join(' ');
+  if (!isEmpty(contact.department) && !isEmpty(name)) {
+    return [titleCase(name), titleCase(contact.department)].join(', ');
+  } else {
+    return isEmpty(contact.department) ? titleCase(name) : titleCase(contact.department);
+  }
+};
+
+const getContactName = async (companyId, sessionContact) => {
+  if (has(sessionContact, 'firstName')) {
+    const name = getName(sessionContact);
+    return name;
+  } else if (has(sessionContact, 'department')) {
+    return titleCase(sessionContact.department);
+  } else {
+    const contacts = await dataService.getCompanyContacts(companyId);
+    const contact = contacts.find(contact => contact.id === sessionContact.contactId);
+    const name = getName(contact);
+    return name;
+  }
+};
+
+exports.getName = getName;
+exports.getContactName = getContactName;
+exports.getFormTitleCaption = getFormTitleCaption;
 exports.getAgentCompany = getAgentCompany;
 exports.getSelectedAddress = getSelectedAddress;
 exports.processFaoFormData = processFaoFormData;
 exports.processCompanyFormData = processCompanyFormData;
+exports.processSelectContactFormData = processSelectContactFormData;

@@ -3,6 +3,7 @@ const forms = require('shared/lib/forms');
 const { has, isEmpty } = require('lodash');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
+
 const getFormTitleCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
 };
@@ -42,11 +43,9 @@ const processSelectContactFormData = (request, regionId, companyId, selectedCont
   if (has(session, 'contact')) { dataService.sessionManager(request, regionId, companyId, { contact: null }); }
   // if it is a new department contact
   if (selectedContact === 'department') {
-    // if the contact exist then reset the contact to null
     dataService.sessionManager(request, regionId, companyId, { contact: { type: 'department', department } });
-    // else save the existing contact id
   } else {
-    // if the contact exist then reset the contact to null
+    // if the contact exist then save the contact id
     dataService.sessionManager(request, regionId, companyId, { contact: { contactId: selectedContact } });
   };
 };
@@ -83,10 +82,10 @@ const getName = (contact) => {
 };
 
 const getContactName = async (companyId, sessionContact) => {
-  if (has(sessionContact, 'firstName')) {
+  if (sessionContact.type === 'person') {
     const name = getName(sessionContact);
     return name;
-  } else if (has(sessionContact, 'department')) {
+  } else if (sessionContact.type === 'department') {
     return titleCase(sessionContact.department);
   } else {
     const contacts = await dataService.getCompanyContacts(companyId);

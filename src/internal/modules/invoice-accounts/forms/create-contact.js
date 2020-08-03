@@ -61,9 +61,9 @@ const createContactFormSchema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
     title: Joi.string().trim().optional().allow(''),
-    firstName: Joi.string().trim().optional(),
+    firstName: Joi.string().trim().required(),
     middleInitials: Joi.string().trim().optional().allow(''),
-    lastName: Joi.string().trim().optional(),
+    lastName: Joi.string().trim().required(),
     department: Joi.string().trim().replace(/\./g, '').optional().allow(''),
     suffix: Joi.string().trim().optional().allow('')
   };

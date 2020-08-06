@@ -6,6 +6,46 @@ const countryList = require('./country-list');
 const UNITED_KINGDOM = 'United Kingdom';
 const postcodeRegex = require('./postcode-regex');
 
+const addressTextFields = [
+  fields.text('addressLine1', {
+    label: 'Sub-building',
+    hint: 'For example, the flat or apartment number',
+    controlClass: 'govuk-input--width-10'
+  }),
+  fields.text('addressLine2', {
+    label: 'Building number',
+    controlClass: 'govuk-input--width-5'
+  }),
+  fields.text('addressLine3', {
+    label: 'Building name',
+    controlClass: 'govuk-input--width-10'
+  }),
+  fields.text('addressLine4', {
+    label: 'Street name',
+    controlClass: 'govuk-!-width-two-thirds'
+  }),
+  fields.text('town', {
+    label: 'Town or city',
+    controlClass: 'govuk-!-width-two-thirds'
+  }),
+  fields.text('county', {
+    label: 'County',
+    controlClass: 'govuk-!-width-two-thirds'
+  }),
+  fields.text('postcode', {
+    errors: {
+      'any.required': {
+        message: 'Enter a UK postcode'
+      },
+      'string.regex.base': {
+        message: 'Enter a real UK postcode'
+      }
+    },
+    label: 'Postcode or zip code',
+    controlClass: 'govuk-input--width-10'
+  })
+];
+
 const getCountryDropdownChoices = () => [
   {
     label: 'Select a country',
@@ -29,49 +69,7 @@ const form = (request, address = {}) => {
 
   const f = formFactory('/address-entry/manual-entry');
 
-  f.fields.push(fields.text('addressLine1', {
-    label: 'Sub-building',
-    hint: 'For example, the flat or apartment number',
-    controlClass: 'govuk-input--width-10'
-  }));
-
-  f.fields.push(fields.text('addressLine2', {
-    label: 'Building number',
-    controlClass: 'govuk-input--width-5'
-  }));
-
-  f.fields.push(fields.text('addressLine3', {
-    label: 'Building name',
-    controlClass: 'govuk-input--width-10'
-  }));
-
-  f.fields.push(fields.text('addressLine4', {
-    label: 'Street name',
-    controlClass: 'govuk-!-width-two-thirds'
-  }));
-
-  f.fields.push(fields.text('town', {
-    label: 'Town or city',
-    controlClass: 'govuk-!-width-two-thirds'
-  }));
-
-  f.fields.push(fields.text('county', {
-    label: 'County',
-    controlClass: 'govuk-!-width-two-thirds'
-  }));
-
-  f.fields.push(fields.text('postcode', {
-    errors: {
-      'any.required': {
-        message: 'Enter a UK postcode'
-      },
-      'string.regex.base': {
-        message: 'Enter a real UK postcode'
-      }
-    },
-    label: 'Postcode or zip code',
-    controlClass: 'govuk-input--width-10'
-  }));
+  f.fields.push(...addressTextFields);
 
   f.fields.push(fields.dropdown('country', {
     errors: {

@@ -60,23 +60,26 @@ const getPostcodeUrl = request => {
 const getSelectAddressUrl = request =>
   `/address-entry/address/select?${queryString.stringify({ postcode: getPostcode(request) })}`;
 
+const pageTemplates = {
+  postcode: 'nunjucks/address-entry/enter-uk-postcode',
+  selectAddress: 'nunjucks/address-entry/select-address',
+  manualAddressEntry: 'nunjucks/form'
+};
+
 const getPageData = (request, page) => {
   const pageData = {
     postcode: {
-      template: 'nunjucks/address-entry/enter-uk-postcode',
       pageTitle: 'Enter the UK postcode',
       back: request.query.back,
       formContainer: forms.ukPostcode
     },
     selectAddress: {
-      template: 'nunjucks/address-entry/select-address',
       pageTitle: 'Select the address',
       back: getPostcodeUrl(request),
       formContainer: forms.selectAddress,
       postcode: getPostcode(request)
     },
     manualAddressEntry: {
-      template: 'nunjucks/form',
       pageTitle: 'Enter the address',
       back: getManualAddressEntryBackLink(request),
       formContainer: forms.manualAddressEntry
@@ -91,8 +94,8 @@ const getPageData = (request, page) => {
 };
 
 const getPage = (request, h, page) => {
-  const { template, formContainer, ...data } = getPageData(request, page);
-  return h.view(template, {
+  const { formContainer, ...data } = getPageData(request, page);
+  return h.view(pageTemplates[page], {
     ...request.view,
     ...data,
     form: sessionForms.get(request, formContainer.form(request))

@@ -42,10 +42,10 @@
  <dl class="meta">
   {% for condition in aggregateConditions %}
     {{ metaRow('Aggregate condition', condition.title) }}
-    {{ metaRow(condition.parameter1Label, condition.parameter1) }} 
-    {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }} 
+    {{ metaRow(condition.parameter1Label, condition.parameter1) }}
+    {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }}
     {% if condition.text %}
-    {{ metaRow('Other information', condition.text, true) }} 
+    {{ metaRow('Other information', condition.text, true) }}
     {% endif %}
   {% endfor %}
 
@@ -59,9 +59,9 @@
 
   {% if transaction.chargeElement.timeLimitedPeriod %}
     {% set timeLimitedPeriod %}
-      {{ transaction.chargeElement.timeLimitedPeriod.startDate | date }} 
+      {{ transaction.chargeElement.timeLimitedPeriod.startDate | date }}
       to {{ transaction.chargeElement.timeLimitedPeriod.endDate | date }}
-    {% endset %} 
+    {% endset %}
   {{ metaRow('Time limited', timeLimitedPeriod) }}
   {% endif %}
 </dl>
@@ -115,7 +115,7 @@
     {{ formRender(form) }}
   </div>
 </div>
-        
+
 
 
 

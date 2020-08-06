@@ -103,7 +103,8 @@ const getTransactionReviewRequest = payload => (
             },
             chargeElement: {
               description: 'Test description',
-              authorisedAnnualQuantity: 25.3
+              authorisedAnnualQuantity: 25.3,
+              maxAnnualQuantity: 25.3
             }
           }
         ]

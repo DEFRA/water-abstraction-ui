@@ -1,6 +1,6 @@
-const paragraphFactory = (name, options = {}) => {
+const linkFactory = (name, options = {}) => {
   const defaults = {
-    widget: 'paragraph',
+    widget: 'link',
     text: ''
   };
   return {
@@ -12,4 +12,4 @@ const paragraphFactory = (name, options = {}) => {
   };
 };
 
-module.exports = paragraphFactory;
+module.exports = linkFactory;

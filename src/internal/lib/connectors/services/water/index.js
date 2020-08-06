@@ -13,6 +13,7 @@ const BatchNotificationsService = require('./BatchNotificationsService');
 const ChangeReasonsService = require('./ChangeReasonsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
+const AddressSearchService = require('./AddressSearchService');
 const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
 const BillingTransactionsService = require('./BillingTransactionsService');
@@ -45,6 +46,7 @@ module.exports = config => ({
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   internalSearch: new InternalSearchService(config.services.water, logger),
+  addressSearch: new AddressSearchService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
   billingTransactions: new BillingTransactionsService(config.services.water, logger),

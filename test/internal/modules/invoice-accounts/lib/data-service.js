@@ -2,13 +2,15 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const dataService = require('../../../../../src/internal/modules/invoice-accounts/lib/data-service');
-const services = require('../../../../../src/internal/lib/connectors/services');
+const dataService = require('internal/modules/invoice-accounts/lib/data-service');
+const services = require('internal/lib/connectors/services');
+const sessionHelpers = require('shared/lib/session-helpers');
+
 const uuid = require('uuid');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-experiment('internal/modules/incoive-accounts/lib/data-service', () => {
+experiment('internal/modules/invoive-accounts/lib/data-service', () => {
   let request;
   const regionId = uuid();
   const companyId = uuid();
@@ -49,6 +51,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     sandbox.stub(services.water.companies, 'getCompany').resolves(company);
     sandbox.stub(services.water.licences, 'getLicenceById').resolves(licence);
     sandbox.stub(services.water.companies, 'postInvoiceAccount').resolves(invoiceAcc);
+    sandbox.stub(sessionHelpers, 'saveToSession').returns(address);
   });
 
   afterEach(async () => {
@@ -56,36 +59,18 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   });
 
   experiment('.sessionManager', () => {
-    test('gets the session data using the flow name, region id and company id', async () => {
-      dataService.sessionManager(request, regionId, companyId);
-      expect(request.yar.get.calledWith(`newInvoiceAccountFlow.${regionId}.${companyId}`)).to.be.true();
+    test('saves the session data using the session helpers', () => {
+      const expectedSessionKey = `newInvoiceAccountFlow.${regionId}.${companyId}`;
+      dataService.sessionManager(request, regionId, companyId, licence);
+      const [requestObject, sessionKey, data] = sessionHelpers.saveToSession.lastCall.args;
+      expect(requestObject).to.equal(request);
+      expect(sessionKey).to.equal(expectedSessionKey);
+      expect(data).to.equal(licence);
     });
 
-    test('sets the session data using the flow name, region id and company id', async () => {
-      dataService.sessionManager(request, regionId, companyId);
-      expect(request.yar.set.calledWith(`newInvoiceAccountFlow.${regionId}.${companyId}`)).to.be.true();
-    });
-
-    test('saves the correct data to the session', async () => {
-      const testSessionData = { name: 'Jimmy Page' };
-      dataService.sessionManager(request, regionId, companyId, testSessionData);
-      expect(request.yar.set.calledWith(`newInvoiceAccountFlow.${regionId}.${companyId}`, testSessionData)).to.be.true();
-    });
-
-    test('merges the old and new data then saves the correct data to the session', async () => {
-      request.yar.get.returns({ name: 'Jimmy Stage' });
-      const dataToAdd = { band: 'Led Zeplin', name: 'Jimmy Page' };
-      dataService.sessionManager(request, regionId, companyId, dataToAdd);
-      expect(request.yar.set.calledWith(`newInvoiceAccountFlow.${regionId}.${companyId}`, dataToAdd)).to.be.true();
-    });
-
-    test('returns the correct merged and saved data', async () => {
-      const yarData = { name: 'Jimmy Stage' };
-      request.yar.get.returns(yarData);
-      const dataToAdd = { band: 'Led Zeplin' };
-      const result = dataService.sessionManager(request, regionId, companyId, dataToAdd);
-      expect(request.yar.set.calledWith(`newInvoiceAccountFlow.${regionId}.${companyId}`, { ...dataToAdd, ...yarData })).to.be.true();
-      expect(result).to.equal({ ...dataToAdd, ...yarData });
+    test('returns the return value from the session helpers', () => {
+      const result = dataService.sessionManager(request, regionId, companyId);
+      expect(result).to.equal(address);
     });
   });
 

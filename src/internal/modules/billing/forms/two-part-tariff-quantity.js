@@ -1,7 +1,7 @@
 'use strict';
 
-const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+const { formFactory, fields } = require('shared/lib/forms/');
 
 /**
  * Gets an array of form choices for the billable quantity
@@ -67,11 +67,14 @@ const twoPartTariffQuantityForm = (request, transaction) => {
 };
 
 const twoPartTariffQuantitySchema = transaction => {
-  const maxQuantity = parseFloat(transaction.chargeElement.authorisedAnnualQuantity);
+  const maxQuantity = parseFloat(transaction.chargeElement.maxAnnualQuantity);
   return {
     csrf_token: Joi.string().uuid().required(),
     quantity: Joi.string().valid(['authorised', 'custom']).required(),
-    customQuantity: Joi.when('quantity', { is: 'custom', then: Joi.number().required().min(0).max(maxQuantity) })
+    customQuantity: Joi.when('quantity', {
+      is: 'custom',
+      then: Joi.number().required().min(0).max(maxQuantity)
+    })
   };
 };
 

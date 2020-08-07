@@ -1,3 +1,5 @@
+'use strict';
+
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
 
 class BillingBatchService extends ServiceClient {

@@ -54,8 +54,6 @@ const getLicenceReview = async (request, h) => {
 
   const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
 
-  console.log(billingVolumes);
-
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     pageTitle: `Review returns data issues for ${licence.licenceNumber}`,
     ...request.view,

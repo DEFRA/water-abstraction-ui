@@ -29,6 +29,14 @@ experiment('internal/modules/billing/pre-handlers', () => {
       id: 'test-invoice-licence-id'
     });
 
+    sandbox.stub(water.licences, 'getLicenceById').resolves({
+      id: 'test-licence-id'
+    });
+
+    sandbox.stub(water.billingVolumes, 'getBillingVolume').resolves({
+      id: 'test-billing-volume-id'
+    });
+
     h = {
       continue: 'continue',
       redirect: sandbox.stub().returnsThis(),
@@ -312,6 +320,68 @@ experiment('internal/modules/billing/pre-handlers', () => {
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1');
       expect(h.takeover.called).to.be.true();
+    });
+  });
+
+  experiment('.loadLicence', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          licenceId: 'test-licence-id'
+        },
+        pre: {
+
+        }
+      };
+    });
+
+    test('the licence is returned from the handler', async () => {
+      const result = await preHandlers.loadLicence(request);
+      expect(result).to.equal({
+        id: 'test-licence-id'
+      });
+    });
+
+    test('returns a Boom not found when the licence is not found', async () => {
+      water.licences.getLicenceById.rejects();
+      const result = await preHandlers.loadLicence(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Licence not found for licenceId: test-licence-id');
+    });
+  });
+
+  experiment('.loadBillingVolume', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          billingVolumeId: 'test-billing-volume-id'
+        },
+        pre: {
+
+        }
+      };
+    });
+
+    test('the billing volume is returned from the handler', async () => {
+      const result = await preHandlers.loadBillingVolume(request);
+      expect(result).to.equal({
+        id: 'test-billing-volume-id'
+      });
+    });
+
+    test('returns a Boom not found when the licence is not found', async () => {
+      water.billingVolumes.getBillingVolume.rejects();
+      const result = await preHandlers.loadBillingVolume(request);
+
+      const { payload } = result.output;
+      expect(payload.statusCode).to.equal(404);
+      expect(payload.message).to.equal('Billing volume not found for billingVolumeId: test-billing-volume-id');
     });
   });
 });

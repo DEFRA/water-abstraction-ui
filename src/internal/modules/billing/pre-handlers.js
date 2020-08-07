@@ -83,7 +83,6 @@ const preHandler = async (config, request, h) => {
     const response = await config.connector(request);
     return response;
   } catch (err) {
-    console.error(err);
     const msg = `${config.errorMessage} for ${config.key}: ${request.params[config.key]}`;
     return Boom.notFound(msg);
   }

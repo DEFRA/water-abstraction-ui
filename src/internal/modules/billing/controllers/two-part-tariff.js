@@ -1,4 +1,4 @@
-const { find, partialRight } = require('lodash');
+const { partialRight } = require('lodash');
 const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
@@ -84,15 +84,6 @@ const getCurrentLicenceData = async licenceRef => {
       aggregateQuantity: summary.data.aggregateQuantity
     };
   }
-};
-
-const getRequestTransaction = request => {
-  const { transactionId } = request.params;
-  const transaction = find(request.pre.invoiceLicence.transactions, { id: transactionId });
-  if (!transaction) {
-    throw Boom.notFound(`Transaction ${transactionId} not found`);
-  }
-  return transaction;
 };
 
 /**
@@ -189,7 +180,7 @@ const postConfirmQuantity = async (request, h) => {
     const hasErrors = billingVolumes.some(row => row.twoPartTariffError);
 
     const path = hasErrors
-      ? routing.getTwoPartTariffLicenceReviewRoute(batch, invoiceLicence.id)
+      ? routing.getTwoPartTariffLicenceReviewRoute(batch, licence.id)
       : routing.getBillingBatchRoute(batch);
 
     return h.redirect(path);

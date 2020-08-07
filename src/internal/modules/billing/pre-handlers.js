@@ -28,12 +28,12 @@ const getInvoice = request => {
 const getLicence = request => {
   const { licenceId } = request.params;
   return water.licences.getLicenceById(licenceId);
-}
+};
 
 const getBillingVolume = request => {
   const { billingVolumeId } = request.params;
   return water.billingVolumes.getBillingVolume(billingVolumeId);
-}
+};
 
 const config = {
   loadBatch: {
@@ -142,7 +142,6 @@ exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenc
 exports.loadInvoice = partial(preHandler, config.loadInvoice);
 exports.loadLicence = partial(preHandler, config.loadLicence);
 exports.loadBillingVolume = partial(preHandler, config.loadBillingVolume);
-
 
 exports.redirectOnBatchStatus = redirectOnBatchStatus;
 exports.loadRegions = loadRegions;

@@ -1,8 +1,9 @@
 'use strict';
-const confirmForm = require('./confirm-form');
 
-const { fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+
+const confirmForm = require('./confirm-form');
+const { fields } = require('shared/lib/forms/');
 
 const twoPartTariffQuantityConfirmForm = (request, quantity) => {
   const { batchId, licenceId, billingVolumeId } = request.params;
@@ -13,7 +14,7 @@ const twoPartTariffQuantityConfirmForm = (request, quantity) => {
 };
 
 const twoPartTariffQuantityConfirmSchema = transaction => {
-  const maxQuantity = parseFloat(transaction.chargeElement.authorisedAnnualQuantity);
+  const maxQuantity = parseFloat(transaction.chargeElement.maxAnnualQuantity);
   return {
     csrf_token: Joi.string().uuid().required(),
     quantity: Joi.number().required().min(0).max(maxQuantity)

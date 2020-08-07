@@ -103,6 +103,7 @@ const getBillingVolumeReviewRequest = payload => (
           description: 'Test description',
           authorisedAnnualQuantity: 25.3,
           billableAnnualQuantity: 8.5,
+          maxAnnualQuantity: 25.3,
           purposeUse: {
             id: 'test-purpose-use-id',
             name: 'Spritzing leeks'

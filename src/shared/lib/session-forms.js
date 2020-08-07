@@ -29,9 +29,10 @@ const setSessionForm = (request, form) => {
   return key;
 };
 
-const postRedirectGet = function (form, customPath) {
+const postRedirectGet = function (form, customPath, queryStr = null) {
   const key = setSessionForm(this.request, form);
-  const path = `${customPath || form.action}?${queryString.stringify({ form: key })}`;
+  const query = queryStr ? { form: key, ...queryStr } : { form: key };
+  const path = `${customPath || form.action}?${queryString.stringify(query)}`;
   return this.redirect(path);
 };
 

@@ -14,26 +14,17 @@ const getBatch = request =>
 const getInvoiceLicence = request =>
   water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
 
-const getInvoiceLicenceInvoice = request => {
-  const { batchId } = request.params;
-  const { invoiceId } = request.pre.invoiceLicence;
-  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
-};
+const getInvoiceLicenceInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.pre.invoiceLicence.invoiceId);
 
-const getInvoice = request => {
-  const { batchId, invoiceId } = request.params;
-  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
-};
+const getInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.params.invoiceId);
 
-const getLicence = request => {
-  const { licenceId } = request.params;
-  return water.licences.getLicenceById(licenceId);
-};
+const getLicence = request =>
+  water.licences.getLicenceById(request.params.licenceId);
 
-const getBillingVolume = request => {
-  const { billingVolumeId } = request.params;
-  return water.billingVolumes.getBillingVolume(billingVolumeId);
-};
+const getBillingVolume = request =>
+  water.billingVolumes.getBillingVolume(request.params.billingVolumeId);
 
 const config = {
   loadBatch: {

@@ -2,7 +2,9 @@ const { ukPostcode, selectAddress, manualAddressEntry } = require('./forms');
 const forms = require('shared/lib/forms');
 const newAddress = require('../../lib/new-address');
 const helpers = require('./lib/helpers');
-const { partialRight, omit } = require('lodash');
+const { omit } = require('lodash');
+
+const sessionForms = require('shared/lib/session-forms');
 
 const storeAddressAndRedirect = (request, h, address) => {
   newAddress.set(request, address);
@@ -12,7 +14,13 @@ const storeAddressAndRedirect = (request, h, address) => {
 
 const getPostcode = (request, h) => {
   helpers.saveReferenceData(request);
-  return helpers.getPage(request, h, 'postcode');
+  return h.view('nunjucks/address-entry/enter-uk-postcode', {
+    ...request.view,
+    ...helpers.getPageCaption(request),
+    pageTitle: 'Enter the UK postcode',
+    back: request.query.back,
+    form: sessionForms.get(request, ukPostcode.form(request))
+  });
 };
 
 const postPostcode = async (request, h) => {
@@ -26,13 +34,20 @@ const postPostcode = async (request, h) => {
   if (form.isValid) {
     return h.redirect(helpers.getSelectAddressUrl(request));
   }
-
-  return h.postRedirectGet(form, helpers.getPostcodeUrl(request));
+  const { redirectPath, back } = request.yar.get(helpers.SESSION_KEY);
+  return h.postRedirectGet(form, '/address-entry/postcode', { redirectPath, back });
 };
 
 const getSelectAddress = (request, h) => {
   helpers.setAddressSearchResults(request);
-  return helpers.getPage(request, h, 'selectAddress');
+  return h.view('nunjucks/address-entry/select-address', {
+    ...request.view,
+    ...helpers.getPageCaption(request),
+    pageTitle: 'Select the address',
+    back: helpers.getPostcodeUrl(request),
+    postcode: helpers.getPostcode(request),
+    form: sessionForms.get(request, selectAddress.form(request))
+  });
 };
 
 const postSelectAddress = (request, h) => {
@@ -49,10 +64,16 @@ const postSelectAddress = (request, h) => {
     return storeAddressAndRedirect(request, h, selectedAddress);
   }
 
-  return h.postRedirectGet(form);
+  return h.postRedirectGet(form, '/address-entry/address/select', { postcode: helpers.getPostcode(request) });
 };
 
-const getManualAddressEntry = partialRight(helpers.getPage, 'manualAddressEntry');
+const getManualAddressEntry = (request, h) => h.view('nunjucks/form', {
+  ...request.view,
+  ...helpers.getPageCaption(request),
+  pageTitle: 'Enter the address',
+  back: helpers.getManualAddressEntryBackLink(request),
+  form: sessionForms.get(request, manualAddressEntry.form(request))
+});
 
 const postManualAddressEntry = (request, h) => {
   let form = forms.handleRequest(
@@ -66,7 +87,6 @@ const postManualAddressEntry = (request, h) => {
   if (form.isValid) {
     return storeAddressAndRedirect(request, h, omit(request.payload, ['csrfToken']));
   }
-
   return h.postRedirectGet(form);
 };
 

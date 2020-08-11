@@ -42,6 +42,9 @@ const form = (request, uprn) => {
     errors: {
       'any.empty': {
         message: 'Select an address from the list'
+      },
+      'string.regex.base': {
+        message: 'Select an address from the list'
       }
     },
     label: 'Select an address',

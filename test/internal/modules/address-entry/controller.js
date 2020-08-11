@@ -136,17 +136,18 @@ experiment('internal/modules/address-entry', () => {
 
     test('redirects with the form and expected path when form is not valid', () => {
       forms.handleRequest.returns({ isValid: false });
-      const urlQuery = queryString.stringify({
+      const queryParams = {
         redirectPath: addressFlowData.redirectPath,
         back: addressFlowData.back
-      });
-      const expectedPath = `/address-entry/postcode?${urlQuery}`;
+      };
+      const expectedPath = `/address-entry/postcode`;
 
       controller.postPostcode(request, h);
 
-      const [formObject, redirectPath] = h.postRedirectGet.lastCall.args;
+      const [formObject, redirectPath, query] = h.postRedirectGet.lastCall.args;
       expect(formObject).to.equal({ isValid: false });
       expect(redirectPath).to.equal(expectedPath);
+      expect(query).to.equal(queryParams);
     });
   });
 

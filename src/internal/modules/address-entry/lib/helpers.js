@@ -48,7 +48,7 @@ const getPostcode = request => {
   const addressSearchResults = getAddressSearchResults(request);
   const sessionPostcode = addressSearchResults ? addressSearchResults[0].postcode : null;
   const postcode = payloadPostcode || sessionPostcode;
-  return postcode.toUpperCase();
+  return postcode ? postcode.toUpperCase() : null;
 };
 
 const getPostcodeUrl = request => {
@@ -60,54 +60,19 @@ const getPostcodeUrl = request => {
 const getSelectAddressUrl = request =>
   `/address-entry/address/select?${queryString.stringify({ postcode: getPostcode(request) })}`;
 
-const pageTemplates = {
-  postcode: 'nunjucks/address-entry/enter-uk-postcode',
-  selectAddress: 'nunjucks/address-entry/select-address',
-  manualAddressEntry: 'nunjucks/form'
-};
-
-const getPageData = (request, page) => {
-  const pageData = {
-    postcode: {
-      pageTitle: 'Enter the UK postcode',
-      back: request.query.back,
-      formContainer: forms.ukPostcode
-    },
-    selectAddress: {
-      pageTitle: 'Select the address',
-      back: getPostcodeUrl(request),
-      formContainer: forms.selectAddress,
-      postcode: getPostcode(request)
-    },
-    manualAddressEntry: {
-      pageTitle: 'Enter the address',
-      back: getManualAddressEntryBackLink(request),
-      formContainer: forms.manualAddressEntry
-    }
-  };
+const getPageCaption = request => {
   const { licenceNumber } = request.yar.get(SESSION_KEY);
-
-  return {
-    ...pageData[page],
-    ...licenceNumber && { caption: `Licence ${licenceNumber}` }
-  };
-};
-
-const getPage = (request, h, page) => {
-  const { formContainer, ...data } = getPageData(request, page);
-  return h.view(pageTemplates[page], {
-    ...request.view,
-    ...data,
-    form: sessionForms.get(request, formContainer.form(request))
-  });
+  if (licenceNumber) return { caption: `Licence ${licenceNumber}` };
 };
 
 exports.SESSION_KEY = SESSION_KEY;
 
 exports.getRedirectPath = getRedirectPath;
-exports.getPage = getPage;
+exports.getPageCaption = getPageCaption;
+exports.getPostcode = getPostcode;
 exports.getPostcodeUrl = getPostcodeUrl;
 exports.getSelectAddressUrl = getSelectAddressUrl;
+exports.getManualAddressEntryBackLink = getManualAddressEntryBackLink;
 exports.saveReferenceData = saveReferenceData;
 exports.setAddressSearchResults = setAddressSearchResults;
 exports.getAddressSearchResults = getAddressSearchResults;

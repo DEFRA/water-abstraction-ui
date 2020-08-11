@@ -28,7 +28,8 @@ if (isAcceptanceTestTarget) {
           query: {
             licenceId: Joi.string().guid().optional().allow(null),
             back: Joi.string().required(),
-            redirectPath: Joi.string().required()
+            redirectPath: Joi.string().required(),
+            form: Joi.string().optional()
           }
         }
       }

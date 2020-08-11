@@ -1,4 +1,4 @@
-const { cloneDeep, get } = require('lodash');
+const { cloneDeep, get, uniqBy } = require('lodash');
 const fields = require('./fields');
 const mappers = require('./mappers');
 const { mapFields } = require('./mapFields');
@@ -162,7 +162,8 @@ const applyErrors = (form, formattedErrors = []) => {
       errors
     };
   });
-  f.errors = formattedErrors;
+
+  f.errors = uniqBy(formattedErrors, 'name');
   return f;
 };
 

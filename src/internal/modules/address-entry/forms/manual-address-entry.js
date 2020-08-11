@@ -4,7 +4,7 @@ const { isEmpty } = require('lodash');
 const countryList = require('./country-list');
 
 const UNITED_KINGDOM = 'United Kingdom';
-const postcodeRegex = require('./postcode-regex');
+const { postcodeSchema } = require('./postcode');
 
 const addressTextFields = [
   fields.text('addressLine1', {
@@ -73,10 +73,10 @@ const form = (request, address = {}) => {
 
   f.fields.push(fields.dropdown('country', {
     errors: {
-      'any.empty': {
-        message: 'Select a country'
-      }
+      'any.allowOnly': { message: 'Select a country' },
+      'any.empty': { message: 'Select a country' }
     },
+    label: 'Country',
     choices: getCountryDropdownChoices(address.country)
   }));
 
@@ -97,42 +97,14 @@ const schema = {
   county: Joi.string().allow('').optional(),
   postcode: Joi.string().trim().empty('').allow('').optional().when('country', {
     is: Joi.string().valid(UNITED_KINGDOM),
-    then: Joi.string().required()
-    // uppercase and remove any spaces (BS1 1SB -> BS11SB)
-      .uppercase().replace(/ /g, '')
-    // then ensure the space is before the inward code (BS11SB -> BS1 1SB)
-      .replace(/(.{3})$/, ' $1').regex(postcodeRegex),
+    then: postcodeSchema,
     otherwise: Joi.string().allow('').optional()
   }),
   country: Joi.string().required().valid(countryList),
   dataSource: Joi.string().required().valid('wrls')
 };
 
-const requiredFieldErrors = {
-  addressLine2: {
-    name: 'addressLine2',
-    message: 'Enter a building number or building name',
-    summary: 'Enter a building number or building name'
-  },
-  addressLine3: {
-    name: 'addressLine3',
-    message: 'Enter a building number or building name',
-    summary: 'Enter a building number or building name'
-  },
-  addressLine4: {
-    name: 'addressLine4',
-    message: 'Enter a street name or town',
-    summary: 'Enter a street name or town'
-  },
-  town: {
-    name: 'town',
-    message: 'Enter a street name or town',
-    summary: 'Enter a street name or town'
-  }
-};
-
-const isAtLeastOneFieldPopulated = (firstField, secondField) =>
-  [firstField, secondField].some(field => !isEmpty(field));
+const isAtLeastOneFieldPopulated = fields => fields.some(field => !isEmpty(field));
 
 /**
   * Adds errors to the form for fields where one field
@@ -146,12 +118,20 @@ const applyRequiredFieldErrors = (form, address) => {
   const { addressLine2, addressLine3, addressLine4, town } = address;
   const errors = [];
 
-  if (!isAtLeastOneFieldPopulated(addressLine2, addressLine3)) {
-    errors.push(requiredFieldErrors.addressLine2, requiredFieldErrors.addressLine3);
+  if (!isAtLeastOneFieldPopulated([addressLine2, addressLine3])) {
+    errors.push({
+      name: 'addressLine2',
+      message: 'Enter either a building number or building name',
+      summary: 'Enter either a building number or building name'
+    });
   }
 
-  if (!isAtLeastOneFieldPopulated(addressLine4, town)) {
-    errors.push(requiredFieldErrors.addressLine4, requiredFieldErrors.town);
+  if (!isAtLeastOneFieldPopulated([addressLine4, town])) {
+    errors.push({
+      name: 'addressLine4',
+      message: 'Enter either a street name or town or city',
+      summary: 'Enter either a street name or town or city'
+    });
   }
 
   if (!isEmpty(errors)) {
@@ -165,4 +145,3 @@ const applyRequiredFieldErrors = (form, address) => {
 exports.form = form;
 exports.schema = schema;
 exports.applyRequiredFieldErrors = applyRequiredFieldErrors;
-exports.requiredFieldErrors = requiredFieldErrors;

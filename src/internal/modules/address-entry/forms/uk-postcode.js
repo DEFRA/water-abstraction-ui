@@ -1,7 +1,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 
-const postcodeRegex = require('./postcode-regex');
+const { postcodeSchema } = require('./postcode');
 
 /**
  * Creates an object to represent the form for capturing the
@@ -17,7 +17,7 @@ const form = (request, postcode) => {
 
   f.fields.push(fields.text('postcode', {
     errors: {
-      'any.required': {
+      'any.empty': {
         message: 'Enter a UK postcode'
       },
       'string.regex.base': {
@@ -40,11 +40,7 @@ const form = (request, postcode) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  postcode: Joi.string().required()
-  // uppercase and remove any spaces (BS1 1SB -> BS11SB)
-    .uppercase().replace(/ /g, '')
-  // then ensure the space is before the inward code (BS11SB -> BS1 1SB)
-    .replace(/(.{3})$/, ' $1').regex(postcodeRegex)
+  postcode: postcodeSchema
 };
 
 exports.form = form;

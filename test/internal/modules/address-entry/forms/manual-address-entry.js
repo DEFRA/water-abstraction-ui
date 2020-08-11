@@ -221,9 +221,10 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
           addressLine3: ''
         };
         const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result.errors).to.have.length(3);
-        expect(result.errors).to.contain(manualAddressEntry.requiredFieldErrors.addressLine2);
-        expect(result.errors).to.contain(manualAddressEntry.requiredFieldErrors.addressLine3);
+        expect(result.errors).to.have.length(2);
+        expect(result.errors[0].name).to.equal('addressLine2');
+        expect(result.errors[0].message).to.equal('Enter either a building number or building name');
+        expect(result.errors[0].summary).to.equal('Enter either a building number or building name');
       });
 
       test('addressLine4 and town do not have a value', async () => {
@@ -233,9 +234,10 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
           town: ''
         };
         const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result.errors).to.have.length(3);
-        expect(result.errors).to.contain(manualAddressEntry.requiredFieldErrors.addressLine4);
-        expect(result.errors).to.contain(manualAddressEntry.requiredFieldErrors.town);
+        expect(result.errors).to.have.length(2);
+        expect(result.errors[0].name).to.equal('addressLine4');
+        expect(result.errors[0].message).to.equal('Enter either a street name or town or city');
+        expect(result.errors[0].summary).to.equal('Enter either a street name or town or city');
       });
     });
   });

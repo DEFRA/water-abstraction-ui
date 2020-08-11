@@ -1,5 +1,3 @@
-const forms = require('../forms');
-const sessionForms = require('shared/lib/session-forms');
 const sessionHelpers = require('shared/lib/session-helpers');
 const services = require('../../../lib/connectors/services');
 const queryString = require('querystring');

@@ -1,3 +1,5 @@
+'use strict';
+
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
 
 class BillingBatchService extends ServiceClient {
@@ -93,6 +95,26 @@ class BillingBatchService extends ServiceClient {
   approveBatchReview (batchId) {
     const uri = this.joinUrl(`/billing/batches/${batchId}/approve-review`);
     return this.serviceRequest.post(uri);
+  }
+
+  /**
+   * Gets all the billing volumes in the batch for the specified licence
+   * @param {String} batchId
+   * @param {String} licenceId
+   */
+  getBatchLicenceBillingVolumes (batchId, licenceId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}/licences/${licenceId}/billing-volumes`);
+    return this.serviceRequest.get(uri);
+  }
+
+  /**
+   * Delete licence from batch - during TPT review process
+   * @param {String} batchId
+   * @param {String} licenceId
+   */
+  deleteBatchLicence (batchId, licenceId) {
+    const uri = this.joinUrl(`/billing/batches/${batchId}/licences/${licenceId}`);
+    return this.serviceRequest.delete(uri);
   }
 }
 

@@ -16,7 +16,7 @@ const InternalSearchService = require('./InternalSearchService');
 const AddressSearchService = require('./AddressSearchService');
 const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
-const BillingTransactionsService = require('./BillingTransactionsService');
+const BillingVolumesService = require('./BillingVolumeService');
 const RegionsService = require('./RegionsService');
 
 // Shared API Clients
@@ -49,7 +49,7 @@ module.exports = config => ({
   addressSearch: new AddressSearchService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
-  billingTransactions: new BillingTransactionsService(config.services.water, logger),
+  billingVolumes: new BillingVolumesService(config.services.water, logger),
   regions: new RegionsService(config.services.water, logger),
   changeReasons: new ChangeReasonsService(config.services.water, logger),
 

@@ -7,12 +7,15 @@ const routing = require('./routing');
  */
 const statusMessages = new Map();
 statusMessages.set(10, 'No returns received');
-statusMessages.set(20, 'Investigating query');
+statusMessages.set(20, 'Checking query');
 statusMessages.set(30, 'Returns received but not processed');
-statusMessages.set(40, 'Some returns data outstanding');
+statusMessages.set(40, 'Some returns IDs not received');
 statusMessages.set(50, 'Returns received late');
 statusMessages.set(60, 'Over abstraction');
-statusMessages.set(70, 'No returns available');
+statusMessages.set(70, 'No returns received');
+statusMessages.set(80, 'Too early to bill');
+statusMessages.set(90, 'Overlap of charge dates');
+statusMessages.set(100, 'No matching charge element');
 
 const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : statusMessages.get(code);

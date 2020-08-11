@@ -429,7 +429,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('grouped transactions have a two-part tariff error message', async () => {
       const [, { billingVolumeGroups: [[{ error }]] }] = h.view.lastCall.args;
-      expect(error).to.equal('Investigating query');
+      expect(error).to.equal('Checking query');
     });
 
     test('a back link is set', async () => {
@@ -526,7 +526,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('sets an error message in the view', async () => {
         const [, { error }] = h.view.lastCall.args;
-        expect(error).to.equal('Investigating query');
+        expect(error).to.equal('Checking query');
       });
 
       test('sets the invoice licence in the view', async () => {

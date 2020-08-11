@@ -6,7 +6,6 @@
 
 {% from "badge.njk" import badge %}
 
-
 {% macro metaRow(key, value, includePadding) %}
   <div class="meta__row">
     <dt class="meta__key">{{ key }}</dt>
@@ -14,109 +13,108 @@
   </div>
 {% endmacro %}
 
-
 {% block content %}
 
-{{ formErrorSummary(form) }}
+  {{ formErrorSummary(form) }}
 
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-two-thirds">
-    <section class="govuk-!-margin-bottom-6">
-      {% set caption %}
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <section class="govuk-!-margin-bottom-6">
+        {% set caption %}
         {{ invoiceLicence.licence.licenceNumber }}
-      {% endset %}
+        {% endset %}
         {{ title(pageTitle, caption, null, true, true) }}
-    </section>
+      </section>
+    </div>
   </div>
-</div>
 
-{% set amounts %}
-    <ul class="govuk-list govuk-!-margin-0">
-      {% for amount in aggregateQuantity %}
-        <li>{{ amount.value }} {{ amount.name }}
+  {% set amounts %}
+  <ul class="govuk-list govuk-!-margin-0">
+    {% for amount in aggregateQuantity %}
+      <li>{{ amount.value }}
+        {{ amount.name }}
       {% endfor %}
-    </ul>
-{% endset %}
+  </ul>
+  {% endset %}
 
-{% set summaryHtml %}
- <dl class="meta">
-  {% for condition in aggregateConditions %}
-    {{ metaRow('Aggregate condition', condition.title) }}
-    {{ metaRow(condition.parameter1Label, condition.parameter1) }}
-    {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }}
-    {% if condition.text %}
-    {{ metaRow('Other information', condition.text, true) }}
+  {% set summaryHtml %}
+  <dl class="meta">
+    {% for condition in aggregateConditions %}
+      {{ metaRow('Aggregate condition', condition.title) }}
+      {{ metaRow(condition.parameter1Label, condition.parameter1) }}
+      {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }}
+      {% if condition.text %}
+        {{ metaRow('Other information', condition.text, true) }}
+      {% endif %}
+    {% endfor %}
+
+    {{ metaRow('Abstraction amounts', amounts | safe, true) }}
+    {{ metaRow('Abstraction period', billingVolume.chargeElement.abstractionPeriod | abstractionPeriod) }}
+    {{ metaRow('Source', billingVolume.chargeElement.source | sentenceCase) }}
+    {{ metaRow('Season', billingVolume.chargeElement.season | sentenceCase) }}
+    {{ metaRow('Loss', billingVolume.chargeElement.loss | sentenceCase) }}
+    {{ metaRow('EIUC source', billingVolume.chargeElement.eiucSource | sentenceCase) }}
+
+    {% if billingVolume.chargeElement.timeLimitedPeriod %}
+      {% set timeLimitedPeriod %}
+      {{ billingVolume.chargeElement.timeLimitedPeriod.startDate | date }}
+      to
+      {{ billingVolume.chargeElement.timeLimitedPeriod.endDate | date }}
+      {% endset %}
+      {{ metaRow('Time limited', timeLimitedPeriod) }}
     {% endif %}
-  {% endfor %}
+  </dl>
 
-  {{ metaRow('Abstraction amounts', amounts | safe, true) }}
-  {{ metaRow('Abstraction period', transaction.chargeElement.abstractionPeriod | abstractionPeriod) }}
-  {{ metaRow('Source', transaction.chargeElement.source | sentenceCase) }}
-  {{ metaRow('Season', transaction.chargeElement.season | sentenceCase) }}
-  {{ metaRow('Loss', transaction.chargeElement.loss | sentenceCase) }}
-  {{ metaRow('EIUC source', transaction.chargeElement.eiucSource | sentenceCase) }}
+  <p>
+    <a href="{{ returnsLink }}">View returns summary</a>
+  </p>
+  {% endset %}
 
-
-  {% if transaction.chargeElement.timeLimitedPeriod %}
-    {% set timeLimitedPeriod %}
-      {{ transaction.chargeElement.timeLimitedPeriod.startDate | date }}
-      to {{ transaction.chargeElement.timeLimitedPeriod.endDate | date }}
-    {% endset %}
-  {{ metaRow('Time limited', timeLimitedPeriod) }}
-  {% endif %}
-</dl>
-
-<p>
-  <a href="{{ returnsLink }}">View returns summary</a>
-</p>
-{% endset %}
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    {{ govukDetails({
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukDetails({
       summaryText: "Licence details",
       html: summaryHtml
     }) }}
+    </div>
   </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
         Quantities
-    </h2>
+      </h2>
 
-    <table class="govuk-table govuk-!-margin-bottom-9">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Charge period</th>
-          <th scope="col" class="govuk-table__header">Element</th>
-          <th scope="col" class="govuk-table__header">Reported</th>
-          <th scope="col" class="govuk-table__header">Billable</th>
-          <th scope="col" class="govuk-table__header">Issue</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</td>
-          <td class="govuk-table__cell">{{ chargeElementQuantity(transaction) }}</td>
-          <td class="govuk-table__cell">{{ reportedVolume(transaction) }}</td>
-          <td class="govuk-table__cell">{{ billableVolume(transaction) }}</td>
-          <td class="govuk-table__cell">{{ error }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <table class="govuk-table govuk-!-margin-bottom-9">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Charge period</th>
+            <th scope="col" class="govuk-table__header">Element</th>
+            <th scope="col" class="govuk-table__header">Reported</th>
+            <th scope="col" class="govuk-table__header">Billable</th>
+            <th scope="col" class="govuk-table__header">Issue</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }}
+              to
+              {{ transaction.chargePeriod.endDate | date }}</td>
+            <td class="govuk-table__cell">{{ chargeElementQuantity(billingVolume.chargeElement) }}</td>
+            <td class="govuk-table__cell">{{ reportedVolume(billingVolume) }}</td>
+            <td class="govuk-table__cell">{{ billableVolume(billingVolume) }}</td>
+            <td class="govuk-table__cell">{{ error }}</td>
+          </tr>
+        </tbody>
+      </table>
 
+    </div>
   </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    {{ formRender(form) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
   </div>
-</div>
-
-
-
 
 {% endblock %}

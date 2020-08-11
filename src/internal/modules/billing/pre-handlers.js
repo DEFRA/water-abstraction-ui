@@ -14,16 +14,17 @@ const getBatch = request =>
 const getInvoiceLicence = request =>
   water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
 
-const getInvoiceLicenceInvoice = request => {
-  const { batchId } = request.params;
-  const { invoiceId } = request.pre.invoiceLicence;
-  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
-};
+const getInvoiceLicenceInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.pre.invoiceLicence.invoiceId);
 
-const getInvoice = request => {
-  const { batchId, invoiceId } = request.params;
-  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
-};
+const getInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.params.invoiceId);
+
+const getLicence = request =>
+  water.licences.getLicenceById(request.params.licenceId);
+
+const getBillingVolume = request =>
+  water.billingVolumes.getBillingVolume(request.params.billingVolumeId);
 
 const config = {
   loadBatch: {
@@ -45,6 +46,16 @@ const config = {
     connector: getInvoice,
     key: 'invoiceId',
     errorMessage: 'Invoice not found'
+  },
+  loadLicence: {
+    connector: getLicence,
+    key: 'licenceId',
+    errorMessage: 'Licence not found'
+  },
+  loadBillingVolume: {
+    connector: getBillingVolume,
+    key: 'billingVolumeId',
+    errorMessage: 'Billing volume not found'
   }
 };
 
@@ -119,6 +130,8 @@ exports.checkBatchStatusIsReady = checkBatchStatusIsReady;
 exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
 exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
 exports.loadInvoice = partial(preHandler, config.loadInvoice);
+exports.loadLicence = partial(preHandler, config.loadLicence);
+exports.loadBillingVolume = partial(preHandler, config.loadBillingVolume);
 
 exports.redirectOnBatchStatus = redirectOnBatchStatus;
 exports.loadRegions = loadRegions;

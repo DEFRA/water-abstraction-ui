@@ -66,12 +66,6 @@ if (isAcceptanceTestTarget) {
             activeNavLink: 'notifications'
           }
         },
-        validate: {
-          query: {
-            postcode: Joi.string().optional(),
-            form: Joi.string().optional()
-          }
-        },
         pre: [
           { method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults' }
         ]
@@ -91,7 +85,10 @@ if (isAcceptanceTestTarget) {
           viewContext: {
             activeNavLink: 'notifications'
           }
-        }
+        },
+        pre: [
+          { method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults' }
+        ]
       }
     },
 

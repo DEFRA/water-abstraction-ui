@@ -1,5 +1,4 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const { getAddressSearchResults } = require('../lib/helpers');
 const { compact } = require('lodash');
 const titleCase = require('title-case');
 const Joi = require('@hapi/joi');
@@ -34,7 +33,7 @@ const getAddressChoices = addresses => {
  */
 const form = (request, uprn) => {
   const { csrfToken } = request.view;
-  const addressSearchResults = getAddressSearchResults(request);
+  const { addressSearchResults } = request.pre;
 
   const f = formFactory('/address-entry/address/select');
 

@@ -31,9 +31,7 @@ const createRequest = () => ({
   view: {
     csrfToken: 'token'
   },
-  yar: {
-    get: sandbox.stub().returns({ addressSearchResults })
-  }
+  pre: { addressSearchResults }
 });
 
 experiment('internal/modules/address-entry/forms/select-address', () => {

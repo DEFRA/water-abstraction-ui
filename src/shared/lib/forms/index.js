@@ -163,7 +163,7 @@ const applyErrors = (form, formattedErrors = []) => {
     };
   });
 
-  f.errors = uniqBy(formattedErrors, 'name');
+  f.errors = formattedErrors;
   return f;
 };
 

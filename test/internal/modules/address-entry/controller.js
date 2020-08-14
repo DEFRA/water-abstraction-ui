@@ -13,7 +13,6 @@ const queryString = require('querystring');
 
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-const newAddress = require('internal/lib/new-address');
 const addressEntryForms = require('internal/modules/address-entry/forms');
 const addressEntryHelpers = require('internal/modules/address-entry/lib/helpers');
 const controller = require('internal/modules/address-entry/controller');
@@ -49,10 +48,15 @@ const createRequest = (options = {}) => ({
   view: {
     foo: 'bar'
   },
+  pre: {
+    addressSearchResults
+  },
   yar: {
     get: sandbox.stub().returns(addressFlowData),
+    set: sandbox.stub(),
     clear: sandbox.stub()
-  }
+  },
+  setNewAddress: sandbox.stub()
 });
 
 const h = {
@@ -65,11 +69,8 @@ experiment('internal/modules/address-entry', () => {
   beforeEach(() => {
     sandbox.stub(sessionForms, 'get').returns({ form: 'object' });
     sandbox.stub(forms, 'handleRequest');
-    sandbox.stub(newAddress, 'set');
 
     sandbox.stub(addressEntryHelpers, 'saveReferenceData');
-    sandbox.stub(addressEntryHelpers, 'setAddressSearchResults');
-    sandbox.stub(addressEntryHelpers, 'getAddressSearchResults').returns(addressSearchResults);
 
     sandbox.stub(addressEntryForms.ukPostcode, 'form').returns({ ukPostcode: 'form' });
     sandbox.stub(addressEntryForms.ukPostcode, 'schema');
@@ -129,9 +130,8 @@ experiment('internal/modules/address-entry', () => {
     });
 
     test('redirects to the expected path when form is valid', () => {
-      const expectedPath = `/address-entry/address/select?${queryString.stringify({ postcode: POSTCODE })}`;
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal(expectedPath);
+      expect(redirectPath).to.equal('/address-entry/address/select');
     });
 
     test('redirects with the form and expected path when form is not valid', () => {
@@ -156,11 +156,6 @@ experiment('internal/modules/address-entry', () => {
     beforeEach(() => {
       request = createRequest();
       controller.getSelectAddress(request, h);
-    });
-
-    test('saves the address search results', () => {
-      const [requestObject] = addressEntryHelpers.setAddressSearchResults.lastCall.args;
-      expect(requestObject).to.equal(request);
     });
 
     test('uses the expected template', () => {
@@ -198,7 +193,7 @@ experiment('internal/modules/address-entry', () => {
 
     experiment('when form is valid', () => {
       test('stores the correct address', () => {
-        const [, selectedAddress] = newAddress.set.lastCall.args;
+        const [selectedAddress] = request.setNewAddress.lastCall.args;
         expect(selectedAddress).to.equal(addressSearchResults[0]);
       });
 
@@ -279,7 +274,7 @@ experiment('internal/modules/address-entry', () => {
     experiment('when form is valid', () => {
       test('stores the address data in the payload', () => {
         const { csrfToken, ...payload } = request.payload;
-        const [, address] = newAddress.set.lastCall.args;
+        const [address] = request.setNewAddress.lastCall.args;
         expect(address).to.equal(payload);
         expect(address).to.not.contain(csrfToken);
       });

@@ -61,15 +61,6 @@ experiment('internal/modules/address-entry/lib/helpers', () => {
     });
   });
 
-  experiment('.getSelectAddressUrl', () => {
-    test('returns the expected url using the postcode from the request', () => {
-      const request = createRequest({ payload: { postcode: 'TT1 1TT' } });
-      const query = queryString.stringify({ postcode: 'TT1 1TT' });
-      const url = addressEntryHelpers.getSelectAddressUrl(request);
-      expect(url).to.equal(`/address-entry/address/select?${query}`);
-    });
-  });
-
   experiment('.saveReferenceData', () => {
     const request = createRequest({ query: {
       licenceId: 'test-licence-id',
@@ -99,24 +90,6 @@ experiment('internal/modules/address-entry/lib/helpers', () => {
         redirectPath: '/redirect/path',
         back: '/back'
       });
-    });
-  });
-
-  experiment('.setAddressSearchResults', () => {
-    test('saves the address search results in the session', () => {
-      const request = createRequest();
-      addressEntryHelpers.setAddressSearchResults(request);
-      const [requestObject, sessionKey, data] = sessionHelpers.saveToSession.lastCall.args;
-      expect(requestObject).to.equal(request);
-      expect(sessionKey).to.equal(addressEntryHelpers.SESSION_KEY);
-      expect(data).to.equal({ addressSearchResults });
-    });
-  });
-
-  experiment('.getAddressSearchResults', () => {
-    test('returns the search results from the session', () => {
-      const result = addressEntryHelpers.getAddressSearchResults(createRequest());
-      expect(result).to.equal(addressSearchResults);
     });
   });
 });

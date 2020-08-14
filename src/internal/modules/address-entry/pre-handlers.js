@@ -1,5 +1,12 @@
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
+const helpers = require('./lib/helpers');
+
+const getPostcode = request => {
+  const { postcode: queryPostcode } = request.query;
+  if (queryPostcode) return queryPostcode;
+  return helpers.getPostcode(request);
+};
 
 /**
  * Retrieves addresses for the specified postcode,
@@ -8,7 +15,7 @@ const services = require('../../lib/connectors/services');
  * @param {Promise<Array>}
  */
 const searchForAddressesByPostcode = async request => {
-  const { postcode } = request.query;
+  const postcode = getPostcode(request);
   try {
     const { data } = await services.water.addressSearch.getAddressSearchResults(postcode);
     return data;

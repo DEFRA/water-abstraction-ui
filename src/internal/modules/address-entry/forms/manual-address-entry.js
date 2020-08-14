@@ -81,6 +81,7 @@ const form = (request, address = {}) => {
   }));
 
   f.fields.push(fields.hidden('dataSource', {}, 'wrls'));
+  f.fields.push(fields.hidden('uprn', {}, null));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -101,7 +102,8 @@ const schema = {
     otherwise: Joi.string().allow('').optional()
   }),
   country: Joi.string().required().valid(countryList),
-  dataSource: Joi.string().required().valid('wrls')
+  dataSource: Joi.string().required().valid('wrls'),
+  uprn: Joi.string().valid('', null).default(null)
 };
 
 const isAtLeastOneFieldPopulated = fields => fields.some(field => !isEmpty(field));

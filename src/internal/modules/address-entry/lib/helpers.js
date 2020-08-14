@@ -26,26 +26,14 @@ const saveReferenceData = async request => {
   return sessionHelpers.saveToSession(request, SESSION_KEY, data);
 };
 
-const setAddressSearchResults = request => {
-  const { addressSearchResults } = request.pre;
-  return sessionHelpers.saveToSession(request, SESSION_KEY, { addressSearchResults });
-};
-
-const getAddressSearchResults = request => {
-  const { addressSearchResults } = request.yar.get(SESSION_KEY);
-  return addressSearchResults;
-};
-
 const getManualAddressEntryBackLink = request =>
   request.query.country ? '/address-entry/address/select' : getPostcodeUrl(request);
 
-const getPayload = request => request.payload || request.query;
+const setPostcode = request =>
+  sessionHelpers.saveToSession(request, SESSION_KEY, { postcode: request.payload.postcode });
 
 const getPostcode = request => {
-  const { postcode: payloadPostcode } = getPayload(request);
-  const addressSearchResults = getAddressSearchResults(request);
-  const sessionPostcode = addressSearchResults ? addressSearchResults[0].postcode : null;
-  const postcode = payloadPostcode || sessionPostcode;
+  const { postcode } = request.yar.get(SESSION_KEY);
   return postcode ? postcode.toUpperCase() : null;
 };
 
@@ -54,9 +42,6 @@ const getPostcodeUrl = request => {
   const urlQuery = queryString.stringify({ redirectPath, back });
   return `/address-entry/postcode?${urlQuery}`;
 };
-
-const getSelectAddressUrl = request =>
-  `/address-entry/address/select?${queryString.stringify({ postcode: getPostcode(request) })}`;
 
 const getPageCaption = request => {
   const { licenceNumber } = request.yar.get(SESSION_KEY);
@@ -67,10 +52,8 @@ exports.SESSION_KEY = SESSION_KEY;
 
 exports.getRedirectPath = getRedirectPath;
 exports.getPageCaption = getPageCaption;
+exports.setPostcode = setPostcode;
 exports.getPostcode = getPostcode;
 exports.getPostcodeUrl = getPostcodeUrl;
-exports.getSelectAddressUrl = getSelectAddressUrl;
 exports.getManualAddressEntryBackLink = getManualAddressEntryBackLink;
 exports.saveReferenceData = saveReferenceData;
-exports.setAddressSearchResults = setAddressSearchResults;
-exports.getAddressSearchResults = getAddressSearchResults;

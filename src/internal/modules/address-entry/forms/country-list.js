@@ -1,3 +1,6 @@
+// list is compiled from: https://data.gov.uk/dataset/57129a6a-1738-4ce2-8d40-3274c7c9cb27/fco-index-of-geographical-names
+// it includes all countries and all UK territories which are countries
+
 module.exports = [
   'Afghanistan',
   'Albania',

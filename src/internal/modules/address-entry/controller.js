@@ -1,25 +1,26 @@
 const { ukPostcode, selectAddress, manualAddressEntry } = require('./forms');
 const forms = require('shared/lib/forms');
-const newAddress = require('../../lib/new-address');
 const helpers = require('./lib/helpers');
 const { omit } = require('lodash');
 
 const sessionForms = require('shared/lib/session-forms');
 
 const storeAddressAndRedirect = (request, h, address) => {
-  newAddress.set(request, address);
+  request.setNewAddress(address);
   const redirectPath = helpers.getRedirectPath(request);
   return h.redirect(redirectPath);
 };
 
 const getPostcode = (request, h) => {
   helpers.saveReferenceData(request);
+  const form = sessionForms.get(request, ukPostcode.form(request));
+
   return h.view('nunjucks/address-entry/enter-uk-postcode', {
     ...request.view,
     ...helpers.getPageCaption(request),
     pageTitle: 'Enter the UK postcode',
     back: request.query.back,
-    form: sessionForms.get(request, ukPostcode.form(request))
+    form
   });
 };
 
@@ -32,15 +33,15 @@ const postPostcode = async (request, h) => {
   );
 
   if (form.isValid) {
-    return h.redirect(helpers.getSelectAddressUrl(request));
+    helpers.setPostcode(request);
+    return h.redirect('/address-entry/address/select');
   }
   const { redirectPath, back } = request.yar.get(helpers.SESSION_KEY);
   return h.postRedirectGet(form, '/address-entry/postcode', { redirectPath, back });
 };
 
-const getSelectAddress = (request, h) => {
-  helpers.setAddressSearchResults(request);
-  return h.view('nunjucks/address-entry/select-address', {
+const getSelectAddress = (request, h) =>
+  h.view('nunjucks/address-entry/select-address', {
     ...request.view,
     ...helpers.getPageCaption(request),
     pageTitle: 'Select the address',
@@ -48,10 +49,10 @@ const getSelectAddress = (request, h) => {
     postcode: helpers.getPostcode(request),
     form: sessionForms.get(request, selectAddress.form(request))
   });
-};
 
 const postSelectAddress = (request, h) => {
   const { uprn } = request.payload;
+  const { addressSearchResults } = request.pre;
   const form = forms.handleRequest(
     selectAddress.form(request, uprn),
     request,
@@ -59,7 +60,6 @@ const postSelectAddress = (request, h) => {
   );
 
   if (form.isValid) {
-    const addressSearchResults = helpers.getAddressSearchResults(request);
     const selectedAddress = addressSearchResults.find(address => address.uprn === parseInt(uprn));
     return storeAddressAndRedirect(request, h, selectedAddress);
   }

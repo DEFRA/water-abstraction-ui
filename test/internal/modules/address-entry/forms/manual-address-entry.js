@@ -121,7 +121,8 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
           ...address,
           postcode: '',
           country: 'British Virgin Islands',
-          dataSource: 'wrls'
+          dataSource: 'wrls',
+          uprn: ''
         };
         const result = Joi.validate(addressData, manualAddressEntry.schema);
         expect(result.error).to.be.null();

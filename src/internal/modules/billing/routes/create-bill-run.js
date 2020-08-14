@@ -8,7 +8,7 @@ const allowedScopes = [billing];
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
 const preHandlers = require('../pre-handlers');
 const billRunTypes = require('../lib/bill-run-types');
-const seasons = require('../lib/seasons');
+const { seasons } = require('../lib/constants');
 
 const VALID_BILL_RUN_TYPES = Joi.string().required().valid(
   Object.values(billRunTypes).map(kebabCase)

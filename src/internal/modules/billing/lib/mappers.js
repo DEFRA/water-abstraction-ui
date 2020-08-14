@@ -3,6 +3,7 @@ const groupArray = require('group-array');
 const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
 const routing = require('./routing');
+const { MINIMUM_CHARGE } = require('./constants');
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -108,12 +109,16 @@ const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
   return acc;
 }, []);
 
-const mapInvoice = invoice => ({
-  ...invoice,
-  isCredit: invoice.netTotal < 0,
-  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
-  sortValue: -Math.abs(invoice.netTotal)
-});
+const mapInvoice = invoice => {
+  const netTotal = invoice.minimumChargeApplies ? MINIMUM_CHARGE : invoice.netTotal;
+  return {
+    ...invoice,
+    netTotal,
+    isCredit: netTotal < 0,
+    group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
+    sortValue: -Math.abs(netTotal)
+  };
+};
 
 const mapInvoices = (batch, invoices) => {
   const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');

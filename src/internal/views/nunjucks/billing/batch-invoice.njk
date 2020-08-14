@@ -40,10 +40,31 @@ invoiceDebitsTotal %}
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-!-margin-bottom-0">
-        {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
+        {% if minimumChargeApplied %}
+          {{ invoiceTotal(2500, false) }}
+        {% else %}
+          {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
+        {% endif %}
       </h2>
     </div>
   </div>
+
+  {% if minimumChargeApplied %}
+    {% set minimumChargeHtml %}
+      <h4 class="govuk-heading-m govuk-!-margin-bottom-1"> 
+      {{chargeApplied | charge}}
+      </h4>
+      <p class="govuk-body">
+        Minimum charge applied
+      </p>
+    {% endset %}
+
+    {{ govukInsetText({
+      html : minimumChargeHtml
+    }) }}
+
+  {% endif %}
+
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
       <h2>

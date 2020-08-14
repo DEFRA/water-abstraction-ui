@@ -301,4 +301,71 @@ experiment('modules/billing/lib/mappers', () => {
       });
     });
   });
+
+  experiment('.mapInvoices', () => {
+    beforeEach(async () => {
+      result = mappers.mapInvoices(batch, [invoice]);
+    });
+
+    test('results contain the invoice', () => {
+      expect(result[0]).to.include(invoice);
+    });
+
+    experiment('group', () => {
+      test('is set to "otherAbstractors" when isWaterUndertaker is false', () => {
+        invoice.isWaterUndertaker = false;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].group).to.equal('otherAbstractors');
+      });
+
+      test('is set to "waterUndertakers" when isWaterUndertaker is true', () => {
+        invoice.isWaterUndertaker = true;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].group).to.equal('waterUndertakers');
+      });
+    });
+
+    experiment('isCredit', () => {
+      test('is set to false when invoice netTotal is positive', () => {
+        invoice.netTotal = 123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].isCredit).to.be.false();
+      });
+
+      test('is set to true when invoice netTotal is negative', () => {
+        invoice.netTotal = -123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].isCredit).to.be.true();
+      });
+    });
+
+    experiment('sortValue is set correctly ', () => {
+      test('for a positive netTotal', () => {
+        invoice.netTotal = 123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].sortValue).to.equal(-123);
+      });
+
+      test('for a negative netTotal', () => {
+        invoice.netTotal = -123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].sortValue).to.equal(-123);
+      });
+    });
+
+    experiment('when minimum charge does not apply', () => {
+      test('netTotal is set to invoice netTotal', () => {
+        expect(result[0].netTotal).to.equal(invoice.netTotal);
+      });
+    });
+
+    experiment('when minimum charge applies', () => {
+      test('netTotal is set to the minimum charge', () => {
+        invoice.netTotal = 1230;
+        invoice.minimumChargeApplies = true;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].netTotal).to.equal(2500);
+      });
+    });
+  });
 });

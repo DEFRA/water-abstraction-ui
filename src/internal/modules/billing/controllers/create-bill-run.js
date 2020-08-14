@@ -11,7 +11,7 @@ const services = require('internal/lib/connectors/services');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
-const seasons = require('../lib/seasons');
+const { seasons } = require('../lib/constants');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 
@@ -61,7 +61,7 @@ const postBillingBatchType = async (request, h) => {
 };
 
 /**
- * Step 2a - display selelct region form
+ * Step 2a - display select region form
  * @param {*} request
  * @param {*} h
  */

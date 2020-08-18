@@ -10,6 +10,7 @@ invoiceDebitsTotal %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
@@ -46,6 +47,12 @@ invoiceDebitsTotal %}
           {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
         {% endif %}
       </h2>
+
+      {% if invoice.isDeMinimis %}
+        {{ govukInsetText({
+            text: "De minimis rule applied"
+        }) }}
+      {% endif %}
     </div>
   </div>
 

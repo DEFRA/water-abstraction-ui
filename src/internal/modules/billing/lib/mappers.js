@@ -3,7 +3,6 @@ const groupArray = require('group-array');
 const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
 const routing = require('./routing');
-const { MINIMUM_CHARGE } = require('./constants');
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -42,14 +41,16 @@ const mapChargeElementTransactions = group => {
     netTotal: acc.netTotal + row.value
   }), initialValue);
 
+  const mappedTransactions = transactions.map(mapTransaction);
   return {
-    transactions: transactions.map(mapTransaction),
+    transactions: mappedTransactions.filter(txn => !txn.isMinimumCharge),
+    minimumChargeTransactions: mappedTransactions.filter(txn => txn.isMinimumCharge),
     totals,
     chargeElement: transactions[0].chargeElement
   };
 };
 
-const mapLicence = (chargeElements, licenceNumber) => {
+const mapLicence = chargeElements => {
   const arr = Object.values(chargeElements);
   return {
     link: arr[0][0].link,
@@ -57,8 +58,7 @@ const mapLicence = (chargeElements, licenceNumber) => {
   };
 };
 
-const mapFinancialYear = (licences, financialYear) =>
-  mapValues(licences, mapLicence);
+const mapFinancialYear = licences => mapValues(licences, mapLicence);
 
 /**
    *
@@ -109,16 +109,12 @@ const mapConditions = conditions => conditions.reduce((acc, conditionType) => {
   return acc;
 }, []);
 
-const mapInvoice = invoice => {
-  const netTotal = invoice.minimumChargeApplies ? MINIMUM_CHARGE : invoice.netTotal;
-  return {
-    ...invoice,
-    netTotal,
-    isCredit: netTotal < 0,
-    group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
-    sortValue: -Math.abs(netTotal)
-  };
-};
+const mapInvoice = invoice => ({
+  ...invoice,
+  isCredit: invoice.netTotal < 0,
+  group: invoice.isWaterUndertaker ? 'waterUndertakers' : 'otherAbstractors',
+  sortValue: -Math.abs(invoice.netTotal)
+});
 
 const mapInvoices = (batch, invoices) => {
   const mappedInvoices = sortBy(invoices.map(mapInvoice), 'sortValue');

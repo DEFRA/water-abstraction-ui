@@ -55,7 +55,18 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
+      }, {
+        value: 1576,
+        chargePeriod: {
+          startDate: '2019-04-01',
+          endDate: '2020-03-31'
+        },
+        chargeElement: {
+          id: 'charge_element_licence_1'
+        },
+        isMinimumCharge: true
       }]
     },
     {
@@ -75,7 +86,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: null,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 3456,
         chargePeriod: {
@@ -89,7 +101,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 14.2,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: -363,
         isCredit: true,
@@ -104,7 +117,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 789,
         chargePeriod: {
@@ -118,7 +132,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 916,
         chargePeriod: {
@@ -128,7 +143,8 @@ const invoice = {
         chargeElement: {
           id: 'charge_element_licence_2_b'
         },
-        volume: 12.35
+        volume: 12.35,
+        isMinimumCharge: false
       }]
     }]
 };
@@ -233,7 +249,8 @@ experiment('modules/billing/lib/mappers', () => {
               calculatedVolume: 12.35,
               volume: 12.35
             },
-            isEdited: false
+            isEdited: false,
+            isMinimumCharge: false
           });
         });
 
@@ -261,7 +278,20 @@ experiment('modules/billing/lib/mappers', () => {
 
         test('has the correct totals', async () => {
           const { totals } = data.chargeElements[0];
-          expect(totals).to.equal({ debits: 924, credits: 0, netTotal: 924 });
+          expect(totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
+        });
+
+        test('has 1 x minimum charge transaction in the charge element', async () => {
+          expect(data.chargeElements[0].minimumChargeTransactions).to.have.length(1);
+        });
+
+        test('has the correct minimum charge transaction', async () => {
+          expect(data.chargeElements[0].minimumChargeTransactions[0]).to.equal({
+            value: 1576,
+            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
+            isEdited: false,
+            isMinimumCharge: true
+          });
         });
       });
 
@@ -277,6 +307,10 @@ experiment('modules/billing/lib/mappers', () => {
         experiment('the first charge element', async () => {
           test('has 1 x transaction', async () => {
             expect(data.chargeElements[0].transactions).to.have.length(1);
+          });
+
+          test('has 0 minimum charge transaction', async () => {
+            expect(data.chargeElements[0].minimumChargeTransactions).to.have.length(0);
           });
 
           experiment('the transaction', () => {
@@ -350,21 +384,6 @@ experiment('modules/billing/lib/mappers', () => {
         invoice.netTotal = -123;
         result = mappers.mapInvoices(batch, [invoice]);
         expect(result[0].sortValue).to.equal(-123);
-      });
-    });
-
-    experiment('when minimum charge does not apply', () => {
-      test('netTotal is set to invoice netTotal', () => {
-        expect(result[0].netTotal).to.equal(invoice.netTotal);
-      });
-    });
-
-    experiment('when minimum charge applies', () => {
-      test('netTotal is set to the minimum charge', () => {
-        invoice.netTotal = 1230;
-        invoice.minimumChargeApplies = true;
-        result = mappers.mapInvoices(batch, [invoice]);
-        expect(result[0].netTotal).to.equal(2500);
       });
     });
   });

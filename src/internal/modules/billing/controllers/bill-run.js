@@ -12,8 +12,6 @@ const titleCase = require('title-case');
 const { pluralize } = require('shared/lib/pluralize');
 const moment = require('moment');
 const Boom = require('@hapi/boom');
-const { flatMap } = require('lodash');
-const { MINIMUM_CHARGE } = require('../lib/constants');
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
 
@@ -40,14 +38,6 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
-const doesMinimumChargeApply = invoice => {
-  const transactions = flatMap(invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.transactions));
-  // console.log(transactions);
-  return transactions.some(trans => trans.isMinimumCharge);
-};
-
-const getChargeApplied = invoice => MINIMUM_CHARGE - invoice.totals.netTotal;
-
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
@@ -58,8 +48,6 @@ const getBillingBatchInvoice = async (request, h) => {
 
   const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
   const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
-  const transactions = mappers.mapInvoiceTransactions(invoice, documentIds);
-  const minimumChargeApplied = doesMinimumChargeApply(invoice);
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
@@ -68,11 +56,9 @@ const getBillingBatchInvoice = async (request, h) => {
     invoice,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    transactions,
+    transactions: mappers.mapInvoiceTransactions(invoice, documentIds),
     isCredit: invoice.totals.netTotal < 0,
-    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
-    minimumChargeApplied,
-    ...minimumChargeApplied && { chargeApplied: getChargeApplied(invoice) }
+    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`
   });
 };
 

@@ -36,6 +36,13 @@
   </td>
 {% endmacro %}
 
+{% macro minimumChargeDescription(transaction) %}
+  <td colspan="2" class="govuk-table__cell">
+    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">Minimum Charge</h5>
+    <p class="govuk-body govuk-!-margin-bottom-0">Raised under Schedule 23 of the Environment Act 1995</p>
+  </td>
+{% endmacro %}
+
 {% macro billableDaysRatioCell(transaction) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {{ transaction.billableDays}}/{{ transaction.authorisedDays }}
@@ -77,6 +84,14 @@
   <tr class="govuk-table__row">
     {{ transactionDetailCell(group, transaction) }}
     {{ billableDaysRatioCell(transaction) }}
+    {{ creditCell(transaction) }}
+    {{ debitCell(transaction) }}
+  </tr>
+{% endmacro %}
+
+{% macro minimumChargeTransactionRow(transaction) %}
+  <tr class="govuk-table__row">
+    {{ minimumChargeDescription(transaction) }}
     {{ creditCell(transaction) }}
     {{ debitCell(transaction) }}
   </tr>
@@ -127,6 +142,10 @@
   <tbody class="govuk-table__body">
     {% for transaction in group.transactions %}
       {{ transactionRow(group, transaction) }}
+    {% endfor %}
+
+    {% for transaction in group.minimumChargeTransactions %}
+      {{ minimumChargeTransactionRow(transaction) }}
     {% endfor %}
   </tbody>
   {{ creditsDebitsFooter(group) }}

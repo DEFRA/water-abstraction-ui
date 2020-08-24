@@ -18,7 +18,7 @@ const controller = require('internal/modules/billing/controllers/create-bill-run
 const batchService = require('internal/modules/billing/services/batch-service');
 const helpers = require('@envage/water-abstraction-helpers');
 const billRunTypes = require('internal/modules/billing/lib/bill-run-types');
-const { seasons } = require('internal/modules/billing/lib/constants');
+const seasons = require('internal/modules/billing/lib/seasons');
 
 const billingRegions = {
   data: [

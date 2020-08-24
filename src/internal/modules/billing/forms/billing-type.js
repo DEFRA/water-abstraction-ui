@@ -9,7 +9,7 @@ const {
   TWO_PART_TARIFF
 } = require('../lib/bill-run-types');
 
-const { seasons } = require('../lib/constants');
+const seasons = require('../lib/seasons');
 
 const seasonChoices = [
   { value: seasons.SUMMER, label: 'Summer' },

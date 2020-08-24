@@ -283,33 +283,6 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.isCredit).to.be.false();
       expect(view.caption).to.equal('Billing account A12345678A');
     });
-
-    experiment('minimumChargeApplied', async () => {
-      test('is false when no transactions have isMinimumCharge flag set', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.minimumChargeApplied).to.be.false();
-        expect(view.chargeApplied).to.be.undefined();
-      });
-
-      test('is true when the transactions have isMinimumCharge flag set', async () => {
-        invoice.invoiceLicences[0].transactions = [{
-          isMinimumCharge: true,
-          chargePeriod: {
-            startDate: '2020-04-01'
-          },
-          chargeElement: {
-            id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9'
-          }
-        }];
-        invoice.totals.netTotal = 1432;
-        services.water.billingBatches.getBatchInvoice.resolves(invoice);
-
-        await controller.getBillingBatchInvoice(request, h);
-        const [, view] = h.view.lastCall.args;
-        expect(view.minimumChargeApplied).to.be.true();
-        expect(view.chargeApplied).to.equal(1068);
-      });
-    });
   });
 
   experiment('.getBillingBatchList', () => {

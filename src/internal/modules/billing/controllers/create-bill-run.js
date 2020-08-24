@@ -11,7 +11,7 @@ const services = require('internal/lib/connectors/services');
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
-const { seasons } = require('../lib/constants');
+const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 

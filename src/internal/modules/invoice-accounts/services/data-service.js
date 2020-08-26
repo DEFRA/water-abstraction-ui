@@ -3,6 +3,7 @@
 const hoek = require('@hapi/hoek');
 const services = require('../../../lib/connectors/services');
 const { uniqBy } = require('lodash');
+
 const sessionManager = (request, regionId, companyId, data = null) => {
   // get existing session data
   let sessionData = request.yar.get(`newInvoiceAccountFlow.${regionId}.${companyId}`);
@@ -19,10 +20,16 @@ const getCompany = async (companyId) => {
 };
 
 const getCompanyAddresses = async (companyId) => {
-  const companyAddresses = await services.water.companies.getAddresses(companyId);
+  const addresses = await services.water.companies.getAddresses(companyId);
   // get the unique list of addresses
-  const uniqueAddresses = uniqBy(companyAddresses.map(row => row.address), 'id');
+  const uniqueAddresses = uniqBy(addresses.map(row => row.address), 'id');
   return uniqueAddresses;
+};
+
+const getCompanyContacts = async (companyId) => {
+  const { data: contacts } = await services.water.companies.getContacts(companyId);
+  const uniqueContacts = uniqBy(contacts.map(row => row.contact), 'id');
+  return uniqueContacts;
 };
 
 const getLicenceById = async (licenceId) => {
@@ -30,10 +37,8 @@ const getLicenceById = async (licenceId) => {
   return licence;
 };
 
-const saveInvoiceAccDetails = async (data) => {
-  const entityId = data.companyId;
-  delete data.companyId;
-  const invoiceAccId = await services.water.companies.postInvoiceAccount(entityId, data);
+const saveInvoiceAccDetails = async (companyId, data) => {
+  const invoiceAccId = await services.water.companies.postInvoiceAccount(companyId, data);
   return invoiceAccId;
 };
 
@@ -42,3 +47,4 @@ exports.getCompanyAddresses = getCompanyAddresses;
 exports.getCompany = getCompany;
 exports.saveInvoiceAccDetails = saveInvoiceAccDetails;
 exports.sessionManager = sessionManager;
+exports.getCompanyContacts = getCompanyContacts;

@@ -6,11 +6,11 @@ const {
   beforeEach,
   afterEach
 } = exports.lab = require('@hapi/lab').script();
-const controller = require('internal/modules/invoice-accounts/controller');
+const controller = require('../../../../../src/internal/modules/invoice-accounts/controllers/invoice-accounts');
 const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();
-const dataService = require('internal/modules/invoice-accounts/lib/data-service');
-const forms = require('../../../../src/shared/lib/forms/index');
+const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
+const forms = require('../../../../../src/shared/lib/forms/index');
 const moment = require('moment');
 const titleCase = require('title-case');
 
@@ -42,7 +42,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
   beforeEach(async => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
-    sandbox.stub(dataService, 'getCompany').resolves({ name: companyName });
     sandbox.stub(dataService, 'sessionManager').returns(sessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
@@ -63,6 +62,12 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         get: sandbox.stub().returns({}),
         set: sandbox.stub(),
         clear: sandbox.stub()
+      },
+      pre: {
+        company: {
+          id: companyId,
+          name: companyName
+        }
       }
     };
 
@@ -85,10 +90,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     test('calls dataService.getLicenceById with the correct query param', async () => {
       const args = dataService.getLicenceById.lastCall.args;
       expect(args[0]).to.equal(licenceId);
-    });
-    test('calls dataService.getCompany with the correct companyId', async () => {
-      const args = dataService.getCompany.lastCall.args;
-      expect(args[0]).to.equal(companyId);
     });
     test('calls sessionManager with the correct params', async () => {
       const viewData = { viewData: { redirectPath: '/somewhere', licenceNumber, licenceId, companyName: titleCase(companyName) } };
@@ -126,12 +127,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   });
 
   experiment('.postCompany', () => {
-    test('dataService.getCompany is called with the companyId', async () => {
-      await controller.postCompany(request, h);
-      const args = dataService.getCompany.lastCall.args;
-      expect(args[0]).to.equal(companyId);
-    });
-
     experiment('when the form is valid', () => {
       test('and the companyId selected = companyId then agent = null', async () => {
         forms.getValues.returns({
@@ -304,7 +299,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         forms.getValues.returns({ faoRequired: 'yes' });
         await controller.postFao(request, h);
         const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/search-contact`;
+        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/select-contact`;
         expect(args[0]).to.equal(redirectPath);
       });
     });
@@ -330,10 +325,6 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       // no data to merge is passed to the session
       expect(args[3]).to.equal(undefined);
       expect(dataService.sessionManager.calledOnce).to.be.true();
-    });
-    test('calls dataService.getCompany with the correct query param', async () => {
-      const args = dataService.getCompany.lastCall.args;
-      expect(args[0]).to.equal(companyId);
     });
     test('calls dataService.getCompanyAddresses with the correct query param', async () => {
       const args = dataService.getCompanyAddresses.lastCall.args;
@@ -374,8 +365,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
     test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
       const startDate = moment().format('YYYY-MM-DD');
-      const details = { address: { addressId }, companyId, regionId, startDate };
-      const [ args ] = dataService.saveInvoiceAccDetails.lastCall.args;
+      const details = [companyId, { address: { addressId }, companyId, regionId, startDate }];
+      const args = dataService.saveInvoiceAccDetails.lastCall.args;
       expect(args).to.equal(details);
     });
   });

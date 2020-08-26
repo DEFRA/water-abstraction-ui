@@ -6,8 +6,8 @@ const confirmForm = require('./confirm-form');
 const { fields } = require('shared/lib/forms/');
 
 const twoPartTariffQuantityConfirmForm = (request, quantity) => {
-  const { batchId, invoiceLicenceId, transactionId } = request.params;
-  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${invoiceLicenceId}/transaction/${transactionId}/confirm`;
+  const { batchId, licenceId, billingVolumeId } = request.params;
+  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}/billing-volume/${billingVolumeId}/confirm`;
   const form = confirmForm(request, action, 'Continue');
   form.fields.push(fields.hidden('quantity', {}, quantity));
   return form;

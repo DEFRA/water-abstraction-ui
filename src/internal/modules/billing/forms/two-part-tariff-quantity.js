@@ -50,13 +50,13 @@ const getQuantityRadio = authorisedAnnualQuantity => fields.radio('quantity', {
   choices: getRadioChoices(authorisedAnnualQuantity)
 });
 
-const twoPartTariffQuantityForm = (request, transaction) => {
+const twoPartTariffQuantityForm = (request, billingVolume) => {
   const { csrfToken } = request.view;
 
-  const { batchId, invoiceLicenceId, transactionId } = request.params;
-  const { authorisedAnnualQuantity } = transaction.chargeElement;
+  const { batchId, licenceId, billingVolumeId } = request.params;
+  const { authorisedAnnualQuantity } = billingVolume.chargeElement;
 
-  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${invoiceLicenceId}/transaction/${transactionId}`;
+  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}/billing-volume/${billingVolumeId}`;
 
   const f = formFactory(action, 'POST');
 
@@ -66,8 +66,8 @@ const twoPartTariffQuantityForm = (request, transaction) => {
   return f;
 };
 
-const twoPartTariffQuantitySchema = transaction => {
-  const maxQuantity = parseFloat(transaction.chargeElement.maxAnnualQuantity);
+const twoPartTariffQuantitySchema = billingVolume => {
+  const maxQuantity = parseFloat(billingVolume.chargeElement.maxAnnualQuantity);
   return {
     csrf_token: Joi.string().uuid().required(),
     quantity: Joi.string().valid(['authorised', 'custom']).required(),

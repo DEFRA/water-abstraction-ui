@@ -1,7 +1,7 @@
 'use strict';
 
-const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+const { formFactory, fields } = require('shared/lib/forms/');
 
 /**
  * Gets an array of form choices for the billable quantity
@@ -50,13 +50,13 @@ const getQuantityRadio = authorisedAnnualQuantity => fields.radio('quantity', {
   choices: getRadioChoices(authorisedAnnualQuantity)
 });
 
-const twoPartTariffQuantityForm = (request, transaction) => {
+const twoPartTariffQuantityForm = (request, billingVolume) => {
   const { csrfToken } = request.view;
 
-  const { batchId, invoiceLicenceId, transactionId } = request.params;
-  const { authorisedAnnualQuantity } = transaction.chargeElement;
+  const { batchId, licenceId, billingVolumeId } = request.params;
+  const { authorisedAnnualQuantity } = billingVolume.chargeElement;
 
-  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${invoiceLicenceId}/transaction/${transactionId}`;
+  const action = `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}/billing-volume/${billingVolumeId}`;
 
   const f = formFactory(action, 'POST');
 
@@ -66,12 +66,15 @@ const twoPartTariffQuantityForm = (request, transaction) => {
   return f;
 };
 
-const twoPartTariffQuantitySchema = transaction => {
-  const maxQuantity = parseFloat(transaction.chargeElement.authorisedAnnualQuantity);
+const twoPartTariffQuantitySchema = billingVolume => {
+  const maxQuantity = parseFloat(billingVolume.chargeElement.maxAnnualQuantity);
   return {
     csrf_token: Joi.string().uuid().required(),
     quantity: Joi.string().valid(['authorised', 'custom']).required(),
-    customQuantity: Joi.when('quantity', { is: 'custom', then: Joi.number().required().min(0).max(maxQuantity) })
+    customQuantity: Joi.when('quantity', {
+      is: 'custom',
+      then: Joi.number().required().min(0).max(maxQuantity)
+    })
   };
 };
 

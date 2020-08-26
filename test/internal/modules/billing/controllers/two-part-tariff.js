@@ -5,8 +5,7 @@ const {
   experiment,
   test,
   beforeEach,
-  afterEach,
-  fail
+  afterEach
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
@@ -79,7 +78,7 @@ const batchLicences = [
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
-const getTransactionReviewRequest = payload => (
+const getBillingVolumeReviewRequest = payload => (
   {
     view: {
       csrfToken: '00000000-0000-0000-0000-000000000000'
@@ -89,30 +88,33 @@ const getTransactionReviewRequest = payload => (
         id: 'test-batch-id',
         status: 'review'
       },
-      invoiceLicence: {
-        id: 'test-invoice-licence-id',
-        licence: {
-          licenceNumber: '01/123/ABC'
-        },
-        transactions: [
-          {
-            id: 'test-transaction-id',
-            billingVolume: {
-              twoPartTariffError: true,
-              twoPartTariffStatus: 20
-            },
-            chargeElement: {
-              description: 'Test description',
-              authorisedAnnualQuantity: 25.3
-            }
+      licence: {
+        id: 'test-licence-id',
+        licenceNumber: '01/123/ABC'
+      },
+      billingVolume: {
+        id: 'test-billing-volume-id',
+        volume: 2.5,
+        calculatedVolume: 3.5,
+        twoPartTariffError: true,
+        twoPartTariffStatus: 20,
+        chargeElement: {
+          id: 'test-charge-element-id',
+          description: 'Test description',
+          authorisedAnnualQuantity: 25.3,
+          billableAnnualQuantity: 8.5,
+          maxAnnualQuantity: 25.3,
+          purposeUse: {
+            id: 'test-purpose-use-id',
+            name: 'Spritzing leeks'
           }
-        ]
+        }
       }
     },
     params: {
       batchId: 'test-batch-id',
-      invoiceLicenceId: 'test-invoice-licence-id',
-      transactionId: 'test-transaction-id'
+      licenceId: 'test-licence-id',
+      billingVolumeId: 'test-billing-volume-id'
     },
     payload
   }
@@ -145,7 +147,9 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
     sandbox.stub(services.water.billingInvoiceLicences, 'deleteInvoiceLicence');
-    sandbox.stub(services.water.billingTransactions, 'updateVolume');
+    sandbox.stub(services.water.billingVolumes, 'updateVolume');
+    sandbox.stub(services.water.billingBatches, 'getBatchLicenceBillingVolumes');
+    sandbox.stub(services.water.billingBatches, 'deleteBatchLicence');
   });
 
   afterEach(async () => {
@@ -200,7 +204,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(licence.licenceHolder.firstName).to.equal('forename');
       expect(licence.licenceHolder.lastName).to.equal('surname');
       expect(licence.twoPartTariffStatuses).to.equal('Multiple errors');
-      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/invoice-licence-id-1');
+      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id-1');
     });
 
     test('maps the second licence correctly', async () => {
@@ -311,69 +315,60 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       }
     };
 
-    const invoiceLicence = {
+    const billingVolumes = [{
       id: uuid(),
-      licence: {
-        licenceNumber: '01/234/ABC'
-      },
-      transactions: [{
-        id: uuid(),
-        chargeElement: {
-          description: 'Purpose A - borehole A',
-          purposeUse: purposes.a,
-          abstractionPeriod: abstractionPeriods.allYear
-        },
-        billingVolume: {
-          twoPartTariffError: true,
-          twoPartTariffStatus: 20
-        }
-      },
-      {
-        id: uuid(),
-        chargeElement: {
-          description: 'Purpose A - borehole B',
-          purposeUse: purposes.a,
-          abstractionPeriod: abstractionPeriods.allYear
-        },
-        billingVolume: {
-          twoPartTariffError: false,
-          twoPartTariffStatus: null
-        }
-      },
-      {
-        id: uuid(),
-        chargeElement: {
-          description: 'Purpose A - borehole c',
-          purposeUse: purposes.a,
-          abstractionPeriod: abstractionPeriods.summer
-        },
-        billingVolume: {
-          twoPartTariffError: false,
-          twoPartTariffStatus: null
-        }
-      },
-      {
-        id: uuid(),
-        chargeElement: {
-          description: 'Purpose B - borehole d',
-          purposeUse: purposes.b,
-          abstractionPeriod: abstractionPeriods.summer
-        },
-        billingVolume: {
-          twoPartTariffError: false,
-          twoPartTariffStatus: null
-        }
-      }]
-    };
+      twoPartTariffError: true,
+      twoPartTariffStatus: 20,
+      chargeElement: {
+        description: 'Purpose A - borehole A',
+        purposeUse: purposes.a,
+        abstractionPeriod: abstractionPeriods.allYear
+      }
+    },
+    {
+      id: uuid(),
+      twoPartTariffError: false,
+      twoPartTariffStatus: null,
+      chargeElement: {
+        description: 'Purpose A - borehole B',
+        purposeUse: purposes.a,
+        abstractionPeriod: abstractionPeriods.allYear
+      }
+    },
+    {
+      id: uuid(),
+      twoPartTariffError: false,
+      twoPartTariffStatus: null,
+      chargeElement: {
+        description: 'Purpose A - borehole c',
+        purposeUse: purposes.a,
+        abstractionPeriod: abstractionPeriods.summer
+      }
+    },
+    {
+      id: uuid(),
+      twoPartTariffError: false,
+      twoPartTariffStatus: null,
+      chargeElement: {
+        description: 'Purpose B - borehole d',
+        purposeUse: purposes.b,
+        abstractionPeriod: abstractionPeriods.summer
+      }
+    }];
 
     const request = {
       pre: {
         batch: {
-          id: uuid()
+          id: 'test-batch-id'
+        },
+        licence: {
+          id: 'test-licence-id',
+          licenceNumber: '01/123/ABC'
         }
       },
       params: {
-        invoiceLicenceId: uuid()
+        batchId: 'test-batch-id',
+        licenceId: 'test-licence-id'
       },
       view: {
         foo: 'bar'
@@ -381,7 +376,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     };
 
     beforeEach(async () => {
-      services.water.billingInvoiceLicences.getInvoiceLicence.resolves(invoiceLicence);
+      services.water.billingBatches.getBatchLicenceBillingVolumes.resolves(billingVolumes);
       await controller.getLicenceReview(request, h);
     });
 
@@ -390,15 +385,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(template).to.equal('nunjucks/billing/two-part-tariff-licence-review');
     });
 
-    test('the invoiceLicence is loaded from the water service', async () => {
-      expect(services.water.billingInvoiceLicences.getInvoiceLicence.calledWith(
-        request.params.invoiceLicenceId
+    test('the billing volumes are loaded from the water service for the current batch and selected licence', async () => {
+      expect(services.water.billingBatches.getBatchLicenceBillingVolumes.calledWith(
+        request.params.batchId, request.params.licenceId
       )).to.be.true();
     });
 
     test('the page title is set', async () => {
       const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('Review returns data issues for 01/234/ABC');
+      expect(pageTitle).to.equal('Review returns data issues for 01/123/ABC');
     });
 
     test('other params on request.view are passed through unchanged', async () => {
@@ -412,10 +407,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     });
 
     test('transactions with same purpose and abstraction period are grouped', async () => {
-      const [, { transactionGroups }] = h.view.lastCall.args;
-      expect(transactionGroups).to.be.an.array().length(3);
+      const [, { billingVolumeGroups }] = h.view.lastCall.args;
+      expect(billingVolumeGroups).to.be.an.array().length(3);
 
-      const groups = transactionGroups.map(group => group.map(tx => tx.chargeElement.description));
+      const groups = billingVolumeGroups.map(group => group.map(tx => tx.chargeElement.description));
 
       expect(groups[0]).to.only.include(['Purpose A - borehole A', 'Purpose A - borehole B']);
       expect(groups[1]).to.only.include(['Purpose A - borehole c']);
@@ -423,18 +418,18 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     });
 
     test('grouped transactions have an edit link', async () => {
-      const [, { transactionGroups: [[{ editLink }]] }] = h.view.lastCall.args;
+      const [, { billingVolumeGroups: [[{ editLink }]] }] = h.view.lastCall.args;
       const expectedLink = [
         `/billing/batch/${request.pre.batch.id}`,
-        `/two-part-tariff/licence/${invoiceLicence.id}`,
-        `/transaction/${invoiceLicence.transactions[0].id}`
+        `/two-part-tariff/licence/${request.params.licenceId}`,
+        `/billing-volume/${billingVolumes[0].id}`
       ].join('');
       expect(editLink).to.equal(expectedLink);
     });
 
     test('grouped transactions have a two-part tariff error message', async () => {
-      const [, { transactionGroups: [[{ error }]] }] = h.view.lastCall.args;
-      expect(error).to.equal('Investigating query');
+      const [, { billingVolumeGroups: [[{ error }]] }] = h.view.lastCall.args;
+      expect(error).to.equal('Checking query');
     });
 
     test('a back link is set', async () => {
@@ -443,47 +438,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     });
   });
 
-  experiment('.getTransactionReview', () => {
+  experiment('.getBillingVolumeReview', () => {
     let request;
 
     beforeEach(async () => {
-      request = getTransactionReviewRequest();
-      services.water.licences.getSummaryByDocumentId.resolves({
-
-      });
+      request = getBillingVolumeReviewRequest();
     });
 
-    experiment('when the transaction is not present in the invoiceLicence', () => {
+    experiment('when the billingVolume is present in the request', async () => {
       beforeEach(async () => {
-        request.pre.invoiceLicence.transactions = [];
-      });
-
-      test('a boom 404 is thrown', async () => {
-        try {
-          await controller.getTransactionReview(request, h);
-          fail();
-        } catch (err) {
-          expect(err.isBoom).to.be.true();
-          expect(err.output.statusCode).to.equal(404);
-        }
-      });
-    });
-
-    experiment('when the transaction is present in the invoiceLicence', async () => {
-      beforeEach(async () => {
-        request.pre.invoiceLicence.transactions = [
-          {
-            id: 'test-transaction-id',
-            billingVolume: {
-              twoPartTariffError: true,
-              twoPartTariffStatus: 20
-            },
-            chargeElement: {
-              description: 'Test description',
-              authorisedAnnualQuantity: 25.3
-            }
-          }
-        ];
         services.crm.documents.getWaterLicence.resolves({
           document_id: 'test-document_id'
         });
@@ -553,7 +516,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
               }
             ]
           } });
-        await controller.getTransactionReview(request, h);
+        await controller.getBillingVolumeReview(request, h);
       });
 
       test('uses the correct template', async () => {
@@ -563,7 +526,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('sets an error message in the view', async () => {
         const [, { error }] = h.view.lastCall.args;
-        expect(error).to.equal('Investigating query');
+        expect(error).to.equal('Checking query');
       });
 
       test('sets the invoice licence in the view', async () => {
@@ -627,14 +590,14 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         });
       });
 
-      test('has the correct transaction', async () => {
-        const [, { transaction }] = h.view.lastCall.args;
-        expect(transaction).to.equal(request.pre.invoiceLicence.transactions[0]);
+      test('has the correct billingVolume', async () => {
+        const [, { billingVolume }] = h.view.lastCall.args;
+        expect(billingVolume).to.equal(request.pre.billingVolume);
       });
 
       test('has a back link', async () => {
         const [, { back }] = h.view.lastCall.args;
-        expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff-review/test-invoice-licence-id');
+        expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id');
       });
 
       experiment('view.form', () => {
@@ -652,7 +615,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         });
 
         test('has the correct action path', async () => {
-          expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id');
+          expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id');
         });
 
         test('has a CSRF token', async () => {
@@ -697,15 +660,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
   });
-  experiment('.postTransactionReview', () => {
+  experiment('.postBillingVolumeReview', () => {
     let request;
 
     experiment('when no radio button is selected', async () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000'
         });
-        await controller.postTransactionReview(request, h);
+        await controller.postBillingVolumeReview(request, h);
       });
 
       test('the form is redisplayed', async () => {
@@ -725,12 +688,12 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     experiment('when a custom quantity is <0', async () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'custom',
           customQuantity: -4.42
         });
-        await controller.postTransactionReview(request, h);
+        await controller.postBillingVolumeReview(request, h);
       });
 
       test('the form is redisplayed', async () => {
@@ -750,12 +713,12 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     experiment('when a custom quantity is > annual authorised volume', async () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'custom',
           customQuantity: 100.3
         });
-        await controller.postTransactionReview(request, h);
+        await controller.postBillingVolumeReview(request, h);
       });
 
       test('the form is redisplayed', async () => {
@@ -775,32 +738,32 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     experiment('when the annual authorised quantity is selected', async () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'authorised'
         });
-        await controller.postTransactionReview(request, h);
+        await controller.postBillingVolumeReview(request, h);
       });
 
       test('the user is redirected to a confirmation page', async () => {
         const [path] = h.redirect.lastCall.args;
-        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id/confirm?quantity=25.3');
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id/confirm?quantity=25.3');
       });
     });
 
     experiment('when a valid custom quantity is selected', async () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'custom',
           customQuantity: 12.43
         });
-        await controller.postTransactionReview(request, h);
+        await controller.postBillingVolumeReview(request, h);
       });
 
       test('the user is redirected to a confirmation page', async () => {
         const [path] = h.redirect.lastCall.args;
-        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/transaction/test-transaction-id/confirm?quantity=12.43');
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id/confirm?quantity=12.43');
       });
     });
   });
@@ -809,7 +772,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     let request;
 
     beforeEach(async () => {
-      request = getTransactionReviewRequest();
+      request = getBillingVolumeReviewRequest();
       request.query = { quantity: 10.4 };
       await controller.getConfirmQuantity(request, h);
     });
@@ -826,7 +789,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('outputs the correct back link to the view', async () => {
       const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff-licence-review/test-invoice-licence-id/transaction/test-transaction-id');
+      expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id');
     });
 
     test('outputs the quantity to the view', async () => {
@@ -834,10 +797,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(quantity).to.equal(request.query.quantity);
     });
 
-    test('outputs the invoice licence to the view', async () => {
-      const [, { invoiceLicence }] = h.view.lastCall.args;
-      expect(invoiceLicence).to.be.an.object();
-      expect(invoiceLicence.id).to.equal('test-invoice-licence-id');
+    test('outputs the licence to the view', async () => {
+      const [, { licence }] = h.view.lastCall.args;
+      expect(licence).to.be.an.object();
+      expect(licence.id).to.equal('test-licence-id');
     });
 
     experiment('the form', () => {
@@ -875,7 +838,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     experiment('when the quantity is valid', () => {
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           quantity: 10.4,
           csrf_token: '00000000-0000-0000-0000-000000000000'
         });
@@ -883,46 +846,42 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       experiment('when there are still other transactions with two-part tariff errors', () => {
         beforeEach(async () => {
-          services.water.billingInvoiceLicences.getInvoiceLicence.resolves({
-            transactions: [{
-              twoPartTariffError: false
-            }, {
-              twoPartTariffError: true
-            }]
-          });
+          services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
+            twoPartTariffError: false
+          }, {
+            twoPartTariffError: true
+          }]);
 
           await controller.postConfirmQuantity(request, h);
         });
 
         test('the transaction is updated', async () => {
-          expect(services.water.billingTransactions.updateVolume.calledWith(
-            request.params.transactionId, request.payload.quantity
+          expect(services.water.billingVolumes.updateVolume.calledWith(
+            request.params.billingVolumeId, request.payload.quantity
           )).to.be.true();
         });
 
         test('the user is redirected back to the licence review screen', async () => {
           expect(h.redirect.calledWith(
-            '/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id'
+            '/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id'
           )).to.be.true();
         });
       });
 
       experiment('when all the two-part tariff errors have been resolved', () => {
         beforeEach(async () => {
-          services.water.billingInvoiceLicences.getInvoiceLicence.resolves({
-            transactions: [{
-              twoPartTariffError: false
-            }, {
-              twoPartTariffError: false
-            }]
-          });
+          services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
+            twoPartTariffError: false
+          }, {
+            twoPartTariffError: false
+          }]);
 
           await controller.postConfirmQuantity(request, h);
         });
 
         test('the transaction is updated', async () => {
-          expect(services.water.billingTransactions.updateVolume.calledWith(
-            request.params.transactionId, request.payload.quantity
+          expect(services.water.billingVolumes.updateVolume.calledWith(
+            request.params.billingVolumeId, request.payload.quantity
           )).to.be.true();
         });
 
@@ -938,7 +897,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       let result;
 
       beforeEach(async () => {
-        request = getTransactionReviewRequest({
+        request = getBillingVolumeReviewRequest({
           quantity: -24,
           csrf_token: '00000000-0000-0000-0000-000000000000'
         });
@@ -947,7 +906,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
 
       test('the transaction is not updated', async () => {
-        expect(services.water.billingTransactions.updateVolume.called).to.be.false();
+        expect(services.water.billingVolumes.updateVolume.called).to.be.false();
       });
 
       test('a bad request response is returned', async () => {
@@ -963,14 +922,14 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     beforeEach(async () => {
       request = {
         params: {
-          invoiceLicenceId: 'test-invoice-licence-id'
+          licenceId: 'test-licence-id'
         },
         pre: {
           batch: {
             id: 'test-batch-id'
           },
-          invoiceLicence: {
-            id: 'test-invoice-licence-id'
+          licence: {
+            id: 'test-licence-id'
           }
         },
         view: {
@@ -999,7 +958,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('the form method and action is correct', async () => {
       const [, { form }] = h.view.lastCall.args;
       expect(form.method).to.equal('POST');
-      expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id/remove');
+      expect(form.action).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/remove');
     });
 
     test('the form has a hidden field with the CSRF token', async () => {
@@ -1022,7 +981,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('sets the back link correctly', async () => {
       const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal(`/billing/batch/test-batch-id/two-part-tariff/licence/test-invoice-licence-id`);
+      expect(back).to.equal(`/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id`);
     });
   });
 
@@ -1033,15 +992,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       request = {
         params: {
           batchId: 'test-batch-id',
-          invoiceLicenceId: 'test-invoice-licence-id'
+          licenceId: 'test-licence-id'
         }
       };
       await controller.postRemoveLicence(request, h);
     });
 
     test('calls the correct water API method to delete the licence from the batch', async () => {
-      expect(services.water.billingInvoiceLicences.deleteInvoiceLicence.calledWith(
-        'test-invoice-licence-id'
+      expect(services.water.billingBatches.deleteBatchLicence.calledWith(
+        'test-batch-id', 'test-licence-id'
       )).to.be.true();
     });
 

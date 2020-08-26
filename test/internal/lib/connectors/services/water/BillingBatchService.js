@@ -165,6 +165,7 @@ experiment('services/water/BillingBatchService', () => {
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}`);
     });
   });
+
   experiment('.getBatchLicences', () => {
     test('passes the expected URL to the service request', async () => {
       const batchId = uuid();
@@ -180,6 +181,26 @@ experiment('services/water/BillingBatchService', () => {
       await service.approveBatchReview(batchId);
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve-review`);
+    });
+  });
+
+  experiment('.getBatchLicenceBillingVolumes', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      const licenceId = uuid();
+      await service.getBatchLicenceBillingVolumes(batchId, licenceId);
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}/billing-volumes`);
+    });
+  });
+
+  experiment('.deleteBatchLicence', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      const licenceId = uuid();
+      await service.deleteBatchLicence(batchId, licenceId);
+      const [url] = serviceRequest.delete.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}`);
     });
   });
 });

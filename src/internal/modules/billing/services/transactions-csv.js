@@ -18,6 +18,7 @@ const getAgreementsString = agreements => agreements.map(agreement => agreement.
 
 const getTransactionData = trans => ({
   value: numberFormatter.penceToPound(trans.value, true),
+  isDeMinimis: trans.isDeMinimis,
   isCredit: trans.isCredit,
   isCompensationCharge: trans.isCompensationCharge,
   source: trans.chargeElement.source,

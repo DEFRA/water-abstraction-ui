@@ -1,12 +1,8 @@
-{% macro licenceBillingContactMetadata(invoice, invoiceLicence) %}
+{% macro licenceBillingContactMetadata(licence) %}
   <dl class="meta govuk-!-margin-bottom-3">
     <div class="meta__row">
       <dt class="meta__key">Licence</dt>
-      <dd class="meta__value">{{ invoiceLicence.licence.licenceNumber }}</dd>
-    </div>
-    <div class="meta__row">
-      <dt class="meta__key">Billing contact</dt>
-      <dd class="meta__value">{{ invoice.invoiceAccount.company.name }}</dd>
+      <dd class="meta__value">{{ licence.licenceNumber }}</dd>
     </div>
   </dl>
 {% endmacro %}

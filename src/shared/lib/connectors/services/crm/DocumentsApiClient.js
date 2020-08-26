@@ -26,18 +26,6 @@ class DocumentsApiClient extends APIClient {
   }
 
   /**
-   * Set licence name
-   * @param {String} documentId - the CRM document ID identifying the permit
-   * @param {String} name - the user-defined document name
-   * @return {Promise} resolves when name updated
-   */
-  setLicenceName (documentId, name) {
-    return this.updateOne(documentId, {
-      document_name: name
-    });
-  };
-
-  /**
    * Finds a single water abstraction licence in CRM
    * by licence number
    * @param {String} licenceRef - the licence number

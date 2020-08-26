@@ -13,7 +13,7 @@ const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/b
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
-const sessionForms = require('../lib/session-forms');
+const sessionForms = require('shared/lib/session-forms');
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -57,8 +57,7 @@ const postBillingBatchType = async (request, h) => {
     ));
   }
 
-  const key = sessionForms.set(request, billingTypeForm);
-  return h.redirect('/billing/batch/type?' + queryString.stringify({ form: key }));
+  return h.postRedirectGet(billingTypeForm);
 };
 
 /**
@@ -112,9 +111,8 @@ const postBillingBatchRegion = async (request, h) => {
 
   if (!billingRegionForm.isValid) {
     const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
-
-    const key = sessionForms.set(request, billingRegionForm);
-    return h.redirect(getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason, key));
+    const path = getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason);
+    return h.postRedirectGet(billingRegionForm, path);
   }
 
   try {

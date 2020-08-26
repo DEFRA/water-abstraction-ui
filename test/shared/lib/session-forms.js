@@ -3,7 +3,7 @@
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
-const sessionForms = require('internal/modules/billing/lib/session-forms');
+const sessionForms = require('shared/lib/session-forms');
 
 const sandbox = require('sinon').createSandbox();
 

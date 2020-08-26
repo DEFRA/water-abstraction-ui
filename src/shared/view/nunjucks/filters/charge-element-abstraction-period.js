@@ -1,10 +1,12 @@
+'use strict';
+
 const { abstractionPeriod } = require('./abstraction-period');
 
 const getStartDate = chargeElement =>
-  `${chargeElement.abstractionPeriodStartDay}/${chargeElement.abstractionPeriodStartMonth}`;
+  `${chargeElement.abstractionPeriod.startDay}/${chargeElement.abstractionPeriod.startMonth}`;
 
 const getEndDate = chargeElement =>
-  `${chargeElement.abstractionPeriodEndDay}/${chargeElement.abstractionPeriodEndMonth}`;
+  `${chargeElement.abstractionPeriod.endDay}/${chargeElement.abstractionPeriod.endMonth}`;
 
 /**
  * Given a charge element object, returns an abstraction period in the format

@@ -1,0 +1,24 @@
+{% macro chargeElementQuantity(chargeElement) %}
+  {% if chargeElement.billableAnnualQuantity | isFinite %}
+    {{ chargeElement.billableAnnualQuantity + 'ML'}}
+  </br>
+  {{' (' + chargeElement.authorisedAnnualQuantity + 'ML authorised)' }}
+{% else %}
+  {{ chargeElement.authorisedAnnualQuantity + 'ML authorised' }}
+{% endif %}
+{% endmacro %}
+
+{% macro reportedVolume(billingVolume) %}
+{% if billingVolume.calculatedVolume | isFinite %}
+  {{ billingVolume.calculatedVolume + 'ML' }}
+{% endif %}
+{% endmacro %}
+
+{% macro billableVolume(billingVolume) %}
+{% if billingVolume.volume | isFinite %}
+  {{ billingVolume.volume + 'ML' }}
+  {% if billingVolume.volume != billingVolume.calculatedVolume and billingVolume.calculatedVolume | isFinite %}
+    {{ ' - edited' }}
+  {% endif %}
+{% endif %}
+{% endmacro %}

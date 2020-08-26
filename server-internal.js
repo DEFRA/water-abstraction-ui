@@ -1,7 +1,7 @@
 require('dotenv').config();
 require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 
-const { createPlugins } = require('./server-common');
+const { createPlugins, createCache } = require('./server-common');
 
 // -------------- Require vendor code -----------------
 const Hapi = require('@hapi/hapi');
@@ -25,12 +25,9 @@ const authPlugin = {
 };
 
 // Define server with REST API cache mechanism
-// @TODO replace with redis
 const server = Hapi.server({
   ...config.server,
-  cache: {
-    provider: require('shared/lib/catbox-rest-api')
-  }
+  cache: createCache(config)
 });
 
 const pluginsArray = [
@@ -59,6 +56,14 @@ const pluginsArray = [
   }, {
     plugin: require('shared/plugins/error'),
     options: { logger }
+  }, {
+    plugin: require('internal/modules/charge-information/plugins/charge-information')
+  },
+  {
+    plugin: require('shared/plugins/cached-service-request'),
+    options: {
+      services: connectors
+    }
   }
 ];
 

@@ -62,7 +62,8 @@ const invoicesForBatch = [
             billingVolume: {
               calculatedVolume: 10.3,
               volume: 9.1
-            }
+            },
+            isDeMinimis: false
           },
           {
             value: 4006,
@@ -103,7 +104,8 @@ const invoicesForBatch = [
             billingVolume: {
               calculatedVolume: null,
               volume: 9.1
-            }
+            },
+            isDeMinimis: true
           }
         ],
         licence: {
@@ -172,6 +174,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(transactionData.billableAnnualQuantity).to.equal(transaction.chargeElement.billableAnnualQuantity);
       expect(transactionData.volume).to.equal(transaction.volume);
       expect(transactionData.calculatedVolume).to.equal(transaction.billingVolume.calculatedVolume);
+      expect(transactionData.isDeMinimis).to.equal(transaction.isDeMinimis);
     });
 
     test('handles multiple agreements', async () => {
@@ -238,7 +241,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'postcode',
       'country',
       'volume',
-      'calculatedVolume'
+      'calculatedVolume',
+      'isDeMinimis'
     ];
 
     beforeEach(async () => {

@@ -105,7 +105,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       const args = h.view.lastCall.args[1];
       expect(args.caption).to.equal('Licence 01/123');
       expect(args.back).to.equal('/manage');
-      expect(args.pageTitle).to.equal('Select an existing contact for test company name');
+      expect(args.pageTitle).to.equal('Setup a contact for test company name');
     });
 
     test('calls the data service to get the company contacts with the correct company id', async () => {

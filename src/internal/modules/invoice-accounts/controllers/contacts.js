@@ -22,7 +22,7 @@ const getContactSelect = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
-    pageTitle: `Select an existing contact for ${session.viewData.companyName}`,
+    pageTitle: `Setup a contact for ${session.viewData.companyName}`,
     back: '/manage',
     form: sessionForms.get(request, selectContactForm(request, contacts, selectedContact))
   });

@@ -70,6 +70,7 @@ const selectContactForm = (request, contacts, selectedContact = null) => {
         message: 'Select an existing contact or select add new person or department'
       }
     },
+    hint: contactChoices.length > 2 ? 'Existing contacts' : '',
     choices: contactChoices
   }, isEmpty(selectedContact) ? null : contactChoices.find(contact => contact.value === getSelectedOption(selectedContact).id)));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

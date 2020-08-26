@@ -19,6 +19,25 @@ class CompaniesService extends ServiceClient {
     };
     return this.serviceRequest.get(url, options);
   }
-}
 
+  getContacts (entityId) {
+    const url = this.joinUrl('companies', entityId, 'contacts');
+    return this.serviceRequest.get(url);
+  }
+
+  getAddresses (entityId) {
+    const url = this.joinUrl('companies', entityId, 'addresses');
+    return this.serviceRequest.get(url);
+  }
+
+  getCompany (entityId) {
+    const url = this.joinUrl('companies', entityId);
+    return this.serviceRequest.get(url);
+  }
+
+  postInvoiceAccount (entityId, body) {
+    const url = this.joinUrl('companies', entityId, 'invoice-accounts');
+    return this.serviceRequest.post(url, { body });
+  }
+}
 module.exports = CompaniesService;

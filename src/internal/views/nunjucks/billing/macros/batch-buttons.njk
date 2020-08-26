@@ -1,8 +1,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% macro cancelBatchButton(batch) %}
-  {% if batch.status in ['ready', 'review'] %}
-  {{
+  {% if batch.status in['ready', 'review'] %}
+    {{
     govukButton({
       text: "Cancel bill run",
       href: '/billing/batch/' + batch.id + '/cancel',
@@ -13,8 +13,8 @@
 {% endmacro %}
 
 {% macro sendBatchButton(batch) %}
-  {% if batch.status in ['ready', 'review'] %}
-  {{
+  {% if batch.status in['ready', 'review'] %}
+    {{
     govukButton({
       text: "Confirm bill run",
       href: '/billing/batch/' + batch.id + '/confirm',
@@ -24,21 +24,23 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeAccountFromBatchButton(batch, invoice) %}
-  {{
+{% macro removeInvoiceFromBatchButton(batch, invoice) %}
+  {% if batch.status == 'ready' %}
+    {{
     govukButton({
       text: "Remove from bill run",
-      href: '/billing/batch/' + batch.id + '/delete-account/' + invoice.id,
+      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })
   }}
+  {% endif %}
 {% endmacro %}
 
-{% macro removeLicenceFromBatchButton(batch, invoiceLicence) %}
-    {{
+{% macro removeLicenceFromBatchButton(batch, licence) %}
+  {{
       govukButton({
         text: "Remove from bill run",
-        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + invoiceLicence.id + '/remove',
+        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + licence.id + '/remove',
         classes: "govuk-button--secondary"
       })
     }}
@@ -64,4 +66,3 @@
     })
   }}
 {% endmacro %}
-

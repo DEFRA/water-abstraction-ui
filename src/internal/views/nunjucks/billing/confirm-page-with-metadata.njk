@@ -12,15 +12,15 @@
       {{ batchTitle(pageTitle, batch, false) }}
 
       <div class="govuk-!-margin-bottom-3">
-      {% if metadataType === 'batch' %}
-        {{ batchMetadata(batch) }}
-      {% elif metadataType === 'invoice' %}
-        {{ invoiceMetadata(account, licence) }}
-      {% elif metadataType === 'licence' %}
-        {{ licenceBillingContactMetadata(invoice, invoiceLicence) }}
-      {% endif %}
+        {% if metadataType === 'batch' %}
+          {{ batchMetadata(batch) }}
+        {% elif metadataType === 'invoice' %}
+          {{ invoiceMetadata(batch, invoice) }}
+        {% elif metadataType === 'licence' %}
+          {{ licenceBillingContactMetadata(licence) }}
+        {% endif %}
       </div>
-      
+
       {{ formRender(form) }}
     </div>
   </div>

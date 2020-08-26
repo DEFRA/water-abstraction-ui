@@ -14,11 +14,17 @@ const getBatch = request =>
 const getInvoiceLicence = request =>
   water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
 
-const getInvoiceLicenceInvoice = request => {
-  const { batchId } = request.params;
-  const { invoiceId } = request.pre.invoiceLicence;
-  return water.billingBatches.getBatchInvoice(batchId, invoiceId);
-};
+const getInvoiceLicenceInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.pre.invoiceLicence.invoiceId);
+
+const getInvoice = request =>
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.params.invoiceId);
+
+const getLicence = request =>
+  water.licences.getLicenceById(request.params.licenceId);
+
+const getBillingVolume = request =>
+  water.billingVolumes.getBillingVolume(request.params.billingVolumeId);
 
 const config = {
   loadBatch: {
@@ -35,6 +41,21 @@ const config = {
     connector: getInvoiceLicenceInvoice,
     key: 'invoiceLicenceId',
     errorMessage: 'Invoice not found'
+  },
+  loadInvoice: {
+    connector: getInvoice,
+    key: 'invoiceId',
+    errorMessage: 'Invoice not found'
+  },
+  loadLicence: {
+    connector: getLicence,
+    key: 'licenceId',
+    errorMessage: 'Licence not found'
+  },
+  loadBillingVolume: {
+    connector: getBillingVolume,
+    key: 'billingVolumeId',
+    errorMessage: 'Billing volume not found'
   }
 };
 
@@ -67,6 +88,7 @@ const checkBatchStatus = async (request, h, status) => {
 };
 
 const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
+const checkBatchStatusIsReady = partialRight(checkBatchStatus, 'ready');
 
 const validBatchStatusSchema = Joi.array().min(1).required().items(
   Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent')
@@ -103,8 +125,13 @@ const loadRegions = async (request, h) => {
 
 exports.loadBatch = partial(preHandler, config.loadBatch);
 exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
+exports.checkBatchStatusIsReady = checkBatchStatusIsReady;
+
 exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
 exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
+exports.loadInvoice = partial(preHandler, config.loadInvoice);
+exports.loadLicence = partial(preHandler, config.loadLicence);
+exports.loadBillingVolume = partial(preHandler, config.loadBillingVolume);
 
 exports.redirectOnBatchStatus = redirectOnBatchStatus;
 exports.loadRegions = loadRegions;

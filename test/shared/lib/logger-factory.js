@@ -31,7 +31,9 @@ experiment('shared/lib/logger-factory', () => {
           'user-agent': 'safari'
         }
       }),
-      url: 'http://example.com/testing'
+      url: {
+        href: 'http://example.com/testing'
+      }
     };
 
     beforeEach(async () => {

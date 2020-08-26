@@ -6,11 +6,13 @@
 
 {% from "badge.njk" import badge %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "./nunjucks/billing/macros/totals.njk" import billRunTotal, invoicesTotal, creditNoteTotal, chargeOrDash %}
+{% from "./nunjucks/billing/macros/totals.njk" import billRunTotal,
+invoicesTotal,
+creditNoteTotal,
+chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, sendBatchButton, downloadBatchButton %}
 {% from "./nunjucks/billing/macros/invoices-table.njk" import invoicesTable %}
-
 
 {% block content %}
 
@@ -29,59 +31,58 @@
 
   {{ batchHeader(pageTitle, batch) }}
 
-
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-!-margin-bottom-0">
-      {{ billRunTotal(batch.totals.netTotal) }}
+        {{ billRunTotal(batch.totals.netTotal) }}
       </h2>
     </div>
   </div>
 
   {% if batch.totals.creditNoteCount %}
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
-    <h2>
-      {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
-    </h2>
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
+        </h2>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
+        </h2>
+      </div>
     </div>
-    <div class="govuk-grid-column-one-half">
-    <h2>
-      {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
-    </h2>
-    </div>
-  </div>
   {% endif %}
 
   {% if isEditable %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <section class="govuk-!-margin-bottom-6">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <section class="govuk-!-margin-bottom-6">
 
-        {{ sendBatchButton(batch) }}
-        {{ cancelBatchButton(batch) }}
+          {{ sendBatchButton(batch) }}
+          {{ cancelBatchButton(batch) }}
 
-      </section>
+        </section>
+      </div>
     </div>
-  </div>
 
   {% endif %}
-    
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-6">
 
       {% if isAnnual %}
-        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-5" />
+        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-5"/>
       {% else %}
-        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-9" />
+        <hr class="govuk-section-break section-break--heavy govuk-!-margin-bottom-9"/>
         <h2 class="govuk-heading-l">{{ subHeading }}</h2>
       {% endif %}
 
       {{ downloadBatchButton(batch) }}
     </div>
   </div>
-  
+
   <div class="govuk-grid-row">
 
     <div class="govuk-grid-column-full govuk-!-margin-top-5">
@@ -89,13 +90,13 @@
       {% if isAnnual %}
 
         {% set waterUndertakersHtml %}
-          <h2 class="govuk-heading-l">Water companies</h2> 
-          {{ invoicesTable(batch, invoices.waterUndertakers, isEditable )}}
+        <h2 class="govuk-heading-l">Water companies</h2>
+        {{ invoicesTable(batch, invoices.waterUndertakers )}}
         {% endset %}
 
         {% set otherAbstractorsHtml %}
-          <h2 class="govuk-heading-l">Other abstractors</h2> 
-          {{ invoicesTable(batch, invoices.otherAbstractors, isEditable )}}
+        <h2 class="govuk-heading-l">Other abstractors</h2>
+        {{ invoicesTable(batch, invoices.otherAbstractors )}}
         {% endset %}
 
         {{ govukTabs({
@@ -118,11 +119,10 @@
         }) }}
 
       {% else %}
-        {{ invoicesTable(batch, invoices, isEditable )}}
+        {{ invoicesTable(batch, invoices )}}
       {% endif %}
 
     </div>
   </div>
 
 {% endblock %}
-

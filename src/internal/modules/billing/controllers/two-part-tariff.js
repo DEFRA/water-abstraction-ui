@@ -1,4 +1,4 @@
-const { find, partialRight } = require('lodash');
+const { partialRight } = require('lodash');
 const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
@@ -6,6 +6,7 @@ const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quant
 const confirmForm = require('../forms/confirm-form');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
+const routing = require('../lib/routing');
 
 const forms = require('shared/lib/forms');
 
@@ -48,17 +49,17 @@ const getTwoPartTariffViewReady = partialRight(getTwoPartTariffAction, 'ready');
  * Allows user to view issues with a single invoice licence
  */
 const getLicenceReview = async (request, h) => {
-  const { batch } = request.pre;
-  const { invoiceLicenceId } = request.params;
+  const { batch, licence } = request.pre;
+  const { licenceId } = request.params;
 
-  const invoiceLicence = await services.water.billingInvoiceLicences.getInvoiceLicence(invoiceLicenceId);
+  const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
 
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
-    pageTitle: `Review returns data issues for ${invoiceLicence.licence.licenceNumber}`,
+    pageTitle: `Review returns data issues for ${licence.licenceNumber}`,
     ...request.view,
     batch,
-    invoiceLicence,
-    transactionGroups: twoPartTariff.getTransactionGroups(batch, invoiceLicence),
+    licence,
+    billingVolumeGroups: twoPartTariff.getBillingVolumeGroups(batch, licence, billingVolumes),
     back: `/billing/batch/${batch.id}/two-part-tariff-review`
   });
 };
@@ -83,47 +84,37 @@ const getCurrentLicenceData = async licenceRef => {
   }
 };
 
-const getRequestTransaction = request => {
-  const { transactionId } = request.params;
-  const transaction = find(request.pre.invoiceLicence.transactions, { id: transactionId });
-  if (!transaction) {
-    throw Boom.notFound(`Transaction ${transactionId} not found`);
-  }
-  return transaction;
-};
-
 /**
  * Allows user to set two-part tariff return quantities during
  * two-part tariff review
  */
-const getTransactionReview = async (request, h, form) => {
-  const { batch, invoiceLicence } = request.pre;
+const getBillingVolumeReview = async (request, h, form) => {
+  const { batch, licence, billingVolume } = request.pre;
 
-  const transaction = getRequestTransaction(request);
-  const licenceData = await getCurrentLicenceData(invoiceLicence.licence.licenceNumber);
+  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
 
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
-    error: twoPartTariff.statusMessages.get(transaction.twoPartTariffStatus),
-    invoiceLicence,
+    error: twoPartTariff.getBillingVolumeError(billingVolume),
+    licence,
     ...request.view,
-    pageTitle: `Review billable quantity ${transaction.chargeElement.description}`,
+    pageTitle: `Review billable quantity ${billingVolume.chargeElement.description}`,
     ...licenceData,
-    transaction,
-    form: form || twoPartTariffQuantityForm.form(request, transaction),
-    back: `/billing/batch/${batch.id}/two-part-tariff-review/${invoiceLicence.id}`
+    billingVolume,
+    form: form || twoPartTariffQuantityForm.form(request, billingVolume),
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
 };
 
 /**
  * Gets the user-selected quantity from the form
  * @param {Object} form - the set quantities form
- * @param {Object} transaction - from water service
+ * @param {Object} billingVolume - from water service
  * @return {Number} returns the quantity selected by user
  */
-const getFormQuantity = (form, transaction) => {
+const getFormQuantity = (form, billingVolume) => {
   const { quantity, customQuantity } = forms.getValues(form);
   if (quantity === 'authorised') {
-    return transaction.chargeElement.authorisedAnnualQuantity;
+    return billingVolume.chargeElement.authorisedAnnualQuantity;
   }
   return customQuantity;
 };
@@ -131,42 +122,39 @@ const getFormQuantity = (form, transaction) => {
 /**
  * Post handler for quantities form
  */
-const postTransactionReview = async (request, h) => {
-  const { batch, invoiceLicence } = request.pre;
-  const transaction = getRequestTransaction(request);
+const postBillingVolumeReview = async (request, h) => {
+  const { batch, billingVolume, licence } = request.pre;
 
   const form = forms.handleRequest(
-    twoPartTariffQuantityForm.form(request, transaction),
+    twoPartTariffQuantityForm.form(request, billingVolume),
     request,
-    twoPartTariffQuantityForm.schema(transaction)
+    twoPartTariffQuantityForm.schema(billingVolume)
   );
 
   if (form.isValid) {
-    const quantity = getFormQuantity(form, transaction);
-    const path = `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/transaction/${transaction.id}/confirm?quantity=${quantity}`;
+    const quantity = getFormQuantity(form, billingVolume);
+    const path = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}/confirm?quantity=${quantity}`;
     return h.redirect(path);
   }
-  return getTransactionReview(request, h, form);
+  return getBillingVolumeReview(request, h, form);
 };
 
 /**
  * Confirmation step when quantity is selected
  */
 const getConfirmQuantity = async (request, h) => {
-  const { batch, invoiceLicence } = request.pre;
+  const { batch, licence, billingVolume } = request.pre;
   const { quantity } = request.query;
-
-  const transaction = getRequestTransaction(request);
 
   const form = twoPartTariffQuantityConfirmForm.form(request, quantity);
 
   return h.view('nunjucks/billing/two-part-tariff-quantities-confirm', {
     ...request.view,
     quantity,
-    invoiceLicence,
+    licence,
     form,
     pageTitle: `You are about to set the billable quantity to ${quantity}ML`,
-    back: `/billing/batch/${batch.id}/two-part-tariff-licence-review/${invoiceLicence.id}/transaction/${transaction.id}`
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`
   });
 };
 
@@ -175,16 +163,25 @@ const getConfirmQuantity = async (request, h) => {
  * Updates the quantity in the water service
  */
 const postConfirmQuantity = async (request, h) => {
-  const { batch, invoiceLicence } = request.pre;
-  const transaction = getRequestTransaction(request);
+  const { batch, licence, billingVolume } = request.pre;
 
-  const schema = twoPartTariffQuantityConfirmForm.schema(transaction);
+  const schema = twoPartTariffQuantityConfirmForm.schema(billingVolume);
   const form = forms.handleRequest(twoPartTariffQuantityConfirmForm.form(request), request, schema);
 
   if (form.isValid) {
     const { quantity } = forms.getValues(form);
-    await services.water.billingTransactions.updateVolume(transaction.id, quantity);
-    return h.redirect(`/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`);
+    await services.water.billingVolumes.updateVolume(billingVolume.id, quantity);
+
+    // If all TPT errors are resolved, go to main TPT batch review screen
+    // If there are still errors, go back to the licence page.
+    const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licence.id);
+    const hasErrors = billingVolumes.some(row => row.twoPartTariffError);
+
+    const path = hasErrors
+      ? routing.getTwoPartTariffLicenceReviewRoute(batch, licence.id)
+      : routing.getBillingBatchRoute(batch);
+
+    return h.redirect(path);
   }
 
   return Boom.badRequest();
@@ -194,10 +191,10 @@ const postConfirmQuantity = async (request, h) => {
  * Confirm removal of licence from TPT return
  */
 const getRemoveLicence = async (request, h) => {
-  const { batch, invoiceLicence } = request.pre;
+  const { batch, licence } = request.pre;
 
   // Confirm form
-  const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}/remove`;
+  const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/remove`;
   const form = confirmForm(request, action, 'Remove licence');
 
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
@@ -206,7 +203,7 @@ const getRemoveLicence = async (request, h) => {
     form,
     metadataType: 'licence',
     pageTitle: `You are about to remove this licence from the bill run`,
-    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicence.id}`
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
 };
 
@@ -214,10 +211,10 @@ const getRemoveLicence = async (request, h) => {
  * Post handler for deleting licence from bill run
  */
 const postRemoveLicence = async (request, h) => {
-  const { batchId, invoiceLicenceId } = request.params;
+  const { batchId, licenceId } = request.params;
 
-  // Delete invoiceLicence from batch
-  await services.water.billingInvoiceLicences.deleteInvoiceLicence(invoiceLicenceId);
+  // Delete licence from batch
+  await services.water.billingBatches.deleteBatchLicence(batchId, licenceId);
 
   // Redirect
   const path = `/billing/batch/${batchId}/two-part-tariff-review`;
@@ -242,15 +239,15 @@ const getApproveReview = (request, h) => {
 
 const postApproveReview = async (request, h) => {
   const { batchId } = request.params;
-  const { data: { event } } = await services.water.billingBatches.approveBatchReview(batchId);
-  return h.redirect(`/waiting/${event.id}?back=0`);
+  const { data: { batch } } = await services.water.billingBatches.approveBatchReview(batchId);
+  return h.redirect(routing.getBillingBatchRoute(batch));
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
-exports.getTransactionReview = getTransactionReview;
-exports.postTransactionReview = postTransactionReview;
+exports.getBillingVolumeReview = getBillingVolumeReview;
+exports.postBillingVolumeReview = postBillingVolumeReview;
 exports.getConfirmQuantity = getConfirmQuantity;
 exports.postConfirmQuantity = postConfirmQuantity;
 exports.getRemoveLicence = getRemoveLicence;

@@ -169,10 +169,10 @@ if (isAcceptanceTestTarget) {
         pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
       }
     },
-    getBillingBatchDeleteAccount: {
+    getBillingBatchDeleteInvoice: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/delete-account/{invoiceId}',
-      handler: controller.getBillingBatchDeleteAccount,
+      path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
+      handler: controller.getBillingBatchDeleteInvoice,
       config: {
         auth: { scope: allowedScopes },
         description: 'Request confirmation to remove invoice from bill run',
@@ -187,13 +187,17 @@ if (isAcceptanceTestTarget) {
             invoiceId: Joi.string().uuid()
           }
         },
-        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
+        pre: [
+          { method: preHandlers.loadBatch, assign: 'batch' },
+          { method: preHandlers.loadInvoice, assign: 'invoice' },
+          preHandlers.checkBatchStatusIsReady
+        ]
       }
     },
-    postBillingBatchDeleteAccount: {
+    postBillingBatchDeleteInvoice: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/delete-account/{accountId}',
-      handler: controller.postBillingBatchDeleteAccount,
+      path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
+      handler: controller.postBillingBatchDeleteInvoice,
       config: {
         auth: { scope: allowedScopes },
         plugins: {
@@ -204,7 +208,7 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: Joi.string().uuid(),
-            accountId: Joi.string().uuid()
+            invoiceId: Joi.string().uuid()
           },
           payload: {
             csrf_token: Joi.string().uuid().required()

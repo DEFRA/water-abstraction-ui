@@ -9,3 +9,4 @@ lcov.info
 jsconfig.json
 .vscode/
 .DS_Store
+temp/

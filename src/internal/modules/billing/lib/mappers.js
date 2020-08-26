@@ -17,9 +17,14 @@ const mapBatchListRow = batch => ({
   link: routing.getBillingBatchRoute(batch)
 });
 
+const isTransactionEdited = transaction => {
+  if (!transaction.billingVolume) return false;
+  return transaction.billingVolume.calculatedVolume !== transaction.billingVolume.volume;
+};
+
 const mapTransaction = transaction => ({
   ...omit(transaction, ['chargeElement']),
-  isEdited: transaction.calculatedVolume !== transaction.volume
+  isEdited: isTransactionEdited(transaction)
 });
 
 const mapChargeElementTransactions = group => {

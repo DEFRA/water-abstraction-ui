@@ -1,3 +1,35 @@
+'use strict';
+
+const Catbox = require('@hapi/catbox');
+const CatboxRedis = require('@hapi/catbox-redis');
+const { pick } = require('lodash');
+
+const getRedisCacheStatus = async (redisConfig, logger) => {
+  let result = 'Not connected';
+
+  try {
+    const options = {
+      ...pick(redisConfig, ['host', 'port', 'password', 'tls']),
+      db: 0
+    };
+
+    const cache = new Catbox.Client(CatboxRedis, options);
+    await cache.start();
+
+    const key = { segment: 'serviceStatus', id: 'testStatus' };
+    await cache.set(key, true, 10000);
+    const value = await cache.get(key);
+
+    if (value) {
+      result = 'Connected';
+    }
+  } catch (err) {
+    logger.error('Cache not connected', err);
+  }
+
+  return result;
+};
+
 const fileCheck = require('../../lib/file-check');
 
 /**
@@ -16,13 +48,15 @@ const getVirusScannerStatus = async () => {
 };
 
 const getServiceStatus = async (request, h) => {
-  const { services } = h.realm.pluginOptions;
-  const [status, virusScanner] = await Promise.all([
+  const { services, redis, logger } = h.realm.pluginOptions;
+
+  const [status, virusScanner, cacheConnection] = await Promise.all([
     services.water.serviceStatus.getServiceStatus(),
-    getVirusScannerStatus()
+    getVirusScannerStatus(),
+    getRedisCacheStatus(redis, logger)
   ]);
 
-  const serviceStatus = Object.assign({}, status.data, { virusScanner });
+  const serviceStatus = Object.assign({}, status.data, { virusScanner }, { cacheConnection });
 
   return request.query.format === 'json'
     ? serviceStatus

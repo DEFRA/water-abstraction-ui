@@ -44,16 +44,31 @@ experiment('internal/modules/billing/routes', () => {
     });
   });
 
-  experiment('.getBillingBatchDeleteAccount', () => {
+  experiment('.getBillingBatchDeleteInvoice', () => {
     test('limits scope to users with billing role', async () => {
-      expect(routes.getBillingBatchDeleteAccount.config.auth.scope)
+      expect(routes.getBillingBatchDeleteInvoice.config.auth.scope)
         .to.only.include([scope.billing]);
+    });
+
+    test('uses the loadBatch pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchDeleteInvoice.config.pre;
+      expect(routePreHandlers[0]).to.equal({ method: preHandlers.loadBatch, assign: 'batch' });
+    });
+
+    test('uses the loadInvoice pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchDeleteInvoice.config.pre;
+      expect(routePreHandlers[1]).to.equal({ method: preHandlers.loadInvoice, assign: 'invoice' });
+    });
+
+    test('uses the checkBatchStatusIsReady pre handler', async () => {
+      const routePreHandlers = routes.getBillingBatchDeleteInvoice.config.pre;
+      expect(routePreHandlers[2]).to.equal(preHandlers.checkBatchStatusIsReady);
     });
   });
 
-  experiment('.postBillingBatchDeleteAccount', () => {
+  experiment('.postBillingBatchDeleteInvoice', () => {
     test('limits scope to users with billing role', async () => {
-      expect(routes.postBillingBatchDeleteAccount.config.auth.scope)
+      expect(routes.postBillingBatchDeleteInvoice.config.auth.scope)
         .to.only.include([scope.billing]);
     });
   });

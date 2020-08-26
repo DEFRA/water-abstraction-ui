@@ -7,54 +7,63 @@
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeLicenceFromBatchButton %}
-
+{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import chargeElementQuantity, reportedVolume, billableVolume %}
 
 {% block content %}
 
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-two-thirds">
-    {{ batchTitle(pageTitle, batch) }}
-    {{ removeLicenceFromBatchButton(batch, invoiceLicence) }}
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      {{ batchTitle(pageTitle, batch) }}
+      {{ removeLicenceFromBatchButton(batch, licence) }}
+    </div>
   </div>
-</div>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
 
-    {% for group in transactionGroups %}
+      {% for group in billingVolumeGroups %}
 
-      {% set insetText %}
+        {% set insetText %}
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ group[0].chargeElement.purposeUse.name }}</h2>
         <p class="govuk-body">{{ group[0].chargeElement.abstractionPeriod | abstractionPeriod }}</p>
-      {% endset %}
+        {% endset %}
 
-      {{ govukInsetText({
+        {{ govukInsetText({
         html : insetText
       }) }}
 
-      <table class="govuk-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Element description</th>
-            <th scope="col" class="govuk-table__header">Issue</th>
-            <th scope="col" class="govuk-table__header">Action</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for transaction in group %}
-          <tr class="govuk-table__row">
-            <td scope="row" class="govuk-table__cell">{{ transaction.chargeElement.description }}</td>
-            <td class="govuk-table__cell">{{ transaction.error | default ('-') }}</td>
-            <td class="govuk-table__cell"><a href="{{ transaction.editLink }}">Change<span class="govuk-visually-hidden"> element {{ transaction.chargeElement.description }}</span></a></td>
-          </tr>
-          {% endfor %}
-  
-        </tbody>
-      </table>
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Element description</th>
+              <th scope="col" class="govuk-table__header">Element quantities</th>
+              <th scope="col" class="govuk-table__header">Reported</th>
+              <th scope="col" class="govuk-table__header">Billable</th>
+              <th scope="col" class="govuk-table__header">Issue</th>
+              <th scope="col" class="govuk-table__header">Action</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for billingVolume in group %}
+              <tr class="govuk-table__row">
+                <td scope="row" class="govuk-table__cell">{{ billingVolume.chargeElement.description }}</td>
+                <td class="govuk-table__cell">{{ chargeElementQuantity(billingVolume.chargeElement) }}</td>
+                <td class="govuk-table__cell">{{ reportedVolume(billingVolume) }}</td>
+                <td class="govuk-table__cell">{{ billableVolume(billingVolume) }}</td>
+                <td class="govuk-table__cell">{{ billingVolume.error | default ('-') }}</td>
+                <td class="govuk-table__cell">
+                  <a href="{{ billingVolume.editLink }}">Change<span class="govuk-visually-hidden">
+                      element
+                      {{ billingVolume.chargeElement.description }}</span></a>
+                </td>
+              </tr>
+            {% endfor %}
 
-    {% endfor %}
+          </tbody>
+        </table>
+
+      {% endfor %}
+    </div>
   </div>
-</div>
-
 
 {% endblock %}

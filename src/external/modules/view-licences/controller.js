@@ -1,5 +1,3 @@
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-
 const services = require('../../lib/connectors/services');
 
 const config = require('external/config');
@@ -88,9 +86,10 @@ const getLicenceRename = (request, h, form) => {
  * @param {String} request.payload.name - the new name for the licence
  * @param {Object} reply - the HAPI HTTP response
  */
-async function postLicenceRename (request, h) {
+const postLicenceRename = async (request, h) => {
   const { documentId } = request.params;
   const { documentName } = request.licence.summary;
+  const { userName } = request.defra;
   const form = handleRequest(renameLicenceForm(request, documentName), request, renameLicenceSchema, { abortEarly: true });
 
   // Validation error - redisplay form
@@ -100,11 +99,9 @@ async function postLicenceRename (request, h) {
 
   // Rename licence
   const { name } = getValues(form);
-  const { error } = await services.crm.documents.setLicenceName(documentId, name);
-  throwIfError(error);
-
+  await services.water.documents.postLicenceRename(documentId, { documentName: name, userName });
   return h.redirect(`/licences/${documentId}`);
-}
+};
 
 exports.getLicences = getLicences;
 exports.postLicenceRename = postLicenceRename;

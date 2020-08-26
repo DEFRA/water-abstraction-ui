@@ -81,7 +81,10 @@ const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
 const createRequest = () => ({
-  pre: { batch: createBatchData() },
+  pre: {
+    batch: createBatchData(),
+    invoice
+  },
   params: {
     batchId: 'test-batch-id',
     invoiceId: 'test-invoice-id'
@@ -121,6 +124,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(batchInvoicesResult);
+    sandbox.stub(services.water.billingBatches, 'deleteInvoiceFromBatch').resolves();
 
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
@@ -498,9 +502,9 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.getBillingBatchDeleteAccount', () => {
+  experiment('.getBillingBatchDeleteInvoice', () => {
     beforeEach(async () => {
-      await controller.getBillingBatchDeleteAccount(request, h);
+      await controller.getBillingBatchDeleteInvoice(request, h);
     });
 
     test('configures the expected view template', async () => {
@@ -511,19 +515,24 @@ experiment('internal/modules/billing/controller', () => {
     test('sets the correct view data', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
-      expect(context.pageTitle).to.equal('You are about to remove this bill from the bill run');
-      expect(context.account.id).to.equal('invoice-account-id');
-      expect(context.account.accountNumber).to.equal('A12345678A');
+      expect(context.pageTitle).to.equal('You\'re about to remove this bill from the supplementary bill run');
+      expect(context.batch).to.equal(request.pre.batch);
+      expect(context.invoice).to.equal(request.pre.invoice);
       expect(context.form).to.be.an.object();
       expect(context.batch).to.equal(batchData);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
   });
 
-  experiment('.postBillingBatchDeleteAccount', () => {
+  experiment('.postBillingBatchDeleteInvoice', () => {
     beforeEach(async () => {
-      sandbox.stub(services.water.billingBatches, 'deleteAccountFromBatch').resolves(true);
-      await controller.postBillingBatchDeleteAccount(request, h);
+      await controller.postBillingBatchDeleteInvoice(request, h);
+    });
+
+    test('calls the delete method in the water service', async () => {
+      expect(services.water.billingBatches.deleteInvoiceFromBatch.calledWith(
+        request.params.batchId, request.params.invoiceId
+      )).to.be.true();
     });
 
     test('redirects to the expected url', async () => {

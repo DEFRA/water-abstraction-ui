@@ -70,5 +70,16 @@ experiment('shared/view/nunjucks/filters/tag', () => {
         classes: 'govuk-tag--blue'
       });
     });
+
+    test('attributes are passed through', async () => {
+      const result = mapBadgeToTag({ text: 'Test', status: 'todo', attributes: { id: 'test-id' } });
+      expect(result).to.equal({
+        text: 'Test',
+        classes: 'govuk-tag--blue',
+        attributes: {
+          id: 'test-id'
+        }
+      });
+    });
   });
 });

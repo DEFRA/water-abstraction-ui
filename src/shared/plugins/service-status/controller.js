@@ -2,15 +2,14 @@
 
 const Catbox = require('@hapi/catbox');
 const CatboxRedis = require('@hapi/catbox-redis');
+const { pick } = require('lodash');
 
 const getRedisCacheStatus = async (redisConfig, logger) => {
   let result = 'Not connected';
 
   try {
     const options = {
-      host: redisConfig.host,
-      port: redisConfig.port,
-      ...(redisConfig.password && { password: redisConfig.password }),
+      ...pick(redisConfig, ['host', 'port', 'password', 'tls']),
       db: 0
     };
 

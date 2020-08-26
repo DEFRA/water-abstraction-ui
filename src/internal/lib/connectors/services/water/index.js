@@ -10,11 +10,12 @@ const ChargeVersionsService = require('shared/lib/connectors/services/water/Char
 // Internal services (possibly unique, or overriding shared)
 const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
+const ChangeReasonsService = require('./ChangeReasonsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
 const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
-const BillingTransactionsService = require('./BillingTransactionsService');
+const BillingVolumesService = require('./BillingVolumeService');
 const RegionsService = require('./RegionsService');
 
 // Shared API Clients
@@ -46,8 +47,9 @@ module.exports = config => ({
   internalSearch: new InternalSearchService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
-  billingTransactions: new BillingTransactionsService(config.services.water, logger),
+  billingVolumes: new BillingVolumesService(config.services.water, logger),
   regions: new RegionsService(config.services.water, logger),
+  changeReasons: new ChangeReasonsService(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),

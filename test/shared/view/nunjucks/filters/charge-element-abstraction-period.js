@@ -5,10 +5,12 @@ const { expect } = require('@hapi/code');
 
 experiment('shared/view/nunjucks/filters/charge-element-abstraction-period', () => {
   const chargeElement = {
-    'abstractionPeriodStartDay': 1,
-    'abstractionPeriodStartMonth': 1,
-    'abstractionPeriodEndDay': 31,
-    'abstractionPeriodEndMonth': 3
+    abstractionPeriod: {
+      startDay: 1,
+      startMonth: 1,
+      endDay: 31,
+      endMonth: 3
+    }
   };
 
   test('the abstraction period is returned with GDS format dates', async () => {

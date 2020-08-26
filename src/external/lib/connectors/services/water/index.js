@@ -2,11 +2,13 @@
 const AcceptanceTestsService = require('shared/lib/connectors/services/water/AcceptanceTestsService');
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
+const DocumentsService = require('shared/lib/connectors/services/water/DocumentsService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
 const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService');
 const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLevelsService');
 const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
+const KpiReportingService = require('shared/lib/connectors/services/water/KpiReportingService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -26,11 +28,13 @@ module.exports = config => ({
   acceptanceTests: new AcceptanceTestsService(config.services.water, logger),
   communications: new CommunicationsService(config.services.water, logger),
   companies: new CompaniesService(config.services.water, logger),
+  documents: new DocumentsService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
   returns: new ReturnsService(config.services.water, logger),
   riverLevels: new RiverLevelsService(config.services.water, logger),
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
+  kpiReporting: new KpiReportingService(config.services.water, logger),
 
   // Shared API Clients
   events: new EventsApiClient(config, logger),

@@ -128,11 +128,7 @@ const invoice = {
         chargeElement: {
           id: 'charge_element_licence_2_b'
         },
-        volume: 12.35,
-        billingVolume: {
-          calculatedVolume: 12.35,
-          volume: 12.35
-        }
+        volume: 12.35
       }]
     }]
 };
@@ -291,6 +287,15 @@ experiment('modules/billing/lib/mappers', () => {
               expect(billingVolume.volume).to.equal(12.35);
               expect(isEdited).to.equal(true);
             });
+          });
+        });
+
+        experiment('handles no billing volume', async () => {
+          test('has 1 x transaction', async () => {
+            const data = result['2021'][LICENCE_2];
+
+            expect(data.chargeElements[0].transactions[1].billingVolume).to.be.undefined();
+            expect(data.chargeElements[0].transactions[1].isEdited).to.be.false();
           });
         });
       });

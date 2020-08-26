@@ -59,12 +59,15 @@ if (isAcceptanceTestTarget) {
     },
     getLicenceReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}',
       handler: controller.getLicenceReview,
       config: {
-        pre,
+        pre: [
+          ...pre,
+          { method: preHandlers.loadLicence, assign: 'licence' }
+        ],
         auth: { scope: allowedScopes },
-        description: 'review a single invoice licence within a 2PT batch',
+        description: 'review a single licence within a 2PT batch',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -73,22 +76,23 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID
+            licenceId: VALID_GUID
           }
         }
       }
     },
-    getTransactionReview: {
+    getBillingVolumeReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}',
-      handler: controller.getTransactionReview,
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}',
+      handler: controller.getBillingVolumeReview,
       config: {
         pre: [
           ...pre,
-          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
+          { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
         ],
         auth: { scope: allowedScopes },
-        description: 'review transaction quantities in TPT batch',
+        description: 'review billing volume quantities in TPT batch',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -97,24 +101,25 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID,
-            transactionId: VALID_GUID
+            licenceId: VALID_GUID,
+            billingVolumeId: VALID_GUID
           }
         }
       }
     },
 
-    postTransactionReview: {
+    postBillingVolumeReview: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}',
-      handler: controller.postTransactionReview,
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}',
+      handler: controller.postBillingVolumeReview,
       config: {
         pre: [
           ...pre,
-          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
+          { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
         ],
         auth: { scope: allowedScopes },
-        description: 'review transaction quantities in TPT batch',
+        description: 'review billing volume quantities in TPT batch',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -123,8 +128,8 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID,
-            transactionId: VALID_GUID
+            licenceId: VALID_GUID,
+            billingVolumeId: VALID_GUID
           }
         }
       }
@@ -132,15 +137,16 @@ if (isAcceptanceTestTarget) {
 
     getConfirmQuantity: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}/confirm',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm',
       handler: controller.getConfirmQuantity,
       config: {
         pre: [
           ...pre,
-          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
+          { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
         ],
         auth: { scope: allowedScopes },
-        description: 'review transaction quantities in TPT batch',
+        description: 'review billing volume quantities in TPT batch',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -149,8 +155,8 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID,
-            transactionId: VALID_GUID
+            licenceId: VALID_GUID,
+            billingVolumeId: VALID_GUID
           },
           query: {
             quantity: Joi.number().min(0).required()
@@ -161,15 +167,16 @@ if (isAcceptanceTestTarget) {
 
     postConfirmQuantity: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/transaction/{transactionId}/confirm',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm',
       handler: controller.postConfirmQuantity,
       config: {
         pre: [
           ...pre,
-          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
+          { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
         ],
         auth: { scope: allowedScopes },
-        description: 'review transaction quantities in TPT batch',
+        description: 'confirm review billing volume in TPT batch',
         plugins: {
           viewContext: {
             activeNavLink: 'notifications'
@@ -178,8 +185,8 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID,
-            transactionId: VALID_GUID
+            licenceId: VALID_GUID,
+            billingVolumeId: VALID_GUID
           },
           payload: {
             csrf_token: VALID_GUID,
@@ -191,13 +198,12 @@ if (isAcceptanceTestTarget) {
 
     getRemoveLicence: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/remove',
       handler: controller.getRemoveLicence,
       config: {
         pre: [
           ...pre,
-          { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' },
-          { method: preHandlers.loadInvoiceLicenceInvoice, assign: 'invoice' }
+          { method: preHandlers.loadLicence, assign: 'licence' }
         ],
         auth: { scope: allowedScopes },
         description: 'confirm remove licence from TPT batch',
@@ -209,7 +215,7 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID
+            licenceId: VALID_GUID
           }
         }
       }
@@ -217,11 +223,12 @@ if (isAcceptanceTestTarget) {
 
     postRemoveLicence: {
       method: 'POST',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{invoiceLicenceId}/remove',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/remove',
       handler: controller.postRemoveLicence,
       config: {
         pre: [
-          ...pre
+          ...pre,
+          { method: preHandlers.loadLicence, assign: 'licence' }
         ],
         auth: { scope: allowedScopes },
         description: 'confirm remove licence from TPT batch',
@@ -233,7 +240,7 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            invoiceLicenceId: VALID_GUID
+            licenceId: VALID_GUID
           }
         }
       }

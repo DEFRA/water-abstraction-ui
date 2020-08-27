@@ -7,6 +7,7 @@ const styles = {
   draft: 'void',
   approved: 'success',
   replaced: 'inactive',
+  superseded: 'inactive',
   invalid: 'error',
   review: 'warning'
 };

@@ -2,7 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const dataService = require('../../../../../src/internal/modules/invoice-accounts/lib/data-service');
+const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const uuid = require('uuid');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
@@ -38,6 +38,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     sandbox.stub(dataService, 'sessionManager').resolves({});
     sandbox.stub(dataService, 'getCompanyAddresses').returns([address, address]);
     sandbox.stub(dataService, 'getCompany').resolves(company);
+    sandbox.stub(dataService, 'getCompanyContacts').resolves([{ id: 'test-id', firstName: 'Jackie', lastName: 'Smith' }]);
   });
 
   afterEach(async () => {
@@ -88,7 +89,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   experiment('.processFaoFormData', () => {
     test('if addFao === yes', () => {
       const response = helpers.processFaoFormData(request, regionId, companyId, 'yes');
-      expect(response).to.equal('search-contact');
+      expect(response).to.equal('select-contact');
     });
 
     test('if addFao === no returns the correct redirect path element', () => {
@@ -126,6 +127,95 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('returns the agent company from the data service if the agent companyId != tempId', async () => {
       const response = await helpers.getAgentCompany({ agent: { companyId: 'test-company-id', name: 'A Company Name' } });
       expect(response).to.equal(company);
+    });
+  });
+
+  experiment('.processSelectContactFormData', () => {
+    test('if selected contact is department', () => {
+      const department = 'test department name';
+      const selectedContact = 'department';
+      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
+    });
+    test('saves the contact id if selectedContact is a person with contact id', () => {
+      const department = 'test department name';
+      const selectedContact = 'test-contact-id';
+      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.equal({ contact: { contactId: 'test-contact-id' } });
+    });
+  });
+
+  experiment('.getCOntactName', () => {
+    test('if selected contact is department', () => {
+      const department = 'test department name';
+      const selectedContact = 'department';
+      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
+    });
+    test('saves the contact id if selectedContact is a person with contact id', () => {
+      const department = 'test department name';
+      const selectedContact = 'test-contact-id';
+      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.equal({ contact: { contactId: 'test-contact-id' } });
+    });
+  });
+
+  experiment('.getContactName', () => {
+    test('if session contact type = person it returns the correct name', async () => {
+      const sessionContact = { title: 'Mr', firstName: 'Chris', lastName: 'Brown', type: 'person' };
+      const response = await helpers.getContactName(companyId, sessionContact);
+      expect(response).to.equal('Mr Chris Brown');
+    });
+    test('if session contact type = department it returns the correct name', async () => {
+      const sessionContact = { title: 'Mr', department: 'Finance', type: 'department' };
+      const response = await helpers.getContactName(companyId, sessionContact);
+      expect(response).to.equal('Finance');
+    });
+    test('if session contact is an existing contact it returns the correct name', async () => {
+      const sessionContact = { contactId: 'test-id' };
+      const response = await helpers.getContactName(companyId, sessionContact);
+      expect(response).to.equal('Jackie Smith');
+    });
+  });
+
+  experiment('.getName', () => {
+    test('if contact name does not have a department it returns the correct name', async () => {
+      const sessionContact = { title: 'Mr', firstName: 'Chris', lastName: 'Brown', type: 'person' };
+      const response = helpers.getName(sessionContact);
+      expect(response).to.equal('Mr Chris Brown');
+    });
+    test('if session contact does have department it returns the correct name', async () => {
+      const sessionContact = { title: 'Mr', firstName: 'Kris', lastName: 'Kross', department: 'Finance' };
+      const response = helpers.getName(sessionContact);
+      expect(response).to.equal('Mr Kris Kross, Finance');
+    });
+    test('if session contact only has a deprtmant it returns the correct name', async () => {
+      const sessionContact = { firstName: '', department: 'Finance' };
+      const response = helpers.getName(sessionContact);
+      expect(response).to.equal('Finance');
+    });
+  });
+
+  experiment('.getFormTitleCaption', () => {
+    test('returns the correct caption', async () => {
+      const response = helpers.getFormTitleCaption('01/123');
+      expect(response).to.equal('Licence 01/123');
     });
   });
 });

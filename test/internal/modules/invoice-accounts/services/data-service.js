@@ -2,7 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const dataService = require('../../../../../src/internal/modules/invoice-accounts/lib/data-service');
+const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const services = require('../../../../../src/internal/lib/connectors/services');
 const uuid = require('uuid');
 const sinon = require('sinon');
@@ -140,10 +140,10 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
 
   experiment('.saveInvoiceAccDetails', () => {
     test('calls the companies service with the correct args', async () => {
-      const data = { companyId: 'test-id', test: 'data' };
-      await dataService.saveInvoiceAccDetails(data);
+      const data = { test: 'data' };
+      await dataService.saveInvoiceAccDetails(companyId, data);
       const args = services.water.companies.postInvoiceAccount.lastCall.args;
-      expect(args[0]).to.equal('test-id');
+      expect(args[0]).to.equal(companyId);
       expect(args[1]).to.equal({ test: 'data' });
     });
     test('calls the companies service with the correct args', async () => {

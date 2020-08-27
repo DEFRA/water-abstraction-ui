@@ -33,6 +33,7 @@ const getAddressChoices = addresses => {
  */
 const form = (request, uprn) => {
   const { csrfToken } = request.view;
+  const { postcode } = request.query;
   const { addressSearchResults } = request.pre;
 
   const f = formFactory('/address-entry/address/select');
@@ -56,6 +57,7 @@ const form = (request, uprn) => {
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(fields.hidden('postcode', {}, postcode));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
@@ -63,7 +65,8 @@ const form = (request, uprn) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  uprn: Joi.string().regex(/^[0-9]+$/).required()
+  uprn: Joi.string().regex(/^[0-9]+$/).required(),
+  postcode: Joi.string().required().allow('')
 };
 
 exports.form = form;

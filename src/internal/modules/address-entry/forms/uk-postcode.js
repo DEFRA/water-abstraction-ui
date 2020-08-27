@@ -10,8 +10,9 @@ const { postcodeSchema } = require('./postcode');
  * @param {Object} request The Hapi request object
  * @param {String} postcode The UK postcode
  */
-const form = (request, postcode) => {
+const form = request => {
   const { csrfToken } = request.view;
+  const { postcode } = request.payload || request.query;
 
   const f = formFactory('/address-entry/postcode');
 

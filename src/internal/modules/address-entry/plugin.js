@@ -1,9 +1,9 @@
 const SESSION_KEY = 'addressLookupData';
 
-const getNewAddress = function () {
+const getNewAddress = function (clearData = true) {
   const address = this.yar.get(SESSION_KEY);
-  this.yar.clear(SESSION_KEY);
-  return address;
+  if (clearData) this.yar.clear(SESSION_KEY);
+  return address || {};
 };
 
 const setNewAddress = function (address) {

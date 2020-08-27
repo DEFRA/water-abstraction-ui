@@ -58,30 +58,4 @@ experiment('shared/lib/session-helpers', () => {
       expect(result).to.equal(dataToAdd);
     });
   });
-
-  experiment('.getRedirectPathAndClearSession', () => {
-    let result;
-    beforeEach(async () => {
-      request = {
-        yar: {
-          get: sandbox.stub().returns({ redirectPath: '/redirect/path' }),
-          clear: sandbox.stub()
-        }
-      };
-
-      result = sessionHelpers.getRedirectPathAndClearSession(request, 'sessionKey');
-    });
-
-    test('gets the redirect path from the session', async () => {
-      expect(request.yar.get.calledWith('sessionKey')).to.be.true();
-    });
-
-    test('clears the session data for the given key', async () => {
-      expect(request.yar.clear.calledWith('sessionKey')).to.be.true();
-    });
-
-    test('returns the redirect path', async () => {
-      expect(result).to.equal('/redirect/path');
-    });
-  });
 });

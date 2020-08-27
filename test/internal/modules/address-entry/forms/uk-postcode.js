@@ -9,10 +9,12 @@ const {
 const ukPostcode = require('internal/modules/address-entry/forms/uk-postcode');
 const { findField, findButton } = require('../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = (options = {}) => ({
   view: {
     csrfToken: 'token'
-  }
+  },
+  query: {},
+  ...options
 });
 
 experiment('internal/modules/address-entry/forms/uk-postcode', () => {
@@ -34,8 +36,14 @@ experiment('internal/modules/address-entry/forms/uk-postcode', () => {
       expect(field).to.exist();
     });
 
-    test('sets the postcode value if supplied', async () => {
-      const form = ukPostcode.form(createRequest(), 'TT1 1TT');
+    test('sets the postcode value if supplied in the payload', async () => {
+      const form = ukPostcode.form(createRequest({ payload: { postcode: 'TT1 1TT' } }));
+      const field = findField(form, 'postcode');
+      expect(field.value).to.equal('TT1 1TT');
+    });
+
+    test('sets the postcode value if supplied in the query', async () => {
+      const form = ukPostcode.form(createRequest({ query: { postcode: 'TT1 1TT' } }));
       const field = findField(form, 'postcode');
       expect(field.value).to.equal('TT1 1TT');
     });

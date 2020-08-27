@@ -9,11 +9,4 @@ const saveToSession = (request, sessionKey, data = {}) => {
   return sessionData;
 };
 
-const getRedirectPathAndClearSession = (request, sessionKey) => {
-  const { redirectPath } = request.yar.get(sessionKey);
-  request.yar.clear(sessionKey);
-  return redirectPath;
-};
-
 exports.saveToSession = saveToSession;
-exports.getRedirectPathAndClearSession = getRedirectPathAndClearSession;

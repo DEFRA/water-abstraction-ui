@@ -4,6 +4,8 @@ const queryString = require('querystring');
 
 const SESSION_KEY = 'newAddressFlow';
 
+const getSession = request => request.yar.get(SESSION_KEY);
+
 const getLicenceNumber = async licenceId => {
   if (licenceId) {
     const { licenceNumber } = await services.water.licences.getLicenceById(licenceId);
@@ -12,48 +14,54 @@ const getLicenceNumber = async licenceId => {
   return null;
 };
 
-const getRedirectPath = request =>
-  sessionHelpers.getRedirectPathAndClearSession(request, SESSION_KEY);
+const clearSessionData = request => request.yar.clear(SESSION_KEY);
+
+const getRedirectPath = request => {
+  const { redirectPath } = getSession(request);
+  return redirectPath;
+};
 
 const saveReferenceData = async request => {
+  clearSessionData(request);
   const { licenceId, redirectPath, back } = request.query;
   const licenceNumber = await getLicenceNumber(licenceId);
   const data = {
     redirectPath,
     back,
-    ...licenceNumber && { licenceNumber }
+    ...licenceId && { licenceId, licenceNumber }
   };
   return sessionHelpers.saveToSession(request, SESSION_KEY, data);
+};
+
+const getAddressUprn = request => {
+  const { uprn } = request.getNewAddress(false);
+  return uprn || null;
 };
 
 const getManualAddressEntryBackLink = request =>
   request.query.country ? '/address-entry/address/select' : getPostcodeUrl(request);
 
-const setPostcode = request =>
-  sessionHelpers.saveToSession(request, SESSION_KEY, { postcode: request.payload.postcode });
-
-const getPostcode = request => {
-  const { postcode } = request.yar.get(SESSION_KEY);
-  return postcode ? postcode.toUpperCase() : null;
+const getPostcodeUrlParams = request => {
+  const { redirectPath, back, licenceId } = getSession(request);
+  return { redirectPath, back, ...licenceId && { licenceId } };
 };
 
 const getPostcodeUrl = request => {
-  const { redirectPath, back } = request.yar.get(SESSION_KEY);
-  const urlQuery = queryString.stringify({ redirectPath, back });
+  const urlQuery = queryString.stringify(getPostcodeUrlParams(request));
   return `/address-entry/postcode?${urlQuery}`;
 };
 
 const getPageCaption = request => {
-  const { licenceNumber } = request.yar.get(SESSION_KEY);
-  if (licenceNumber) return { caption: `Licence ${licenceNumber}` };
+  const session = getSession(request);
+  if (session && session.licenceNumber) return { caption: `Licence ${session.licenceNumber}` };
 };
 
 exports.SESSION_KEY = SESSION_KEY;
 
 exports.getRedirectPath = getRedirectPath;
+exports.getAddressUprn = getAddressUprn;
 exports.getPageCaption = getPageCaption;
-exports.setPostcode = setPostcode;
-exports.getPostcode = getPostcode;
+exports.getPostcodeUrlParams = getPostcodeUrlParams;
 exports.getPostcodeUrl = getPostcodeUrl;
 exports.getManualAddressEntryBackLink = getManualAddressEntryBackLink;
 exports.saveReferenceData = saveReferenceData;

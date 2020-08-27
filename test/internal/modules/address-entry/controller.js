@@ -56,6 +56,7 @@ const createRequest = (options = {}) => ({
     set: sandbox.stub(),
     clear: sandbox.stub()
   },
+  getNewAddress: sandbox.stub().returns(addressSearchResults[0]),
   setNewAddress: sandbox.stub()
 });
 
@@ -85,13 +86,13 @@ experiment('internal/modules/address-entry', () => {
 
   experiment('.getPostcode', () => {
     let request;
-    beforeEach(() => {
+    beforeEach(async () => {
       request = createRequest({ query: {
         back: addressFlowData.back,
         redirectPath: addressFlowData.redirectPath,
         licenceId: 'test-licence-id'
       } });
-      controller.getPostcode(request, h);
+      await controller.getPostcode(request, h);
     });
 
     test('saves the query data', () => {
@@ -131,7 +132,7 @@ experiment('internal/modules/address-entry', () => {
 
     test('redirects to the expected path when form is valid', () => {
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/address-entry/address/select');
+      expect(redirectPath).to.equal(`/address-entry/address/select?${queryString.stringify({ postcode: POSTCODE })}`);
     });
 
     test('redirects with the form and expected path when form is not valid', () => {
@@ -154,7 +155,7 @@ experiment('internal/modules/address-entry', () => {
   experiment('.getSelectAddress', () => {
     let request;
     beforeEach(() => {
-      request = createRequest();
+      request = createRequest({ query: { postcode: POSTCODE } });
       controller.getSelectAddress(request, h);
     });
 

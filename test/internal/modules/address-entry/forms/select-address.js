@@ -27,10 +27,11 @@ const addressSearchResults = [{
   uprn: 987654
 }];
 
-const createRequest = () => ({
+const createRequest = (query = {}) => ({
   view: {
     csrfToken: 'token'
   },
+  query,
   pre: { addressSearchResults }
 });
 
@@ -63,7 +64,7 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
       expect(options.choices[2].value).to.equal(addressSearchResults[1].uprn);
     });
 
-    test('sets the uprn value to an integer if supplied', async () => {
+    test('sets the uprn value to an integer if provided', async () => {
       const form = selectAddress.form(createRequest(), '123456');
       const field = findField(form, 'uprn');
       expect(field.value).to.equal(123456);
@@ -74,6 +75,18 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
       const field = findField(form, { options: { widget: 'link' } });
       expect(field.options.text).to.equal('I cannot find the address in the list');
       expect(field.options.url).to.equal('/address-entry/manual-entry?country=United Kingdom');
+    });
+
+    test('has hidden postcode field', async () => {
+      const form = selectAddress.form(createRequest());
+      const postcode = findField(form, 'postcode');
+      expect(postcode.options.type).to.equal('hidden');
+    });
+
+    test('sets the postcode value if provided', async () => {
+      const form = selectAddress.form(createRequest({ postcode: 'TT1 1TT' }));
+      const postcode = findField(form, 'postcode');
+      expect(postcode.value).to.equal('TT1 1TT');
     });
 
     test('has a submit button', async () => {

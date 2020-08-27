@@ -66,6 +66,12 @@ if (isAcceptanceTestTarget) {
             activeNavLink: 'notifications'
           }
         },
+        validate: {
+          query: {
+            postcode: Joi.string().required().allow(''),
+            form: Joi.string().optional()
+          }
+        },
         pre: [
           { method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults' }
         ]

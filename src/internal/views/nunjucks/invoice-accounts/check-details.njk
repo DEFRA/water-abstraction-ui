@@ -48,11 +48,8 @@
                 FAO
               </dt>
               <dd class="govuk-summary-list__value">
-                {% if session.agent === null %}
-                  No
-                {% else %}
-                  {{ session.agent }}
-                {% endif %}            
+                {{ selectedContact }}                  
+                
               </dd>
               <dd class="govuk-summary-list__actions ">
                 <a class="govuk-link" href="add-fao">

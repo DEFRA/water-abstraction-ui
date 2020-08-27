@@ -1,3 +1,5 @@
+'use strict';
+
 const { licenceHolder, colleague, colleagueWithReturns } = require('./constants').scope;
 const { getReturnPath } = require('./return-path');
 const services = require('./connectors/services');
@@ -14,6 +16,7 @@ exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
 exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
 exports.getRiverLevel = services.water.riverLevels.getRiverLevel.bind(services.water.riverLevels);
+exports.getLicenceAgreements = services.water.licences.getLicenceAgreements.bind(services.water.licences);
 
 /**
  * Should the licence view show charging information to this external user?

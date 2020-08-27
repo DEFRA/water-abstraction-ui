@@ -1,36 +1,54 @@
-<h2 class="govuk-heading-m">Charge versions</h2>
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<h2 class="govuk-heading-l">Charge information</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-  <a class="govuk-link" href="/licences/{{ documentId }}/charge-version/{{ chargeVersion.id }}">Version {{ chargeVersion.versionNumber }}</a>
+  {% if chargeVersion.status == 'review' %}
+    <a class="govuk-link" href="/charge-version/{{ chargeVersion.id }}/review">Review</a>
+  {% else %}
+    <a class="govuk-link" href="/charge-version/{{ chargeVersion.id }}/view">View</a>
+  {% endif %}
 {% endmacro %}
 
 {% macro chargeVersionRowMobile(chargeVersion) %}
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
-      {{ chargeVersionLink(chargeVersion) }}
-    </h3>
 
-    <p>Effective from: {{ chargeVersion.dateRange.startDate | date }}</p>
-    <p>Effective to: {{ chargeVersion.dateRange.endDate | date }}</p>
-    {{ badge(chargeVersion | chargeVersionBadge) }}
+    <p>Start date: {{ chargeVersion.dateRange.startDate | date }}</p>
+    <p>End date: {{ chargeVersion.dateRange.endDate | date }}</p>
+    <p>Reason: </p>
+    <p>Status: {{ badge(chargeVersion | chargeVersionBadge) }}</p>
+    {# <p>Action: {{ chargeVersionLink(chargeVersion) }}</p> #}
+  </div>
+{% endmacro %}
+
+{% macro agreementRowMobile(agreement) %}
+  <div class="phone--show">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    <p>Start date: {{ agreement.dateRange.startDate | date }}</p>
+    <p>End date: {{ agreement.dateRange.endDate | date }}</p>
+    <p>Agreement: {{ agreement.agreement.code }}</p>
+    <p>Date signed:</p>
+    {# <p>Action:</p> #}
   </div>
 {% endmacro %}
 
 {% macro chargeVersionRow(chargeVersion) %}
   <tr class="govuk-table__row">
-    <td class="govuk-table__cell" scope="row">
-      {{ chargeVersionLink(chargeVersion) }}
-    </td>
     <td class="govuk-table__cell">
       {{ chargeVersion.dateRange.startDate | date }}
     </td>
     <td class="govuk-table__cell">
       {{ chargeVersion.dateRange.endDate | date }}
     </td>
+    <td class="govuk-table__cell"></td>
     <td class="govuk-table__cell">
       {{ badge(chargeVersion | chargeVersionBadge) }}
     </td>
+    {# <td class="govuk-table__cell">
+      {{ chargeVersionLink(chargeVersion) }}
+    </td> #}
   </tr>
 {% endmacro %}
 
@@ -43,10 +61,11 @@
   <table class="govuk-table phone--hide">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Version</th>
-        <th class="govuk-table__header" scope="col">Effective from</th>
-        <th class="govuk-table__header" scope="col">Effective to</th>
+        <th class="govuk-table__header" scope="col">Start date</th>
+        <th class="govuk-table__header" scope="col">End date</th>
+        <th class="govuk-table__header" scope="col">Reason</th>
         <th class="govuk-table__header" scope="col">Status</th>
+        {# <th class="govuk-table__header" scope="col">Action</th> #}
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -56,6 +75,72 @@
     </tbody>
   </table>
 
+  {# <a href="/licences/{{ licenceId }}/charge-versions/create"
+    role="button"
+    draggable="false"
+    class="govuk-button govuk-!-margin-right-3"
+    data-module="govuk-button">
+    Setup a new charge
+  </a>
+
+  <a href="/licences/{{ licenceId }}/make-non-chargable"
+    role="button"
+    draggable="false"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button">
+    Make licence non-chargable
+  </a> #}
 {% else %}
-  <p>No charge versions for this licence.</p>
+  <p>No charge information for this licence.</p>
+{% endif %}
+
+{% if agreements.length %}
+
+  {# <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"> #}
+  <h2 class="govuk-heading-l">Agreements</h2>
+
+  {% for agreement in agreements %}
+    {{ agreementRowMobile(agreement) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Start date</th>
+        <th class="govuk-table__header" scope="col">End date</th>
+        <th class="govuk-table__header" scope="col">Agreement</th>
+        <th class="govuk-table__header" scope="col">Date signed</th>
+        {# <th class="govuk-table__header" scope="col">Action</th> #}
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for agreement in agreements %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">
+            {{ agreement.dateRange.startDate | date }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ agreement.dateRange.endDate | date }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ agreement.agreement.code }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ agreement.dateSigned | date }}
+          </td>
+          {# <td class="govuk-table__cell"></td> #}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {# <a href="/licences/{{ licenceId }}/agreements/create"
+    role="button"
+    draggable="false"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button">
+    Set up a new agreement
+  </a> #}
+{% else %}
+  <p>No agreements for this licence.</p>
 {% endif %}

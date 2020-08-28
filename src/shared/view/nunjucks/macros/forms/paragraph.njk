@@ -1,3 +1,5 @@
 {% macro formParagraphWidget(field) %}
-<{{field.options.element}} class="{{ field.options.controlClass }}">{{ field.options.text }}</{{field.options.element}}>
+  <p class="{{ field.options.controlClass }}">
+    {{ field.options.text }}
+  </p>
 {% endmacro %}

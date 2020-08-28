@@ -1,0 +1,7 @@
+{% macro formLinkWidget(field) %}
+<p>
+  <a href="{{ field.options.url }}" class="govuk-link {{className}}">
+    {{ field.options.text }}
+  </a>
+</p>
+{% endmacro %}

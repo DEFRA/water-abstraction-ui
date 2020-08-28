@@ -69,6 +69,19 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(field.options.type).to.equal('hidden');
     });
 
+    test('has a hidden uprn field set to null', async () => {
+      const form = manualAddressEntry.form(createRequest());
+      const field = findField(form, 'uprn');
+      expect(field.value).to.equal(null);
+      expect(field.options.type).to.equal('hidden');
+    });
+
+    test('sets the uprn field to null even when a value is provided', async () => {
+      const form = manualAddressEntry.form(createRequest(), { uprn: '1234' });
+      const field = findField(form, 'uprn');
+      expect(field.value).to.equal(null);
+    });
+
     test('has a submit button', async () => {
       const form = manualAddressEntry.form(createRequest());
       const button = findButton(form);

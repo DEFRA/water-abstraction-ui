@@ -67,7 +67,7 @@ const form = (request, address = {}) => {
     address.country = request.query.country;
   }
 
-  const f = formFactory('/address-entry/manual-entry');
+  let f = formFactory('/address-entry/manual-entry');
 
   f.fields.push(...addressTextFields);
 
@@ -80,12 +80,14 @@ const form = (request, address = {}) => {
     choices: getCountryDropdownChoices(address.country)
   }));
 
+  f = setValues(f, address);
+
   f.fields.push(fields.hidden('dataSource', {}, 'wrls'));
   f.fields.push(fields.hidden('uprn', {}, null));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
-  return setValues(f, address);
+  return f;
 };
 
 const schema = {

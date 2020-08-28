@@ -11,8 +11,8 @@ const styles = {
   review: 'warning'
 };
 
-//Map the backend statuses to the desired front-end labels from acceptance criteria.
-//Statuses are: 'Draft', 'Review', 'Approved', 'Replaced' - We will also keep invalid to accomodate errors and edge cases. TT 2020-08-28
+//  Map the backend statuses to the desired front-end labels from acceptance criteria.
+//  Statuses are: 'Draft', 'Review', 'Approved', 'Replaced' - We will also keep invalid to accomodate errors and edge cases. TT 2020-08-28
 const displayedTextTransformer = {
   current: 'approved',
   draft: 'draft',

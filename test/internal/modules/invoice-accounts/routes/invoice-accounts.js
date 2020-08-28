@@ -2,9 +2,9 @@
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { scope } = require('internal/lib/constants');
-const routes = require('internal/modules/invoice-accounts/routes');
+const routes = require('../../../../../src/internal/modules/invoice-accounts/routes/invoice-accounts');
 
-experiment('internal/modules/invoice-accounts/routes', () => {
+experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   experiment('.getCompany', () => {
     test('limits scope to users with charing role', async () => {
       expect(routes.getCompany.config.auth.scope)

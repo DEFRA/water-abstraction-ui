@@ -96,10 +96,12 @@ const hasMultiplePages = pagination => pagination.pageCount > 1;
  */
 const getLicence = async (request, h) => {
   const { licenceNumber } = request.licence.summary;
+  const licenceId = request.licence.summary.waterLicence.id;
 
-  const { getLicenceSummaryReturns, getReturnPath, canShowCharging } = h.realm.pluginOptions;
+  const { getLicenceSummaryReturns, getReturnPath, canShowCharging, getLicenceAgreements } = h.realm.pluginOptions;
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
+  const agreements = await getLicenceAgreements(licenceId);
 
   const view = {
     ...getCommonViewContext(request),
@@ -108,7 +110,9 @@ const getLicence = async (request, h) => {
     hasMoreReturns: hasMultiplePages(returns.pagination),
     back: '/licences',
     showChargeVersions: canShowCharging(request),
-    chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse()
+    chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse(),
+    agreements,
+    licenceId
   };
 
   return h.view('nunjucks/view-licences/licence', view);

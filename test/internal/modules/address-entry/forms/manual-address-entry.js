@@ -227,6 +227,16 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       });
     });
 
+    test('sets the isValid flag to false when new errors are found', () => {
+      const addressData = {
+        ...address,
+        addressLine2: '',
+        addressLine3: ''
+      };
+      const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
+      expect(result.isValid).to.be.false();
+    });
+
     experiment('applies new errors when', () => {
       test('addressLine2 and addressLine3 do not have a value', async () => {
         const addressData = {

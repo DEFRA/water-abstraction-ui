@@ -36,13 +36,6 @@
   </td>
 {% endmacro %}
 
-{% macro minimumChargeDescription(transaction) %}
-  <td colspan="2" class="govuk-table__cell">
-    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">Minimum Charge</h5>
-    <p class="govuk-body govuk-!-margin-bottom-0">Raised under Schedule 23 of the Environment Act 1995</p>
-  </td>
-{% endmacro %}
-
 {% macro billableDaysRatioCell(transaction) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {{ transaction.billableDays}}/{{ transaction.authorisedDays }}

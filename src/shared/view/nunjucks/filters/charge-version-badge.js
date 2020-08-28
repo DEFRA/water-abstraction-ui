@@ -22,14 +22,14 @@ const displayedTextTransformer = {
   superseded: 'replaced',
   invalid: 'invalid',
   review: 'review'
-}
+};
 
 /**
  * Gets badge object to render for charge version status
  */
 const chargeVersionBadge = chargeVersion => {
   const { status } = chargeVersion;
-  let displayedLabel = displayedTextTransformer[status]
+  let displayedLabel = displayedTextTransformer[status];
   return {
     text: titleCase(displayedLabel),
     status: styles[displayedLabel]

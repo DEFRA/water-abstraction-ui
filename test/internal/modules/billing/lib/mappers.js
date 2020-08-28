@@ -55,7 +55,15 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
+      }, {
+        value: 1576,
+        chargePeriod: {
+          startDate: '2019-04-01',
+          endDate: '2020-03-31'
+        },
+        isMinimumCharge: true
       }]
     },
     {
@@ -75,7 +83,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: null,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 3456,
         chargePeriod: {
@@ -89,7 +98,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 14.2,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: -363,
         isCredit: true,
@@ -104,7 +114,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 789,
         chargePeriod: {
@@ -118,7 +129,8 @@ const invoice = {
         billingVolume: {
           calculatedVolume: 12.35,
           volume: 12.35
-        }
+        },
+        isMinimumCharge: false
       }, {
         value: 916,
         chargePeriod: {
@@ -128,7 +140,8 @@ const invoice = {
         chargeElement: {
           id: 'charge_element_licence_2_b'
         },
-        volume: 12.35
+        volume: 12.35,
+        isMinimumCharge: false
       }]
     }]
 };
@@ -233,7 +246,8 @@ experiment('modules/billing/lib/mappers', () => {
               calculatedVolume: 12.35,
               volume: 12.35
             },
-            isEdited: false
+            isEdited: false,
+            isMinimumCharge: false
           });
         });
 
@@ -259,9 +273,23 @@ experiment('modules/billing/lib/mappers', () => {
           expect(isEdited).to.be.false();
         });
 
+        test('has the correct minimum charge transactions', async () => {
+          expect(data.minimumChargeTransactions.transactions[0]).to.equal({
+            value: 1576,
+            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
+            isMinimumCharge: true
+          });
+
+          expect(data.minimumChargeTransactions.totals).to.equal({
+            debits: 1576,
+            credits: 0,
+            netTotal: 1576
+          });
+        });
+
         test('has the correct totals', async () => {
-          const { totals } = data.chargeElements[0];
-          expect(totals).to.equal({ debits: 924, credits: 0, netTotal: 924 });
+          const { totals } = data;
+          expect(totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
         });
       });
 
@@ -288,6 +316,11 @@ experiment('modules/billing/lib/mappers', () => {
               expect(isEdited).to.equal(true);
             });
           });
+
+          test('has the correct totals', async () => {
+            const { totals } = data;
+            expect(totals).to.equal({ debits: 4690, credits: -363, netTotal: 4327 });
+          });
         });
 
         experiment('handles no billing volume', async () => {
@@ -298,6 +331,58 @@ experiment('modules/billing/lib/mappers', () => {
             expect(data.chargeElements[0].transactions[1].isEdited).to.be.false();
           });
         });
+      });
+    });
+  });
+
+  experiment('.mapInvoices', () => {
+    beforeEach(async () => {
+      result = mappers.mapInvoices(batch, [invoice]);
+    });
+
+    test('results contain the invoice', () => {
+      expect(result[0]).to.include(invoice);
+    });
+
+    experiment('group', () => {
+      test('is set to "otherAbstractors" when isWaterUndertaker is false', () => {
+        invoice.isWaterUndertaker = false;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].group).to.equal('otherAbstractors');
+      });
+
+      test('is set to "waterUndertakers" when isWaterUndertaker is true', () => {
+        invoice.isWaterUndertaker = true;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].group).to.equal('waterUndertakers');
+      });
+    });
+
+    experiment('isCredit', () => {
+      test('is set to false when invoice netTotal is positive', () => {
+        invoice.netTotal = 123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].isCredit).to.be.false();
+      });
+
+      test('is set to true when invoice netTotal is negative', () => {
+        invoice.netTotal = -123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].isCredit).to.be.true();
+      });
+    });
+
+    experiment('sortValue is set correctly ', () => {
+      test('for a positive netTotal', () => {
+        invoice.netTotal = 123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].sortValue).to.equal(-123);
+      });
+
+      test('for a negative netTotal', () => {
+        invoice.netTotal = -123;
+        result = mappers.mapInvoices(batch, [invoice]);
+        expect(result[0].sortValue).to.equal(-123);
       });
     });
   });

@@ -1,4 +1,4 @@
-const { omit, flatMap, mapValues, sortBy, groupBy } = require('lodash');
+const { omit, flatMap, mapValues, sortBy, groupBy, uniq, compact } = require('lodash');
 const groupArray = require('group-array');
 const sentenceCase = require('sentence-case');
 const helpers = require('@envage/water-abstraction-helpers');
@@ -27,37 +27,56 @@ const mapTransaction = transaction => ({
   isEdited: isTransactionEdited(transaction)
 });
 
-const mapChargeElementTransactions = group => {
-  const transactions = group.map(row => row.transaction);
+const getTransactionTotals = transactions => {
   const initialValue = {
     debits: 0,
     credits: 0,
     netTotal: 0
   };
 
-  const totals = transactions.reduce((acc, row) => ({
+  return transactions.reduce((acc, row) => ({
     debits: acc.debits + (row.isCredit ? 0 : row.value),
     credits: acc.credits + (row.isCredit ? row.value : 0),
     netTotal: acc.netTotal + row.value
   }), initialValue);
+};
+
+const mapChargeElementTransactions = (transactions, chargeElementId) => {
+  const chargeElementTransactions = transactions.filter(trans => {
+    if (!trans.isMinimumCharge) return trans.chargeElement.id === chargeElementId;
+  });
 
   return {
-    transactions: transactions.map(mapTransaction),
-    totals,
-    chargeElement: transactions[0].chargeElement
+    transactions: chargeElementTransactions.map(mapTransaction),
+    chargeElement: chargeElementTransactions[0].chargeElement };
+};
+
+const getChargeElementIds = transactions => uniq(compact(transactions.map(trans => {
+  if (!trans.isMinimumCharge) return trans.chargeElement.id;
+})));
+
+const getMinimumChargeTransactions = transactions => {
+  const minChargeTransactions = transactions.filter(trans => trans.isMinimumCharge);
+  return {
+    transactions: minChargeTransactions,
+    totals: getTransactionTotals(minChargeTransactions)
   };
 };
 
-const mapLicence = (chargeElements, licenceNumber) => {
-  const arr = Object.values(chargeElements);
+const mapLicence = licenceTransactions => {
+  const transactions = licenceTransactions.map(row => row.transaction);
+
+  const chargeElementIds = getChargeElementIds(transactions);
+  const chargeElements = chargeElementIds.map(id => mapChargeElementTransactions(transactions, id));
   return {
-    link: arr[0][0].link,
-    chargeElements: arr.map(mapChargeElementTransactions)
+    link: licenceTransactions[0].link,
+    totals: getTransactionTotals(transactions),
+    minimumChargeTransactions: getMinimumChargeTransactions(transactions),
+    chargeElements
   };
 };
 
-const mapFinancialYear = (licences, financialYear) =>
-  mapValues(licences, mapLicence);
+const mapFinancialYear = licences => mapValues(licences, mapLicence);
 
 /**
    *
@@ -74,9 +93,8 @@ const mapInvoiceTransactions = (invoice, documentIds) => {
       link: `/licences/${documentIds.get(licenceNumber)}`
     }));
   }));
-
-  // Group by financial year, licence number, charge element
-  const grouped = groupArray(transactions, 'financialYear', 'licenceNumber', 'transaction.chargeElement.id');
+  // Group by financial year, licence number
+  const grouped = groupArray(transactions, 'financialYear', 'licenceNumber');
 
   // Map the returned values
   return mapValues(grouped, mapFinancialYear);

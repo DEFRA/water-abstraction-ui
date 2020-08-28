@@ -61,7 +61,7 @@ const postBillingBatchType = async (request, h) => {
 };
 
 /**
- * Step 2a - display selelct region form
+ * Step 2a - display select region form
  * @param {*} request
  * @param {*} h
  */

@@ -82,6 +82,14 @@
   </tr>
 {% endmacro %}
 
+{% macro minimumChargeTransactionRow(transaction) %}
+  <tr class="govuk-table__row">
+    {{ minimumChargeDescription(transaction) }}
+    {{ creditCell(transaction) }}
+    {{ debitCell(transaction) }}
+  </tr>
+{% endmacro %}
+
 {% macro twoPartTariffTransactionRow(group, transaction) %}
   <tr class="govuk-table__row">
     {{ transactionDetailCell(group, transaction) }}
@@ -91,37 +99,37 @@
   </tr>
 {% endmacro %}
 
-{% macro creditsDebitsFooter(group) %}
+{% macro creditsDebitsFooter(totals) %}
   <tfoot>
     <tr class="govuk-table__row">
       <th scope="row" colspan="2" class="govuk-table__header">Credits</th>
-      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ group.totals.credits | charge }}</b></td>
+      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ totals.credits | charge }}</b></td>
       <td class="govuk-table__header"></td>
     </tr>
       <th scope="row" colspan="3" class="govuk-table__header">Debits</th>
-      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ group.totals.debits | charge }}</b></td>
+      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ totals.debits | charge }}</b></td>
     </tr>
     </tr>
       <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
         <span class="govuk-visually-hidden">Total</span>
       </th>
-      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ group.totals.netTotal | charge(true) }}</b></td>
+      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ totals.netTotal | charge(true) }}</b></td>
     </tr>
   </tfoot>
 {% endmacro %}
 
-{% macro debitsFooter(group) %}
+{% macro debitsFooter(totals) %}
   <tfoot>
     </tr>
       <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
         <span class="govuk-visually-hidden">Total</span>
       </th>
-      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ group.totals.netTotal | charge(true) }}</b></td>
+      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ totals.netTotal | charge(true) }}</b></td>
     </tr>
   </tfoot>
 {% endmacro %}
 
-{% macro transactionsTable(group) %}
+{% macro transactionsTable(group, totals) %}
  <table class="govuk-table">
   {{ header() }}
   <tbody class="govuk-table__body">
@@ -129,11 +137,11 @@
       {{ transactionRow(group, transaction) }}
     {% endfor %}
   </tbody>
-  {{ creditsDebitsFooter(group) }}
+  {{ creditsDebitsFooter(totals) }}
  </table>
 {% endmacro %}
 
-{% macro twoPartTariffTransactionsTable(group) %}
+{% macro twoPartTariffTransactionsTable(group, totals) %}
  <table class="govuk-table">
   {{ twoPartTariffHeader() }}
   <tbody class="govuk-table__body">
@@ -141,7 +149,7 @@
     {{ twoPartTariffTransactionRow(group, transaction) }}
     {% endfor %}
   </tbody>
-  {{ debitsFooter(group) }}
+  {{ debitsFooter(totals) }}
  </table>
 {% endmacro %}
 

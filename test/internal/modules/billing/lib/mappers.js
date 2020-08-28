@@ -63,9 +63,6 @@ const invoice = {
           startDate: '2019-04-01',
           endDate: '2020-03-31'
         },
-        chargeElement: {
-          id: 'charge_element_licence_1'
-        },
         isMinimumCharge: true
       }]
     },
@@ -276,22 +273,23 @@ experiment('modules/billing/lib/mappers', () => {
           expect(isEdited).to.be.false();
         });
 
-        test('has the correct totals', async () => {
-          const { totals } = data.chargeElements[0];
-          expect(totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
-        });
-
-        test('has 1 x minimum charge transaction in the charge element', async () => {
-          expect(data.chargeElements[0].minimumChargeTransactions).to.have.length(1);
-        });
-
-        test('has the correct minimum charge transaction', async () => {
-          expect(data.chargeElements[0].minimumChargeTransactions[0]).to.equal({
+        test('has the correct minimum charge transactions', async () => {
+          expect(data.minimumChargeTransactions.transactions[0]).to.equal({
             value: 1576,
             chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
-            isEdited: false,
             isMinimumCharge: true
           });
+
+          expect(data.minimumChargeTransactions.totals).to.equal({
+            debits: 1576,
+            credits: 0,
+            netTotal: 1576
+          });
+        });
+
+        test('has the correct totals', async () => {
+          const { totals } = data;
+          expect(totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
         });
       });
 
@@ -309,10 +307,6 @@ experiment('modules/billing/lib/mappers', () => {
             expect(data.chargeElements[0].transactions).to.have.length(1);
           });
 
-          test('has 0 minimum charge transaction', async () => {
-            expect(data.chargeElements[0].minimumChargeTransactions).to.have.length(0);
-          });
-
           experiment('the transaction', () => {
             test('has isEdited flag true as the volume is different to the calculated volume', async () => {
               const { volume, billingVolume, isEdited } = data.chargeElements[0].transactions[0];
@@ -321,6 +315,11 @@ experiment('modules/billing/lib/mappers', () => {
               expect(billingVolume.volume).to.equal(12.35);
               expect(isEdited).to.equal(true);
             });
+          });
+
+          test('has the correct totals', async () => {
+            const { totals } = data;
+            expect(totals).to.equal({ debits: 4690, credits: -363, netTotal: 4327 });
           });
         });
 

@@ -85,6 +85,22 @@ invoiceDebitsTotal %}
             <a href="{{ licence.link }}">View licence</a>
           </p>
 
+          {% for transaction in licence.minimumChargeTransactions.transactions %}
+            {% set minChargeHtml %}
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+                {{ licence.minimumChargeTransactions.totals.netTotal | charge }}
+              </p>
+              <p class="govuk-body">
+              Minimum charge applied
+              </p>
+            {% endset %}
+
+             {{ govukInsetText({
+              html : minChargeHtml,
+              classes: 'govuk-!-padding-bottom-0 govuk-!-padding-top-0'
+            }) }}
+          {% endfor %}
+
           {% for group in licence.chargeElements %}
 
             {% set insetHtml %}
@@ -103,9 +119,9 @@ invoiceDebitsTotal %}
             }) }}
 
             {% if batch.type == 'two_part_tariff' %}
-              {{ twoPartTariffTransactionsTable(group) }}
+              {{ twoPartTariffTransactionsTable(group, licence.totals) }}
             {% else %}
-              {{ transactionsTable(group) }}
+              {{ transactionsTable(group, licence.totals) }}
             {% endif %}
 
           {% endfor %}

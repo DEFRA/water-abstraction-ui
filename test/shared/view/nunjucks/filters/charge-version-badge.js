@@ -5,16 +5,17 @@ const { expect } = require('@hapi/code');
 
 experiment('shared/view/nunjucks/filters/charge-version-badge', () => {
   test('The status text is returned using title casing', async () => {
-    const chargeVersion = { status: 'titleCasePlease' };
+    const chargeVersion = { status: 'appROVED' };
     const { text } = chargeVersionBadge(chargeVersion);
-    expect(text).to.equal('Title Case Please');
+    expect(text).to.equal('Approved');
   });
 
   const statuses = [
-    { status: 'current', expectedStatus: 'completed', expectedText: 'Current' },
+    { status: 'current', expectedStatus: 'success', expectedText: 'Approved' },
     { status: 'draft', expectedStatus: 'void', expectedText: 'Draft' },
     { status: 'approved', expectedStatus: 'success', expectedText: 'Approved' },
     { status: 'replaced', expectedStatus: 'inactive', expectedText: 'Replaced' },
+    { status: 'superseded', expectedStatus: 'inactive', expectedText: 'Replaced' },
     { status: 'invalid', expectedStatus: 'error', expectedText: 'Invalid' },
     { status: 'review', expectedStatus: 'warning', expectedText: 'Review' }
   ];

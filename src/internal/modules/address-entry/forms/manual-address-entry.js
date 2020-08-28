@@ -140,6 +140,7 @@ const applyRequiredFieldErrors = (form, address) => {
 
   if (!isEmpty(errors)) {
     // need to include existing errors so that they are not lost
+    form.isValid = false;
     return applyErrors(form, [...errors, ...form.errors]);
   }
 

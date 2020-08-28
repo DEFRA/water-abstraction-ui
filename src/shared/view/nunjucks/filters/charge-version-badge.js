@@ -3,7 +3,6 @@
 const titleCase = require('title-case');
 
 const styles = {
-  current: 'active',
   draft: 'void',
   approved: 'success',
   replaced: 'inactive',
@@ -29,7 +28,7 @@ const displayedTextTransformer = {
  */
 const chargeVersionBadge = chargeVersion => {
   const { status } = chargeVersion;
-  let displayedLabel = displayedTextTransformer[status];
+  let displayedLabel = displayedTextTransformer[status.toLowerCase()];
   return {
     text: titleCase(displayedLabel),
     status: styles[displayedLabel]

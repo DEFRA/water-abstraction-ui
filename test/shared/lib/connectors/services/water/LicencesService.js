@@ -198,4 +198,20 @@ experiment('services/water/LicencesService', () => {
         } });
     });
   });
+
+  experiment('.getLicenceById', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.getLicenceById('licence-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id');
+    });
+  });
+
+  experiment('.getLicenceAgreements', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.getLicenceAgreements('licence-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/agreements');
+    });
+  });
 });

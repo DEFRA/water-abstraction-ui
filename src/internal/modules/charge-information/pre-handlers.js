@@ -45,15 +45,42 @@ const loadDraftChargeInformation = async request => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadChangeReasons = async request => {
+const loadChargeableChangeReasons = async request => {
   try {
     const response = await services.water.changeReasons.getChangeReasons();
-    return response.data;
+    return response.data.filter(reason => reason.type === 'new_chargeable_charge_version');
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);
   }
 };
 
-exports.loadLicence = loadLicence;
+const loadDefaultCharges = async request => {
+  const { licenceId } = request.params;
+  try {
+    const versions = await services.water.licences.getLicenceVersions(licenceId);
+    const version = versions.find(v => v.status === 'current');
+
+    const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
+    return defaultCharges;
+  } catch (err) {
+    return errorHandler(err, `Default charges not found for licence ${licenceId}`);
+  }
+};
+
+const loadBillingAccounts = async request => {
+  const { licenceNumber, licenceId } = request.pre.licence;
+  const { startDate } = request.pre.draftChargeInformation;
+
+  try {
+    const licenceAccounts = await services.water.licences.getLicenceAccountsByRefAndDate(licenceNumber, startDate);
+    return licenceAccounts;
+  } catch (err) {
+    return errorHandler(err, `Cannot load billing accounts for licence ${licenceId}`);
+  }
+};
+
+exports.loadBillingAccounts = loadBillingAccounts;
+exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
+exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
-exports.loadChangeReasons = loadChangeReasons;
+exports.loadLicence = loadLicence;

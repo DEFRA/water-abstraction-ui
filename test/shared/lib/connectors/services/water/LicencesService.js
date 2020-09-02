@@ -214,4 +214,31 @@ experiment('services/water/LicencesService', () => {
       expect(url).to.equal('https://example.com/api/licences/licence-id/agreements');
     });
   });
+
+  experiment('.getLicenceVersions', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.getLicenceVersions('licence-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/versions');
+    });
+  });
+
+  experiment('.getLicenceAccountsByRefAndDate', () => {
+    beforeEach(async () => {
+      await service.getLicenceAccountsByRefAndDate('123/123', '2000-01-01');
+    });
+
+    test('makes a request to the expected URL', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-accounts');
+    });
+
+    test('passes the expected query params', async () => {
+      const [, options] = serviceRequest.get.lastCall.args;
+      expect(options.qs).to.equal({
+        documentRef: '123/123',
+        date: '2000-01-01'
+      });
+    });
+  });
 });

@@ -30,9 +30,32 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     };
 
     sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves({
-      data: [{
-        changeReasonId: 'test-change-reason-id'
-      }]
+      data: [
+        {
+          changeReasonId: 'test-change-reason-id-1',
+          type: 'new_chargeable_charge_version'
+        },
+        {
+          changeReasonId: 'test-change-reason-id-2',
+          type: 'new_non_chargeable_charge_version'
+        }
+      ]
+    });
+
+    sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
+      { id: 'test-licence-version-1', status: 'superceded' },
+      { id: 'test-licence-version-2', status: 'current' }
+    ]);
+
+    sandbox.stub(services.water.licences, 'getLicenceAccountsByRefAndDate').resolves([
+      { id: 'test-licence-account-1' },
+      { id: 'test-licence-account-2' }
+    ]);
+
+    sandbox.stub(services.water.chargeVersions, 'getDefaultChargesForLicenceVersion').resolves({
+      data: [
+        { source: 'unsupported' }
+      ]
     });
   });
 
@@ -141,10 +164,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
-  experiment('loadChangeReasons', () => {
+  experiment('loadChargeableChangeReasons', () => {
     experiment('when data is found', () => {
       beforeEach(async () => {
-        result = await preHandlers.loadChangeReasons(request);
+        result = await preHandlers.loadChargeableChangeReasons(request);
       });
 
       test('the service method is called', async () => {
@@ -155,7 +178,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
 
       test('resolves with reasons data', async () => {
         expect(result).to.be.an.array().length(1);
-        expect(result[0].changeReasonId).to.equal('test-change-reason-id');
+        expect(result[0].changeReasonId).to.equal('test-change-reason-id-1');
       });
     });
 
@@ -164,7 +187,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const err = new Error();
         err.statusCode = 404;
         services.water.changeReasons.getChangeReasons.rejects(err);
-        result = await preHandlers.loadChangeReasons(request);
+        result = await preHandlers.loadChargeableChangeReasons(request);
       });
 
       test('resolves with a Boom 404 error', async () => {
@@ -181,7 +204,107 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       });
 
       test('rejects with the error', async () => {
-        const func = () => preHandlers.loadChangeReasons(request);
+        const func = () => preHandlers.loadChargeableChangeReasons(request);
+        const err = await expect(func()).to.reject();
+        expect(err.message).to.equal('Oh no!');
+      });
+    });
+  });
+
+  experiment('loadDefaultCharges', () => {
+    experiment('when data is found', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadDefaultCharges(request);
+      });
+
+      test('the licence id is used to get the licence versions', async () => {
+        const [licenceId] = services.water.licences.getLicenceVersions.lastCall.args;
+        expect(licenceId).to.equal(request.params.licenceId);
+      });
+
+      test('the charges are requested for the current licence version', async () => {
+        const [versionId] = services.water.chargeVersions.getDefaultChargesForLicenceVersion.lastCall.args;
+        expect(versionId).to.equal('test-licence-version-2');
+      });
+    });
+
+    experiment('when the data is not found', () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.licences.getLicenceVersions.rejects(err);
+        result = await preHandlers.loadDefaultCharges(request);
+      });
+
+      test('resolves with a Boom 404 error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(404);
+        expect(result.message).to.equal('Default charges not found for licence test-licence-id');
+      });
+    });
+
+    experiment('for other errors', () => {
+      beforeEach(async () => {
+        const err = new Error('Oh no!');
+        services.water.chargeVersions.getDefaultChargesForLicenceVersion.rejects(err);
+      });
+
+      test('rejects with the error', async () => {
+        const func = () => preHandlers.loadDefaultCharges(request);
+        const err = await expect(func()).to.reject();
+        expect(err.message).to.equal('Oh no!');
+      });
+    });
+  });
+
+  experiment('loadBillingAccounts', () => {
+    beforeEach(async () => {
+      request.pre = {
+        licence: {
+          licenceId: 'test-licence-id',
+          licenceNumber: '123/123'
+        },
+        draftChargeInformation: {
+          startDate: '2000-01-01'
+        }
+      };
+    });
+
+    experiment('when data is found', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadBillingAccounts(request);
+      });
+
+      test('the licence number and start date are used to get the licence accounts', async () => {
+        const [licenceNumber, startDate] = services.water.licences.getLicenceAccountsByRefAndDate.lastCall.args;
+        expect(licenceNumber).to.equal(request.pre.licence.licenceNumber);
+        expect(startDate).to.equal(request.pre.draftChargeInformation.startDate);
+      });
+    });
+
+    experiment('when the data is not found', () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.licences.getLicenceAccountsByRefAndDate.rejects(err);
+        result = await preHandlers.loadBillingAccounts(request);
+      });
+
+      test('resolves with a Boom 404 error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(404);
+        expect(result.message).to.equal('Cannot load billing accounts for licence test-licence-id');
+      });
+    });
+
+    experiment('for other errors', () => {
+      beforeEach(async () => {
+        const err = new Error('Oh no!');
+        services.water.licences.getLicenceAccountsByRefAndDate.rejects(err);
+      });
+
+      test('rejects with the error', async () => {
+        const func = () => preHandlers.loadBillingAccounts(request);
         const err = await expect(func()).to.reject();
         expect(err.message).to.equal('Oh no!');
       });

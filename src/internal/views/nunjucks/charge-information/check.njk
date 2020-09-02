@@ -1,0 +1,93 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% macro summaryListRow(key, value) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ key }}</dt>
+    <dd class="govuk-summary-list__value">{{ value }}</dd>
+  </div>
+{% endmacro %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle, caption, null, true) }}
+    </div>
+    <div class="govuk-grid-column-full">
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
+        <dl class="govuk-summary-list">
+          {{ summaryListRow('Reason', draftChargeInformation.changeReason.description)}}
+          {{ summaryListRow('Start date', draftChargeInformation.startDate | date )}}
+
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Billing account</dt>
+            <dd class="govuk-summary-list__value">
+              {{ draftChargeInformation.billingAccount.billingAccount.accountNumber }}
+              {%if invoiceAccountAddress.address.addressLine1 %}<br/>{{invoiceAccountAddress.address.addressLine1}}{%endif%}
+              {%if invoiceAccountAddress.address.addressLine2 %}<br/>{{invoiceAccountAddress.address.addressLine2}}{%endif%}
+              {%if invoiceAccountAddress.address.addressLine3 %}<br/>{{invoiceAccountAddress.address.addressLine3}}{%endif%}
+              {%if invoiceAccountAddress.address.addressLine4 %}<br/>{{invoiceAccountAddress.address.addressLine4}}{%endif%}
+              {%if invoiceAccountAddress.address.town %}<br/>{{invoiceAccountAddress.address.town}}{%endif%}
+              {%if invoiceAccountAddress.address.county %}<br/>{{invoiceAccountAddress.address.county}}{%endif%}
+              {%if invoiceAccountAddress.address.postcode %}<br/>{{invoiceAccountAddress.address.postcode}}{%endif%}
+            </dd>
+          </div>
+
+          {{ summaryListRow('Licence holder', draftChargeInformation.billingAccount.billingAccount.company.name) }}
+        </dl>
+      </section>
+
+      {% for chargeElement in draftChargeInformation.abstractionData %}
+        <section class="govuk-!-margin-bottom-7">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Element {{loop.index}}</h2>
+          <dl class="govuk-summary-list">
+            {{ summaryListRow('Purpose', chargeElement.purposeUse.name) }}
+            {{ summaryListRow('Description', chargeElement.description) }}
+            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
+            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
+            {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity + ' megalitres per year') }}
+
+            {% set billableQuantity = 'Not set' %}
+            {% if chargeElement.billableAnnualQuantity %}
+              {% set timeLimited = chargeElement.billableAnnualQuantity %}
+            {% endif %}
+            {{ summaryListRow('Billable quantity', billableQuantity) }}
+
+            {% set timeLimited = 'No' %}
+            {% if chargeElement.isTwoPartTariff %}
+              {% set timeLimited = 'Yes' %}
+            {% endif %}
+            {{ summaryListRow('Time limit', timeLimited) }}
+
+            {{ summaryListRow('Source', chargeElement.source | title) }}
+            {{ summaryListRow('Season', chargeElement.season | title) }}
+            {{ summaryListRow('Loss', chargeElement.loss | title) }}
+            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+          </dl>
+        </section>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+        {{ govukButton({
+          text: 'Confirm',
+          name: 'nextStep',
+          value: 'confirm',
+          classes: 'govuk-!-margin-right-6'
+        }) }}
+        {{ govukButton({
+          text: 'Cancel charge information',
+          name: 'nextStep',
+          value: 'cancel',
+          classes: 'govuk-button--secondary'
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

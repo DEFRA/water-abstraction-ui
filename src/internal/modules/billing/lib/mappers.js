@@ -48,20 +48,17 @@ const mapChargeElementTransactions = (transactions, chargeElementId) => {
 
   return {
     transactions: chargeElementTransactions.map(mapTransaction),
-    chargeElement: chargeElementTransactions[0].chargeElement };
+    totals: getTransactionTotals(chargeElementTransactions),
+    chargeElement: chargeElementTransactions[0].chargeElement
+  };
 };
 
 const getChargeElementIds = transactions => uniq(compact(transactions.map(trans => {
   if (!trans.isMinimumCharge) return trans.chargeElement.id;
 })));
 
-const getMinimumChargeTransactions = transactions => {
-  const minChargeTransactions = transactions.filter(trans => trans.isMinimumCharge);
-  return {
-    transactions: minChargeTransactions,
-    totals: getTransactionTotals(minChargeTransactions)
-  };
-};
+const getMinimumChargeTransactions = transactions =>
+  transactions.filter(trans => trans.isMinimumCharge);
 
 const mapLicence = licenceTransactions => {
   const transactions = licenceTransactions.map(row => row.transaction);
@@ -70,7 +67,6 @@ const mapLicence = licenceTransactions => {
   const chargeElements = chargeElementIds.map(id => mapChargeElementTransactions(transactions, id));
   return {
     link: licenceTransactions[0].link,
-    totals: getTransactionTotals(transactions),
     minimumChargeTransactions: getMinimumChargeTransactions(transactions),
     chargeElements
   };

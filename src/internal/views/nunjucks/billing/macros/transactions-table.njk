@@ -129,7 +129,7 @@
   </tfoot>
 {% endmacro %}
 
-{% macro transactionsTable(group, totals) %}
+{% macro transactionsTable(group) %}
  <table class="govuk-table">
   {{ header() }}
   <tbody class="govuk-table__body">
@@ -137,11 +137,11 @@
       {{ transactionRow(group, transaction) }}
     {% endfor %}
   </tbody>
-  {{ creditsDebitsFooter(totals) }}
+  {{ creditsDebitsFooter(group.totals) }}
  </table>
 {% endmacro %}
 
-{% macro twoPartTariffTransactionsTable(group, totals) %}
+{% macro twoPartTariffTransactionsTable(group) %}
  <table class="govuk-table">
   {{ twoPartTariffHeader() }}
   <tbody class="govuk-table__body">
@@ -149,7 +149,7 @@
     {{ twoPartTariffTransactionRow(group, transaction) }}
     {% endfor %}
   </tbody>
-  {{ debitsFooter(totals) }}
+  {{ debitsFooter(group.totals) }}
  </table>
 {% endmacro %}
 

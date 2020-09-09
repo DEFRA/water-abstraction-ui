@@ -251,6 +251,14 @@ experiment('modules/billing/lib/mappers', () => {
           });
         });
 
+        test('has the correct charge element total', async () => {
+          expect(data.chargeElements[0].totals).to.equal({
+            debits: 924,
+            credits: 0,
+            netTotal: 924
+          });
+        });
+
         test('has the correct value', async () => {
           const { value } = data.chargeElements[0].transactions[0];
           expect(value).to.equal(924);
@@ -274,22 +282,11 @@ experiment('modules/billing/lib/mappers', () => {
         });
 
         test('has the correct minimum charge transactions', async () => {
-          expect(data.minimumChargeTransactions.transactions[0]).to.equal({
+          expect(data.minimumChargeTransactions[0]).to.equal({
             value: 1576,
             chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
             isMinimumCharge: true
           });
-
-          expect(data.minimumChargeTransactions.totals).to.equal({
-            debits: 1576,
-            credits: 0,
-            netTotal: 1576
-          });
-        });
-
-        test('has the correct totals', async () => {
-          const { totals } = data;
-          expect(totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
         });
       });
 
@@ -318,8 +315,8 @@ experiment('modules/billing/lib/mappers', () => {
           });
 
           test('has the correct totals', async () => {
-            const { totals } = data;
-            expect(totals).to.equal({ debits: 4690, credits: -363, netTotal: 4327 });
+            const { totals } = data.chargeElements[0];
+            expect(totals).to.equal({ debits: 1234, credits: 0, netTotal: 1234 });
           });
         });
 

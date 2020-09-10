@@ -1,12 +1,10 @@
-const paragraphFactory = (name, options = {}, value) => {
+const paragraphFactory = (name, options = {}) => {
   const defaults = {
     widget: 'paragraph',
-    text: '',
-    element: 'p'
+    text: ''
   };
   return {
     name,
-    value,
     options: {
       ...defaults,
       ...options

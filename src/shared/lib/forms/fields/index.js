@@ -7,6 +7,7 @@ const checkbox = require('./checkbox');
 const dropdown = require('./dropdown');
 const paragraph = require('./paragraph');
 const file = require('./file');
+const link = require('./link');
 
 exports.button = button;
 exports.date = date;
@@ -17,3 +18,4 @@ exports.checkbox = checkbox;
 exports.dropdown = dropdown;
 exports.paragraph = paragraph;
 exports.file = file;
+exports.link = link;

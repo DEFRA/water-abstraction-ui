@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.50.0",
+  "version": "1.51.0",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -30,7 +30,7 @@
     "@hapi/code": "^6.0.0",
     "@hapi/lab": "^19.1.0",
     "auto-changelog": "^1.16.4",
-    "codecov": "^3.6.5",
+    "codecov": "^3.7.1",
     "del": "^3.0.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",

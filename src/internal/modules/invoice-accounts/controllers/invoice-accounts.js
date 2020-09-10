@@ -3,41 +3,35 @@ const boom = require('@hapi/boom');
 const queryString = require('querystring');
 const moment = require('moment');
 const sessionForms = require('shared/lib/session-forms');
-const { selectCompanyForm, selectCompanyFormSchema } = require('./forms/select-company');
-const { selectAddressForm, selectAddressFormSchema } = require('./forms/select-address');
-const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
-const { checkDetailsForm } = require('./forms/check-details');
 const forms = require('shared/lib/forms');
+
+const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
+const { selectAddressForm, selectAddressFormSchema } = require('../forms/select-address');
+const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
+const { checkDetailsForm } = require('../forms/check-details');
+
 const titleCase = require('title-case');
 const { has, isEmpty } = require('lodash');
+const urlJoin = require('url-join');
 
 // tempId is used to determine if a new entity should be created.
 const tempId = '00000000-0000-0000-0000-000000000000';
-const dataService = require('./lib/data-service');
-const urlJoin = require('url-join');
-const {
-  processCompanyFormData,
-  processFaoFormData,
-  getSelectedAddress,
-  getAgentCompany } = require('./lib/helpers');
-
-const getCaption = (licenceNumber) => {
-  return licenceNumber ? `Licence ${licenceNumber}` : '';
-};
+const dataService = require('../services/data-service');
+const helpers = require('../lib/helpers');
 
 const getCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { licenceId, redirectPath } = request.query;
+  const { company } = request.pre;
   // licenceId is an optional query param. if supplied it will be displayed as the caption on the forms for the session
   const { licenceNumber } = licenceId ? await dataService.getLicenceById(licenceId) : { licenceNumber: null };
-  const company = await dataService.getCompany(companyId);
   // The company name and licence number set here will be used in the select address page
   const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: titleCase(company.name) } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
-  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : getAgentCompany(session);
+  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : helpers.getAgentCompany(session);
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: getCaption(licenceNumber),
+    caption: helpers.getFormTitleCaption(licenceNumber),
     pageTitle: 'Who should the bills go to?',
     back: '/manage',
     form: sessionForms.get(request, selectCompanyForm(request, company, selectedCompany))
@@ -46,11 +40,11 @@ const getCompany = async (request, h) => {
 
 const postCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const company = await dataService.getCompany(companyId);
+  const { company } = request.pre;
   const schema = selectCompanyFormSchema(request.payload);
   const form = forms.handleRequest(selectCompanyForm(request, company), request, schema);
   if (form.isValid) {
-    const redirectPath = processCompanyFormData(request, regionId, companyId, form);
+    const redirectPath = helpers.processCompanyFormData(request, regionId, companyId, form);
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
   }
   const { viewData: { redirectPath } } = dataService.sessionManager(request, regionId, companyId);
@@ -67,7 +61,7 @@ const getAddress = async (request, h) => {
   const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: getCaption(session.viewData.licenceNumber),
+    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: `Select an existing address for ${session.viewData.companyName}`,
     back: '/manage',
     form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddressId))
@@ -91,11 +85,15 @@ const postAddress = async (request, h) => {
 const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
-  // TODO if selected contact is yes, additional contact data will need to be sent to the form
-  const selectedContact = has(session, 'agent') && session.contact === null ? 'no' : 'yes with contact details';
+  let selectedContact;
+  if (has(session, 'contact')) {
+    selectedContact = isEmpty(session.contact) ? 'no' : 'yes';
+  } else {
+    selectedContact = null;
+  }
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: getCaption(session.viewData.licenceNumber),
+    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: 'Do you need to add an FAO?',
     back: '/manage',
     form: sessionForms.get(request, addFaoForm(request, selectedContact))
@@ -108,7 +106,7 @@ const postFao = async (request, h) => {
   const form = forms.handleRequest(addFaoForm(request), request, schema);
   if (form.isValid) {
     const { faoRequired } = forms.getValues(form);
-    const redirectPath = processFaoFormData(request, regionId, companyId, faoRequired);
+    const redirectPath = helpers.processFaoFormData(request, regionId, companyId, faoRequired);
     return h.redirect(urlJoin('/invoice-accounts/create/', regionId, companyId, redirectPath));
   }
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'add-fao'));
@@ -120,32 +118,32 @@ const getCheckDetails = async (request, h) => {
   if (Object.keys(session).length === 0 && session.constructor === Object) {
     throw boom.notFound('Session data not found');
   }
-  const selectedAddress = await getSelectedAddress(companyId, session);
-  const company = await dataService.getCompany(companyId);
+  const selectedContact = isEmpty(session.contact) ? 'No' : await helpers.getContactName(companyId, session.contact);
+  const selectedAddress = await helpers.getSelectedAddress(companyId, session);
+  const { company } = request.pre;
   return h.view('nunjucks/invoice-accounts/check-details', {
     ...request.view,
     form: sessionForms.get(request, checkDetailsForm(request)),
-    caption: getCaption(session.viewData.licenceNumber),
+    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: 'Check billing account details',
     back: '/manage',
     session,
-    companyId,
-    regionId,
     company,
-    selectedAddress });
+    selectedAddress,
+    selectedContact });
 };
 
 const postCheckDetails = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
+
   // TODO default start date added here - might need to create a screen for the user to select a date
   session.startDate = moment().format('YYYY-MM-DD');
   const redirectPath = session.viewData.redirectPath;
   // remove unnecesary session data
   delete session.viewData;
   if (session.address.addressId === tempId) { delete session.address.addressId; };
-
-  const invoiceAcc = await dataService.saveInvoiceAccDetails({ regionId, companyId, ...session });
+  const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, { regionId, ...session });
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });
   return h.redirect(path);

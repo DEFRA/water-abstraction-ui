@@ -162,6 +162,7 @@ const applyErrors = (form, formattedErrors = []) => {
       errors
     };
   });
+
   f.errors = formattedErrors;
   return f;
 };

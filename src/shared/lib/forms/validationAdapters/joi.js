@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const { mapFields } = require('../mapFields');
-const { get } = require('lodash');
+const { get, uniqBy } = require('lodash');
 
 const getChoiceValues = field => field.options.choices.map(choice => choice.value);
 
@@ -49,7 +49,7 @@ const validate = (requestData, schema, options = { abortEarly: false }) => Joi.v
 const formatErrors = (error, customErrors) => {
   const details = get(error, 'details', []);
 
-  return details.map(err => {
+  const errors = details.map(err => {
     const name = err.context.key;
     const { type, message } = err;
 
@@ -70,6 +70,9 @@ const formatErrors = (error, customErrors) => {
       summary: message
     };
   });
+
+  // only return one error for each field
+  return uniqBy(errors, 'name');
 };
 
 module.exports = {

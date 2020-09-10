@@ -64,6 +64,8 @@ const pluginsArray = [
     options: {
       services: connectors
     }
+  }, {
+    plugin: require('internal/modules/address-entry/plugin')
   }
 ];
 

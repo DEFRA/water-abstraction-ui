@@ -5,36 +5,34 @@ const { expect } = require('@hapi/code');
 
 experiment('shared/view/nunjucks/filters/charge-version-badge', () => {
   test('The status text is returned using title casing', async () => {
-    const chargeVersion = { status: 'titleCasePlease' };
+    const chargeVersion = { status: 'appROVED' };
     const { text } = chargeVersionBadge(chargeVersion);
-    expect(text).to.equal('Title Case Please');
+    expect(text).to.equal('Approved');
   });
 
-  experiment('for a status of current', () => {
-    test('the style is set to "completed"', async () => {
-      const chargeVersion = { status: 'current' };
-      const { status } = chargeVersionBadge(chargeVersion);
-      expect(status).to.equal('completed');
-    });
+  const statuses = [
+    { status: 'current', expectedStatus: 'success', expectedText: 'Approved' },
+    { status: 'draft', expectedStatus: 'void', expectedText: 'Draft' },
+    { status: 'approved', expectedStatus: 'success', expectedText: 'Approved' },
+    { status: 'replaced', expectedStatus: 'inactive', expectedText: 'Replaced' },
+    { status: 'superseded', expectedStatus: 'inactive', expectedText: 'Replaced' },
+    { status: 'invalid', expectedStatus: 'error', expectedText: 'Invalid' },
+    { status: 'review', expectedStatus: 'warning', expectedText: 'Review' }
+  ];
 
-    test('the text is set to "Current"', async () => {
-      const chargeVersion = { status: 'current' };
-      const { text } = chargeVersionBadge(chargeVersion);
-      expect(text).to.equal('Current');
-    });
-  });
+  statuses.forEach(spec => {
+    experiment(`when the charge version status is ${spec.status}`, () => {
+      test(`the style is set to ${spec.expectedStatus}`, async () => {
+        const chargeVersion = { status: spec.status };
+        const { status } = chargeVersionBadge(chargeVersion);
+        expect(status).to.equal(spec.expectedStatus);
+      });
 
-  experiment('for a status of draft', () => {
-    test('the style is set to "void"', async () => {
-      const chargeVersion = { status: 'draft' };
-      const { status } = chargeVersionBadge(chargeVersion);
-      expect(status).to.equal('void');
-    });
-
-    test('the text is set to "Draft"', async () => {
-      const chargeVersion = { status: 'draft' };
-      const { text } = chargeVersionBadge(chargeVersion);
-      expect(text).to.equal('Draft');
+      test(`the text is set to ${spec.expectedText}`, async () => {
+        const chargeVersion = { status: spec.status };
+        const { text } = chargeVersionBadge(chargeVersion);
+        expect(text).to.equal(spec.expectedText);
+      });
     });
   });
 });

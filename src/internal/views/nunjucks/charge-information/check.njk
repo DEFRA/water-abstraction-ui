@@ -1,12 +1,17 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "crm/address.njk" import address %}
 
 {% macro summaryListRow(key, value) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
   </div>
+{% endmacro %}
+
+{% macro timeLimitedPeriod(period) %}
+  {{ period.startDate | date }} to {{ period.endDate | date }}
 {% endmacro %}
 
 {% block content %}
@@ -25,13 +30,8 @@
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
               {{ draftChargeInformation.billingAccount.billingAccount.accountNumber }}
-              {%if invoiceAccountAddress.address.addressLine1 %}<br/>{{invoiceAccountAddress.address.addressLine1}}{%endif%}
-              {%if invoiceAccountAddress.address.addressLine2 %}<br/>{{invoiceAccountAddress.address.addressLine2}}{%endif%}
-              {%if invoiceAccountAddress.address.addressLine3 %}<br/>{{invoiceAccountAddress.address.addressLine3}}{%endif%}
-              {%if invoiceAccountAddress.address.addressLine4 %}<br/>{{invoiceAccountAddress.address.addressLine4}}{%endif%}
-              {%if invoiceAccountAddress.address.town %}<br/>{{invoiceAccountAddress.address.town}}{%endif%}
-              {%if invoiceAccountAddress.address.county %}<br/>{{invoiceAccountAddress.address.county}}{%endif%}
-              {%if invoiceAccountAddress.address.postcode %}<br/>{{invoiceAccountAddress.address.postcode}}{%endif%}
+              <br>
+              {{ address(invoiceAccountAddress.address) }}
             </dd>
           </div>
 
@@ -46,18 +46,19 @@
             {{ summaryListRow('Purpose', chargeElement.purposeUse.name) }}
             {{ summaryListRow('Description', chargeElement.description) }}
             {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
-            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
             {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity + ' megalitres per year') }}
 
             {% set billableQuantity = 'Not set' %}
             {% if chargeElement.billableAnnualQuantity %}
-              {% set timeLimited = chargeElement.billableAnnualQuantity %}
+              {% set billableQuantity = chargeElement.billableAnnualQuantity %}
             {% endif %}
             {{ summaryListRow('Billable quantity', billableQuantity) }}
 
             {% set timeLimited = 'No' %}
-            {% if chargeElement.isTwoPartTariff %}
-              {% set timeLimited = 'Yes' %}
+            {% if chargeElement.timeLimitedPeriod %}
+              {% set timeLimited %}
+                {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+              {% endset %}
             {% endif %}
             {{ summaryListRow('Time limit', timeLimited) }}
 

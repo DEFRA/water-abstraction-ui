@@ -60,8 +60,11 @@ const loadDefaultCharges = async request => {
     const versions = await services.water.licences.getLicenceVersions(licenceId);
     const version = versions.find(v => v.status === 'current');
 
-    const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
-    return defaultCharges;
+    if (version) {
+      const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
+      return defaultCharges;
+    }
+    return [];
   } catch (err) {
     return errorHandler(err, `Default charges not found for licence ${licenceId}`);
   }

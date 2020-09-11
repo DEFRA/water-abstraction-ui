@@ -1,7 +1,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const titleCase = require('title-case');
-const { compact } = require('lodash');
+const { compact, uniqBy } = require('lodash');
 
 const getAddressText = address => {
   const { addressLine1, addressLine2, addressLine3, addressLine4 } = address;
@@ -12,8 +12,7 @@ const getAddressText = address => {
 };
 
 const getAddressChoices = addresses => {
-  console.log(addresses)
-  const choices = addresses.map(record => {
+  const choices = uniqBy(addresses, entity => [entity.address.id].join()).map(record => {
     return ({
       value: record.address.id,
       label: getAddressText(record.address)
@@ -25,7 +24,7 @@ const getAddressChoices = addresses => {
   }];
 };
 
-const form = (request, id) => {
+const form = (request, h) => {
   const { csrfToken } = request.view;
   const { sessionKey, redirectPath } = request.query;
   const { addressSearchResults } = request.pre;
@@ -43,7 +42,7 @@ const form = (request, id) => {
     },
     label: 'Select an address',
     choices: getAddressChoices(addressSearchResults)
-  }, id));
+  }, h));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('redirectPath', {}, redirectPath));

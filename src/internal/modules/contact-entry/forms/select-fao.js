@@ -1,12 +1,13 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const titleCase = require('title-case');
+const { uniqBy } = require('lodash');
 
 const getFAOChoices = entities => {
-  const choices = entities.map(entity => {
+  const choices = uniqBy(entities, entity => [entity.contactId].join()).map(entity => {
     return ({
       value: entity.contactId,
-      label: titleCase(`${entity.contact.firstName} ${entity.contact.lastName}`)
+      label: titleCase(`${entity.contact.salutation ? entity.contact.salutation : ''} ${entity.contact.firstName ? entity.contact.firstName : ''} ${entity.contact.lastName ? entity.contact.lastName : ''}`)
     });
   });
   return [...choices, { divider: 'or' }, {
@@ -18,7 +19,7 @@ const getFAOChoices = entities => {
   }];
 };
 
-const form = (request, id) => {
+const form = (request, h) => {
   const { csrfToken } = request.view;
   const { sessionKey, redirectPath } = request.query;
   const { FAOSearchResults } = request.pre;
@@ -36,7 +37,7 @@ const form = (request, id) => {
     },
     label: 'Select an address',
     choices: getFAOChoices(FAOSearchResults)
-  }, id));
+  }, h));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('redirectPath', {}, redirectPath));

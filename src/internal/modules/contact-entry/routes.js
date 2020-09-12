@@ -1,7 +1,7 @@
 const preHandlers = require('./pre-handlers');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-const { selectContact, selectAddress, selectFAO, selectAccountType, companySearch, individualName, companySearchSelect } = require('./forms');
+const { selectContact, selectAddress, selectFAO, selectAccountType, companySearch, individualName, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
 const Joi = require('@hapi/joi');
 const { merge } = require('lodash');
 
@@ -222,7 +222,7 @@ const routes = () => [
         ...request.view,
         pageTitle: 'Select a company',
         back: request.query.back,
-        form: sessionForms.get(request, companySearchSelect.form(request))
+        form: sessionForms.get(request, companySearchSelectCompany.form(request))
       });
     },
     options: {
@@ -237,37 +237,78 @@ const routes = () => [
     }
   }, {
     method: 'POST',
-    path: '/contact-entry/new/details/company-search/results',
+    path: '/contact-entry/new/details/company-search/select-company',
     handler: async (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
       const { selectedCompaniesHouseNumber } = request.payload;
       const form = forms.handleRequest(
-        companySearchSelect.form(request),
+        companySearchSelectCompany.form(request),
         request,
-        companySearchSelect.schema
+        companySearchSelectCompany.schema
       );
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
         console.log(form)
-        console.log("FORM INVALID")
         return h.postRedirectGet(form, '/contact-entry/new/details/company-search/results', {
           sessionKey
         });
       } else {
-        console.log('LOGGED HERE')
         // Company name or number has been set. Store this in yar
         request.yar.set(sessionKey, merge(currentState, { selectedCompaniesHouseNumber }));
         // Proceed to the next stage
-        // Goes to the address entry workflow
-        // TODO: Fetch companies from companies house
-        return h.redirect(`/contact-entry/new/details/company-search/results/select-company-address?sessionKey=${sessionKey}`);
+        return h.redirect(`/contact-entry/new/details/company-search/select-company-address?sessionKey=${sessionKey}`);
       }
     },
     options: {
       pre: [
         { method: preHandlers.searchForCompaniesInCompaniesHouse, assign: 'companiesHouseResults' }
       ]
+    }
+  }, {
+    method: 'GET',
+    path: '/contact-entry/new/details/company-search/select-company-address',
+    handler: async (request, h) => {
+      return h.view('nunjucks/contact-entry/basic-form', {
+        ...request.view,
+        pageTitle: 'Select a company address',
+        back: request.query.back,
+        form: sessionForms.get(request, companySearchSelectAddress.form(request))
+      });
+    },
+    options: {
+      pre: [
+        { method: preHandlers.returnCompanyAddressesFromCompaniesHouse, assign: 'companiesHouseAddresses' }
+      ],
+      validate: {
+        query: {
+          sessionKey: Joi.string().uuid().required()
+        }
+      }
+    }
+  }, {
+    method: 'POST',
+    path: '/contact-entry/new/details/company-search/select-company-address',
+    handler: async (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      const { selectedCompaniesHouseAddress } = request.payload;
+      const form = forms.handleRequest(
+        companySearchSelectAddress.form(request),
+        request,
+        companySearchSelectAddress.schema
+      );
+      // If form is invalid, redirect user back to form
+      if (!form.isValid) {
+        return h.postRedirectGet(form, '/contact-entry/new/details/company-search/select-company-address', {
+          sessionKey
+        });
+      } else {
+        // Company name or number has been set. Store this in yar
+        request.yar.set(sessionKey, merge(currentState, { selectedCompaniesHouseAddress }));
+        // Proceed to the next stage
+        return h.redirect(`/contact-entry/fao?sessionKey=${sessionKey}`);
+      }
     }
   }, {
     // Route for displaying the list of existing contact addresses.

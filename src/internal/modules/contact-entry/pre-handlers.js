@@ -50,7 +50,23 @@ const searchForCompaniesInCompaniesHouse = async request => {
   } else {
     // Search companies house. Return results as array;
     const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(companyNameOrNumber);
+    // Store results in yar, so that we can retrieve the results again later for address selection
     return data;
+  }
+};
+
+const returnCompanyAddressesFromCompaniesHouse = async request => {
+  let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
+  const { selectedCompaniesHouseNumber } = request.yar.get(sessionKey);
+  if (!selectedCompaniesHouseNumber) {
+    return [];
+  } else {
+    // Search companies house. Return results as array;
+    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(selectedCompaniesHouseNumber);
+    // Compile the addresses array and the main address object into a single array
+    const addressArray = [...data[0].company.companyAddresses, data[0].address];
+    // Store results in yar, so that we can retrieve the results again later for address selection
+    return addressArray;
   }
 };
 
@@ -74,3 +90,4 @@ exports.searchForAddressesByEntityId = searchForAddressesByEntityId;
 exports.searchForFAOsByEntityId = searchForFAOsByEntityId;
 exports.fetchRegionByCompanyId = fetchRegionByCompanyId;
 exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
+exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;

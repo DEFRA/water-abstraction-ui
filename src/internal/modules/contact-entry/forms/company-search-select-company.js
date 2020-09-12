@@ -21,7 +21,7 @@ const form = (request, h) => {
   const { sessionKey } = request.query;
   const { companiesHouseResults } = request.pre;
 
-  const f = formFactory('/contact-entry/new/details/company-search/results');
+  const f = formFactory('/contact-entry/new/details/company-search/select-company');
 
   f.fields.push(fields.radio('selectedCompaniesHouseNumber', {
     errors: {

@@ -4,4 +4,5 @@ exports.selectFAO = require('./select-fao');
 exports.selectAccountType = require('./select-account-type');
 exports.companySearch = require('./company-search');
 exports.individualName = require('./individual-name');
-exports.companySearchSelect = require('./company-search-select');
+exports.companySearchSelectCompany = require('./company-search-select-company');
+exports.companySearchSelectAddress = require('./company-search-select-address');

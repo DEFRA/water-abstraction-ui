@@ -12,21 +12,21 @@ const getAddressText = address => {
 };
 
 const getAddressChoices = addresses => {
-  const choices = uniqBy(addresses, entity => [entity.address.id].join()).map(record => {
+  const choices = [...uniqBy(addresses, entity => [entity.address.id].join()).map(record => {
     return ({
       value: record.address.id,
       label: getAddressText(record.address)
     });
-  });
-  return [...choices, { divider: 'or' }, {
-    value: null,
-    label: 'Another address'
+  }), { divider: 'or' }];
+  return [...choices.length > 1 ? choices : [], {
+    value: 'new',
+    label: 'Set up a new address'
   }];
 };
 
-const form = (request, h) => {
+const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
-  const { sessionKey, redirectPath } = request.query;
+  const { sessionKey } = request.query;
   const { addressSearchResults } = request.pre;
 
   const f = formFactory('/contact-entry/select-address');
@@ -42,10 +42,9 @@ const form = (request, h) => {
     },
     label: 'Select an address',
     choices: getAddressChoices(addressSearchResults)
-  }, h));
+  }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.hidden('redirectPath', {}, redirectPath));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -54,9 +53,8 @@ const form = (request, h) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  redirectPath: Joi.string().required(),
   sessionKey: Joi.string().uuid().required(),
-  id: Joi.string().uuid().required()
+  id: Joi.string().uuid().required().allow('new')
 };
 
 exports.form = form;

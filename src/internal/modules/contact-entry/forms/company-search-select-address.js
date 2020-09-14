@@ -21,7 +21,7 @@ const getAddressChoices = addresses => {
   return choices;
 };
 
-const form = (request, h) => {
+const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { sessionKey } = request.query;
   const { companiesHouseAddresses } = request.pre;
@@ -39,7 +39,7 @@ const form = (request, h) => {
     },
     label: 'Select a company address',
     choices: getAddressChoices(companiesHouseAddresses)
-  }, h));
+  }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));

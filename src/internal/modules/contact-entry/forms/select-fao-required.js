@@ -1,21 +1,25 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 
-const form = (request, h) => {
+const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { sessionKey } = request.query;
 
-  const f = formFactory('/contact-entry/new/details/individual');
+  const f = formFactory('/contact-entry/new/details/fao');
 
-  f.fields.push(fields.text('individualFullName', {
-    label: 'Full name',
-    controlClass: 'govuk-!-width-one-half',
+  f.fields.push(fields.radio('FAOIsRequired', {
     errors: {
       'any.empty': {
-        message: 'Enter a name'
+        message: 'Select an option'
+      },
+      'string.regex.base': {
+        message: 'Select an option'
       }
-    }
-  }));
+    },
+    choices: [
+      { value: true, label: 'Yes' },
+      { value: false, label: 'No' }]
+  }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
@@ -27,7 +31,7 @@ const form = (request, h) => {
 const schema = {
   csrf_token: Joi.string().uuid().required(),
   sessionKey: Joi.string().uuid().required(),
-  individualFullName: Joi.string().required()
+  FAOIsRequired: Joi.boolean().required()
 };
 
 exports.form = form;

@@ -1,6 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
-const titleCase = require('title-case');
 
 const getCompanyText = company => {
   return `${company.name} (${company.companyNumber})`;
@@ -16,7 +15,7 @@ const getCompanyChoices = companies => {
   return choices;
 };
 
-const form = (request, h) => {
+const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { sessionKey } = request.query;
   const { companiesHouseResults } = request.pre;
@@ -34,7 +33,7 @@ const form = (request, h) => {
     },
     label: 'Select a company',
     choices: getCompanyChoices(companiesHouseResults)
-  }, h));
+  }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));

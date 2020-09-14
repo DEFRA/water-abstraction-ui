@@ -1,7 +1,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 
-const form = (request, h) => {
+const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { sessionKey } = request.query;
 
@@ -15,7 +15,7 @@ const form = (request, h) => {
         message: 'Enter the Companies House number or company name'
       }
     }
-  }));
+  }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));

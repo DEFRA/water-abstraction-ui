@@ -101,6 +101,34 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+    contactEntryTakeover: {
+      /**
+       * This route is intended to act as a redirection utility.
+       * When users reach the end of the `contact-entry` workflow,
+       * they will be redirected to this GET request.
+       */
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
+      handler: (request, h) => {
+        console.log('SO FAR SO GOOD')
+        console.log(request.query)
+        return 'OK'
+      }, // TODO
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirects the user into the invoice-account flow after a new contact has been created',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            redirectPath: Joi.string().required()
+          }
+        }
+      }
+
+    },
     getFao: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/add-fao',

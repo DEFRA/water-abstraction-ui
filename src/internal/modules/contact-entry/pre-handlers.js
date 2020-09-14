@@ -28,20 +28,6 @@ const searchForAddressesByEntityId = async request => {
   }
 };
 
-const searchForFAOsByEntityId = async request => {
-  let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
-  const { id } = request.yar.get(sessionKey);
-  try {
-    const { data } = await services.water.companies.getContacts(id);
-    return data;
-  } catch (err) {
-    if (err.statusCode === 404) {
-      return Boom.notFound(`No address found.`);
-    }
-    throw err;
-  }
-};
-
 const searchForCompaniesInCompaniesHouse = async request => {
   let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
   const { companyNameOrNumber } = request.yar.get(sessionKey);
@@ -70,24 +56,21 @@ const returnCompanyAddressesFromCompaniesHouse = async request => {
   }
 };
 
-const fetchRegionByCompanyId = async request => {
-  let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
-  const { licenceId } = request.yar.get(sessionKey);
-  try {
-    // TODO asked Stephan which method would be best for figuring out the region for a licence. Awaiting feedback.
-    return '';
-  } catch (err) {
-    console.log(err)
-    if (err.statusCode === 404) {
-      return Boom.notFound(`No address found.`);
-    }
-    throw err;
-  }
-};
+const persistCompanyInDatabase = async request => {
+  const sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
+  const currentState = request.yar.get(sessionKey);
+  let payload = {
+    name: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseCompanyName : currentState.personFullName,
+    type: currentState.accountType,
+    companyNumber: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseNumber : null,
+    organisationType: currentState.accountType === 'organisation' ? currentState.organisationType : null
+  };
+  const company = await services.water.companies.postCompany(payload);
+  return company.companyId;
+}
 
 exports.searchForCompaniesByString = searchForCompaniesByString;
 exports.searchForAddressesByEntityId = searchForAddressesByEntityId;
-exports.searchForFAOsByEntityId = searchForFAOsByEntityId;
-exports.fetchRegionByCompanyId = fetchRegionByCompanyId;
 exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
 exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;
+exports.persistCompanyInDatabase = persistCompanyInDatabase;

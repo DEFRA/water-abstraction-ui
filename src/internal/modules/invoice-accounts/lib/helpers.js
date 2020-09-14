@@ -3,6 +3,8 @@ const forms = require('shared/lib/forms');
 const { has, isEmpty } = require('lodash');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
+const queryString = require('querystring');
+const uuid = require('uuid/v4');
 
 const getFormTitleCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
@@ -11,12 +13,18 @@ const getFormTitleCaption = (licenceNumber) => {
 const processCompanyFormData = (request, regionId, companyId, formData) => {
   const { selectedCompany, companySearch } = forms.getValues(formData);
   if (selectedCompany === 'company_search') {
-    // TODO place holder -- route does not exist
-    return `company-search?filter=${companySearch}`;
+    const tempUuid = uuid();
+    const queryTail = queryString.stringify({
+      sessionKey: tempUuid,
+      searchQuery: companySearch,
+      regionId: regionId,
+      back: `/invoice-accounts/create/${regionId}/${companyId}`
+    });
+    return `/contact-entry/select-contact?${queryTail}`;
   } else {
     const agentId = selectedCompany === companyId ? null : selectedCompany;
     dataService.sessionManager(request, regionId, companyId, { agent: agentId });
-    return 'select-address';
+    return `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
   }
 };
 

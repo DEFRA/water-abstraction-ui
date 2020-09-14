@@ -45,7 +45,7 @@ const postCompany = async (request, h) => {
   const form = forms.handleRequest(selectCompanyForm(request, company), request, schema);
   if (form.isValid) {
     const redirectPath = helpers.processCompanyFormData(request, regionId, companyId, form);
-    return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
+    return h.redirect(redirectPath);
   }
   const { viewData: { redirectPath } } = dataService.sessionManager(request, regionId, companyId);
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId), { redirectPath });

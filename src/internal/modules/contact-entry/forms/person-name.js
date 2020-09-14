@@ -5,20 +5,16 @@ const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { sessionKey } = request.query;
 
-  const f = formFactory('/contact-entry/new/account-type');
+  const f = formFactory('/contact-entry/new/details/person');
 
-  f.fields.push(fields.radio('accountType', {
+  f.fields.push(fields.text('personFullName', {
+    label: 'Full name',
+    controlClass: 'govuk-!-width-one-half',
     errors: {
       'any.empty': {
-        message: 'Select an option'
-      },
-      'string.regex.base': {
-        message: 'Select an option'
+        message: 'Enter a name'
       }
-    },
-    choices: [
-      { value: 'organisation', label: 'Company or organisation' },
-      { value: 'person', label: 'Individual' }]
+    }
   }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
@@ -31,7 +27,7 @@ const form = (request, defaultValue) => {
 const schema = {
   csrf_token: Joi.string().uuid().required(),
   sessionKey: Joi.string().uuid().required(),
-  accountType: Joi.string().required().allow(['organisation', 'person'])
+  personFullName: Joi.string().required()
 };
 
 exports.form = form;

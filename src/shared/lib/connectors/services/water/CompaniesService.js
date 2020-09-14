@@ -30,6 +30,11 @@ class CompaniesService extends ServiceClient {
     return this.serviceRequest.get(url);
   }
 
+  postCompany (body) {
+    const url = this.joinUrl('companies');
+    return this.serviceRequest.post(url, { body });
+  }
+
   getCompany (entityId) {
     const url = this.joinUrl('companies', entityId);
     return this.serviceRequest.get(url);

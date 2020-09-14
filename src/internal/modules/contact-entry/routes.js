@@ -1,9 +1,11 @@
 const preHandlers = require('./pre-handlers');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-const { selectContact, selectAddress, selectFAO, selectAccountType, companySearch, individualName, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
+const { selectContact, selectAddress, FAORequired, selectAccountType, companySearch, personName, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
 const Joi = require('@hapi/joi');
+const queryString = require('querystring');
 const { merge } = require('lodash');
+const addressEntryHelpers = require('../address-entry/lib/helpers');
 
 const routes = () => [
   {
@@ -12,21 +14,23 @@ const routes = () => [
     method: 'GET',
     path: '/contact-entry/select-contact',
     handler: (request, h) => {
-      const { sessionKey, licenceId, back, redirectPath } = request.query;
+      const { sessionKey, regionId, back, searchQuery } = request.query;
       // First, store the licence ID in the session, for use in captions
-      if (licenceId) {
-        let currentState = request.yar.get(sessionKey);
-        request.yar.set(sessionKey, merge(currentState, {
-          licenceId,
-          back,
-          redirectPath
-        }));
-      }
+
+      let currentState = request.yar.get(sessionKey);
+      request.yar.set(sessionKey, merge(currentState, {
+        back,
+        regionId,
+        searchQuery
+      }));
+
+      let defaultValue = currentState ? currentState.id : null;
+
       // Return the view
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Does this contact already exist?',
-        form: sessionForms.get(request, selectContact.form(request))
+        form: sessionForms.get(request, selectContact.form(request, defaultValue))
       });
     },
     options: {
@@ -36,11 +40,10 @@ const routes = () => [
       ],
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required(),
-          back: Joi.string().required(),
-          searchQuery: Joi.string().optional(),
-          redirectPath: Joi.string().required(),
-          licenceId: Joi.string().optional(),
+          sessionKey: Joi.string().uuid().required(), // A UUID used to identify the set of information collected in this flow, stored in yar
+          back: Joi.string().required(), // Where users are sent to if they press 'back'
+          searchQuery: Joi.string().required(), // The string query used to look for contacts in the CRM database (soft/fuzzy search)
+          regionId: Joi.string().uuid().required(), // The UUID for a region associated with the licence. Passed to the invoice-accounts module.
           form: Joi.string().optional()
         }
       }
@@ -63,20 +66,16 @@ const routes = () => [
           request,
           selectContact.schema
         );
-        // If form is invalid, redirect user back to form
         if (!form.isValid) {
-          let { licenceId } = request.yar.get(sessionKey);
           return h.postRedirectGet(form, '/contact-entry/select-contact', {
             sessionKey,
             back: currentState.back,
-            searchQuery,
-            redirectPath: currentState.redirectPath,
-            licenceId
+            searchQuery
           });
         } else {
           // Contact has been selected. Store the contact ID in yar
           request.yar.set(sessionKey, merge(currentState, { id: id }));
-          return h.redirect(`/contact-entry/select-address?sessionKey=${sessionKey}&redirectPath=${currentState.redirectPath}`);
+          return h.redirect(`/contact-entry/select-address?sessionKey=${sessionKey}`);
         }
       }
     },
@@ -90,16 +89,20 @@ const routes = () => [
     method: 'GET',
     path: '/contact-entry/new/account-type',
     handler: (request, h) => {
+      const { sessionKey } = request.query;
+      let currentState = request.yar.get(sessionKey);
+      let defaultValue = currentState.accountType;
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Select the account type',
-        form: sessionForms.get(request, selectAccountType.form(request))
+        form: sessionForms.get(request, selectAccountType.form(request, defaultValue))
       });
     },
     options: {
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
     }
@@ -108,12 +111,6 @@ const routes = () => [
     method: 'POST',
     path: '/contact-entry/new/account-type',
     handler: (request, h) => {
-
-      console.log("=====")
-      console.log("=====")
-      console.log("=====")
-      console.log(request.payload)
-      console.log(request.query)
       const { sessionKey } = request.payload || request.query;
 
       let currentState = request.yar.get(sessionKey);
@@ -145,45 +142,71 @@ const routes = () => [
     handler: (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
+      let defaultValue = currentState.accountType === 'organisation' ? (currentState.companyNameOrNumber ? currentState.companyNameOrNumber : currentState.searchQuery) : (currentState.personName ? currentState.personName : currentState.searchQuery);
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
-        pageTitle: currentState.accountType === 'company' ? 'Enter the company details' : 'Enter the full name',
+        pageTitle: currentState.accountType === 'organisation' ? 'Enter the company details' : 'Enter the full name',
         back: request.query.back,
-        form: currentState.accountType === 'company' ? sessionForms.get(request, companySearch.form(request)) : sessionForms.get(request, individualName.form(request))
+        form: currentState.accountType === 'organisation' ? sessionForms.get(request, companySearch.form(request, defaultValue)) : sessionForms.get(request, personName.form(request, defaultValue))
       });
     },
     options: {
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
     }
   }, {
-    // Route for posting the name of a new individual contact
+    // Route for posting the name of a new person contact
     method: 'POST',
-    path: '/contact-entry/new/details/individual',
+    path: '/contact-entry/new/details/person',
     handler: (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
-      const { individualFullName } = request.payload;
+      const { personFullName } = request.payload;
       const form = forms.handleRequest(
-        individualName.form(request),
+        personName.form(request),
         request,
-        individualName.schema
+        personName.schema
       );
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
-        return h.postRedirectGet(form, '/contact-entry/new/details', {
+        return h.postRedirectGet(form, '/contact-entry/new/details/person', {
           sessionKey
         });
       } else {
         // Contact name has been set. Store the contact name in yar
-        request.yar.set(sessionKey, merge(currentState, { individualFullName }));
+        request.yar.set(sessionKey, merge(currentState, { personFullName }));
         // Proceed to the next stage
         // Goes to the address entry workflow
-        // TODO: Connect to Dana's address flow
-        return h.redirect(`/contact-entry/new/details?sessionKey=${sessionKey}`);
+        const queryTail = queryString.stringify({
+          redirectPath: `/contact-entry/new/details/after-address-entry?sessionKey=${sessionKey}`,
+          back: `/contact-entry/new/details?sessionKey=${sessionKey}`
+        });
+        return h.redirect(`/address-entry/postcode?${queryTail}`);
+      }
+    }
+  }, {
+    method: 'GET',
+    path: '/contact-entry/new/details/after-address-entry',
+    handler: (request, h) => {
+      // This is the path the user is redirected to after the address entry flow
+      // Sets the address in the yar object, and redirects to FAO pages
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      let address = request.yar.get(addressEntryHelpers.SESSION_KEY);
+      request.yar.set(sessionKey, merge(currentState, { personAddress: address }));
+
+      return h.redirect(`/contact-entry/new/details/fao?sessionKey=${sessionKey}`);
+    },
+    options: {
+      validate: {
+        query: {
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
+        }
       }
     }
   }, {
@@ -202,7 +225,7 @@ const routes = () => [
       );
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
-        return h.postRedirectGet(form, '/contact-entry/new/details', {
+        return h.postRedirectGet(form, '/contact-entry/new/details/company-search', {
           sessionKey
         });
       } else {
@@ -211,18 +234,22 @@ const routes = () => [
         // Proceed to the next stage
         // Goes to the address entry workflow
         // TODO: Fetch companies from companies house
-        return h.redirect(`/contact-entry/new/details/company-search/results?sessionKey=${sessionKey}`);
+        return h.redirect(`/contact-entry/new/details/company-search/select-company?sessionKey=${sessionKey}`);
       }
     }
   }, {
     method: 'GET',
-    path: '/contact-entry/new/details/company-search/results',
+    path: '/contact-entry/new/details/company-search/select-company',
     handler: async (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      let defaultValue = currentState.selectedCompaniesHouseNumber;
+
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Select a company',
         back: request.query.back,
-        form: sessionForms.get(request, companySearchSelectCompany.form(request))
+        form: sessionForms.get(request, companySearchSelectCompany.form(request, defaultValue))
       });
     },
     options: {
@@ -231,7 +258,8 @@ const routes = () => [
       ],
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
     }
@@ -249,13 +277,16 @@ const routes = () => [
       );
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
-        console.log(form)
-        return h.postRedirectGet(form, '/contact-entry/new/details/company-search/results', {
+        return h.postRedirectGet(form, '/contact-entry/new/details/company-search/select-company', {
           sessionKey
         });
       } else {
         // Company name or number has been set. Store this in yar
-        request.yar.set(sessionKey, merge(currentState, { selectedCompaniesHouseNumber }));
+        request.yar.set(sessionKey, merge(currentState, {
+          selectedCompaniesHouseNumber,
+          selectedCompaniesHouseCompanyName: request.pre.companiesHouseResults.find(x => x.company.companyNumber === selectedCompaniesHouseNumber).company.name,
+          organisationType: request.pre.companiesHouseResults.find(x => x.company.companyNumber === selectedCompaniesHouseNumber).company.organisationType
+        }));
         // Proceed to the next stage
         return h.redirect(`/contact-entry/new/details/company-search/select-company-address?sessionKey=${sessionKey}`);
       }
@@ -282,7 +313,8 @@ const routes = () => [
       ],
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
     }
@@ -307,7 +339,7 @@ const routes = () => [
         // Company name or number has been set. Store this in yar
         request.yar.set(sessionKey, merge(currentState, { selectedCompaniesHouseAddress }));
         // Proceed to the next stage
-        return h.redirect(`/contact-entry/fao?sessionKey=${sessionKey}`);
+        return h.redirect(`/contact-entry/new/details/fao?sessionKey=${sessionKey}`);
       }
     }
   }, {
@@ -328,7 +360,8 @@ const routes = () => [
       ],
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
     }
@@ -338,7 +371,7 @@ const routes = () => [
     method: 'POST',
     path: '/contact-entry/select-address',
     handler: (request, h) => {
-      const { sessionKey, redirectPath } = request.payload || request.query;
+      const { sessionKey } = request.payload || request.query;
       const { id } = request.payload;
       const form = forms.handleRequest(
         selectAddress.form(request),
@@ -348,47 +381,77 @@ const routes = () => [
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
         return h.postRedirectGet(form, '/contact-entry/select-address', {
-          sessionKey,
-          redirectPath
+          sessionKey
         });
-      } else if (id == null) {
-        h.redirect(); // TODO redirect to path for creating a new address
+      } else if (id === 'new') {
+        // TODO redirect to path for creating a new address (Dana's flow)
+        const queryTail = queryString.stringify({
+          back: `/contact-entry/select-address?sessionKey=${sessionKey}`
+        });
+        return h.redirect(`/address-entry/postcode?${queryTail}`);
       } else {
         // Contact has been selected. Store the contact ID in yar
         let currentState = request.yar.get(sessionKey);
         request.yar.set(sessionKey, merge(currentState, { addressId: id }));
-        // return h.redirect(`/contact-entry/fao?sessionKey=${sessionKey}&redirectPath=${redirectPath}`);
-        return h.redirect(`/invoice-accounts/create/${currentState.regionId}/${currentState.id}/add-fao`);
+        // Send user to the next step, where they are asked if they would like to add FAO
+        return h.redirect(`/contact-entry/new/details/fao?sessionKey=${sessionKey}`);
       }
     },
     options: {
       pre: [
-        { method: preHandlers.fetchRegionByCompanyId, assign: 'companyRegion' },
         { method: preHandlers.searchForAddressesByEntityId, assign: 'addressSearchResults' }
       ]
     }
   }, {
     // Route for displaying the page where a user is asked if they would like to add a FAO
     method: 'GET',
-    path: '/contact-entry/fao',
+    path: '/contact-entry/new/details/fao',
     handler: (request, h) => {
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Do you need to add an FAO?',
         back: request.query.back,
-        form: sessionForms.get(request, selectFAO.form(request))
+        form: sessionForms.get(request, FAORequired.form(request))
       });
     },
     options: {
-      pre: [
-        // handler to fetch existing related contacts as FAOs
-        { method: preHandlers.searchForFAOsByEntityId, assign: 'FAOSearchResults' }
-      ],
       validate: {
         query: {
-          sessionKey: Joi.string().uuid().required()
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
         }
       }
+    }
+  },
+  {
+    method: 'POST',
+    path: '/contact-entry/new/details/fao',
+    handler: async (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      const { FAOIsRequired } = request.payload;
+      const form = forms.handleRequest(
+        FAORequired.form(request),
+        request,
+        FAORequired.schema
+      );
+      // If form is invalid, redirect user back to form
+      if (!form.isValid) {
+        return h.postRedirectGet(form, '/contact-entry/new/details/fao', {
+          sessionKey
+        });
+      } else {
+        // FAOIsRequired value has been set. Store this in yar
+        request.yar.set(sessionKey, merge(currentState, { FAOIsRequired }));
+        // TODO redirect to Stephan's FAO flow
+        return h.redirect(`/invoice-accounts/create/${currentState.regionId}/${request.pre.storedCompanyId}/contact-entry-complete`);
+      }
+    },
+    options: {
+      pre: [
+        { method: preHandlers.persistCompanyInDatabase, assign: 'storedCompanyId' }, // Saves the company in the database, and return a company Id. This is needed because the invoice-accounts flow requires a companyId as a param
+        { method: preHandlers.searchForCompaniesInCompaniesHouse, assign: 'companiesHouseResults' }
+      ]
     }
   }
 ];

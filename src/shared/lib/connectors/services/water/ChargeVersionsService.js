@@ -36,6 +36,11 @@ class ChargeVersionsService extends ServiceClient {
     const url = this.joinUrl('charge-versions', chargeVersionId);
     return this.serviceRequest.get(url);
   }
+
+  getDefaultChargesForLicenceVersion (licenceVersionId) {
+    const url = this.joinUrl('charge-versions/default', licenceVersionId);
+    return this.serviceRequest.get(url);
+  }
 }
 
 module.exports = ChargeVersionsService;

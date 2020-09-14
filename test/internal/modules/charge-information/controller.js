@@ -15,6 +15,7 @@ const uuid = require('uuid/v4');
 
 const sandbox = sinon.createSandbox();
 
+const services = require('../../../../src/internal/lib/connectors/services');
 const controller = require('internal/modules/charge-information/controller');
 
 const createRequest = () => ({
@@ -39,8 +40,28 @@ const createRequest = () => ({
       description: 'Transfer'
     }],
     draftChargeInformation: {
-      chargeElements: []
-    }
+      chargeElements: [],
+      billingAccount: {
+        billingAccount: {
+          invoiceAccountAddresses: []
+        }
+      }
+    },
+    defaultCharges: [
+      { season: 'summer' }
+    ],
+    billingAccounts: [
+      {
+        id: 'test-licence-account-1',
+        invoiceAccountAddresses: [],
+        company: { name: 'Test company' }
+      },
+      {
+        id: 'test-licence-account-2',
+        company: { name: 'Test company' },
+        invoiceAccountAddresses: []
+      }
+    ]
   },
   yar: {
     get: sandbox.stub(),
@@ -65,173 +86,14 @@ experiment('internal/modules/charge-information/controller', () => {
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
+
+    sandbox.stub(services.crm.documents, 'getWaterLicence').resolves({
+      document_id: 'test-doc-id'
+    });
   });
 
   afterEach(async () => {
     sandbox.restore();
-  });
-
-  experiment('.getTaskList', () => {
-    beforeEach(async () => {
-      request = createRequest();
-      await controller.getTasklist(request, h);
-    });
-
-    test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/charge-information/task-list.njk');
-    });
-
-    test('sets a back link', async () => {
-      const { back } = h.view.lastCall.args[1];
-      expect(back).to.be.a.string();
-    });
-
-    test('has the page title', async () => {
-      const { pageTitle } = h.view.lastCall.args[1];
-      expect(pageTitle).to.equal('Set up charge information');
-    });
-
-    test('has a tasklist array', async () => {
-      const { taskList } = h.view.lastCall.args[1];
-      expect(taskList).to.be.an.array();
-    });
-
-    test('passes through request.view', async () => {
-      const { foo } = h.view.lastCall.args[1];
-      expect(foo).to.equal(request.view.foo);
-    });
-
-    experiment('the first tasklist section', () => {
-      test('has a heading for charge information', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        expect(taskList[0].heading).to.equal('Charge information');
-      });
-
-      test('the first task is to select a reason', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        const task = taskList[0].tasks[0];
-        expect(task.text).to.equal('Select reason for new charge information');
-        expect(task.badge.text).to.equal('Not started');
-        expect(task.badge.status).to.equal('inactive');
-        expect(task.link).to.equal('/licences/test-licence-id/charge-information/reason');
-      });
-
-      experiment('when the reason is set', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.pre.draftChargeInformation.changeReason = {
-            changeReasonId: 'test-reason-id'
-          };
-          await controller.getTasklist(request, h);
-        });
-
-        test('the badge changes to completed', async () => {
-          const { taskList } = h.view.lastCall.args[1];
-          const task = taskList[0].tasks[0];
-          expect(task.badge.text).to.equal('Completed');
-          expect(task.badge.status).to.equal('success');
-        });
-      });
-
-      test('the second task is to set a start date', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        const task = taskList[0].tasks[1];
-        expect(task.text).to.equal('Set charge start date');
-        expect(task.badge.text).to.equal('Not started');
-        expect(task.badge.status).to.equal('inactive');
-        expect(task.link).to.equal('/licences/test-licence-id/charge-information/start-date');
-      });
-
-      experiment('when the start date is set', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.pre.draftChargeInformation.startDate = '2019-01-01';
-          await controller.getTasklist(request, h);
-        });
-
-        test('the badge changes to completed', async () => {
-          const { taskList } = h.view.lastCall.args[1];
-          const task = taskList[0].tasks[1];
-          expect(task.badge.text).to.equal('Completed');
-          expect(task.badge.status).to.equal('success');
-        });
-      });
-
-      test('the third task is to set up a charge element', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        const task = taskList[0].tasks[2];
-        expect(task.text).to.equal('Set up element');
-        expect(task.badge.text).to.equal('Not started');
-        expect(task.badge.status).to.equal('inactive');
-        expect(task.link).to.be.undefined();
-      });
-
-      experiment('when there are 1+ elements', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.pre.draftChargeInformation.chargeElements = [{
-            description: 'Test element'
-          }];
-          await controller.getTasklist(request, h);
-        });
-
-        test('the badge changes to completed', async () => {
-          const { taskList } = h.view.lastCall.args[1];
-          const task = taskList[0].tasks[2];
-          expect(task.badge.text).to.equal('Completed');
-          expect(task.badge.status).to.equal('success');
-        });
-      });
-    });
-
-    experiment('the second tasklist section', () => {
-      test('has a heading for billing contact', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        expect(taskList[1].heading).to.equal('Billing contact');
-      });
-
-      test('the first task is to select a billing contact', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        const task = taskList[1].tasks[0];
-        expect(task.text).to.equal('Set up billing contact');
-        expect(task.badge.text).to.equal('Not started');
-        expect(task.badge.status).to.equal('inactive');
-        expect(task.link).to.be.undefined();
-      });
-
-      experiment('when a billing contact is set', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.pre.draftChargeInformation.invoiceAccount = {
-            invoiceAccountId: 'test-invoice-account-id'
-          };
-          await controller.getTasklist(request, h);
-        });
-
-        test('the badge changes to completed', async () => {
-          const { taskList } = h.view.lastCall.args[1];
-          const task = taskList[1].tasks[0];
-          expect(task.badge.text).to.equal('Completed');
-          expect(task.badge.status).to.equal('success');
-        });
-      });
-    });
-
-    experiment('the third tasklist section', () => {
-      test('has a heading for check and confirm', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        expect(taskList[2].heading).to.equal('Check and confirm');
-      });
-
-      test('the first task is to select a billing contact', async () => {
-        const { taskList } = h.view.lastCall.args[1];
-        const task = taskList[2].tasks[0];
-        expect(task.text).to.equal('Check charge information');
-        expect(task.badge).to.be.undefined();
-        expect(task.link).to.be.undefined();
-      });
-    });
   });
 
   experiment('.getReason', () => {
@@ -247,7 +109,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('sets a back link', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-licence-id/charge-information/task-list');
+      expect(back).to.equal('/licences/test-doc-id');
     });
 
     test('has the page title', async () => {
@@ -272,7 +134,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('the form action is correct', async () => {
       const { form } = h.view.lastCall.args[1];
-      expect(form.action).to.equal('/licences/test-licence-id/charge-information/reason');
+      expect(form.action).to.equal('/licences/test-licence-id/charge-information/create');
     });
 
     test('the form has a hidden CSRF field', async () => {
@@ -334,9 +196,32 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
       });
 
-      test('the user is redirected to the tasklist page', async () => {
+      test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/task-list'
+          '/licences/test-licence-id/charge-information/start-date'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a non-chargeable reason is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          reason: 'non-chargeable'
+        };
+        await controller.postReason(request, h);
+      });
+
+      test('the draft charge information is updated with the reason', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/non-chargeable-reason'
         )).to.be.true();
       });
     });
@@ -376,7 +261,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('sets a back link', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal('/licences/test-licence-id/charge-information/task-list');
+        expect(back).to.equal('/licences/test-licence-id/charge-information/create');
       });
 
       test('has the page title', async () => {
@@ -544,9 +429,9 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(data.startDate).to.equal(getISODate());
       });
 
-      test('the user is redirected to the tasklist page', async () => {
+      test('the user is redirected to the billing account page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/task-list'
+          '/licences/test-licence-id/charge-information/billing-account'
         )).to.be.true();
       });
     });
@@ -567,9 +452,9 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(data.startDate).to.equal(request.pre.licence.startDate);
       });
 
-      test('the user is redirected to the tasklist page', async () => {
+      test('the user is redirected to the billing account page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/task-list'
+          '/licences/test-licence-id/charge-information/billing-account'
         )).to.be.true();
       });
     });
@@ -595,9 +480,9 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(data.startDate).to.equal(customDate.format('YYYY-MM-DD'));
       });
 
-      test('the user is redirected to the tasklist page', async () => {
+      test('the user is redirected to the billing account page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/task-list'
+          '/licences/test-licence-id/charge-information/billing-account'
         )).to.be.true();
       });
     });
@@ -699,6 +584,207 @@ experiment('internal/modules/charge-information/controller', () => {
         const [ form ] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
         expect(field.errors[0].message).to.equal("Date must be today or up to six years' in the past");
+      });
+    });
+  });
+
+  experiment('.getSelectBillingAccount', () => {
+    experiment('when there are no billing accounts for the licence', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.billingAccounts = [];
+        await controller.getSelectBillingAccount(request, h);
+      });
+
+      test('the user is redirects to new billing account page', async () => {
+        const [url] = h.redirect.lastCall.args;
+        expect(url).to.equal('/licences/test-licence-id/charge-information/billing-account/create');
+      });
+    });
+
+    experiment('when there are no billing accounts for the licence', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        await controller.getSelectBillingAccount(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/charge-information/form.njk');
+      });
+
+      test('sets a back link', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-licence-id/charge-information/start-date');
+      });
+
+      test('sets a page title including the comapny name', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.pageTitle).to.equal('Select an existing billing account for Test company');
+      });
+
+      test('has the expected form', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/billing-account');
+        expect(view.form.method).to.equal('POST');
+      });
+    });
+  });
+
+  experiment('.postSelectBillingAccount', () => {
+    experiment('when a the user chooses to set up a new billing account', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          invoiceAccountAddress: 'set-up-new-billing-account'
+        };
+        await controller.postSelectBillingAccount(request, h);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/billing-account/create'
+        )).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getUseAbstractionData', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getUseAbstractionData(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/form.njk');
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/billing-account');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Use abstraction data to set up the element?');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has the expected form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
+      expect(view.form.method).to.equal('POST');
+    });
+  });
+
+  experiment('.postUseAbstractionData', () => {
+    experiment('when a valid option is selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          useAbstractionData: true
+        };
+        await controller.postUseAbstractionData(request, h);
+      });
+
+      test('the draft charge information is updated with the reason', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.abstractionData).to.equal(request.pre.defaultCharges);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/check'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when no option is seleceted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken
+        };
+        await controller.postUseAbstractionData(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('the form in error state is passed to the post-redirect-get handler', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].message).to.equal('Select whether to use abstraction data to set up the element');
+      });
+    });
+  });
+
+  experiment('.getCheckData', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getCheckData(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/check.njk');
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Check charge information');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+  });
+
+  experiment('.postCheckData', () => {
+    experiment('when a the user cancels the flow', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          nextStep: 'cancel'
+        };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the draft charge information is cleared', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data).to.equal({});
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-doc-id'
+        )).to.be.true();
       });
     });
   });

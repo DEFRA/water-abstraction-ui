@@ -160,6 +160,7 @@ const mapChoices = (field, prop = 'checked') => {
       : {
         value: choice[keyProperty],
         text: choice[labelProperty],
+        html: choice.html,
         hint: {
           text: choice.hint
         },

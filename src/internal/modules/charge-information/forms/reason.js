@@ -30,8 +30,13 @@ const selectReasonForm = request => {
         message: 'Select a reason for new charge information'
       }
     },
-    choices: changeReasons.map(mapChoice)
+    choices: [
+      ...changeReasons.map(mapChoice),
+      { divider: 'or' },
+      { label: 'Make this licence non-chargeable', value: 'non-chargeable' }
+    ]
   }, changeReasonId));
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -43,9 +48,10 @@ const selectReasonSchema = request => {
 
   return {
     csrf_token: Joi.string().uuid().required(),
-    reason: Joi.string().required().valid(
-      changeReasons.map(changeReason => changeReason.changeReasonId)
-    )
+    reason: Joi.string().required().valid([
+      ...changeReasons.map(changeReason => changeReason.changeReasonId),
+      'non-chargeable'
+    ])
   };
 };
 

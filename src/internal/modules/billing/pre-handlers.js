@@ -9,7 +9,7 @@ const { water } = require('../../lib/connectors/services');
 const routing = require('./lib/routing');
 
 const getBatch = request =>
-  water.billingBatches.getBatch(request.params.batchId);
+  water.billingBatches.getBatch(request.params.batchId, true);
 
 const getInvoiceLicence = request =>
   water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);

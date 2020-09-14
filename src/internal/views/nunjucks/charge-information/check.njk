@@ -3,10 +3,21 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "crm/address.njk" import address %}
 
-{% macro summaryListRow(key, value) %}
+{% macro actions(licence, page, rowKey) %}
+  <dd class="govuk-summary-list__actions">
+    <a class="govuk-link" href="/licences/{{ licence.id }}/charge-information/{{ page}}">
+      Change<span class="govuk-visually-hidden"> {{ rowKey | lower }}</span>
+    </a>
+  </dd>
+{% endmacro %}
+
+{% macro summaryListRow(key, value, licence, page) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
+    {% if licence %}
+      {{actions(licence, page, key) }}
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -14,62 +25,92 @@
   {{ period.startDate | date }} to {{ period.endDate | date }}
 {% endmacro %}
 
+{% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
+  <section class="govuk-!-margin-bottom-7">
+    <dl class="govuk-summary-list">
+      {{ summaryListRow('Reason', draftChargeInformation.changeReason.description)}}
+      {{ summaryListRow('Start date', draftChargeInformation.startDate | date )}}
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Billing account</dt>
+        <dd class="govuk-summary-list__value">
+          {{ draftChargeInformation.billingAccount.billingAccount.accountNumber }}
+          <br>
+          {{ address(invoiceAccountAddress.address) }}
+        </dd>
+      </div>
+
+      {{ summaryListRow('Licence holder', draftChargeInformation.billingAccount.billingAccount.company.name) }}
+    </dl>
+  </section>
+
+  {% for chargeElement in draftChargeInformation.abstractionData %}
+    <section class="govuk-!-margin-bottom-7">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Element {{loop.index}}</h2>
+      <dl class="govuk-summary-list">
+        {{ summaryListRow('Purpose', chargeElement.purposeUse.name) }}
+        {{ summaryListRow('Description', chargeElement.description) }}
+        {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
+        {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity + ' megalitres per year') }}
+
+        {% set billableQuantity = 'Not set' %}
+        {% if chargeElement.billableAnnualQuantity %}
+          {% set billableQuantity = chargeElement.billableAnnualQuantity %}
+        {% endif %}
+        {{ summaryListRow('Billable quantity', billableQuantity) }}
+
+        {% set timeLimited = 'No' %}
+        {% if chargeElement.timeLimitedPeriod %}
+          {% set timeLimited %}
+            {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+          {% endset %}
+        {% endif %}
+        {{ summaryListRow('Time limit', timeLimited) }}
+
+        {{ summaryListRow('Source', chargeElement.source | title) }}
+        {{ summaryListRow('Season', chargeElement.season | title) }}
+        {{ summaryListRow('Loss', chargeElement.loss | title) }}
+        {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+      </dl>
+    </section>
+  {% endfor %}
+{% endmacro %}
+
+{% macro nonChargeableData(drafChargeInformation, licence) %}
+  <section class="govuk-!-margin-bottom-7">
+    <dl class="govuk-summary-list">
+      {{ summaryListRow(
+        'Reason licence is not chargeable',
+        draftChargeInformation.changeReason.description,
+        licence,
+        'non-chargeable-reason')
+      }}
+      {{ summaryListRow(
+        'Effective date',
+        draftChargeInformation.startDate | date,
+        licence,
+        'effective-date')
+      }}
+    </dl>
+  </section>
+{% endmacro %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle, caption, null, true) }}
     </div>
-    <div class="govuk-grid-column-full">
-      <section class="govuk-!-margin-bottom-7">
+
+    {% if isChargeable %}
+      <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
-        <dl class="govuk-summary-list">
-          {{ summaryListRow('Reason', draftChargeInformation.changeReason.description)}}
-          {{ summaryListRow('Start date', draftChargeInformation.startDate | date )}}
-
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Billing account</dt>
-            <dd class="govuk-summary-list__value">
-              {{ draftChargeInformation.billingAccount.billingAccount.accountNumber }}
-              <br>
-              {{ address(invoiceAccountAddress.address) }}
-            </dd>
-          </div>
-
-          {{ summaryListRow('Licence holder', draftChargeInformation.billingAccount.billingAccount.company.name) }}
-        </dl>
-      </section>
-
-      {% for chargeElement in draftChargeInformation.abstractionData %}
-        <section class="govuk-!-margin-bottom-7">
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Element {{loop.index}}</h2>
-          <dl class="govuk-summary-list">
-            {{ summaryListRow('Purpose', chargeElement.purposeUse.name) }}
-            {{ summaryListRow('Description', chargeElement.description) }}
-            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod) }}
-            {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity + ' megalitres per year') }}
-
-            {% set billableQuantity = 'Not set' %}
-            {% if chargeElement.billableAnnualQuantity %}
-              {% set billableQuantity = chargeElement.billableAnnualQuantity %}
-            {% endif %}
-            {{ summaryListRow('Billable quantity', billableQuantity) }}
-
-            {% set timeLimited = 'No' %}
-            {% if chargeElement.timeLimitedPeriod %}
-              {% set timeLimited %}
-                {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
-              {% endset %}
-            {% endif %}
-            {{ summaryListRow('Time limit', timeLimited) }}
-
-            {{ summaryListRow('Source', chargeElement.source | title) }}
-            {{ summaryListRow('Season', chargeElement.season | title) }}
-            {{ summaryListRow('Loss', chargeElement.loss | title) }}
-            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
-          </dl>
-        </section>
-      {% endfor %}
-    </div>
+        {{ chargeableData(draftChargeInformation, invoiceAccountAddress)}}
+      </div>
+    {% else %}
+      <div class="govuk-grid-column-two-thirds">
+        {{ nonChargeableData(draftChargeInformation, licence)}}
+      </div>
+    {% endif %}
   </div>
 
   <div class="govuk-grid-row">

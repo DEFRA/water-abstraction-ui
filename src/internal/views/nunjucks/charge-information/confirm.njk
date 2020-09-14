@@ -1,0 +1,54 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "crm/address.njk" import address %}
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <span class="govuk-caption-l">{{ caption }}</span>
+      {{ govukPanel({ titleText: "Charge information complete" }) }}
+
+      <section class="govuk-!-margin-bottom-9">
+        <h2 class="govuk-heading-l">What happens next</h2>
+        <p class="govuk-body">
+          The Billing and Data team will review the charge information.
+        </p>
+
+        <h3 class="govuk-heading-m">If Billing and Data need you to make changes</h3>
+        <p class="govuk-body">
+          The status will be ‘Draft’. Select 'Review' to see details of the
+          changes you need to make.
+        </p>
+
+        <h3 class="govuk-heading-m">If Billing and Data approve the licence for billing</h3>
+        <p class="govuk-body">
+          The charge information will be listed in the
+          licence's charge information tab and the status will be ‘Active’.
+        </p>
+        <p class="govuk-body">
+          <a href="{{ licenceUrl }}" class="govuk-link">View charge information</a>
+        </p>
+      </section>
+
+      {% if isChargeable %}
+        <section>
+          <h3 class="govuk-heading-m">Licence agreements</h3>
+          <p class="govuk-body">
+            If this licence has an agreement you can set this up now.
+          </p>
+          {{ govukButton({
+            text: "Set up new agreement",
+            classes: "govuk-button--secondary",
+            href: "/licences/" + licence.id + "/agreements/create"
+          }) }}
+        </section>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}

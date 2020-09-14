@@ -19,6 +19,7 @@ const services = require('../../../../src/internal/lib/connectors/services');
 const controller = require('internal/modules/charge-information/controller');
 
 const createRequest = () => ({
+  query: {},
   params: {
     licenceId: 'test-licence-id'
   },
@@ -42,8 +43,11 @@ const createRequest = () => ({
     draftChargeInformation: {
       chargeElements: [],
       billingAccount: {
+        invoiceAccountAddress: 'test-account-address-id',
         billingAccount: {
-          invoiceAccountAddresses: []
+          invoiceAccountAddresses: [
+            { id: 'test-account-address-id' }
+          ]
         }
       }
     },
@@ -109,7 +113,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('sets a back link', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-doc-id');
+      expect(back).to.equal('/licences/test-doc-id#charge');
     });
 
     test('has the page title', async () => {
@@ -250,6 +254,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the licence start date is in the past 6 years', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
         await controller.getStartDate(request, h);
       });
@@ -340,6 +345,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the licence start date is > 6 years in the past', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.licence.startDate = '1990-01-01';
         await controller.getStartDate(request, h);
       });
@@ -366,6 +372,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment("when the a start date has already been set to today's date", () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.draftChargeInformation.startDate = getISODate();
         await controller.getStartDate(request, h);
       });
@@ -380,6 +387,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to the licence start date', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.draftChargeInformation.startDate = request.pre.licence.startDate;
         await controller.getStartDate(request, h);
       });
@@ -394,6 +402,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to a custom date', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.draftChargeInformation.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
         await controller.getStartDate(request, h);
       });
@@ -416,6 +425,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when "today" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'today'
@@ -439,6 +449,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when "licenceStartDate" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'licenceStartDate'
@@ -464,6 +475,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'customDate',
@@ -490,6 +502,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when an invalid "customDate" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'customDate',
@@ -514,6 +527,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when a custom date before the licence started is posted', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'customDate',
@@ -540,6 +554,7 @@ experiment('internal/modules/charge-information/controller', () => {
         const tomorrow = moment().add(1, 'day');
 
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.licence.endDate = getISODate();
         request.payload = {
           csrf_token: request.view.csrfToken,
@@ -565,6 +580,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when a custom date more than 6 years ago is posted', () => {
       beforeEach(async () => {
         request = createRequest();
+        request.pre.isChargeable = true;
         request.pre.licence.startDate = '1990-01-01';
         request.payload = {
           csrf_token: request.view.csrfToken,
@@ -733,38 +749,133 @@ experiment('internal/modules/charge-information/controller', () => {
   });
 
   experiment('.getCheckData', () => {
-    beforeEach(async () => {
-      request = createRequest();
-      await controller.getCheckData(request, h);
+    experiment('when the licence is chargeable', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = true;
+        await controller.getCheckData(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/charge-information/check.njk');
+      });
+
+      test('sets a back link', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
+      });
+
+      test('has the page title', async () => {
+        const { pageTitle } = h.view.lastCall.args[1];
+        expect(pageTitle).to.equal('Check charge information');
+      });
+
+      test('has a caption', async () => {
+        const { caption } = h.view.lastCall.args[1];
+        expect(caption).to.equal('Licence 01/123');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('adds the licence to the view context', async () => {
+        const { licence } = h.view.lastCall.args[1];
+        expect(licence.id).to.equal('test-licence-id');
+      });
+
+      test('adds the invoice account address to the view context', async () => {
+        const { invoiceAccountAddress } = h.view.lastCall.args[1];
+        expect(invoiceAccountAddress.id).to.equal('test-account-address-id');
+      });
+
+      test('adds the isChargeable flag to the view context', async () => {
+        const { isChargeable } = h.view.lastCall.args[1];
+        expect(isChargeable).to.equal(true);
+      });
     });
 
-    test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/charge-information/check.njk');
-    });
+    experiment('when the licence is non-chargeable', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        await controller.getCheckData(request, h);
+      });
 
-    test('sets a back link', async () => {
-      const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
-    });
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/charge-information/check.njk');
+      });
 
-    test('has the page title', async () => {
-      const { pageTitle } = h.view.lastCall.args[1];
-      expect(pageTitle).to.equal('Check charge information');
-    });
+      test('sets a back link', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-licence-id/charge-information/effective-date');
+      });
 
-    test('has a caption', async () => {
-      const { caption } = h.view.lastCall.args[1];
-      expect(caption).to.equal('Licence 01/123');
-    });
+      test('has the page title', async () => {
+        const { pageTitle } = h.view.lastCall.args[1];
+        expect(pageTitle).to.equal('Check charge information');
+      });
 
-    test('passes through request.view', async () => {
-      const { foo } = h.view.lastCall.args[1];
-      expect(foo).to.equal(request.view.foo);
+      test('has a caption', async () => {
+        const { caption } = h.view.lastCall.args[1];
+        expect(caption).to.equal('Licence 01/123');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('adds the licence to the view context', async () => {
+        const { licence } = h.view.lastCall.args[1];
+        expect(licence.id).to.equal('test-licence-id');
+      });
+
+      test('adds the isChargeable flag to the view context', async () => {
+        const { isChargeable } = h.view.lastCall.args[1];
+        expect(isChargeable).to.equal(false);
+      });
     });
   });
 
   experiment('.postCheckData', () => {
+    experiment('when the flow is confirmed for a chargeable setup', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = true;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          nextStep: 'confirm'
+        };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the user is redirected to the confirmation page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/confirm?chargeable=true');
+      });
+    });
+
+    experiment('when the flow is confirmed for a non-chargeable setup', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          nextStep: 'confirm'
+        };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the user is redirected to the confirmation page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/confirm?chargeable=false');
+      });
+    });
+
     experiment('when a the user cancels the flow', () => {
       beforeEach(async () => {
         request = createRequest();
@@ -782,10 +893,361 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the user is redirected to the expected page', async () => {
-        expect(h.redirect.calledWith(
-          '/licences/test-doc-id'
-        )).to.be.true();
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-doc-id#charge');
       });
+    });
+  });
+
+  experiment('.getNonChargeableReason', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getNonChargeableReason(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/form.njk');
+    });
+
+    experiment('when the user has started the chargeable flow', () => {
+      test('sets a back link to the chargeable reason page', async () => {
+        request = createRequest();
+        request.query.start = true;
+        await controller.getNonChargeableReason(request, h);
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-doc-id#charge');
+      });
+    });
+
+    experiment('when the user has started the non chargeable flow', () => {
+      test('sets a back link to the charge table on the licence page', async () => {
+        request = createRequest();
+        request.query.start = false;
+        await controller.getNonChargeableReason(request, h);
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal('/licences/test-licence-id/charge-information/create');
+      });
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Why is this licence not chargeable?');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has the expected form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/non-chargeable-reason');
+      expect(view.form.method).to.equal('POST');
+    });
+  });
+
+  experiment('.postNonChargeableReason', () => {
+    experiment('when a valid reason is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          reason: 'test-reason-1'
+        };
+        await controller.postNonChargeableReason(request, h);
+      });
+
+      test('the draft charge information is updated with the reason', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/effective-date');
+      });
+    });
+
+    experiment('when no reason is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken
+        };
+        await controller.postNonChargeableReason(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('the form in error state is passed to the post-redirect-get handler', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].message).to.equal('Select a reason');
+      });
+    });
+  });
+
+  experiment('.getEffectiveDate', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getEffectiveDate(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/form.njk');
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/non-chargeable-reason');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Enter effective date');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has the expected form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/effective-date');
+      expect(view.form.method).to.equal('POST');
+    });
+  });
+
+  experiment('.postEffectiveDate', () => {
+    experiment('when "today" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'today'
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(getISODate());
+      });
+
+      test('the user is redirected to the check data page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/check');
+      });
+    });
+
+    experiment('when "licenceStartDate" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'licenceStartDate'
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(request.pre.licence.startDate);
+      });
+
+      test('the user is redirected to the check data page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/check');
+      });
+    });
+
+    experiment('when "customDate" is posted', () => {
+      const customDate = moment().subtract(1, 'year');
+
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': customDate.format('DD'),
+          'customDate-month': customDate.format('MM'),
+          'customDate-year': customDate.format('YYYY')
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is updated with the start date', async () => {
+        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.startDate).to.equal(customDate.format('YYYY-MM-DD'));
+      });
+
+      test('the user is redirected to the check data page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal('/licences/test-licence-id/charge-information/check');
+      });
+    });
+
+    experiment('when an invalid "customDate" is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': 'Last',
+          'customDate-month': 'Tuesday',
+          'customDate-year': 'Or Wednesday'
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('Enter a real date for the effective date');
+      });
+    });
+
+    experiment('when a custom date before the licence started is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': '1',
+          'customDate-month': '5',
+          'customDate-year': '1966'
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+      });
+    });
+
+    experiment('when a custom date after the licence end date is posted', () => {
+      beforeEach(async () => {
+        const tomorrow = moment().add(1, 'day');
+
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.pre.licence.endDate = getISODate();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': tomorrow.format('DD'),
+          'customDate-month': tomorrow.format('MM'),
+          'customDate-year': tomorrow.format('YYYY')
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+      });
+    });
+
+    experiment('when a custom date more than 6 years ago is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.isChargeable = false;
+        request.pre.licence.startDate = '1990-01-01';
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': '02',
+          'customDate-month': '01',
+          'customDate-year': '1990'
+        };
+        await controller.postEffectiveDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
+        expect(field.errors[0].message).to.equal("Date must be today or up to six years' in the past");
+      });
+    });
+  });
+
+  experiment('.getConfirm', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query.chargeable = true;
+      await controller.getConfirm(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/confirm.njk');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Charge information complete');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('contains a link back to the charge information tab', async () => {
+      const { licenceUrl } = h.view.lastCall.args[1];
+      expect(licenceUrl).to.equal('/licences/test-doc-id#charge');
+    });
+
+    test('has the isChargeable flag', async () => {
+      const { isChargeable } = h.view.lastCall.args[1];
+      expect(isChargeable).to.equal(true);
     });
   });
 });

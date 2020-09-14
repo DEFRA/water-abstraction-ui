@@ -1,7 +1,22 @@
-exports.getCheckData = licence => `/licences/${licence.id}/charge-information/check`;
-exports.getCreateBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account/create`;
-exports.getNonChargeableReason = licence => `/licences/${licence.id}/charge-information/non-chargeable-reason`;
-exports.getReason = licence => `/licences/${licence.id}/charge-information/create`;
-exports.getStartDate = licence => `/licences/${licence.id}/charge-information/start-date`;
-exports.getSelectBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account`;
-exports.getUseAbstractionData = licence => `/licences/${licence.id}/charge-information/use-abstraction-data`;
+'use strict';
+
+const querystring = require('querystring');
+
+const createUrl = urlTail => licence => {
+  return `/licences/${licence.id}/charge-information/${urlTail}`;
+};
+
+exports.getCheckData = createUrl('check');
+
+exports.getConfirm = (licence, isChargeable) => {
+  const qs = querystring.stringify({ chargeable: isChargeable });
+  return `/licences/${licence.id}/charge-information/confirm?${qs}`;
+};
+
+exports.getCreateBillingAccount = createUrl('billing-account/create');
+exports.getEffectiveDate = createUrl('effective-date');
+exports.getNonChargeableReason = createUrl('non-chargeable-reason');
+exports.getReason = createUrl('create');
+exports.getStartDate = createUrl('start-date');
+exports.getSelectBillingAccount = createUrl('billing-account');
+exports.getUseAbstractionData = createUrl('use-abstraction-data');

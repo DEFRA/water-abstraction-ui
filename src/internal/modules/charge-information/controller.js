@@ -1,5 +1,7 @@
 'use strict';
 
+const { get } = require('lodash');
+
 const forms = require('./forms');
 const actions = require('./lib/actions');
 const routing = require('./lib/routing');
@@ -8,7 +10,7 @@ const services = require('../../lib/connectors/services');
 
 const getLicencePageUrl = async licence => {
   const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
-  return `/licences/${document.document_id}`;
+  return `/licences/${document.document_id}#charge`;
 };
 
 /**
@@ -105,20 +107,28 @@ const postUseAbstractionData = createPostHandler(
   request => routing.getCheckData(request.pre.licence)
 );
 
-const getCheckData = async (request, h) => {
-  const { licence, draftChargeInformation } = request.pre;
+const getInvoiceAccountAddressFromDraft = draftChargeInformation => {
+  const invoiceAccountAddresses = get(draftChargeInformation, 'billingAccount.billingAccount.invoiceAccountAddresses', []);
+  const invoiceAccountAddress = get(draftChargeInformation, 'billingAccount.invoiceAccountAddress');
 
-  const invoiceAccountAddress = draftChargeInformation.billingAccount.billingAccount.invoiceAccountAddresses.find(add => {
-    return add.id === draftChargeInformation.billingAccount.invoiceAccountAddress;
-  });
+  return invoiceAccountAddresses.find(add => add.id === invoiceAccountAddress);
+};
+
+const getCheckData = async (request, h) => {
+  const { licence, draftChargeInformation, isChargeable } = request.pre;
+  const back = isChargeable
+    ? routing.getUseAbstractionData(licence)
+    : routing.getEffectiveDate(licence);
 
   const view = {
     ...request.view,
     caption: `Licence ${licence.licenceNumber}`,
-    back: routing.getUseAbstractionData(licence),
+    back,
     pageTitle: 'Check charge information',
     draftChargeInformation,
-    invoiceAccountAddress
+    licence,
+    invoiceAccountAddress: getInvoiceAccountAddressFromDraft(draftChargeInformation),
+    isChargeable
   };
 
   return h.view('nunjucks/charge-information/check.njk', view);
@@ -126,26 +136,77 @@ const getCheckData = async (request, h) => {
 
 const postCheckData = async (request, h) => {
   const { nextStep } = request.payload;
-  const { licence } = request.pre;
+  const { licence, isChargeable } = request.pre;
 
   if (nextStep === 'confirm') {
     // send the draft data to the water service to save
     console.log('Collected data', request.pre.draftChargeInformation);
-  } else {
-    await applyFormResponse(request, {}, actions.clearData);
+
+    return h.redirect(routing.getConfirm(licence, isChargeable));
   }
+
+  await applyFormResponse(request, {}, actions.clearData);
 
   const url = await getLicencePageUrl(licence);
   return h.redirect(url);
 };
 
+const getNonChargeableReason = async (request, h) => {
+  const { licence } = request.pre;
+  const backUrl = request.query.start
+    ? await getLicencePageUrl(request.pre.licence)
+    : routing.getReason(licence);
+
+  return h.view('nunjucks/charge-information/form.njk', {
+    ...getDefaultView(request, forms.nonChargeableReason, backUrl),
+    pageTitle: 'Why is this licence not chargeable?'
+  });
+};
+
+const postNonChargeableReason = createPostHandler(
+  forms.nonChargeableReason,
+  actions.setChangeReason,
+  request => routing.getEffectiveDate(request.pre.licence)
+);
+
+const getEffectiveDate = async (request, h) => {
+  return h.view('nunjucks/charge-information/form.njk', {
+    ...getDefaultView(request, forms.startDate, routing.getNonChargeableReason),
+    pageTitle: 'Enter effective date'
+  });
+};
+
+const postEffectiveDate = createPostHandler(
+  forms.startDate,
+  actions.setStartDate,
+  request => routing.getCheckData(request.pre.licence)
+);
+
+const getConfirm = async (request, h) => {
+  const { licence } = request.pre;
+
+  return h.view('nunjucks/charge-information/confirm.njk', {
+    ...request.view,
+    caption: `Licence ${licence.licenceNumber}`,
+    licenceUrl: await getLicencePageUrl(licence),
+    licence,
+    isChargeable: get(request, 'query.chargeable', false),
+    pageTitle: 'Charge information complete'
+  });
+};
+
 exports.getCheckData = getCheckData;
+exports.getConfirm = getConfirm;
+exports.getEffectiveDate = getEffectiveDate;
+exports.getNonChargeableReason = getNonChargeableReason;
 exports.getReason = getReason;
 exports.getSelectBillingAccount = getSelectBillingAccount;
 exports.getStartDate = getStartDate;
 exports.getUseAbstractionData = getUseAbstractionData;
 
 exports.postCheckData = postCheckData;
+exports.postEffectiveDate = postEffectiveDate;
+exports.postNonChargeableReason = postNonChargeableReason;
 exports.postReason = postReason;
 exports.postSelectBillingAccount = postSelectBillingAccount;
 exports.postStartDate = postStartDate;

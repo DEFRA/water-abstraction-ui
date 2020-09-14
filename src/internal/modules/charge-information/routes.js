@@ -4,7 +4,7 @@ const { VALID_GUID } = require('shared/lib/validators');
 
 const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
-
+const chargeElementRoutes = require('./routes/charge-element');
 module.exports = {
   getTasklist: {
     method: 'GET',
@@ -140,5 +140,6 @@ module.exports = {
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
-  }
+  },
+  ...Object.values(chargeElementRoutes)
 };

@@ -68,16 +68,18 @@ const formatYearSegment = (year) => {
   return '';
 };
 
+
 /**
  * Date mapper - combines the day month and year form values to a single
  * string formatted as YYYY-MM-DD
  */
 const dateMapper = {
   import: (fieldName, payload) => {
-    const day = payload[fieldName + '-day'];
-    const month = payload[fieldName + '-month'];
-    const year = payload[fieldName + '-year'];
-    return `${formatYearSegment(year)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
+    const day = payload[fieldName + '-day'] ? formatDateSegment(payload[fieldName + '-day']) : '';
+    const month = payload[fieldName + '-month'] ? `${formatDateSegment(payload[fieldName + '-month'])}-` : '';
+    const year = payload[fieldName + '-year'] ? `${formatYearSegment(payload[fieldName + '-year'])}-` : '';
+
+    return `${year}${month}${day}`;
   },
   postValidate: value => {
     // The internal date format is an ISO 8601 string, YYYY-MM-DD, so if we

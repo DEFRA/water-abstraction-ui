@@ -9,10 +9,7 @@ const form = (request, defaultValue) => {
 
   f.fields.push(fields.radio('accountType', {
     errors: {
-      'any.empty': {
-        message: 'Select an option'
-      },
-      'string.regex.base': {
+      'any.required': {
         message: 'Select an option'
       }
     },

@@ -30,10 +30,7 @@ const form = (request, defaultValue) => {
 
   f.fields.push(fields.radio('selectedCompaniesHouseAddress', {
     errors: {
-      'any.empty': {
-        message: 'Select a company address from the list'
-      },
-      'string.regex.base': {
+      'any.required': {
         message: 'Select a company address from the list'
       }
     },

@@ -33,10 +33,7 @@ const form = (request, defaultValue) => {
 
   f.fields.push(fields.radio('id', {
     errors: {
-      'any.empty': {
-        message: 'Select an address from the list'
-      },
-      'string.regex.base': {
+      'any.required': {
         message: 'Select an address from the list'
       }
     },

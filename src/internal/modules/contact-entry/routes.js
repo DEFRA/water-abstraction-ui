@@ -74,7 +74,7 @@ const routes = () => [
           });
         } else {
           // Contact has been selected. Store the contact ID in yar
-          request.yar.set(sessionKey, merge(currentState, { id: id }));
+          request.yar.set(sessionKey, merge(currentState, { newCompany: false, id: id }));
           return h.redirect(`/contact-entry/select-address?sessionKey=${sessionKey}`);
         }
       }
@@ -127,7 +127,7 @@ const routes = () => [
         });
       } else {
         // Contact has been selected. Store the contact account type in yar
-        request.yar.set(sessionKey, merge(currentState, { accountType }));
+        request.yar.set(sessionKey, merge(currentState, { newCompany: true, accountType }));
         // Proceed to the next stage
         return h.redirect(`/contact-entry/new/details?sessionKey=${sessionKey}`);
       }
@@ -165,6 +165,7 @@ const routes = () => [
     handler: (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
       const { personFullName } = request.payload;
       const form = forms.handleRequest(
         personName.form(request),
@@ -217,6 +218,7 @@ const routes = () => [
     handler: async (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
       const { companyNameOrNumber } = request.payload;
       const form = forms.handleRequest(
         companySearch.form(request),
@@ -269,6 +271,7 @@ const routes = () => [
     handler: async (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
       const { selectedCompaniesHouseNumber } = request.payload;
       const form = forms.handleRequest(
         companySearchSelectCompany.form(request),
@@ -300,11 +303,15 @@ const routes = () => [
     method: 'GET',
     path: '/contact-entry/new/details/company-search/select-company-address',
     handler: async (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
+      let defaultValue = currentState.selectedCompaniesHouseAddress;
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Select a company address',
         back: request.query.back,
-        form: sessionForms.get(request, companySearchSelectAddress.form(request))
+        form: sessionForms.get(request, companySearchSelectAddress.form(request, defaultValue))
       });
     },
     options: {
@@ -324,6 +331,7 @@ const routes = () => [
     handler: async (request, h) => {
       const { sessionKey } = request.payload || request.query;
       let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
       const { selectedCompaniesHouseAddress } = request.payload;
       const form = forms.handleRequest(
         companySearchSelectAddress.form(request),
@@ -347,11 +355,15 @@ const routes = () => [
     method: 'GET',
     path: '/contact-entry/select-address',
     handler: (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
+      let defaultValue = currentState.addressId;
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: `Select an address`,
         back: request.query.back,
-        form: sessionForms.get(request, selectAddress.form(request))
+        form: sessionForms.get(request, selectAddress.form(request, defaultValue))
       });
     },
     options: {
@@ -386,12 +398,14 @@ const routes = () => [
       } else if (id === 'new') {
         // TODO redirect to path for creating a new address (Dana's flow)
         const queryTail = queryString.stringify({
-          back: `/contact-entry/select-address?sessionKey=${sessionKey}`
+          redirectPath: `/contact-entry/new/details/after-address-entry?sessionKey=${sessionKey}`,
+          back: `/contact-entry/new/details?sessionKey=${sessionKey}`
         });
         return h.redirect(`/address-entry/postcode?${queryTail}`);
       } else {
         // Contact has been selected. Store the contact ID in yar
         let currentState = request.yar.get(sessionKey);
+        console.log(currentState)
         request.yar.set(sessionKey, merge(currentState, { addressId: id }));
         // Send user to the next step, where they are asked if they would like to add FAO
         return h.redirect(`/contact-entry/new/details/fao?sessionKey=${sessionKey}`);
@@ -407,11 +421,15 @@ const routes = () => [
     method: 'GET',
     path: '/contact-entry/new/details/fao',
     handler: (request, h) => {
+      const { sessionKey } = request.payload || request.query;
+      let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
+      let defaultValue = currentState.FAOIsRequired;
       return h.view('nunjucks/contact-entry/basic-form', {
         ...request.view,
         pageTitle: 'Do you need to add an FAO?',
         back: request.query.back,
-        form: sessionForms.get(request, FAORequired.form(request))
+        form: sessionForms.get(request, FAORequired.form(request, defaultValue))
       });
     },
     options: {
@@ -428,7 +446,12 @@ const routes = () => [
     path: '/contact-entry/new/details/fao',
     handler: async (request, h) => {
       const { sessionKey } = request.payload || request.query;
+      console.log("FAO")
+      console.log("FAO")
+      console.log(sessionKey)
+      console.log("FAO")
       let currentState = request.yar.get(sessionKey);
+      console.log(currentState)
       const { FAOIsRequired } = request.payload;
       const form = forms.handleRequest(
         FAORequired.form(request),
@@ -437,6 +460,9 @@ const routes = () => [
       );
       // If form is invalid, redirect user back to form
       if (!form.isValid) {
+        console.log("caught here")
+        console.log("caught here")
+        console.log("caught here")
         return h.postRedirectGet(form, '/contact-entry/new/details/fao', {
           sessionKey
         });

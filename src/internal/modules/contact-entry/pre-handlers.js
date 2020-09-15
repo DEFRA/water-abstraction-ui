@@ -59,15 +59,19 @@ const returnCompanyAddressesFromCompaniesHouse = async request => {
 const persistCompanyInDatabase = async request => {
   const sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
   const currentState = request.yar.get(sessionKey);
-  let payload = {
-    name: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseCompanyName : currentState.personFullName,
-    type: currentState.accountType,
-    companyNumber: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseNumber : null,
-    organisationType: currentState.accountType === 'organisation' ? currentState.organisationType : null
-  };
-  const company = await services.water.companies.postCompany(payload);
-  return company.companyId;
-}
+  if (currentState.newCompany) {
+    let payload = {
+      name: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseCompanyName : currentState.personFullName,
+      type: currentState.accountType,
+      companyNumber: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseNumber : null,
+      organisationType: currentState.accountType === 'organisation' ? currentState.organisationType : null
+    };
+    const company = await services.water.companies.postCompany(payload);
+    return company.companyId;
+  } else {
+    return currentState.id;
+  }
+};
 
 exports.searchForCompaniesByString = searchForCompaniesByString;
 exports.searchForAddressesByEntityId = searchForAddressesByEntityId;

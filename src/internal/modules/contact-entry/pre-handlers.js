@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 
 const searchForCompaniesByString = async request => {
-  const { searchQuery } = request.query;
+  const { searchQuery } = request.payload || request.query;
   try {
     const data = await services.water.companies.getCompaniesByName(searchQuery);
     return data;
@@ -56,25 +56,7 @@ const returnCompanyAddressesFromCompaniesHouse = async request => {
   }
 };
 
-const persistCompanyInDatabase = async request => {
-  const sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
-  const currentState = request.yar.get(sessionKey);
-  if (currentState.newCompany) {
-    let payload = {
-      name: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseCompanyName : currentState.personFullName,
-      type: currentState.accountType,
-      companyNumber: currentState.accountType === 'organisation' ? currentState.selectedCompaniesHouseNumber : null,
-      organisationType: currentState.accountType === 'organisation' ? currentState.organisationType : null
-    };
-    const company = await services.water.companies.postCompany(payload);
-    return company.companyId;
-  } else {
-    return currentState.id;
-  }
-};
-
 exports.searchForCompaniesByString = searchForCompaniesByString;
 exports.searchForAddressesByEntityId = searchForAddressesByEntityId;
 exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
 exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;
-exports.persistCompanyInDatabase = persistCompanyInDatabase;

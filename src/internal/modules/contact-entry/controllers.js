@@ -5,7 +5,7 @@ const { selectContact, selectAddress, selectAccountType, companySearch, personNa
 const queryString = require('querystring');
 const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/lib/helpers').SESSION_KEY;
 
-const getSelectAddressController = (request, h) => {
+module.exports.getSelectAddressController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.addressId;
@@ -17,7 +17,7 @@ const getSelectAddressController = (request, h) => {
   });
 };
 
-const postSelectAddressController = (request, h) => {
+module.exports.postSelectAddressController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   const { id } = request.payload;
   const form = forms.handleRequest(
@@ -46,7 +46,7 @@ const postSelectAddressController = (request, h) => {
   }
 };
 
-const getSelectContactController = (request, h) => {
+module.exports.getSelectContactController = (request, h) => {
   const { sessionKey, regionId, originalCompanyId, back, searchQuery } = request.query;
   // First, store the licence ID in the session, for use in captions
 
@@ -68,7 +68,7 @@ const getSelectContactController = (request, h) => {
   });
 };
 
-const getSelectAccountTypeController = (request, h) => {
+module.exports.getSelectAccountTypeController = (request, h) => {
   const { sessionKey } = request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.accountType;
@@ -79,7 +79,7 @@ const getSelectAccountTypeController = (request, h) => {
   });
 };
 
-const postSelectAccountTypeController = (request, h) => {
+module.exports.postSelectAccountTypeController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
 
   let currentState = request.yar.get(sessionKey);
@@ -102,7 +102,7 @@ const postSelectAccountTypeController = (request, h) => {
   }
 };
 
-const postSelectContactController = (request, h) => {
+module.exports.postSelectContactController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { id, searchQuery, regionId } = request.payload;
@@ -133,7 +133,7 @@ const postSelectContactController = (request, h) => {
   }
 };
 
-const postDetailsController = (request, h) => {
+module.exports.postDetailsController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.accountType === 'organisation' ? (currentState.companyNameOrNumber ? currentState.companyNameOrNumber : currentState.searchQuery) : (currentState.personName ? currentState.personName : currentState.searchQuery);
@@ -145,7 +145,7 @@ const postDetailsController = (request, h) => {
   });
 };
 
-const postPersonDetailsController = (request, h) => {
+module.exports.postPersonDetailsController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { personFullName } = request.payload;
@@ -172,7 +172,7 @@ const postPersonDetailsController = (request, h) => {
   }
 };
 
-const postCompanySearchController = async (request, h) => {
+module.exports.postCompanySearchController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { companyNameOrNumber } = request.payload;
@@ -196,7 +196,7 @@ const postCompanySearchController = async (request, h) => {
   }
 };
 
-const postSelectCompanyAddressController = async (request, h) => {
+module.exports.postSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { selectedCompaniesHouseAddress } = request.payload;
@@ -220,7 +220,7 @@ const postSelectCompanyAddressController = async (request, h) => {
   }
 };
 
-const getSelectCompanyAddressController = async (request, h) => {
+module.exports.getSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseAddress;
@@ -232,7 +232,7 @@ const getSelectCompanyAddressController = async (request, h) => {
   });
 };
 
-const postSelectCompanyController = async (request, h) => {
+module.exports.postSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { selectedCompaniesHouseNumber } = request.payload;
@@ -260,7 +260,7 @@ const postSelectCompanyController = async (request, h) => {
   }
 };
 
-const getSelectCompanyController = async (request, h) => {
+module.exports.getSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseNumber;
@@ -273,7 +273,7 @@ const getSelectCompanyController = async (request, h) => {
   });
 };
 
-const getAfterAddressEntryController = (request, h) => {
+module.exports.getAfterAddressEntryController = (request, h) => {
   // This is the path the user is redirected to after the address entry flow
   // Sets the address in the yar object
   const { sessionKey } = request.payload || request.query;
@@ -283,18 +283,3 @@ const getAfterAddressEntryController = (request, h) => {
   // Redirect the user back into the invoice-accounts flow
   return h.redirect(`/invoice-accounts/create/${currentState.regionId}/${currentState.originalCompanyId}/contact-entry-complete?sessionKey=${sessionKey}`);
 };
-
-exports.getSelectAddressController = getSelectAddressController;
-exports.postSelectAddressController = postSelectAddressController;
-exports.getSelectContactController = getSelectContactController;
-exports.getSelectAccountTypeController = getSelectAccountTypeController;
-exports.postSelectAccountTypeController = postSelectAccountTypeController;
-exports.postSelectContactController = postSelectContactController;
-exports.postDetailsController = postDetailsController;
-exports.postPersonDetailsController = postPersonDetailsController;
-exports.postCompanySearchController = postCompanySearchController;
-exports.postSelectCompanyAddressController = postSelectCompanyAddressController;
-exports.getSelectCompanyAddressController = getSelectCompanyAddressController;
-exports.postSelectCompanyController = postSelectCompanyController;
-exports.getSelectCompanyController = getSelectCompanyController;
-exports.getAfterAddressEntryController = getAfterAddressEntryController;

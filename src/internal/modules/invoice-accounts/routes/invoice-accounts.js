@@ -109,11 +109,7 @@ if (isAcceptanceTestTarget) {
        */
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
-      handler: (request, h) => {
-        console.log('SO FAR SO GOOD')
-        console.log(request.query)
-        return 'OK'
-      }, // TODO
+      handler: controller.contactEntryHandover,
       config: {
         auth: { scope: allowedScopes },
         description: 'Redirects the user into the invoice-account flow after a new contact has been created',
@@ -123,7 +119,7 @@ if (isAcceptanceTestTarget) {
             companyId: VALID_GUID
           },
           query: {
-            redirectPath: Joi.string().required()
+            sessionKey: VALID_GUID
           }
         }
       }

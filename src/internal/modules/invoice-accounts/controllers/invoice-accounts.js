@@ -82,6 +82,35 @@ const postAddress = async (request, h) => {
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'select-address'));
 };
 
+const contactEntryHandover = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  const { sessionKey } = request.query;
+
+  let currentState = request.yar.get(sessionKey);
+  // Store everything in the right bits of the session
+  if (currentState.companyId !== companyId) {
+    let companyName = currentState.newCompany ? currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName : currentState.companyName;
+    let newData = {
+      viewData: {
+        companyName: titleCase(companyName)
+      },
+      agent: {
+        id: currentState.id,
+        name: titleCase(companyName),
+        company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
+      },
+      address: {
+        addressId: currentState.addressId ? currentState.addressId : null,
+        ...!currentState.addressId ? currentState.address : {}
+      }
+    };
+    dataService.sessionManager(request, regionId, companyId, newData);
+  }
+
+  // forward to /invoice-accounts/create/{regionId}/{companyId}/add-fao
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
+};
+
 const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
@@ -130,7 +159,8 @@ const getCheckDetails = async (request, h) => {
     session,
     company,
     selectedAddress,
-    selectedContact });
+    selectedContact
+  });
 };
 
 const postCheckDetails = async (request, h) => {
@@ -157,6 +187,8 @@ module.exports.postAddress = postAddress;
 
 module.exports.postFao = postFao;
 module.exports.getFao = getFao;
+
+module.exports.contactEntryHandover = contactEntryHandover;
 
 module.exports.getCheckDetails = getCheckDetails;
 module.exports.postCheckDetails = postCheckDetails;

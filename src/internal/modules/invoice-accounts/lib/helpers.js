@@ -18,6 +18,7 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
       sessionKey: tempUuid,
       searchQuery: companySearch,
       regionId: regionId,
+      originalCompanyId: companyId,
       back: `/invoice-accounts/create/${regionId}/${companyId}`
     });
     return `/contact-entry/select-contact?${queryTail}`;

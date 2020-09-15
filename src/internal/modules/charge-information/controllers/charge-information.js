@@ -1,10 +1,10 @@
 'use strict';
 
-const forms = require('./forms');
-const actions = require('./lib/actions');
-const routing = require('./lib/routing');
-const { createPostHandler, getDefaultView, applyFormResponse } = require('./lib/helpers');
-const services = require('../../lib/connectors/services');
+const forms = require('../forms');
+const actions = require('../lib/actions');
+const routing = require('../lib/routing');
+const { createPostHandler, getDefaultView, applyFormResponse } = require('../lib/helpers');
+const services = require('../../../lib/connectors/services');
 
 const getLicencePageUrl = async licence => {
   const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);

@@ -68,7 +68,6 @@ const formatYearSegment = (year) => {
   return '';
 };
 
-
 /**
  * Date mapper - combines the day month and year form values to a single
  * string formatted as YYYY-MM-DD

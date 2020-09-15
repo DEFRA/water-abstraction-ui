@@ -4,6 +4,7 @@ const urlJoin = require('url-join');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { has } = require('lodash');
+const moment = require('moment');
 /**
  * Form to request if an FAO contact should be added to the invoice account
  *
@@ -13,7 +14,7 @@ const { has } = require('lodash');
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
   const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'period');
+  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'abstraction');
   const startDate = has(sessionData, 'abstractionPeriod.startDay')
     ? `${sessionData.abstractionPeriod.startMonth}-${sessionData.abstractionPeriod.startDay}` : '';
   const endDate = has(sessionData, 'abstractionPeriod.endDay')
@@ -31,7 +32,7 @@ const form = (request, sessionData = {}) => {
       'any.empty': {
         message: 'Enter the start day and month'
       },
-      'string.regex.base': { 
+      'string.regex.base': {
         message: 'Enter the start date in the right format, for example 31 3'
       }
     }
@@ -62,8 +63,14 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    startDate: Joi.string().regex(/^(([1-9])|((0)[0-9])|((1)[0-2]))-([1-9]|[0-2][0-9]|(3)[0-1])$/).required(),
-    endDate: Joi.string().regex(/^(([1-9])|((0)[0-9])|((1)[0-2]))-([1-9]|[0-2][0-9]|(3)[0-1])$/).required()
+    startDate: Joi.string(),
+    endDate: Joi.string().custom((value, helpers) => {
+      const dateValue = `2000-${value}`;
+      if (!(moment(dateValue, 'YYYY-MM-DD', true).isValid())) {
+        return helpers.error('any.invalid');
+      }
+      return value;
+    }, 'custom validator')
   };
 };
 

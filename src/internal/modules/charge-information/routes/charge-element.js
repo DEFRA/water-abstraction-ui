@@ -39,7 +39,8 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' }
       ]
     }
   },

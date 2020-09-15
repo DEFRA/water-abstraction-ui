@@ -4,12 +4,18 @@ const urlJoin = require('url-join');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
-const options = [
-  { value: 'high', label: 'High', hint: 'This is the default loss category for the purpose chosen' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
-  { value: 'very low', label: 'Very low' }
-];
+const options = (defaultChargeData, selectedPurpose) => {
+  const defaultLoss = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose);
+  return [
+    { value: 'high', label: 'High' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'low', label: 'Low' },
+    { value: 'very low', label: 'Very low' }
+  ].map((row) => {
+    return row.value === defaultLoss.loss
+      ? { ...row, hint: 'This is the default loss category for the purpose chosen' } : row;
+  });
+};
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -17,7 +23,7 @@ const options = [
  * @param {Object} request The Hapi request object
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
-const form = (request, sessionData = {}) => {
+const form = (request, sessionData = {}, defaultChargeData = {}) => {
   const { csrfToken } = request.view;
   const { licenceId, elementId } = request.params;
   const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'loss');
@@ -30,7 +36,7 @@ const form = (request, sessionData = {}) => {
         message: 'Select loss category'
       }
     },
-    choices: options
+    choices: options(defaultChargeData, sessionData.purpose)
   }, sessionData.loss || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

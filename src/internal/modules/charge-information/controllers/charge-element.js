@@ -7,7 +7,6 @@ const forms = require('../forms/charge-element/index');
 const urlJoin = require('url-join');
 const { omit } = require('lodash');
 const mappers = require('../lib/charge-elements/mappers');
-const moment = require('moment');
 
 const steps = {
   purpose: { title: 'Select a purpose use', nextStep: 'description', formValues: ['purpose'] },
@@ -34,35 +33,10 @@ const getChargeElementStep = async (request, h) => {
   });
 };
 
-const validateDates = (key, value) => {
-  const dateValue = `2000-${value}`;
-  if (!(moment(dateValue, 'YYYY-MM-DD', true).isValid())) {
-    return {
-      name: `${key}Date`,
-      message: `Enter a valid ${key} day and month`,
-      summary: `Enter a valid ${key} day and month`
-    };
-  }
-  return null;
-};
-
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const schema = forms[step].schema(request.payload);
   const form = formHelpers.handleRequest(forms[step].form(request), request, schema);
-  if (step === 'abstraction1') {
-    const formData = formHelpers.getValues(form);
-    const start = validateDates('start', formData.startDate);
-    const end = validateDates('end', formData.endDate);
-    if (start) {
-      form.errors.push(start);
-      form.isValid = false;
-    };
-    if (end) {
-      form.errors.push(end);
-      form.isValid = false;
-    };
-  };
   if (form.isValid) {
     const formData = formHelpers.getValues(form);
     // save the form values in the session except the csrf token

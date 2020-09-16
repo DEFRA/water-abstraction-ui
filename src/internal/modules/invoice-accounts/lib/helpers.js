@@ -63,8 +63,8 @@ const getSelectedAddress = async (companyId, session) => {
   if (session.address.addressId === tempId) {
     return session.address;
   } else {
-    const addresses = await dataService.getCompanyAddresses(companyId);
-    const selectedAddress = addresses.find(address => (address.id === session.address.addressId));
+    const addresses = await dataService.getCompanyAddresses(companyId, session);
+    const selectedAddress = addresses.find(address => (address.id === session.address.id));
     return selectedAddress;
   };
 };

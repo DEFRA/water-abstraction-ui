@@ -53,9 +53,9 @@ const postCompany = async (request, h) => {
 
 const getAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const addresses = await dataService.getCompanyAddresses(companyId);
   // get the session data to check if the address has been set and if it is new or existing
   const session = dataService.sessionManager(request, regionId, companyId);
+  const addresses = await dataService.getCompanyAddresses(companyId, session);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
   const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
@@ -70,7 +70,8 @@ const getAddress = async (request, h) => {
 
 const postAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const addresses = await dataService.getCompanyAddresses(companyId);
+  const session = dataService.sessionManager(request, regionId, companyId);
+  const addresses = await dataService.getCompanyAddresses(companyId, session);
   const schema = selectAddressFormSchema(request.payload);
   const form = forms.handleRequest(selectAddressForm(request, addresses), request, schema);
   if (form.isValid) {
@@ -95,13 +96,14 @@ const contactEntryHandover = async (request, h) => {
         companyName: titleCase(companyName)
       },
       agent: {
-        id: currentState.id,
+        id: currentState.id ? currentState.id : tempId,
         name: titleCase(companyName),
         company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
       },
       address: {
-        addressId: currentState.addressId ? currentState.addressId : null,
-        ...!currentState.addressId ? currentState.address : {}
+        id: currentState.addressId ? currentState.addressId : tempId,
+        addressId: currentState.addressId ? currentState.addressId : tempId,
+        ...currentState.address
       }
     };
     dataService.sessionManager(request, regionId, companyId, newData);

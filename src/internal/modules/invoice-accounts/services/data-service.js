@@ -14,10 +14,12 @@ const getCompany = async (companyId) => {
   return company;
 };
 
-const getCompanyAddresses = async (companyId) => {
+const getCompanyAddresses = async (companyId, session) => {
   const addresses = await services.water.companies.getAddresses(companyId);
+  // If there is a new address stored in the session, as identified by a nonsensical GUID, append the address to the array of addresses
+  const allAddresses = [...addresses || [], ...[session.address] || []];
   // get the unique list of addresses
-  const uniqueAddresses = uniqBy(addresses.map(row => row.address), 'id');
+  const uniqueAddresses = uniqBy(allAddresses.map(row => row.address), 'id');
   return uniqueAddresses;
 };
 

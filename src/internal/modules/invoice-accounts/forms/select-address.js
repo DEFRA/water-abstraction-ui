@@ -18,12 +18,14 @@ const address = (address) => {
 };
 
 const addressList = (addresses) => {
-  const addrList = addresses.map(row => {
-    return {
-      value: row.id,
-      label: (address(row)).join(', ')
-    };
-  });
+  const addrList = addresses
+    .filter(x => x) // Filters any 'undefined' values
+    .map(row => {
+      return {
+        value: row.id,
+        label: (address(row)).join(', ')
+      };
+    });
   return addrList.length > 0 ? [...addrList, { divider: 'or' }] : [];
 };
 

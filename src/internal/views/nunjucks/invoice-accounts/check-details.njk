@@ -20,10 +20,10 @@
                 {{ company.name | titleCase }}<br>
               </dd>
               <dd class="govuk-summary-list__actions ">
-                {% if session.viewData.licenceNumber !== null %}
-                  <a class="govuk-link" href="./?redirectPath={{ session.viewData.redirectPath }}&licenceId={{session.viewData.licenceId}}">
+                {% if session.viewData.licenceNumber %}
+                  <a class="govuk-link" href=".?redirectPath={{ session.viewData.redirectPath }}&licenceId={{session.viewData.licenceId}}">
                 {% else %}
-                  <a class="govuk-link" href="./?redirectPath={{ session.viewData.redirectPath }}">
+                  <a class="govuk-link" href=".?redirectPath={{ session.viewData.redirectPath }}">
                 {% endif %}
                   Change<span class="govuk-visually-hidden">billing contact name</span>
                 </a>

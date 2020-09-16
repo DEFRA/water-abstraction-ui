@@ -125,6 +125,52 @@ if (isAcceptanceTestTarget) {
       }
 
     },
+    getCreateAddress: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/create-address',
+      handler: controller.getCreateAddress,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Enter invoice account address',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            form: Joi.string().optional()
+          }
+        }
+      }
+    },
+    getAddressEntered: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/address-entered',
+      handler: controller.getAddressEntered,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirect path from the address entry module',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            form: Joi.string().optional()
+          }
+        }
+      }
+    },
     getFao: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/add-fao',
@@ -186,7 +232,7 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
+          { method: preHandlers.getDisplayedCompany, assign: 'company' }
         ]
       }
     },

@@ -4,7 +4,7 @@ const queryString = require('querystring');
 const moment = require('moment');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-
+const ADDRESS_FLOW_SESSION_KEY = require('../../address-entry/plugin').SESSION_KEY;
 const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
 const { selectAddressForm, selectAddressFormSchema } = require('../forms/select-address');
 const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
@@ -28,7 +28,9 @@ const getCompany = async (request, h) => {
   // The company name and licence number set here will be used in the select address page
   const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: titleCase(company.name) } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
-  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : helpers.getAgentCompany(session);
+
+  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : await helpers.getAgentCompany(session);
+
   return h.view('nunjucks/form', {
     ...request.view,
     caption: helpers.getFormTitleCaption(licenceNumber),
@@ -49,6 +51,33 @@ const postCompany = async (request, h) => {
   }
   const { viewData: { redirectPath } } = dataService.sessionManager(request, regionId, companyId);
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId), { redirectPath });
+};
+
+// Handles the redirection to the address entry flow
+const getCreateAddress = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  const queryTail = queryString.stringify({
+    redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/address-entered`,
+    back: `/invoice-accounts/create/${regionId}/${companyId}/check-details`
+  });
+  return h.redirect(`/address-entry/postcode?${queryTail}`);
+};
+
+// Handles the address entered via the address entry flow, and stores it in the session object
+const getAddressEntered = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  // Fetch the address using the address flow session key
+  let address = request.yar.get(ADDRESS_FLOW_SESSION_KEY);
+  // Store the address in the session object
+  dataService.sessionManager(request, regionId, companyId, {
+    address: {
+      ...address,
+      id: address.id ? address.id : tempId,
+      addressId: address.id ? address.id : tempId
+    }
+  });
+  // Redirect the user to the check your answers page.
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
 };
 
 const getAddress = async (request, h) => {
@@ -76,7 +105,9 @@ const postAddress = async (request, h) => {
   const form = forms.handleRequest(selectAddressForm(request, addresses), request, schema);
   if (form.isValid) {
     const { selectedAddress } = forms.getValues(form);
-    dataService.sessionManager(request, regionId, companyId, { address: { addressId: selectedAddress } });
+    if (selectedAddress !== tempId) {
+      dataService.sessionManager(request, regionId, companyId, { address: { id: selectedAddress, addressId: selectedAddress } });
+    }
     const redirectPath = selectedAddress === 'new_address' ? 'create-address' : 'add-fao';
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
   }
@@ -97,6 +128,7 @@ const contactEntryHandover = async (request, h) => {
       },
       agent: {
         id: currentState.id ? currentState.id : tempId,
+        companyId: currentState.id ? currentState.id : tempId,
         name: titleCase(companyName),
         company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
       },
@@ -183,6 +215,9 @@ const postCheckDetails = async (request, h) => {
 
 module.exports.getCompany = getCompany;
 module.exports.postCompany = postCompany;
+
+module.exports.getCreateAddress = getCreateAddress;
+module.exports.getAddressEntered = getAddressEntered;
 
 module.exports.getAddress = getAddress;
 module.exports.postAddress = postAddress;

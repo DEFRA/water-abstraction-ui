@@ -2,8 +2,22 @@
 
 const Boom = require('boom');
 const { partial } = require('lodash');
+const dataService = require('./services/data-service');
 
 const { water } = require('../../lib/connectors/services');
+
+const getDisplayedCompany = async (request) => {
+  const session = dataService.sessionManager(request, request.params.regionId, request.params.companyId);
+  if (session.agent) {
+    if (session.agent.id) {
+      return water.companies.getCompany(session.agent.id);
+    } else {
+      return session.agent;
+    }
+  } else {
+    return water.companies.getCompany(request.params.companyId);
+  }
+};
 
 const getCompany = async (request) =>
   water.companies.getCompany(request.params.companyId);
@@ -37,3 +51,4 @@ const preHandler = async (config, request, h) => {
 };
 
 exports.loadCompany = partial(preHandler, config.loadCompany);
+exports.getDisplayedCompany = getDisplayedCompany;

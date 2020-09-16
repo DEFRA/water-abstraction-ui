@@ -3,7 +3,7 @@ const { merge } = require('lodash');
 const forms = require('shared/lib/forms');
 const { selectContact, selectAddress, selectAccountType, companySearch, personName, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
 const queryString = require('querystring');
-const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/lib/helpers').SESSION_KEY;
+const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/plugin').SESSION_KEY;
 
 module.exports.getSelectAddressController = (request, h) => {
   const { sessionKey } = request.payload || request.query;

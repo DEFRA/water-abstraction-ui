@@ -6,34 +6,9 @@ const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
 
 module.exports = {
-  getTasklist: {
-    method: 'GET',
-    path: '/licences/{licenceId}/charge-information/task-list',
-    handler: controller.getTasklist,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Shows tasklist for new charge information',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          licenceId: VALID_GUID
-        }
-      },
-      pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
-      ]
-    }
-  },
   getReason: {
     method: 'GET',
-    path: '/licences/{licenceId}/charge-information/reason',
+    path: '/licences/{licenceId}/charge-information/create',
     handler: controller.getReason,
     options: {
       auth: {
@@ -56,13 +31,14 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadChangeReasons, assign: 'changeReasons' }
+        { method: preHandlers.loadChargeableChangeReasons, assign: 'changeReasons' }
       ]
     }
   },
+
   postReason: {
     method: 'POST',
-    path: '/licences/{licenceId}/charge-information/reason',
+    path: '/licences/{licenceId}/charge-information/create',
     handler: controller.postReason,
     options: {
       auth: {
@@ -82,7 +58,7 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadChangeReasons, assign: 'changeReasons' }
+        { method: preHandlers.loadChargeableChangeReasons, assign: 'changeReasons' }
       ]
     }
   },
@@ -133,6 +109,171 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
+  },
+
+  getSelectBillingAccount: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/billing-account',
+    handler: controller.getSelectBillingAccount,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+      ]
+    }
+  },
+
+  postSelectBillingAccount: {
+    method: 'POST',
+    path: '/licences/{licenceId}/charge-information/billing-account',
+    handler: controller.postSelectBillingAccount,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+      ]
+    }
+  },
+
+  getUseAbstractionData: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/use-abstraction-data',
+    handler: controller.getUseAbstractionData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
+  },
+
+  postUseAbstractionData: {
+    method: 'POST',
+    path: '/licences/{licenceId}/charge-information/use-abstraction-data',
+    handler: controller.postUseAbstractionData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' }
+      ]
+    }
+  },
+
+  getCheckData: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/check',
+    handler: controller.getCheckData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
+  },
+
+  postCheckData: {
+    method: 'POST',
+    path: '/licences/{licenceId}/charge-information/check',
+    handler: controller.postCheckData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional()
         }
       },
       pre: [

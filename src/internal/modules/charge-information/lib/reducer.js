@@ -5,14 +5,29 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setReason:
       return {
         ...state,
-        changeReason: action.changeReason
+        changeReason: action.payload
       };
 
     case ACTION_TYPES.setStartDate:
       return {
         ...state,
-        startDate: action.startDate
+        startDate: action.payload
       };
+
+    case ACTION_TYPES.setAbstractionData:
+      return {
+        ...state,
+        abstractionData: action.payload
+      };
+
+    case ACTION_TYPES.setBillingAccount:
+      return {
+        ...state,
+        billingAccount: action.payload
+      };
+
+    case ACTION_TYPES.clearData:
+      return {};
   }
 
   return state;

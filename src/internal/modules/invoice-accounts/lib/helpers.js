@@ -86,6 +86,16 @@ const getAgentCompany = async (session) => {
   } else { return null; }
 };
 
+const getCompanyName = async (request) => {
+  const { sessionKey } = request.query;
+  let currentState = request.yar.get(sessionKey);
+  if (currentState.newCompany) {
+    return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName
+  } else {
+    return currentState.companyName;
+  }
+};
+
 const getName = (contact) => {
   const name = [
     contact.title,
@@ -116,6 +126,7 @@ const getContactName = async (companyId, sessionContact) => {
 };
 
 exports.getName = getName;
+exports.getCompanyName = getCompanyName;
 exports.getContactName = getContactName;
 exports.getFormTitleCaption = getFormTitleCaption;
 exports.getAgentCompany = getAgentCompany;

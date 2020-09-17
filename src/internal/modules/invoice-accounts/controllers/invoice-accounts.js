@@ -117,14 +117,13 @@ const postAddress = async (request, h) => {
 const contactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { sessionKey } = request.query;
-
   let currentState = request.yar.get(sessionKey);
-  // Store everything in the right bits of the session
+  
   if (currentState.companyId !== companyId) {
-    let companyName = currentState.newCompany ? currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName : currentState.companyName;
-    let newData = {};
+    let companyName = titleCase(helpers.getCompanyName(request));
+    let newData = {}; // Store everything in the right bits of the session
     newData['viewData'] = {
-      companyName: titleCase(companyName)
+      companyName: companyName
     };
     if (currentState.id === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
       newData['agent'] = null;
@@ -132,7 +131,7 @@ const contactEntryHandover = async (request, h) => {
       newData['agent'] = {
         id: currentState.id ? currentState.id : tempId,
         companyId: currentState.id ? currentState.id : tempId,
-        name: titleCase(companyName),
+        name: companyName,
         company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
       };
     }
@@ -143,9 +142,7 @@ const contactEntryHandover = async (request, h) => {
     };
     dataService.sessionManager(request, regionId, companyId, newData);
   }
-
-  // forward to /invoice-accounts/create/{regionId}/{companyId}/add-fao
-  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`); // forward to /invoice-accounts/create/{regionId}/{companyId}/add-fao
 };
 
 const getFao = async (request, h) => {

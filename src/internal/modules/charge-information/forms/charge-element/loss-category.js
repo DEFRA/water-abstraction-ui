@@ -49,7 +49,7 @@ const form = (request, sessionData = {}, defaultChargeData = []) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    loss: Joi.string().allow(['high', 'medium', 'low', 'very low']).required()
+    loss: Joi.string().valid(['high', 'medium', 'low', 'very low']).required()
   };
 };
 

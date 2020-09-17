@@ -4,6 +4,7 @@ const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { has } = require('lodash');
 const routing = require('../../lib/routing');
+const { capitalize } = require('lodash');
 
 const errors = {
   empty: {
@@ -16,6 +17,25 @@ const errors = {
     message: 'Enter a real end date'
   }
 };
+
+const getFormField = (key, date) => {
+  const name = capitalize(key);
+  return fields.date(`${key}Date`, {
+    label: `${name} Date`,
+    subHeading: true,
+    items: ['day', 'month'],
+    type: 'date',
+    mapper: 'dayOfYearMapper',
+    errors: {
+      'any.required': errors.empty,
+      'any.empty': errors.empty,
+      'string.isoDate': errors[`invalid${name}`],
+      'date.isoDate': errors[`invalid${name}`],
+      'date.base': errors[`invalid${name}`]
+    }
+  }, date);
+};
+
 /**
  * Form to request if an FAO contact should be added to the invoice account
  *
@@ -32,34 +52,8 @@ const form = (request, sessionData = {}) => {
     ? `${sessionData.abstractionPeriod.endMonth}-${sessionData.abstractionPeriod.endDay}` : '';
 
   const f = formFactory(action, 'POST');
-  f.fields.push(fields.date('startDate', {
-    label: 'Start Date',
-    subHeading: true,
-    items: ['day', 'month'],
-    type: 'date',
-    mapper: 'dayOfYearMapper',
-    errors: {
-      'any.required': errors.empty,
-      'any.empty': errors.empty,
-      'string.isoDate': errors.invalidStart,
-      'date.isoDate': errors.invalidStart,
-      'date.base': errors.invalidStart
-    }
-  }, startDate));
-  f.fields.push(fields.date('endDate', {
-    label: 'End Date',
-    subHeading: true,
-    items: ['day', 'month'],
-    mapper: 'dayOfYearMapper',
-    type: 'date',
-    errors: {
-      'any.required': errors.empty,
-      'any.empty': errors.empty,
-      'string.isoDate': errors.invalidEnd,
-      'date.isoDate': errors.invalidEnd,
-      'date.base': errors.invalidEnd
-    }
-  }, endDate));
+  f.fields.push(getFormField('start', startDate));
+  f.fields.push(getFormField('end', endDate));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;

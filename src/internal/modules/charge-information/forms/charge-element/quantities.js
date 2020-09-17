@@ -3,6 +3,24 @@
 const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
+const { capitalize } = require('lodash');
+
+const getFormField = (key, sessionData) => {
+  const fieldName = `${key}AnnualQuantity`;
+  return fields.text(fieldName, {
+    controlClass: 'govuk-input govuk-input--width-10',
+    label: capitalize(key),
+    suffix: 'megalitres per year',
+    errors: {
+      'any.empty': {
+        message: `Enter an ${key} quantity`
+      },
+      'number.base': {
+        message: `Enter a valid ${key} quantity as a number that is more than zero`
+      }
+    }
+  }, sessionData[fieldName] || '');
+};
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -16,29 +34,8 @@ const form = (request, sessionData = {}) => {
   const action = routing.getChargeElementStep(licenceId, 'quantities');
 
   const f = formFactory(action, 'POST');
-  f.fields.push(fields.text('authorisedAnnualQuantity', {
-    controlClass: 'govuk-input govuk-input--width-10',
-    label: 'Authorised',
-    suffix: 'megalitres per year',
-    errors: {
-      'any.empty': {
-        message: 'Enter an authorised quantity'
-      },
-      'number.base': {
-        message: 'Enter a valid authorised quantity as a number that is more than zero'
-      }
-    }
-  }, sessionData.authorisedAnnualQuantity || ''));
-  f.fields.push(fields.text('billableAnnualQuantity', {
-    controlClass: 'govuk-input govuk-input--width-10',
-    label: 'Billable (optional)',
-    suffix: ' megalitres per year',
-    errors: {
-      'number.base': {
-        message: 'Enter a valid billable quantity as a number that is more than zero'
-      }
-    }
-  }, sessionData.billableAnnualQuantity || ''));
+  f.fields.push(getFormField('authorised', sessionData));
+  f.fields.push(getFormField('billable', sessionData));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

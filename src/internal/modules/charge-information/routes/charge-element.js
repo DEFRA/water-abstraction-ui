@@ -34,7 +34,7 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          step: Joi.string().allow(chargeElementSteps)
+          step: Joi.string().valid(chargeElementSteps).required()
         }
       },
       pre: [
@@ -61,7 +61,7 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          step: Joi.string().allow(chargeElementSteps)
+          step: Joi.string().valid(chargeElementSteps).required()
         }
       },
       pre: [

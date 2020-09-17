@@ -40,7 +40,7 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    season: Joi.string().required().allow(['summer', 'winter', 'all year'])
+    season: Joi.string().required().valid(['summer', 'winter', 'all year'])
   };
 };
 

@@ -15,10 +15,13 @@ const getError = (key) => {
       message: `Enter the ${key} date in the right format, for example 31 3 2018`
     },
     empty: {
-      message: `Enter a ${key} date for the time limit`
+      message: `Enter the ${key} date for the time limit`
     },
     beforeChargeStart: {
       message: 'Enter a start date on or after the charge information start date'
+    },
+    afterLicenceExpired: {
+      message: 'Enter an end date that is on or before the licence end date'
     }
   };
 };
@@ -35,6 +38,8 @@ const getDateField = (key, values) => {
     mapper: 'dateMapper',
     subHeading: true,
     errors: {
+      'date.min': getError(key).beforeChargeStart,
+      'date.max': getError(key).afterLicenceExpired,
       'any.required': getError(key).empty,
       'string.isoDate': getError(key).invalid,
       'date.isoDate': getError(key).invalid,
@@ -62,8 +67,8 @@ const options = values => {
   */
 const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'time');
+  const { licence } = request.pre;
+  const action = routing.getChargeElementStep(licence.id, 'time');
   let selectedValue;
   if (!(has(sessionData, 'timeLimitedPeriod'))) {
     selectedValue = '';
@@ -84,6 +89,7 @@ const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData
     choices: options(dates)
   }, selectedValue));
   f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeData.startDate));
+  f.fields.push(fields.hidden('expiredDate', {}, licence.expiredDate || '9999-01-01'));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -92,16 +98,17 @@ const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData
 
 const schema = (request) => {
   return {
+    expiredDate: Joi.date().iso(),
     chargeStartDate: Joi.date().iso(),
     csrf_token: Joi.string().uuid().required(),
-    timeLimitedPeriod: Joi.string().required().allow(['yes', false]),
+    timeLimitedPeriod: Joi.string().required().valid(['yes', false]),
     startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().greater(Joi.ref('chargeStartDate')).required()
+      then: Joi.date().iso().min(Joi.ref('chargeStartDate')).required()
     }),
     endDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().greater(Joi.ref('startDate')).required()
+      then: Joi.date().iso().greater(Joi.ref('startDate')).max(Joi.ref('expiredDate')).required()
     })
   };
 };

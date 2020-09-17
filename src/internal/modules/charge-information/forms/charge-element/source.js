@@ -27,7 +27,7 @@ const form = (request, sessionData = {}) => {
   f.fields.push(fields.radio('source', {
     errors: {
       'any.required': {
-        message: 'Select source'
+        message: 'Select a source'
       }
     },
     choices: options
@@ -41,7 +41,7 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    source: Joi.string().required().allow(['unsupported', 'supported', 'tidal', 'kielder'])
+    source: Joi.string().required().valid(['unsupported', 'supported', 'tidal', 'kielder'])
   };
 };
 

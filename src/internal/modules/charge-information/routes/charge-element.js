@@ -10,7 +10,7 @@ const chargeElementSteps = [
   'description',
   'period',
   'quantities',
-  'time-limit',
+  'time',
   'source',
   'season',
   'loss'
@@ -19,7 +19,7 @@ const chargeElementSteps = [
 module.exports = {
   getChargeElementStep: {
     method: 'GET',
-    path: '/licences/{licenceId}/charge-information/charge-element/{elementId}/{step}',
+    path: '/licences/{licenceId}/charge-information/charge-element/{step}',
     handler: controller.getChargeElementStep,
     options: {
       auth: {
@@ -34,19 +34,19 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          elementId: Joi.string(),
           step: Joi.string().allow(chargeElementSteps)
         }
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' }
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
       ]
     }
   },
   postChargeElementStep: {
     method: 'POST',
-    path: '/licences/{licenceId}/charge-information/charge-element/{elementId}/{step}',
+    path: '/licences/{licenceId}/charge-information/charge-element/{step}',
     handler: controller.postChargeElementStep,
     options: {
       auth: {
@@ -61,11 +61,12 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          elementId: Joi.string(),
           step: Joi.string().allow(chargeElementSteps)
         }
       },
       pre: [
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }

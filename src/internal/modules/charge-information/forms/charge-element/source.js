@@ -1,6 +1,6 @@
 'use strict';
 
-const urlJoin = require('url-join');
+const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
@@ -19,8 +19,8 @@ const options = [
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'source');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'source');
 
   const f = formFactory(action, 'POST');
 

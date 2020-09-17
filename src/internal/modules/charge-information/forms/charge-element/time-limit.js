@@ -1,54 +1,56 @@
 'use strict';
 
-const urlJoin = require('url-join');
+const routing = require('../../lib/routing');
 const { has } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
 
-const startDateError = {
-  message: 'Enter the start date in the right format, for example 31 3 2018'
-};
-const endDateError = {
-  message: 'Enter the end date in the right format, for example 31 3 2018'
+/**
+ * returns the errors for the start and end date form fields
+ * @param {string} key start or end
+ */
+const getError = (key) => {
+  return {
+    invalid: {
+      message: `Enter the ${key} date in the right format, for example 31 3 2018`
+    },
+    empty: {
+      message: `Enter a ${key} date for the time limit`
+    },
+    beforeChargeStart: {
+      message: 'Enter a start date on or after the charge information start date'
+    }
+  };
 };
 
-const options = dates => {
+/**
+ * This method returns a date field - it is extracted to avoid code duplication
+ * @param {string} key either start or end used to define the date field
+ * @param {object} values session data to preload the form
+ */
+const getDateField = (key, values) => {
+  return fields.date(`${key}Date`, {
+    label: 'Enter start date',
+    type: 'date',
+    mapper: 'dateMapper',
+    subHeading: true,
+    errors: {
+      'any.required': getError(key).empty,
+      'string.isoDate': getError(key).invalid,
+      'date.isoDate': getError(key).invalid,
+      'date.base': getError(key).invalid
+    }
+  }, values[key + 'Date']);
+};
+
+const options = values => {
   return [
     {
       value: 'yes',
       label: 'Yes',
-      fields: [
-        fields.date('startDate', {
-          label: 'Enter start date',
-          type: 'date',
-          mapper: 'dateMapper',
-          subHeading: true,
-          errors: {
-            'any.required': startDateError,
-            'string.isoDate': startDateError,
-            'date.isoDate': startDateError,
-            'date.base': startDateError
-          }
-        }, dates.startDate),
-        fields.date('endDate', {
-          label: 'Enter end date',
-          type: 'date',
-          mapper: 'dateMapper',
-          subHeading: true,
-          errors: {
-            'any.required': endDateError,
-            'string.isoDate': endDateError,
-            'date.isoDate': endDateError,
-            'date.base': endDateError,
-            'date.ref': '',
-            'date.greater': {
-              message: 'Enter an end date after the start date'
-            }
-          }
-        }, dates.endDate)
-      ]
+      fields: [ getDateField('start', values), getDateField('end', values) ]
     },
-    { value: 'no', label: 'No' }
+    { value: false, label: 'No' }
   ];
 };
 
@@ -58,15 +60,15 @@ const options = dates => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
-const form = (request, sessionData = {}) => {
+const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'time');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'time');
   let selectedValue;
   if (!(has(sessionData, 'timeLimitedPeriod'))) {
     selectedValue = '';
   } else {
-    selectedValue = sessionData.timeLimitedPeriod === 'no' ? 'no' : 'yes';
+    selectedValue = !sessionData.timeLimitedPeriod ? false : 'yes';
   }
 
   const dates = (has(sessionData, 'timeLimitedPeriod.startDate')) ? sessionData.timeLimitedPeriod : { startDate: null, endDate: null };
@@ -76,11 +78,12 @@ const form = (request, sessionData = {}) => {
   f.fields.push(fields.radio('timeLimitedPeriod', {
     errors: {
       'any.required': {
-        message: 'Set a time limit?'
+        message: 'Select yes if you want to set a time limit. Select no to continue'
       }
     },
     choices: options(dates)
   }, selectedValue));
+  f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeData.startDate));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -89,11 +92,12 @@ const form = (request, sessionData = {}) => {
 
 const schema = (request) => {
   return {
+    chargeStartDate: Joi.date().iso(),
     csrf_token: Joi.string().uuid().required(),
-    timeLimitedPeriod: Joi.string().required().allow(['yes', 'no']),
+    timeLimitedPeriod: Joi.string().required().allow(['yes', false]),
     startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().required()
+      then: Joi.date().iso().greater(Joi.ref('chargeStartDate')).required()
     }),
     endDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',

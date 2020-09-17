@@ -1,6 +1,6 @@
 'use-strict';
 
-const mapAbstractionPeriod = (formValues) => {
+const abstraction = (formValues) => {
   const [startMonth, startDay] = (formValues.startDate || '').toString().split(/[- T]/g);
   const [endMonth, endDay] = (formValues.endDate || '').toString().split(/[- T]/g);
   return {
@@ -13,7 +13,7 @@ const mapAbstractionPeriod = (formValues) => {
   };
 };
 
-const mapTimeLimit = (formValues) => {
+const time = (formValues) => {
   if (formValues.timeLimitedPeriod === 'yes') {
     return {
       timeLimitedPeriod: {
@@ -21,8 +21,14 @@ const mapTimeLimit = (formValues) => {
         endDate: formValues.endDate
       }
     };
-  } else return { timeLimitedPeriod: 'no' };
+  } else return { timeLimitedPeriod: false };
 };
 
-exports.mapTimeLimit = mapTimeLimit;
-exports.mapAbstractionPeriod = mapAbstractionPeriod;
+const purpose = (formValues, defaultCharges) => {
+  const { purposeUse } = defaultCharges.find(item => item.purposeUse.id === formValues.purpose);
+  return { purposeUse };
+};
+
+exports.purpose = purpose;
+exports.time = time;
+exports.abstraction = abstraction;

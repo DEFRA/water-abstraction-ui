@@ -1,9 +1,9 @@
 'use strict';
 
-const urlJoin = require('url-join');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { has } = require('lodash');
+const routing = require('../../lib/routing');
 
 const errors = {
   empty: {
@@ -24,8 +24,8 @@ const errors = {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'abstraction');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'abstraction');
   const startDate = has(sessionData, 'abstractionPeriod.startDay')
     ? `${sessionData.abstractionPeriod.startMonth}-${sessionData.abstractionPeriod.startDay}` : '';
   const endDate = has(sessionData, 'abstractionPeriod.endDay')

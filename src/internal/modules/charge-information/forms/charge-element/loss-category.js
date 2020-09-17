@@ -1,18 +1,20 @@
 'use strict';
 
-const urlJoin = require('url-join');
+const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
+const { has } = require('lodash');
 
 const options = (defaultChargeData, selectedPurpose) => {
   const defaultLoss = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose);
+  const loss = has(defaultLoss, 'loss') ? defaultLoss.loss : 'high';
   return [
     { value: 'high', label: 'High' },
     { value: 'medium', label: 'Medium' },
     { value: 'low', label: 'Low' },
     { value: 'very low', label: 'Very low' }
   ].map((row) => {
-    return row.value === defaultLoss.loss
+    return row.value === loss
       ? { ...row, hint: 'This is the default loss category for the purpose chosen' } : row;
   });
 };
@@ -23,10 +25,10 @@ const options = (defaultChargeData, selectedPurpose) => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
-const form = (request, sessionData = {}, defaultChargeData = {}) => {
+const form = (request, sessionData = {}, defaultChargeData = []) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'loss');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'loss');
 
   const f = formFactory(action, 'POST');
 
@@ -47,7 +49,7 @@ const form = (request, sessionData = {}, defaultChargeData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    loss: Joi.string().required().allow(['high', 'medium', 'low', 'very low'])
+    loss: Joi.string().allow(['high', 'medium', 'low', 'very low']).required()
   };
 };
 

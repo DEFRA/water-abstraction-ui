@@ -1,6 +1,6 @@
 'use strict';
 
-const urlJoin = require('url-join');
+const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
@@ -12,15 +12,15 @@ const { formFactory, fields } = require('shared/lib/forms/');
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'description');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'description');
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('description', {
     hint: 'For example, describe where the abstraction point is',
     errors: {
       'any.empty': {
-        message: 'Add element description'
+        message: 'Enter a description of the element'
       }
     }
   }, sessionData.description || ''));

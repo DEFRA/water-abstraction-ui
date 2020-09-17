@@ -1,9 +1,8 @@
 'use strict';
 
-const urlJoin = require('url-join');
+const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { optional } = require('@hapi/joi');
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -13,8 +12,8 @@ const { optional } = require('@hapi/joi');
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = urlJoin('/licences/', licenceId, 'charge-information/charge-element', elementId, 'quantities');
+  const { licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, 'quantities');
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('authorisedAnnualQuantity', {
@@ -23,15 +22,23 @@ const form = (request, sessionData = {}) => {
     suffix: 'megalitres per year',
     errors: {
       'any.empty': {
-        message: 'Enter the authorised quantity'
+        message: 'Enter an authorised quantity'
+      },
+      'number.base': {
+        message: 'Enter a valid authorised quantity as a number that is more than zero'
       }
     }
-  }, sessionData.authorised || ''));
+  }, sessionData.authorisedAnnualQuantity || ''));
   f.fields.push(fields.text('billableAnnualQuantity', {
+    controlClass: 'govuk-input govuk-input--width-10',
     label: 'Billable (optional)',
     suffix: ' megalitres per year',
-    controlClass: 'govuk-input govuk-input--width-10'
-  }, sessionData.billable || ''));
+    errors: {
+      'number.base': {
+        message: 'Enter a valid billable quantity as a number that is more than zero'
+      }
+    }
+  }, sessionData.billableAnnualQuantity || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

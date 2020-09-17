@@ -5,3 +5,4 @@ exports.getReason = licence => `/licences/${licence.id}/charge-information/creat
 exports.getStartDate = licence => `/licences/${licence.id}/charge-information/start-date`;
 exports.getSelectBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account`;
 exports.getUseAbstractionData = licence => `/licences/${licence.id}/charge-information/use-abstraction-data`;
+exports.getChargeElementStep = (licenceId, step) => `/licences/${licenceId}/charge-information/charge-element/${step}`;

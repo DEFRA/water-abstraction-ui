@@ -99,10 +99,25 @@ const getUseAbstractionData = async (request, h) => {
   });
 };
 
+/*
+* Handles the redirection to the next step when value billing account
+* data has been selected. Either the user wants to create a new billing
+* account, in which case redirect there, or move on to the next step.
+*
+* @param {Object} request
+* @param {Object} formValues
+*/
+const handleValidAbstractionDataRedirect = (request, formValues) => {
+  const { licence } = request.pre;
+  return formValues.useAbstractionData
+    ? routing.getCheckData(licence)
+    : routing.getChargeElementStep(licence, 'purpose');
+};
+
 const postUseAbstractionData = createPostHandler(
   forms.useAbstractionData,
   actions.setAbstractionData,
-  request => routing.getCheckData(request.pre.licence)
+  handleValidAbstractionDataRedirect
 );
 
 const getCheckData = async (request, h) => {

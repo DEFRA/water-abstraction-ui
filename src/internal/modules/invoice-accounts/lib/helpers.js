@@ -59,7 +59,6 @@ const processSelectContactFormData = (request, regionId, companyId, selectedCont
 };
 
 const getSelectedAddress = async (companyId, session) => {
-
   if (session.address && session.address.addressId === tempId) { // If the address has been entered using the new address entry flow, this will pull that address from the session
     return session.address;
   } else { // If the address already exists in the DB and has an ID...

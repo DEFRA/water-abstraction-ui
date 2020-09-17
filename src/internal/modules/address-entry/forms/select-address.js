@@ -1,15 +1,6 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const { compact } = require('lodash');
-const titleCase = require('title-case');
 const Joi = require('@hapi/joi');
-
-const getAddressText = address => {
-  const { addressLine1, addressLine2, addressLine3, addressLine4 } = address;
-  const addressLines = compact([addressLine1, addressLine2, addressLine3, addressLine4])
-    .map(line => titleCase(line))
-    .join(' ');
-  return `${addressLines}, ${titleCase(address.town)}, ${address.postcode}`;
-};
+const { getAddressText } = require('../lib/helpers');
 
 const getAddressChoices = addresses => {
   const choices = addresses.map(address => ({

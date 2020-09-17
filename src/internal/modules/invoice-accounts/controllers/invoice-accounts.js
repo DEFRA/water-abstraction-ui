@@ -126,7 +126,9 @@ const contactEntryHandover = async (request, h) => {
     newData['viewData'] = {
       companyName: titleCase(companyName)
     };
-    if (currentState.id !== companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+    if (currentState.id === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+      newData['agent'] = null;
+    } else {
       newData['agent'] = {
         id: currentState.id ? currentState.id : tempId,
         companyId: currentState.id ? currentState.id : tempId,

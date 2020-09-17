@@ -122,21 +122,22 @@ const contactEntryHandover = async (request, h) => {
   // Store everything in the right bits of the session
   if (currentState.companyId !== companyId) {
     let companyName = currentState.newCompany ? currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName : currentState.companyName;
-    let newData = {
-      viewData: {
-        companyName: titleCase(companyName)
-      },
-      agent: {
+    let newData = {};
+    newData['viewData'] = {
+      companyName: titleCase(companyName)
+    };
+    if (currentState.id !== companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+      newData['agent'] = {
         id: currentState.id ? currentState.id : tempId,
         companyId: currentState.id ? currentState.id : tempId,
         name: titleCase(companyName),
         company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
-      },
-      address: {
-        id: currentState.addressId ? currentState.addressId : tempId,
-        addressId: currentState.addressId ? currentState.addressId : tempId,
-        ...currentState.address
-      }
+      };
+    }
+    newData['address'] = {
+      id: currentState.addressId ? currentState.addressId : tempId,
+      addressId: currentState.addressId ? currentState.addressId : tempId,
+      ...currentState.address
     };
     dataService.sessionManager(request, regionId, companyId, newData);
   }

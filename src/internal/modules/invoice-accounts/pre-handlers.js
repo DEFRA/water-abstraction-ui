@@ -5,11 +5,12 @@ const { partial } = require('lodash');
 const dataService = require('./services/data-service');
 
 const { water } = require('../../lib/connectors/services');
+const tempId = '00000000-0000-0000-0000-000000000000';
 
 const getDisplayedCompany = async (request) => {
   const session = dataService.sessionManager(request, request.params.regionId, request.params.companyId);
   if (session.agent) {
-    if (session.agent.id) {
+    if (session.agent.id !== tempId) {
       return water.companies.getCompany(session.agent.id);
     } else {
       return session.agent;

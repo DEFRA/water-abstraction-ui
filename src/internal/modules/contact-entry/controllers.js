@@ -5,7 +5,7 @@ const { selectContact, selectAddress, selectAccountType, companySearch, personNa
 const queryString = require('querystring');
 const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/plugin').SESSION_KEY;
 
-module.exports.getSelectAddressController = (request, h) => {
+const getSelectAddressController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.addressId;
@@ -17,7 +17,7 @@ module.exports.getSelectAddressController = (request, h) => {
   });
 };
 
-module.exports.postSelectAddressController = (request, h) => {
+const postSelectAddressController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   const { id } = request.payload;
   const form = forms.handleRequest(
@@ -25,7 +25,7 @@ module.exports.postSelectAddressController = (request, h) => {
     request,
     selectAddress.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/select-address', {
       sessionKey
@@ -46,7 +46,7 @@ module.exports.postSelectAddressController = (request, h) => {
   }
 };
 
-module.exports.getSelectContactController = (request, h) => {
+const getSelectContactController = (request, h) => {
   const { sessionKey, regionId, originalCompanyId, back, searchQuery } = request.query;
   // First, store the licence ID in the session, for use in captions
 
@@ -68,7 +68,7 @@ module.exports.getSelectContactController = (request, h) => {
   });
 };
 
-module.exports.getSelectAccountTypeController = (request, h) => {
+const getSelectAccountTypeController = (request, h) => {
   const { sessionKey } = request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.accountType;
@@ -79,7 +79,7 @@ module.exports.getSelectAccountTypeController = (request, h) => {
   });
 };
 
-module.exports.postSelectAccountTypeController = (request, h) => {
+const postSelectAccountTypeController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
 
   let currentState = request.yar.get(sessionKey);
@@ -89,7 +89,7 @@ module.exports.postSelectAccountTypeController = (request, h) => {
     request,
     selectAccountType.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/new/account-type', {
       sessionKey
@@ -102,18 +102,14 @@ module.exports.postSelectAccountTypeController = (request, h) => {
   }
 };
 
-module.exports.postSelectContactController = (request, h) => {
+const postSelectContactController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { id, searchQuery, regionId } = request.payload;
   if (id === null || id === 'new') {
     return h.redirect(`/contact-entry/new/account-type?sessionKey=${sessionKey}`);
   } else {
-    const form = forms.handleRequest(
-      selectContact.form(request),
-      request,
-      selectContact.schema
-    );
+    const form = forms.handleRequest(selectContact.form(request), request, selectContact.schema);
     if (!form.isValid) {
       return h.postRedirectGet(form, '/contact-entry/select-contact', {
         sessionKey,
@@ -133,10 +129,15 @@ module.exports.postSelectContactController = (request, h) => {
   }
 };
 
-module.exports.postDetailsController = (request, h) => {
+const postDetailsController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
-  let defaultValue = currentState.accountType === 'organisation' ? (currentState.companyNameOrNumber ? currentState.companyNameOrNumber : currentState.searchQuery) : (currentState.personName ? currentState.personName : currentState.searchQuery);
+  let defaultValue;
+  if (currentState.accountType === 'organisation') {
+    defaultValue = currentState.companyNameOrNumber ? currentState.companyNameOrNumber : currentState.searchQuery;
+  } else {
+    defaultValue = currentState.personName ? currentState.personName : currentState.searchQuery;
+  }
   return h.view('nunjucks/contact-entry/basic-form', {
     ...request.view,
     pageTitle: currentState.accountType === 'organisation' ? 'Enter the company details' : 'Enter the full name',
@@ -145,7 +146,7 @@ module.exports.postDetailsController = (request, h) => {
   });
 };
 
-module.exports.postPersonDetailsController = (request, h) => {
+const postPersonDetailsController = (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { personFullName } = request.payload;
@@ -154,7 +155,7 @@ module.exports.postPersonDetailsController = (request, h) => {
     request,
     personName.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/new/details', {
       sessionKey
@@ -172,7 +173,7 @@ module.exports.postPersonDetailsController = (request, h) => {
   }
 };
 
-module.exports.postCompanySearchController = async (request, h) => {
+const postCompanySearchController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { companyNameOrNumber } = request.payload;
@@ -181,7 +182,7 @@ module.exports.postCompanySearchController = async (request, h) => {
     request,
     companySearch.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/new/details', {
       sessionKey
@@ -196,7 +197,7 @@ module.exports.postCompanySearchController = async (request, h) => {
   }
 };
 
-module.exports.postSelectCompanyAddressController = async (request, h) => {
+const postSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { selectedCompaniesHouseAddress } = request.payload;
@@ -205,7 +206,7 @@ module.exports.postSelectCompanyAddressController = async (request, h) => {
     request,
     companySearchSelectAddress.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/new/details/company-search/select-company-address', {
       sessionKey
@@ -220,7 +221,7 @@ module.exports.postSelectCompanyAddressController = async (request, h) => {
   }
 };
 
-module.exports.getSelectCompanyAddressController = async (request, h) => {
+const getSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseAddress;
@@ -232,7 +233,7 @@ module.exports.getSelectCompanyAddressController = async (request, h) => {
   });
 };
 
-module.exports.postSelectCompanyController = async (request, h) => {
+const postSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   const { selectedCompaniesHouseNumber } = request.payload;
@@ -241,7 +242,7 @@ module.exports.postSelectCompanyController = async (request, h) => {
     request,
     companySearchSelectCompany.schema
   );
-    // If form is invalid, redirect user back to form
+  // If form is invalid, redirect user back to form
   if (!form.isValid) {
     return h.postRedirectGet(form, '/contact-entry/new/details/company-search/select-company', {
       sessionKey
@@ -260,7 +261,7 @@ module.exports.postSelectCompanyController = async (request, h) => {
   }
 };
 
-module.exports.getSelectCompanyController = async (request, h) => {
+const getSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseNumber;
@@ -273,7 +274,7 @@ module.exports.getSelectCompanyController = async (request, h) => {
   });
 };
 
-module.exports.getAfterAddressEntryController = (request, h) => {
+const getAfterAddressEntryController = (request, h) => {
   // This is the path the user is redirected to after the address entry flow
   // Sets the address in the yar object
   const { sessionKey } = request.payload || request.query;
@@ -283,3 +284,18 @@ module.exports.getAfterAddressEntryController = (request, h) => {
   // Redirect the user back into the invoice-accounts flow
   return h.redirect(`/invoice-accounts/create/${currentState.regionId}/${currentState.originalCompanyId}/contact-entry-complete?sessionKey=${sessionKey}`);
 };
+
+exports.getSelectAddressController = getSelectAddressController;
+exports.postSelectAddressController = postSelectAddressController;
+exports.getSelectContactController = getSelectContactController;
+exports.getSelectAccountTypeController = getSelectAccountTypeController;
+exports.postSelectAccountTypeController = postSelectAccountTypeController;
+exports.postSelectContactController = postSelectContactController;
+exports.postDetailsController = postDetailsController;
+exports.postPersonDetailsController = postPersonDetailsController;
+exports.postCompanySearchController = postCompanySearchController;
+exports.postSelectCompanyAddressController = postSelectCompanyAddressController;
+exports.getSelectCompanyAddressController = getSelectCompanyAddressController;
+exports.postSelectCompanyController = postSelectCompanyController;
+exports.getSelectCompanyController = getSelectCompanyController;
+exports.getAfterAddressEntryController = getAfterAddressEntryController;

@@ -33,9 +33,7 @@ if (isAcceptanceTestTarget) {
             licenceId: Joi.string().uuid().optional()
           }
         },
-        pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
-        ]
+        pre: [{ method: preHandlers.loadCompany, assign: 'company' }]
       }
     },
     postCompany: {
@@ -76,9 +74,7 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          query: {
-            form: Joi.string().optional()
-          }
+          query: { form: Joi.string().optional() }
         }
       }
     },
@@ -101,12 +97,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
-    contactEntryTakeover: {
-      /**
-       * This route is intended to act as a redirection utility.
-       * When users reach the end of the `contact-entry` workflow,
-       * they will be redirected to this GET request.
-       */
+    contactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
       handler: controller.contactEntryHandover,
@@ -118,9 +109,7 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          query: {
-            sessionKey: VALID_GUID
-          }
+          query: { sessionKey: VALID_GUID }
         }
       }
 
@@ -142,9 +131,7 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          query: {
-            form: Joi.string().optional()
-          }
+          query: { form: Joi.string().optional() }
         }
       }
     },
@@ -165,9 +152,7 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          query: {
-            form: Joi.string().optional()
-          }
+          query: { form: Joi.string().optional() }
         }
       }
     },
@@ -188,9 +173,7 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          query: {
-            form: Joi.string().optional()
-          }
+          query: { form: Joi.string().optional() }
         }
       }
     },
@@ -231,9 +214,7 @@ if (isAcceptanceTestTarget) {
             companyId: VALID_GUID
           }
         },
-        pre: [
-          { method: preHandlers.getDisplayedCompany, assign: 'company' }
-        ]
+        pre: [{ method: preHandlers.getDisplayedCompany, assign: 'company' }]
       }
     },
     postCheckDetails: {
@@ -253,13 +234,9 @@ if (isAcceptanceTestTarget) {
             regionId: VALID_GUID,
             companyId: VALID_GUID
           },
-          payload: {
-            csrf_token: Joi.string().uuid().required()
-          }
+          payload: { csrf_token: Joi.string().uuid().required() }
         },
-        pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
-        ]
+        pre: [{ method: preHandlers.loadCompany, assign: 'company' }]
       }
     }
   };

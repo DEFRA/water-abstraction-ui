@@ -2,7 +2,7 @@ const routes = require('./routes');
 
 const contactEntryPlugin = {
   register: (server) => {
-    for (const [key, eachRoute] of Object.entries(routes)) {
+    for (const eachRoute of Object.values(routes)) {
       server.route(eachRoute);
     }
   },

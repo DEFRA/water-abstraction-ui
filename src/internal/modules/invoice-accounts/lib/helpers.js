@@ -63,7 +63,6 @@ const getSelectedAddress = async (companyId, session) => {
     return session.address;
   } else { // If the address already exists in the DB and has an ID...
     const addressesArray = await dataService.getCompanyAddresses(companyId, session); // If the address belongs to the parent company
-    console.log(session)
     if (session.address && session.address.id) {
       return addressesArray.filter(x => x).find(address => address.id === session.address.id);
     } else {

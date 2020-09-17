@@ -55,8 +55,6 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('returns the correct path if selectedCompany === comapny_search', async () => {
       forms.getValues.returns({ selectedCompany: 'company_search', companySearch: 'test name' });
       const response = helpers.processCompanyFormData(request, regionId, companyId, formData);
-
-
       const redirectPath = `/contact-entry/select-contact`;
       expect(response.substr(0, response.indexOf('?'))).to.equal(redirectPath);
     });

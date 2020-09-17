@@ -26,12 +26,18 @@ const getError = (key) => {
   };
 };
 
+const getDates = sessionData => {
+  return (has(sessionData, 'timeLimitedPeriod.startDate'))
+    ? sessionData.timeLimitedPeriod
+    : { startDate: null, endDate: null };
+};
+
 /**
  * This method returns a date field - it is extracted to avoid code duplication
  * @param {string} key either start or end used to define the date field
  * @param {object} values session data to preload the form
  */
-const getDateField = (key, values) => {
+const getDateField = (key, sessionData) => {
   return fields.date(`${key}Date`, {
     label: 'Enter start date',
     type: 'date',
@@ -45,18 +51,26 @@ const getDateField = (key, values) => {
       'date.isoDate': getError(key).invalid,
       'date.base': getError(key).invalid
     }
-  }, values[key + 'Date']);
+  }, getDates(sessionData)[key + 'Date']);
 };
 
-const options = values => {
+const options = (sessionData) => {
   return [
     {
       value: 'yes',
       label: 'Yes',
-      fields: [ getDateField('start', values), getDateField('end', values) ]
+      fields: [ getDateField('start', sessionData), getDateField('end', sessionData) ]
     },
     { value: false, label: 'No' }
   ];
+};
+
+const getSelectedValue = sessionData => {
+  if (!(has(sessionData, 'timeLimitedPeriod'))) {
+    return '';
+  } else {
+    return !sessionData.timeLimitedPeriod ? false : 'yes';
+  }
 };
 
 /**
@@ -69,14 +83,6 @@ const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData
   const { csrfToken } = request.view;
   const { licence } = request.pre;
   const action = routing.getChargeElementStep(licence.id, 'time');
-  let selectedValue;
-  if (!(has(sessionData, 'timeLimitedPeriod'))) {
-    selectedValue = '';
-  } else {
-    selectedValue = !sessionData.timeLimitedPeriod ? false : 'yes';
-  }
-
-  const dates = (has(sessionData, 'timeLimitedPeriod.startDate')) ? sessionData.timeLimitedPeriod : { startDate: null, endDate: null };
 
   const f = formFactory(action, 'POST');
 
@@ -86,8 +92,8 @@ const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData
         message: 'Select yes if you want to set a time limit. Select no to continue'
       }
     },
-    choices: options(dates)
-  }, selectedValue));
+    choices: options(sessionData)
+  }, getSelectedValue(sessionData)));
   f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeData.startDate));
   f.fields.push(fields.hidden('expiredDate', {}, licence.expiredDate || '9999-01-01'));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

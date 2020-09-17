@@ -2,10 +2,10 @@ const preHandlers = require('./pre-handlers');
 const Joi = require('@hapi/joi');
 const controllers = require('./controllers');
 
-const routes = () => [
-  {
-    // Route for fetching a list of existing contacts that match the search string
-    // Expects a GUID as a sessionKey, and a string to search for in the service.
+module.exports = {
+  // Route for fetching a list of existing contacts that match the search string
+  // Expects a GUID as a sessionKey, and a string to search for in the service.
+  getSelectContact: {
     method: 'GET',
     path: '/contact-entry/select-contact',
     handler: controllers.getSelectContactController,
@@ -25,7 +25,8 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postSelectContact: {
     // Route for selecting a contact from the list of existing contacts
     // Payload should contain a contact ID
     // If all is well, it directs user to /contact-entry/select-address
@@ -37,7 +38,8 @@ const routes = () => [
         { method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }
       ]
     }
-  }, {
+  },
+  getSelectAccountType: {
     // Route for displaying the page for selecting an account type when creating a new contact
     method: 'GET',
     path: '/contact-entry/new/account-type',
@@ -50,12 +52,14 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postSelectAccountType: {
     // Route for selecting an account type when creating a new contact
     method: 'POST',
     path: '/contact-entry/new/account-type',
     handler: controllers.postSelectAccountTypeController
-  }, {
+  },
+  getEnterNewDetails: {
     // Route for displaying the list of existing contact addresses.
     method: 'GET',
     path: '/contact-entry/new/details',
@@ -68,12 +72,14 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postEnterPersonDetails: {
     // Route for posting the name of a new person contact
     method: 'POST',
     path: '/contact-entry/new/details/person',
     handler: controllers.postPersonDetailsController
-  }, {
+  },
+  getAfterAddressEntry: {
     method: 'GET',
     path: '/contact-entry/new/details/after-address-entry',
     handler: controllers.getAfterAddressEntryController,
@@ -85,13 +91,15 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postCompanySearch: {
     // Route for posting the name or number of a new company contact
     // It searches companies house for a matching company
     method: 'POST',
     path: '/contact-entry/new/details/company-search',
     handler: controllers.postCompanySearchController
-  }, {
+  },
+  getSelectCompany: {
     method: 'GET',
     path: '/contact-entry/new/details/company-search/select-company',
     handler: controllers.getSelectCompanyController,
@@ -106,7 +114,8 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postSelectCompany: {
     method: 'POST',
     path: '/contact-entry/new/details/company-search/select-company',
     handler: controllers.postSelectCompanyController,
@@ -115,7 +124,8 @@ const routes = () => [
         { method: preHandlers.searchForCompaniesInCompaniesHouse, assign: 'companiesHouseResults' }
       ]
     }
-  }, {
+  },
+  getSelectCompanyAddress: {
     method: 'GET',
     path: '/contact-entry/new/details/company-search/select-company-address',
     handler: controllers.getSelectCompanyAddressController,
@@ -130,7 +140,8 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postSelectCompanyAddress: {
     method: 'POST',
     path: '/contact-entry/new/details/company-search/select-company-address',
     handler: controllers.postSelectCompanyAddressController,
@@ -139,7 +150,8 @@ const routes = () => [
         { method: preHandlers.returnCompanyAddressesFromCompaniesHouse, assign: 'companiesHouseAddresses' }
       ]
     }
-  }, {
+  },
+  getSelectAddress: {
     // Route for displaying the list of existing contact addresses.
     method: 'GET',
     path: '/contact-entry/select-address',
@@ -155,7 +167,8 @@ const routes = () => [
         }
       }
     }
-  }, {
+  },
+  postSelectAddress: {
     // Route for selecting an address from the list of existing contact addresses
     // Payload should contain an address ID
     method: 'POST',
@@ -167,6 +180,4 @@ const routes = () => [
       ]
     }
   }
-];
-
-exports.routes = routes;
+};

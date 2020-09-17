@@ -93,20 +93,23 @@ experiment('internal/modules/invoice-accounts/lib/data-service', () => {
     });
 
     test('calls the companies service with the correct entity id', async () => {
-      await dataService.getCompanyAddresses(companyId);
+      const session = dataService.sessionManager(request, regionId, companyId);
+      await dataService.getCompanyAddresses(companyId, session);
       const [entityId] = services.water.companies.getAddresses.lastCall.args;
       expect(entityId).to.equal(companyId);
     });
 
     test('returns a unique list of addresses when duplicate addresses are reveived from the companies service', async () => {
-      const result = await dataService.getCompanyAddresses(companyId);
+      const session = dataService.sessionManager(request, regionId, companyId);
+      const result = await dataService.getCompanyAddresses(companyId, session);
       expect(result).to.equal([address]);
     });
 
     test('returns a unique list of addresses when multiple addresses are reveived from the companies service', async () => {
       const addresses = [{ address }, { address }, { address: { ...address, id: uuid() } }];
       services.water.companies.getAddresses.resolves(addresses);
-      const result = await dataService.getCompanyAddresses(companyId);
+      const session = dataService.sessionManager(request, regionId, companyId);
+      const result = await dataService.getCompanyAddresses(companyId, session);
       expect(result).to.equal([addresses[0].address, addresses[2].address]);
     });
   });

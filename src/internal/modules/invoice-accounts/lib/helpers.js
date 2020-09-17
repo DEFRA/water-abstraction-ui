@@ -23,7 +23,7 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
     });
     return `/contact-entry/select-contact?${queryTail}`;
   } else {
-    dataService.sessionManager(request, regionId, companyId, { agent: { id: selectedCompany, companyId: selectedCompany } });
+    dataService.sessionManager(request, regionId, companyId, { agent: { id: selectedCompany !== companyId ? selectedCompany : null } });
     return `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
   }
 };
@@ -59,11 +59,11 @@ const processSelectContactFormData = (request, regionId, companyId, selectedCont
 };
 
 const getSelectedAddress = async (companyId, session) => {
-  if (session.address && session.address.addressId === tempId) { // If the address has been entered using the new address entry flow, this will pull that address from the session
+  if (session.address && session.address.id === tempId) { // If the address has been entered using the new address entry flow, this will pull that address from the session
     return session.address;
   } else { // If the address already exists in the DB and has an ID...
     const addressesArray = await dataService.getCompanyAddresses(companyId, session); // If the address belongs to the parent company
-
+    console.log(session)
     if (session.address && session.address.id) {
       return addressesArray.filter(x => x).find(address => address.id === session.address.id);
     } else {
@@ -75,12 +75,12 @@ const getSelectedAddress = async (companyId, session) => {
 const getAgentCompany = async (session) => {
   if (has(session, 'agent')) {
     let agent;
-    if (session.agent.companyId === tempId) {
+    if (session.agent.id === tempId) {
       agent = session.agent;
-    } else if (session.agent.companyId == null) {
+    } else if (session.agent.id == null) {
       agent = session.agent;
     } else {
-      agent = await dataService.getCompany(session.agent.companyId);
+      agent = await dataService.getCompany(session.agent.id);
     }
     return agent;
   } else { return null; }
@@ -90,7 +90,7 @@ const getCompanyName = async (request) => {
   const { sessionKey } = request.query;
   let currentState = request.yar.get(sessionKey);
   if (currentState.newCompany) {
-    return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName
+    return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName;
   } else {
     return currentState.companyName;
   }

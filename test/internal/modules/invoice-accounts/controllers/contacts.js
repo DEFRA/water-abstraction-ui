@@ -30,7 +30,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     return {
       companyId,
       regionId,
-      address: { addressId },
+      address: { id: addressId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,

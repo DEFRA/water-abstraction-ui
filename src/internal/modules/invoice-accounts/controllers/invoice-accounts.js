@@ -72,8 +72,7 @@ const getAddressEntered = async (request, h) => {
   dataService.sessionManager(request, regionId, companyId, {
     address: {
       ...address,
-      id: address.id ? address.id : tempId,
-      addressId: address.id ? address.id : tempId
+      id: address.id ? address.id : tempId
     }
   });
   // Redirect the user to the check your answers page.
@@ -86,8 +85,8 @@ const getAddress = async (request, h) => {
   const session = dataService.sessionManager(request, regionId, companyId);
   const addresses = await dataService.getCompanyAddresses(companyId, session);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
-  if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
-  const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
+  if (session.address && session.address.id === tempId) { addresses.push(session.address); }
+  const selectedAddressId = has(session, 'address') ? session.address.id : null;
   return h.view('nunjucks/form', {
     ...request.view,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
@@ -106,7 +105,7 @@ const postAddress = async (request, h) => {
   if (form.isValid) {
     const { selectedAddress } = forms.getValues(form);
     if (selectedAddress !== tempId) {
-      dataService.sessionManager(request, regionId, companyId, { address: { id: selectedAddress, addressId: selectedAddress } });
+      dataService.sessionManager(request, regionId, companyId, { address: { id: selectedAddress } });
     }
     const redirectPath = selectedAddress === 'new_address' ? 'create-address' : 'add-fao';
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
@@ -118,7 +117,6 @@ const contactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { sessionKey } = request.query;
   let currentState = request.yar.get(sessionKey);
-  
   if (currentState.companyId !== companyId) {
     let companyName = titleCase(helpers.getCompanyName(request));
     let newData = {}; // Store everything in the right bits of the session
@@ -130,14 +128,12 @@ const contactEntryHandover = async (request, h) => {
     } else {
       newData['agent'] = {
         id: currentState.id ? currentState.id : tempId,
-        companyId: currentState.id ? currentState.id : tempId,
         name: companyName,
         company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
       };
     }
     newData['address'] = {
       id: currentState.addressId ? currentState.addressId : tempId,
-      addressId: currentState.addressId ? currentState.addressId : tempId,
       ...currentState.address
     };
     dataService.sessionManager(request, regionId, companyId, newData);
@@ -206,7 +202,7 @@ const postCheckDetails = async (request, h) => {
   const redirectPath = session.viewData.redirectPath;
   // remove unnecesary session data
   delete session.viewData;
-  if (session.address.addressId === tempId) { delete session.address.addressId; };
+  if (session.address.id === tempId) { delete session.address.id; };
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, { regionId, ...session });
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });

@@ -6,7 +6,7 @@ const routes = require('../../../../../src/internal/modules/invoice-accounts/rou
 
 experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   experiment('.getCompany', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.getCompany.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -17,7 +17,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.postCompany', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.postCompany.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -28,7 +28,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.getAddress', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.getAddress.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -39,7 +39,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.postAddress', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.postAddress.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -50,7 +50,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.getFao', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.getFao.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -61,7 +61,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.postFao', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.postFao.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -72,7 +72,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.getCheckDetails', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.getCheckDetails.config.auth.scope)
         .to.only.include([scope.charging]);
     });
@@ -83,7 +83,7 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
   });
 
   experiment('.postCheckDetails', () => {
-    test('limits scope to users with charing role', async () => {
+    test('limits scope to users with charging role', async () => {
       expect(routes.postCheckDetails.config.auth.scope)
         .to.only.include([scope.charging]);
     });

@@ -55,13 +55,16 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('returns the correct path if selectedCompany === comapny_search', async () => {
       forms.getValues.returns({ selectedCompany: 'company_search', companySearch: 'test name' });
       const response = helpers.processCompanyFormData(request, regionId, companyId, formData);
-      expect(response).to.equal('company-search?filter=test name');
+
+
+      const redirectPath = `/contact-entry/select-contact`;
+      expect(response.substr(0, response.indexOf('?'))).to.equal(redirectPath);
     });
 
     test('returns the correct path if selectedCompany === companyId', async () => {
       forms.getValues.returns({ selectedCompany: companyId, companySearch: '' });
       const response = helpers.processCompanyFormData(request, regionId, companyId, formData);
-      expect(response).to.equal('select-address');
+      expect(response).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
     });
 
     test('adds the agent: null to session data if selectedCompany === companyId', async () => {
@@ -71,18 +74,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       expect(args[0]).to.equal({ test: 'request' });
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ agent: null });
-    });
-
-    test('adds the agent: null to session data if selectedCompany === companyId', async () => {
-      const selectedCompany = uuid();
-      forms.getValues.returns({ selectedCompany, companySearch: '' });
-      helpers.processCompanyFormData(request, regionId, companyId, formData);
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal({ test: 'request' });
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ agent: selectedCompany });
+      expect(args[3]).to.equal({ agent: { id: null } });
     });
   });
 
@@ -108,24 +100,24 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
 
   experiment('.getSelectedAddress', () => {
     test('returns the session address when the session address id === tempId', async () => {
-      const response = await helpers.getSelectedAddress(companyId, { address: { addressId: tempId, addressLine1: 'test' } });
-      expect(response).to.equal({ addressId: tempId, addressLine1: 'test' });
+      const response = await helpers.getSelectedAddress(companyId, { address: { id: tempId, addressLine1: 'test' } });
+      expect(response).to.equal({ id: tempId, addressLine1: 'test' });
     });
 
     test('returns the address from the data service if the address != tempId', async () => {
-      const response = await helpers.getSelectedAddress(companyId, { address: { addressId: address.id } });
+      const response = await helpers.getSelectedAddress(companyId, { address: { id: address.id } });
       expect(response).to.equal(address);
     });
   });
 
   experiment('.getAgentCompany', () => {
-    test('returns the session agent company when the session agent companyId === tempId', async () => {
-      const response = await helpers.getAgentCompany({ agent: { companyId: tempId, name: 'A Company Name' } });
-      expect(response).to.equal({ companyId: tempId, name: 'A Company Name' });
+    test('returns the session agent company when the session agent id === tempId', async () => {
+      const response = await helpers.getAgentCompany({ agent: { id: tempId, name: 'A Company Name' } });
+      expect(response).to.equal({ id: tempId, name: 'A Company Name' });
     });
 
-    test('returns the agent company from the data service if the agent companyId != tempId', async () => {
-      const response = await helpers.getAgentCompany({ agent: { companyId: 'test-company-id', name: 'A Company Name' } });
+    test('returns the agent company from the data service if the agent id != tempId', async () => {
+      const response = await helpers.getAgentCompany({ agent: { id: 'test-company-id', name: 'A Company Name' } });
       expect(response).to.equal(company);
     });
   });

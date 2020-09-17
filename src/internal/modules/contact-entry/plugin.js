@@ -1,8 +1,10 @@
-const { routes } = require('./routes');
+const routes = require('./routes');
 
 const contactEntryPlugin = {
   register: (server) => {
-    routes().map(eachRoute => server.route(eachRoute));
+    for (const [key, eachRoute] of Object.entries(routes)) {
+      server.route(eachRoute);
+    }
   },
 
   pkg: {

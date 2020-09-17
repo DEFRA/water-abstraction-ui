@@ -30,7 +30,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     return {
       companyId,
       regionId,
-      address: { addressId },
+      address: { id: addressId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,
@@ -131,18 +131,20 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and the companyId selected = companyId then agent = null', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = dataService.sessionManager.lastCall.args;
         expect(args[0]).to.equal(request);
         expect(args[1]).to.equal(regionId);
         expect(args[2]).to.equal(companyId);
-        expect(args[3]).to.equal({ agent: null });
+        expect(args[3]).to.equal({ agent: { id: null } });
       });
       test('and a company has been selected the user is rdirected to the select address path', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
         const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
@@ -151,11 +153,12 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and a company search name has been entered the user is rdirected to the search company path', async () => {
         forms.getValues.returns({
           selectedCompany: 'company_search',
-          companySearch: 'Company Name To Search for' });
+          companySearch: 'Company Name To Search for'
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/company-search?filter=Company Name To Search for`;
-        expect(args[0]).to.equal(redirectPath);
+        const redirectPath = `/contact-entry/select-contact`;
+        expect(args[0].substr(0, args[0].indexOf('?'))).to.equal(redirectPath);
       });
     });
     experiment('when the form is not valid', () => {
@@ -220,7 +223,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         expect(args[0]).to.equal(request);
         expect(args[1]).to.equal(regionId);
         expect(args[2]).to.equal(companyId);
-        expect(args[3]).to.equal({ address: { addressId: 'test-address-id' } });
+        expect(args[3]).to.equal({ address: { id: 'test-address-id' } });
       });
       test('when an existing address has been selected the user is redirected to the add-fao path', async () => {
         forms.getValues.returns({ selectedAddress: 'test-address-id' });
@@ -365,7 +368,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
     test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
       const startDate = moment().format('YYYY-MM-DD');
-      const details = [companyId, { address: { addressId }, companyId, regionId, startDate }];
+      const details = [companyId, { address: { id: addressId }, companyId, regionId, startDate }];
       const args = dataService.saveInvoiceAccDetails.lastCall.args;
       expect(args).to.equal(details);
     });

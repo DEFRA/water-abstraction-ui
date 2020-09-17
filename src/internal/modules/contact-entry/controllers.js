@@ -138,11 +138,12 @@ const postDetailsController = (request, h) => {
   } else {
     defaultValue = currentState.personName ? currentState.personName : currentState.searchQuery;
   }
+  let form = currentState.accountType === 'organisation' ? sessionForms.get(request, companySearch.form(request, defaultValue)) : sessionForms.get(request, personName.form(request, defaultValue));
   return h.view('nunjucks/contact-entry/basic-form', {
     ...request.view,
     pageTitle: currentState.accountType === 'organisation' ? 'Enter the company details' : 'Enter the full name',
     back: request.query.back,
-    form: currentState.accountType === 'organisation' ? sessionForms.get(request, companySearch.form(request, defaultValue)) : sessionForms.get(request, personName.form(request, defaultValue))
+    form: form
   });
 };
 

@@ -72,7 +72,6 @@ experiment('internal/modules/invoice-accounts/routes', () => {
       let url = `/contact-entry/select-contact?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
-      console.log(response);
       expect(response.statusCode).to.equal(200);
     });
   });
@@ -158,24 +157,160 @@ experiment('internal/modules/invoice-accounts/routes', () => {
 
     test('has the correct controller', () => {
       expect(routes.getEnterNewDetails.handler)
-        .to.equal(controllers.postDetailsController);
+        .to.equal(controllers.getDetailsController);
     });
   });
 
-  experiment('.postSelectAccountType', () => {
+  experiment('.postEnterPersonDetails', () => {
     test('has the correct method', () => {
-      expect(routes.postSelectAccountType.method)
+      expect(routes.postEnterPersonDetails.method)
         .to.equal('POST');
     });
 
     test('has the correct path', () => {
-      expect(routes.postSelectAccountType.path)
-        .to.equal('/contact-entry/new/account-type');
+      expect(routes.postEnterPersonDetails.path)
+        .to.equal('/contact-entry/new/details/person');
     });
 
     test('has the correct controller', () => {
-      expect(routes.postSelectAccountType.handler)
-        .to.equal(controllers.postSelectAccountTypeController);
+      expect(routes.postEnterPersonDetails.handler)
+        .to.equal(controllers.postPersonDetailsController);
+    });
+  });
+
+  experiment('.getAfterAddressEntry', () => {
+    test('has the correct method', () => {
+      expect(routes.getAfterAddressEntry.method)
+        .to.equal('GET');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.getAfterAddressEntry.path)
+        .to.equal('/contact-entry/new/details/after-address-entry');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.getAfterAddressEntry.handler)
+        .to.equal(controllers.getAfterAddressEntryController);
+    });
+  });
+
+  experiment('.postCompanySearch', () => {
+    test('has the correct method', () => {
+      expect(routes.postCompanySearch.method)
+        .to.equal('POST');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.postCompanySearch.path)
+        .to.equal('/contact-entry/new/details/company-search');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.postCompanySearch.handler)
+        .to.equal(controllers.postCompanySearchController);
+    });
+  });
+
+  experiment('.getSelectCompany', () => {
+    test('has the correct method', () => {
+      expect(routes.getSelectCompany.method)
+        .to.equal('GET');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.getSelectCompany.path)
+        .to.equal('/contact-entry/new/details/company-search/select-company');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.getSelectCompany.handler)
+        .to.equal(controllers.getSelectCompanyController);
+    });
+  });
+
+  experiment('.postSelectCompany', () => {
+    test('has the correct method', () => {
+      expect(routes.postSelectCompany.method)
+        .to.equal('POST');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.postSelectCompany.path)
+        .to.equal('/contact-entry/new/details/company-search/select-company');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.postSelectCompany.handler)
+        .to.equal(controllers.postSelectCompanyController);
+    });
+  });
+
+  experiment('.getSelectCompanyAddress', () => {
+    test('has the correct method', () => {
+      expect(routes.getSelectCompanyAddress.method)
+        .to.equal('GET');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.getSelectCompanyAddress.path)
+        .to.equal('/contact-entry/new/details/company-search/select-company-address');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.getSelectCompanyAddress.handler)
+        .to.equal(controllers.getSelectCompanyAddressController);
+    });
+  });
+
+  experiment('.postSelectCompanyAddress', () => {
+    test('has the correct method', () => {
+      expect(routes.postSelectCompanyAddress.method)
+        .to.equal('POST');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.postSelectCompanyAddress.path)
+        .to.equal('/contact-entry/new/details/company-search/select-company-address');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.postSelectCompanyAddress.handler)
+        .to.equal(controllers.postSelectCompanyAddressController);
+    });
+  });
+
+  experiment('.getSelectAddress', () => {
+    test('has the correct method', () => {
+      expect(routes.getSelectAddress.method)
+        .to.equal('GET');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.getSelectAddress.path)
+        .to.equal('/contact-entry/select-address');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.getSelectAddress.handler)
+        .to.equal(controllers.getSelectAddressController);
+    });
+  });
+
+  experiment('.postSelectAddress', () => {
+    test('has the correct method', () => {
+      expect(routes.postSelectAddress.method)
+        .to.equal('POST');
+    });
+
+    test('has the correct path', () => {
+      expect(routes.postSelectAddress.path)
+        .to.equal('/contact-entry/select-address');
+    });
+
+    test('has the correct controller', () => {
+      expect(routes.postSelectAddress.handler)
+        .to.equal(controllers.postSelectAddressController);
     });
   });
 });

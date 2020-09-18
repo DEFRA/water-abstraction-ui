@@ -63,7 +63,7 @@ module.exports = {
     // Route for displaying the list of existing contact addresses.
     method: 'GET',
     path: '/contact-entry/new/details',
-    handler: controllers.postDetailsController,
+    handler: controllers.getDetailsController,
     options: {
       validate: {
         query: {

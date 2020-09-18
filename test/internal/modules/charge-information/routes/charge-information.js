@@ -10,8 +10,8 @@ const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
-const routes = require('src/internal/modules/charge-information/routes/charge-information');
-const testHelpers = require('../../test-helpers');
+const routes = require('../../../../../src/internal/modules/charge-information/routes/charge-information');
+const testHelpers = require('../../../test-helpers');
 
 experiment('internal/modules/charge-information/routes', () => {
   let server;

@@ -37,10 +37,10 @@ const getFormField = (key, date) => {
 };
 
 /**
- * Form to request if an FAO contact should be added to the invoice account
+ * Form to request the abstraction period
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  selected value used to determine what radio option should be checked
+ * @param {Boolean}  data object containing selected and default options for the form
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;

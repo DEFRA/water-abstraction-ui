@@ -65,9 +65,9 @@ module.exports = {
         }
       },
       pre: [
+        { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
       ]
     }
   }

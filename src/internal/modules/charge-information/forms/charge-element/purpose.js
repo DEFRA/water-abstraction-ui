@@ -12,15 +12,15 @@ const options = defaultChargeData => {
 };
 
 /**
- * Form to request if an FAO contact should be added to the invoice account
+ * Form to request the charge element purpose
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  selected value used to determine what radio option should be checked
+ * @param {Boolean}  data object containing selected and default options for the form
   */
-const form = (request, sessionData = {}, defaultChargeData = []) => {
+const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'purpose');
+  const { defaultCharges, licence } = request.pre;
+  const action = routing.getChargeElementStep(licence.id, 'purpose');
 
   const f = formFactory(action, 'POST');
 
@@ -30,7 +30,7 @@ const form = (request, sessionData = {}, defaultChargeData = []) => {
         message: 'Select a purpose use'
       }
     },
-    choices: options(defaultChargeData)
+    choices: options(defaultCharges)
   }, sessionData.purpose || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -41,7 +41,7 @@ const form = (request, sessionData = {}, defaultChargeData = []) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    purpose: Joi.string().required()
+    purpose: Joi.string().uuid().required()
   };
 };
 

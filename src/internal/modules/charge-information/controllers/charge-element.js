@@ -26,13 +26,12 @@ const flowConfig = {
 const getChargeElementStep = async (request, h) => {
   const { step, licenceId } = request.params;
   const sessionData = dataservice.sessionManager(request, licenceId);
-  const { defaultCharges, draftChargeInformation, licence } = request.pre;
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: `Licence ${licence.licenceNumber}`,
+    caption: `Licence ${request.pre.licence.licenceNumber}`,
     pageTitle: flowConfig[step].pageTitle,
     back: '/manage',
-    form: sessionForms.get(request, forms[step].form(request, sessionData, defaultCharges, draftChargeInformation))
+    form: sessionForms.get(request, forms[step].form(request, sessionData))
   });
 };
 

@@ -39,7 +39,7 @@ const getDates = sessionData => {
  */
 const getDateField = (key, sessionData) => {
   return fields.date(`${key}Date`, {
-    label: 'Enter start date',
+    label: `Enter ${key} date`,
     type: 'date',
     mapper: 'dateMapper',
     subHeading: true,
@@ -79,9 +79,9 @@ const getSelectedValue = sessionData => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
-const form = (request, sessionData = {}, defaultChargeData = [], draftChargeData = {}) => {
+const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licence } = request.pre;
+  const { draftChargeData, licence } = request.pre;
   const action = routing.getChargeElementStep(licence.id, 'time');
 
   const f = formFactory(action, 'POST');
@@ -108,11 +108,11 @@ const schema = (request) => {
     chargeStartDate: Joi.date().iso(),
     csrf_token: Joi.string().uuid().required(),
     timeLimitedPeriod: Joi.string().required().valid(['yes', false]),
-    startDate: Joi.when('timeLimitedPeriod', {
+    startDate: Joi.date().allow('').when('timeLimitedPeriod', {
       is: 'yes',
       then: Joi.date().iso().min(Joi.ref('chargeStartDate')).required()
     }),
-    endDate: Joi.when('timeLimitedPeriod', {
+    endDate: Joi.date().allow('').when('timeLimitedPeriod', {
       is: 'yes',
       then: Joi.date().iso().greater(Joi.ref('startDate')).max(Joi.ref('expiredDate')).required()
     })

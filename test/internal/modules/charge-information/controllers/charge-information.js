@@ -15,8 +15,8 @@ const uuid = require('uuid/v4');
 
 const sandbox = sinon.createSandbox();
 
-const services = require('../../../../src/internal/lib/connectors/services');
-const controller = require('src/internal/modules/charge-information/controllers/charge-information');
+const services = require('../../../../../src/internal/lib/connectors/services');
+const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-information');
 
 const createRequest = () => ({
   params: {

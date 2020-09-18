@@ -13,49 +13,54 @@ const uuid = require('uuid/v4');
 
 const sandbox = sinon.createSandbox();
 
-const controller = require('internal/modules/contact-entry/controllers');
+const controller = require('../../../../src/internal/modules/contact-entry/controllers');
 
 let contactId = uuid();
+let companyId = uuid();
+let regionId = uuid();
 
-const createRequest = (tempSessionKey) => ({
-  query: {
-    sessionKey: tempSessionKey,
-    back: '/some/return/url'
-  },
-  params: {
-    regionId: uuid(),
-    companyId: uuid()
-  },
-  view: {
-    foo: 'bar',
-    csrfToken: uuid()
-  },
-  pre: {
-    companiesHouseResults: [],
-    companiesHouseAddresses: [],
-    addressSearchResults: [],
-    contactSearchResults: [{
-      id: contactId,
-      name: 'some name'
-    }]
-  },
-  yar: {
-    get: sandbox.stub().resolves({
-      back: 'someplace',
+const createRequest = (tempSessionKey, contactType = 'organisation') => {
+  return ({
+    query: {
       sessionKey: tempSessionKey,
-      originalCompanyId: uuid(),
-      regionId: uuid(),
-      searchQuery: 'testco'
-    }),
-    set: sandbox.stub(),
-    clear: sandbox.stub()
-  },
-  server: {
-    methods: {
-      setDraftChargeInformation: sandbox.stub()
+      back: '/some/return/url'
+    },
+    params: {
+      regionId: regionId,
+      companyId: companyId
+    },
+    view: {
+      foo: 'bar',
+      csrfToken: uuid()
+    },
+    pre: {
+      companiesHouseResults: [],
+      companiesHouseAddresses: [],
+      addressSearchResults: [],
+      contactSearchResults: [{
+        id: contactId,
+        name: 'some name'
+      }]
+    },
+    yar: {
+      get: sandbox.stub().resolves({
+        back: 'someplace',
+        sessionKey: tempSessionKey,
+        originalCompanyId: companyId,
+        regionId: regionId,
+        searchQuery: 'testco',
+        accountType: contactType
+      }),
+      set: sandbox.stub(),
+      clear: sandbox.stub()
+    },
+    server: {
+      methods: {
+        setDraftChargeInformation: sandbox.stub()
+      }
     }
-  }
-});
+  });
+};
 
 experiment('internal/modules/contact-entry/controllers', () => {
   let request, h;
@@ -127,4 +132,154 @@ experiment('internal/modules/contact-entry/controllers', () => {
       });
     });
   });
+
+  experiment('.getSelectAccountTypeController', () => {
+    beforeEach(async () => {
+      request = createRequest(uuid());
+      await controller.getSelectAccountTypeController(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Select the account type');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has a form', async () => {
+      const { form } = h.view.lastCall.args[1];
+      expect(form).to.be.an.object();
+    });
+  });
+
+  experiment('.postSelectAccountTypeController', () => {
+    let tempSessionKey;
+
+    experiment('when the form is valid', () => {
+      beforeEach(async () => {
+        tempSessionKey = uuid();
+        request = createRequest(tempSessionKey);
+        await controller.postSelectAccountTypeController({ ...request, payload: { accountType: 'person', sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
+      });
+      test('yar set is called', async () => {
+        expect(request.yar.set.called).to.be.true();
+      });
+      test('the client is redirected to provide additional details about the new contact', async () => {
+        expect(h.redirect.lastCall.args[0]).to.equal(
+          `/contact-entry/new/details?sessionKey=${tempSessionKey}`
+        );
+      });
+    });
+    experiment('when the form is invalid', () => {
+      beforeEach(async () => {
+        tempSessionKey = uuid();
+        request = createRequest(tempSessionKey);
+        await controller.postSelectAccountTypeController({ ...request, payload: { accountType: 1, sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
+      });
+      test('the client is redirected back to the form', async () => {
+        expect(h.postRedirectGet.lastCall.args[0].action).to.equal(
+          `/contact-entry/new/account-type`
+        );
+      });
+    });
+  });
+
+  experiment('.getDetailsController', () => {
+    experiment('when the selected contact is an organisation', () => {
+      beforeEach(async () => {
+        request = createRequest(uuid(), 'organisation');
+        await controller.getDetailsController(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('has a form', async () => {
+        const { form } = h.view.lastCall.args[1];
+        expect(form).to.be.an.object();
+      });
+    });
+
+    experiment('when the selected contact is an individual', () => {
+      beforeEach(async () => {
+        request = createRequest(uuid(), 'person');
+        await controller.getDetailsController(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('has a form', async () => {
+        const { form } = h.view.lastCall.args[1];
+        expect(form).to.be.an.object();
+      });
+    });
+  });
+
+  experiment('.postPersonDetailsController', () => {
+    let tempSessionKey;
+
+    experiment('when the form is valid', () => {
+      beforeEach(async () => {
+        tempSessionKey = uuid();
+        request = createRequest(tempSessionKey);
+        await controller.postPersonDetailsController({ ...request, payload: { personFullName: 'Mr John Doe', sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
+      });
+      test('yar set is called', async () => {
+        expect(request.yar.set.called).to.be.true();
+      });
+      test('the client is redirected to the address entry module', async () => {
+        let pathCalled = h.redirect.lastCall.args[0];
+        expect(pathCalled.substring(0, pathCalled.indexOf('?'))).to.equal(
+          `/address-entry/postcode`
+        );
+      });
+    });
+    experiment('when the form is invalid', () => {
+      beforeEach(async () => {
+        tempSessionKey = uuid();
+        request = createRequest(tempSessionKey);
+        await controller.postPersonDetailsController({ ...request, payload: { personFullName: undefined, sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
+      });
+      test('the client is redirected back to the form', async () => {
+        expect(h.postRedirectGet.lastCall.args[0].action).to.equal(
+          `/contact-entry/new/details/person`
+        );
+      });
+    });
+  });
+
+  //    getCompanySearchController
+  //    postCompanySearchController
+
+  //    getSelectCompanyController
+  //    postSelectCompanyController
+
+  //    getSelectCompanyAddressController
+  //    postSelectCompanyAddressController
+
+  //    getSelectAddressController
+  //    postSelectAddressController
 });

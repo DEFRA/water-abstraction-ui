@@ -5,6 +5,7 @@ const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 const options = [
+  // @TODO the defaul season needs to be calculated once the abstrcation helpers has been updated.
   { value: 'summer', label: 'Summer', hint: 'This is the default season for the abstraction period set' },
   { value: 'winter', label: 'Winter' },
   { value: 'all year', label: 'All year' }

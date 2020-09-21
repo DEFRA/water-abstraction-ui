@@ -16,7 +16,7 @@ const testHelpers = require('../../../test-helpers');
 const validChargeElementSteps = [
   'purpose',
   'description',
-  'period',
+  'abstraction',
   'quantities',
   'time',
   'source',

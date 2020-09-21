@@ -81,7 +81,7 @@ const getSelectedValue = sessionData => {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { draftChargeData, licence } = request.pre;
+  const { draftChargeInformation, licence } = request.pre;
   const action = routing.getChargeElementStep(licence.id, 'time');
 
   const f = formFactory(action, 'POST');
@@ -94,7 +94,7 @@ const form = (request, sessionData = {}) => {
     },
     choices: options(sessionData)
   }, getSelectedValue(sessionData)));
-  f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeData.startDate));
+  f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeInformation.startDate));
   f.fields.push(fields.hidden('expiredDate', {}, licence.expiredDate || '9999-01-01'));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

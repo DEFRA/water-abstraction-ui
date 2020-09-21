@@ -36,6 +36,11 @@ const getFormField = (key, date) => {
   }, date);
 };
 
+const getSessionDates = (key, sessionData) => {
+  return has(sessionData, `abstractionPeriod.${key}Day`)
+    ? sessionData.abstractionPeriod[`${key}Month`] + '-' + sessionData.abstractionPeriod[`${key}Day`] : '';
+};
+
 /**
  * Form to request the abstraction period
  *
@@ -46,14 +51,10 @@ const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
   const { licenceId } = request.params;
   const action = routing.getChargeElementStep(licenceId, 'abstraction');
-  const startDate = has(sessionData, 'abstractionPeriod.startDay')
-    ? `${sessionData.abstractionPeriod.startMonth}-${sessionData.abstractionPeriod.startDay}` : '';
-  const endDate = has(sessionData, 'abstractionPeriod.endDay')
-    ? `${sessionData.abstractionPeriod.endMonth}-${sessionData.abstractionPeriod.endDay}` : '';
 
   const f = formFactory(action, 'POST');
-  f.fields.push(getFormField('start', startDate));
-  f.fields.push(getFormField('end', endDate));
+  f.fields.push(getFormField('start', getSessionDates('start', sessionData)));
+  f.fields.push(getFormField('end', getSessionDates('end', sessionData)));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;

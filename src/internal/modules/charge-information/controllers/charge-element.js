@@ -12,15 +12,15 @@ const routing = require('../lib/routing');
  * -- pageTitle = the title of the page displayed with the form
  * -- nextStep  = the next page to load
  */
-const flowConfig = {
+const routingConfig = {
   purpose: { pageTitle: 'Select a purpose use', nextStep: 'description' },
-  description: { pageTitle: 'Add element description', nextStep: 'abstraction' },
-  abstraction: { pageTitle: 'Set abstraction period', nextStep: 'quantities' },
-  quantities: { pageTitle: 'Add licence quantities', nextStep: 'time' },
-  time: { pageTitle: 'Set time limit?', nextStep: 'source' },
-  source: { pageTitle: 'Select source', nextStep: 'season' },
-  season: { pageTitle: 'Select season', nextStep: 'loss' },
-  loss: { pageTitle: 'Select loss category', nextStep: 'loss' }
+  description: { pageTitle: 'Add element description', nextStep: 'abstraction', back: 'purpose' },
+  abstraction: { pageTitle: 'Set abstraction period', nextStep: 'quantities', back: 'description' },
+  quantities: { pageTitle: 'Add licence quantities', nextStep: 'time', back: 'abstraction' },
+  time: { pageTitle: 'Set time limit?', nextStep: 'source', back: 'quantities' },
+  source: { pageTitle: 'Select source', nextStep: 'season', back: 'time' },
+  season: { pageTitle: 'Select season', nextStep: 'loss', back: 'source' },
+  loss: { pageTitle: 'Select loss category', nextStep: 'loss', back: 'season' }
 };
 
 const getChargeElementStep = async (request, h) => {
@@ -29,8 +29,9 @@ const getChargeElementStep = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     caption: `Licence ${request.pre.licence.licenceNumber}`,
-    pageTitle: flowConfig[step].pageTitle,
-    back: '/manage',
+    pageTitle: routingConfig[step].pageTitle,
+    back: step === 'purpose' ? routing.getUseAbstractionData(request.pre.licence)
+      : routing.getChargeElementStep(licenceId, routingConfig[step].back),
     form: sessionForms.get(request, forms[step].form(request, sessionData))
   });
 };
@@ -50,7 +51,7 @@ const postChargeElementStep = async (request, h) => {
       dataservice.saveCustomCharge(request, licenceId, sessionData);
       return h.redirect(routing.getCheckData({ id: licenceId }));
     }
-    return h.redirect(routing.getChargeElementStep(licenceId, flowConfig[step].nextStep));
+    return h.redirect(routing.getChargeElementStep(licenceId, routingConfig[step].nextStep));
   }
   return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, step));
 };

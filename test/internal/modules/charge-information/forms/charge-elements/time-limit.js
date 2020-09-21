@@ -15,8 +15,8 @@ const createRequest = () => ({
     licenceId: 'test-licence-id'
   },
   pre: {
-    licence: { id: 'test-licence-id' },
-    draftChargeData: {}
+    licence: { id: 'test-licence-id', expiredDate: '2020-12-31' },
+    draftChargeInformation: { startDate: '2001-01-01' }
   }
 });
 

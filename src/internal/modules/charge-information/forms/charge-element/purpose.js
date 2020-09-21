@@ -5,8 +5,8 @@ const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { uniqBy } = require('lodash');
 
-const options = defaultChargeData => {
-  return uniqBy(defaultChargeData.map(row => {
+const options = defaultCharges => {
+  return uniqBy(defaultCharges.map(row => {
     return { value: row.purposeUse.id, label: row.purposeUse.name };
   }), 'value');
 };

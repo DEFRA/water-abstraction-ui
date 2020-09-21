@@ -38,7 +38,7 @@ const form = (request, sessionData = {}) => {
         message: 'Select loss category'
       }
     },
-    choices: options(defaultCharges, sessionData.purposeUse)
+    choices: options(defaultCharges, sessionData.purposeUse || {})
   }, sessionData.loss || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

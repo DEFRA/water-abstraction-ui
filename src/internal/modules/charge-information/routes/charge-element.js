@@ -8,7 +8,7 @@ const allowedScopes = [charging];
 const chargeElementSteps = [
   'purpose',
   'description',
-  'period',
+  'abstraction',
   'quantities',
   'time',
   'source',

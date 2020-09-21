@@ -29,7 +29,7 @@ const searchForAddressesByEntityId = async request => {
 };
 
 const searchForCompaniesInCompaniesHouse = async request => {
-  let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
+  const { sessionKey } = request.payload || request.query;
   const { companyNameOrNumber } = request.yar.get(sessionKey);
   if (!companyNameOrNumber) {
     return [];
@@ -42,7 +42,7 @@ const searchForCompaniesInCompaniesHouse = async request => {
 };
 
 const returnCompanyAddressesFromCompaniesHouse = async request => {
-  let sessionKey = request.query.sessionKey ? request.query.sessionKey : request.payload.sessionKey;
+  const { sessionKey } = request.payload || request.query;
   const { selectedCompaniesHouseNumber } = request.yar.get(sessionKey);
   if (!selectedCompaniesHouseNumber) {
     return [];

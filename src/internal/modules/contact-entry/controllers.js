@@ -180,6 +180,7 @@ const getSelectCompanyController = async (request, h) => {
     form: sessionForms.get(request, companySearchSelectCompany.form(request, defaultValue))
   });
 };
+
 const postSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   let currentState = request.yar.get(sessionKey);

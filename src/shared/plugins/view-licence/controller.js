@@ -5,6 +5,8 @@ const { getLicencePageTitle, getCommonViewContext } = require('./lib/view-helper
 const { getCommonBackLink } = require('shared/lib/view-licence-helpers');
 const { getHoFTypes } = require('./lib/conditions');
 const { errorMapper } = require('./lib/error');
+const { hasScope } = require('internal/lib/permissions');
+const { scope } = require('internal/lib/constants');
 
 async function getLicenceDetail (request, reply) {
   try {
@@ -91,7 +93,7 @@ const hasMultiplePages = pagination => pagination.pageCount > 1;
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
  * @param {String} request.params.licence_id - CRM document header GUID
- * @param {String} [request.params.gauging_station] - gauging staion reference in flood API
+ * @param {String} [request.params.gauging_station] - gauging station reference in flood API
  * @param {Object} reply - HAPI reply interface
  */
 const getLicence = async (request, h) => {
@@ -99,6 +101,7 @@ const getLicence = async (request, h) => {
   const licenceId = request.licence.summary.waterLicence.id;
 
   const { getLicenceSummaryReturns, getReturnPath, canShowCharging, getLicenceAgreements } = h.realm.pluginOptions;
+  const isChargingUser = hasScope(request, scope.charging);
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
   const agreements = await getLicenceAgreements(licenceId);
@@ -112,7 +115,8 @@ const getLicence = async (request, h) => {
     showChargeVersions: canShowCharging(request),
     chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse(),
     agreements,
-    licenceId
+    licenceId,
+    isChargingUser
   };
 
   return h.view('nunjucks/view-licences/licence', view);

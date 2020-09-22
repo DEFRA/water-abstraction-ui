@@ -9,9 +9,10 @@ const {
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
+const { scope } = require('internal/lib/constants');
 const controller = require('../../../../src/shared/plugins/view-licence/controller');
 
-experiment('shared/plugings/view-licence/controller', () => {
+experiment('shared/plugins/view-licence/controller', () => {
   let h;
   let request;
   let documentId;
@@ -39,6 +40,11 @@ experiment('shared/plugings/view-licence/controller', () => {
         }
       },
       view: {
+      },
+      auth: {
+        credentials: {
+          scope: scope.charging
+        }
       }
     };
 
@@ -111,6 +117,10 @@ experiment('shared/plugings/view-licence/controller', () => {
 
     test('sets the licence id', async () => {
       expect(view.licenceId).to.equal(licenceId);
+    });
+
+    test('sets isChargingUser', () => {
+      expect(view.isChargingUser).to.be.true();
     });
   });
 });

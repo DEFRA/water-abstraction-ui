@@ -1,6 +1,6 @@
 'use strict';
 const { expect } = require('@hapi/code');
-const { experiment, test, before, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const preHandlers = require('../../../../src/internal/modules/invoice-accounts/pre-handlers');
 const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();

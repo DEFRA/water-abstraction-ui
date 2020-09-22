@@ -249,6 +249,28 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       });
     });
   });
+
+  experiment('.contactEntryHandover', () => {
+    beforeEach(async () => {
+      await controller.contactEntryHandover(request, h);
+    });
+    test('calls yar.get', async () => {
+      expect(request.yar.get.called).to.be.true();
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      // no data to merge is passed to the session
+      expect(typeof args[3]).to.equal('object');
+      expect(dataService.sessionManager.calledOnce).to.be.true();
+    });
+    test('redirects the client the fao page', async () => {
+      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`))
+    });
+  });
+
   experiment('.getFao', () => {
     beforeEach(async () => {
       await controller.getFao(request, h);

@@ -138,7 +138,7 @@ const contactEntryHandover = async (request, h) => {
     };
     dataService.sessionManager(request, regionId, companyId, newData);
   }
-  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`); // forward to /invoice-accounts/create/{regionId}/{companyId}/add-fao
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
 };
 
 const getFao = async (request, h) => {

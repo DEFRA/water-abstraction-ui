@@ -18,6 +18,7 @@ const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
 const BillingVolumesService = require('./BillingVolumeService');
 const RegionsService = require('./RegionsService');
+const AgreementsService = require('./AgreementsService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -52,6 +53,7 @@ module.exports = config => ({
   billingVolumes: new BillingVolumesService(config.services.water, logger),
   regions: new RegionsService(config.services.water, logger),
   changeReasons: new ChangeReasonsService(config.services.water, logger),
+  agreements: new AgreementsService(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),

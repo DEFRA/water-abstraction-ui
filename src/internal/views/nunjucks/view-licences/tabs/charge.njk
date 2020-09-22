@@ -14,8 +14,8 @@
   {# {% if not agreement.dateRange.endDate %}
     <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
   {% endif %} #}
-  {% if isChargingUser %} 
-    <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a> 
+  {% if isChargingUser %}
+    <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}
 
@@ -23,10 +23,14 @@
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-    <p>Start date: {{ chargeVersion.dateRange.startDate | date }}</p>
-    <p>End date: {{ chargeVersion.dateRange.endDate | date }}</p>
-    <p>Reason: </p>
-    <p>Status: {{ badge(chargeVersion | chargeVersionBadge) }}</p>
+    <p>Start date:
+      {{ chargeVersion.dateRange.startDate | date }}</p>
+    <p>End date:
+      {{ chargeVersion.dateRange.endDate | date }}</p>
+    <p>Reason:
+    </p>
+    <p>Status:
+      {{ badge(chargeVersion | chargeVersionBadge) }}</p>
     {# <p>Action: {{ chargeVersionLink(chargeVersion) }}</p> #}
   </div>
 {% endmacro %}
@@ -35,11 +39,15 @@
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-    <p>Start date: {{ agreement.dateRange.startDate | date }}</p>
-    <p>End date: {{ agreement.dateRange.endDate | date }}</p>
-    <p>Agreement: {{ agreement.agreement.code }}</p>
-    <p>Date signed: {{ agreement.dateSigned | date }}</p>
-    <p>Action: 
+    <p>Start date:
+      {{ agreement.dateRange.startDate | date }}</p>
+    <p>End date:
+      {{ agreement.dateRange.endDate | date }}</p>
+    <p>Agreement:
+      {{ agreement.agreement.description }}</p>
+    <p>Date signed:
+      {{ agreement.dateSigned | date }}</p>
+    <p>Action:
       {{ agreementActions(agreement, licenceId, isChargingUser) }}
     </p>
   </div>
@@ -72,7 +80,7 @@
       {{ agreement.dateRange.endDate | date }}
     </td>
     <td class="govuk-table__cell">
-      {{ agreement.agreement.code }}
+      {{ agreement.agreement.description }}
     </td>
     <td class="govuk-table__cell">
       {{ agreement.dateSigned | date }}

@@ -173,6 +173,37 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
   });
 
+  experiment('.getCreateAddress', () => {
+    beforeEach(async () => {
+      await controller.getCreateAddress(request, h);
+    });
+    test('redirects client to address entry', () => {
+      expect(h.redirect.called).to.be.true();
+      expect(h.redirect.lastCall.args[0]).to.startsWith(`/address-entry/`);
+    });
+  });
+
+  experiment('.getAddressEntered', () => {
+    beforeEach(async () => {
+      await controller.getAddressEntered(request, h);
+    });
+    test('calls yar.get', async () => {
+      expect(request.yar.get.called).to.be.true();
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.exist();
+      expect(dataService.sessionManager.calledOnce).to.be.true();
+    });
+    test('redirects client to invoice accounts module', () => {
+      expect(h.redirect.called).to.be.true();
+      expect(h.redirect.lastCall.args[0]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
+    });
+  });
+
   experiment('.getAddress', () => {
     beforeEach(async () => {
       await controller.getAddress(request, h);

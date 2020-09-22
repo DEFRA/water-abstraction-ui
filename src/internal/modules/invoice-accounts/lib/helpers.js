@@ -87,7 +87,7 @@ const getAgentCompany = async (session) => {
 
 const getCompanyName = async (request) => {
   const { sessionKey } = request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   if (currentState.newCompany) {
     return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName;
   } else {

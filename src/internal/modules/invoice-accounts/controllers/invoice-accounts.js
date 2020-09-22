@@ -116,7 +116,7 @@ const postAddress = async (request, h) => {
 const contactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { sessionKey } = request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   if (currentState.companyId !== companyId) {
     let companyName = titleCase(helpers.getCompanyName(request));
     let newData = {}; // Store everything in the right bits of the session

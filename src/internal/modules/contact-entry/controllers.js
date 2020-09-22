@@ -5,11 +5,11 @@ const { selectContact, selectAddress, selectAccountType, companySearch, personNa
 const queryString = require('querystring');
 const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/plugin').SESSION_KEY;
 
-const getSelectContactController = (request, h) => {
+const getSelectContactController = async (request, h) => {
   const { sessionKey, regionId, originalCompanyId, back, searchQuery } = request.query;
   // First, store the licence ID in the session, for use in captions
 
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   request.yar.set(sessionKey, merge(currentState, {
     back,
     regionId,
@@ -27,9 +27,9 @@ const getSelectContactController = (request, h) => {
   });
 };
 
-const postSelectContactController = (request, h) => {
+const postSelectContactController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { id, searchQuery, regionId } = request.payload;
   if (id === null || id === 'new') {
     return h.redirect(`/contact-entry/new/account-type?sessionKey=${sessionKey}`);
@@ -54,9 +54,9 @@ const postSelectContactController = (request, h) => {
   }
 };
 
-const getSelectAccountTypeController = (request, h) => {
+const getSelectAccountTypeController = async (request, h) => {
   const { sessionKey } = request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let defaultValue = currentState.accountType;
   return h.view('nunjucks/contact-entry/basic-form', {
     ...request.view,
@@ -65,10 +65,10 @@ const getSelectAccountTypeController = (request, h) => {
   });
 };
 
-const postSelectAccountTypeController = (request, h) => {
+const postSelectAccountTypeController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
 
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { accountType } = request.payload;
   const form = forms.handleRequest(
     selectAccountType.form(request),
@@ -88,9 +88,9 @@ const postSelectAccountTypeController = (request, h) => {
   }
 };
 
-const getDetailsController = (request, h) => {
+const getDetailsController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let defaultValue;
   if (currentState.accountType === 'organisation') {
     defaultValue = currentState.companyNameOrNumber ? currentState.companyNameOrNumber : currentState.searchQuery;
@@ -106,9 +106,9 @@ const getDetailsController = (request, h) => {
   });
 };
 
-const postPersonDetailsController = (request, h) => {
+const postPersonDetailsController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { personFullName } = request.payload;
   const form = forms.handleRequest(
     personName.form(request),
@@ -133,11 +133,11 @@ const postPersonDetailsController = (request, h) => {
   }
 };
 
-const getAfterAddressEntryController = (request, h) => {
+const getAfterAddressEntryController = async (request, h) => {
   // This is the path the user is redirected to after the address entry flow
   // Sets the address in the yar object
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let address = request.yar.get(ADDRESS_FLOW_SESSION_KEY);
   request.yar.set(sessionKey, merge(currentState, { addressId: null, address }));
   // Redirect the user back into the invoice-accounts flow
@@ -146,7 +146,7 @@ const getAfterAddressEntryController = (request, h) => {
 
 const postCompanySearchController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { companyNameOrNumber } = request.payload;
   const form = forms.handleRequest(
     companySearch.form(request),
@@ -170,7 +170,7 @@ const postCompanySearchController = async (request, h) => {
 
 const getSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseNumber;
 
   return h.view('nunjucks/contact-entry/basic-form', {
@@ -183,7 +183,7 @@ const getSelectCompanyController = async (request, h) => {
 
 const postSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { selectedCompaniesHouseNumber } = request.payload;
   const form = forms.handleRequest(
     companySearchSelectCompany.form(request),
@@ -211,7 +211,7 @@ const postSelectCompanyController = async (request, h) => {
 
 const getSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let defaultValue = currentState.selectedCompaniesHouseAddress;
   return h.view('nunjucks/contact-entry/basic-form', {
     ...request.view,
@@ -222,7 +222,7 @@ const getSelectCompanyAddressController = async (request, h) => {
 };
 const postSelectCompanyAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   const { selectedCompaniesHouseAddress } = request.payload;
   const form = forms.handleRequest(
     companySearchSelectAddress.form(request),
@@ -244,9 +244,9 @@ const postSelectCompanyAddressController = async (request, h) => {
   }
 };
 
-const getSelectAddressController = (request, h) => {
+const getSelectAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  let currentState = request.yar.get(sessionKey);
+  let currentState = await request.yar.get(sessionKey);
   let defaultValue = currentState.addressId;
   return h.view('nunjucks/contact-entry/basic-form', {
     ...request.view,
@@ -256,7 +256,7 @@ const getSelectAddressController = (request, h) => {
   });
 };
 
-const postSelectAddressController = (request, h) => {
+const postSelectAddressController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   const { id } = request.payload;
   const form = forms.handleRequest(
@@ -278,7 +278,7 @@ const postSelectAddressController = (request, h) => {
     return h.redirect(`/address-entry/postcode?${queryTail}`);
   } else {
     // Contact has been selected. Store the contact ID in yar
-    let currentState = request.yar.get(sessionKey);
+    let currentState = await request.yar.get(sessionKey);
     request.yar.set(sessionKey, merge(currentState, { addressId: id, address: null }));
     // Redirect the user back into the invoice-accounts flow
     return h.redirect(`/invoice-accounts/create/${currentState.regionId}/${currentState.originalCompanyId}/contact-entry-complete?sessionKey=${sessionKey}`);

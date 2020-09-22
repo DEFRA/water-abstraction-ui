@@ -16,7 +16,7 @@ const searchForCompaniesByString = async request => {
 
 const searchForAddressesByEntityId = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { id } = request.yar.get(sessionKey);
+  const { id } = await request.yar.get(sessionKey);
   try {
     const data = await services.water.companies.getAddresses(id);
     return data;
@@ -30,7 +30,7 @@ const searchForAddressesByEntityId = async request => {
 
 const searchForCompaniesInCompaniesHouse = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { companyNameOrNumber } = request.yar.get(sessionKey);
+  const { companyNameOrNumber } = await request.yar.get(sessionKey);
   if (!companyNameOrNumber) {
     return [];
   } else {
@@ -43,7 +43,7 @@ const searchForCompaniesInCompaniesHouse = async request => {
 
 const returnCompanyAddressesFromCompaniesHouse = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { selectedCompaniesHouseNumber } = request.yar.get(sessionKey);
+  const { selectedCompaniesHouseNumber } = await request.yar.get(sessionKey);
   if (!selectedCompaniesHouseNumber) {
     return [];
   } else {

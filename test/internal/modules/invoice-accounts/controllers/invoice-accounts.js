@@ -267,7 +267,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(dataService.sessionManager.calledOnce).to.be.true();
     });
     test('redirects the client the fao page', async () => {
-      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`))
+      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`));
     });
   });
 

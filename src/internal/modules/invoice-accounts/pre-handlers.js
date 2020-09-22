@@ -51,5 +51,6 @@ const preHandler = async (config, request, h) => {
   }
 };
 
+exports.getCompany = getCompany;
 exports.loadCompany = partial(preHandler, config.loadCompany);
 exports.getDisplayedCompany = getDisplayedCompany;

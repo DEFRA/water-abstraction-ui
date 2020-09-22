@@ -106,6 +106,11 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       const response = await helpers.getSelectedAddress(companyId, { address: { id: address.id } });
       expect(response).to.equal(address);
     });
+
+    test(`returns null address session object doesn't exist`, async () => {
+      const response = await helpers.getSelectedAddress(companyId, { address: undefined });
+      expect(response).to.equal(null);
+    });
   });
 
   experiment('.getAgentCompany', () => {
@@ -117,6 +122,11 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('returns the agent company from the data service if the agent id != tempId', async () => {
       const response = await helpers.getAgentCompany({ agent: { id: 'test-company-id', name: 'A Company Name' } });
       expect(response).to.equal(company);
+    });
+
+    test('returns the agent company from the session if the agent id is null', async () => {
+      const response = await helpers.getAgentCompany({ agent: { id: null, name: 'A Company Name' } });
+      expect(response).to.equal({ id: null, name: 'A Company Name' });
     });
   });
 
@@ -143,7 +153,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     });
   });
 
-  experiment('.getCOntactName', () => {
+  experiment('.getContactName', () => {
     test('if selected contact is department', () => {
       const department = 'test department name';
       const selectedContact = 'department';
@@ -181,6 +191,47 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       const sessionContact = { contactId: 'test-id' };
       const response = await helpers.getContactName(companyId, sessionContact);
       expect(response).to.equal('Jackie Smith');
+    });
+  });
+
+  experiment('.getCompanyName', () => {
+    test('if the company is an organisation, returns the company name', async () => {
+      let modifiedRequest = {
+        ...request,
+        query: { sessionKey: uuid() },
+        yar: {
+          get: () => {
+            return {
+              newCompany: true,
+              accountType: 'organisation',
+              companyName: 'SomeCo'
+            };
+          }
+        }
+      };
+      const response = await helpers.getCompanyName(modifiedRequest);
+
+      expect(response).to.equal('SomeCo');
+    });
+
+    test('if the company is an individual, returns the person name', async () => {
+      let modifiedRequest = {
+        ...request,
+        query: { sessionKey: uuid() },
+        yar: {
+          get: () => {
+            return {
+              newCompany: true,
+              accountType: 'person',
+              companyName: 'SomeCo',
+              personFullName: 'Jane Doe'
+            };
+          }
+        }
+      };
+      const response = await helpers.getCompanyName(modifiedRequest);
+
+      expect(response).to.equal('Jane Doe');
     });
   });
 

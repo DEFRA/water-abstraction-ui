@@ -19,8 +19,8 @@ const options = [
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'source');
+  const { licenceId, elementId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'source');
 
   const f = formFactory(action, 'POST');
 

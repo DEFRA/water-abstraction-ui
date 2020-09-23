@@ -24,20 +24,20 @@ const routingConfig = {
 };
 
 const getChargeElementStep = async (request, h) => {
-  const { step, licenceId } = request.params;
-  const sessionData = dataservice.sessionManager(request, licenceId);
+  const { step, licenceId, elementId } = request.params;
+  const sessionData = dataservice.sessionManager(request, licenceId, elementId);
   return h.view('nunjucks/form', {
     ...request.view,
     caption: `Licence ${request.pre.licence.licenceNumber}`,
     pageTitle: routingConfig[step].pageTitle,
     back: step === 'purpose' ? routing.getUseAbstractionData(request.pre.licence)
-      : routing.getChargeElementStep(licenceId, routingConfig[step].back),
+      : routing.getChargeElementStep(licenceId, elementId, routingConfig[step].back),
     form: sessionForms.get(request, forms[step].form(request, sessionData))
   });
 };
 
 const postChargeElementStep = async (request, h) => {
-  const { step, licenceId } = request.params;
+  const { step, licenceId, elementId } = request.params;
   const schema = forms[step].schema(request.payload);
   const form = formHelpers.handleRequest(forms[step].form(request), request, schema);
   const { defaultCharges } = request.pre;
@@ -46,14 +46,14 @@ const postChargeElementStep = async (request, h) => {
     // mapp the form data before saving it to the session
     const data = mappers[step] ? mappers[step](formData, defaultCharges) : formData;
     // save the form values in the session except the csrf token
-    const sessionData = dataservice.sessionManager(request, licenceId, omit(data, 'csrf_token'));
+    const sessionData = dataservice.sessionManager(request, licenceId, elementId, omit(data, 'csrf_token'));
     if (step === 'loss') {
-      dataservice.saveCustomCharge(request, licenceId, sessionData);
+      dataservice.saveCustomCharge(request, licenceId, elementId, sessionData);
       return h.redirect(routing.getCheckData({ id: licenceId }));
     }
-    return h.redirect(routing.getChargeElementStep(licenceId, routingConfig[step].nextStep));
+    return h.redirect(routing.getChargeElementStep(licenceId, elementId, routingConfig[step].nextStep));
   }
-  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, step));
+  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step));
 };
 
 exports.getChargeElementStep = getChargeElementStep;

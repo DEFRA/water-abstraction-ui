@@ -12,8 +12,8 @@ const { formFactory, fields } = require('shared/lib/forms/');
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'description');
+  const { licenceId, elementId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'description');
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('description', {

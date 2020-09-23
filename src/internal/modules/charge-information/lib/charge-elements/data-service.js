@@ -2,20 +2,22 @@
 
 const sessionHelpers = require('shared/lib/session-helpers');
 
-const saveCustomCharge = (request, licenceId, sessionData) => {
+const saveCustomCharge = (request, licenceId, elementId, sessionData) => {
   const { draftChargeInformation } = request.pre;
   // add the charge element to the draft charge information
-  draftChargeInformation.abstractionData
-    ? draftChargeInformation.abstractionData.push(sessionData)
-    : draftChargeInformation.abstractionData = [sessionData];
+  if (draftChargeInformation.chargeElements) {
+    // if element exist overwrite otherwise add
+    const index = draftChargeInformation.chargeElements.findIndex((element) => element.id === elementId);
+    index >= 0 ? draftChargeInformation.chargeElements[index] = { ...sessionData, id: elementId }
+      : draftChargeInformation.chargeElements.push({ ...sessionData, id: elementId });
+  } else { draftChargeInformation.chargeElements = [{ ...sessionData, id: elementId }]; }
+
   request.server.methods.setDraftChargeInformation(licenceId, draftChargeInformation);
-  // clear the charge element session data
-  request.yar.clear(`chargeElement.${licenceId}`);
 };
 
 // session data is stored at charge-elements-licence-ref
-const sessionManager = (request, licenceId, data) => {
-  const sessionKey = `chargeElement.${licenceId}`;
+const sessionManager = (request, licenceId, elementId, data) => {
+  const sessionKey = `chargeElement.${licenceId}.${elementId}`;
   return sessionHelpers.saveToSession(request, sessionKey, data);
 };
 

@@ -1,7 +1,11 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
-const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
+const {
+  experiment,
+  test,
+  beforeEach
+} = exports.lab = require('@hapi/lab').script();
 
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/season');
 const { findField, findButton } = require('../../../../../lib/form-test');
@@ -15,7 +19,10 @@ const createRequest = () => ({
   }
 });
 
-const sessionData = { purposeUse: { id: 'test-purpose-use-id' } };
+const sessionData = {
+  purposeUse: { id: 'test-purpose-use-id' },
+  abstractionPeriod: { startDay: 1, startMonth: 4, endDay: 31, endMonth: 6 }
+};
 
 experiment('internal/modules/charge-information/forms/charge-element/season', () => {
   let seasonForm;
@@ -43,9 +50,9 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
       const radio = findField(seasonForm, 'season');
       expect(radio.options.choices.length).to.equal(3);
       expect(radio.options.choices[0].label).to.equal('Summer');
-      expect(radio.options.choices[0].hint).to.equal('This is the default season for the abstraction period set');
       expect(radio.options.choices[1].label).to.equal('Winter');
       expect(radio.options.choices[2].label).to.equal('All year');
+      expect(radio.options.choices[2].hint).to.equal('This is the default season for the abstraction period set');
     });
   });
 

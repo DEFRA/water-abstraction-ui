@@ -19,7 +19,7 @@ const chargeElementSteps = [
 module.exports = {
   getChargeElementStep: {
     method: 'GET',
-    path: '/licences/{licenceId}/charge-information/charge-element/{step}',
+    path: '/licences/{licenceId}/charge-information/charge-element/{elementId}/{step}',
     handler: controller.getChargeElementStep,
     options: {
       auth: {
@@ -34,7 +34,8 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          step: Joi.string().valid(chargeElementSteps).required()
+          step: Joi.string().valid(chargeElementSteps).required(),
+          elementId: Joi.string().uuid().required()
         }
       },
       pre: [
@@ -46,7 +47,7 @@ module.exports = {
   },
   postChargeElementStep: {
     method: 'POST',
-    path: '/licences/{licenceId}/charge-information/charge-element/{step}',
+    path: '/licences/{licenceId}/charge-information/charge-element/{elementId}/{step}',
     handler: controller.postChargeElementStep,
     options: {
       auth: {
@@ -61,7 +62,8 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID,
-          step: Joi.string().valid(chargeElementSteps).required()
+          step: Joi.string().valid(chargeElementSteps).required(),
+          elementId: Joi.string().uuid().required()
         }
       },
       pre: [

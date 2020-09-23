@@ -17,7 +17,7 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setAbstractionData:
       return {
         ...state,
-        abstractionData: action.payload
+        chargeElements: action.payload
       };
 
     case ACTION_TYPES.setBillingAccount:

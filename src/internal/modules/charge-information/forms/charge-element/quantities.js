@@ -30,8 +30,8 @@ const getFormField = (key, sessionData) => {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'quantities');
+  const { licenceId, elementId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'quantities');
 
   const f = formFactory(action, 'POST');
   f.fields.push(getFormField('authorised', sessionData));

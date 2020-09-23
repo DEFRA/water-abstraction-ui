@@ -13,6 +13,9 @@ const createRequest = () => ({
   pre: {
     licence: { id: 'test-licence-id' },
     defaultCharges: [{ purposeUse: { id: 'test-purpose-use-id' }, loss: 'low' }]
+  },
+  params: {
+    elementId: 'test-element-id'
   }
 });
 

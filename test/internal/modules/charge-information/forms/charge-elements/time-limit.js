@@ -60,7 +60,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
       expect(radio.options.choices[0].fields[1].options.label).to.equal('Enter end date');
       expect(radio.options.choices[0].fields[1].options.widget).to.equal('date');
       expect(radio.options.choices[1].label).to.equal('No');
-      expect(radio.options.choices[1].value).to.equal(false);
+      expect(radio.options.choices[1].value).to.equal('no');
     });
   });
 
@@ -83,7 +83,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
         expect(result.error).to.not.exist();
       });
       test('validates no', async () => {
-        const result = schema().timeLimitedPeriod.validate(false);
+        const result = schema().timeLimitedPeriod.validate('no');
         expect(result.error).to.not.exist();
       });
 
@@ -126,10 +126,10 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
         const result = schema().startDate.validate('2001-t1-sd');
         expect(result.error).to.exist();
       });
-      test('is not required if timeLimitedPeriod is no/false', async () => {
+      test('is not required if timeLimitedPeriod is no', async () => {
         const data = {
           csrf_token: testUuid,
-          timeLimitedPeriod: false
+          timeLimitedPeriod: 'no'
         };
         const result = Joi.validate(data, schema());
         expect(result.error).not.to.exist();
@@ -151,7 +151,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
       test('is not required if timeLimitedPeriod is no/false', async () => {
         const data = {
           csrf_token: testUuid,
-          timeLimitedPeriod: false
+          timeLimitedPeriod: 'no'
         };
         const result = Joi.validate(data, schema());
         expect(result.error).not.to.exist();

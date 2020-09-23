@@ -28,17 +28,19 @@ experiment('internal/modules/charge-information/routes', () => {
   let server;
   let licenceId;
   let step;
+  let elementId;
 
   experiment('getChargeElementStep', () => {
     beforeEach(async () => {
       licenceId = uuid();
+      elementId = uuid();
       step = 'purpose';
       server = testHelpers.getTestServer(routes.getChargeElementStep);
     });
 
     test('allows a uuid for the licence id', async () => {
       const request = {
-        url: `/licences/${licenceId}/charge-information/charge-element/${step}`
+        url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`
       };
 
       const response = await server.inject(request);
@@ -47,16 +49,16 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${step}`
+        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${elementId}/${step}`
       };
       const response = await server.inject(request);
       expect(response.statusCode).to.equal(400);
     });
 
-    validChargeElementSteps.forEach(elementStep => {
-      test(`Charge element ${elementStep} is a valid value`, async () => {
+    validChargeElementSteps.forEach(step => {
+      test(`Charge element ${step} is a valid value`, async () => {
         const request = {
-          url: `/licences/${licenceId}/charge-information/charge-element/${elementStep}`
+          url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`
         };
         const response = await server.inject(request);
         expect(response.payload).to.equal('Test handler');
@@ -65,7 +67,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow an invalid values for charge element step', async () => {
       const request = {
-        url: `/licences/${licenceId}/charge-information/charge-element/charges`
+        url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/charges`
       };
       const response = await server.inject(request);
       expect(response.statusCode).to.equal(400);
@@ -73,7 +75,14 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${step}`
+        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${elementId}/${step}`
+      };
+      const response = await server.inject(request);
+      expect(response.statusCode).to.equal(400);
+    });
+    test('does not allow a non uuid for the element id', async () => {
+      const request = {
+        url: `/licences/${licenceId}/charge-information/charge-element/test-non-uuid-element-id/${step}`
       };
       const response = await server.inject(request);
       expect(response.statusCode).to.equal(400);
@@ -98,7 +107,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('allows a uuid for the licence id', async () => {
       const request = {
-        url: `/licences/${licenceId}/charge-information/charge-element/${step}`,
+        url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`,
         method: 'POST'
       };
       const response = await server.inject(request);
@@ -107,17 +116,17 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${step}`,
+        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${elementId}/${step}`,
         method: 'POST'
       };
       const response = await server.inject(request);
       expect(response.statusCode).to.equal(400);
     });
 
-    validChargeElementSteps.forEach(elementStep => {
-      test(`Charge element ${elementStep} is a valid value`, async () => {
+    validChargeElementSteps.forEach(step => {
+      test(`Charge element ${step} is a valid value`, async () => {
         const request = {
-          url: `/licences/${licenceId}/charge-information/charge-element/${elementStep}`,
+          url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`,
           method: 'POST'
         };
         const response = await server.inject(request);
@@ -127,7 +136,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow an invalid values for charge element step', async () => {
       const request = {
-        url: `/licences/${licenceId}/charge-information/charge-element/charges`,
+        url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/charges`,
         method: 'POST'
       };
       const response = await server.inject(request);
@@ -136,7 +145,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${step}`,
+        url: `/licences/test-non-uuid-licence-id/charge-information/charge-element/${elementId}/${step}`,
         method: 'POST'
       };
       const response = await server.inject(request);

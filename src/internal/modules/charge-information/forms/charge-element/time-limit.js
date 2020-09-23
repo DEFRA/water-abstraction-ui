@@ -61,7 +61,7 @@ const options = (sessionData) => {
       label: 'Yes',
       fields: [ getDateField('start', sessionData), getDateField('end', sessionData) ]
     },
-    { value: false, label: 'No' }
+    { value: 'no', label: 'No' }
   ];
 };
 
@@ -69,7 +69,7 @@ const getSelectedValue = sessionData => {
   if (!(has(sessionData, 'timeLimitedPeriod'))) {
     return '';
   } else {
-    return !sessionData.timeLimitedPeriod ? false : 'yes';
+    return !sessionData.timeLimitedPeriod ? 'no' : 'yes';
   }
 };
 
@@ -82,7 +82,8 @@ const getSelectedValue = sessionData => {
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
   const { draftChargeInformation, licence } = request.pre;
-  const action = routing.getChargeElementStep(licence.id, 'time');
+  const { elementId } = request.params;
+  const action = routing.getChargeElementStep(licence.id, elementId, 'time');
 
   const f = formFactory(action, 'POST');
 
@@ -107,7 +108,7 @@ const schema = (request) => {
     expiredDate: Joi.date().iso(),
     chargeStartDate: Joi.date().iso(),
     csrf_token: Joi.string().uuid().required(),
-    timeLimitedPeriod: Joi.string().required().valid(['yes', false]),
+    timeLimitedPeriod: Joi.string().required().valid(['yes', 'no']),
     startDate: Joi.date().allow('').when('timeLimitedPeriod', {
       is: 'yes',
       then: Joi.date().iso().min(Joi.ref('chargeStartDate')).required()

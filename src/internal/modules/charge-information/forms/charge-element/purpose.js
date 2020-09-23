@@ -19,8 +19,9 @@ const options = defaultCharges => {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { defaultCharges, licence } = request.pre;
-  const action = routing.getChargeElementStep(licence.id, 'purpose');
+  const { defaultCharges } = request.pre;
+  const { licenceId, elementId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'purpose');
 
   const f = formFactory(action, 'POST');
 

@@ -29,7 +29,8 @@ const routingConfig = {
 const createRequest = (step) => ({
   params: {
     licenceId: 'test-licence-id',
-    step
+    step,
+    elementId: 'test-element-id'
   },
   view: {
     foo: 'bar',
@@ -101,7 +102,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
         await controller.getChargeElementStep(request, h);
         const { back } = h.view.lastCall.args[1];
         if (step !== 'purpose') {
-          expect(back).to.equal(`/licences/test-licence-id/charge-information/charge-element/${routingConfig[step].back}`);
+          expect(back).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${routingConfig[step].back}`);
         } else { expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data'); }
       });
       test('has a caption', async () => {
@@ -141,7 +142,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           await controller.postChargeElementStep(request, h);
           const args = h.redirect.lastCall.args;
           if (step !== 'loss') {
-            expect(args[0]).to.equal(`/licences/test-licence-id/charge-information/charge-element/${routingConfig[step].nextStep}`);
+            expect(args[0]).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${routingConfig[step].nextStep}`);
           } else { expect(args[0]).to.equal('/licences/test-licence-id/charge-information/check'); }
         });
       });
@@ -159,7 +160,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           await controller.postChargeElementStep(request, h);
           const args = h.postRedirectGet.lastCall.args;
           expect(args[0]).to.equal({ isValid: false });
-          expect(args[1]).to.equal(`/licences/test-licence-id/charge-information/charge-element/${step}`);
+          expect(args[1]).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${step}`);
         });
       });
     });

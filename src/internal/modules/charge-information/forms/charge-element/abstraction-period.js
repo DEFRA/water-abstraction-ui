@@ -49,8 +49,8 @@ const getSessionDates = (key, sessionData) => {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, 'abstraction');
+  const { licenceId, elementId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'abstraction');
 
   const f = formFactory(action, 'POST');
   f.fields.push(getFormField('start', getSessionDates('start', sessionData)));

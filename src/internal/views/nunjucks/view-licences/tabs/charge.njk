@@ -10,6 +10,15 @@
   {% endif %}
 {% endmacro %}
 
+{% macro agreementActions(agreement, isChargingUser) %}
+  {# {% if not agreement.dateRange.endDate %}
+    <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
+  {% endif %} #}
+  {% if isChargingUser %} 
+    <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a> 
+  {% endif %}
+{% endmacro %}
+
 {% macro chargeVersionRowMobile(chargeVersion) %}
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
@@ -22,15 +31,17 @@
   </div>
 {% endmacro %}
 
-{% macro agreementRowMobile(agreement) %}
+{% macro agreementRowMobile(agreement, isChargingUser, licenceId) %}
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
     <p>Start date: {{ agreement.dateRange.startDate | date }}</p>
     <p>End date: {{ agreement.dateRange.endDate | date }}</p>
     <p>Agreement: {{ agreement.agreement.code }}</p>
-    <p>Date signed:</p>
-    {# <p>Action:</p> #}
+    <p>Date signed: {{ agreement.dateSigned | date }}</p>
+    <p>Action: 
+      {{ agreementActions(agreement, licenceId, isChargingUser) }}
+    </p>
   </div>
 {% endmacro %}
 
@@ -49,6 +60,26 @@
     {# <td class="govuk-table__cell">
       {{ chargeVersionLink(chargeVersion) }}
     </td> #}
+  </tr>
+{% endmacro %}
+
+{% macro agreementRow(agreement, isChargingUser, licenceId) %}
+  <tr class="govuk-table__row">
+    <td class="govuk-table__cell">
+      {{ agreement.dateRange.startDate | date }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ agreement.dateRange.endDate | date }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ agreement.agreement.code }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ agreement.dateSigned | date }}
+    </td>
+    <td class="govuk-table__cell">
+      {{ agreementActions(agreement, licenceId, isChargingUser) }}
+    </td>
   </tr>
 {% endmacro %}
 
@@ -100,7 +131,7 @@
   <h2 class="govuk-heading-l">Agreements</h2>
 
   {% for agreement in agreements %}
-    {{ agreementRowMobile(agreement) }}
+    {{ agreementRowMobile(agreement, isChargingUser, licenceId, true) }}
   {% endfor %}
 
   <table class="govuk-table phone--hide">
@@ -110,26 +141,12 @@
         <th class="govuk-table__header" scope="col">End date</th>
         <th class="govuk-table__header" scope="col">Agreement</th>
         <th class="govuk-table__header" scope="col">Date signed</th>
-        {# <th class="govuk-table__header" scope="col">Action</th> #}
+        <th class="govuk-table__header" scope="col">Action</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       {% for agreement in agreements %}
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">
-            {{ agreement.dateRange.startDate | date }}
-          </td>
-          <td class="govuk-table__cell">
-            {{ agreement.dateRange.endDate | date }}
-          </td>
-          <td class="govuk-table__cell">
-            {{ agreement.agreement.code }}
-          </td>
-          <td class="govuk-table__cell">
-            {{ agreement.dateSigned | date }}
-          </td>
-          {# <td class="govuk-table__cell"></td> #}
-        </tr>
+        {{ agreementRow(agreement, isChargingUser, licenceId, true) }}
       {% endfor %}
     </tbody>
   </table>

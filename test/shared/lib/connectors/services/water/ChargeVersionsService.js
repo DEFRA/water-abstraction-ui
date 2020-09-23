@@ -59,4 +59,16 @@ experiment('services/water/ChargeVersionsService', () => {
       expect(url).to.equal(expectedUrl);
     });
   });
+
+  experiment('.getDefaultChargesForLicenceVersion', () => {
+    test('passes the expected URL to the service request', async () => {
+      const service = new ChargeVersionsService('http://127.0.0.1:8001/water/1.0');
+      await service.getDefaultChargesForLicenceVersion('licence-version-id');
+
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-versions/default/licence-version-id`;
+      const [url] = serviceRequest.get.lastCall.args;
+
+      expect(url).to.equal(expectedUrl);
+    });
+  });
 });

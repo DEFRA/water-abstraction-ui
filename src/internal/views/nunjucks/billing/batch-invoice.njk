@@ -51,6 +51,7 @@ invoiceDebitsTotal %}
       {% endif %}
     </div>
   </div>
+
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-one-half">
       <h2>
@@ -83,6 +84,22 @@ invoiceDebitsTotal %}
           <p>
             <a href="{{ licence.link }}">View licence</a>
           </p>
+
+          {% for transaction in licence.minimumChargeTransactions %}
+            {% set minChargeHtml %}
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+                {{ transaction.value | charge }}
+              </p>
+              <p class="govuk-body">
+              Minimum charge applied
+              </p>
+            {% endset %}
+
+             {{ govukInsetText({
+              html : minChargeHtml,
+              classes: 'govuk-!-padding-bottom-0 govuk-!-padding-top-0'
+            }) }}
+          {% endfor %}
 
           {% for group in licence.chargeElements %}
 

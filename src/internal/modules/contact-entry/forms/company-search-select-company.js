@@ -1,15 +1,16 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
+const { getAddressText } = require('../../address-entry/lib/helpers');
 
-const getCompanyText = company => {
-  return `${company.name} (${company.companyNumber})`;
+const getCompanyText = row => {
+  return `${row.company.name}, ${row.address ? getAddressText(row.address) : row.company.companyNumber}`;
 };
 
 const getCompanyChoices = companies => {
   const choices = companies.map(record => {
     return ({
       value: record.company.companyNumber,
-      label: getCompanyText(record.company)
+      label: getCompanyText(record)
     });
   });
   return choices;

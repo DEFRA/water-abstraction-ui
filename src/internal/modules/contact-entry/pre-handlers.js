@@ -1,5 +1,6 @@
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
+const sessionHelper = require('shared/lib/session-helpers');
 
 const searchForCompaniesByString = async request => {
   const { searchQuery } = request.payload || request.query;
@@ -16,7 +17,7 @@ const searchForCompaniesByString = async request => {
 
 const searchForAddressesByEntityId = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { id } = await request.yar.get(sessionKey);
+  const { id } = await sessionHelper.saveToSession(request, sessionKey);
   try {
     const data = await services.water.companies.getAddresses(id);
     return data;
@@ -30,7 +31,7 @@ const searchForAddressesByEntityId = async request => {
 
 const searchForCompaniesInCompaniesHouse = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { companyNameOrNumber } = await request.yar.get(sessionKey);
+  const { companyNameOrNumber } = await sessionHelper.saveToSession(request, sessionKey);
   if (!companyNameOrNumber) {
     return [];
   } else {
@@ -43,7 +44,7 @@ const searchForCompaniesInCompaniesHouse = async request => {
 
 const returnCompanyAddressesFromCompaniesHouse = async request => {
   const { sessionKey } = request.payload || request.query;
-  const { selectedCompaniesHouseNumber } = await request.yar.get(sessionKey);
+  const { selectedCompaniesHouseNumber } = await sessionHelper.saveToSession(request, sessionKey);
   if (!selectedCompaniesHouseNumber) {
     return [];
   } else {

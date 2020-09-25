@@ -19,7 +19,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const companyId = uuid();
   const licenceId = uuid();
   const licenceNumber = '01/123';
-  const companyName = 'test company name';
+  const companyName = 'Test Company Name';
   const addressId = uuid();
   let h, request;
 
@@ -105,7 +105,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       const args = h.view.lastCall.args[1];
       expect(args.caption).to.equal('Licence 01/123');
       expect(args.back).to.equal('/manage');
-      expect(args.pageTitle).to.equal('Setup a contact for test company name');
+      expect(args.pageTitle).to.equal('Setup a contact for Test Company Name');
     });
 
     test('calls the data service to get the company contacts with the correct company id', async () => {
@@ -214,7 +214,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       const args = h.view.lastCall.args[1];
       expect(args.caption).to.equal('Licence 01/123');
       expect(args.back).to.equal('/manage');
-      expect(args.pageTitle).to.equal('Add a new contact for test company name');
+      expect(args.pageTitle).to.equal('Add a new contact for Test Company Name');
     });
   });
 

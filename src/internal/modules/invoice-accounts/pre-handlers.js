@@ -16,9 +16,7 @@ const getDisplayedCompany = async (request) => {
   }
 };
 
-const getCompany = async (request) => {
-  return water.companies.getCompany(request.params.companyId);
-}
+const getCompany = async (request) => water.companies.getCompany(request.params.companyId);
 
 const config = {
   loadCompany: {

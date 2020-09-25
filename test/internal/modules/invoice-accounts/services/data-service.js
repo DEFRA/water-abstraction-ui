@@ -68,8 +68,8 @@ experiment('internal/modules/invoice-accounts/lib/data-service', () => {
       expect(data).to.equal(licence);
     });
 
-    test('returns the return value from the session helpers', () => {
-      const result = dataService.sessionManager(request, regionId, companyId);
+    test('returns the return value from the session helpers', async () => {
+      const result = await dataService.sessionManager(request, regionId, companyId);
       expect(result).to.equal(address);
     });
   });

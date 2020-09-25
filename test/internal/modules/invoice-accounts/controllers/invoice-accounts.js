@@ -19,7 +19,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const companyId = uuid();
   const licenceId = uuid();
   const licenceNumber = '01/123';
-  const companyName = 'test company name';
+  const companyName = 'Test Company Name';
   const addressId = uuid();
   let h, request;
 
@@ -295,7 +295,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(args[2]).to.equal(companyId);
       // no data to merge is passed to the session
       expect(typeof args[3]).to.equal('object');
-      expect(dataService.sessionManager.calledOnce).to.be.true();
+      expect(dataService.sessionManager.called).to.be.true();
     });
     test('redirects the client the fao page', async () => {
       expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`));

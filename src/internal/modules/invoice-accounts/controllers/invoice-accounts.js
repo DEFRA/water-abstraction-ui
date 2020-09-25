@@ -27,7 +27,7 @@ const getCompany = async (request, h) => {
   // licenceId is an optional query param. if supplied it will be displayed as the caption on the forms for the session
   const { licenceNumber } = licenceId ? await dataService.getLicenceById(licenceId) : { licenceNumber: null };
 
-  await dataService.sessionManager(request, regionId, companyId, { viewData: { licenceNumber, companyName: company.name, redirectPath } });
+  await dataService.sessionManager(request, regionId, companyId, { viewData: { licenceNumber, licenceId, companyName: company.name, redirectPath } });
 
   // The company name and licence number set here will be used in the select address page
   return h.view('nunjucks/form', {

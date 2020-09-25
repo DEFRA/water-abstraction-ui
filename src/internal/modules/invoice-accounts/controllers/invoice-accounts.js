@@ -66,7 +66,7 @@ const getCreateAddress = async (request, h) => {
 const getAddressEntered = async (request, h) => {
   const { regionId, companyId } = request.params;
   // Fetch the address using the address flow session key
-  const address = sessionHelper.saveToSession(request, ADDRESS_FLOW_SESSION_KEY);
+  const address = await sessionHelper.saveToSession(request, ADDRESS_FLOW_SESSION_KEY);
   // Store the address in the session object
   dataService.sessionManager(request, regionId, companyId, {
     address: {
@@ -115,7 +115,7 @@ const postAddress = async (request, h) => {
 const getContactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { sessionKey } = request.query;
-  const currentState = sessionHelper.saveToSession(request, sessionKey);
+  const currentState = await sessionHelper.saveToSession(request, sessionKey);
   const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
   if (currentState.companyId !== companyId) {
     const companyName = titleCase(await helpers.getCompanyName(request));

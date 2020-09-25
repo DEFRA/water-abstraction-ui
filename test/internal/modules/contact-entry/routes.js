@@ -7,7 +7,7 @@ const testHelpers = require('../../test-helpers');
 const uuid = require('uuid');
 const queryString = require('querystring');
 
-experiment('internal/modules/invoice-accounts/routes', () => {
+experiment('internal/modules/contact-entry/routes', () => {
   experiment('.getSelectContact', () => {
     let server;
 
@@ -158,23 +158,6 @@ experiment('internal/modules/invoice-accounts/routes', () => {
     test('has the correct controller', () => {
       expect(routes.getEnterNewDetails.handler)
         .to.equal(controllers.getDetailsController);
-    });
-  });
-
-  experiment('.postEnterPersonDetails', () => {
-    test('has the correct method', () => {
-      expect(routes.postEnterPersonDetails.method)
-        .to.equal('POST');
-    });
-
-    test('has the correct path', () => {
-      expect(routes.postEnterPersonDetails.path)
-        .to.equal('/contact-entry/new/details/person');
-    });
-
-    test('has the correct controller', () => {
-      expect(routes.postEnterPersonDetails.handler)
-        .to.equal(controllers.postPersonDetailsController);
     });
   });
 

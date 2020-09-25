@@ -9,8 +9,14 @@ const tempId = '00000000-0000-0000-0000-000000000000';
 
 const getDisplayedCompany = async (request) => {
   const session = await dataService.sessionManager(request, request.params.regionId, request.params.companyId);
-  if (session.agent && session.agent.id !== tempId && session.agent.id !== null) {
-    return water.companies.getCompany(session.agent.id);
+  if (session.agent) {
+    if (session.agent.id === null) {
+      return water.companies.getCompany(request.params.companyId);
+    } else if (session.agent.id !== tempId) {
+      return water.companies.getCompany(session.agent.id);
+    } else {
+      return session.agent;
+    }
   } else {
     return water.companies.getCompany(request.params.companyId);
   }

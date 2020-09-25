@@ -3,6 +3,7 @@
 const sessionHelpers = require('shared/lib/session-helpers');
 const services = require('../../../lib/connectors/services');
 const { uniqBy } = require('lodash');
+const tempId = '00000000-0000-0000-0000-000000000000';
 
 const sessionManager = async (request, regionId, companyId, data) => {
   const sessionKey = `newInvoiceAccountFlow.${regionId}.${companyId}`;
@@ -21,7 +22,7 @@ const getCompanyAddresses = async (companyId, session) => {
 
   // Get the addresses that belong to the agent, if there is an agent
   const agentId = session.agent ? session.agent.id : null;
-  if (agentId) {
+  if (agentId !== null && agentId !== tempId) {
     let agentAddresses = await services.water.companies.getAddresses(agentId);
     return uniqBy(responseArray.concat(agentAddresses).map(x => x.address), 'id');
   } else {

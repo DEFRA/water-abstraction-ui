@@ -19,12 +19,13 @@ const ADDRESS_FLOW_SESSION_KEY = require('../../../../src/internal/modules/addre
 let contactId = uuid();
 let companyId = uuid();
 let regionId = uuid();
+let back = '/some/return/url';
 
 const createRequest = (tempSessionKey, contactType = 'organisation') => {
   return ({
     query: {
       sessionKey: tempSessionKey,
-      back: '/some/return/url'
+      back: back
     },
     params: {
       regionId: regionId,
@@ -55,7 +56,7 @@ const createRequest = (tempSessionKey, contactType = 'organisation') => {
     },
     yar: {
       get: sandbox.stub().resolves({
-        back: 'someplace',
+        back: back,
         sessionKey: tempSessionKey,
         originalCompanyId: companyId,
         regionId: regionId,
@@ -183,9 +184,9 @@ experiment('internal/modules/contact-entry/controllers', () => {
       test('yar set is called', async () => {
         expect(request.yar.set.called).to.be.true();
       });
-      test('the client is redirected to provide additional details about the new contact', async () => {
-        expect(h.redirect.lastCall.args[0]).to.equal(
-          `/contact-entry/new/details?sessionKey=${tempSessionKey}`
+      test('the client is redirected to address entry', async () => {
+        expect(h.redirect.lastCall.args[0]).to.startWith(
+          `/address-entry/postcode`
         );
       });
     });
@@ -249,39 +250,6 @@ experiment('internal/modules/contact-entry/controllers', () => {
     });
   });
 
-  experiment('.postPersonDetailsController', () => {
-    let tempSessionKey;
-
-    experiment('when the form is valid', () => {
-      beforeEach(async () => {
-        tempSessionKey = uuid();
-        request = createRequest(tempSessionKey);
-        await controller.postPersonDetailsController({ ...request, payload: { personFullName: 'Mr John Doe', sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
-      });
-      test('yar set is called', async () => {
-        expect(request.yar.set.called).to.be.true();
-      });
-      test('the client is redirected to the address entry module', async () => {
-        let pathCalled = h.redirect.lastCall.args[0];
-        expect(pathCalled.substring(0, pathCalled.indexOf('?'))).to.equal(
-          `/address-entry/postcode`
-        );
-      });
-    });
-    experiment('when the form is invalid', () => {
-      beforeEach(async () => {
-        tempSessionKey = uuid();
-        request = createRequest(tempSessionKey);
-        await controller.postPersonDetailsController({ ...request, payload: { personFullName: undefined, sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
-      });
-      test('the client is redirected back to the form', async () => {
-        expect(h.postRedirectGet.lastCall.args[0].action).to.equal(
-          `/contact-entry/new/details/person`
-        );
-      });
-    });
-  });
-
   experiment('.getAfterAddressEntryController', () => {
     let tempSessionKey;
     beforeEach(async () => {
@@ -298,11 +266,9 @@ experiment('internal/modules/contact-entry/controllers', () => {
       expect(request.yar.set.called).to.be.true();
     });
 
-    test('the client is redirected to the invoice account module', async () => {
+    test('the client is redirected to the back parameter', async () => {
       let pathCalled = h.redirect.lastCall.args[0];
-      expect(pathCalled).to.startWith(
-        `/invoice-accounts/create/`
-      );
+      expect(pathCalled).to.startWith(back);
     });
   });
 
@@ -439,11 +405,9 @@ experiment('internal/modules/contact-entry/controllers', () => {
       test('yar set is called', async () => {
         expect(request.yar.set.called).to.be.true();
       });
-      test('the client is redirected to the invoice account module', async () => {
+      test('the client is redirected to the back param', async () => {
         let pathCalled = h.redirect.lastCall.args[0];
-        expect(pathCalled).to.startWith(
-          `/invoice-accounts/create/`
-        );
+        expect(pathCalled).to.startWith(back);
       });
     });
     experiment('when the form is invalid', () => {
@@ -504,11 +468,9 @@ experiment('internal/modules/contact-entry/controllers', () => {
       test('yar set is called', async () => {
         expect(request.yar.set.called).to.be.true();
       });
-      test('the client is redirected to the invoice account module', async () => {
+      test('the client is redirected to the back param', async () => {
         let pathCalled = h.redirect.lastCall.args[0];
-        expect(pathCalled).to.startWith(
-          `/invoice-accounts/create/`
-        );
+        expect(pathCalled).to.startWith(back);
       });
     });
     experiment('when the form is valid because the user would like to create a new address', () => {

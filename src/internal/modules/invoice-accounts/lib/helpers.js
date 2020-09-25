@@ -19,9 +19,11 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
       searchQuery: companySearch,
       regionId: regionId,
       originalCompanyId: companyId,
-      back: `/invoice-accounts/create/${regionId}/${companyId}`
+      back: `/invoice-accounts/create/${regionId}/${companyId}/contact-entry-complete`
     });
     return `/contact-entry/select-contact?${queryTail}`;
+  } else if (selectedCompany === tempId) { // Handle if the same agent is being re-selected again
+    return `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
   } else {
     dataService.sessionManager(request, regionId, companyId, { agent: { id: selectedCompany !== companyId ? selectedCompany : null } });
     return `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
@@ -76,7 +78,7 @@ const getAgentCompany = async (session) => {
     let agent;
     if (session.agent.id === tempId) {
       agent = session.agent;
-    } else if (session.agent.id == null) {
+    } else if (session.agent.id === null) {
       agent = session.agent;
     } else {
       agent = await dataService.getCompany(session.agent.id);

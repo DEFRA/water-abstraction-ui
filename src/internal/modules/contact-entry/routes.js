@@ -73,12 +73,6 @@ module.exports = {
       }
     }
   },
-  postEnterPersonDetails: {
-    // Route for posting the name of a new person contact
-    method: 'POST',
-    path: '/contact-entry/new/details/person',
-    handler: controllers.postPersonDetailsController
-  },
   getAfterAddressEntry: {
     method: 'GET',
     path: '/contact-entry/new/details/after-address-entry',

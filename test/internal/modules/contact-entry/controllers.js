@@ -96,7 +96,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('has the page title', async () => {
@@ -152,7 +152,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('has the page title', async () => {
@@ -212,7 +212,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/contact-entry/basic-form');
+        expect(template).to.equal('nunjucks/form');
       });
 
       test('passes through request.view', async () => {
@@ -234,7 +234,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/contact-entry/basic-form');
+        expect(template).to.equal('nunjucks/form');
       });
 
       test('passes through request.view', async () => {
@@ -348,7 +348,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('passes through request.view', async () => {
@@ -404,7 +404,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('passes through request.view', async () => {
@@ -472,7 +472,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/contact-entry/basic-form');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('passes through request.view', async () => {

@@ -2,8 +2,8 @@ const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { deleteAgreements } = require('internal/lib/constants').scope;
+const allowedScopes = [deleteAgreements];
 
 module.exports = {
   getDeleteAgreement: {

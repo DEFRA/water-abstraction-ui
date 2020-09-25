@@ -33,7 +33,7 @@ if (isAcceptanceTestTarget) {
             licenceId: Joi.string().uuid().optional()
           }
         },
-        pre: [{ method: preHandlers.loadCompany, assign: 'company' }]
+        pre: [{ method: preHandlers.loadCompany, assign: 'company' }, { method: preHandlers.getDisplayedCompany, assign: 'defaultCompany' }]
       }
     },
     postCompany: {
@@ -97,10 +97,10 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
-    contactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
+    getContactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
-      handler: controller.contactEntryHandover,
+      handler: controller.getContactEntryHandover,
       config: {
         auth: { scope: allowedScopes },
         description: 'Redirects the user into the invoice-account flow after a new contact has been created',

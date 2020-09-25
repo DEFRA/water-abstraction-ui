@@ -281,9 +281,9 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
   });
 
-  experiment('.contactEntryHandover', () => {
+  experiment('.getContactEntryHandover', () => {
     beforeEach(async () => {
-      await controller.contactEntryHandover(request, h);
+      await controller.getContactEntryHandover(request, h);
     });
     test('calls yar.get', async () => {
       expect(request.yar.get.called).to.be.true();

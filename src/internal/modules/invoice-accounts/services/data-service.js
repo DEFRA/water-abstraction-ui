@@ -4,9 +4,10 @@ const sessionHelpers = require('shared/lib/session-helpers');
 const services = require('../../../lib/connectors/services');
 const { uniqBy } = require('lodash');
 
-const sessionManager = (request, regionId, companyId, data) => {
+const sessionManager = async (request, regionId, companyId, data) => {
   const sessionKey = `newInvoiceAccountFlow.${regionId}.${companyId}`;
-  return sessionHelpers.saveToSession(request, sessionKey, data);
+  let response = await sessionHelpers.saveToSession(request, sessionKey, data);
+  return response;
 };
 
 const getCompany = async (companyId) => {

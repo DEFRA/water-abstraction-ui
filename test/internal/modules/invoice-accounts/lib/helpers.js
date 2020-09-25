@@ -65,6 +65,12 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       expect(response).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
     });
 
+    test('returns the correct path if selectedCompany === tempId', async () => {
+      forms.getValues.returns({ selectedCompany: tempId, companySearch: '' });
+      const response = helpers.processCompanyFormData(request, regionId, companyId, formData);
+      expect(response).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
+    });
+
     test('adds the agent: null to session data if selectedCompany === companyId', async () => {
       forms.getValues.returns({ selectedCompany: companyId, companySearch: '' });
       helpers.processCompanyFormData(request, regionId, companyId, formData);
@@ -127,6 +133,11 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('returns the agent company from the session if the agent id is null', async () => {
       const response = await helpers.getAgentCompany({ agent: { id: null, name: 'A Company Name' } });
       expect(response).to.equal({ id: null, name: 'A Company Name' });
+    });
+
+    test('returns null if the agent object is nullish', async () => {
+      const response = await helpers.getAgentCompany();
+      expect(response).to.equal(null);
     });
   });
 

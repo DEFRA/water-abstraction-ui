@@ -20,7 +20,12 @@ const createError = code => {
 
 experiment('internal/modules/agreements/pre-handlers', () => {
   beforeEach(() => {
-    sandbox.stub(services.water.agreements, 'getAgreement').resolves({ id: 'test-agreement-id', code: 'S127' });
+    sandbox.stub(services.water.agreements, 'getAgreement').resolves({
+      id: 'test-agreement-id',
+      agreement: {
+        code: 'S127'
+      }
+    });
     sandbox.stub(services.water.licences, 'getLicenceById').resolves({ id: 'test-licence-id' });
     sandbox.stub(services.crm.documents, 'getWaterLicence').resolves({ document_id: 'test-document-id' });
   });
@@ -47,8 +52,10 @@ experiment('internal/modules/agreements/pre-handlers', () => {
     test('returns the agreement with the expected description', () => {
       expect(result).to.equal({
         id: 'test-agreement-id',
-        code: 'S127',
-        description: 'Two-part tariff (S127)'
+        agreement: {
+          code: 'S127',
+          description: 'Two-part tariff (S127)'
+        }
       });
     });
 

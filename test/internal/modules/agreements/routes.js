@@ -11,9 +11,9 @@ const routes = require('internal/modules/agreements/routes');
 
 experiment('internal/modules/agreements/routes', () => {
   experiment('.getDeleteAgreement', () => {
-    test('limits scope to users with charges role', async () => {
+    test('limits scope to users with delete_agreements role', async () => {
       expect(routes.getDeleteAgreement.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.deleteAgreements]);
     });
 
     test('uses the loadAgreement pre handler', async () => {
@@ -50,7 +50,7 @@ experiment('internal/modules/agreements/routes', () => {
   experiment('.postDeleteAgreement', () => {
     test('limits scope to users with charges role', async () => {
       expect(routes.postDeleteAgreement.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.deleteAgreements]);
     });
 
     test('uses the loadDocument pre handler', async () => {

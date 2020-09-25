@@ -11,7 +11,7 @@ const ROUTING_CONFIG = {
   time: { pageTitle: 'Set time limit?', nextStep: 'source', back: 'quantities' },
   source: { pageTitle: 'Select source', nextStep: 'season', back: 'time' },
   season: { pageTitle: 'Select season', nextStep: 'loss', back: 'source' },
-  loss: { pageTitle: 'Select loss category', nextStep: 'loss', back: 'season' }
+  loss: { pageTitle: 'Select loss category', back: 'season' }
 };
 
 const LOSS_HIGH = 'high';

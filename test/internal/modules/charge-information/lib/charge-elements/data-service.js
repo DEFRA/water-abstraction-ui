@@ -22,7 +22,7 @@ experiment('internal/modules/charge-information/lib/charge-elements/data-service
     beforeEach(async () => {
       request = {
         pre: {
-          draftChargeInformation: { abstractionData: false }
+          draftChargeInformation: { chargeElements: [] }
         },
         server: { methods: { setDraftChargeInformation: sandbox.stub() } },
         yar: { clear: sandbox.stub() }

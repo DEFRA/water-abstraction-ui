@@ -47,7 +47,6 @@ const getDateField = (key, sessionData) => {
       'date.min': getError(key).beforeChargeStart,
       'date.max': getError(key).afterLicenceExpired,
       'any.required': getError(key).empty,
-      'string.isoDate': getError(key).invalid,
       'date.isoDate': getError(key).invalid,
       'date.base': getError(key).invalid
     }
@@ -81,9 +80,8 @@ const getSelectedValue = sessionData => {
   */
 const form = (request, sessionData = {}) => {
   const { csrfToken } = request.view;
-  const { draftChargeInformation, licence } = request.pre;
-  const { elementId } = request.params;
-  const action = routing.getChargeElementStep(licence.id, elementId, 'time');
+  const { elementId, licenceId } = request.params;
+  const action = routing.getChargeElementStep(licenceId, elementId, 'time');
 
   const f = formFactory(action, 'POST');
 
@@ -95,8 +93,6 @@ const form = (request, sessionData = {}) => {
     },
     choices: options(sessionData)
   }, getSelectedValue(sessionData)));
-  f.fields.push(fields.hidden('chargeStartDate', {}, draftChargeInformation.startDate));
-  f.fields.push(fields.hidden('expiredDate', {}, licence.expiredDate || '9999-01-01'));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -104,18 +100,18 @@ const form = (request, sessionData = {}) => {
 };
 
 const schema = (request) => {
+  const { startDate } = request.draftChargeInformation;
+  const expiredDate = request.licence.expiredDate || '9999-01-01';
   return {
-    expiredDate: Joi.date().iso(),
-    chargeStartDate: Joi.date().iso(),
     csrf_token: Joi.string().uuid().required(),
     timeLimitedPeriod: Joi.string().required().valid(['yes', 'no']),
-    startDate: Joi.date().allow('').when('timeLimitedPeriod', {
+    startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().min(Joi.ref('chargeStartDate')).required()
+      then: Joi.date().iso().min(startDate)
     }),
-    endDate: Joi.date().allow('').when('timeLimitedPeriod', {
+    endDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().greater(Joi.ref('startDate')).max(Joi.ref('expiredDate')).required()
+      then: Joi.date().iso().greater(startDate).max(expiredDate)
     })
   };
 };

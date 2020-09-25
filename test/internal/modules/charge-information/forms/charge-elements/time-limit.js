@@ -67,167 +67,108 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
   experiment('schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate(testUuid);
+        const result = schema(createRequest().pre).csrf_token.validate(testUuid);
         expect(result.error).to.be.null();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest().pre).csrf_token.validate('sciccors');
         expect(result.error).to.exist();
       });
     });
 
     experiment('timeLimitedPeriod', () => {
       test('validates yes', async () => {
-        const result = schema().timeLimitedPeriod.validate('yes');
+        const result = schema(createRequest().pre).timeLimitedPeriod.validate('yes');
         expect(result.error).to.not.exist();
       });
       test('validates no', async () => {
-        const result = schema().timeLimitedPeriod.validate('no');
+        const result = schema(createRequest().pre).timeLimitedPeriod.validate('no');
         expect(result.error).to.not.exist();
       });
 
       test('can not be a nomral string', async () => {
-        const result = schema().timeLimitedPeriod.validate('something');
-        expect(result.error).to.exist();
-      });
-    });
-
-    experiment('expiredDate', () => {
-      test('validates yes', async () => {
-        const result = schema().expiredDate.validate('2001-01-02');
-        expect(result.error).to.not.exist();
-      });
-      test('validates no', async () => {
-        const result = schema().expiredDate.validate('2001-t1-sd');
-        expect(result.error).to.exist();
-      });
-    });
-    experiment('chargeStartDate', () => {
-      test('validates yes', async () => {
-        const result = schema().chargeStartDate.validate('2001-01-02');
-        expect(result.error).to.not.exist();
-      });
-      test('validates no', async () => {
-        const result = schema().chargeStartDate.validate('2001-t1-sd');
+        const result = schema(createRequest().pre).timeLimitedPeriod.validate('something');
         expect(result.error).to.exist();
       });
     });
     experiment('startDate', () => {
       test('accepts a valid date', async () => {
-        const result = schema().startDate.validate('2001-01-02');
+        const result = schema(createRequest().pre).startDate.validate('2001-01-02');
         expect(result.error).to.not.exist();
       });
       test('accepts an empty string', async () => {
-        const result = schema().startDate.validate('');
+        const result = schema(createRequest().pre).startDate.validate('');
         expect(result.error).to.not.exist();
-      });
-      test('validates no', async () => {
-        const result = schema().startDate.validate('2001-t1-sd');
-        expect(result.error).to.exist();
       });
       test('is not required if timeLimitedPeriod is no', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).not.to.exist();
       });
     });
     experiment('endDate', () => {
       test('accepts a valid date', async () => {
-        const result = schema().endDate.validate('2001-01-02');
+        const result = schema(createRequest().pre).endDate.validate('2001-01-02');
         expect(result.error).to.not.exist();
       });
       test('accepts an empty string', async () => {
-        const result = schema().endDate.validate('');
+        const result = schema(createRequest().pre).endDate.validate('');
         expect(result.error).to.not.exist();
-      });
-      test('validates no', async () => {
-        const result = schema().endDate.validate('2001-t1-sd');
-        expect(result.error).to.exist();
       });
       test('is not required if timeLimitedPeriod is no/false', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).not.to.exist();
       });
     });
     experiment('when timeLimitedPeriod is yes', () => {
-      test('startDate is required', async () => {
-        const data = {
-          csrf_token: testUuid,
-          timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
-          // missing start date
-          endDate: '2001-02-28'
-        };
-        const result = Joi.validate(data, schema());
-        expect(result.error).to.exist();
-      });
-      test('endDate is required', async () => {
-        const data = {
-          csrf_token: testUuid,
-          timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
-          startDate: '2001-02-28'
-          // missing endDate
-        };
-        const result = Joi.validate(data, schema());
-        expect(result.error).to.exist();
-      });
       test('accepts start and end dates', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
           startDate: '2001-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).not.to.exist();
       });
       test('fails when startDate is before chargeStartDate', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
           startDate: '2000-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).to.exist();
       });
       test('fails when endDate is after expiredDate', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
           startDate: '2001-01-02',
-          endDate: '2002-02-08'
+          endDate: '2002-02-08',
+          draftChargeInformation: { startDate: '2001-01-01' },
+          licence: { expiredDate: '2001-12-31' }
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).to.exist();
       });
       test('is OK when start and end dates are on the boundaries', async () => {
         const data = {
           csrf_token: testUuid,
           timeLimitedPeriod: 'yes',
-          expiredDate: '2001-12-31',
-          chargeStartDate: '2001-01-01',
           startDate: '2001-01-01',
           endDate: '2001-12-31'
         };
-        const result = Joi.validate(data, schema());
+        const result = Joi.validate(data, schema(createRequest().pre));
         expect(result.error).not.to.exist();
       });
     });

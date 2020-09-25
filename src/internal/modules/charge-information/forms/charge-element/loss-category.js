@@ -3,12 +3,12 @@
 const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { has, capitalize } = require('lodash');
+const { capitalize } = require('lodash');
 const { LOSS_CATEGORIES } = require('../../lib/charge-elements/constants');
 
 const options = (defaultChargeData, selectedPurpose) => {
-  const defaultLoss = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose.id);
-  const loss = has(defaultLoss, 'loss') ? defaultLoss.loss : 'high';
+  const { loss } = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose.id) || '';
+
   return LOSS_CATEGORIES.map(category => {
     const option = { value: category, label: capitalize(category) };
     if (category === loss) { option.hint = 'This is the default loss category for the purpose chosen'; };

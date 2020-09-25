@@ -15,16 +15,7 @@ const formHelpers = require('../../../../../src/shared/lib/forms');
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-element');
 
-const routingConfig = {
-  purpose: { pageTitle: 'Select a purpose use', nextStep: 'description' },
-  description: { pageTitle: 'Add element description', nextStep: 'abstraction', back: 'purpose' },
-  abstraction: { pageTitle: 'Set abstraction period', nextStep: 'quantities', back: 'description' },
-  quantities: { pageTitle: 'Add licence quantities', nextStep: 'time', back: 'abstraction' },
-  time: { pageTitle: 'Set time limit?', nextStep: 'source', back: 'quantities' },
-  source: { pageTitle: 'Select source', nextStep: 'season', back: 'time' },
-  season: { pageTitle: 'Select season', nextStep: 'loss', back: 'source' },
-  loss: { pageTitle: 'Select loss category', nextStep: 'loss', back: 'season' }
-};
+const { ROUTING_CONFIG } = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 
 const createRequest = (step) => ({
   params: {
@@ -43,7 +34,8 @@ const createRequest = (step) => ({
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {
-      startDate: '2001-01-01'
+      startDate: '2001-01-01',
+      chargeElements: []
     },
     defaultCharges: [
       {
@@ -67,9 +59,6 @@ const createRequest = (step) => ({
   }
 });
 
-// const getReadableDate = str => moment(str).format('D MMMM YYYY');
-// const getISODate = str => moment(str).format('YYYY-MM-DD');
-
 experiment('internal/modules/charge-information/controllers/charge-element', () => {
   let request, h;
 
@@ -82,7 +71,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
   });
 
   experiment('.getChargeElementStep', () => {
-    const validSteps = ['purpose', 'description', 'abstraction', 'quantities', 'time', 'source', 'season', 'loss'];
+    const validSteps = Object.keys(ROUTING_CONFIG);
 
     validSteps.forEach(step => {
       test(`the controller returns the correct form for ${step}`, async () => {
@@ -95,14 +84,14 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
         request = createRequest(step);
         await controller.getChargeElementStep(request, h);
         const { pageTitle } = h.view.lastCall.args[1];
-        expect(pageTitle).to.equal(routingConfig[step].pageTitle);
+        expect(pageTitle).to.equal(ROUTING_CONFIG[step].pageTitle);
       });
       test('sets a back link', async () => {
         request = createRequest(step);
         await controller.getChargeElementStep(request, h);
         const { back } = h.view.lastCall.args[1];
         if (step !== 'purpose') {
-          expect(back).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${routingConfig[step].back}`);
+          expect(back).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${ROUTING_CONFIG[step].back}`);
         } else { expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data'); }
       });
       test('has a caption', async () => {
@@ -131,7 +120,11 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
     experiment('when the form isValid = true', () => {
       beforeEach(async => {
         sandbox.stub(formHelpers, 'handleRequest').returns({ isValid: true });
-        sandbox.stub(formHelpers, 'getValues').returns({ purpose: 'purpose-use-id' });
+        sandbox.stub(formHelpers, 'getValues').returns({
+          purpose: 'purpose-use-id',
+          startDate: '01-01',
+          endDate: '01-02'
+        });
       });
       afterEach(async => {
         sandbox.restore();
@@ -142,7 +135,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           await controller.postChargeElementStep(request, h);
           const args = h.redirect.lastCall.args;
           if (step !== 'loss') {
-            expect(args[0]).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${routingConfig[step].nextStep}`);
+            expect(args[0]).to.equal(`/licences/test-licence-id/charge-information/charge-element/test-element-id/${ROUTING_CONFIG[step].nextStep}`);
           } else { expect(args[0]).to.equal('/licences/test-licence-id/charge-information/check'); }
         });
       });

@@ -9,7 +9,7 @@ const getFormField = (key, sessionData) => {
   const fieldName = `${key}AnnualQuantity`;
   return fields.text(fieldName, {
     controlClass: 'govuk-input govuk-input--width-10',
-    label: capitalize(key),
+    label: `${capitalize(key)}${key === 'billable' ? ' (optional)' : ''}`,
     suffix: 'megalitres per year',
     errors: {
       'any.empty': {

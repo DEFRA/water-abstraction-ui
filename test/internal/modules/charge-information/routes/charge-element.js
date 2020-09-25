@@ -12,17 +12,8 @@ const { expect } = require('@hapi/code');
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
 const routes = require('../../../../../src/internal/modules/charge-information/routes/charge-element');
 const testHelpers = require('../../../test-helpers');
-
-const validChargeElementSteps = [
-  'purpose',
-  'description',
-  'abstraction',
-  'quantities',
-  'time',
-  'source',
-  'season',
-  'loss'
-];
+const { ROUTING_CONFIG } = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
+const validChargeElementSteps = Object.keys(ROUTING_CONFIG);
 
 experiment('internal/modules/charge-information/routes', () => {
   let server;
@@ -42,7 +33,6 @@ experiment('internal/modules/charge-information/routes', () => {
       const request = {
         url: `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`
       };
-
       const response = await server.inject(request);
       expect(response.payload).to.equal('Test handler');
     });

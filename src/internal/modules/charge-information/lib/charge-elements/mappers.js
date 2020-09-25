@@ -1,8 +1,8 @@
 'use-strict';
 
 const abstraction = (formValues) => {
-  const [startMonth, startDay] = (formValues.startDate || '').toString().split(/[- T]/g);
-  const [endMonth, endDay] = (formValues.endDate || '').toString().split(/[- T]/g);
+  const [startMonth, startDay] = (formValues.startDate).toString().split(/[- T]/g);
+  const [endMonth, endDay] = (formValues.endDate).toString().split(/[- T]/g);
   return {
     abstractionPeriod: {
       startDay,
@@ -21,7 +21,7 @@ const time = (formValues) => {
         endDate: formValues.endDate
       }
     };
-  } else return { timeLimitedPeriod: false };
+  } else return { timeLimitedPeriod: null };
 };
 
 const purpose = (formValues, defaultCharges) => {

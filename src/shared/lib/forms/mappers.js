@@ -110,9 +110,9 @@ const dayOfYearMapper = {
   import: (fieldName, payload) => {
     const day = payload[fieldName + '-day'];
     const month = payload[fieldName + '-month'];
-    const date = moment(`2001-${formatDateSegment(month)}-${formatDateSegment(day)}`);
+    const date = moment(`2001-${formatDateSegment(month === '' ? 'invalid' : month)}-${formatDateSegment(day === '' ? 'invalid' : day)}`);
     // add the year if it is a valid date otherwise add invalid to prevent Javascript to convert this as a date that might pass the Joi.date() validation
-    const value = (date.isValid()) ? `2001-${formatDateSegment(month)}-${formatDateSegment(day)}` : `invalid${formatDateSegment(month)}-${formatDateSegment(day)}`;
+    const value = (date.isValid()) ? date.format('YYYY-MM-DD') : `invalid${formatDateSegment(month)}-${formatDateSegment(day)}`;
     return value;
   },
   postValidate: value => {

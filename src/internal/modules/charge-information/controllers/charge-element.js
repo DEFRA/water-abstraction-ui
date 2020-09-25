@@ -5,13 +5,13 @@ const formHelpers = require('shared/lib/forms');
 const forms = require('../forms/charge-element/index');
 const { omit } = require('lodash');
 const mappers = require('../lib/charge-elements/mappers');
-const dataservice = require('../lib/charge-elements/data-service');
+const dataService = require('../lib/charge-elements/data-service');
 const routing = require('../lib/routing');
 const { ROUTING_CONFIG } = require('../lib/charge-elements/constants');
 
 const getChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
-  const sessionData = dataservice.sessionManager(request, licenceId, elementId);
+  const sessionData = dataService.sessionManager(request, licenceId, elementId);
   return h.view('nunjucks/form', {
     ...request.view,
     caption: `Licence ${request.pre.licence.licenceNumber}`,
@@ -24,7 +24,7 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
-  const schema = forms[step].schema(request.payload);
+  const schema = forms[step].schema({ ...request.payload, ...request.pre });
   const form = formHelpers.handleRequest(forms[step].form(request), request, schema);
   const { defaultCharges } = request.pre;
   if (form.isValid) {
@@ -32,9 +32,9 @@ const postChargeElementStep = async (request, h) => {
     // mapp the form data before saving it to the session
     const data = mappers[step] ? mappers[step](formData, defaultCharges) : formData;
     // save the form values in the session except the csrf token
-    const sessionData = dataservice.sessionManager(request, licenceId, elementId, omit(data, 'csrf_token'));
+    const sessionData = dataService.sessionManager(request, licenceId, elementId, omit(data, 'csrf_token'));
     if (step === 'loss') {
-      dataservice.saveCustomCharge(request, licenceId, elementId, sessionData);
+      dataService.saveCustomCharge(request, licenceId, elementId, sessionData);
       return h.redirect(routing.getCheckData({ id: licenceId }));
     }
     return h.redirect(routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep));

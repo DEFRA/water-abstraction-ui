@@ -45,7 +45,7 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
     });
     test('has a choice for using billableAnnualQuantity', async () => {
       const text = findField(quantitiesForm, 'billableAnnualQuantity');
-      expect(text.options.label).to.equal('Billable');
+      expect(text.options.label).to.equal('Billable (optional)');
     });
   });
 

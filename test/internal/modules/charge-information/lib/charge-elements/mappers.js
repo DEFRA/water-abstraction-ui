@@ -26,12 +26,12 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       const result = time(timeLimitFormValues);
       expect(result).to.be.equal({ timeLimitedPeriod: { startDate: '2001-01-01', endDate: '2001-01-31' } });
     });
-    test('when timelimitedPeriod = yes', () => {
-      timeLimitFormValues.timeLimitedPeriod = false;
+    test('when timelimitedPeriod = no', () => {
+      timeLimitFormValues.timeLimitedPeriod = 'no';
       timeLimitFormValues.startDate = '';
       timeLimitFormValues.endDate = '';
       const result = time(timeLimitFormValues);
-      expect(result).to.be.equal({ timeLimitedPeriod: false });
+      expect(result).to.be.equal({ timeLimitedPeriod: null });
     });
   });
   experiment('.abstraction', () => {

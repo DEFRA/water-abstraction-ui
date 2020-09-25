@@ -2,19 +2,10 @@ const controller = require('../controllers/charge-element');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 const Joi = require('@hapi/joi');
-
 const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
-const chargeElementSteps = [
-  'purpose',
-  'description',
-  'abstraction',
-  'quantities',
-  'time',
-  'source',
-  'season',
-  'loss'
-];
+const { ROUTING_CONFIG } = require('../lib/charge-elements/constants');
+const chargeElementSteps = Object.keys(ROUTING_CONFIG);
 
 module.exports = {
   getChargeElementStep: {

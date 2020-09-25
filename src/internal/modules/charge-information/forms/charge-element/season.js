@@ -34,7 +34,7 @@ const form = (request, sessionData = {}) => {
         message: 'Select a season'
       }
     },
-    choices: options(sessionData.abstractionPeriod || null)
+    choices: options(sessionData.abstractionPeriod)
   }, sessionData.season));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

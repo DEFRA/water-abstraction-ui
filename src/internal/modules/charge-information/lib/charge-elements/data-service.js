@@ -5,13 +5,9 @@ const sessionHelpers = require('shared/lib/session-helpers');
 const saveCustomCharge = (request, licenceId, elementId, sessionData) => {
   const { draftChargeInformation } = request.pre;
   // add the charge element to the draft charge information
-  if (draftChargeInformation.chargeElements) {
-    // if element exist overwrite otherwise add
-    const index = draftChargeInformation.chargeElements.findIndex((element) => element.id === elementId);
-    index >= 0 ? draftChargeInformation.chargeElements[index] = { ...sessionData, id: elementId }
-      : draftChargeInformation.chargeElements.push({ ...sessionData, id: elementId });
-  } else { draftChargeInformation.chargeElements = [{ ...sessionData, id: elementId }]; }
-
+  const index = draftChargeInformation.chargeElements.findIndex((element) => element.id === elementId);
+  index >= 0 ? draftChargeInformation.chargeElements[index] = { ...sessionData, id: elementId }
+    : draftChargeInformation.chargeElements.push({ ...sessionData, id: elementId });
   request.server.methods.setDraftChargeInformation(licenceId, draftChargeInformation);
 };
 

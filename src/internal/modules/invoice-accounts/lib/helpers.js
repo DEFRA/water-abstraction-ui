@@ -46,8 +46,8 @@ const processFaoFormData = (request, regionId, companyId, addFao) => {
   }
 };
 
-const processSelectContactFormData = (request, regionId, companyId, selectedContact, department) => {
-  const session = dataService.sessionManager(request, regionId, companyId);
+const processSelectContactFormData = async (request, regionId, companyId, selectedContact, department) => {
+  const session = await dataService.sessionManager(request, regionId, companyId);
   if (has(session, 'contact')) { dataService.sessionManager(request, regionId, companyId, { contact: null }); }
   // if it is a new department contact
   if (selectedContact === 'department') {

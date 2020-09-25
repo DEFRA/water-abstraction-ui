@@ -16,7 +16,7 @@ const { has, isEmpty, omit, pickBy } = require('lodash');
  */
 const getContactSelect = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const session = dataService.sessionManager(request, regionId, companyId);
+  const session = await dataService.sessionManager(request, regionId, companyId);
   const contacts = await dataService.getCompanyContacts(companyId);
   const selectedContact = has(session, 'contact') ? session.contact : null;
   return h.view('nunjucks/form', {
@@ -53,7 +53,7 @@ const postContactSelect = async (request, h) => {
  */
 const getContactCreate = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const session = dataService.sessionManager(request, regionId, companyId);
+  const session = await dataService.sessionManager(request, regionId, companyId);
   const selectedContact = isEmpty(session.contact) ||
   (has(session.contact, 'department') && !has(session.contact, 'firstName')) ? {} : session.contact;
 
@@ -74,7 +74,7 @@ const postContactCreate = async (request, h) => {
     // remove empty elements where values were left blank on the form
     const formData = pickBy(omit(forms.getValues(form), 'csrf_token'), (value, key) => { return !(isEmpty(value)); });
     // get the session
-    const session = dataService.sessionManager(request, regionId, companyId);
+    const session = await dataService.sessionManager(request, regionId, companyId);
     // reset the session contact if it exists
     if (!isEmpty(session.contact)) { dataService.sessionManager(request, regionId, companyId, { contact: null }); }
     // set the new contact

@@ -118,7 +118,7 @@ const getContactEntryHandover = async (request, h) => {
   const currentState = sessionHelper.saveToSession(request, sessionKey);
   const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
   if (currentState.companyId !== companyId) {
-    let companyName = titleCase(await helpers.getCompanyName(request));
+    const companyName = titleCase(await helpers.getCompanyName(request));
     let newData = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
     newData['viewData']['companyName'] = companyName;
     if (currentState.id === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company

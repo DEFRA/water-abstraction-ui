@@ -20,7 +20,7 @@ const getCompanyAddresses = async (companyId, session) => {
   let responseArray = await services.water.companies.getAddresses(companyId);
 
   // Get the addresses that belong to the agent, if there is an agent
-  let agentId = session.agent ? session.agent.id : null;
+  const agentId = session.agent ? session.agent.id : null;
   if (agentId) {
     let agentAddresses = await services.water.companies.getAddresses(agentId);
     return uniqBy(responseArray.concat(agentAddresses).map(x => x.address), 'id');

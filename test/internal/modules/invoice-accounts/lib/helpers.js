@@ -131,20 +131,20 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
   });
 
   experiment('.processSelectContactFormData', () => {
-    test('if selected contact is department', () => {
+    test('if selected contact is department', async () => {
       const department = 'test department name';
       const selectedContact = 'department';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      await helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
       expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
     });
-    test('saves the contact id if selectedContact is a person with contact id', () => {
+    test('saves the contact id if selectedContact is a person with contact id', async () => {
       const department = 'test department name';
       const selectedContact = 'test-contact-id';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      await helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
@@ -153,21 +153,21 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     });
   });
 
-  experiment('.getContactName', () => {
-    test('if selected contact is department', () => {
+  experiment('.getContactName', async () => {
+    test('if selected contact is department', async () => {
       const department = 'test department name';
       const selectedContact = 'department';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      await helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
       expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
     });
-    test('saves the contact id if selectedContact is a person with contact id', () => {
+    test('saves the contact id if selectedContact is a person with contact id', async () => {
       const department = 'test department name';
       const selectedContact = 'test-contact-id';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
+      await helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);

@@ -85,17 +85,22 @@ const getDetailsController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   const { accountType, companyNameOrNumber, searchQuery, personName } = sessionHelper.saveToSession(request, sessionKey);
   let defaultValue;
+  let form;
+  let pageTitle;
   if (accountType === 'organisation') {
     defaultValue = companyNameOrNumber || searchQuery;
+    form = sessionForms.get(request, companySearch.form(request, defaultValue));
+    pageTitle = 'Enter the company details';
   } else {
     defaultValue = personName || searchQuery;
+    form = sessionForms.get(request, personNameInput.form(request, defaultValue));
+    pageTitle = 'Enter the full name';
   }
-  const form = accountType === 'organisation' ? sessionForms.get(request, companySearch.form(request, defaultValue)) : sessionForms.get(request, personNameInput.form(request, defaultValue));
   return h.view('nunjucks/form', {
     ...request.view,
-    pageTitle: accountType === 'organisation' ? 'Enter the company details' : 'Enter the full name',
+    pageTitle,
     back: request.query.back,
-    form: form
+    form
   });
 };
 

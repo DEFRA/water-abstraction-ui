@@ -1,6 +1,6 @@
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-const { selectContact, selectAddress, selectAccountType, companySearch, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
+const { selectContact, selectAccountType, companySearch, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
 const queryString = require('querystring');
 const sessionHelper = require('shared/lib/session-helpers');
 const ADDRESS_FLOW_SESSION_KEY = require('../address-entry/plugin').SESSION_KEY;
@@ -46,7 +46,12 @@ const postSelectContactController = async (request, h) => {
         id: id,
         companyName: request.pre.contactSearchResults.find(x => x.id === id).name
       });
-      return h.redirect(`/contact-entry/select-address?sessionKey=${sessionKey}`);
+      // Redirect to address entry next
+      const queryTail = queryString.stringify({
+        redirectPath: `/contact-entry/new/details/after-address-entry?sessionKey=${sessionKey}`,
+        back: `/contact-entry/new/details?sessionKey=${sessionKey}`
+      });
+      return h.redirect(`/address-entry/postcode?${queryTail}`);
     }
   }
 };
@@ -209,46 +214,6 @@ const postSelectCompanyAddressController = async (request, h) => {
   }
 };
 
-const getSelectAddressController = async (request, h) => {
-  const { sessionKey } = request.payload || request.query;
-  const { defaultValue } = await sessionHelper.saveToSession(request, sessionKey);
-  return h.view('nunjucks/form', {
-    ...request.view,
-    pageTitle: `Select an address`,
-    back: request.query.back,
-    form: sessionForms.get(request, selectAddress.form(request, defaultValue))
-  });
-};
-
-const postSelectAddressController = async (request, h) => {
-  const { sessionKey } = request.payload || request.query;
-  const { id } = request.payload;
-  const { back } = await sessionHelper.saveToSession(request, sessionKey);
-  const form = forms.handleRequest(
-    selectAddress.form(request),
-    request,
-    selectAddress.schema
-  );
-  // If form is invalid, redirect user back to form
-  if (!form.isValid) {
-    return h.postRedirectGet(form, '/contact-entry/select-address', {
-      sessionKey
-    });
-  } else if (id === 'new') {
-    // Redirect to path for creating a new address (Dana's flow)
-    const queryTail = queryString.stringify({
-      redirectPath: `/contact-entry/new/details/after-address-entry?sessionKey=${sessionKey}`,
-      back: `/contact-entry/new/details?sessionKey=${sessionKey}`
-    });
-    return h.redirect(`/address-entry/postcode?${queryTail}`);
-  } else {
-    // Address has been selected. Store the address ID in yar
-    sessionHelper.saveToSession(request, sessionKey, { addressId: id, address: null });
-    // Redirect the user back into the original flow
-    return h.redirect(`${back}?sessionKey=${sessionKey}`);
-  }
-};
-
 exports.getSelectContactController = getSelectContactController;
 exports.postSelectContactController = postSelectContactController;
 exports.getSelectAccountTypeController = getSelectAccountTypeController;
@@ -260,5 +225,3 @@ exports.getSelectCompanyController = getSelectCompanyController;
 exports.postSelectCompanyController = postSelectCompanyController;
 exports.getSelectCompanyAddressController = getSelectCompanyAddressController;
 exports.postSelectCompanyAddressController = postSelectCompanyAddressController;
-exports.getSelectAddressController = getSelectAddressController;
-exports.postSelectAddressController = postSelectAddressController;

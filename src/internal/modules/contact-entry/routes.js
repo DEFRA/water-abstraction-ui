@@ -144,34 +144,5 @@ module.exports = {
         { method: preHandlers.returnCompanyAddressesFromCompaniesHouse, assign: 'companiesHouseAddresses' }
       ]
     }
-  },
-  getSelectAddress: {
-    // Route for displaying the list of existing contact addresses.
-    method: 'GET',
-    path: '/contact-entry/select-address',
-    handler: controllers.getSelectAddressController,
-    options: {
-      pre: [
-        { method: preHandlers.searchForAddressesByEntityId, assign: 'addressSearchResults' }
-      ],
-      validate: {
-        query: {
-          sessionKey: Joi.string().uuid().required(),
-          form: Joi.string().optional()
-        }
-      }
-    }
-  },
-  postSelectAddress: {
-    // Route for selecting an address from the list of existing contact addresses
-    // Payload should contain an address ID
-    method: 'POST',
-    path: '/contact-entry/select-address',
-    handler: controllers.postSelectAddressController,
-    options: {
-      pre: [
-        { method: preHandlers.searchForAddressesByEntityId, assign: 'addressSearchResults' }
-      ]
-    }
   }
 };

@@ -138,8 +138,8 @@ experiment('internal/modules/contact-entry/controllers', () => {
         await controller.postSelectContactController({ ...request, payload: { id: contactId, sessionKey: tempSessionKey, searchQuery: 'something', regionId: uuid(), csrf_token: uuid() } }, h);
       });
       test('the client is redirected to select an address for the contact', async () => {
-        expect(h.redirect.lastCall.args[0]).to.equal(
-          `/contact-entry/select-address?sessionKey=${tempSessionKey}`
+        expect(h.redirect.lastCall.args[0]).to.startWith(
+          `/address-entry/postcode`
         );
       });
     });
@@ -421,89 +421,6 @@ experiment('internal/modules/contact-entry/controllers', () => {
         let pathCalled = h.postRedirectGet.lastCall.args[1];
         expect(pathCalled).to.equal(
           `/contact-entry/new/details/company-search/select-company-address`
-        );
-      });
-    });
-  });
-
-  experiment('.getSelectAddressController', () => {
-    let tempSessionKey;
-    beforeEach(async () => {
-      tempSessionKey = uuid();
-      request = createRequest(tempSessionKey);
-      await controller.getSelectAddressController(request, h);
-    });
-
-    test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
-    });
-
-    test('passes through request.view', async () => {
-      const { foo } = h.view.lastCall.args[1];
-      expect(foo).to.equal(request.view.foo);
-    });
-
-    test('has a form', async () => {
-      const { form } = h.view.lastCall.args[1];
-      expect(form).to.be.an.object();
-    });
-  });
-
-  experiment('.postSelectAddressController', () => {
-    let tempSessionKey;
-    experiment('when the form is valid because an address has been selected', () => {
-      beforeEach(async () => {
-        tempSessionKey = uuid();
-        request = createRequest(tempSessionKey);
-        await controller.postSelectAddressController({
-          ...request,
-          payload: {
-            id: uuid(),
-            sessionKey: tempSessionKey,
-            csrf_token: uuid()
-          }
-        }, h);
-      });
-      test('yar set is called', async () => {
-        expect(request.yar.set.called).to.be.true();
-      });
-      test('the client is redirected to the back param', async () => {
-        let pathCalled = h.redirect.lastCall.args[0];
-        expect(pathCalled).to.startWith(back);
-      });
-    });
-    experiment('when the form is valid because the user would like to create a new address', () => {
-      beforeEach(async () => {
-        tempSessionKey = uuid();
-        request = createRequest(tempSessionKey);
-        await controller.postSelectAddressController({
-          ...request,
-          payload: {
-            id: 'new',
-            sessionKey: tempSessionKey,
-            csrf_token: uuid()
-          }
-        }, h);
-      });
-      test('the client is redirected to the address entry flow', async () => {
-        let pathCalled = h.redirect.lastCall.args[0];
-        expect(pathCalled).to.startWith(
-          `/address-entry/postcode`
-        );
-      });
-    });
-    experiment('when the form is invalid', () => {
-      beforeEach(async () => {
-        tempSessionKey = uuid();
-        request = createRequest(tempSessionKey);
-        await controller.postSelectAddressController({ ...request, payload: { id: undefined, sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
-      });
-
-      test('the client is redirected to select an address', async () => {
-        let pathCalled = h.postRedirectGet.lastCall.args[1];
-        expect(pathCalled).to.equal(
-          `/contact-entry/select-address`
         );
       });
     });

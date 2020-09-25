@@ -127,26 +127,6 @@ experiment('internal/modules/contact-entry/pre-handlers', () => {
     });
   });
 
-  experiment('searchForAddressesByEntityId', () => {
-    beforeEach(async () => {
-      response = await preHandlers.searchForAddressesByEntityId(request);
-    });
-
-    afterEach(async () => {
-      sandbox.restore();
-    });
-
-    test('responds with an array', async () => {
-      expect(Array.isArray(response)).to.be.true();
-    });
-
-    test('calls the service method', async () => {
-      expect(
-        services.water.companies.getAddresses.calledWith(defaultId)
-      ).to.be.true();
-    });
-  });
-
   experiment('searchForCompaniesInCompaniesHouse', () => {
     beforeEach(async () => {
       response = await preHandlers.searchForCompaniesInCompaniesHouse(request);

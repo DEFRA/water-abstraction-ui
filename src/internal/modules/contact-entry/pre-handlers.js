@@ -15,20 +15,6 @@ const searchForCompaniesByString = async request => {
   }
 };
 
-const searchForAddressesByEntityId = async request => {
-  const { sessionKey } = request.payload || request.query;
-  const { id } = await sessionHelper.saveToSession(request, sessionKey);
-  try {
-    const data = await services.water.companies.getAddresses(id);
-    return data;
-  } catch (err) {
-    if (err.statusCode === 404) {
-      return Boom.notFound(`No address found.`);
-    }
-    throw err;
-  }
-};
-
 const searchForCompaniesInCompaniesHouse = async request => {
   const { sessionKey } = request.payload || request.query;
   const { companyNameOrNumber } = await sessionHelper.saveToSession(request, sessionKey);
@@ -58,6 +44,5 @@ const returnCompanyAddressesFromCompaniesHouse = async request => {
 };
 
 exports.searchForCompaniesByString = searchForCompaniesByString;
-exports.searchForAddressesByEntityId = searchForAddressesByEntityId;
 exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
 exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;

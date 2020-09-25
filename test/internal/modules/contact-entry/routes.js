@@ -262,38 +262,4 @@ experiment('internal/modules/contact-entry/routes', () => {
         .to.equal(controllers.postSelectCompanyAddressController);
     });
   });
-
-  experiment('.getSelectAddress', () => {
-    test('has the correct method', () => {
-      expect(routes.getSelectAddress.method)
-        .to.equal('GET');
-    });
-
-    test('has the correct path', () => {
-      expect(routes.getSelectAddress.path)
-        .to.equal('/contact-entry/select-address');
-    });
-
-    test('has the correct controller', () => {
-      expect(routes.getSelectAddress.handler)
-        .to.equal(controllers.getSelectAddressController);
-    });
-  });
-
-  experiment('.postSelectAddress', () => {
-    test('has the correct method', () => {
-      expect(routes.postSelectAddress.method)
-        .to.equal('POST');
-    });
-
-    test('has the correct path', () => {
-      expect(routes.postSelectAddress.path)
-        .to.equal('/contact-entry/select-address');
-    });
-
-    test('has the correct controller', () => {
-      expect(routes.postSelectAddress.handler)
-        .to.equal(controllers.postSelectAddressController);
-    });
-  });
 });

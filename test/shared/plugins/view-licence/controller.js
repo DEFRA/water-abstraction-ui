@@ -71,7 +71,12 @@ experiment('shared/plugins/view-licence/controller', () => {
       });
 
       h.realm.pluginOptions.getLicenceAgreements.resolves([
-        { id: '0000000-0000-0000-0000-000000003333' }
+        {
+          id: '0000000-0000-0000-0000-000000003333',
+          agreement: {
+            code: 'S127'
+          }
+        }
       ]);
 
       h.realm.pluginOptions.canShowCharging.returns(true);
@@ -110,9 +115,8 @@ experiment('shared/plugins/view-licence/controller', () => {
     });
 
     test('sets the agreements', async () => {
-      expect(view.agreements).to.equal([
-        { id: '0000000-0000-0000-0000-000000003333' }
-      ]);
+      expect(view.agreements[0].id).to.equal('0000000-0000-0000-0000-000000003333');
+      expect(view.agreements[0].agreement.description).to.equal('Two-part tariff (S127)');
     });
 
     test('sets the licence id', async () => {

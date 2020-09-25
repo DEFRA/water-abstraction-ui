@@ -1,3 +1,5 @@
+'use strict';
+
 const SCOPE_RETURNS = 'returns';
 const SCOPE_BULK_RETURNS_NOTIFICATIONS = 'bulk_return_notifications';
 const SCOPE_ABSTRACTION_REFORM_USER = 'ar_user';
@@ -7,6 +9,7 @@ const SCOPE_RENEWAL_NOTIFICATIONS = 'renewal_notifications';
 const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts';
 const SCOPE_CHARGING = 'charging';
 const SCOPE_BILLING = 'billing';
+const SCOPE_DELETE_AGREEMENTS = 'delete_agreements';
 
 module.exports = {
   scope: {
@@ -33,6 +36,7 @@ module.exports = {
     ],
     manageAccounts: SCOPE_MANAGE_ACCOUNTS,
     charging: SCOPE_CHARGING,
-    billing: SCOPE_BILLING
+    billing: SCOPE_BILLING,
+    deleteAgreements: SCOPE_DELETE_AGREEMENTS
   }
 };

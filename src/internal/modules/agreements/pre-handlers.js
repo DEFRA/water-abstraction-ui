@@ -1,6 +1,8 @@
+'use strict';
+
 const services = require('internal/lib/connectors/services');
 const Boom = require('@hapi/boom');
-const agreementDescriptions = require('./lib/descriptions');
+const agreementMapper = require('../../../shared/lib/mappers/agreements');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -9,10 +11,10 @@ const errorHandler = (err, message) => {
   throw err;
 };
 
-const decorateAgreementWithDescription = agreement => {
-  agreement.description = agreementDescriptions[agreement.code];
-  return agreement;
-};
+const decorateAgreementWithDescription = licenceAgreement => ({
+  ...licenceAgreement,
+  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement)
+});
 
 const loadAgreement = async request => {
   const { agreementId } = request.params;

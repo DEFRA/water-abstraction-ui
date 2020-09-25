@@ -7,6 +7,7 @@ const { getHoFTypes } = require('./lib/conditions');
 const { errorMapper } = require('./lib/error');
 const { hasScope } = require('internal/lib/permissions');
 const { scope } = require('internal/lib/constants');
+const agreementMapper = require('../../lib/mappers/agreements');
 
 async function getLicenceDetail (request, reply) {
   try {
@@ -89,6 +90,11 @@ const getLicenceGaugingStation = async (request, h) => {
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
+const mapLicenceAgreement = licenceAgreement => ({
+  ...licenceAgreement,
+  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement)
+});
+
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -114,7 +120,7 @@ const getLicence = async (request, h) => {
     back: '/licences',
     showChargeVersions: canShowCharging(request),
     chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse(),
-    agreements,
+    agreements: agreements.map(mapLicenceAgreement),
     licenceId,
     isChargingUser
   };

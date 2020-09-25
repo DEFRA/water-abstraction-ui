@@ -5,7 +5,8 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/source');
 const { findField, findButton } = require('../../../../../lib/form-test');
-
+const { SOURCES } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
+const { capitalize } = require('lodash');
 const createRequest = () => ({
   view: {
     csrfToken: 'token'
@@ -41,11 +42,10 @@ experiment('internal/modules/charge-information/forms/charge-element/source', ()
 
     test('has a 4 choices Unsupported, Suppported, Tidal, Kielder', async () => {
       const radio = findField(sourceForm, 'source');
-      expect(radio.options.choices.length).to.equal(4);
-      expect(radio.options.choices[0].label).to.equal('Unsupported');
-      expect(radio.options.choices[1].label).to.equal('Supported');
-      expect(radio.options.choices[2].label).to.equal('Tidal');
-      expect(radio.options.choices[3].label).to.equal('Kielder');
+      const sourceValues = Object.values(radio.options.choices).map(choice => choice.value);
+      const sourceLabels = Object.values(radio.options.choices).map(choice => choice.label);
+      expect(sourceValues).to.equal(SOURCES);
+      expect(sourceLabels).to.equal(SOURCES.map(source => capitalize(source)));
     });
   });
 
@@ -63,8 +63,7 @@ experiment('internal/modules/charge-information/forms/charge-element/source', ()
     });
 
     experiment('season', () => {
-      const validSeasonOptions = ['unsupported', 'supported', 'tidal', 'kielder'];
-      validSeasonOptions.forEach(option => {
+      SOURCES.forEach(option => {
         test(`accepts the valid source ${option}`, async () => {
           const result = schema().source.validate(option);
           expect(result.error).to.not.exist();

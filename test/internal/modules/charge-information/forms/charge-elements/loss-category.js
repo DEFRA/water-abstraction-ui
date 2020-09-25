@@ -2,10 +2,10 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-
+const { LOSS_CATEGORIES } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/loss-category');
 const { findField, findButton } = require('../../../../../lib/form-test');
-
+const { capitalize } = require('lodash');
 const createRequest = () => ({
   view: {
     csrfToken: 'token'
@@ -45,12 +45,11 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
 
     test('has a 4 choices high, medium, low, very low and low has the hint', async () => {
       const radio = findField(lossCategoryForm, 'loss');
-      expect(radio.options.choices.length).to.equal(4);
-      expect(radio.options.choices[0].label).to.equal('High');
-      expect(radio.options.choices[1].label).to.equal('Medium');
-      expect(radio.options.choices[2].label).to.equal('Low');
+      const lossCategoryValues = Object.values(radio.options.choices).map(choice => choice.value);
+      const lossCategoryLabels = Object.values(radio.options.choices).map(choice => choice.label);
+      expect(lossCategoryValues).to.equal(LOSS_CATEGORIES);
+      expect(lossCategoryLabels).to.equal(LOSS_CATEGORIES.map(category => capitalize(category)));
       expect(radio.options.choices[2].hint).to.equal('This is the default loss category for the purpose chosen');
-      expect(radio.options.choices[3].label).to.equal('Very low');
     });
   });
 
@@ -68,8 +67,7 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
     });
 
     experiment('loss', () => {
-      const validLossOptions = ['high', 'medium', 'low', 'very low'];
-      validLossOptions.forEach(option => {
+      LOSS_CATEGORIES.forEach(option => {
         test('validates for a string', async () => {
           const result = schema().loss.validate(option);
           expect(result.error).to.not.exist();

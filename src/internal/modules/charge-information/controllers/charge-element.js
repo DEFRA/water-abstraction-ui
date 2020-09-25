@@ -7,21 +7,7 @@ const { omit } = require('lodash');
 const mappers = require('../lib/charge-elements/mappers');
 const dataservice = require('../lib/charge-elements/data-service');
 const routing = require('../lib/routing');
-/**
- * flowConfig is used to define the
- * -- pageTitle = the title of the page displayed with the form
- * -- nextStep  = the next page to load
- */
-const routingConfig = {
-  purpose: { pageTitle: 'Select a purpose use', nextStep: 'description' },
-  description: { pageTitle: 'Add element description', nextStep: 'abstraction', back: 'purpose' },
-  abstraction: { pageTitle: 'Set abstraction period', nextStep: 'quantities', back: 'description' },
-  quantities: { pageTitle: 'Add licence quantities', nextStep: 'time', back: 'abstraction' },
-  time: { pageTitle: 'Set time limit?', nextStep: 'source', back: 'quantities' },
-  source: { pageTitle: 'Select source', nextStep: 'season', back: 'time' },
-  season: { pageTitle: 'Select season', nextStep: 'loss', back: 'source' },
-  loss: { pageTitle: 'Select loss category', nextStep: 'loss', back: 'season' }
-};
+const { ROUTING_CONFIG } = require('../lib/charge-elements/constants');
 
 const getChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
@@ -29,9 +15,9 @@ const getChargeElementStep = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     caption: `Licence ${request.pre.licence.licenceNumber}`,
-    pageTitle: routingConfig[step].pageTitle,
+    pageTitle: ROUTING_CONFIG[step].pageTitle,
     back: step === 'purpose' ? routing.getUseAbstractionData(request.pre.licence)
-      : routing.getChargeElementStep(licenceId, elementId, routingConfig[step].back),
+      : routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].back),
     form: sessionForms.get(request, forms[step].form(request, sessionData))
   });
 };
@@ -51,7 +37,7 @@ const postChargeElementStep = async (request, h) => {
       dataservice.saveCustomCharge(request, licenceId, elementId, sessionData);
       return h.redirect(routing.getCheckData({ id: licenceId }));
     }
-    return h.redirect(routing.getChargeElementStep(licenceId, elementId, routingConfig[step].nextStep));
+    return h.redirect(routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep));
   }
   return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step));
 };

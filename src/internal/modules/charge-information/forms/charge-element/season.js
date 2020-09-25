@@ -4,17 +4,15 @@ const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const helpers = require('@envage/water-abstraction-helpers');
+const { capitalize } = require('lodash');
+const { SEASONS } = require('../../lib/charge-elements/constants');
 
 const options = (absPeriod) => {
   const defaultSeason = absPeriod ? helpers.returns.date.getAbstractionPeriodSeason(absPeriod) : '';
-  return [
-    { value: 'summer', label: 'Summer' },
-    { value: 'winter', label: 'Winter' },
-    { value: 'all year', label: 'All year' }
-  ].map(season => {
-    return season.value === defaultSeason
-      ? { ...season, hint: 'This is the default season for the abstraction period set' }
-      : season;
+  return SEASONS.map(season => {
+    const option = { value: season, label: capitalize(season) };
+    if (season === defaultSeason) { option.hint = 'This is the default season for the abstraction period set'; };
+    return option;
   });
 };
 
@@ -47,7 +45,7 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    season: Joi.string().required().valid(['summer', 'winter', 'all year'])
+    season: Joi.string().required().valid(SEASONS)
   };
 };
 

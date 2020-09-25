@@ -9,7 +9,8 @@ const {
 
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/season');
 const { findField, findButton } = require('../../../../../lib/form-test');
-
+const { SEASONS } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
+const { capitalize } = require('lodash');
 const createRequest = () => ({
   view: {
     csrfToken: 'token'
@@ -48,10 +49,10 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
 
     test('has a 4 choices high, medium, low, very low and low has the hint', async () => {
       const radio = findField(seasonForm, 'season');
-      expect(radio.options.choices.length).to.equal(3);
-      expect(radio.options.choices[0].label).to.equal('Summer');
-      expect(radio.options.choices[1].label).to.equal('Winter');
-      expect(radio.options.choices[2].label).to.equal('All year');
+      const seasonValues = Object.values(radio.options.choices).map(season => season.value);
+      const seasonLabels = Object.values(radio.options.choices).map(season => season.label);
+      expect(seasonValues).to.equal(SEASONS);
+      expect(seasonLabels).to.equal(SEASONS.map(season => capitalize(season)));
       expect(radio.options.choices[2].hint).to.equal('This is the default season for the abstraction period set');
     });
   });
@@ -70,8 +71,7 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
     });
 
     experiment('season', () => {
-      const validSeasonOptions = ['summer', 'winter', 'all year'];
-      validSeasonOptions.forEach(option => {
+      SEASONS.forEach(option => {
         test('validates for a string', async () => {
           const result = schema().season.validate(option);
           expect(result.error).to.not.exist();

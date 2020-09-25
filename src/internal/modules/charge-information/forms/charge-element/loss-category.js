@@ -3,19 +3,16 @@
 const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { has } = require('lodash');
+const { has, capitalize } = require('lodash');
+const { LOSS_CATEGORIES } = require('../../lib/charge-elements/constants');
 
 const options = (defaultChargeData, selectedPurpose) => {
   const defaultLoss = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose.id);
   const loss = has(defaultLoss, 'loss') ? defaultLoss.loss : 'high';
-  return [
-    { value: 'high', label: 'High' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'low', label: 'Low' },
-    { value: 'very low', label: 'Very low' }
-  ].map((row) => {
-    return row.value === loss
-      ? { ...row, hint: 'This is the default loss category for the purpose chosen' } : row;
+  return LOSS_CATEGORIES.map(category => {
+    const option = { value: category, label: capitalize(category) };
+    if (category === loss) { option.hint = 'This is the default loss category for the purpose chosen'; };
+    return option;
   });
 };
 
@@ -50,7 +47,7 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    loss: Joi.string().valid(['high', 'medium', 'low', 'very low']).required()
+    loss: Joi.string().valid(LOSS_CATEGORIES).required()
   };
 };
 

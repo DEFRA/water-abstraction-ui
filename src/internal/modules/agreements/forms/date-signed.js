@@ -16,8 +16,6 @@ const dateSignedForm = request => {
 
   const dateSigned = get(request, 'pre.flowState.dateSigned');
 
-  console.log(request.pre.flowStart);
-
   const { endDate } = request.pre.licence;
 
   f.fields.push(fields.date('dateSigned', {

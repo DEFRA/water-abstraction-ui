@@ -27,40 +27,7 @@ const loadAgreement = async request => {
   }
 };
 
-const loadLicence = async request => {
-  const { licenceId } = request.params;
-  try {
-    const licence = await services.water.licences.getLicenceById(licenceId);
-    return licence;
-  } catch (err) {
-    return errorHandler(err, `Licence ${licenceId} not found`);
-  }
-};
-
-const loadDocument = async request => {
-  const { licenceNumber } = await loadLicence(request);
-  try {
-    const documentHeader = services.crm.documents.getWaterLicence(licenceNumber);
-    return documentHeader;
-  } catch (err) {
-    return errorHandler(err, `Document for licence ${licenceNumber} not found in CRM`);
-  }
-};
-
-const loadLicenceDocument = request => {
-  const { licenceId } = request.params;
-  try {
-    const documentHeader = services.water.licences.getDocumentByLicenceId(licenceId);
-    return documentHeader;
-  } catch (err) {
-    return errorHandler(err, `Document for licence ${licenceId} not found in CRM`);
-  }
-};
-
 const getFlowState = request => getSessionData(request);
 
 exports.loadAgreement = loadAgreement;
-exports.loadLicence = loadLicence;
-exports.loadDocument = loadDocument;
-exports.loadLicenceDocument = loadLicenceDocument;
 exports.getFlowState = getFlowState;

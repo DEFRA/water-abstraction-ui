@@ -2,6 +2,7 @@
 
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
 const { VALID_GUID } = require('shared/lib/validators');
 
 const { deleteAgreements, manageAgreements } = require('internal/lib/constants').scope;
@@ -29,8 +30,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.loadAgreement, assign: 'agreement' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadDocument, assign: 'document' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+        { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
       ]
     }
   },
@@ -51,7 +52,7 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadDocument, assign: 'document' }
+        { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
       ]
     }
   },
@@ -72,8 +73,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadLicenceDocument, assign: 'document' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+        { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
       ]
     }
   },
@@ -94,8 +95,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadLicenceDocument, assign: 'document' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+        { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
       ]
     }
   },
@@ -116,7 +117,7 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
@@ -137,7 +138,7 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
@@ -157,7 +158,7 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
@@ -177,7 +178,7 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
@@ -198,7 +199,7 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: sharedPreHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
@@ -219,7 +220,7 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.getFlowState, assign: 'flowState' },
-        { method: preHandlers.loadLicenceDocument, assign: 'document' }
+        { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
       ]
     }
   }

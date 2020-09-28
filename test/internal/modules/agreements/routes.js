@@ -7,6 +7,8 @@ const {
 
 const { scope } = require('internal/lib/constants');
 const preHandlers = require('internal/modules/agreements/pre-handlers');
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
+
 const routes = require('internal/modules/agreements/routes');
 
 experiment('internal/modules/agreements/routes', () => {
@@ -28,7 +30,7 @@ experiment('internal/modules/agreements/routes', () => {
 
     test('uses the loadLicence pre handler', async () => {
       expect(routes.getDeleteAgreement.options.pre[1].method)
-        .to.equal(preHandlers.loadLicence);
+        .to.equal(sharedPreHandlers.loadLicence);
     });
 
     test('saves licence to expected place', async () => {
@@ -38,7 +40,7 @@ experiment('internal/modules/agreements/routes', () => {
 
     test('uses the loadDocument pre handler', async () => {
       expect(routes.getDeleteAgreement.options.pre[2].method)
-        .to.equal(preHandlers.loadDocument);
+        .to.equal(sharedPreHandlers.loadLicenceDocument);
     });
 
     test('saves document to expected place', async () => {
@@ -55,7 +57,7 @@ experiment('internal/modules/agreements/routes', () => {
 
     test('uses the loadDocument pre handler', async () => {
       expect(routes.postDeleteAgreement.options.pre[0].method)
-        .to.equal(preHandlers.loadDocument);
+        .to.equal(sharedPreHandlers.loadLicenceDocument);
     });
 
     test('saves document to expected place', async () => {

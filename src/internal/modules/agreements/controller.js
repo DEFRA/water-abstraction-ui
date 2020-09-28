@@ -55,8 +55,7 @@ const getSelectAgreementType = async (request, h) => {
   const { document_id: documentId } = request.pre.document;
 
   const view = {
-    ...request.view,
-    caption: `Licence ${request.pre.licence.licenceNumber}`,
+    ...getDefaultView(request),
     pageTitle: 'Select agreement',
     form: sessionForms.get(request, selectAgreementType.form(request)),
     back: `/licences/${documentId}`
@@ -70,8 +69,7 @@ const getSelectAgreementType = async (request, h) => {
 const getDateSigned = async (request, h) => {
   const { licence } = request.pre;
   const view = {
-    ...request.view,
-    caption: `Licence ${request.pre.licence.licenceNumber}`,
+    ...getDefaultView(request),
     pageTitle: 'Enter date agreement was signed',
     form: sessionForms.get(request, dateSigned.form(request)),
     back: `/licences/${licence.id}/agreements/select-type`
@@ -86,8 +84,7 @@ const getCheckStartDate = async (request, h) => {
   const { licence } = request.pre;
   const { startDate } = getSessionData(request);
   const view = {
-    ...request.view,
-    caption: `Licence ${request.pre.licence.licenceNumber}`,
+    ...getDefaultView(request),
     pageTitle: 'Check agreement start date',
     form: sessionForms.get(request, checkStartDate.form(request)),
     back: `/licences/${licence.id}/agreements/date-signed`,
@@ -98,12 +95,14 @@ const getCheckStartDate = async (request, h) => {
   return h.view('nunjucks/agreements/check-start-date', view);
 };
 
+/**
+ * Page 4: Check your answers
+ */
 const getCheckAnswers = async (request, h) => {
   const { flowState, licence } = request.pre;
 
   const view = {
-    ...request.view,
-    caption: `Licence ${request.pre.licence.licenceNumber}`,
+    ...getDefaultView(request),
     pageTitle: 'Check agreement details',
     back: `/licences/${licence.id}/agreements/check-start-date`,
     form: confirmForm.form(request),
@@ -142,7 +141,6 @@ exports.getDeleteAgreement = getDeleteAgreement;
 exports.postDeleteAgreement = postDeleteAgreement;
 
 exports.getSelectAgreementType = getSelectAgreementType;
-
 exports.postSelectAgreementType = partialRight(createPostHandler, selectAgreementType, actions.setAgreementType, `/date-signed`);
 
 exports.getDateSigned = getDateSigned;

@@ -31,8 +31,6 @@ const getFinancialAgreementTypeField = value => fields.radio('financialAgreement
 const selectAgreementTypeForm = request => {
   const { csrfToken } = request.view;
 
-  console.log(request.pre.flowState);
-
   const financialAgreementCode = get(request, 'pre.flowState.code');
 
   const f = formFactory(request.path, 'POST');

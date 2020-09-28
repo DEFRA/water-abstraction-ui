@@ -85,7 +85,7 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     });
 
     test('the abstractionData is updated', async () => {
-      expect(state.abstractionData).to.equal('updated-abstraction-data');
+      expect(state.chargeElements).to.equal('updated-abstraction-data');
     });
 
     test('the other data is untouched', async () => {

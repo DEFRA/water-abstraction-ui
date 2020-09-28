@@ -53,7 +53,7 @@ const setBillingAccount = (request, formValues) => {
 const setAbstractionData = (request, formValues) => {
   const abstractionData = formValues.useAbstractionData
     ? request.pre.defaultCharges
-    : false;
+    : [];
 
   return {
     type: ACTION_TYPES.setAbstractionData,

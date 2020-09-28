@@ -15,8 +15,8 @@ const uuid = require('uuid/v4');
 
 const sandbox = sinon.createSandbox();
 
-const services = require('../../../../src/internal/lib/connectors/services');
-const controller = require('internal/modules/charge-information/controller');
+const services = require('../../../../../src/internal/lib/connectors/services');
+const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-information');
 
 const createRequest = () => ({
   params: {
@@ -702,7 +702,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the draft charge information is updated with the reason', async () => {
         const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.abstractionData).to.equal(request.pre.defaultCharges);
+        expect(data.chargeElements).to.equal(request.pre.defaultCharges);
       });
 
       test('the user is redirected to the expected page', async () => {

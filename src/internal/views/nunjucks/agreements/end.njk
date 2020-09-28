@@ -1,0 +1,60 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% block content %}
+
+  {{ title(pageTitle, caption) }}
+  {{ govukWarningText({
+    text: 'When you end this agreement, the licence will be added 
+    to the supplementary bill run. A new charge will be calculated 
+    for the time the agreement was in place.'
+  })}}
+
+  <div class="phone--show">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    <p>Agreement:
+      {{ agreement.agreement.description | default(agreement.agreement.code) }}</p>
+    <p>Date signed:
+      {{ agreement.dateSigned | date }}</p>
+    <p>Start date:
+      {{ agreement.dateRange.startDate | date }}</p>
+    <p>End date:
+      {{ agreement.dateRange.endDate | date }}</p>
+  </div>
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Agreement</th>
+        <th class="govuk-table__header" scope="col">Date signed</th>
+        <th class="govuk-table__header" scope="col">Start date</th>
+        <th class="govuk-table__header" scope="col">End date</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {{ agreement.agreement.description | default(agreement.agreement.code) }}
+        </td>
+        <td class="govuk-table__cell">
+          {{ agreement.dateSigned | date }}
+        </td>
+        <td class="govuk-table__cell">
+          {{ agreement.dateRange.startDate | date }}
+        </td>
+        <td class="govuk-table__cell">
+          {{ endDate | date }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

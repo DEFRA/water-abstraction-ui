@@ -33,7 +33,7 @@ const form = (request, sessionData = {}) => {
   f.fields.push(fields.radio('loss', {
     errors: {
       'any.required': {
-        message: 'Select loss category'
+        message: 'Select a loss category'
       }
     },
     choices: options(defaultCharges, sessionData.purposeUse || {})

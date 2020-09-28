@@ -25,7 +25,8 @@ const getChargeElementStep = async (request, h) => {
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const schema = forms[step].schema({ ...request.payload, ...request.pre });
-  const form = formHelpers.handleRequest(forms[step].form(request), request, schema);
+  const form = formHelpers.handleRequest(
+    forms[step].form(request, dataService.sessionManager(request, licenceId, elementId)), request, schema);
   const { defaultCharges } = request.pre;
   if (form.isValid) {
     const formData = formHelpers.getValues(form);

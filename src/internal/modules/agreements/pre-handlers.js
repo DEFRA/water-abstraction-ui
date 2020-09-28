@@ -3,6 +3,7 @@
 const services = require('internal/lib/connectors/services');
 const Boom = require('@hapi/boom');
 const agreementMapper = require('../../../shared/lib/mappers/agreements');
+const { getSessionData } = require('./lib/helpers');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -26,10 +27,10 @@ const loadAgreement = async request => {
   }
 };
 
-const loadLicence = request => {
+const loadLicence = async request => {
   const { licenceId } = request.params;
   try {
-    const licence = services.water.licences.getLicenceById(licenceId);
+    const licence = await services.water.licences.getLicenceById(licenceId);
     return licence;
   } catch (err) {
     return errorHandler(err, `Licence ${licenceId} not found`);
@@ -46,6 +47,20 @@ const loadDocument = async request => {
   }
 };
 
+const loadLicenceDocument = request => {
+  const { licenceId } = request.params;
+  try {
+    const documentHeader = services.water.licences.getDocumentByLicenceId(licenceId);
+    return documentHeader;
+  } catch (err) {
+    return errorHandler(err, `Document for licence ${licenceId} not found in CRM`);
+  }
+};
+
+const getFlowState = request => getSessionData(request);
+
 exports.loadAgreement = loadAgreement;
 exports.loadLicence = loadLicence;
 exports.loadDocument = loadDocument;
+exports.loadLicenceDocument = loadLicenceDocument;
+exports.getFlowState = getFlowState;

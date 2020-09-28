@@ -191,10 +191,11 @@ const mapLegendOptions = (field) => {
   };
 
   if (field.options.heading) {
+    const size = field.options.size || 'xl';
     return {
       ...defaults,
       isPageHeading: true,
-      classes: 'govuk-fieldset__legend--xl'
+      classes: `govuk-fieldset__legend--${size}`
     };
   }
 

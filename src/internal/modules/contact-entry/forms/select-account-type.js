@@ -41,7 +41,7 @@ const schema = {
   sessionKey: Joi.string().uuid().required(),
   accountType: Joi.string().required().allow(['organisation', 'person']),
   personName: Joi.when('accountType', {
-    is: 'organisation',
+    is: 'person',
     then: Joi.string().required()
   })
 };

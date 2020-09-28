@@ -27,7 +27,7 @@ const getSelectContactController = async (request, h) => {
 const postSelectContactController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
   const { back } = await sessionHelper.saveToSession(request, sessionKey);
-  const { id, searchQuery, regionId } = request.payload;
+  const { id, searchQuery, regionId, originalCompanyId } = request.payload;
   if (id === null || id === 'new') {
     return h.redirect(`/contact-entry/new/account-type?sessionKey=${sessionKey}`);
   } else {
@@ -35,9 +35,10 @@ const postSelectContactController = async (request, h) => {
     if (!form.isValid) {
       return h.postRedirectGet(form, '/contact-entry/select-contact', {
         sessionKey,
-        back: back,
+        searchQuery,
         regionId,
-        searchQuery
+        originalCompanyId,
+        back: back
       });
     } else {
       // Contact has been selected. Store the contact ID in yar

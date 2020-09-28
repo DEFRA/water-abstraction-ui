@@ -123,7 +123,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
       beforeEach(async () => {
         tempSessionKey = uuid();
         request = createRequest(tempSessionKey);
-        await controller.postSelectContactController({ ...request, payload: { id: 'new', sessionKey: tempSessionKey, searchQuery: 'something', regionId: uuid(), csrf_token: uuid() } }, h);
+        await controller.postSelectContactController({ ...request, payload: { id: 'new', sessionKey: tempSessionKey, searchQuery: 'something', regionId: uuid(), originalCompanyId: uuid(), csrf_token: uuid() } }, h);
       });
       test('the client is redirected to select a contact type for the new contact', async () => {
         expect(h.redirect.lastCall.args[0]).to.equal(
@@ -135,7 +135,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
       beforeEach(async () => {
         tempSessionKey = uuid();
         request = createRequest(tempSessionKey);
-        await controller.postSelectContactController({ ...request, payload: { id: contactId, sessionKey: tempSessionKey, searchQuery: 'something', regionId: uuid(), csrf_token: uuid() } }, h);
+        await controller.postSelectContactController({ ...request, payload: { id: contactId, sessionKey: tempSessionKey, searchQuery: 'something', regionId: uuid(), originalCompanyId: uuid(), csrf_token: uuid() } }, h);
       });
       test('the client is redirected to select an address for the contact', async () => {
         expect(h.redirect.lastCall.args[0]).to.startWith(
@@ -179,7 +179,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
       beforeEach(async () => {
         tempSessionKey = uuid();
         request = createRequest(tempSessionKey);
-        await controller.postSelectAccountTypeController({ ...request, payload: { accountType: 'person', sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
+        await controller.postSelectAccountTypeController({ ...request, payload: { accountType: 'person', personName: 'John Doe', sessionKey: tempSessionKey, csrf_token: uuid() } }, h);
       });
       test('yar set is called', async () => {
         expect(request.yar.set.called).to.be.true();

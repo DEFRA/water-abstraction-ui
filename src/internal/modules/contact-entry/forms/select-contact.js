@@ -15,7 +15,7 @@ const getContactChoices = contacts => {
 
 const form = (request, defaultValue) => {
   const { csrfToken } = request.view;
-  const { sessionKey, searchQuery, back, regionId } = request.query;
+  const { sessionKey, searchQuery, back, regionId, originalCompanyId } = request.query;
   const { contactSearchResults } = request.pre;
 
   const f = formFactory('/contact-entry/select-contact');
@@ -23,7 +23,7 @@ const form = (request, defaultValue) => {
   f.fields.push(fields.radio('id', {
     errors: {
       'any.required': {
-        message: 'Select a contact from the list'
+        message: contactSearchResults.length >= 1 ? 'Select an existing contact, or set up a new contact' : `Select 'Set up a new contact'`
       }
     },
     label: 'Select a contact',
@@ -33,6 +33,7 @@ const form = (request, defaultValue) => {
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('back', {}, back));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
+  f.fields.push(fields.hidden('originalCompanyId', {}, originalCompanyId));
   f.fields.push(fields.hidden('regionId', {}, regionId));
   f.fields.push(fields.hidden('searchQuery', {}, searchQuery));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -46,6 +47,7 @@ const schema = {
   searchQuery: Joi.string(),
   back: Joi.string(),
   regionId: Joi.string().uuid().required(),
+  originalCompanyId: Joi.string().uuid().required(),
   id: Joi.string().uuid().required()
 };
 

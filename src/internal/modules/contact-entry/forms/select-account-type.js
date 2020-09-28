@@ -21,7 +21,7 @@ const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
         fields: [fields.text('personName', {
           errors: {
             'any.empty': {
-              message: 'Error message goes here'
+              message: `Enter the full name`
             }
           },
           label: 'Full name'

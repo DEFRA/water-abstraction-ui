@@ -11,11 +11,14 @@ const getFormTitleCaption = (licenceNumber) => {
 const processCompanyFormData = (request, regionId, companyId, formData) => {
   const { selectedCompany, companySearch } = forms.getValues(formData);
   if (selectedCompany === 'company_search') {
-    // TODO place holder -- route does not exist
-    return `company-search?filter=${companySearch}`;
+    return `contact-search?filter=${companySearch}`;
   } else {
     const agentId = selectedCompany === companyId ? null : selectedCompany;
-    dataService.sessionManager(request, regionId, companyId, { agent: agentId });
+    if (agentId) {
+      dataService.sessionManager(request, regionId, companyId, { agent: { companyId: agentId } });
+    } else {
+      dataService.sessionManager(request, regionId, companyId, { agent: null });
+    }
     return 'select-address';
   }
 };
@@ -54,16 +57,43 @@ const getSelectedAddress = async (companyId, session) => {
   if (session.address.addressId === tempId) {
     return session.address;
   } else {
-    const addresses = await dataService.getCompanyAddresses(companyId);
+    const addresses = await getAllAddresses(companyId, session);
     const selectedAddress = addresses.find(address => (address.id === session.address.addressId));
     return selectedAddress;
   };
 };
 
-const getAgentCompany = (session) => {
-  if (has(session, 'agent')) {
-    return session.agent.companyId === tempId ? session.agent : dataService.getCompany(session.agent.companyId);
+const getAllAddresses = async (companyId, session) => {
+  let originalCompanyAddresses = await dataService.getCompanyAddresses(companyId) || [];
+  let agentCompanyAddresses = has(session, 'agent.companyId') ? await dataService.getCompanyAddresses(session.agent.companyId) : [] || [];
+  let newAddressFromSession = {};
+
+  if (has(session, 'address.id')) {
+    if (session.address.addressId === tempId) {
+      newAddressFromSession = session.address;
+    }
+  }
+
+  const compiledArrays = [...originalCompanyAddresses, ...agentCompanyAddresses, newAddressFromSession];
+  const filteredArray = compiledArrays.filter(obj => obj.id);
+  return filteredArray;
+};
+
+const getAgentCompany = async (session) => {
+  if (session.agent && session.agent.companyId) {
+    const outcome = session.agent.companyId === tempId ? session.agent : await dataService.getCompany(session.agent.companyId);
+    return outcome;
   } else { return null; }
+};
+
+const getCompanyName = async (request) => {
+  const { sessionKey } = request.query;
+  let currentState = await request.yar.get(sessionKey);
+  if (currentState.newCompany) {
+    return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName;
+  } else {
+    return currentState.companyName;
+  }
 };
 
 const getName = (contact) => {
@@ -96,8 +126,10 @@ const getContactName = async (companyId, sessionContact) => {
 };
 
 exports.getName = getName;
+exports.getCompanyName = getCompanyName;
 exports.getContactName = getContactName;
 exports.getFormTitleCaption = getFormTitleCaption;
+exports.getAllAddresses = getAllAddresses;
 exports.getAgentCompany = getAgentCompany;
 exports.getSelectedAddress = getSelectedAddress;
 exports.processFaoFormData = processFaoFormData;

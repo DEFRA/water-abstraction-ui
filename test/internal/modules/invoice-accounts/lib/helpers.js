@@ -52,10 +52,10 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       expect(args[0]).to.equal(formData);
     });
 
-    test('returns the correct path if selectedCompany === comapny_search', async () => {
+    test('returns the correct path if selectedCompany === company_search', async () => {
       forms.getValues.returns({ selectedCompany: 'company_search', companySearch: 'test name' });
       const response = helpers.processCompanyFormData(request, regionId, companyId, formData);
-      expect(response).to.equal('company-search?filter=test name');
+      expect(response).to.equal('contact-search?filter=test name');
     });
 
     test('returns the correct path if selectedCompany === companyId', async () => {
@@ -82,7 +82,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       expect(args[0]).to.equal({ test: 'request' });
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ agent: selectedCompany });
+      expect(args[3]).to.equal({ agent: { companyId: selectedCompany } });
     });
   });
 

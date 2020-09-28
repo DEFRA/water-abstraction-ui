@@ -4,6 +4,7 @@ const Joi = require('joi');
 const controller = require('../controllers/contacts');
 const { charging } = require('internal/lib/constants').scope;
 const { VALID_GUID } = require('shared/lib/validators');
+const preHandlers = require('../pre-handlers');
 
 const allowedScopes = [charging];
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
@@ -98,6 +99,39 @@ if (isAcceptanceTestTarget) {
             department: Joi.string().trim().optional().allow('')
           }
         }
+      }
+    },
+    getContactSearch: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.getContactSearch,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'find an existing contact to associate with the invoice account',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            filter: Joi.string().required(),
+            form: Joi.string().optional()
+          }
+        },
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
+      }
+    },
+    postContactSearch: {
+      method: 'POST',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.postContactSearch,
+      options: {
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
       }
     }
   };

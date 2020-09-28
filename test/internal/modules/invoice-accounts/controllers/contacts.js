@@ -66,6 +66,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         clear: sandbox.stub()
       },
       pre: {
+        companies: [],
         company: {
           id: companyId,
           name: companyName

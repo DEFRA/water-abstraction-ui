@@ -4,9 +4,12 @@ const dataService = require('../services/data-service');
 const helpers = require('../lib/helpers');
 const { selectContactForm, selectContactFormSchema } = require('../forms/select-contact');
 const { createContactForm, createContactFormSchema } = require('../forms/create-contact');
+const { selectExistingContactForm, selectExistingContactSchema } = require('../forms/select-existing-contact');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
+const queryString = require('querystring');
 const urlJoin = require('url-join');
+const uuid = require('uuid');
 const { has, isEmpty, omit, pickBy } = require('lodash');
 
 /**
@@ -55,7 +58,7 @@ const getContactCreate = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
   const selectedContact = isEmpty(session.contact) ||
-  (has(session.contact, 'department') && !has(session.contact, 'firstName')) ? {} : session.contact;
+    (has(session.contact, 'department') && !has(session.contact, 'firstName')) ? {} : session.contact;
 
   return h.view('nunjucks/form', {
     ...request.view,
@@ -84,8 +87,50 @@ const postContactCreate = async (request, h) => {
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'create-contact'));
 };
 
+const getContactSearch = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  // Return the view
+  const { viewData } = dataService.sessionManager(request, regionId, companyId);
+  const { agent } = dataService.sessionManager(request, regionId, companyId);
+  let selectedContactId = agent ? agent.id : null;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    pageTitle: 'Does this contact already exist?',
+    back: `/invoice-accounts/create/${regionId}/${companyId}?redirectPath=${viewData.redirectPath}`,
+    form: sessionForms.get(request, selectExistingContactForm(request, selectedContactId))
+  });
+};
+
+const postContactSearch = async (request, h) => {
+  const { id, filter } = request.payload;
+  const { regionId, companyId } = request.params;
+  const form = forms.handleRequest(selectExistingContactForm(request), request, selectExistingContactSchema);
+  if (form.isValid) {
+    if (id === 'new') {
+      let volatileKey = uuid();
+      const path = `/contact-entry/new?` + queryString.stringify({
+        searchQuery: filter,
+        sessionKey: volatileKey,
+        back: `/invoice-accounts/create/${regionId}/${companyId}/contact-search`,
+        redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/contact-entry-complete?sessionKey=${volatileKey}`
+      });
+      return h.redirect(path);
+    } else {
+      // Set the display company name
+      await dataService.sessionManager(request, regionId, companyId, { agent: { companyId: id } });
+      return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
+    }
+  } else {
+    return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, `contact-search`), { filter });
+  }
+};
+
 module.exports.getContactSelect = getContactSelect;
 module.exports.postContactSelect = postContactSelect;
 
 module.exports.getContactCreate = getContactCreate;
 module.exports.postContactCreate = postContactCreate;
+
+module.exports.getContactSearch = getContactSearch;
+module.exports.postContactSearch = postContactSearch;

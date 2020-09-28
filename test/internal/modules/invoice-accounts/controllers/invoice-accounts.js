@@ -64,6 +64,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         clear: sandbox.stub()
       },
       pre: {
+        companies: [],
         company: {
           id: companyId,
           name: companyName
@@ -154,7 +155,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
           companySearch: 'Company Name To Search for' });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/company-search?filter=Company Name To Search for`;
+        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/contact-search?filter=Company Name To Search for`;
         expect(args[0]).to.equal(redirectPath);
       });
     });

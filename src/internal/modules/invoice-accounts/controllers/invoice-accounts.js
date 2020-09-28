@@ -4,6 +4,8 @@ const queryString = require('querystring');
 const moment = require('moment');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
+const sessionHelper = require('shared/lib/session-helpers');
+const ADDRESS_FLOW_SESSION_KEY = require('../../address-entry/plugin').SESSION_KEY;
 
 const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
 const { selectAddressForm, selectAddressFormSchema } = require('../forms/select-address');
@@ -22,27 +24,28 @@ const helpers = require('../lib/helpers');
 const getCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
   const { licenceId, redirectPath } = request.query;
-  const { company } = request.pre;
+  const { company, companies } = request.pre;
   // licenceId is an optional query param. if supplied it will be displayed as the caption on the forms for the session
   const { licenceNumber } = licenceId ? await dataService.getLicenceById(licenceId) : { licenceNumber: null };
   // The company name and licence number set here will be used in the select address page
   const data = { viewData: { redirectPath, licenceNumber, licenceId, companyName: titleCase(company.name) } };
   const session = dataService.sessionManager(request, regionId, companyId, data);
-  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : helpers.getAgentCompany(session);
+  const selectedCompany = has(session, 'agent') && isEmpty(session.agent) ? company : await helpers.getAgentCompany(session);
+
   return h.view('nunjucks/form', {
     ...request.view,
     caption: helpers.getFormTitleCaption(licenceNumber),
     pageTitle: 'Who should the bills go to?',
     back: '/manage',
-    form: sessionForms.get(request, selectCompanyForm(request, company, selectedCompany))
+    form: sessionForms.get(request, selectCompanyForm(request, companies, selectedCompany))
   });
 };
 
 const postCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const { company } = request.pre;
+  const { companies } = request.pre;
   const schema = selectCompanyFormSchema(request.payload);
-  const form = forms.handleRequest(selectCompanyForm(request, company), request, schema);
+  const form = forms.handleRequest(selectCompanyForm(request, companies), request, schema);
   if (form.isValid) {
     const redirectPath = helpers.processCompanyFormData(request, regionId, companyId, form);
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
@@ -53,9 +56,9 @@ const postCompany = async (request, h) => {
 
 const getAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const addresses = await dataService.getCompanyAddresses(companyId);
   // get the session data to check if the address has been set and if it is new or existing
   const session = dataService.sessionManager(request, regionId, companyId);
+  const addresses = await helpers.getAllAddresses(companyId, session);
   // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
   const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
@@ -70,16 +73,72 @@ const getAddress = async (request, h) => {
 
 const postAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const addresses = await dataService.getCompanyAddresses(companyId);
+  const session = dataService.sessionManager(request, regionId, companyId);
+  const addresses = await helpers.getAllAddresses(companyId, session);
   const schema = selectAddressFormSchema(request.payload);
   const form = forms.handleRequest(selectAddressForm(request, addresses), request, schema);
   if (form.isValid) {
     const { selectedAddress } = forms.getValues(form);
-    dataService.sessionManager(request, regionId, companyId, { address: { addressId: selectedAddress } });
+    if (selectedAddress !== tempId) {
+      dataService.sessionManager(request, regionId, companyId, { address: { addressId: selectedAddress } });
+    }
     const redirectPath = selectedAddress === 'new_address' ? 'create-address' : 'add-fao';
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
   }
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'select-address'));
+};
+
+// Handles the redirection to the address entry flow
+const getCreateAddress = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  const queryTail = queryString.stringify({
+    redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/address-entered`,
+    back: `/invoice-accounts/create/${regionId}/${companyId}/check-details`
+  });
+  return h.redirect(`/address-entry/postcode?${queryTail}`);
+};
+
+// Handles the address entered via the address entry flow, and stores it in the session object
+const getAddressEntered = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  // Fetch the address using the address flow session key
+  const address = await sessionHelper.saveToSession(request, ADDRESS_FLOW_SESSION_KEY);
+  // Store the address in the session object
+  dataService.sessionManager(request, regionId, companyId, {
+    address: {
+      ...address,
+      addressId: address.id ? address.id : tempId
+    }
+  });
+  // Redirect the user to the check your answers page.
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
+};
+
+const getContactEntryHandover = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  const { sessionKey } = request.query;
+  const currentState = await sessionHelper.saveToSession(request, sessionKey);
+  const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
+  if (currentState.companyId !== companyId) {
+    const companyName = titleCase(await helpers.getCompanyName(request));
+    let newData = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
+    newData['viewData']['companyName'] = companyName;
+    if (currentState.id === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+      newData['agent'] = null;
+    } else {
+      newData['agent'] = {
+        id: currentState.id ? currentState.id : tempId,
+        name: companyName,
+        company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
+      };
+    }
+    newData['address'] = {
+      id: currentState.addressId ? currentState.addressId : tempId,
+      ...currentState.address
+    };
+    dataService.sessionManager(request, regionId, companyId, newData);
+  }
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
 };
 
 const getFao = async (request, h) => {
@@ -130,7 +189,8 @@ const getCheckDetails = async (request, h) => {
     session,
     company,
     selectedAddress,
-    selectedContact });
+    selectedContact
+  });
 };
 
 const postCheckDetails = async (request, h) => {
@@ -155,8 +215,13 @@ module.exports.postCompany = postCompany;
 module.exports.getAddress = getAddress;
 module.exports.postAddress = postAddress;
 
+module.exports.getCreateAddress = getCreateAddress;
+module.exports.getAddressEntered = getAddressEntered;
+
 module.exports.postFao = postFao;
 module.exports.getFao = getFao;
+
+module.exports.getContactEntryHandover = getContactEntryHandover;
 
 module.exports.getCheckDetails = getCheckDetails;
 module.exports.postCheckDetails = postCheckDetails;

@@ -20,7 +20,7 @@ const address = (address) => {
 const addressList = (addresses) => {
   const addrList = addresses.map(row => {
     return {
-      value: row.id,
+      value: row.id || row.addressId,
       label: (address(row)).join(', ')
     };
   });

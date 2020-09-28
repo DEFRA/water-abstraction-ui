@@ -34,7 +34,8 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
+          { method: preHandlers.loadCompany, assign: 'company' },
+          { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
     },
@@ -56,7 +57,10 @@ if (isAcceptanceTestTarget) {
             selectedCompany: Joi.string().optional().allow('')
           }
         },
-        pre: [{ method: preHandlers.loadCompany, assign: 'company' }]
+        pre: [
+          { method: preHandlers.loadCompany, assign: 'company' },
+          { method: preHandlers.loadCompanies, assign: 'companies' }
+        ]
       }
     },
     getAddress: {
@@ -101,6 +105,66 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+    getContactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
+      handler: controller.getContactEntryHandover,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirects the user into the invoice-account flow after a new contact has been created',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { sessionKey: VALID_GUID }
+        }
+      }
+
+    },
+    getCreateAddress: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/create-address',
+      handler: controller.getCreateAddress,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Enter invoice account address',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { form: Joi.string().optional() }
+        }
+      }
+    },
+    getAddressEntered: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/address-entered',
+      handler: controller.getAddressEntered,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirect path from the address entry module',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { form: Joi.string().optional() }
+        }
+      }
+    },
+
     getFao: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/add-fao',
@@ -162,7 +226,7 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
+          { method: preHandlers.loadBillingContact, assign: 'company' }
         ]
       }
     },

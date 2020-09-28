@@ -133,7 +133,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
-        expect(action.payload).to.equal(false);
+        expect(action.payload).to.equal([]);
       });
     });
   });

@@ -46,6 +46,7 @@ experiment('csv templates', () => {
     test('should return the current return cycle', async () => {
       const cycle = csvTemplates._getCurrentCycle('2019-04-01');
       expect(cycle).to.equal({
+        dueDate: '2019-04-28',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
         isSummer: false

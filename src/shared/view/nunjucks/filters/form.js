@@ -54,26 +54,16 @@ const mapFormField = (field) => {
  * @param  {String|null} value - the date value.
  * @return {Array} - array of items, one for day, month and year
  */
-const getFormDateItems = (value) => {
-  const [year, month, day] = (value || '').toString().split(/[- T]/g);
-
-  return [
-    {
-      classes: 'govuk-input--width-2',
-      value: day,
-      name: 'day'
-    },
-    {
-      classes: 'govuk-input--width-2',
-      value: month,
-      name: 'month'
-    },
-    {
-      classes: 'govuk-input--width-4',
-      value: year,
-      name: 'year'
-    }
-  ];
+const getFormDateItems = (values, items = ['day', 'month', 'year']) => {
+  const formValues = (values || '').toString().split(/[- T]/g);
+  return items.map((item, index) => {
+    return {
+      classes: item === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2',
+      // items.length -1 because the array starts at 0 not 1
+      value: formValues[(items.length - 1) - index],
+      name: item
+    };
+  });
 };
 
 /**
@@ -94,7 +84,7 @@ const mapFormDateField = (field) => {
       text: field.options.hint
     },
     classes: field.options.controlClass,
-    items: getFormDateItems(field.value),
+    items: getFormDateItems(field.value, field.options.items),
     attributes: field.options.attr || {}
   };
 

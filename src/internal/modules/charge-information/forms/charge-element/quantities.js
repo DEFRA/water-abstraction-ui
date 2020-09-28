@@ -17,7 +17,8 @@ const getFormField = (key, sessionData) => {
       },
       'number.base': {
         message: `Enter a valid ${key} quantity as a number that is more than zero`
-      }
+      },
+      'number.greater': { message: `Enter a valid ${key} quantity as a number that is more than zero` }
     }
   }, sessionData[fieldName] || '');
 };
@@ -45,8 +46,8 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.number().integer().required(),
-    billableAnnualQuantity: Joi.number().integer().allow('').optional()
+    authorisedAnnualQuantity: Joi.number().integer().greater(0).required(),
+    billableAnnualQuantity: Joi.number().integer().greater(0).allow('').optional()
   };
 };
 

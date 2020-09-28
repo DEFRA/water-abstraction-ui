@@ -10,7 +10,7 @@ const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
   f.fields.push(fields.radio('accountType', {
     errors: {
       'any.required': {
-        message: 'Select an option'
+        message: 'Select the account type'
       }
     },
     choices: [

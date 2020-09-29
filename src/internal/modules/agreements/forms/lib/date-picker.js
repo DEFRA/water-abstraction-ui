@@ -4,6 +4,14 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const moment = require('moment');
 const Joi = require('@hapi/joi');
 
+/**
+ * Gets the maximum date - this is the earliest of:
+ * - The licence end date
+ * - Today's date
+ * @param {String} licenceEndDate
+ * @param {String} [refDate] - reference date for testing
+ * @return {Object}
+ */
 const getMaxDate = (licenceEndDate, refDate) => {
   const today = moment(refDate);
   const isLicenceEndDate = licenceEndDate && moment(licenceEndDate).isBefore(today, 'day');
@@ -17,10 +25,11 @@ const getMaxDate = (licenceEndDate, refDate) => {
 /**
  * Gets error messages common to both date pickers in the flow
  * @param {String} licenceEndDate
+ * @param {String} [refDate] - reference date for testing
  * @return {Object}
  */
-const getCommonErrors = licenceEndDate => {
-  const { isLicenceEndDate } = getMaxDate(licenceEndDate);
+const getCommonErrors = (licenceEndDate, refDate) => {
+  const { isLicenceEndDate } = getMaxDate(licenceEndDate, refDate);
   return {
     'date.max': {
       message: isLicenceEndDate

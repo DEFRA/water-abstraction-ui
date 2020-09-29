@@ -2,6 +2,8 @@
 
 const moment = require('moment');
 const { partialRight } = require('lodash');
+const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
+
 const sessionForms = require('shared/lib/session-forms');
 const { agreementDescriptions } = require('shared/lib/mappers/agreements');
 
@@ -101,26 +103,28 @@ const getCheckStartDate = async (request, h) => {
 const getCheckAnswers = async (request, h) => {
   const { flowState, licence } = request.pre;
 
+  const basePath = `/licences/${licence.id}/agreements`;
+
   const view = {
     ...getDefaultView(request),
     pageTitle: 'Check agreement details',
-    back: `/licences/${licence.id}/agreements/check-start-date`,
+    back: `${basePath}/check-start-date`,
     form: confirmForm.form(request),
     answers: [{
       label: 'Agreement',
       value: agreementDescriptions[flowState.code],
       visuallyHiddenText: 'agreement',
-      link: `/licences/${licence.id}/agreements/select-type`
+      link: `${basePath}/select-type`
     }, {
       label: 'Date signed',
-      value: moment(flowState.dateSigned).format('D MMMM YYYY'),
+      value: isoToReadable(flowState.dateSigned),
       visuallyHiddenText: 'date signed',
-      link: `/licences/${licence.id}/agreements/date-signed`
+      link: `${basePath}/date-signed`
     }, {
       label: 'Start date',
-      value: moment(flowState.startDate).format('D MMMM YYYY'),
+      value: isoToReadable(flowState.startDate),
       visuallyHiddenText: 'start date',
-      link: `/licences/${licence.id}/agreements/check-start-date`
+      link: `${basePath}/check-start-date`
     }]
   };
   return h.view('nunjucks/agreements/check-answers', view);

@@ -2,6 +2,8 @@ const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
 const { selectAccountType, companySearch, companySearchSelectCompany, companySearchSelectAddress } = require('./forms');
 const sessionHelper = require('shared/lib/session-helpers');
+const queryString = require('querystring');
+const { SESSION_KEY: ADDRESS_FLOW_SESSION_KEY } = require('../address-entry/plugin');
 
 const getNew = async (request, h) => {
   const { sessionKey, regionId, originalCompanyId, back, searchQuery, redirectPath } = request.query;
@@ -43,30 +45,48 @@ const postSelectAccountTypeController = async (request, h) => {
     });
   } else {
     // Contact has been selected. Store the contact account type in yar
-    const { redirectPath } = sessionHelper.saveToSession(request, sessionKey, { newCompany: true, accountType, personFullName: personName, companyName: personName });
-
-    // Proceed to the next stage
-    if (accountType === 'organisation') {
-      return h.redirect(`/contact-entry/new/details?sessionKey=${sessionKey}`);
-    } else {
-      // return to redirectPath
-      return h.redirect(`${redirectPath}`);
-    }
+    sessionHelper.saveToSession(request, sessionKey, { newCompany: true, accountType, personFullName: personName, companyName: personName, agent: { companyId: '00000000-0000-0000-0000-000000000000', name: personName } });
+    return h.redirect(`/contact-entry/new/details?sessionKey=${sessionKey}`);
   }
 };
 
 const getDetailsController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  const { companyNameOrNumber, searchQuery } = await sessionHelper.saveToSession(request, sessionKey);
+  const { companyNameOrNumber, searchQuery, accountType } = await sessionHelper.saveToSession(request, sessionKey);
 
-  const defaultValue = companyNameOrNumber || searchQuery;
+  if (accountType === 'organisation') { // For companies, the next step is companies house
+    const defaultValue = companyNameOrNumber || searchQuery;
 
-  return h.view('nunjucks/form', {
-    ...request.view,
-    pageTitle: 'Enter the company details',
-    back: request.query.back,
-    form: sessionForms.get(request, companySearch.form(request, defaultValue))
+    return h.view('nunjucks/form', {
+      ...request.view,
+      pageTitle: 'Enter the company details',
+      back: request.query.back,
+      form: sessionForms.get(request, companySearch.form(request, defaultValue))
+    });
+  } else { // For individuals, we hand over to the address entry flow
+    const queryTail = queryString.stringify({
+      redirectPath: `/contact-entry/new/address-entered?sessionKey=${sessionKey}`,
+      back: `/contact-entry/new/details?sessionKey=${sessionKey}`
+    });
+    return h.redirect(`/address-entry/postcode?${queryTail}`);
+  }
+};
+
+const getAddressEntered = async (request, h) => {
+  const { sessionKey } = request.payload || request.query;
+  // Fetch the address using the address flow session key
+  //  const address = await sessionHelper.saveToSession(request, ADDRESS_FLOW_SESSION_KEY);
+  const address = request.yar.get(ADDRESS_FLOW_SESSION_KEY);
+
+  const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, {
+    address: {
+      ...address,
+      addressId: '00000000-0000-0000-0000-000000000000'
+    }
   });
+
+  // Redirect the user to the referring workflow
+  return h.redirect(redirectPath);
 };
 
 const postCompanySearchController = async (request, h) => {
@@ -122,7 +142,8 @@ const postSelectCompanyController = async (request, h) => {
       selectedCompaniesHouseNumber,
       companyName: selectedCompanyName,
       selectedCompaniesHouseCompanyName: selectedCompanyName,
-      organisationType: request.pre.companiesHouseResults.find(x => x.company.companyNumber === selectedCompaniesHouseNumber).company.organisationType
+      organisationType: request.pre.companiesHouseResults.find(x => x.company.companyNumber === selectedCompaniesHouseNumber).company.organisationType,
+      agent: { companyId: '00000000-0000-0000-0000-000000000000', name: selectedCompanyName }
     });
     // Proceed to the next stage
     return h.redirect(`/contact-entry/new/details/company-search/select-company-address?sessionKey=${sessionKey}`);
@@ -166,6 +187,7 @@ exports.getNew = getNew;
 exports.getSelectAccountTypeController = getSelectAccountTypeController;
 exports.postSelectAccountTypeController = postSelectAccountTypeController;
 exports.getDetailsController = getDetailsController;
+exports.getAddressEntered = getAddressEntered;
 exports.postCompanySearchController = postCompanySearchController;
 exports.getSelectCompanyController = getSelectCompanyController;
 exports.postSelectCompanyController = postSelectCompanyController;

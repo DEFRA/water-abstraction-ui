@@ -54,6 +54,20 @@ module.exports = {
       }
     }
   },
+  getAddressEntered: {
+    // Route for handling the handover from the address entry module
+    method: 'GET',
+    path: '/contact-entry/new/address-entered',
+    handler: controllers.getAddressEntered,
+    options: {
+      validate: {
+        query: {
+          sessionKey: Joi.string().uuid().required(),
+          form: Joi.string().optional()
+        }
+      }
+    }
+  },
   postCompanySearch: {
     // Route for posting the name or number of a new company contact
     // It searches companies house for a matching company

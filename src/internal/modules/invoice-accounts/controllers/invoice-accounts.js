@@ -119,25 +119,24 @@ const getContactEntryHandover = async (request, h) => {
   const { sessionKey } = request.query;
   const currentState = await sessionHelper.saveToSession(request, sessionKey);
   const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
-  if (currentState.companyId !== companyId) {
-    const companyName = titleCase(await helpers.getCompanyName(request));
-    let newData = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
-    newData['viewData']['companyName'] = companyName;
-    if (currentState.id === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
-      newData['agent'] = null;
-    } else {
-      newData['agent'] = {
-        id: currentState.id ? currentState.id : tempId,
-        name: companyName,
-        company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
-      };
-    }
-    newData['address'] = {
-      id: currentState.addressId ? currentState.addressId : tempId,
-      ...currentState.address
+  const companyName = titleCase(await helpers.getCompanyName(request));
+  let newData = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
+  newData['viewData']['companyName'] = companyName;
+  if (currentState.agent.companyId === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+    newData['agent'] = null;
+  } else {
+    newData['agent'] = {
+      id: currentState.id ? currentState.id : tempId,
+      companyId: currentState.id ? currentState.id : tempId,
+      name: companyName,
+      company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
     };
-    dataService.sessionManager(request, regionId, companyId, newData);
   }
+  newData['address'] = {
+    id: currentState.addressId ? currentState.addressId : tempId,
+    ...currentState.address
+  };
+  dataService.sessionManager(request, regionId, companyId, newData);
   return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
 };
 

@@ -15,10 +15,14 @@ const getCompany = async (companyId) => {
 };
 
 const getCompanyAddresses = async (companyId) => {
-  const addresses = await services.water.companies.getAddresses(companyId);
-  // get the unique list of addresses
-  const uniqueAddresses = uniqBy(addresses.map(row => row.address), 'id');
-  return uniqueAddresses;
+  if (companyId !== '00000000-0000-0000-0000-000000000000') {
+    const addresses = await services.water.companies.getAddresses(companyId);
+    // get the unique list of addresses
+    const uniqueAddresses = uniqBy(addresses.map(row => row.address), 'id');
+    return uniqueAddresses;
+  } else {
+    return [];
+  }
 };
 
 const getCompanyContacts = async (companyId) => {

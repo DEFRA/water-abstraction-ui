@@ -19,7 +19,6 @@ const loadCompanies = async (request) => {
 const loadBillingContact = async (request) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
-
   if (has(session, 'agent.companyId')) {
     const agentCompany = await helpers.getAgentCompany(session);
     return agentCompany;

@@ -15,7 +15,8 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
   } else {
     const agentId = selectedCompany === companyId ? null : selectedCompany;
     if (agentId) {
-      dataService.sessionManager(request, regionId, companyId, { agent: { companyId: agentId } });
+      const existingState = dataService.sessionManager(request, regionId, companyId);
+      dataService.sessionManager(request, regionId, companyId, { agent: { ...existingState.agent, companyId: agentId } });
     } else {
       dataService.sessionManager(request, regionId, companyId, { agent: null });
     }
@@ -65,7 +66,7 @@ const getSelectedAddress = async (companyId, session) => {
 
 const getAllAddresses = async (companyId, session) => {
   let originalCompanyAddresses = await dataService.getCompanyAddresses(companyId) || [];
-  let agentCompanyAddresses = has(session, 'agent.companyId') ? await dataService.getCompanyAddresses(session.agent.companyId) : [] || [];
+  let agentCompanyAddresses = has(session, 'agent.companyId') && session.agent.companyId !== '00000000-0000-0000-0000-000000000000' ? await dataService.getCompanyAddresses(session.agent.companyId) : [] || [];
   let newAddressFromSession = {};
 
   if (has(session, 'address.id')) {
@@ -88,11 +89,13 @@ const getAgentCompany = async (session) => {
 
 const getCompanyName = async (request) => {
   const { sessionKey } = request.query;
+  const { companyId } = request.params;
   let currentState = await request.yar.get(sessionKey);
   if (currentState.newCompany) {
-    return currentState.accountType === 'organisation' ? currentState.companyName : currentState.personFullName;
+    return currentState.agent.name;
   } else {
-    return currentState.companyName;
+    const originalCompany = await dataService.getCompany(companyId);
+    return originalCompany.name;
   }
 };
 

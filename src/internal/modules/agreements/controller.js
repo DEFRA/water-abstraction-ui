@@ -60,7 +60,7 @@ const getSelectAgreementType = async (request, h) => {
     ...getDefaultView(request),
     pageTitle: 'Select agreement',
     form: sessionForms.get(request, selectAgreementType.form(request)),
-    back: `/licences/${documentId}`
+    back: `/licences/${documentId}#charge`
   };
   return h.view('nunjucks/agreements/form', view);
 };

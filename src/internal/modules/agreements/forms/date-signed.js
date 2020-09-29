@@ -4,7 +4,7 @@ const { get } = require('lodash');
 const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
-const { getMaxDate, getCommonErrors, getDateValidator } = require('./lib/date-picker');
+const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
 
 /**
  * Gets form to select agreement signed date

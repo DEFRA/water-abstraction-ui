@@ -2,6 +2,7 @@
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 const moment = require('moment');
+const Joi = require('@hapi/joi');
 
 const getMaxDate = (licenceEndDate, refDate) => {
   const today = moment(refDate);
@@ -32,5 +33,19 @@ const getCommonErrors = licenceEndDate => {
   };
 };
 
+/**
+ * Returns a Joi validator for the date fields.  The date is limited to:
+ * - No earlier than the licence start date
+ * - No later than today or the licence end date
+ * @param {Object} licence
+ * @return {Object} Joi validator
+ */
+const getDateValidator = licence => {
+  const { startDate, endDate } = licence;
+  const { maxDate } = getMaxDate(endDate);
+  return Joi.date().min(startDate).max(maxDate).iso().required();
+};
+
 exports.getMaxDate = getMaxDate;
 exports.getCommonErrors = getCommonErrors;
+exports.getDateValidator = getDateValidator;

@@ -3,7 +3,7 @@
 const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
-const { getCommonErrors, getMaxDate } = require('./lib/date-picker');
+const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
 
 const getDatePicker = licenceEndDate => {
   return fields.date('startDate', {
@@ -66,13 +66,12 @@ const checkStartDateForm = request => {
 
 const checkStartDateSchema = (request, refDate) => {
   const { licence } = request.pre;
-  const { maxDate } = getMaxDate(licence.endDate);
   return {
     csrf_token: Joi.string().uuid().required(),
     isCustomStartDate: Joi.boolean().required(),
     startDate: Joi.when('isCustomStartDate', {
       is: true,
-      then: Joi.date().min(licence.startDate).max(maxDate).iso().required()
+      then: getDateValidator(licence)
     })
   };
 };

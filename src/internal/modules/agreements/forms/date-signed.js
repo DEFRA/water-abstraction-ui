@@ -4,7 +4,7 @@ const { get } = require('lodash');
 const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
-const { getMaxDate, getCommonErrors } = require('./lib/date-picker');
+const { getMaxDate, getCommonErrors, getDateValidator } = require('./lib/date-picker');
 
 /**
  * Gets form to select agreement signed date
@@ -38,10 +38,9 @@ const dateSignedForm = request => {
 
 const dateSignedSchema = (request, refDate) => {
   const { licence } = request.pre;
-  const { maxDate } = getMaxDate(licence.endDate);
   return {
     csrf_token: Joi.string().uuid().required(),
-    dateSigned: Joi.date().min(licence.startDate).max(maxDate).iso().required()
+    dateSigned: getDateValidator(licence)
   };
 };
 

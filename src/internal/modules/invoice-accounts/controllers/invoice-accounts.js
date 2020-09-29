@@ -66,7 +66,7 @@ const getAddress = async (request, h) => {
     ...request.view,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: `Select an existing address for ${session.viewData.companyName}`,
-    back: '/manage',
+    back: `/invoice-accounts/create/${regionId}/${companyId}?redirectPath=${session.viewData.redirectPath}`,
     form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddressId))
   });
 };
@@ -107,7 +107,8 @@ const getAddressEntered = async (request, h) => {
   dataService.sessionManager(request, regionId, companyId, {
     address: {
       ...address,
-      addressId: address.id ? address.id : tempId
+      addressId: address.id ? address.id : tempId,
+      id: address.id ? address.id : tempId
     }
   });
   // Redirect the user to the check your answers page.
@@ -125,15 +126,24 @@ const getContactEntryHandover = async (request, h) => {
   if (currentState.agent.companyId === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
     newData['agent'] = null;
   } else {
+    let tempType;
+    if (currentState.organisationType) {
+      tempType = currentState.organisationType;
+    } else {
+      tempType = 'individual';
+    }
     newData['agent'] = {
       id: currentState.id ? currentState.id : tempId,
       companyId: currentState.id ? currentState.id : tempId,
       name: companyName,
-      company_number: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
+      type: tempType,
+      companyNumber: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
     };
   }
   newData['address'] = {
     id: currentState.addressId ? currentState.addressId : tempId,
+    addressId: currentState.addressId ? currentState.addressId : tempId,
+    country: currentState.address.country ? currentState.address.country : 'UK',
     ...currentState.address
   };
   dataService.sessionManager(request, regionId, companyId, newData);
@@ -153,7 +163,7 @@ const getFao = async (request, h) => {
     ...request.view,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: 'Do you need to add an FAO?',
-    back: '/manage',
+    back: `/invoice-accounts/create/${regionId}/${companyId}/select-address`,
     form: sessionForms.get(request, addFaoForm(request, selectedContact))
   });
 };
@@ -195,14 +205,45 @@ const getCheckDetails = async (request, h) => {
 const postCheckDetails = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
-
-  // TODO default start date added here - might need to create a screen for the user to select a date
-  session.startDate = moment().format('YYYY-MM-DD');
   const redirectPath = session.viewData.redirectPath;
-  // remove unnecesary session data
-  delete session.viewData;
-  if (session.address.addressId === tempId) { delete session.address.addressId; };
-  const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, { regionId, ...session });
+  // Create the request body object
+  let requestBody = {};
+  // TODO default start date added here - might need to create a screen for the user to select a date
+  requestBody['startDate'] = moment().format('YYYY-MM-DD');
+  // Stuff the regionId into the request body
+  requestBody['regionId'] = regionId;
+  // Stuff the address into the request body
+  requestBody['address'] = session.address;
+  // If the address is a temp/new one, we remove the ID from the request
+  if (requestBody.address.id === tempId) {
+    delete requestBody.address.id;
+    delete requestBody.address.addressId;
+  }
+  // Remove the data source property from the address object
+  delete requestBody.address.dataSource;
+  // Remove properties from the address sub-object where there is no corresponding value
+  Object.entries(requestBody.address).map(eachProperty => {
+    if (eachProperty[1].length === 0) {
+      delete requestBody.address[eachProperty[0]];
+    }
+  });
+  // Stuff the agent into the request body
+  requestBody['agent'] = session.agent;
+  // If the agent is a temp/new one, we remove the ID from the request
+  if (requestBody.agent.id === tempId) {
+    delete requestBody.agent.id;
+    delete requestBody.agent.companyId;
+  }
+  // If the company number is not a valid 8-long string, remove it
+  if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
+    delete requestBody.agent.companyNumber;
+  }
+  // Stuff the contact into the request body
+  requestBody['contact'] = session.contact;
+
+  // Make the request
+  const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
+
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });
   return h.redirect(path);

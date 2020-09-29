@@ -21,6 +21,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const licenceNumber = '01/123';
   const companyName = 'test company name';
   const addressId = uuid();
+  const agentId = uuid();
   let h, request;
 
   const secondHeader = sandbox.stub();
@@ -31,6 +32,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       companyId,
       regionId,
       address: { addressId },
+      agent: { companyId: agentId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,
@@ -44,6 +46,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
     sandbox.stub(dataService, 'sessionManager').returns(sessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
+    sandbox.stub(dataService, 'getCompany').returns({ id: agentId });
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
     sandbox.stub(forms, 'getValues').returns({});
@@ -64,7 +67,10 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         clear: sandbox.stub()
       },
       pre: {
-        companies: [],
+        companies: [{
+          id: companyId,
+          name: companyName
+        }],
         company: {
           id: companyId,
           name: companyName
@@ -132,7 +138,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and the companyId selected = companyId then agent = null', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = dataService.sessionManager.lastCall.args;
         expect(args[0]).to.equal(request);
@@ -143,7 +150,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and a company has been selected the user is rdirected to the select address path', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
         const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
@@ -152,7 +160,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and a company search name has been entered the user is rdirected to the search company path', async () => {
         forms.getValues.returns({
           selectedCompany: 'company_search',
-          companySearch: 'Company Name To Search for' });
+          companySearch: 'Company Name To Search for'
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
         const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/contact-search?filter=Company Name To Search for`;
@@ -176,11 +185,11 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       await controller.getAddress(request, h);
     });
     test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
     test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.lastCall.args;
+      const args = dataService.sessionManager.firstCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
@@ -202,14 +211,14 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
     test('view context is assigned a back link path for type', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/manage');
+      expect(back).to.startWith('/invoice-accounts/create');
     });
   });
 
   experiment('.postAddress', () => {
     test('dataService.getCompanyAddresses is called with the companyId', async () => {
       await controller.postAddress(request, h);
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
 
@@ -274,7 +283,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
     test('view context is assigned a back link path for type', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/manage');
+      expect(back).to.startWith('/invoice-accounts/create');
     });
   });
 
@@ -328,7 +337,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(dataService.sessionManager.calledOnce).to.be.true();
     });
     test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
     test('the expected view template is used', async () => {
@@ -366,7 +375,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
     test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
       const startDate = moment().format('YYYY-MM-DD');
-      const details = [companyId, { address: { addressId }, companyId, regionId, startDate }];
+      const details = [companyId, { address: { addressId }, agent: { companyId: agentId }, contact: undefined, regionId, startDate }];
       const args = dataService.saveInvoiceAccDetails.lastCall.args;
       expect(args).to.equal(details);
     });

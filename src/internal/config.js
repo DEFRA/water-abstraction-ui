@@ -130,5 +130,9 @@ module.exports = {
     password: process.env.REDIS_PASSWORD || '',
     ...!isLocal && { tls: {} },
     db: 1
+  },
+
+  featureToggles: {
+    manageAgreements: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV)
   }
 };

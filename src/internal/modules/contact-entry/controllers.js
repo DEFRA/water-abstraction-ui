@@ -177,7 +177,7 @@ const postSelectCompanyAddressController = async (request, h) => {
     });
   } else {
     // Company name or number has been set. Store this in yar
-    const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, { addressId: null, address: JSON.parse(selectedCompaniesHouseAddress) });
+    const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, { address: { ...JSON.parse(selectedCompaniesHouseAddress), addressId: '00000000-0000-0000-0000-000000000000' } });
     // Redirect the user back into the invoice-accounts flow
     return h.redirect(`${redirectPath}`);
   }

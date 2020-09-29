@@ -60,7 +60,7 @@ const getDetailsController = async (request, h) => {
     return h.view('nunjucks/form', {
       ...request.view,
       pageTitle: 'Enter the company details',
-      back: request.query.back,
+      back: `/contact-entry/new/account-type?sessionKey=${sessionKey}`,
       form: sessionForms.get(request, companySearch.form(request, defaultValue))
     });
   } else { // For individuals, we hand over to the address entry flow
@@ -81,7 +81,8 @@ const getAddressEntered = async (request, h) => {
   const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, {
     address: {
       ...address,
-      addressId: '00000000-0000-0000-0000-000000000000'
+      addressId: '00000000-0000-0000-0000-000000000000',
+      id: '00000000-0000-0000-0000-000000000000'
     }
   });
 
@@ -117,7 +118,7 @@ const getSelectCompanyController = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     pageTitle: 'Select a company',
-    back: request.query.back,
+    back: `/contact-entry/new/details?sessionKey=${sessionKey}`,
     form: sessionForms.get(request, companySearchSelectCompany.form(request, selectedCompaniesHouseNumber))
   });
 };
@@ -156,7 +157,7 @@ const getSelectCompanyAddressController = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     pageTitle: 'Select a company address',
-    back: request.query.back,
+    back: `/contact-entry/new/details/company-search/select-company?sessionKey=${sessionKey}`,
     form: sessionForms.get(request, companySearchSelectAddress.form(request, defaultValue))
   });
 };
@@ -177,7 +178,13 @@ const postSelectCompanyAddressController = async (request, h) => {
     });
   } else {
     // Company name or number has been set. Store this in yar
-    const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, { address: { ...JSON.parse(selectedCompaniesHouseAddress), addressId: '00000000-0000-0000-0000-000000000000' } });
+    const { redirectPath } = await sessionHelper.saveToSession(request, sessionKey, {
+      address: {
+        ...JSON.parse(selectedCompaniesHouseAddress),
+        addressId: '00000000-0000-0000-0000-000000000000',
+        id: '00000000-0000-0000-0000-000000000000'
+      }
+    });
     // Redirect the user back into the invoice-accounts flow
     return h.redirect(`${redirectPath}`);
   }

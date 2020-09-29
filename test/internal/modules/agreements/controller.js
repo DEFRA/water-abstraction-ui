@@ -134,13 +134,17 @@ experiment('internal/modules/agreements/controller', () => {
 
     beforeEach(async () => {
       request = {
+        params: {
+          licenceId
+        },
         view: {
           csrfToken: uuid()
         },
         pre: {
           licence: {
             id: licenceId,
-            licenceNumber: '01/234/ABC'
+            licenceNumber: '01/234/ABC',
+            startDate: '2020-02-01'
           },
           document: {
             document_id: documentId
@@ -247,6 +251,108 @@ experiment('internal/modules/agreements/controller', () => {
 
         expect(field.options.label).to.equal('Enter date agreement was signed');
         expect(field.options.widget).to.equal('date');
+      });
+    });
+
+    experiment('.getCheckStartDate', () => {
+      experiment('when the agreement start date = the licence start date', async () => {
+        beforeEach(async () => {
+          request.yar.get.onFirstCall().returns({
+            startDate: '2020-02-01'
+          });
+
+          await controller.getCheckStartDate(request, h);
+        });
+
+        test('uses the correct template', async () => {
+          expect(h.view.calledWith(
+            'nunjucks/agreements/check-start-date'
+          )).to.be.true();
+        });
+
+        test('sets the caption in the view', async () => {
+          const [, { caption }] = h.view.lastCall.args;
+          expect(caption).to.equal(`Licence 01/234/ABC`);
+        });
+
+        test('sets the page title in the view', async () => {
+          const [, { pageTitle }] = h.view.lastCall.args;
+          expect(pageTitle).to.equal(`Check agreement start date`);
+        });
+
+        test('sets the correct back link in the view', async () => {
+          const [, { back }] = h.view.lastCall.args;
+          expect(back).to.equal(`/licences/${licenceId}/agreements/date-signed`);
+        });
+
+        test('sets flags to indicate if the start date is significant', async () => {
+          const [, { isLicenceStartDate, isFinancialYearStartDate }] = h.view.lastCall.args;
+          expect(isLicenceStartDate).to.be.true();
+          expect(isFinancialYearStartDate).to.be.false();
+        });
+
+        test('defines a form', async () => {
+          const [, { form }] = h.view.lastCall.args;
+          expect(form).to.be.an.object();
+        });
+
+        test('the form has 2 radio options for yes/no', async () => {
+          const [, { form }] = h.view.lastCall.args;
+          const field = form.fields.find(field => field.name === 'isCustomStartDate');
+
+          expect(field.options.widget).to.equal('radio');
+          expect(field.options.label).to.equal('Do you want to set a different agreement start date?');
+
+          expect(field.options.choices.length).to.equal(2);
+
+          expect(field.options.choices[0].label).to.equal('Yes');
+          expect(field.options.choices[0].value).to.equal(true);
+
+          expect(field.options.choices[1].label).to.equal('No');
+          expect(field.options.choices[1].value).to.equal(false);
+        });
+
+        test('the "yes" radio option has a conditional disclosure field for the start date', async () => {
+          const [, { form }] = h.view.lastCall.args;
+          const field = form.fields.find(field => field.name === 'isCustomStartDate');
+
+          const [dateField] = field.options.choices[0].fields;
+
+          expect(dateField.options.label).to.equal('Start date');
+          expect(dateField.options.widget).to.equal('date');
+        });
+      });
+
+      experiment('when the agreement start date = the financial year start', async () => {
+        beforeEach(async () => {
+          request.yar.get.onFirstCall().returns({
+            startDate: '2020-04-01'
+          });
+
+          await controller.getCheckStartDate(request, h);
+        });
+
+        test('sets flags to indicate if the start date is significant', async () => {
+          const [, { isLicenceStartDate, isFinancialYearStartDate }] = h.view.lastCall.args;
+          expect(isLicenceStartDate).to.be.false();
+          expect(isFinancialYearStartDate).to.be.true();
+        });
+      });
+
+      experiment('when the agreement start date is neither the financial year or licence start date', async () => {
+        beforeEach(async () => {
+          request.yar.get.onFirstCall().returns({
+            startDate: '2020-04-02'
+          });
+
+          await controller.getCheckStartDate(request, h);
+        });
+
+        test('sets flags to indicate if the start date is significant', async () => {
+          const [, { isLicenceStartDate, isFinancialYearStartDate }] = h.view.lastCall.args;
+          expect(isLicenceStartDate).to.be.false();
+          expect(isFinancialYearStartDate).to.be.false();
+        });
       });
     });
   });

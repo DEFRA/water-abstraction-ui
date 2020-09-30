@@ -1,0 +1,44 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+{% from "badge.njk" import badge %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ title(pageTitle, caption) }}
+    </div>
+  </div>
+
+  <section class="govuk-!-margin-bottom-2">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <table class="govuk-table govuk-!-margin-bottom-8">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Start Date</th>
+                <th scope="col" class="govuk-table__header">Reason</th>
+                <th scope="col" class="govuk-table__header">Status</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  {{ draftChargeInformation.dateRange.startDate | date }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ draftChargeInformation.changeReason.description }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ badge(draftChargeInformation | chargeVersionBadge) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        {{ formRender(form) }}
+      </div>
+    </div>
+  </section>
+{% endblock %}

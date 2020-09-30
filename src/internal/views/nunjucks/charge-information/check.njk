@@ -3,6 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "crm/address.njk" import address %}
+{% from "badge.njk" import badge %}
 
 {% macro summaryListRow(key, value, changeLink) %}
   <div class="govuk-summary-list__row">
@@ -35,27 +36,30 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle, caption, null, true) }}
+      <div class="govuk-!-margin-bottom-9">
+        {{ badge(draftChargeInformation | chargeVersionBadge(true)) }}
+      </div>
     </div>
     <div class="govuk-grid-column-full">
       <section class="govuk-!-margin-bottom-7">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
         <dl class="govuk-summary-list">
           {{ summaryListRow('Reason', draftChargeInformation.changeReason.description, changeLink('/create'))}}
-          {{ summaryListRow('Start date', draftChargeInformation.startDate | date, changeLink('/start-date'))}}
+          {{ summaryListRow('Start date', draftChargeInformation.dateRange.startDate | date, changeLink('/start-date'))}}
 
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
-              {{ draftChargeInformation.billingAccount.billingAccount.accountNumber }}
+              {{ draftChargeInformation.invoiceAccount.accountNumber }}
               <br>
-              {{ address(invoiceAccountAddress.address) }}
+              {{ address(draftChargeInformation.invoiceAccount.invoiceAccountAddress.address) }}
             </dd>
             <dd class="govuk-summary-list__actions">
               <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
             </dd>
           </div>
 
-          {{ summaryListRow('Licence holder', draftChargeInformation.billingAccount.billingAccount.company.name) }}
+          {{ summaryListRow('Licence holder', draftChargeInformation.invoiceAccount.company.name | titleCase) }}
         </dl>
       </section>
 

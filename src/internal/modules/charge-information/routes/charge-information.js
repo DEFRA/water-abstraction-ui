@@ -341,5 +341,29 @@ module.exports = {
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
+  },
+
+  getSubmitted: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/submitted',
+    handler: controller.getSubmitted,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
   }
 };

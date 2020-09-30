@@ -5,6 +5,7 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
+const { getActionUrl } = require('../lib/form-helpers');
 
 const mapChoice = changeReason => ({
   value: changeReason.changeReasonId,
@@ -20,7 +21,7 @@ const selectReasonForm = request => {
 
   const changeReasonId = get(draftChargeInformation, 'changeReason.changeReasonId');
 
-  const action = routing.getReason(licence);
+  const action = getActionUrl(request, routing.getReason(licence.id));
 
   const f = formFactory(action, 'POST');
 

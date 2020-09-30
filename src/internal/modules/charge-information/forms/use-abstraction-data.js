@@ -5,6 +5,7 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
+const { getActionUrl } = require('../lib/form-helpers');
 
 const useAbstractionDataForm = request => {
   const { csrfToken } = request.view;
@@ -12,7 +13,7 @@ const useAbstractionDataForm = request => {
 
   const useAbstractionData = get(draftChargeInformation, 'abstractionData');
 
-  const action = routing.getUseAbstractionData(licence);
+  const action = getActionUrl(request, routing.getUseAbstractionData(licence.id));
 
   const f = formFactory(action, 'POST');
 

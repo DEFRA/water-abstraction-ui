@@ -1,9 +1,10 @@
 'use strict';
 
-const routing = require('../../lib/routing');
 const { has } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 /**
  * returns the errors for the start and end date form fields
@@ -26,9 +27,9 @@ const getError = (key) => {
   };
 };
 
-const getDates = sessionData => {
-  return (has(sessionData, 'timeLimitedPeriod.startDate'))
-    ? sessionData.timeLimitedPeriod
+const getDates = data => {
+  return (has(data, 'timeLimitedPeriod.startDate'))
+    ? data.timeLimitedPeriod
     : { startDate: null, endDate: null };
 };
 
@@ -37,7 +38,7 @@ const getDates = sessionData => {
  * @param {string} key either start or end used to define the date field
  * @param {object} values session data to preload the form
  */
-const getDateField = (key, sessionData) => {
+const getDateField = (key, data) => {
   return fields.date(`${key}Date`, {
     label: `Enter ${key} date`,
     type: 'date',
@@ -50,25 +51,25 @@ const getDateField = (key, sessionData) => {
       'date.isoDate': getError(key).invalid,
       'date.base': getError(key).invalid
     }
-  }, getDates(sessionData)[key + 'Date']);
+  }, getDates(data)[key + 'Date']);
 };
 
-const options = (sessionData) => {
+const options = (data) => {
   return [
     {
       value: 'yes',
       label: 'Yes',
-      fields: [ getDateField('start', sessionData), getDateField('end', sessionData) ]
+      fields: [ getDateField('start', data), getDateField('end', data) ]
     },
     { value: 'no', label: 'No' }
   ];
 };
 
-const getSelectedValue = sessionData => {
-  if (!(has(sessionData, 'timeLimitedPeriod'))) {
+const getSelectedValue = data => {
+  if (!(has(data, 'timeLimitedPeriod'))) {
     return '';
   } else {
-    return !sessionData.timeLimitedPeriod ? 'no' : 'yes';
+    return !data.timeLimitedPeriod ? 'no' : 'yes';
   }
 };
 
@@ -78,10 +79,10 @@ const getSelectedValue = sessionData => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
-const form = (request, sessionData = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
-  const { elementId, licenceId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, elementId, 'time');
+  const data = getChargeElementData(request);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.timeLimit);
 
   const f = formFactory(action, 'POST');
 
@@ -91,8 +92,8 @@ const form = (request, sessionData = {}) => {
         message: 'Select yes if you want to set a time limit. Select no to continue'
       }
     },
-    choices: options(sessionData)
-  }, getSelectedValue(sessionData)));
+    choices: options(data)
+  }, getSelectedValue(data)));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -100,8 +101,8 @@ const form = (request, sessionData = {}) => {
 };
 
 const schema = (request) => {
-  const { startDate } = request.draftChargeInformation;
-  const expiredDate = request.licence.expiredDate || '9999-01-01';
+  const { startDate } = request.pre.draftChargeInformation;
+  const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
   return {
     csrf_token: Joi.string().uuid().required(),
     timeLimitedPeriod: Joi.string().required().valid(['yes', 'no']),

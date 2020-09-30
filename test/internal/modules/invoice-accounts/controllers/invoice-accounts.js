@@ -11,6 +11,7 @@ const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();
 const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const forms = require('../../../../../src/shared/lib/forms/index');
+const sessionHelper = require('../../../../../src/shared/lib/session-helpers');
 const moment = require('moment');
 const titleCase = require('title-case');
 
@@ -47,6 +48,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     sandbox.stub(dataService, 'sessionManager').returns(sessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'getCompany').returns({ id: agentId });
+    sandbox.stub(sessionHelper, 'saveToSession').returns({ agent: { companyId: agentId }, address: { country: null } });
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
     sandbox.stub(forms, 'getValues').returns({});
@@ -256,6 +258,22 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       });
     });
   });
+
+  experiment('.getContactEntryHandover', () => {
+    beforeEach(async () => {
+      await controller.getContactEntryHandover(request, h);
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+    });
+    test('client is redirected', async () => {
+      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`)).to.be.true();
+    });
+  });
+
   experiment('.getFao', () => {
     beforeEach(async () => {
       await controller.getFao(request, h);

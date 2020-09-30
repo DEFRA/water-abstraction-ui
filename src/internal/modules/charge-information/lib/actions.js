@@ -1,13 +1,15 @@
 const { find } = require('lodash');
 const moment = require('moment');
+const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const ACTION_TYPES = {
   clearData: 'clearData',
   setAbstractionData: 'set.abstractionData',
-  setBillingAccount: 'set.billingAccount',
+  setBillingAccount: 'set.invoiceAccount',
   setReason: 'set.reason',
-  setStartDate: 'set.startDate'
+  setStartDate: 'set.startDate',
+  removeChargeElement: 'remove.chargeElement'
 };
 
 const setChangeReason = (request, formValues) => {
@@ -35,29 +37,49 @@ const setStartDate = (request, formValues) => {
 };
 
 const setBillingAccount = (request, formValues) => {
-  const billingAccount = request.pre.billingAccounts.find(account => {
-    return account.invoiceAccountAddresses.find(address => {
+  let invoiceAccountAddress;
+  const invoiceAccount = request.pre.billingAccounts.find(account => {
+    invoiceAccountAddress = account.invoiceAccountAddresses.find(address => {
       return address.id === formValues.invoiceAccountAddress;
     });
+    return invoiceAccountAddress;
   }) || null;
 
   return {
     type: ACTION_TYPES.setBillingAccount,
     payload: {
-      invoiceAccountAddress: formValues.invoiceAccountAddress,
-      billingAccount
+      ...invoiceAccount,
+      invoiceAccountAddress
     }
   };
 };
 
+const generateIds = chargeElements =>
+  chargeElements.map(element => ({
+    ...element,
+    id: uuid()
+  }));
+
 const setAbstractionData = (request, formValues) => {
   const abstractionData = formValues.useAbstractionData
-    ? request.pre.defaultCharges
+    ? generateIds(request.pre.defaultCharges)
     : [];
 
   return {
     type: ACTION_TYPES.setAbstractionData,
     payload: abstractionData
+  };
+};
+
+const removeChargeElement = request => {
+  const { draftChargeInformation: { chargeElements } } = request.pre;
+  const { buttonAction } = request.payload;
+  const [, chargeElementId] = buttonAction.split(':');
+  const updatedChargeElements = chargeElements.filter(element => element.id !== chargeElementId);
+
+  return {
+    type: ACTION_TYPES.removeChargeElement,
+    payload: updatedChargeElements
   };
 };
 
@@ -74,3 +96,4 @@ exports.setAbstractionData = setAbstractionData;
 exports.setBillingAccount = setBillingAccount;
 exports.setChangeReason = setChangeReason;
 exports.setStartDate = setStartDate;
+exports.removeChargeElement = removeChargeElement;

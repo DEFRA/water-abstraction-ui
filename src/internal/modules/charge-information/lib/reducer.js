@@ -23,7 +23,13 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setBillingAccount:
       return {
         ...state,
-        billingAccount: action.payload
+        invoiceAccount: action.payload
+      };
+
+    case ACTION_TYPES.removeChargeElement:
+      return {
+        ...state,
+        chargeElements: action.payload
       };
 
     case ACTION_TYPES.clearData:

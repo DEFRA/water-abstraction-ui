@@ -29,15 +29,8 @@ const loadLicence = async request => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request => {
-  const { licenceId } = request.params;
-  try {
-    const data = await request.server.methods.getDraftChargeInformation(licenceId);
-    return data;
-  } catch (err) {
-    return errorHandler(err, `Draft charge information not found for licence ${licenceId}`);
-  }
-};
+const loadDraftChargeInformation = async request =>
+  request.getDraftChargeInformation(request.params.licenceId);
 
 /**
  * Loads list of change reasons

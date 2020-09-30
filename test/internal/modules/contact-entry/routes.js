@@ -107,7 +107,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('responds with 200 if the query parameters are valid', async () => {
       const queryTail = queryString.stringify({
-        sessionKey: uuid(),
+        sessionKey: uuid()
       });
 
       let url = `/contact-entry/new/account-type?${queryTail}`;

@@ -23,7 +23,7 @@ const form = (request, defaultValue) => {
 
   const f = formFactory('/contact-entry/new/details/company-search/select-company');
 
-  f.fields.push(fields.radio('selectedCompaniesHouseNumber', {
+  f.fields.push(fields.dropdown('selectedCompaniesHouseNumber', {
     errors: {
       'any.required': {
         message: 'Select a company from the list'

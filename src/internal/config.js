@@ -1,3 +1,5 @@
+'use strict';
+
 require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
@@ -130,5 +132,9 @@ module.exports = {
     password: process.env.REDIS_PASSWORD || '',
     ...!isLocal && { tls: {} },
     db: 1
+  },
+
+  featureToggles: {
+    manageAgreements: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV)
   }
 };

@@ -417,13 +417,12 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
 
     test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.lastCall.args;
+      const args = dataService.sessionManager.firstCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
       // no data to merge is passed to the session
       expect(args[3]).to.equal(undefined);
-      expect(dataService.sessionManager.calledOnce).to.be.true();
     });
 
     test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {

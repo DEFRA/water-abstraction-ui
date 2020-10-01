@@ -1,7 +1,6 @@
 'use-strict';
 const boom = require('@hapi/boom');
 const queryString = require('querystring');
-const moment = require('moment');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
 const sessionHelper = require('shared/lib/session-helpers');
@@ -119,7 +118,6 @@ const getContactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
 
   let data = await helpers.processContactEntry(request);
-  console.log(data)
 
   dataService.sessionManager(request, regionId, companyId, data);
   return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
@@ -181,35 +179,8 @@ const postCheckDetails = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
   const redirectPath = session.viewData.redirectPath;
-  // Create the request body object
-  let requestBody = {};
-  // TODO default start date added here - might need to create a screen for the user to select a date
-  requestBody['startDate'] = moment().format('YYYY-MM-DD');
-  requestBody['regionId'] = regionId; // Stuff the regionId into the request body
-  requestBody['address'] = session.address; // Stuff the address into the request body
-  // If the address is a temp/new one, we remove the ID from the request
-  if (requestBody.address.id === tempId) {
-    delete requestBody.address.id;
-    delete requestBody.address.addressId;
-  }
-  delete requestBody.address.dataSource; // Remove the data source property from the address object
-  // Remove properties from the address sub-object where there is no corresponding value
-  Object.entries(requestBody.address).map(eachProperty => {
-    if (eachProperty[1].length === 0) {
-      delete requestBody.address[eachProperty[0]];
-    }
-  });
-  requestBody['agent'] = session.agent; // Stuff the agent into the request body
-  // If the agent is a temp/new one, we remove the ID from the request
-  if (requestBody.agent.id === tempId) {
-    delete requestBody.agent.id;
-    delete requestBody.agent.companyId;
-  }
-  // If the company number is not a valid 8-long string, remove it
-  if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
-    delete requestBody.agent.companyNumber;
-  }
-  requestBody['contact'] = session.contact; // Stuff the contact into the request body
+  // Formulate the body of the request
+  const requestBody = await helpers.postDataHandler(request);
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);

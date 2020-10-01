@@ -1,6 +1,7 @@
 const dataService = require('../services/data-service');
 const forms = require('shared/lib/forms');
 const { has, isEmpty } = require('lodash');
+const moment = require('moment');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
 const sessionHelper = require('shared/lib/session-helpers');
@@ -163,6 +164,41 @@ const processContactEntry = async (request) => {
   return response;
 };
 
+const postDataHandler = (request) => {
+  const { regionId, companyId } = request.params;
+  const session = dataService.sessionManager(request, regionId, companyId);
+  // Create the request body object
+  let requestBody = {};
+  // TODO default start date added here - might need to create a screen for the user to select a date
+  requestBody['startDate'] = moment().format('YYYY-MM-DD');
+  requestBody['regionId'] = regionId; // Stuff the regionId into the request body
+  requestBody['address'] = session.address; // Stuff the address into the request body
+  // If the address is a temp/new one, we remove the ID from the request
+  if (requestBody.address.id === tempId) {
+    delete requestBody.address.id;
+    delete requestBody.address.addressId;
+  }
+  delete requestBody.address.dataSource; // Remove the data source property from the address object
+  // Remove properties from the address sub-object where there is no corresponding value
+  Object.entries(requestBody.address).map(eachProperty => {
+    if (eachProperty[1].length === 0) {
+      delete requestBody.address[eachProperty[0]];
+    }
+  });
+  requestBody['agent'] = session.agent; // Stuff the agent into the request body
+  // If the agent is a temp/new one, we remove the ID from the request
+  if (requestBody.agent.id === tempId) {
+    delete requestBody.agent.id;
+    delete requestBody.agent.companyId;
+  }
+  // If the company number is not a valid 8-long string, remove it
+  if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
+    delete requestBody.agent.companyNumber;
+  }
+  requestBody['contact'] = session.contact; // Stuff the contact into the request body
+  return requestBody;
+};
+
 exports.getName = getName;
 exports.getCompanyName = getCompanyName;
 exports.getContactName = getContactName;
@@ -174,3 +210,4 @@ exports.processFaoFormData = processFaoFormData;
 exports.processCompanyFormData = processCompanyFormData;
 exports.processSelectContactFormData = processSelectContactFormData;
 exports.processContactEntry = processContactEntry;
+exports.postDataHandler = postDataHandler;

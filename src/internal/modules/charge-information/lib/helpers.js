@@ -1,7 +1,7 @@
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { reducer } = require('./reducer');
 const sessionForms = require('shared/lib/session-forms');
-const { isFunction, isEmpty } = require('lodash');
+const { isFunction, isEmpty, omit } = require('lodash');
 const routing = require('../lib/routing');
 
 const getPostedForm = (request, formContainer) => {
@@ -53,7 +53,16 @@ const getDefaultView = (request, backLink, formContainer) => {
   return view;
 };
 
+const prepareChargeInformation = (licenceId, chargeData) => ({
+  licenceId,
+  chargeVersion: {
+    ...omit(chargeData, 'status'),
+    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id'))
+  }
+});
+
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
+exports.prepareChargeInformation = prepareChargeInformation;

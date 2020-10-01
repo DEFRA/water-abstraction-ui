@@ -140,16 +140,13 @@ const getCheckData = async (request, h) => {
 };
 
 const submitDraftChargeInformation = async (request, h) => {
-  const { licence, draftChargeInformation } = request.pre;
+  const { licence: { id }, draftChargeInformation } = request.pre;
 
-  const dataToSubmit = {
-    licenceId: licence.id,
-    chargeVersion: draftChargeInformation
-  };
-  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(dataToSubmit);
+  const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
+  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   await applyFormResponse(request, {}, actions.clearData);
 
-  return h.redirect(routing.getSubmitted(licence.id));
+  return h.redirect(routing.getSubmitted(id));
 };
 
 const redirectToCancelPage = (request, h) =>

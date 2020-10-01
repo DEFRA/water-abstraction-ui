@@ -210,25 +210,21 @@ const postCheckDetails = async (request, h) => {
   let requestBody = {};
   // TODO default start date added here - might need to create a screen for the user to select a date
   requestBody['startDate'] = moment().format('YYYY-MM-DD');
-  // Stuff the regionId into the request body
-  requestBody['regionId'] = regionId;
-  // Stuff the address into the request body
-  requestBody['address'] = session.address;
+  requestBody['regionId'] = regionId; // Stuff the regionId into the request body
+  requestBody['address'] = session.address; // Stuff the address into the request body
   // If the address is a temp/new one, we remove the ID from the request
   if (requestBody.address.id === tempId) {
     delete requestBody.address.id;
     delete requestBody.address.addressId;
   }
-  // Remove the data source property from the address object
-  delete requestBody.address.dataSource;
+  delete requestBody.address.dataSource; // Remove the data source property from the address object
   // Remove properties from the address sub-object where there is no corresponding value
   Object.entries(requestBody.address).map(eachProperty => {
     if (eachProperty[1].length === 0) {
       delete requestBody.address[eachProperty[0]];
     }
   });
-  // Stuff the agent into the request body
-  requestBody['agent'] = session.agent;
+  requestBody['agent'] = session.agent; // Stuff the agent into the request body
   // If the agent is a temp/new one, we remove the ID from the request
   if (requestBody.agent.id === tempId) {
     delete requestBody.agent.id;
@@ -238,12 +234,9 @@ const postCheckDetails = async (request, h) => {
   if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
     delete requestBody.agent.companyNumber;
   }
-  // Stuff the contact into the request body
-  requestBody['contact'] = session.contact;
-
+  requestBody['contact'] = session.contact; // Stuff the contact into the request body
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
-
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });
   return h.redirect(path);

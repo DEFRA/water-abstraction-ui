@@ -12,6 +12,8 @@ const sandbox = require('sinon').createSandbox();
 const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const forms = require('../../../../../src/shared/lib/forms/index');
 const sessionHelper = require('../../../../../src/shared/lib/session-helpers');
+const ADDRESS_FLOW_SESSION_KEY = require('../../../../../src/internal/modules/address-entry/plugin').SESSION_KEY;
+const tempId = '00000000-0000-0000-0000-000000000000';
 const moment = require('moment');
 const titleCase = require('title-case');
 
@@ -256,6 +258,39 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         const args = h.postRedirectGet.lastCall.args;
         expect(args[1]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
       });
+    });
+  });
+
+  experiment('.getCreateAddress', () => {
+    beforeEach(async () => {
+      await controller.getCreateAddress(request, h);
+    });
+    test('client is redirected to the address entry workflow', async () => {
+      const args = h.redirect.lastCall.args;
+      expect(args[0]).to.startWith(`/address-entry/postcode`);
+    });
+  });
+
+  experiment('.getAddressEntered', () => {
+    beforeEach(async () => {
+      await controller.getAddressEntered(request, h);
+    });
+    test('calls saveToSession to fetch the address from the address entry workflow', async () => {
+      const args = sessionHelper.saveToSession.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(ADDRESS_FLOW_SESSION_KEY);
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(typeof args[3]).to.equal('object');
+      expect(args[3].address.addressId).to.equal(tempId);
+    });
+    test('client is redirected to the check your answers page', async () => {
+      const args = h.redirect.lastCall.args;
+      expect(args[0]).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
     });
   });
 

@@ -90,8 +90,7 @@ const postContactCreate = async (request, h) => {
 const getContactSearch = async (request, h) => {
   const { regionId, companyId } = request.params;
   // Return the view
-  const { viewData } = dataService.sessionManager(request, regionId, companyId);
-  const { agent } = dataService.sessionManager(request, regionId, companyId);
+  const { viewData, agent } = dataService.sessionManager(request, regionId, companyId);
   let selectedContactId = agent ? agent.id : null;
 
   return h.view('nunjucks/form', {

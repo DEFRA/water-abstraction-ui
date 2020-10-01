@@ -4,7 +4,9 @@ const {
   experiment,
   test,
   beforeEach,
-  afterEach
+  afterEach,
+  before,
+  after
 } = exports.lab = require('@hapi/lab').script();
 const controller = require('../../../../../src/internal/modules/invoice-accounts/controllers/contacts');
 const uuid = require('uuid');
@@ -18,6 +20,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const regionId = uuid();
   const companyId = uuid();
   const licenceId = uuid();
+  const agentId = uuid();
   const licenceNumber = '01/123';
   const companyName = 'test company name';
   const addressId = uuid();
@@ -31,6 +34,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       companyId,
       regionId,
       address: { addressId },
+      agent: { companyId: agentId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,
@@ -42,7 +46,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
   beforeEach(async => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
-    sandbox.stub(dataService, 'sessionManager');
+    sandbox.stub(dataService, 'sessionManager').resolves(getSessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'getCompanyContacts').resolves([{ id: 'test-contact-id', firstName: 'Winston' }]);
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
@@ -67,6 +71,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       },
       pre: {
         companies: [],
+        contactSearchResults: [],
         company: {
           id: companyId,
           name: companyName
@@ -249,6 +254,72 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         await controller.postContactCreate(request, h);
         const args = h.postRedirectGet.lastCall.args;
         expect(args[1]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/create-contact`);
+      });
+    });
+  });
+
+  experiment('.getContactSearch', () => {
+    beforeEach(async () => {
+      await dataService.sessionManager.returns(getSessionData());
+      await controller.getContactSearch(request, h);
+    });
+    afterEach(async () => {
+      await sandbox.restore();
+    });
+    test('calls sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      // no data to merge is passed to the session
+      expect(args[3]).to.equal(undefined);
+    });
+
+    test('the correct data is passed to the view', async () => {
+      const sessionData = getSessionData();
+      dataService.sessionManager.returns(sessionData);
+      await controller.getContactSearch(request, h);
+      const args = h.view.lastCall.args[1];
+      expect(args.back).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}`);
+      expect(args.pageTitle).to.equal('Does this contact already exist?');
+    });
+  });
+
+  experiment('.postContactSearch', async () => {
+    experiment('when the form is valid', () => {
+      experiment('when the user opts to create a new contact', () => {
+        let modifiedRequest;
+        beforeEach(async () => {
+          modifiedRequest = { payload: { filter: 'some string', id: 'new' } };
+          Object.assign(modifiedRequest, request);
+          await dataService.sessionManager.returns(getSessionData());
+          await controller.postContactSearch(modifiedRequest, h);
+        });
+        afterEach(async () => {
+          await sandbox.restore();
+        });
+        test('then redirect to contact entry', async () => {
+          await controller.postContactSearch(modifiedRequest, h);
+          const args = h.redirect.lastCall.args;
+          expect(args[0]).to.startWith(`/contact-entry/new`);
+        });
+      });
+      experiment('when the user opts to select an existing contact', () => {
+        const contactId = uuid();
+        let modifiedRequest;
+        before(async () => {
+          modifiedRequest = { payload: { filter: 'some string', id: contactId } };
+          Object.assign(modifiedRequest, request);
+          await controller.postContactSearch(modifiedRequest, h);
+        });
+        after(async () => {
+          await sandbox.restore();
+        });
+        test('then redirect to select an address', async () => {
+          await controller.postContactSearch(modifiedRequest, h);
+          const args = h.redirect.lastCall.args;
+          expect(args[0]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
+        });
       });
     });
   });

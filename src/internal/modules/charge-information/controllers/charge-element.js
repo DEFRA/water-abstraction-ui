@@ -1,13 +1,12 @@
 'use-strict';
 
-const formHelpers = require('shared/lib/forms');
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
-const helpers = require('../lib/charge-elements/helpers');
-const { getDefaultView } = require('../lib/helpers');
+const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
 const { ROUTING_CONFIG,
   CHARGE_ELEMENT_FIRST_STEP,
   CHARGE_ELEMENT_LAST_STEP } = require('../lib/charge-elements/constants');
+const actions = require('../lib/actions');
 
 const getBackLink = request => {
   const { step, licenceId, elementId } = request.params;
@@ -21,7 +20,6 @@ const getBackLink = request => {
 
 const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
-  console.log(request.query);
   if (request.query.returnToCheckData === 1 || step === CHARGE_ELEMENT_LAST_STEP) {
     return routing.getCheckData(licenceId);
   }
@@ -38,14 +36,10 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
-  const form = formHelpers.handleRequest(
-    forms[step].form(request),
-    request,
-    forms[step].schema(request)
-  );
+  const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
-    helpers.saveChargeElementInformation(form, request);
+    await applyFormResponse(request, form, actions.setChargeElementData);
     return h.redirect(getRedirectPath(request));
   }
 

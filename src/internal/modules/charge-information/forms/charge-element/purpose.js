@@ -33,7 +33,7 @@ const form = request => {
       }
     },
     choices: options(defaultCharges)
-  }, data.purpose || ''));
+  }, data.purposeUse.id || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

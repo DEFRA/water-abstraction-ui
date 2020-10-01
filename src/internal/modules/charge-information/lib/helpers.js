@@ -1,7 +1,7 @@
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { reducer } = require('./reducer');
 const sessionForms = require('shared/lib/session-forms');
-const { isFunction, isEmpty, omit } = require('lodash');
+const { isFunction, isEmpty } = require('lodash');
 const routing = require('../lib/routing');
 
 const getPostedForm = (request, formContainer) => {
@@ -10,12 +10,13 @@ const getPostedForm = (request, formContainer) => {
 };
 
 const applyFormResponse = (request, form, actionCreator) => {
+  const { licenceId } = request.params;
   const action = actionCreator(request, getValues(form));
   const nextState = reducer(request.pre.draftChargeInformation, action);
 
   return isEmpty(nextState)
-    ? request.clearDraftChargeInformation(request.pre.licence.id)
-    : request.setDraftChargeInformation(nextState);
+    ? request.clearDraftChargeInformation(licenceId)
+    : request.setDraftChargeInformation(licenceId, nextState);
 };
 
 const getRedirectPath = (request, nextPageInFlowUrl) => {
@@ -52,19 +53,7 @@ const getDefaultView = (request, backLink, formContainer) => {
   return view;
 };
 
-const prepareChargeInformation = draftChargeInfo => ({
-  licenceId: draftChargeInfo.licenceId,
-  chargeVersion: {
-    ...omit(draftChargeInfo, ['licenceId', 'startDate', 'status']),
-    dateRange: {
-      startDate: draftChargeInfo.startDate
-    },
-    chargeElements: draftChargeInfo.chargeElements.map(element => omit(element, 'id'))
-  }
-});
-
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
-exports.prepareChargeInformation = prepareChargeInformation;

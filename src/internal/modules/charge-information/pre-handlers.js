@@ -64,14 +64,14 @@ const loadDefaultCharges = async request => {
 };
 
 const loadBillingAccounts = async request => {
-  const { licenceNumber, licenceId } = request.pre.licence;
-  const { startDate } = request.pre.draftChargeInformation;
+  const { licenceNumber, id } = request.pre.licence;
+  const { startDate } = request.pre.draftChargeInformation.dateRange;
 
   try {
     const licenceAccounts = await services.water.licences.getLicenceAccountsByRefAndDate(licenceNumber, startDate);
     return licenceAccounts;
   } catch (err) {
-    return errorHandler(err, `Cannot load billing accounts for licence ${licenceId}`);
+    return errorHandler(err, `Cannot load billing accounts for licence ${id}`);
   }
 };
 

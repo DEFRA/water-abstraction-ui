@@ -101,7 +101,7 @@ const form = request => {
 };
 
 const schema = (request) => {
-  const { startDate } = request.pre.draftChargeInformation;
+  const { startDate } = request.pre.draftChargeInformation.dateRange;
   const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
   return {
     csrf_token: Joi.string().uuid().required(),

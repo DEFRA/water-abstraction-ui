@@ -23,7 +23,7 @@
 
 
 {% macro changeLink(urlTail, chargeElementId) %}
-  {% set changeLinkRoot = '/licences/' + draftChargeInformation.licenceId + '/charge-information' %}
+  {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% set queryTail = { returnToCheckData: 1 } | queryString %}
   {% if chargeElementId %}
     {{ changeLinkRoot + '/charge-element/' + chargeElementId + urlTail + '?' + queryTail }}
@@ -52,7 +52,7 @@
             <dd class="govuk-summary-list__value">
               {{ draftChargeInformation.invoiceAccount.accountNumber }}
               <br>
-              {{ address(draftChargeInformation.invoiceAccount.invoiceAccountAddress.address) }}
+              {{ address(invoiceAccountAddress.address) }}
             </dd>
             <dd class="govuk-summary-list__actions">
               <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>

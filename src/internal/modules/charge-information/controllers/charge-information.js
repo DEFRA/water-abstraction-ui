@@ -132,6 +132,7 @@ const getCheckData = async (request, h) => {
     ...getDefaultView(request, routing.getUseAbstractionData),
     pageTitle: 'Check charge information',
     draftChargeInformation: chargeInformationValidator.addValidation(draftChargeInformation),
+    licenceId: request.params.licenceId,
     invoiceAccountAddress
   };
 
@@ -141,8 +142,11 @@ const getCheckData = async (request, h) => {
 const submitDraftChargeInformation = async (request, h) => {
   const { licence, draftChargeInformation } = request.pre;
 
-  const preparedChargeInformation = prepareChargeInformation(draftChargeInformation);
-  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInformation);
+  const dataToSubmit = {
+    licenceId: licence.id,
+    chargeVersion: draftChargeInformation
+  };
+  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(dataToSubmit);
   await applyFormResponse(request, {}, actions.clearData);
 
   return h.redirect(routing.getSubmitted(licence.id));

@@ -9,10 +9,11 @@ const sessionHelpers = require('shared/lib/session-helpers');
 
 const getSessionKey = licenceId => `draftChargeInformation.${licenceId}`;
 
-const generateChargeVersion = licenceId => ({
-  licenceId,
+const generateChargeVersion = () => ({
   changeReason: null,
-  startDate: null,
+  dateRange: {
+    startDate: null
+  },
   chargeElements: [],
   invoiceAccount: null,
   status: 'draft'
@@ -21,11 +22,11 @@ const generateChargeVersion = licenceId => ({
 const getDraftChargeInformation = function (licenceId) {
   const key = getSessionKey(licenceId);
   const draftChargeInfo = this.yar.get(key);
-  return draftChargeInfo || generateChargeVersion(licenceId);
+  return draftChargeInfo || generateChargeVersion();
 };
 
-const setDraftChargeInformation = function (data) {
-  sessionHelpers.saveToSession(this, getSessionKey(data.licenceId), data);
+const setDraftChargeInformation = function (licenceId, data) {
+  sessionHelpers.saveToSession(this, getSessionKey(licenceId), data);
 };
 
 const clearDraftChargeInformation = function (licenceId) {

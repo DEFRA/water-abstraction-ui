@@ -1,15 +1,15 @@
-const { find } = require('lodash');
+const { find, omit } = require('lodash');
 const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
+const mappers = require('./charge-elements/mappers');
 
 const ACTION_TYPES = {
   clearData: 'clearData',
-  setAbstractionData: 'set.abstractionData',
   setBillingAccount: 'set.invoiceAccount',
   setReason: 'set.reason',
   setStartDate: 'set.startDate',
-  removeChargeElement: 'remove.chargeElement'
+  setChargeElementData: 'set.chargeElementData'
 };
 
 const setChangeReason = (request, formValues) => {
@@ -37,19 +37,17 @@ const setStartDate = (request, formValues) => {
 };
 
 const setBillingAccount = (request, formValues) => {
-  let invoiceAccountAddress;
   const invoiceAccount = request.pre.billingAccounts.find(account => {
-    invoiceAccountAddress = account.invoiceAccountAddresses.find(address => {
+    return account.invoiceAccountAddresses.find(address => {
       return address.id === formValues.invoiceAccountAddress;
     });
-    return invoiceAccountAddress;
   }) || null;
 
   return {
     type: ACTION_TYPES.setBillingAccount,
     payload: {
       ...invoiceAccount,
-      invoiceAccountAddress
+      invoiceAccountAddress: formValues.invoiceAccountAddress
     }
   };
 };
@@ -66,8 +64,30 @@ const setAbstractionData = (request, formValues) => {
     : [];
 
   return {
-    type: ACTION_TYPES.setAbstractionData,
+    type: ACTION_TYPES.setChargeElementData,
     payload: abstractionData
+  };
+};
+
+const getNewChargeElementData = (request, formValues) => {
+  const { defaultCharges } = request.pre;
+  const { step } = request.params;
+  return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+};
+
+const setChargeElementData = (request, formValues) => {
+  const { draftChargeInformation } = request.pre;
+  const { elementId } = request.params;
+
+  const data = getNewChargeElementData(request, formValues);
+  const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+  chargeElementToUpdate
+    ? Object.assign(chargeElementToUpdate, data)
+    : draftChargeInformation.chargeElements.push({ ...data, id: elementId });
+
+  return {
+    type: ACTION_TYPES.updateChargeElements,
+    payload: draftChargeInformation.chargeElements
   };
 };
 
@@ -78,7 +98,7 @@ const removeChargeElement = request => {
   const updatedChargeElements = chargeElements.filter(element => element.id !== chargeElementId);
 
   return {
-    type: ACTION_TYPES.removeChargeElement,
+    type: ACTION_TYPES.updateChargeElements,
     payload: updatedChargeElements
   };
 };
@@ -96,4 +116,5 @@ exports.setAbstractionData = setAbstractionData;
 exports.setBillingAccount = setBillingAccount;
 exports.setChangeReason = setChangeReason;
 exports.setStartDate = setStartDate;
+exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;

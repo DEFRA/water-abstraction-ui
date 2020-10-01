@@ -3,6 +3,7 @@ const forms = require('shared/lib/forms');
 const { has, isEmpty } = require('lodash');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
+const sessionHelper = require('shared/lib/session-helpers');
 
 const getFormTitleCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
@@ -128,6 +129,40 @@ const getContactName = async (companyId, sessionContact) => {
   }
 };
 
+const processContactEntry = async (request) => {
+  const { regionId, companyId } = request.params;
+  const companyName = titleCase(await getCompanyName(request));
+  const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
+  let response = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
+  response['viewData']['companyName'] = companyName;
+  const { sessionKey } = request.query;
+  const currentState = await sessionHelper.saveToSession(request, sessionKey);
+  if (currentState.agent.companyId === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
+    response['agent'] = null;
+  } else {
+    let tempType;
+    if (currentState.organisationType) {
+      tempType = currentState.organisationType;
+    } else {
+      tempType = 'individual';
+    }
+    response['agent'] = {
+      id: currentState.id ? currentState.id : tempId,
+      companyId: currentState.id ? currentState.id : tempId,
+      name: companyName,
+      type: tempType,
+      companyNumber: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
+    };
+  }
+  response['address'] = {
+    id: currentState.addressId ? currentState.addressId : tempId,
+    addressId: currentState.addressId ? currentState.addressId : tempId,
+    country: currentState.address.country ? currentState.address.country : 'UK',
+    ...currentState.address
+  };
+  return response;
+};
+
 exports.getName = getName;
 exports.getCompanyName = getCompanyName;
 exports.getContactName = getContactName;
@@ -138,3 +173,4 @@ exports.getSelectedAddress = getSelectedAddress;
 exports.processFaoFormData = processFaoFormData;
 exports.processCompanyFormData = processCompanyFormData;
 exports.processSelectContactFormData = processSelectContactFormData;
+exports.processContactEntry = processContactEntry;

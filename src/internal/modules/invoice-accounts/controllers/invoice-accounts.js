@@ -117,36 +117,11 @@ const getAddressEntered = async (request, h) => {
 
 const getContactEntryHandover = async (request, h) => {
   const { regionId, companyId } = request.params;
-  const { sessionKey } = request.query;
-  const currentState = await sessionHelper.saveToSession(request, sessionKey);
-  const originalSessionData = await dataService.sessionManager(request, regionId, companyId);
-  const companyName = titleCase(await helpers.getCompanyName(request));
-  let newData = { viewData: originalSessionData.viewData || {} }; // Store everything in the right bits of the session
-  newData['viewData']['companyName'] = companyName;
-  if (currentState.agent.companyId === companyId) { // This if-statement helps the controller avoid creating an 'agent' object if the selected company ID happens to be the same as the originating company
-    newData['agent'] = null;
-  } else {
-    let tempType;
-    if (currentState.organisationType) {
-      tempType = currentState.organisationType;
-    } else {
-      tempType = 'individual';
-    }
-    newData['agent'] = {
-      id: currentState.id ? currentState.id : tempId,
-      companyId: currentState.id ? currentState.id : tempId,
-      name: companyName,
-      type: tempType,
-      companyNumber: currentState.selectedCompaniesHouseNumber ? currentState.selectedCompaniesHouseNumber : null
-    };
-  }
-  newData['address'] = {
-    id: currentState.addressId ? currentState.addressId : tempId,
-    addressId: currentState.addressId ? currentState.addressId : tempId,
-    country: currentState.address.country ? currentState.address.country : 'UK',
-    ...currentState.address
-  };
-  dataService.sessionManager(request, regionId, companyId, newData);
+
+  let data = await helpers.processContactEntry(request);
+  console.log(data)
+
+  dataService.sessionManager(request, regionId, companyId, data);
   return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
 };
 

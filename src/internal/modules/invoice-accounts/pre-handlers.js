@@ -69,6 +69,7 @@ const preHandler = async (config, request, h) => {
   }
 };
 
+exports.getCompany = getCompany;
 exports.loadCompanies = loadCompanies;
 exports.loadCompany = partial(preHandler, config.loadCompany);
 exports.loadBillingContact = loadBillingContact;

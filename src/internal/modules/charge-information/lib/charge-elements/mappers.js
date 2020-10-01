@@ -28,8 +28,8 @@ const time = (formValues) => {
 };
 
 const purpose = (formValues, defaultCharges) => {
-  const { purposeUse } = defaultCharges.find(item => item.purposeUse.id === formValues.purpose);
-  return { purposeUse };
+  const { purposePrimary, purposeSecondary, purposeUse } = defaultCharges.find(item => item.purposeUse.id === formValues.purpose);
+  return { purposePrimary, purposeSecondary, purposeUse };
 };
 
 const quantities = formValues => {

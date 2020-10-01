@@ -16,12 +16,12 @@ const options = defaultCharges => {
  * Form to request the charge element purpose
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
+ * @param {Boolean}  data object containing charge element data
   */
 const form = request => {
   const { csrfToken } = request.view;
   const { defaultCharges } = request.pre;
-  const data = getChargeElementData(request);
+  const { purposeUse } = getChargeElementData(request);
   const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.purpose);
 
   const f = formFactory(action, 'POST');
@@ -33,7 +33,7 @@ const form = request => {
       }
     },
     choices: options(defaultCharges)
-  }, data.purposeUse.id || ''));
+  }, purposeUse ? purposeUse.id : ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

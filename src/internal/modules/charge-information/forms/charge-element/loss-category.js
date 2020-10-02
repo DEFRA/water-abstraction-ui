@@ -6,8 +6,8 @@ const { capitalize } = require('lodash');
 const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
-const options = (defaultChargeData, selectedPurpose) => {
-  const { loss } = defaultChargeData.find(row => row.purposeUse.id === selectedPurpose.id) || '';
+const options = (selectedPurposeUse) => {
+  const { loss } = selectedPurposeUse;
 
   return LOSS_CATEGORIES.map(category => {
     const option = { value: category, label: capitalize(category) };
@@ -24,7 +24,6 @@ const options = (defaultChargeData, selectedPurpose) => {
   */
 const form = request => {
   const { csrfToken } = request.view;
-  const { defaultCharges } = request.pre;
   const data = getChargeElementData(request);
 
   const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.loss);
@@ -37,7 +36,7 @@ const form = request => {
         message: 'Select a loss category'
       }
     },
-    choices: options(defaultCharges, data.purposeUse || {})
+    choices: options(data.purposeUse || {})
   }, data.loss || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

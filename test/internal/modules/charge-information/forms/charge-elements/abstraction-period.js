@@ -6,12 +6,19 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/abstraction-period');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
+  },
+  pre: {
+    draftChargeInformation: {
+      chargeElements: chargeElements || []
+    }
   }
 });
 
@@ -43,11 +50,28 @@ experiment('internal/modules/charge-information/forms/charge-element/abstraction
       expect(dateField.options.widget).to.equal('date');
       expect(dateField.options.mapper).to.equal('dayOfYearMapper');
     });
+
     test('has a endDate field', async () => {
       const dateField = findField(abstractionPeriodForm, 'endDate');
       expect(dateField.options.label).to.equal('End Date');
       expect(dateField.options.widget).to.equal('date');
       expect(dateField.options.mapper).to.equal('dayOfYearMapper');
+    });
+
+    test('populates the date fields if data is available', async () => {
+      abstractionPeriodForm = form(createRequest([{
+        id: 'test-element-id',
+        abstractionPeriod: {
+          startDay: 1,
+          startMonth: 4,
+          endDay: 31,
+          endMonth: 10
+        }
+      }]));
+      const startDateField = findField(abstractionPeriodForm, 'startDate');
+      const endDateField = findField(abstractionPeriodForm, 'endDate');
+      expect(startDateField.value).to.equal('4-1');
+      expect(endDateField.value).to.equal('10-31');
     });
   });
 

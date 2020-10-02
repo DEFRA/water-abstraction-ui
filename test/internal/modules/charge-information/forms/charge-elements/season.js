@@ -11,25 +11,35 @@ const { form, schema } = require('../../../../../../src/internal/modules/charge-
 const { findField, findButton } = require('../../../../../lib/form-test');
 const { SEASONS } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 const { capitalize } = require('lodash');
-const createRequest = () => ({
+const createRequest = chargeElementData => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
+  },
+  pre: {
+    draftChargeInformation: {
+      chargeElements: [{
+        id: 'test-element-id',
+        abstractionPeriod: {
+          startDay: 1,
+          startMonth: 4,
+          endDay: 31,
+          endMonth: 6 },
+        ...chargeElementData
+      }]
+    }
   }
 });
-
-const sessionData = {
-  purposeUse: { id: 'test-purpose-use-id' },
-  abstractionPeriod: { startDay: 1, startMonth: 4, endDay: 31, endMonth: 6 }
-};
 
 experiment('internal/modules/charge-information/forms/charge-element/season', () => {
   let seasonForm;
 
   beforeEach(async () => {
-    seasonForm = form(createRequest(), sessionData);
+    seasonForm = form(createRequest());
   });
 
   experiment('form', () => {
@@ -54,6 +64,12 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
       expect(seasonValues).to.equal(SEASONS);
       expect(seasonLabels).to.equal(SEASONS.map(season => capitalize(season)));
       expect(radio.options.choices[2].hint).to.equal('This is the default season for the abstraction period set');
+    });
+
+    test('sets the value of the authorisedAnnualQuantity, if provided', async () => {
+      seasonForm = form(createRequest({ season: 'summer' }));
+      const seasonField = findField(seasonForm, 'season');
+      expect(seasonField.value).to.equal('summer');
     });
   });
 

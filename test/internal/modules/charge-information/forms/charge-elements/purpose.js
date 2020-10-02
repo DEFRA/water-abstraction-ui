@@ -6,31 +6,31 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/purpose');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
   },
   pre: {
     defaultCharges: [
       { purposeUse: { id: 'test-id', name: 'test-purpose-name' } },
       { purposeUse: { id: 'test-id', name: 'test-purpose-name' } }
     ],
-    licence: { id: 'test-licence-id' }
+    draftChargeInformation: {
+      chargeElements: chargeElements || []
+    }
   }
 });
-
-const data = {
-  sessionData: {}
-};
 
 experiment('internal/modules/charge-information/forms/charge-element/purpose', () => {
   let purposeForm;
 
   beforeEach(async () => {
-    purposeForm = form(createRequest(), data);
+    purposeForm = form(createRequest());
   });
 
   experiment('form', () => {
@@ -48,11 +48,23 @@ experiment('internal/modules/charge-information/forms/charge-element/purpose', (
       expect(button.options.label).to.equal('Continue');
     });
 
-    test('has a choice for using abstraction data', async () => {
+    test('has a unique set of choices from the defaultCharge data', async () => {
       const radio = findField(purposeForm, 'purpose');
 
       expect(radio.options.choices[0].label).to.equal('test-purpose-name');
       expect(radio.options.choices.length).to.equal(1);
+    });
+
+    test('sets the value of the purpose field, if provided', async () => {
+      purposeForm = form(createRequest([{
+        id: 'test-element-id',
+        purposeUse: {
+          id: 'test-purpose-use-id',
+          loss: 'low'
+        }
+      }]));
+      const purpose = findField(purposeForm, 'purpose');
+      expect(purpose.value).to.equal('test-purpose-use-id');
     });
   });
 

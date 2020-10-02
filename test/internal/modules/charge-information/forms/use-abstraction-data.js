@@ -10,6 +10,7 @@ const createRequest = () => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   pre: {
     licence: {
       id: 'test-licence-id'

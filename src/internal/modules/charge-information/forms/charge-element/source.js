@@ -26,7 +26,7 @@ const form = request => {
       }
     },
     choices: Object.values(SOURCES).map(source => { return { value: source, label: capitalize(source) }; })
-  }, data.source || ''));
+  }, data.source));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

@@ -21,7 +21,7 @@ const createValues = (startDate, customDate) => ({ startDate, customDate });
  * @return {Object}
  */
 const getValues = (request, licence, refDate) => {
-  const startDate = get(request, 'pre.draftChargeInformation.startDate');
+  const startDate = get(request, 'pre.draftChargeInformation.dateRange.startDate');
   if (!startDate) {
     return createValues();
   }

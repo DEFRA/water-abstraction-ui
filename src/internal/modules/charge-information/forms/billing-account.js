@@ -48,8 +48,7 @@ const selectBillingAccountForm = request => {
   const { csrfToken } = request.view;
   const { licence, draftChargeInformation, billingAccounts } = request.pre;
 
-  const invoiceAccountAddresses = get(draftChargeInformation, 'billingAccount.invoiceAccountAddress');
-
+  const invoiceAccountAddress = get(draftChargeInformation, 'invoiceAccount.invoiceAccountAddress');
   const action = getActionUrl(request, routing.getSelectBillingAccount(licence.id));
 
   const f = formFactory(action, 'POST');
@@ -65,7 +64,7 @@ const selectBillingAccountForm = request => {
       { divider: 'or' },
       { label: 'Set up a new billing account', value: 'set-up-new-billing-account' }
     ]
-  }, invoiceAccountAddresses));
+  }, invoiceAccountAddress));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

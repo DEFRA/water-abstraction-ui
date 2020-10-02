@@ -174,10 +174,12 @@ const postDataHandler = (request) => {
   requestBody['regionId'] = regionId; // Stuff the regionId into the request body
   requestBody['address'] = session.address; // Stuff the address into the request body
   // If the address is a temp/new one, we remove the ID from the request
-  if (requestBody.address.id === tempId) {
+
+  if (requestBody.address && requestBody.address.id === tempId) {
     delete requestBody.address.id;
     delete requestBody.address.addressId;
   }
+
   delete requestBody.address.dataSource; // Remove the data source property from the address object
   // Remove properties from the address sub-object where there is no corresponding value
   Object.entries(requestBody.address).map(eachProperty => {
@@ -187,13 +189,13 @@ const postDataHandler = (request) => {
   });
   requestBody['agent'] = session.agent; // Stuff the agent into the request body
   // If the agent is a temp/new one, we remove the ID from the request
-  if (requestBody.agent.id === tempId) {
+  if (requestBody.agent && requestBody.agent.id === tempId) {
     delete requestBody.agent.id;
     delete requestBody.agent.companyId;
-  }
-  // If the company number is not a valid 8-long string, remove it
-  if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
-    delete requestBody.agent.companyNumber;
+    // If the company number is not a valid 8-long string, remove it
+    if (!requestBody.agent.companyNumber || requestBody.agent.companyNumber.length !== 8) {
+      delete requestBody.agent.companyNumber;
+    }
   }
   requestBody['contact'] = session.contact; // Stuff the contact into the request body
   return requestBody;

@@ -1,3 +1,5 @@
+'use strict';
+
 require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 

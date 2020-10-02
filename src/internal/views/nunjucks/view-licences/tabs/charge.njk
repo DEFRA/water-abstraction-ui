@@ -14,7 +14,7 @@
   {# {% if not agreement.dateRange.endDate %}
     <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
   {% endif %} #}
-  {% if isChargingUser %}
+  {% if isChargingUser and featureToggles.manageAgreements %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}

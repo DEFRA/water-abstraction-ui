@@ -71,7 +71,6 @@ const getLicenceGaugingStation = async (request, h) => {
   // Get gauging station data
   const { gaugingStation } = request.params;
 
-  // const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes);
   const { licenceNumber, documentName } = request.licence.summary;
   const { pageTitle } = getLicencePageTitle(request.config.view, licenceNumber, documentName);
 
@@ -121,7 +120,8 @@ const getLicence = async (request, h) => {
     back: '/licences',
     showChargeVersions,
     licenceId,
-    isChargingUser
+    isChargingUser,
+    featureToggles: h.realm.pluginOptions.featureToggles
   };
 
   if (showChargeVersions && isChargingUser) {

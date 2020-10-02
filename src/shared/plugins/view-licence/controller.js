@@ -71,7 +71,6 @@ const getLicenceGaugingStation = async (request, h) => {
   // Get gauging station data
   const { gaugingStation } = request.params;
 
-  // const { riverLevel, measure } = await helpers.loadRiverLevelData(gaugingStation, hofTypes);
   const { licenceNumber, documentName } = request.licence.summary;
   const { pageTitle } = getLicencePageTitle(request.config.view, licenceNumber, documentName);
 
@@ -110,7 +109,8 @@ const getLicence = async (request, h) => {
   const isChargingUser = hasScope(request, scope.charging);
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
-  const agreements = await getLicenceAgreements(licenceId);
+
+  const showChargeVersions = canShowCharging(request);
 
   const view = {
     ...getCommonViewContext(request),
@@ -118,12 +118,17 @@ const getLicence = async (request, h) => {
     returns: returns.data.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
     hasMoreReturns: hasMultiplePages(returns.pagination),
     back: '/licences',
-    showChargeVersions: canShowCharging(request),
-    chargeVersions: sortBy(request.licence.chargeVersions, 'versionNumber').reverse(),
-    agreements: agreements.map(mapLicenceAgreement),
+    showChargeVersions,
     licenceId,
-    isChargingUser
+    isChargingUser,
+    featureToggles: h.realm.pluginOptions.featureToggles
   };
+
+  if (showChargeVersions && isChargingUser) {
+    const agreements = await getLicenceAgreements(licenceId);
+    view.agreements = agreements.map(mapLicenceAgreement);
+    view.chargeVersions = sortBy(request.licence.chargeVersions, 'versionNumber').reverse();
+  }
 
   return h.view('nunjucks/view-licences/licence', view);
 };

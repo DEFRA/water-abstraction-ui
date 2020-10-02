@@ -74,10 +74,11 @@ const formatYearSegment = (year) => {
  */
 const dateMapper = {
   import: (fieldName, payload) => {
-    const day = payload[fieldName + '-day'];
-    const month = payload[fieldName + '-month'];
-    const year = payload[fieldName + '-year'];
-    return `${formatYearSegment(year)}-${formatDateSegment(month)}-${formatDateSegment(day)}`;
+    const day = payload[fieldName + '-day'] ? formatDateSegment(payload[fieldName + '-day']) : '';
+    const month = payload[fieldName + '-month'] ? `${formatDateSegment(payload[fieldName + '-month'])}-` : '';
+    const year = payload[fieldName + '-year'] ? `${formatYearSegment(payload[fieldName + '-year'])}-` : '';
+
+    return `${year}${month}${day}`;
   },
   postValidate: value => {
     // The internal date format is an ISO 8601 string, YYYY-MM-DD, so if we
@@ -94,6 +95,40 @@ const dateMapper = {
       day: parts[2],
       month: parts[1],
       year: parts[0]
+    };
+  }
+};
+
+/**
+ * This mapper is used where you only need a day and month
+ * i.e. for the abstraction period of a licence where
+ * water is abstracted every year during the same start day-month and end day-month
+ * The mapper makes use of the moment().isvalid() method to check it is a valid date
+ * This discussion thread includes further details https://github.com/sideway/joi/issues/1245
+ */
+const dayOfYearMapper = {
+  import: (fieldName, payload) => {
+    const day = payload[fieldName + '-day'];
+    const month = payload[fieldName + '-month'];
+    const date = moment(`2001-${formatDateSegment(month === '' ? 'invalid' : month)}-${formatDateSegment(day === '' ? 'invalid' : day)}`);
+    // add the year if it is a valid date otherwise add invalid to prevent Javascript to convert this as a date that might pass the Joi.date() validation
+    const value = (date.isValid()) ? date.format('YYYY-MM-DD') : `invalid${formatDateSegment(month)}-${formatDateSegment(day)}`;
+    return value;
+  },
+  postValidate: value => {
+    const date = moment(value, 'YYYY-MM-DD', true);
+    if ((date.isValid())) {
+      // the value returned here is the month and day only
+      // the year is dropped because it is only used to validate the day and month combination
+      return date.format('MM-DD');
+    };
+    // remove the invalid flag to pass the original value back to the form for correction or remove the the year added by the import.
+    return value.includes('invalid') ? value.replace('invalid', '') : value.replace('2001-', '');
+  },
+  export: (value) => {
+    return {
+      day: value.day,
+      month: value.month
     };
   }
 };
@@ -166,6 +201,7 @@ const objectMapper = {
 exports.defaultMapper = defaultMapper;
 exports.booleanMapper = booleanMapper;
 exports.dateMapper = dateMapper;
+exports.dayOfYearMapper = dayOfYearMapper;
 exports.numberMapper = numberMapper;
 exports.licenceNumbersMapper = licenceNumbersMapper;
 exports.arrayMapper = arrayMapper;

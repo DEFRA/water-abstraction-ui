@@ -183,7 +183,7 @@ const postDataHandler = (request) => {
   delete requestBody.address.dataSource; // Remove the data source property from the address object
   // Remove properties from the address sub-object where there is no corresponding value
   Object.entries(requestBody.address).map(eachProperty => {
-    if (eachProperty[1].length === 0) {
+    if (eachProperty[0] && eachProperty[1].length === 0) {
       delete requestBody.address[eachProperty[0]];
     }
   });

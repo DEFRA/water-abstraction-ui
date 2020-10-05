@@ -7,6 +7,7 @@ const { createContactForm, createContactFormSchema } = require('../forms/create-
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
 const urlJoin = require('url-join');
+
 const { has, isEmpty, omit, pickBy } = require('lodash');
 
 /**
@@ -55,7 +56,7 @@ const getContactCreate = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
   const selectedContact = isEmpty(session.contact) ||
-  (has(session.contact, 'department') && !has(session.contact, 'firstName')) ? {} : session.contact;
+    (has(session.contact, 'department') && !has(session.contact, 'firstName')) ? {} : session.contact;
 
   return h.view('nunjucks/form', {
     ...request.view,

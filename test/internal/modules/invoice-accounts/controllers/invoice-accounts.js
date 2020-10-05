@@ -4,13 +4,18 @@ const {
   experiment,
   test,
   beforeEach,
-  afterEach
+  afterEach,
+  before,
+  after
 } = exports.lab = require('@hapi/lab').script();
 const controller = require('../../../../../src/internal/modules/invoice-accounts/controllers/invoice-accounts');
 const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();
 const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const forms = require('../../../../../src/shared/lib/forms/index');
+const sessionHelper = require('../../../../../src/shared/lib/session-helpers');
+const ADDRESS_FLOW_SESSION_KEY = require('../../../../../src/internal/modules/address-entry/plugin').SESSION_KEY;
+const tempId = '00000000-0000-0000-0000-000000000000';
 const moment = require('moment');
 const titleCase = require('title-case');
 
@@ -20,7 +25,10 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const licenceId = uuid();
   const licenceNumber = '01/123';
   const companyName = 'test company name';
+  const anotherCompanyId = uuid();
+  const anotherCompanyName = 'Some other Ltd.';
   const addressId = uuid();
+  const agentId = uuid();
   let h, request;
 
   const secondHeader = sandbox.stub();
@@ -31,6 +39,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       companyId,
       regionId,
       address: { addressId },
+      agent: { companyId: agentId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,
@@ -44,6 +53,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
     sandbox.stub(dataService, 'sessionManager').returns(sessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
+    sandbox.stub(dataService, 'getCompany').returns({ id: agentId });
+    sandbox.stub(sessionHelper, 'saveToSession').returns({ agent: { companyId: agentId }, address: { country: null } });
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
     sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
     sandbox.stub(forms, 'getValues').returns({});
@@ -64,6 +75,14 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         clear: sandbox.stub()
       },
       pre: {
+        companies: [{
+          id: companyId,
+          name: companyName
+        }],
+        contactSearchResults: [{
+          id: anotherCompanyId,
+          name: anotherCompanyName
+        }],
         company: {
           id: companyId,
           name: companyName
@@ -131,7 +150,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and the companyId selected = companyId then agent = null', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = dataService.sessionManager.lastCall.args;
         expect(args[0]).to.equal(request);
@@ -142,7 +162,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and a company has been selected the user is rdirected to the select address path', async () => {
         forms.getValues.returns({
           selectedCompany: companyId,
-          companySearch: null });
+          companySearch: null
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
         const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/select-address`;
@@ -151,10 +172,11 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       test('and a company search name has been entered the user is rdirected to the search company path', async () => {
         forms.getValues.returns({
           selectedCompany: 'company_search',
-          companySearch: 'Company Name To Search for' });
+          companySearch: 'Company Name To Search for'
+        });
         await controller.postCompany(request, h);
         const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/company-search?filter=Company Name To Search for`;
+        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/contact-search?filter=Company Name To Search for`;
         expect(args[0]).to.equal(redirectPath);
       });
     });
@@ -175,11 +197,11 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       await controller.getAddress(request, h);
     });
     test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
     test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.lastCall.args;
+      const args = dataService.sessionManager.firstCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
@@ -201,14 +223,14 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
     test('view context is assigned a back link path for type', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/manage');
+      expect(back).to.startWith('/invoice-accounts/create');
     });
   });
 
   experiment('.postAddress', () => {
     test('dataService.getCompanyAddresses is called with the companyId', async () => {
       await controller.postAddress(request, h);
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
 
@@ -246,6 +268,55 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       });
     });
   });
+
+  experiment('.getCreateAddress', () => {
+    beforeEach(async () => {
+      await controller.getCreateAddress(request, h);
+    });
+    test('client is redirected to the address entry workflow', async () => {
+      const args = h.redirect.lastCall.args;
+      expect(args[0]).to.startWith(`/address-entry/postcode`);
+    });
+  });
+
+  experiment('.getAddressEntered', () => {
+    beforeEach(async () => {
+      await controller.getAddressEntered(request, h);
+    });
+    test('calls saveToSession to fetch the address from the address entry workflow', async () => {
+      const args = sessionHelper.saveToSession.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(ADDRESS_FLOW_SESSION_KEY);
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      expect(typeof args[3]).to.equal('object');
+      expect(args[3].address.addressId).to.equal(tempId);
+    });
+    test('client is redirected to the check your answers page', async () => {
+      const args = h.redirect.lastCall.args;
+      expect(args[0]).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
+    });
+  });
+
+  experiment('.getContactEntryHandover', () => {
+    beforeEach(async () => {
+      await controller.getContactEntryHandover(request, h);
+    });
+    test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.lastCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+    });
+    test('client is redirected', async () => {
+      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`)).to.be.true();
+    });
+  });
+
   experiment('.getFao', () => {
     beforeEach(async () => {
       await controller.getFao(request, h);
@@ -273,7 +344,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
     test('view context is assigned a back link path for type', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/manage');
+      expect(back).to.startWith('/invoice-accounts/create');
     });
   });
 
@@ -327,7 +398,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(dataService.sessionManager.calledOnce).to.be.true();
     });
     test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.lastCall.args;
+      const args = dataService.getCompanyAddresses.firstCall.args;
       expect(args[0]).to.equal(companyId);
     });
     test('the expected view template is used', async () => {
@@ -354,20 +425,83 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     });
 
     test('calls dataService.sessionManager with the correct params', async () => {
+      const args = dataService.sessionManager.firstCall.args;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.equal(regionId);
+      expect(args[2]).to.equal(companyId);
+      // no data to merge is passed to the session
+      expect(args[3]).to.equal(undefined);
+    });
+
+    test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
+      const startDate = moment().format('YYYY-MM-DD');
+      const details = [companyId, { address: { addressId }, agent: { companyId: agentId }, contact: undefined, regionId, startDate }];
+      const args = dataService.saveInvoiceAccDetails.lastCall.args;
+      expect(args).to.equal(details);
+    });
+  });
+
+  experiment('.getSearchCompany', () => {
+    beforeEach(async () => {
+      await dataService.sessionManager.returns(sessionData());
+      await controller.getSearchCompany(request, h);
+    });
+    afterEach(async () => {
+      await sandbox.restore();
+    });
+    test('calls sessionManager with the correct params', async () => {
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
       // no data to merge is passed to the session
       expect(args[3]).to.equal(undefined);
-      expect(dataService.sessionManager.calledOnce).to.be.true();
     });
 
-    test('calls the dataservice.saveInvoiceAccountDetails with the correct data shape and params', () => {
-      const startDate = moment().format('YYYY-MM-DD');
-      const details = [companyId, { address: { addressId }, companyId, regionId, startDate }];
-      const args = dataService.saveInvoiceAccDetails.lastCall.args;
-      expect(args).to.equal(details);
+    test('the correct data is passed to the view', async () => {
+      dataService.sessionManager.returns(sessionData());
+      await controller.getSearchCompany(request, h);
+      const args = h.view.lastCall.args[1];
+      expect(args.back).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}`);
+      expect(args.pageTitle).to.equal('Does this contact already exist?');
+    });
+  });
+
+  experiment('.postSearchCompany', async () => {
+    experiment('when the form is valid', () => {
+      experiment('when the user opts to create a new contact', () => {
+        let modifiedRequest;
+        beforeEach(async () => {
+          modifiedRequest = { payload: { filter: 'some string', id: 'new' } };
+          Object.assign(modifiedRequest, request);
+          await dataService.sessionManager.returns(sessionData());
+          await controller.postSearchCompany(modifiedRequest, h);
+        });
+        afterEach(async () => {
+          await sandbox.restore();
+        });
+        test('then redirect to contact entry', async () => {
+          await controller.postSearchCompany(modifiedRequest, h);
+          const args = h.redirect.lastCall.args;
+          expect(args[0]).to.startWith(`/contact-entry/new`);
+        });
+      });
+      experiment('when the user opts to select an existing contact', () => {
+        let modifiedRequest;
+        before(async () => {
+          modifiedRequest = { payload: { filter: 'some string', id: anotherCompanyId } };
+          Object.assign(modifiedRequest, request);
+          await controller.postSearchCompany(modifiedRequest, h);
+        });
+        after(async () => {
+          await sandbox.restore();
+        });
+        test('then redirect to select an address', async () => {
+          await controller.postSearchCompany(modifiedRequest, h);
+          const args = h.redirect.lastCall.args;
+          expect(args[0]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
+        });
+      });
     });
   });
 });

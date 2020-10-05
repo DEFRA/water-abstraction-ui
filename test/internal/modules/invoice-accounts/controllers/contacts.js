@@ -18,6 +18,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const regionId = uuid();
   const companyId = uuid();
   const licenceId = uuid();
+  const agentId = uuid();
   const licenceNumber = '01/123';
   const companyName = 'test company name';
   const addressId = uuid();
@@ -31,6 +32,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       companyId,
       regionId,
       address: { addressId },
+      agent: { companyId: agentId },
       viewData: {
         redirectPath: '/somewhere',
         licenceNumber,
@@ -42,7 +44,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
   beforeEach(async => {
     sandbox.stub(dataService, 'getLicenceById').resolves({ licenceNumber });
-    sandbox.stub(dataService, 'sessionManager');
+    sandbox.stub(dataService, 'sessionManager').resolves(getSessionData());
     sandbox.stub(dataService, 'getCompanyAddresses').returns([]);
     sandbox.stub(dataService, 'getCompanyContacts').resolves([{ id: 'test-contact-id', firstName: 'Winston' }]);
     sandbox.stub(dataService, 'saveInvoiceAccDetails').resolves({ id: 'test-uuid-for-invoice-account' });
@@ -66,6 +68,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         clear: sandbox.stub()
       },
       pre: {
+        companies: [],
+        contactSearchResults: [],
         company: {
           id: companyId,
           name: companyName

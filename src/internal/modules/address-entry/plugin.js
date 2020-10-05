@@ -23,3 +23,4 @@ const addressLookupPlugin = {
 };
 
 module.exports = addressLookupPlugin;
+module.exports.SESSION_KEY = SESSION_KEY;

@@ -39,5 +39,15 @@ class CompaniesService extends ServiceClient {
     const url = this.joinUrl('companies', entityId, 'invoice-accounts');
     return this.serviceRequest.post(url, { body });
   }
+
+  getCompaniesByName (searchQuery) {
+    const url = this.joinUrl(`companies/search?name=${searchQuery}`);
+    return this.serviceRequest.get(url);
+  };
+
+  getCompaniesFromCompaniesHouse (searchQuery) {
+    const url = this.joinUrl(`companies-house/search/companies?q=${searchQuery}`);
+    return this.serviceRequest.get(url);
+  };
 }
 module.exports = CompaniesService;

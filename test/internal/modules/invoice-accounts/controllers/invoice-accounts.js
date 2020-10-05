@@ -25,6 +25,8 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   const licenceId = uuid();
   const licenceNumber = '01/123';
   const companyName = 'test company name';
+  const anotherCompanyId = uuid();
+  const anotherCompanyName = 'Some other Ltd.';
   const addressId = uuid();
   const agentId = uuid();
   let h, request;
@@ -77,7 +79,10 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
           id: companyId,
           name: companyName
         }],
-        contactSearchResults: [],
+        contactSearchResults: [{
+          id: anotherCompanyId,
+          name: anotherCompanyName
+        }],
         company: {
           id: companyId,
           name: companyName
@@ -482,10 +487,9 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         });
       });
       experiment('when the user opts to select an existing contact', () => {
-        const contactId = uuid();
         let modifiedRequest;
         before(async () => {
-          modifiedRequest = { payload: { filter: 'some string', id: contactId } };
+          modifiedRequest = { payload: { filter: 'some string', id: anotherCompanyId } };
           Object.assign(modifiedRequest, request);
           await controller.postSearchCompany(modifiedRequest, h);
         });

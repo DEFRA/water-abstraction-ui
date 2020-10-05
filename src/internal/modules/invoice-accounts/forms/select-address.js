@@ -4,7 +4,7 @@ const Joi = require('@hapi/joi');
 const urlJoin = require('url-join');
 const { formFactory, fields } = require('shared/lib/forms/');
 const titleCase = require('title-case');
-const { isEmpty } = require('lodash');
+const { isEmpty, uniq } = require('lodash');
 
 const address = (address) => {
   return [
@@ -18,7 +18,7 @@ const address = (address) => {
 };
 
 const addressList = (addresses) => {
-  const addrList = addresses.map(row => {
+  const addrList = uniq(addresses).map(row => {
     return {
       value: row.id || row.addressId,
       label: (address(row)).join(', ')

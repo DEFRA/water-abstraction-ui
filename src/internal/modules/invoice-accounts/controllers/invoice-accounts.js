@@ -14,7 +14,7 @@ const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
 const { checkDetailsForm } = require('../forms/check-details');
 
 const titleCase = require('title-case');
-const { has, isEmpty } = require('lodash');
+const { has, isEmpty, assign } = require('lodash');
 const urlJoin = require('url-join');
 
 // tempId is used to determine if a new entity should be created.
@@ -84,8 +84,13 @@ const postSearchCompany = async (request, h) => {
       });
       return h.redirect(path);
     } else {
-      // Set the display company name
-      await dataService.sessionManager(request, regionId, companyId, { agent: { companyId: id } });
+      // Fetch the current session object, so we can update the viewData nested object
+      const existingState = await dataService.sessionManager(request, regionId, companyId);
+      // Update the session with the selected agent (if applicable) and display the company name
+      await dataService.sessionManager(request, regionId, companyId, {
+        agent: { companyId: id },
+        viewData: assign({}, existingState.viewData, { companyName: titleCase(request.pre.contactSearchResults.find(x => x.id === id).name || 'the agent') })
+      });
       return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
     }
   } else {

@@ -6,29 +6,37 @@ const { LOSS_CATEGORIES } = require('../../../../../../src/internal/modules/char
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/loss-category');
 const { findField, findButton } = require('../../../../../lib/form-test');
 const { capitalize } = require('lodash');
-const createRequest = () => ({
+const createRequest = chargeElementData => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   pre: {
-    licence: { id: 'test-licence-id' },
-    defaultCharges: [{ purposeUse: { id: 'test-purpose-use-id' }, loss: 'low' }]
+    defaultCharges: [{ purposeUse: { id: 'test-purpose-use-id', loss: 'low' }, loss: 'low' }],
+    draftChargeInformation: {
+      chargeElements: [{
+        id: 'test-element-id',
+        purposeUse: {
+          id: 'test-purpose-use-id',
+          lossFactor: 'low'
+        },
+        ...chargeElementData
+      }]
+    }
   },
   params: {
     elementId: 'test-element-id'
   }
 });
 
-const sessionData = { purposeUse: { id: 'test-purpose-use-id' } };
-
 experiment('internal/modules/charge-information/forms/charge-element/loss-category', () => {
   let lossCategoryForm;
 
   beforeEach(async () => {
-    lossCategoryForm = form(createRequest(), sessionData);
+    lossCategoryForm = form(createRequest());
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(lossCategoryForm.method).to.equal('POST');
     });
@@ -51,9 +59,15 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
       expect(lossCategoryLabels).to.equal(LOSS_CATEGORIES.map(category => capitalize(category)));
       expect(radio.options.choices[2].hint).to.equal('This is the default loss category for the purpose chosen');
     });
+
+    test('sets the value of the loss field, if provided', async () => {
+      lossCategoryForm = form(createRequest({ loss: 'medium' }));
+      const loss = findField(lossCategoryForm, 'loss');
+      expect(loss.value).to.equal('medium');
+    });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

@@ -26,12 +26,13 @@ const displayedTextTransformer = {
 /**
  * Gets badge object to render for charge version status
  */
-const chargeVersionBadge = chargeVersion => {
+const chargeVersionBadge = (chargeVersion, isLarge = false) => {
   const { status } = chargeVersion;
   let displayedLabel = displayedTextTransformer[status.toLowerCase()];
   return {
     text: titleCase(displayedLabel),
-    status: styles[displayedLabel]
+    status: styles[displayedLabel],
+    ...isLarge && { size: 'large' }
   };
 };
 

@@ -21,10 +21,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       params: {
         licenceId: 'test-licence-id'
       },
+      getDraftChargeInformation: sandbox.stub(),
       server: {
         methods: {
-          cachedServiceRequest: sandbox.stub(),
-          getDraftChargeInformation: sandbox.stub()
+          cachedServiceRequest: sandbox.stub()
         }
       }
     };
@@ -115,52 +115,22 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
   });
 
   experiment('loadDraftChargeInformation', () => {
-    experiment('when data is found', () => {
-      beforeEach(async () => {
-        request.server.methods.getDraftChargeInformation.resolves({
-          startDate: '2020-01-01'
-        });
-
-        result = await preHandlers.loadDraftChargeInformation(request);
+    beforeEach(async () => {
+      request.getDraftChargeInformation.returns({
+        startDate: '2020-01-01'
       });
 
-      test('the server method is called with the licence ID', async () => {
-        expect(request.server.methods.getDraftChargeInformation.calledWith(
-          'test-licence-id'
-        )).to.be.true();
-      });
-
-      test('resolves with cache data', async () => {
-        expect(result.startDate).to.equal('2020-01-01');
-      });
+      result = await preHandlers.loadDraftChargeInformation(request);
     });
 
-    experiment('when the data is not found', () => {
-      beforeEach(async () => {
-        const err = new Error();
-        err.statusCode = 404;
-        request.server.methods.getDraftChargeInformation.rejects(err);
-        result = await preHandlers.loadDraftChargeInformation(request);
-      });
-
-      test('resolves with a Boom 404 error', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(404);
-        expect(result.message).to.equal('Draft charge information not found for licence test-licence-id');
-      });
+    test('the server method is called with the licence ID', async () => {
+      expect(request.getDraftChargeInformation.calledWith(
+        'test-licence-id'
+      )).to.be.true();
     });
 
-    experiment('for other errors', () => {
-      beforeEach(async () => {
-        const err = new Error('Oh no!');
-        request.server.methods.getDraftChargeInformation.rejects(err);
-      });
-
-      test('rejects with the error', async () => {
-        const func = () => preHandlers.loadDraftChargeInformation(request);
-        const err = await expect(func()).to.reject();
-        expect(err.message).to.equal('Oh no!');
-      });
+    test('returns the retrieved data', async () => {
+      expect(result).to.equal({ startDate: '2020-01-01' });
     });
   });
 
@@ -261,11 +231,13 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     beforeEach(async () => {
       request.pre = {
         licence: {
-          licenceId: 'test-licence-id',
+          id: 'test-licence-id',
           licenceNumber: '123/123'
         },
         draftChargeInformation: {
-          startDate: '2000-01-01'
+          dateRange: {
+            startDate: '2000-01-01'
+          }
         }
       };
     });
@@ -278,7 +250,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       test('the licence number and start date are used to get the licence accounts', async () => {
         const [licenceNumber, startDate] = services.water.licences.getLicenceAccountsByRefAndDate.lastCall.args;
         expect(licenceNumber).to.equal(request.pre.licence.licenceNumber);
-        expect(startDate).to.equal(request.pre.draftChargeInformation.startDate);
+        expect(startDate).to.equal(request.pre.draftChargeInformation.dateRange.startDate);
       });
     });
 

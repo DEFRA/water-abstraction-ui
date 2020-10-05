@@ -3,6 +3,7 @@ const { get, pullAt } = require('lodash');
 const moment = require('moment');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
+const { getActionUrl } = require('../lib/form-helpers');
 
 const DATE_FORMAT = 'D MMMM YYYY';
 const ISO_FORMAT = 'YYYY-MM-DD';
@@ -20,7 +21,7 @@ const createValues = (startDate, customDate) => ({ startDate, customDate });
  * @return {Object}
  */
 const getValues = (request, licence, refDate) => {
-  const startDate = get(request, 'pre.draftChargeInformation.startDate');
+  const startDate = get(request, 'pre.draftChargeInformation.dateRange.startDate');
   if (!startDate) {
     return createValues();
   }
@@ -101,7 +102,7 @@ const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
   const { licence } = request.pre;
 
-  const action = routing.getStartDate(licence);
+  const action = getActionUrl(request, routing.getStartDate(licence.id));
   const values = getValues(request, licence, refDate);
   const dates = getDates(licence);
 

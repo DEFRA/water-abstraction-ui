@@ -61,7 +61,7 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     });
 
     test('the startDate is updated', async () => {
-      expect(state.startDate).to.equal('updated-start-date');
+      expect(state.dateRange.startDate).to.equal('updated-start-date');
     });
 
     test('the other data is untouched', async () => {
@@ -71,13 +71,13 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     });
   });
 
-  experiment('when the action is setAbstractionData', () => {
+  experiment('when the action is setChargeElementData', () => {
     let action;
     let state;
 
     beforeEach(async () => {
       action = {
-        type: ACTION_TYPES.setAbstractionData,
+        type: ACTION_TYPES.setChargeElementData,
         payload: 'updated-abstraction-data'
       };
 
@@ -109,7 +109,7 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     });
 
     test('the abstractionData is updated', async () => {
-      expect(state.billingAccount).to.equal('updated-billing-account-data');
+      expect(state.invoiceAccount).to.equal('updated-billing-account-data');
     });
 
     test('the other data is untouched', async () => {

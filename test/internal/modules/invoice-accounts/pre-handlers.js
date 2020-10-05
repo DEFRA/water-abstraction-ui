@@ -70,13 +70,6 @@ experiment('internal/modules/invoice-accounts/pre-handlers', () => {
     sandbox.restore();
   });
 
-  experiment('.getCompany', async () => {
-    test('calls the service method', async () => {
-      await preHandlers.getCompany(request);
-      expect(services.water.companies.getCompany.calledWith(companyId)).to.be.true();
-    });
-  });
-
   experiment('.loadCompanies', async () => {
     let response;
     beforeEach(async () => {
@@ -96,21 +89,6 @@ experiment('internal/modules/invoice-accounts/pre-handlers', () => {
     });
     test('returns an array', async () => {
       expect(Array.isArray(response)).to.be.true();
-    });
-  });
-
-  experiment('.loadBillingContact', async () => {
-    beforeEach(async () => {
-      await preHandlers.loadBillingContact(request);
-    });
-    test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.firstCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      // no data to merge is passed to the session
-      expect(args[3]).to.equal(undefined);
-      expect(dataService.sessionManager.calledOnce).to.be.true();
     });
   });
 

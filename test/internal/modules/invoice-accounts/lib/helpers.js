@@ -10,7 +10,7 @@ const helpers = require('internal/modules/invoice-accounts/lib/helpers');
 const forms = require('../../../../../src/shared/lib/forms/index');
 
 experiment('internal/modules/incoive-accounts/lib/data-service', () => {
-  const request = { test: 'request' };
+  const request = { test: 'request', pre: { companies: [] } };
   const regionId = uuid();
   const companyId = uuid();
   const formData = { test: 'data' };
@@ -68,21 +68,23 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
       forms.getValues.returns({ selectedCompany: companyId, companySearch: '' });
       helpers.processCompanyFormData(request, regionId, companyId, formData);
       const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal({ test: 'request' });
+      expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ agent: null });
+      expect(args[3]).to.contain({ agent: null });
     });
 
-    test('adds the agent: null to session data if selectedCompany === companyId', async () => {
+    test('adds the agent: id to session data if selectedCompany !== companyId', async () => {
+      let modifiedRequest = request;
       const selectedCompany = uuid();
+      modifiedRequest.pre.companies = [{ id: selectedCompany, name: 'some company ltd.' }];
       forms.getValues.returns({ selectedCompany, companySearch: '' });
-      helpers.processCompanyFormData(request, regionId, companyId, formData);
+      helpers.processCompanyFormData(modifiedRequest, regionId, companyId, formData);
       const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal({ test: 'request' });
+      expect(args[0]).to.equal(modifiedRequest);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ agent: { companyId: selectedCompany } });
+      expect(args[3]).to.contain(['agent', 'viewData']);
     });
   });
 
@@ -99,7 +101,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     test('if addFao === no returns the correct details are saved in the session', () => {
       helpers.processFaoFormData(request, regionId, companyId, 'no');
       const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal({ test: 'request' });
+      expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
       expect(args[3]).to.equal({ contact: null });

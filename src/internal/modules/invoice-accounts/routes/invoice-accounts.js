@@ -34,7 +34,6 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' },
           { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
@@ -58,7 +57,6 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' },
           { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
@@ -226,7 +224,7 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadBillingContact, assign: 'company' }
+          { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
     },
@@ -250,10 +248,7 @@ if (isAcceptanceTestTarget) {
           payload: {
             csrf_token: Joi.string().uuid().required()
           }
-        },
-        pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
-        ]
+        }
       }
     },
     getSearchCompany: {

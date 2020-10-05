@@ -1,6 +1,6 @@
 const dataService = require('../services/data-service');
 const forms = require('shared/lib/forms');
-const { has, isEmpty } = require('lodash');
+const { has, isEmpty, assign } = require('lodash');
 const moment = require('moment');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
@@ -18,7 +18,12 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
     const agentId = selectedCompany === companyId ? null : selectedCompany;
     if (agentId) {
       const existingState = dataService.sessionManager(request, regionId, companyId);
-      dataService.sessionManager(request, regionId, companyId, { agent: { ...existingState.agent, companyId: agentId } });
+      // Store the selected agent name in the viewData object
+
+      dataService.sessionManager(request, regionId, companyId, {
+        viewData: assign({}, existingState.viewData, { companyName: titleCase(request.pre.companies.find(x => x.id === selectedCompany).name || 'the agent') }),
+        agent: assign({}, existingState.agent, { companyId: agentId })
+      });
     } else {
       dataService.sessionManager(request, regionId, companyId, { agent: null });
     }

@@ -255,6 +255,39 @@ if (isAcceptanceTestTarget) {
           { method: preHandlers.loadCompany, assign: 'company' }
         ]
       }
+    },
+    getSearchCompany: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.getSearchCompany,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'find an existing contact to associate with the invoice account',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            filter: Joi.string().required(),
+            form: Joi.string().optional()
+          }
+        },
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
+      }
+    },
+    postSearchCompany: {
+      method: 'POST',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.postSearchCompany,
+      options: {
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
+      }
     }
   };
 };

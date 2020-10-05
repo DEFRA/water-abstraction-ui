@@ -14,7 +14,7 @@ const getContactChoices = contacts => {
   }];
 };
 
-const selectExistingContactForm = (request, defaultValue) => {
+const selectExistingCompanyForm = (request, defaultValue) => {
   const { csrfToken } = request.view;
   const { contactSearchResults } = request.pre;
   const { filter } = request.query;
@@ -38,11 +38,11 @@ const selectExistingContactForm = (request, defaultValue) => {
   return f;
 };
 
-const selectExistingContactSchema = {
+const selectExistingCompanySchema = {
   csrf_token: Joi.string().uuid().required(),
   filter: Joi.string().required(),
   id: Joi.string().uuid().allow('new').required()
 };
 
-exports.selectExistingContactForm = selectExistingContactForm;
-exports.selectExistingContactSchema = selectExistingContactSchema;
+exports.selectExistingCompanyForm = selectExistingCompanyForm;
+exports.selectExistingCompanySchema = selectExistingCompanySchema;

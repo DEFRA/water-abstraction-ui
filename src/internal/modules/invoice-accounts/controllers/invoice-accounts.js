@@ -1,6 +1,7 @@
 'use-strict';
 const boom = require('@hapi/boom');
 const queryString = require('querystring');
+const uuid = require('uuid');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
 const sessionHelper = require('shared/lib/session-helpers');
@@ -8,6 +9,7 @@ const ADDRESS_FLOW_SESSION_KEY = require('../../address-entry/plugin').SESSION_K
 
 const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
 const { selectAddressForm, selectAddressFormSchema } = require('../forms/select-address');
+const { selectExistingCompanyForm, selectExistingCompanySchema } = require('../forms/select-existing-company');
 const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
 const { checkDetailsForm } = require('../forms/check-details');
 
@@ -53,12 +55,49 @@ const postCompany = async (request, h) => {
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId), { redirectPath });
 };
 
+const getSearchCompany = async (request, h) => {
+  const { regionId, companyId } = request.params;
+  // Return the view
+  const { viewData, agent } = dataService.sessionManager(request, regionId, companyId);
+  let selectedContactId = agent ? agent.id : null;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    pageTitle: 'Does this contact already exist?',
+    back: `/invoice-accounts/create/${regionId}/${companyId}?redirectPath=${viewData.redirectPath}`,
+    form: sessionForms.get(request, selectExistingCompanyForm(request, selectedContactId))
+  });
+};
+
+const postSearchCompany = async (request, h) => {
+  const { id, filter } = request.payload;
+  const { regionId, companyId } = request.params;
+  const form = forms.handleRequest(selectExistingCompanyForm(request), request, selectExistingCompanySchema);
+  if (form.isValid) {
+    if (id === 'new') {
+      const volatileKey = uuid();
+      const path = `/contact-entry/new?` + queryString.stringify({
+        searchQuery: filter,
+        sessionKey: volatileKey,
+        back: `/invoice-accounts/create/${regionId}/${companyId}/contact-search`,
+        redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/contact-entry-complete?sessionKey=${volatileKey}`
+      });
+      return h.redirect(path);
+    } else {
+      // Set the display company name
+      await dataService.sessionManager(request, regionId, companyId, { agent: { companyId: id } });
+      return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
+    }
+  } else {
+    return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, `contact-search`), { filter });
+  }
+};
+
 const getAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
   // get the session data to check if the address has been set and if it is new or existing
   const session = dataService.sessionManager(request, regionId, companyId);
   const addresses = await helpers.getAllAddresses(companyId, session);
-  // @TODO this might need a mapper to map the session address data to the Company address shape passed to the form
   if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
   const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
   return h.view('nunjucks/form', {
@@ -190,6 +229,9 @@ const postCheckDetails = async (request, h) => {
 
 module.exports.getCompany = getCompany;
 module.exports.postCompany = postCompany;
+
+module.exports.getSearchCompany = getSearchCompany;
+module.exports.postSearchCompany = postSearchCompany;
 
 module.exports.getAddress = getAddress;
 module.exports.postAddress = postAddress;

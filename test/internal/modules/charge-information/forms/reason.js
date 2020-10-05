@@ -34,7 +34,7 @@ const createRequest = changeReason => ({
 });
 
 experiment('internal/modules/charge-information/forms/reason', () => {
-  experiment('form', () => {
+  experiment('.form', () => {
     let reasonForm;
     beforeEach(() => {
       reasonForm = form(createRequest());
@@ -72,7 +72,7 @@ experiment('internal/modules/charge-information/forms/reason', () => {
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     let request, reasonSchema;
     beforeEach(() => {
       request = createRequest();

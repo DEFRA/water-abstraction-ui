@@ -29,7 +29,7 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
     quantitiesForm = form(createRequest());
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(quantitiesForm.method).to.equal('POST');
     });
@@ -73,7 +73,7 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
@@ -108,8 +108,8 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
         expect(result.error).to.not.exist();
       });
 
-      test('can not null or empty', async () => {
-        const result = schema().billableAnnualQuantity.validate('');
+      test('can be null or empty', async () => {
+        const result = schema().billableAnnualQuantity.validate(null);
         expect(result.error).not.to.exist();
       });
     });

@@ -7,11 +7,11 @@ const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elem
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const options = (selectedPurposeUse) => {
-  const { loss } = selectedPurposeUse;
+  const { lossFactor } = selectedPurposeUse;
 
   return LOSS_CATEGORIES.map(category => {
     const option = { value: category, label: capitalize(category) };
-    if (category === loss) { option.hint = 'This is the default loss category for the purpose chosen'; };
+    if (category === lossFactor) { option.hint = 'This is the default loss category for the purpose chosen'; };
     return option;
   });
 };

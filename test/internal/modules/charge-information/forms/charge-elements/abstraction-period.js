@@ -29,7 +29,7 @@ experiment('internal/modules/charge-information/forms/charge-element/abstraction
     abstractionPeriodForm = form(createRequest());
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(abstractionPeriodForm.method).to.equal('POST');
     });
@@ -75,7 +75,7 @@ experiment('internal/modules/charge-information/forms/charge-element/abstraction
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

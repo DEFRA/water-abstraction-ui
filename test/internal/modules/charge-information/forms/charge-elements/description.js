@@ -31,7 +31,7 @@ experiment('internal/modules/charge-information/forms/charge-element/description
     descriptionForm = form(createRequest(), sessionData);
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(descriptionForm.method).to.equal('POST');
     });
@@ -62,7 +62,7 @@ experiment('internal/modules/charge-information/forms/charge-element/description
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

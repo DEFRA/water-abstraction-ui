@@ -20,6 +20,7 @@ const generateChargeVersion = () => ({
 });
 
 const getDraftChargeInformation = function (licenceId) {
+  console.log('called', licenceId);
   const key = getSessionKey(licenceId);
   const draftChargeInfo = this.yar.get(key);
   return draftChargeInfo || generateChargeVersion();
@@ -47,4 +48,7 @@ const chargeInformationPlugin = {
 };
 
 module.exports = chargeInformationPlugin;
+module.exports._getDraftChargeInformation = getDraftChargeInformation;
+module.exports._setDraftChargeInformation = setDraftChargeInformation;
+module.exports._clearDraftChargeInformation = clearDraftChargeInformation;
 module.exports._generateChargeVersion = generateChargeVersion;

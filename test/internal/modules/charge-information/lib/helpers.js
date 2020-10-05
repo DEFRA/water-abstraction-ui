@@ -42,30 +42,30 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
     });
 
     test('includes the existing request view', async () => {
-      const defaultView = helpers.getDefaultView(request, formContainer, 'test-back');
+      const defaultView = helpers.getDefaultView(request, 'test-back', formContainer);
       expect(defaultView.pageTitle).to.equal(request.view.pageTitle);
     });
 
     test('if the back link is a string it is used', async () => {
-      const defaultView = helpers.getDefaultView(request, formContainer, 'test-back');
+      const defaultView = helpers.getDefaultView(request, 'test-back', formContainer);
       expect(defaultView.back).to.equal('test-back');
     });
 
     test('if the back link is a function it is called and the return value used', async () => {
       const routingLink = sandbox.stub().returns('test-link');
-      const defaultView = helpers.getDefaultView(request, formContainer, routingLink);
+      const defaultView = helpers.getDefaultView(request, routingLink, formContainer);
 
       expect(defaultView.back).to.equal('test-link');
-      expect(routingLink.calledWith(request.pre.licence)).to.equal(true);
+      expect(routingLink.calledWith(request.pre.licence.id)).to.equal(true);
     });
 
     test('adds a caption using the licence number', async () => {
-      const defaultView = helpers.getDefaultView(request, formContainer, 'test-back');
+      const defaultView = helpers.getDefaultView(request, 'test-back', formContainer);
       expect(defaultView.caption).to.equal('Licence 123/123');
     });
 
     test('adds the form to the view', async () => {
-      const defaultView = helpers.getDefaultView(request, formContainer, 'test-back');
+      const defaultView = helpers.getDefaultView(request, 'test-back', formContainer);
       expect(defaultView.form).to.equal('test-form');
       expect(formContainer.form.calledWith(request)).to.equal(true);
     });

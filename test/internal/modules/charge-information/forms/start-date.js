@@ -27,7 +27,7 @@ const createRequest = startDate => ({
 });
 
 experiment('internal/modules/charge-information/forms/start-date', () => {
-  experiment('form', () => {
+  experiment('.form', () => {
     let startDateForm;
     beforeEach(() => {
       startDateForm = form(createRequest(), '2020-04-01');
@@ -104,7 +104,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     const csrfToken = 'c5afe238-fb77-4131-be80-384aaf245842';
     let startDateSchema;
     beforeEach(() => {

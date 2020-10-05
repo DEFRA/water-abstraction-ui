@@ -16,15 +16,22 @@ const createRequest = () => ({
 });
 
 experiment('internal/modules/charge-information/forms/cancel-charge-info', () => {
-  let cancelChargeInfoForm;
+  let request, cancelChargeInfoForm;
 
   beforeEach(async () => {
-    cancelChargeInfoForm = form(createRequest());
+    request = createRequest();
+    cancelChargeInfoForm = form(request);
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(cancelChargeInfoForm.method).to.equal('POST');
+    });
+
+    test('sets the expected form action', async () => {
+      expect(cancelChargeInfoForm.action).to.equal(
+        `/licences/${request.params.licenceId}/charge-information/cancel`
+      );
     });
 
     test('has CSRF token field', async () => {

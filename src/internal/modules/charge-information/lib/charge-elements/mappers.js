@@ -32,14 +32,6 @@ const purpose = (formValues, defaultCharges) => {
   return { purposePrimary, purposeSecondary, purposeUse };
 };
 
-const quantities = formValues => {
-  const { authorisedAnnualQuantity, billableAnnualQuantity } = formValues;
-  return {
-    authorisedAnnualQuantity,
-    billableAnnualQuantity: (billableAnnualQuantity === '') ? null : billableAnnualQuantity
-  };
-};
-
 const source = formValues => ({
   source: formValues.source,
   eiucSource: formValues.source === SOURCES.tidal ? formValues.source : EIUC_SOURCE_OTHER
@@ -48,5 +40,4 @@ const source = formValues => ({
 exports.purpose = purpose;
 exports.time = time;
 exports.abstraction = abstraction;
-exports.quantities = quantities;
 exports.source = source;

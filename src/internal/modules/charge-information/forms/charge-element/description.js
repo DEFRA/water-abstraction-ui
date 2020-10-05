@@ -22,6 +22,9 @@ const form = request => {
     errors: {
       'any.empty': {
         message: 'Enter a description of the element'
+      },
+      'any.required': {
+        message: 'Enter a description of the element'
       }
     }
   }, data.description || ''));

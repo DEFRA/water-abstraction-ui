@@ -20,7 +20,7 @@ const createRequest = () => ({
 });
 
 experiment('internal/modules/charge-information/forms/use-abstraction-data', () => {
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       const abstractionForm = form(createRequest());
       expect(abstractionForm.method).to.equal('POST');
@@ -47,7 +47,7 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

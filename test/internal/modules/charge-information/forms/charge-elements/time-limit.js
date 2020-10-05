@@ -33,7 +33,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
     }));
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(timeLimitForm.method).to.equal('POST');
     });
@@ -70,7 +70,8 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
 
     test('sets the value of the timeLimitedPeriod, if provided', async () => {
       timeLimitForm = form(createRequest({ chargeElements: [{
-        id: 'test-element-id'
+        id: 'test-element-id',
+        timeLimitedPeriod: false
       }] }));
       const radio = findField(timeLimitForm, 'timeLimitedPeriod');
       expect(radio.value).to.equal('no');
@@ -95,7 +96,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
     });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     let timeLimitSchema;
     beforeEach(() => {
       timeLimitSchema = schema(createRequest({

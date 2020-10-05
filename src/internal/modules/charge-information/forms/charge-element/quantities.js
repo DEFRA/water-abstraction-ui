@@ -12,6 +12,7 @@ const getFormField = (key, data) => {
     controlClass: 'govuk-input govuk-input--width-10',
     label: `${capitalize(key)}${key === 'billable' ? ' (optional)' : ''}`,
     suffix: 'megalitres per year',
+    mapper: 'numberMapper',
     errors: {
       'any.empty': {
         message: `Enter an ${key} quantity`
@@ -50,7 +51,7 @@ const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
     authorisedAnnualQuantity: Joi.number().integer().greater(0).required(),
-    billableAnnualQuantity: Joi.number().integer().greater(0).allow('').optional()
+    billableAnnualQuantity: Joi.number().integer().greater(0).allow(null).optional()
   };
 };
 

@@ -41,12 +41,12 @@ const setBillingAccount = (request, formValues) => {
     return account.invoiceAccountAddresses.find(address => {
       return address.id === formValues.invoiceAccountAddress;
     });
-  }) || null;
+  }) || { invoiceAccount: null };
 
   return {
     type: ACTION_TYPES.setBillingAccount,
     payload: {
-      ...invoiceAccount,
+      ...(invoiceAccount && invoiceAccount) || null,
       invoiceAccountAddress: formValues.invoiceAccountAddress
     }
   };
@@ -86,7 +86,7 @@ const setChargeElementData = (request, formValues) => {
     : draftChargeInformation.chargeElements.push({ ...data, id: elementId });
 
   return {
-    type: ACTION_TYPES.updateChargeElements,
+    type: ACTION_TYPES.setChargeElementData,
     payload: draftChargeInformation.chargeElements
   };
 };
@@ -98,7 +98,7 @@ const removeChargeElement = request => {
   const updatedChargeElements = chargeElements.filter(element => element.id !== chargeElementId);
 
   return {
-    type: ACTION_TYPES.updateChargeElements,
+    type: ACTION_TYPES.setChargeElementData,
     payload: updatedChargeElements
   };
 };

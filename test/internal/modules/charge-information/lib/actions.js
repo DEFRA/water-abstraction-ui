@@ -12,7 +12,7 @@ const moment = require('moment');
 const actions = require('internal/modules/charge-information/lib/actions');
 
 experiment('internal/modules/charge-information/lib/actions', () => {
-  experiment('setChangeReason', () => {
+  experiment('.setChangeReason', () => {
     let request;
 
     beforeEach(async () => {
@@ -57,7 +57,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
     });
   });
 
-  experiment('setStartDate', () => {
+  experiment('.setStartDate', () => {
     let request;
 
     beforeEach(async () => {
@@ -104,14 +104,14 @@ experiment('internal/modules/charge-information/lib/actions', () => {
     });
   });
 
-  experiment('setAbstractionData', () => {
+  experiment('.setAbstractionData', () => {
     let request;
 
     beforeEach(async () => {
       request = {
         pre: {
           defaultCharges: [
-            { source: 'unsupportred' }
+            { source: 'unsupported' }
           ]
         }
       };
@@ -122,8 +122,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const formValues = { useAbstractionData: true };
         const action = actions.setAbstractionData(request, formValues);
 
-        expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
-        expect(action.payload).to.equal(request.pre.defaultCharges);
+        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
+        expect(action.payload[0]).to.contain(request.pre.defaultCharges[0]);
+      });
+
+      test('the charge elements are assigned a guid id', async () => {
+        const formValues = { useAbstractionData: true };
+        const action = actions.setAbstractionData(request, formValues);
+        const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
+        expect(action.payload[0].id).to.match(guidRegex);
       });
     });
 
@@ -132,13 +139,13 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const formValues = { useAbstractionData: false };
         const action = actions.setAbstractionData(request, formValues);
 
-        expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
+        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
         expect(action.payload).to.equal([]);
       });
     });
   });
 
-  experiment('setBillingAccount', () => {
+  experiment('.setBillingAccount', () => {
     let request;
 
     beforeEach(async () => {
@@ -173,7 +180,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           type: actions.ACTION_TYPES.setBillingAccount,
           payload: {
             invoiceAccountAddress: 'set-up-new-billing-account',
-            billingAccount: null
+            invoiceAccount: null
           }
         });
       });
@@ -187,28 +194,114 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setBillingAccount,
           payload: {
+            id: '00000000-0000-0000-0000-000000001111',
             invoiceAccountAddress: '00000000-0000-0000-0000-000000002222',
-            billingAccount: {
-              id: '00000000-0000-0000-0000-000000001111',
-              invoiceAccountAddresses: [
-                {
-                  id: '00000000-0000-0000-0000-000000002222',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                },
-                {
-                  id: '00000000-0000-0000-0000-000000003333',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                }
-              ],
-              accountNumber: 'A10000000A'
-            }
+            invoiceAccountAddresses: [
+              {
+                id: '00000000-0000-0000-0000-000000002222',
+                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
+              },
+              {
+                id: '00000000-0000-0000-0000-000000003333',
+                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
+              }
+            ],
+            accountNumber: 'A10000000A'
           }
         });
       });
     });
   });
 
-  experiment('clearData', () => {
+  experiment('.setChargeElementData', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          elementId: 'test-element-id',
+          step: 'season'
+        },
+        pre: {
+          draftChargeInformation: {
+            chargeElements: [{
+              id: 'test-element-id',
+              source: 'supported'
+            }]
+          },
+          defaultCharges: {}
+        }
+      };
+    });
+
+    experiment('when the charge element exists', () => {
+      test('updates the charge element with form value data', () => {
+        const formValues = { season: 'winter' };
+        const action = actions.setChargeElementData(request, formValues);
+        expect(action).to.equal({
+          type: actions.ACTION_TYPES.setChargeElementData,
+          payload: [{
+            id: 'test-element-id',
+            source: 'supported',
+            season: 'winter'
+          }]
+        });
+      });
+    });
+
+    experiment('when the charge element does not exist', () => {
+      beforeEach(() => {
+        request.pre.draftChargeInformation.chargeElements = [];
+      });
+      test('adds a new charge element with form value data and an id', () => {
+        const formValues = { season: 'winter' };
+        const action = actions.setChargeElementData(request, formValues);
+        expect(action).to.equal({
+          type: actions.ACTION_TYPES.setChargeElementData,
+          payload: [{
+            id: 'test-element-id',
+            season: 'winter'
+          }]
+        });
+      });
+    });
+  });
+
+  experiment('.removeChargeElement', () => {
+    let request;
+
+    beforeEach(async () => {
+      request = {
+        payload: {
+          buttonAction: 'removeElement:test-element-1-id'
+        },
+        pre: {
+          draftChargeInformation: {
+            chargeElements: [{
+              id: 'test-element-1-id',
+              source: 'supported'
+            }, {
+              id: 'test-element-2-id',
+              source: 'unsupported'
+            }]
+          }
+        }
+      };
+    });
+
+    test('returns the remaining charge elements', () => {
+      const action = actions.removeChargeElement(request);
+      expect(action).to.equal({
+        type: actions.ACTION_TYPES.setChargeElementData,
+        payload: [{
+          id: 'test-element-2-id',
+          source: 'unsupported'
+        }]
+      });
+    });
+  });
+
+  experiment('.clearData', () => {
     test('returns the expected action with no payload', async () => {
       const action = actions.clearData();
       expect(action).to.equal({

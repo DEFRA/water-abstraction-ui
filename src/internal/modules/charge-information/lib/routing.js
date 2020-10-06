@@ -1,10 +1,27 @@
-exports.getCheckData = licenceId => `/licences/${licenceId}/charge-information/check`;
-exports.getCreateBillingAccount = licenceId => `/licences/${licenceId}/charge-information/billing-account/create`;
-exports.getNonChargeableReason = licenceId => `/licences/${licenceId}/charge-information/non-chargeable-reason`;
-exports.getReason = licenceId => `/licences/${licenceId}/charge-information/create`;
-exports.getStartDate = licenceId => `/licences/${licenceId}/charge-information/start-date`;
-exports.getSelectBillingAccount = licenceId => `/licences/${licenceId}/charge-information/billing-account`;
-exports.getUseAbstractionData = licenceId => `/licences/${licenceId}/charge-information/use-abstraction-data`;
-exports.getChargeElementStep = (licenceId, elementId, step) => `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`;
-exports.getCancelData = licenceId => `/licences/${licenceId}/charge-information/cancel`;
-exports.getSubmitted = licenceId => `/licences/${licenceId}/charge-information/submitted`;
+'use strict';
+
+const querystring = require('querystring');
+
+const createUrl = urlTail => licenceId => {
+  return `/licences/${licenceId}/charge-information/${urlTail}`;
+};
+
+exports.getChargeElementStep = (elementId, step) => {
+  return `charge-element/${elementId}/${step}`;
+};
+
+exports.getSubmitted = (licenceId, isChargeable) => {
+  const qs = querystring.stringify({ chargeable: isChargeable });
+  return createUrl(`submitted?${qs}`)(licenceId);
+};
+
+exports.getCheckData = createUrl('check');
+exports.getCreateBillingAccount = createUrl('billing-account/create');
+exports.getNonChargeableReason = createUrl('non-chargeable-reason');
+exports.getReason = createUrl('create');
+exports.getStartDate = createUrl('start-date');
+exports.getSelectBillingAccount = createUrl('billing-account');
+exports.getUseAbstractionData = createUrl('use-abstraction-data');
+exports.getEffectiveDate = createUrl('effective-date');
+exports.getNonChargeableReason = createUrl('non-chargeable-reason');
+exports.getCancelData = createUrl('cancel');

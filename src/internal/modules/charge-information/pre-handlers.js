@@ -32,19 +32,32 @@ const loadLicence = async request => {
 const loadDraftChargeInformation = async request =>
   request.getDraftChargeInformation(request.params.licenceId);
 
-/**
- * Loads list of change reasons
- * or a Boom 404 error if not found
- * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
- * @param {Promise<Object>}
- */
-const loadChargeableChangeReasons = async request => {
+const getFilteredChangeReasons = async type => {
   try {
     const response = await services.water.changeReasons.getChangeReasons();
-    return response.data.filter(reason => reason.type === 'new_chargeable_charge_version');
+    return response.data.filter(reason => reason.type === type);
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);
   }
+};
+
+/**
+ * Loads list of chargeable change reasons or a Boom 404 error if not found
+ *
+ * @param {Promise<Object>}
+ */
+const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeable_charge_version');
+
+/**
+ * Loads list of non chargeable change reasons or a Boom 404 error if not found
+ *
+ * @param {Promise<Object>}
+ */
+const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
+
+const loadIsChargeable = async request => {
+  const { changeReason } = request.pre.draftChargeInformation;
+  return changeReason.type === 'new_chargeable_charge_version';
 };
 
 const loadDefaultCharges = async request => {
@@ -80,3 +93,5 @@ exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
 exports.loadLicence = loadLicence;
+exports.loadIsChargeable = loadIsChargeable;
+exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;

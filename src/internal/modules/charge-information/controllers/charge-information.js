@@ -3,16 +3,12 @@
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
-const { createPostHandler, getDefaultView, applyFormResponse, prepareChargeInformation } = require('../lib/helpers');
+const { getLicencePageUrl, createPostHandler, getDefaultView,
+  applyFormResponse, prepareChargeInformation } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
 const uuid = require('uuid');
-
-const getLicencePageUrl = async licence => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
-  return `/licences/${document.document_id}#charge`;
-};
 
 /**
  * Select the reason for the creation of a new charge version
@@ -123,30 +119,37 @@ const postUseAbstractionData = createPostHandler(
 );
 
 const getCheckData = async (request, h) => {
-  const { draftChargeInformation } = request.pre;
+  const { draftChargeInformation, isChargeable } = request.pre;
+  const licenceId = request.params.licenceId;
 
-  const invoiceAccountAddress = draftChargeInformation.invoiceAccount.invoiceAccountAddresses
-    .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress);
+  const back = isChargeable
+    ? routing.getUseAbstractionData(licenceId)
+    : routing.getEffectiveDate(licenceId);
+
+  const invoiceAccountAddress = isChargeable ? draftChargeInformation.invoiceAccount.invoiceAccountAddresses
+    .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress) : null;
 
   const view = {
     ...getDefaultView(request, routing.getUseAbstractionData),
     pageTitle: 'Check charge information',
+    back,
     draftChargeInformation: chargeInformationValidator.addValidation(draftChargeInformation),
-    licenceId: request.params.licenceId,
-    invoiceAccountAddress
+    licenceId,
+    invoiceAccountAddress,
+    isChargeable
   };
 
   return h.view('nunjucks/charge-information/check.njk', view);
 };
 
 const submitDraftChargeInformation = async (request, h) => {
-  const { licence: { id }, draftChargeInformation } = request.pre;
+  const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   await applyFormResponse(request, {}, actions.clearData);
-
-  return h.redirect(routing.getSubmitted(id));
+  const route = routing.getSubmitted(id, isChargeable);
+  return h.redirect(route);
 };
 
 const redirectToCancelPage = (request, h) =>
@@ -197,12 +200,14 @@ const postCancelData = async (request, h) => {
 
 const getSubmitted = async (request, h) => {
   const { licence } = request.pre;
+  const { chargeable: isChargeable } = request.query;
   const licencePageUrl = await getLicencePageUrl(licence);
 
   return h.view('nunjucks/charge-information/submitted.njk', {
     ...getDefaultView(request),
     pageTitle: 'Charge information complete',
-    licencePageUrl
+    licencePageUrl,
+    isChargeable
   });
 };
 

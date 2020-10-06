@@ -6,8 +6,8 @@ const createUrl = urlTail => licenceId => {
   return `/licences/${licenceId}/charge-information/${urlTail}`;
 };
 
-exports.getChargeElementStep = (elementId, step) => {
-  return `charge-element/${elementId}/${step}`;
+exports.getChargeElementStep = (licenceId, elementId, step) => {
+  return createUrl(`charge-element/${elementId}/${step}`)(licenceId);
 };
 
 exports.getSubmitted = (licenceId, isChargeable) => {

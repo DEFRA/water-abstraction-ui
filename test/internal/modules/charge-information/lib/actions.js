@@ -33,10 +33,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const action = actions.setChangeReason(request, formValues);
 
         expect(action).to.equal({
-          type: actions.ACTION_TYPES.setReason,
-          payload: {
-            changeReasonId: 'non-chargeable'
-          }
+          type: actions.ACTION_TYPES.clearData
         });
       });
     });

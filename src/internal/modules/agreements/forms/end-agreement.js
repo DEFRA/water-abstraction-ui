@@ -1,6 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
-const moment = require('moment');
 
 /**
  * Creates an object to represent the form for setting the

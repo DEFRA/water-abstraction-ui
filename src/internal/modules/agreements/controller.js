@@ -55,19 +55,19 @@ const postEndAgreement = async (request, h) => {
 
   const form = await forms.handleRequest(endAgreementForm(request, formEndDate), request, endAgreementFormSchema(request, h));
 
-  function goBack () {
+  const goBack = () => {
     return h.postRedirectGet(form, `/licences/${licenceId}/agreements/${agreementId}/end`);
-  }
-
+  };
+  console.log(form);
   if (form.isValid) {
     try {
       await helpers.sessionManager(request, agreementId, { endDate: formEndDate });
       return h.redirect(`/licences/${licenceId}/agreements/${agreementId}/end/confirm`);
     } catch (err) {
-      goBack();
+      return goBack();
     }
   } else {
-    goBack();
+    return goBack();
   }
 };
 

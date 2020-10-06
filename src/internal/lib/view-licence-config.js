@@ -1,5 +1,7 @@
 'use strict';
 
+const config = require('../config');
+
 const { getReturnPath } = require('./return-path');
 
 const services = require('./connectors/services');
@@ -27,3 +29,9 @@ exports.getLicenceAgreements = services.water.licences.getLicenceAgreements.bind
  * @returns {Boolean} True if this user can see charging details
  */
 exports.canShowCharging = request => permissions.isCharging(request);
+
+/**
+ * Pass through the feature toggles config property
+ * @type {Object}
+ */
+exports.featureToggles = config.featureToggles;

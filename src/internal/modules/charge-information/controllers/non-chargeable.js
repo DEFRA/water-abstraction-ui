@@ -1,11 +1,10 @@
 'use-strict';
 
-const { get } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
 const { getLicencePageUrl, createPostHandler, getDefaultView } = require('../lib/helpers');
-
+const { getSubmitted } = require('./charge-information');
 const getNonChargeableReason = async (request, h) => {
   const { licence } = request.pre;
   const backUrl = request.query.start
@@ -37,20 +36,6 @@ const postEffectiveDate = createPostHandler(
   request => routing.getCheckData(request.pre.licence.id)
 );
 
-const getConfirm = async (request, h) => {
-  const { licence } = request.pre;
-
-  return h.view('nunjucks/confirm.njk', {
-    ...request.view,
-    caption: `Licence ${licence.licenceNumber}`,
-    licenceUrl: await getLicencePageUrl(licence),
-    licence,
-    isChargeable: get(request, 'query.chargeable', false),
-    pageTitle: 'Charge information complete'
-  });
-};
-
-exports.getConfirm = getConfirm;
 exports.getEffectiveDate = getEffectiveDate;
 exports.getNonChargeableReason = getNonChargeableReason;
 exports.postEffectiveDate = postEffectiveDate;

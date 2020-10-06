@@ -7,7 +7,7 @@ const { form, schema } = require('internal/modules/charge-information/forms/star
 const { findField, findButton } = require('../../../../lib/form-test');
 const Joi = require('@hapi/joi');
 
-const createRequest = startDate => ({
+const createRequest = (startDate, isChargeable = true) => ({
   view: {
     csrfToken: 'token'
   },
@@ -22,7 +22,8 @@ const createRequest = startDate => ({
       dateRange: {
         startDate
       }
-    }
+    },
+    isChargeable
   }
 });
 
@@ -76,6 +77,60 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
         const customDateOption = startDateRadio.options.choices[3];
         expect(customDateOption.label).to.equal('Another date');
         expect(customDateOption.value).to.equal('customDate');
+      });
+    });
+
+    experiment('when the licence is set to be non-chargeable', () => {
+      let dateForm;
+
+      beforeEach(async () => {
+        dateForm = form(createRequest('2020-02-02', false));
+      });
+
+      test('sets the form method to POST', async () => {
+        expect(dateForm.method).to.equal('POST');
+      });
+
+      test('the action submits back to the expected url', async () => {
+        expect(dateForm.action).to.equal('/licences/test-licence-id/charge-information/effective-date');
+      });
+
+      test('has CSRF token field', async () => {
+        const csrf = findField(dateForm, 'csrf_token');
+        expect(csrf.value).to.equal('token');
+      });
+
+      test('has a submit button', async () => {
+        const button = findButton(dateForm);
+        expect(button.options.label).to.equal('Continue');
+      });
+
+      experiment('date choices', () => {
+        test('has option for today', async () => {
+          const radio = findField(dateForm, 'startDate');
+          expect(radio.options.choices[0].label).to.equal('Today');
+        });
+
+        test('has option for licence start date', async () => {
+          const radio = findField(dateForm, 'startDate');
+          expect(radio.options.choices[1].label).to.equal('Licence start date');
+          expect(radio.options.choices[1].hint).to.equal('1 April 2016');
+        });
+
+        test('has option for custom date', async () => {
+          const radio = findField(dateForm, 'startDate');
+          expect(radio.options.choices[3].label).to.equal('Another date');
+        });
+
+        test('has start date based errors for the custom date', async () => {
+          const radio = findField(dateForm, 'startDate');
+          const errors = radio.options.choices[3].fields[0].options.errors;
+
+          expect(errors['any.required'].message).to.equal('Enter the effective date');
+          expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
+          expect(errors['date.min'].message).to.equal('You must enter a date after the licence start date');
+          expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
+        });
       });
     });
 

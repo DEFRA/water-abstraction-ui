@@ -127,33 +127,5 @@ module.exports = {
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
-  },
-
-  getConfirm: {
-    method: 'GET',
-    path: '/licences/{licenceId}/charge-information/confirm',
-    handler: controller.getConfirm,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Confirmation page for the end of the charge information flow',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          licenceId: VALID_GUID
-        },
-        query: {
-          chargeable: Joi.boolean().default(false).optional()
-        }
-      },
-      pre: [
-        { method: preHandlers.loadLicence, assign: 'licence' }
-      ]
-    }
   }
 };

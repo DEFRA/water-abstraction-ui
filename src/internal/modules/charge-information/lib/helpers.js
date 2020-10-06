@@ -3,6 +3,7 @@ const { reducer } = require('./reducer');
 const sessionForms = require('shared/lib/session-forms');
 const { isFunction, isEmpty, omit } = require('lodash');
 const routing = require('../lib/routing');
+const services = require('../../../lib/connectors/services');
 
 const getPostedForm = (request, formContainer) => {
   const schema = formContainer.schema(request);
@@ -39,7 +40,7 @@ const createPostHandler = (formContainer, actionCreator, redirectPathFunc) => as
 };
 
 const getDefaultView = (request, backLink, formContainer) => {
-  const { licence } = request.pre;
+  const licence = request.pre.licence || request.pre.chargeVersion.licence;
   const back = isFunction(backLink) ? backLink(licence.id) : backLink;
 
   const view = {
@@ -61,6 +62,12 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   }
 });
 
+const getLicencePageUrl = async licence => {
+  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
+  return `/licences/${document.document_id}#charge`;
+};
+
+exports.getLicencePageUrl = getLicencePageUrl;
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;

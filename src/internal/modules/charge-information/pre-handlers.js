@@ -75,8 +75,19 @@ const loadBillingAccounts = async request => {
   }
 };
 
+const loadChargeVersion = async request => {
+  const { chargeVersionId } = request.params;
+
+  try {
+    const { chargeVersion } = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
+    return chargeVersion;
+  } catch (err) {
+    return errorHandler(err, `Cannot load charge version ${chargeVersionId}`);
+  }
+};
 exports.loadBillingAccounts = loadBillingAccounts;
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
+exports.loadChargeVersion = loadChargeVersion;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
 exports.loadLicence = loadLicence;

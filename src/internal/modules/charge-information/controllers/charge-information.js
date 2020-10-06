@@ -3,16 +3,11 @@
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
-const { createPostHandler, getDefaultView, applyFormResponse, prepareChargeInformation } = require('../lib/helpers');
+const { createPostHandler, getDefaultView, applyFormResponse, prepareChargeInformation, getLicencePageUrl } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
 const uuid = require('uuid');
-
-const getLicencePageUrl = async licence => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
-  return `/licences/${document.document_id}#charge`;
-};
 
 /**
  * Select the reason for the creation of a new charge version
@@ -131,7 +126,7 @@ const getCheckData = async (request, h) => {
   const view = {
     ...getDefaultView(request, routing.getUseAbstractionData),
     pageTitle: 'Check charge information',
-    draftChargeInformation: chargeInformationValidator.addValidation(draftChargeInformation),
+    chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId: request.params.licenceId,
     invoiceAccountAddress
   };

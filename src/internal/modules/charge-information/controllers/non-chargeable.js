@@ -4,7 +4,6 @@ const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
 const { getLicencePageUrl, createPostHandler, getDefaultView } = require('../lib/helpers');
-const { getSubmitted } = require('./charge-information');
 const getNonChargeableReason = async (request, h) => {
   const { licence } = request.pre;
   const backUrl = request.query.start

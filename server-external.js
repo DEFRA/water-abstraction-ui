@@ -30,6 +30,9 @@ const server = Hapi.server({
   cache: createCache(config)
 });
 
+// Add service connectors to request
+server.decorate('request', 'services', connectors);
+
 /**
  * Async function to start HAPI server
  */

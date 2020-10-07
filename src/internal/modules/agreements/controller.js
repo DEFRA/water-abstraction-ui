@@ -14,9 +14,10 @@ const getDefaultView = request => ({
 
 const getDeleteAgreement = (request, h) => {
   const { agreement, licence, document } = request.pre;
-  return h.view('nunjucks/agreements/delete', {
+  return h.view('nunjucks/agreements/confirm-end-or-delete', {
     ...getDefaultView(request),
     pageTitle: 'You\'re about to delete this agreement',
+    verb: 'delete',
     back: `/licences/${document.document_id}#charge`,
     agreement,
     licenceId: licence.id,
@@ -74,9 +75,10 @@ const getConfirmEndAgreement = async (request, h) => {
   const { agreement, licence, document } = request.pre;
   const { agreementId } = request.params;
   const { endDate } = await helpers.sessionManager(request, agreementId);
-  return h.view('nunjucks/agreements/end', {
+  return h.view('nunjucks/agreements/confirm-end-or-delete', {
     ...getDefaultView(request),
     pageTitle: 'You\'re about to end this agreement',
+    verb: 'end',
     back: `/licences/${document.document_id}/agreements/${agreementId}/end`,
     agreement,
     licenceId: licence.id,

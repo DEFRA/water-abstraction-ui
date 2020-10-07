@@ -70,7 +70,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('uses the correct template', () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/agreements/delete');
+      expect(template).to.equal('nunjucks/agreements/confirm-end-or-delete');
     });
 
     test('has the correct page title', () => {
@@ -86,6 +86,11 @@ experiment('internal/modules/agreements/controller', () => {
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/licences/test-document-id#charge');
+    });
+
+    test('has the correct verb for the warning message', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.verb).to.equal('delete');
     });
 
     test('contains the agreement', () => {
@@ -214,12 +219,17 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('uses the correct template', () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/agreements/end');
+      expect(template).to.equal('nunjucks/agreements/confirm-end-or-delete');
     });
 
     test('has the correct page title', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.pageTitle).to.equal('You\'re about to end this agreement');
+    });
+
+    test('has the correct verb for the warning message', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.verb).to.equal('end');
     });
 
     test('has the correct caption', () => {

@@ -26,6 +26,7 @@ const createRequest = () => ({
     foo: 'bar',
     csrfToken: uuid()
   },
+  query: {},
   pre: {
     licence: {
       id: 'test-licence-id',
@@ -41,11 +42,10 @@ const createRequest = () => ({
     }],
     draftChargeInformation: {
       chargeElements: [],
-      billingAccount: {
-        billingAccount: {
-          invoiceAccountAddresses: []
-        }
-      }
+      invoiceAccount: {
+        invoiceAccountAddresses: []
+      },
+      dateRange: {}
     },
     defaultCharges: [
       { season: 'summer' }
@@ -64,14 +64,10 @@ const createRequest = () => ({
     ]
   },
   yar: {
-    get: sandbox.stub(),
-    set: sandbox.stub()
+    get: sandbox.stub()
   },
-  server: {
-    methods: {
-      setDraftChargeInformation: sandbox.stub()
-    }
-  }
+  setDraftChargeInformation: sandbox.stub(),
+  clearDraftChargeInformation: sandbox.stub()
 });
 
 const getReadableDate = str => moment(str).format('D MMMM YYYY');
@@ -90,6 +86,8 @@ experiment('internal/modules/charge-information/controller', () => {
     sandbox.stub(services.crm.documents, 'getWaterLicence').resolves({
       document_id: 'test-doc-id'
     });
+    sandbox.stub(services.water.chargeVersionWorkflows, 'postChargeVersionWorkflow').resolves();
+    sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves();
   });
 
   afterEach(async () => {
@@ -104,12 +102,12 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/charge-information/form.njk');
+      expect(template).to.equal('nunjucks/form.njk');
     });
 
     test('sets a back link', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-doc-id');
+      expect(back).to.equal('/licences/test-doc-id#charge');
     });
 
     test('has the page title', async () => {
@@ -191,7 +189,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
       });
@@ -214,7 +212,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
       });
@@ -236,7 +234,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('the form in error state is passed to the post-redirect-get handler', async () => {
@@ -256,7 +254,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/charge-information/form.njk');
+        expect(template).to.equal('nunjucks/form.njk');
       });
 
       test('sets a back link', async () => {
@@ -366,7 +364,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment("when the a start date has already been set to today's date", () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.draftChargeInformation.startDate = getISODate();
+        request.pre.draftChargeInformation.dateRange.startDate = getISODate();
         await controller.getStartDate(request, h);
       });
 
@@ -380,7 +378,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to the licence start date', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.draftChargeInformation.startDate = request.pre.licence.startDate;
+        request.pre.draftChargeInformation.dateRange.startDate = request.pre.licence.startDate;
         await controller.getStartDate(request, h);
       });
 
@@ -394,7 +392,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the a start date has already been set to a custom date', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.draftChargeInformation.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
+        request.pre.draftChargeInformation.dateRange.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
         await controller.getStartDate(request, h);
       });
 
@@ -407,7 +405,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the conditional field for custom date has a value', async () => {
         const { form } = h.view.lastCall.args[1];
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-        expect(field.value).to.equal(request.pre.draftChargeInformation.startDate);
+        expect(field.value).to.equal(request.pre.draftChargeInformation.dateRange.startDate);
       });
     });
   });
@@ -424,9 +422,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.startDate).to.equal(getISODate());
+        expect(data.dateRange.startDate).to.equal(getISODate());
       });
 
       test('the user is redirected to the billing account page', async () => {
@@ -447,9 +445,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.startDate).to.equal(request.pre.licence.startDate);
+        expect(data.dateRange.startDate).to.equal(request.pre.licence.startDate);
       });
 
       test('the user is redirected to the billing account page', async () => {
@@ -475,9 +473,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.startDate).to.equal(customDate.format('YYYY-MM-DD'));
+        expect(data.dateRange.startDate).to.equal(customDate.format('YYYY-MM-DD'));
       });
 
       test('the user is redirected to the billing account page', async () => {
@@ -501,7 +499,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
@@ -525,7 +523,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
@@ -552,7 +550,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
@@ -577,7 +575,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
@@ -610,7 +608,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('uses the correct template', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/charge-information/form.njk');
+        expect(template).to.equal('nunjucks/form.njk');
       });
 
       test('sets a back link', async () => {
@@ -658,7 +656,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/charge-information/form.njk');
+      expect(template).to.equal('nunjucks/form.njk');
     });
 
     test('sets a back link', async () => {
@@ -700,9 +698,10 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.chargeElements).to.equal(request.pre.defaultCharges);
+        expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
+        expect(data.chargeElements[0]).to.include('id');
       });
 
       test('the user is redirected to the expected page', async () => {
@@ -722,7 +721,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        expect(request.server.methods.setDraftChargeInformation.called).to.be.false();
+        expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('the form in error state is passed to the post-redirect-get handler', async () => {
@@ -765,27 +764,210 @@ experiment('internal/modules/charge-information/controller', () => {
   });
 
   experiment('.postCheckData', () => {
+    experiment('when a the user confirms the charge info', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          buttonAction: 'confirm'
+        };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the data is submitted in the expected format', async () => {
+        const [{ licenceId, chargeVersion }] = services.water.chargeVersionWorkflows.postChargeVersionWorkflow.lastCall.args;
+        expect(licenceId).to.equal(request.params.licenceId);
+        expect(chargeVersion).to.equal(request.pre.draftChargeInformation);
+      });
+
+      test('the session data is cleared', async () => {
+        const [licenceId] = request.clearDraftChargeInformation.lastCall.args;
+        expect(licenceId).to.equal(request.params.licenceId);
+      });
+
+      test('the user is redirected to the confirmation page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/submitted'
+        )).to.be.true();
+      });
+    });
+
     experiment('when a the user cancels the flow', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          nextStep: 'cancel'
+          buttonAction: 'cancel'
         };
         await controller.postCheckData(request, h);
       });
 
-      test('the draft charge information is cleared', async () => {
-        const [id, data] = request.server.methods.setDraftChargeInformation.lastCall.args;
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/cancel'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a the user adds an element to the charge info', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          buttonAction: 'addElement'
+        };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        const [redirectPath] = h.redirect.lastCall.args;
+        // random guid is assigned as the new element id
+        expect(redirectPath).to.startWith('/licences/test-licence-id/charge-information/charge-element');
+        expect(redirectPath).to.endWith('/purpose');
+      });
+    });
+
+    experiment('when a the user removes an element to the charge info', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          buttonAction: 'removeElement:test-element-1-id'
+        };
+        request.pre.draftChargeInformation.chargeElements.push(...[{
+          id: 'test-element-1-id'
+        }, {
+          id: 'test-element-2-id'
+        }]);
+        await controller.postCheckData(request, h);
+      });
+
+      test('the session data is saved excluding charge element to remove', async () => {
+        const [, data] = request.setDraftChargeInformation.lastCall.args;
+        expect(data.chargeElements).to.equal([{
+          id: 'test-element-2-id'
+        }]);
+      });
+
+      test('the user is redirected to the confirmation page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/check'
+        )).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getCancelData', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getCancelData(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/cancel.njk');
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/check');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('You\'re about to cancel this charge information');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
+    });
+
+    test('has the expected form', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/cancel');
+      expect(view.form.method).to.equal('POST');
+    });
+  });
+
+  experiment('.postCancelData', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.postCancelData(request, h);
+    });
+
+    experiment('when a charge version workflow does not exist', () => {
+      test('does not delete the charge version workflow', () => {
+        expect(
+          services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow.called
+        ).to.be.false();
+      });
+
+      test('the draft charge info is deleted from the session', () => {
+        const [id] = request.clearDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data).to.equal({});
       });
 
       test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-doc-id'
+          '/licences/test-doc-id#charge'
         )).to.be.true();
       });
+    });
+
+    experiment('when a charge version workflow exists', () => {
+      beforeEach(async () => {
+        request.pre.draftChargeInformation.chargeVersionWorkflowId = 'test-workflow-id';
+        await controller.postCancelData(request, h);
+      });
+
+      test('does not delete the charge version workflow', () => {
+        const [id] = services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow.lastCall.args;
+        expect(id).to.equal('test-workflow-id');
+      });
+
+      test('the draft charge info is deleted from the session', () => {
+        const [id] = request.clearDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-doc-id#charge'
+        )).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getSubmitted', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getSubmitted(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/submitted.njk');
+    });
+
+    test('has the page title', async () => {
+      const { pageTitle } = h.view.lastCall.args[1];
+      expect(pageTitle).to.equal('Charge information complete');
+    });
+
+    test('has a caption', async () => {
+      const { caption } = h.view.lastCall.args[1];
+      expect(caption).to.equal('Licence 01/123');
+    });
+
+    test('passes through request.view', async () => {
+      const { foo } = h.view.lastCall.args[1];
+      expect(foo).to.equal(request.view.foo);
     });
   });
 });

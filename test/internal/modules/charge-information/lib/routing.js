@@ -20,49 +20,49 @@ experiment('internal/modules/charge-information/lib/routing', () => {
 
   experiment('.getCheckData', () => {
     test('returns the correct url', async () => {
-      const url = routing.getCheckData(licence);
+      const url = routing.getCheckData(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/check');
     });
   });
 
   experiment('.getCreateBillingAccount', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getCreateBillingAccount(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getCreateBillingAccount(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/billing-account/create');
     });
   });
 
   experiment('.getNonChargeableReason', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getNonChargeableReason(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getNonChargeableReason(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/non-chargeable-reason');
     });
   });
 
   experiment('.getReason', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getReason(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getReason(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/create');
     });
   });
 
   experiment('.getStartDate', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getStartDate(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getStartDate(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/start-date');
     });
   });
 
   experiment('.getSelectBillingAccount', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getSelectBillingAccount(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getSelectBillingAccount(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/billing-account');
     });
   });
 
   experiment('.getUseAbstractionData', () => {
-    test('returns the corrent url', async () => {
-      const url = routing.getUseAbstractionData(licence);
+    test('returns the correct url', async () => {
+      const url = routing.getUseAbstractionData(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
     });
   });

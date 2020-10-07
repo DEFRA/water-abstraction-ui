@@ -1,8 +1,10 @@
-exports.getCheckData = licence => `/licences/${licence.id}/charge-information/check`;
-exports.getCreateBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account/create`;
-exports.getNonChargeableReason = licence => `/licences/${licence.id}/charge-information/non-chargeable-reason`;
-exports.getReason = licence => `/licences/${licence.id}/charge-information/create`;
-exports.getStartDate = licence => `/licences/${licence.id}/charge-information/start-date`;
-exports.getSelectBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account`;
-exports.getUseAbstractionData = licence => `/licences/${licence.id}/charge-information/use-abstraction-data`;
+exports.getCheckData = licenceId => `/licences/${licenceId}/charge-information/check`;
+exports.getCreateBillingAccount = licenceId => `/licences/${licenceId}/charge-information/billing-account/create`;
+exports.getNonChargeableReason = licenceId => `/licences/${licenceId}/charge-information/non-chargeable-reason`;
+exports.getReason = licenceId => `/licences/${licenceId}/charge-information/create`;
+exports.getStartDate = licenceId => `/licences/${licenceId}/charge-information/start-date`;
+exports.getSelectBillingAccount = licenceId => `/licences/${licenceId}/charge-information/billing-account`;
+exports.getUseAbstractionData = licenceId => `/licences/${licenceId}/charge-information/use-abstraction-data`;
 exports.getChargeElementStep = (licenceId, elementId, step) => `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`;
+exports.getCancelData = licenceId => `/licences/${licenceId}/charge-information/cancel`;
+exports.getSubmitted = licenceId => `/licences/${licenceId}/charge-information/submitted`;

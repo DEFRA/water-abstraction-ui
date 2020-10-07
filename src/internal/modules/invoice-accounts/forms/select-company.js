@@ -5,12 +5,10 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const urlJoin = require('url-join');
 const titleCase = require('title-case');
 
-const choices = (company, companySelected) => {
-  const options = [{ value: company.id, label: titleCase(company.name), hint: titleCase(company.type) }];
-  // if an agent company was previously selected add this to the list of options
-  if (companySelected && company.id !== companySelected.id) {
-    options.push({ value: companySelected.id, label: titleCase(companySelected.name), hint: titleCase(companySelected.type) });
-  };
+const choices = (companies, companySelected) => {
+  const options = companies.filter(x => x).map(eachCompany => {
+    return { value: eachCompany.id, label: titleCase(eachCompany.name), hint: titleCase(eachCompany.type) };
+  });
   return [
     ...options,
     {
@@ -37,7 +35,7 @@ const choices = (company, companySelected) => {
  * @param {Object} company The main company for the licence
  * @param {Object} companySelected The selected company which could be different from the main company
   */
-const selectCompanyForm = (request, company, companySelected = null) => {
+const selectCompanyForm = (request, companies, companySelected = null) => {
   const { csrfToken } = request.view;
   const { regionId, companyId } = request.params;
   const action = urlJoin('/invoice-accounts/create', regionId, companyId);
@@ -50,7 +48,7 @@ const selectCompanyForm = (request, company, companySelected = null) => {
         message: 'Select who the bills should go to'
       }
     },
-    choices: choices(company, companySelected)
+    choices: choices(companies, companySelected)
   }, checkedOption));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

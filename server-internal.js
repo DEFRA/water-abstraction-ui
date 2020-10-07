@@ -69,6 +69,8 @@ const pluginsArray = [
     }
   }, {
     plugin: require('internal/modules/address-entry/plugin')
+  }, {
+    plugin: require('internal/modules/contact-entry/plugin')
   }
 ];
 

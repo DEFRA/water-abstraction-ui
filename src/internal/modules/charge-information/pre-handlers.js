@@ -29,15 +29,8 @@ const loadLicence = async request => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request => {
-  const { licenceId } = request.params;
-  try {
-    const data = await request.server.methods.getDraftChargeInformation(licenceId);
-    return data;
-  } catch (err) {
-    return errorHandler(err, `Draft charge information not found for licence ${licenceId}`);
-  }
-};
+const loadDraftChargeInformation = async request =>
+  request.getDraftChargeInformation(request.params.licenceId);
 
 /**
  * Loads list of change reasons
@@ -71,14 +64,14 @@ const loadDefaultCharges = async request => {
 };
 
 const loadBillingAccounts = async request => {
-  const { licenceNumber, licenceId } = request.pre.licence;
-  const { startDate } = request.pre.draftChargeInformation;
+  const { licenceNumber, id } = request.pre.licence;
+  const { startDate } = request.pre.draftChargeInformation.dateRange;
 
   try {
     const licenceAccounts = await services.water.licences.getLicenceAccountsByRefAndDate(licenceNumber, startDate);
     return licenceAccounts;
   } catch (err) {
-    return errorHandler(err, `Cannot load billing accounts for licence ${licenceId}`);
+    return errorHandler(err, `Cannot load billing accounts for licence ${id}`);
   }
 };
 

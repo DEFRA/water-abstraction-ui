@@ -26,7 +26,7 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
-          start: Joi.boolean().optional(),
+          start: Joi.number().default(0).allow(0, 1),
           returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },

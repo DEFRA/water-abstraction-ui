@@ -17,7 +17,6 @@ exports.getSubmitted = (licenceId, isChargeable) => {
 
 exports.getCheckData = createUrl('check');
 exports.getCreateBillingAccount = createUrl('billing-account/create');
-exports.getNonChargeableReason = createUrl('non-chargeable-reason');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');
 exports.getSelectBillingAccount = createUrl('billing-account');

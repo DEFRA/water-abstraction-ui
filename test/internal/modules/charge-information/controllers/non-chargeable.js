@@ -71,7 +71,6 @@ const createRequest = () => ({
   clearDraftChargeInformation: sandbox.stub()
 });
 
-// const getReadableDate = str => moment(str).format('D MMMM YYYY');
 const getISODate = str => moment(str).format('YYYY-MM-DD');
 
 experiment('internal/modules/charge-information/controller', () => {

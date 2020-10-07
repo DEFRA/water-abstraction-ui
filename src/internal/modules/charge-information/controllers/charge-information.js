@@ -130,9 +130,8 @@ const getCheckData = async (request, h) => {
     .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress) : null;
 
   const view = {
-    ...getDefaultView(request, routing.getUseAbstractionData),
+    ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
-    back,
     draftChargeInformation: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId,
     invoiceAccountAddress,

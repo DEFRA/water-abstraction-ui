@@ -4,9 +4,10 @@ const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
 const { getLicencePageUrl, createPostHandler, getDefaultView } = require('../lib/helpers');
+
 const getNonChargeableReason = async (request, h) => {
   const { licence } = request.pre;
-  const backUrl = request.query.start
+  const backUrl = request.query.start === 1
     ? await getLicencePageUrl(request.pre.licence)
     : routing.getReason(licence.id);
 

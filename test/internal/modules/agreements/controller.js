@@ -229,7 +229,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id#charge');
+      expect(view.back).to.equal('/licences/test-document-id/agreements/test-agreement-id/end');
     });
 
     test('contains the agreement', () => {

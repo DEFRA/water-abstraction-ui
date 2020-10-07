@@ -58,7 +58,6 @@ const postEndAgreement = async (request, h) => {
   const goBack = () => {
     return h.postRedirectGet(form, `/licences/${licenceId}/agreements/${agreementId}/end`);
   };
-  console.log(form);
   if (form.isValid) {
     try {
       await helpers.sessionManager(request, agreementId, { endDate: formEndDate });
@@ -78,7 +77,7 @@ const getConfirmEndAgreement = async (request, h) => {
   return h.view('nunjucks/agreements/end', {
     ...getDefaultView(request),
     pageTitle: 'You\'re about to end this agreement',
-    back: `/licences/${document.document_id}#charge`,
+    back: `/licences/${document.document_id}/agreements/${agreementId}/end`,
     agreement,
     licenceId: licence.id,
     endDate: endDate,
@@ -92,6 +91,7 @@ const postConfirmEndAgreement = async (request, h) => {
   const { endDate } = await helpers.sessionManager(request, agreementId);
   try {
     await water.agreements.endAgreement(agreementId, { endDate });
+    await helpers.clearSession(request, agreementId);
     return h.redirect(`/licences/${document.document_id}#charge`);
   } catch (err) {
     logger.info(`Did not successfully end agreement ${agreementId}`);

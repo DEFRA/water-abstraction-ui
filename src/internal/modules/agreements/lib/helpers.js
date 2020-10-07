@@ -5,4 +5,10 @@ const sessionManager = (request, agreementId, data) => {
   return sessionHelpers.saveToSession(request, sessionKey, data);
 };
 
+const clearSession = (request, agreementId) => {
+  const sessionKey = `endAgreement.${agreementId}`;
+  return request.yar.clear(sessionKey);
+};
+
 exports.sessionManager = sessionManager;
+exports.clearSession = clearSession;

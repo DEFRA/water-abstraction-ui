@@ -26,7 +26,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         methods: {
           cachedServiceRequest: sandbox.stub()
         }
-      }
+      },
+      pre: { draftChargeInformation: { dateRange: { startDate: '2018-01-16' } } }
     };
 
     sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves({

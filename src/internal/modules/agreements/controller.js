@@ -72,14 +72,14 @@ const postEndAgreement = async (request, h) => {
 };
 
 const getConfirmEndAgreement = async (request, h) => {
-  const { agreement, licence, document } = request.pre;
-  const { agreementId } = request.params;
+  const { agreement, licence } = request.pre;
+  const { licenceId, agreementId } = request.params;
   const { endDate } = await helpers.sessionManager(request, agreementId);
   return h.view('nunjucks/agreements/confirm-end-or-delete', {
     ...getDefaultView(request),
     pageTitle: 'You\'re about to end this agreement',
     verb: 'end',
-    back: `/licences/${document.document_id}/agreements/${agreementId}/end`,
+    back: `/licences/${licenceId}/agreements/${agreementId}/end`,
     agreement,
     licenceId: licence.id,
     endDate: endDate,

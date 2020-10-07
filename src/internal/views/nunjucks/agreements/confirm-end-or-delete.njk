@@ -50,7 +50,11 @@
           {{ agreement.dateRange.startDate | date }}
         </td>
         <td class="govuk-table__cell">
+          {% if verb=='end' %}
+          {{ endDate | date }}
+          {% else %}
           {{ agreement.dateRange.endDate | date }}
+          {% endif %}
         </td>
       </tr>
     </tbody>

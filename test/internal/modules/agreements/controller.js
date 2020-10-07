@@ -20,7 +20,8 @@ const createRequest = () => ({
     csrf_token: 'csrf-token'
   },
   params: {
-    agreementId: 'test-agreement-id'
+    agreementId: 'test-agreement-id',
+    licenceId: 'test-licence-id'
   },
   yar: {
     get: sandbox.stub(),
@@ -239,7 +240,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id/agreements/test-agreement-id/end');
+      expect(view.back).to.equal('/licences/test-licence-id/agreements/test-agreement-id/end');
     });
 
     test('contains the agreement', () => {

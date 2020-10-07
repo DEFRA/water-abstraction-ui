@@ -66,4 +66,11 @@ experiment('internal/modules/charge-information/lib/routing', () => {
       expect(url).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
     });
   });
+
+  experiment('.getEffectiveDate', () => {
+    test('returns the correct url', async () => {
+      const url = routing.getEffectiveDate(licence.id);
+      expect(url).to.equal('/licences/test-licence-id/charge-information/effective-date');
+    });
+  });
 });

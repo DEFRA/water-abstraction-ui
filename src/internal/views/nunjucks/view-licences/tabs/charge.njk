@@ -10,11 +10,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro agreementActions(agreement, isChargingUser) %}
-  {# {% if not agreement.dateRange.endDate %}
-    <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
-  {% endif %} #}
+{% macro agreementActions(agreement, licenceId, isChargingUser) %}
   {% if isChargingUser and featureToggles.manageAgreements %}
+    {% if not agreement.dateRange.endDate %}
+      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a> |
+    {% endif %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}
@@ -114,7 +114,7 @@
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/charge-versions/create"
+  <a href="/licences/{{ licenceId }}/charge-information/create"
     role="button"
     draggable="false"
     class="govuk-button govuk-!-margin-right-3"
@@ -122,13 +122,13 @@
     Setup a new charge
   </a>
 
-  <a href="/licences/{{ licenceId }}/make-non-chargeable"
+  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1"
     role="button"
     draggable="false"
     class="govuk-button govuk-button--secondary"
     data-module="govuk-button">
     Make licence non-chargeable
-  </a> #}
+  </a>
 {% else %}
   <p>No charge information for this licence.</p>
 {% endif %}
@@ -159,13 +159,10 @@
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/agreements/create"
-    role="button"
-    draggable="false"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button">
-    Set up a new agreement
-  </a> #}
 {% else %}
   <p>No agreements for this licence.</p>
 {% endif %}
+
+<a href="/licences/{{ licenceId }}/agreements/select-type" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  Set up a new agreement
+</a>

@@ -13,13 +13,14 @@ const ACTION_TYPES = {
 };
 
 const setChangeReason = (request, formValues) => {
-  const changeReason = formValues.reason === 'non-chargeable'
-    ? { changeReasonId: 'non-chargeable' }
-    : find(request.pre.changeReasons, { changeReasonId: formValues.reason });
-
+  if (formValues.reason === 'non-chargeable') {
+    return {
+      type: ACTION_TYPES.clearData
+    };
+  }
   return {
     type: ACTION_TYPES.setReason,
-    payload: changeReason
+    payload: find(request.pre.changeReasons, { changeReasonId: formValues.reason })
   };
 };
 

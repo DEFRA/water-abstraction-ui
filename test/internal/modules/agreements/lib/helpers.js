@@ -38,25 +38,25 @@ experiment('internal/modules/agreements/lib/reducer', () => {
     };
   });
 
-  experiment('.getSessionData', () => {
+  experiment('.getAddAgreementSessionData', () => {
     test('sets flow state to the session with a generated key', async () => {
-      helpers.getSessionData(request);
+      helpers.getAddAgreementSessionData(request);
       expect(request.yar.get.calledWith(
         'licence.test-licence-id.create-agreement'
       )).to.be.true();
     });
   });
 
-  experiment('.clearSessionData', () => {
+  experiment('.clearAddAgreementSessionData', () => {
     test('clears flow state to the session with a generated key', async () => {
-      helpers.clearSessionData(request);
+      helpers.clearAddAgreementSessionData(request);
       expect(request.yar.clear.calledWith(
         'licence.test-licence-id.create-agreement'
       )).to.be.true();
     });
   });
 
-  experiment('createPostHandler', () => {
+  experiment('createAddAgreementPostHandler', () => {
     let formContainer, actionCreator;
 
     beforeEach(async () => {
@@ -82,7 +82,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
         request.payload = {
           foo: 'bar'
         };
-        await helpers.createPostHandler(request, h, formContainer, actionCreator, 'test/path');
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
       });
 
       test('the next state is set in the session', async () => {
@@ -101,7 +101,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
         request.payload = {
           foo: 'not-bar'
         };
-        await helpers.createPostHandler(request, h, formContainer, actionCreator, 'test/path');
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
       });
 
       test('the next state is not set in the session', async () => {

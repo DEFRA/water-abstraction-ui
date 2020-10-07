@@ -3,7 +3,7 @@
 const services = require('internal/lib/connectors/services');
 const Boom = require('@hapi/boom');
 const agreementMapper = require('../../../shared/lib/mappers/agreements');
-const { getSessionData } = require('./lib/helpers');
+const { getAddAgreementSessionData } = require('./lib/helpers');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -27,7 +27,7 @@ const loadAgreement = async request => {
   }
 };
 
-const getFlowState = request => getSessionData(request);
+const getFlowState = request => getAddAgreementSessionData(request);
 
 exports.loadAgreement = loadAgreement;
 exports.getFlowState = getFlowState;

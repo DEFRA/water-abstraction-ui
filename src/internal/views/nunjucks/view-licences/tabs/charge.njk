@@ -10,11 +10,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro agreementActions(agreement, isChargingUser) %}
-  {# {% if not agreement.dateRange.endDate %}
-    <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
-  {% endif %} #}
+{% macro agreementActions(agreement, licenceId, isChargingUser) %}
   {% if isChargingUser and featureToggles.manageAgreements %}
+    {% if not agreement.dateRange.endDate %}
+      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a> |
+    {% endif %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}

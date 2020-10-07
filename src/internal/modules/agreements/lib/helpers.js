@@ -1,17 +1,27 @@
 'use strict';
-
+const sessionHelpers = require('shared/lib/session-helpers');
 const urlJoin = require('url-join');
 
 const { handleRequest, getValues } = require('shared/lib/forms/');
 const { reducer } = require('./reducer');
 
-const getSessionKey = request => `licence.${request.params.licenceId}.create-agreement`;
+const endAgreementSessionManager = (request, agreementId, data) => {
+  const sessionKey = `endAgreement.${agreementId}`;
+  return sessionHelpers.saveToSession(request, sessionKey, data);
+};
 
-const getSessionData = request => request.yar.get(getSessionKey(request));
+const clearEndAgreementSessionData = (request, agreementId) => {
+  const sessionKey = `endAgreement.${agreementId}`;
+  return request.yar.clear(sessionKey);
+};
 
-const setSessionData = (request, data) => request.yar.set(getSessionKey(request), data);
+const getAddAgreementSessionKey = request => `licence.${request.params.licenceId}.create-agreement`;
 
-const clearSessionData = request => request.yar.clear(getSessionKey(request));
+const getAddAgreementSessionData = request => request.yar.get(getAddAgreementSessionKey(request));
+
+const setAddAgreementSessionData = (request, data) => request.yar.set(getAddAgreementSessionKey(request), data);
+
+const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreementSessionKey(request));
 
 /**
  * Generic post handler
@@ -22,12 +32,12 @@ const clearSessionData = request => request.yar.clear(getSessionKey(request));
  * @param {String} tail - the URL tail to redirect to
  * @return {Object}
  */
-const createPostHandler = (request, h, formContainer, actionCreator, tail) => {
+const createAddAgreementPostHandler = (request, h, formContainer, actionCreator, tail) => {
   const form = handleRequest(formContainer.form(request), request, formContainer.schema(request));
   if (form.isValid) {
-    const currentState = getSessionData(request);
+    const currentState = getAddAgreementSessionData(request);
     const nextState = reducer(currentState, actionCreator(request, getValues(form)));
-    setSessionData(request, nextState);
+    setAddAgreementSessionData(request, nextState);
 
     // Redirect to next page in flow
     return h.redirect(urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail));
@@ -36,6 +46,9 @@ const createPostHandler = (request, h, formContainer, actionCreator, tail) => {
   return h.postRedirectGet(form);
 };
 
-exports.getSessionData = getSessionData;
-exports.createPostHandler = createPostHandler;
-exports.clearSessionData = clearSessionData;
+exports.endAgreementSessionManager = endAgreementSessionManager;
+exports.clearEndAgreementSessionData = clearEndAgreementSessionData;
+
+exports.getAddAgreementSessionData = getAddAgreementSessionData;
+exports.createAddAgreementPostHandler = createAddAgreementPostHandler;
+exports.clearAddAgreementSessionData = clearAddAgreementSessionData;

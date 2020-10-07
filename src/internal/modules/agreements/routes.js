@@ -6,7 +6,6 @@ const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
 const { VALID_GUID } = require('shared/lib/validators');
 
 const config = require('../../config');
-
 const { deleteAgreements, manageAgreements } = require('internal/lib/constants').scope;
 
 if (config.featureToggles.manageAgreements) {
@@ -223,6 +222,117 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
+          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+        ]
+      }
+    },
+
+    getEndAgreement: {
+      method: 'GET',
+      path: '/licences/{licenceId}/agreements/{agreementId}/end',
+      handler: controller.getEndAgreement,
+      options: {
+        auth: {
+          scope: [manageAgreements]
+        },
+        description: 'Page for setting an agreement end date',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'view'
+          }
+        },
+        validate: {
+          params: {
+            licenceId: VALID_GUID,
+            agreementId: VALID_GUID
+          }
+        },
+        pre: [
+          { method: preHandlers.loadAgreement, assign: 'agreement' },
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+        ]
+      }
+    },
+
+    postEndAgreement: {
+      method: 'POST',
+      path: '/licences/{licenceId}/agreements/{agreementId}/end',
+      handler: controller.postEndAgreement,
+      options: {
+        auth: {
+          scope: [manageAgreements]
+        },
+        description: 'Route that handles the POST to set an agreement end date in the session',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'view'
+          }
+        },
+        validate: {
+          params: {
+            licenceId: VALID_GUID,
+            agreementId: VALID_GUID
+          }
+        },
+        pre: [
+          { method: preHandlers.loadAgreement, assign: 'agreement' },
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+        ]
+      }
+    },
+    getConfirmEndAgreement: {
+      method: 'GET',
+      path: '/licences/{licenceId}/agreements/{agreementId}/end/confirm',
+      handler: controller.getConfirmEndAgreement,
+      options: {
+        auth: {
+          scope: [manageAgreements]
+        },
+        description: 'Page for confirming ending an agreement',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'view'
+          }
+        },
+        validate: {
+          params: {
+            licenceId: VALID_GUID,
+            agreementId: VALID_GUID
+          }
+        },
+        pre: [
+          { method: preHandlers.loadAgreement, assign: 'agreement' },
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+        ]
+      }
+    },
+
+    postConfirmEndAgreement: {
+      method: 'POST',
+      path: '/licences/{licenceId}/agreements/{agreementId}/end/confirm',
+      handler: controller.postConfirmEndAgreement,
+      options: {
+        auth: {
+          scope: [manageAgreements]
+        },
+        description: 'Route that handles the POST to end an agreement',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'view'
+          }
+        },
+        validate: {
+          params: {
+            licenceId: VALID_GUID,
+            agreementId: VALID_GUID
+          }
+        },
+        pre: [
+          { method: preHandlers.loadAgreement, assign: 'agreement' },
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
           { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
         ]
       }

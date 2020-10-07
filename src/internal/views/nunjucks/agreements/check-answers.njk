@@ -1,0 +1,21 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ title(pageTitle, caption)}}
+
+      {{ govukSummaryList(answers | checkAnswers) }}
+
+      <p>
+        This licence will be added to the supplementary bill run if a bill is due.
+      </p>
+      {{ formRender(form) }}
+    </div>
+  </div>
+{% endblock %}

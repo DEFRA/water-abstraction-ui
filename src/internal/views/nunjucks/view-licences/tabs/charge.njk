@@ -10,11 +10,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro agreementActions(agreement, isChargingUser) %}
-  {# {% if not agreement.dateRange.endDate %}
-    <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
-  {% endif %} #}
+{% macro agreementActions(agreement, licenceId, isChargingUser) %}
   {% if isChargingUser and featureToggles.manageAgreements %}
+    {% if not agreement.dateRange.endDate %}
+      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a> |
+    {% endif %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}
@@ -159,13 +159,10 @@
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/agreements/create"
-    role="button"
-    draggable="false"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button">
-    Set up a new agreement
-  </a> #}
 {% else %}
   <p>No agreements for this licence.</p>
 {% endif %}
+
+<a href="/licences/{{ licenceId }}/agreements/select-type" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  Set up a new agreement
+</a>

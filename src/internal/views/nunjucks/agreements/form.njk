@@ -1,0 +1,22 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ formErrorSummary(form) }}
+
+      {% if caption %}
+        <span class="govuk-caption-l">{{ caption }}</span>
+      {% endif %}
+    </div>
+    <div class="govuk-grid-column-full">
+
+      {{ formRender(form) }}
+    </div>
+  </div>
+{% endblock %}

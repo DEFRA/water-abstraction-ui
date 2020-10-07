@@ -4,12 +4,17 @@
 
 {% block content %}
 
-  {{ title(pageTitle, caption) }}
-  {{ govukWarningText({
-    text: 'When you delete this agreement, the licence will be added 
-    to the supplementary bill run. A new charge will be calculated 
-    for the time the agreement was in place.'
-  })}}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ title(pageTitle, caption) }}
+      {% set warningText = 'When you ' + verb + ' this agreement, the licence will be added 
+        to the supplementary bill run. A new charge will be calculated 
+        for the time the agreement was in place.' %}
+      {{ govukWarningText({
+        text: warningText
+      })}}
+    </div>
+  </div>
 
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
@@ -45,7 +50,11 @@
           {{ agreement.dateRange.startDate | date }}
         </td>
         <td class="govuk-table__cell">
+          {% if verb=='end' %}
+          {{ endDate | date }}
+          {% else %}
           {{ agreement.dateRange.endDate | date }}
+          {% endif %}
         </td>
       </tr>
     </tbody>
@@ -57,4 +66,4 @@
     </div>
   </div>
 
-{% endblock %}
+{% endblock %}  

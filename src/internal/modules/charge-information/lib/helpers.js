@@ -3,6 +3,12 @@ const { reducer } = require('./reducer');
 const sessionForms = require('shared/lib/session-forms');
 const { isFunction, isEmpty, omit } = require('lodash');
 const routing = require('../lib/routing');
+const services = require('../../../lib/connectors/services');
+
+const getLicencePageUrl = async licence => {
+  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
+  return `/licences/${document.document_id}#charge`;
+};
 
 const getPostedForm = (request, formContainer) => {
   const schema = formContainer.schema(request);
@@ -13,7 +19,6 @@ const applyFormResponse = (request, form, actionCreator) => {
   const { licenceId } = request.params;
   const action = actionCreator(request, getValues(form));
   const nextState = reducer(request.pre.draftChargeInformation, action);
-
   return isEmpty(nextState)
     ? request.clearDraftChargeInformation(licenceId)
     : request.setDraftChargeInformation(licenceId, nextState);
@@ -66,3 +71,4 @@ exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
+exports.getLicencePageUrl = getLicencePageUrl;

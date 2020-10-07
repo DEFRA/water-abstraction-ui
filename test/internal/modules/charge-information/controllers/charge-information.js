@@ -33,6 +33,7 @@ const createRequest = () => ({
       licenceNumber: '01/123',
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
+    isChargeable: true,
     changeReasons: [{
       changeReasonId: 'test-reason-1',
       description: 'New licence'
@@ -211,10 +212,9 @@ experiment('internal/modules/charge-information/controller', () => {
         await controller.postReason(request, h);
       });
 
-      test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+      test('the draft charge information is cleared', async () => {
+        const [id] = request.clearDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
       });
 
       test('the user is redirected to the expected page', async () => {
@@ -787,7 +787,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('the user is redirected to the confirmation page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/submitted'
+          '/licences/test-licence-id/charge-information/submitted?chargeable=true'
         )).to.be.true();
       });
     });

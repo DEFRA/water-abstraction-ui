@@ -32,100 +32,132 @@
   {% endif %}
 {% endmacro %}
 
-{% block content %}
+{% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
+  <div class="govuk-!-margin-bottom-9">
+    {{ badge(draftChargeInformation | chargeVersionBadge(true)) }}
+  </div>
+  <div class="govuk-grid-column-full">
+    <section class="govuk-!-margin-bottom-7">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
+      <dl class="govuk-summary-list">
+        {{ summaryListRow('Reason', draftChargeInformation.changeReason.description, changeLink('/create'))}}
+        {{ summaryListRow('Start date', draftChargeInformation.dateRange.startDate | date, changeLink('/start-date'))}}
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Billing account</dt>
+          <dd class="govuk-summary-list__value">
+            {{ draftChargeInformation.invoiceAccount.accountNumber }}
+            <br>
+            {{ address(invoiceAccountAddress.address) }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+          </dd>
+        </div>
+
+        {{ summaryListRow('Licence holder', draftChargeInformation.invoiceAccount.company.name | titleCase) }}
+      </dl>
+    </section>
+
+    {% for chargeElement in draftChargeInformation.chargeElements %}
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element {{loop.index}}</h2>
+        {% for validationWarning in chargeElement.validationWarnings %}
+          {{
+            govukWarningText({
+              text: validationWarning,
+              iconFallbackText: "Warning",
+              classes: "govuk-!-margin-bottom-1"
+            })
+          }}
+        {% endfor %}
+        <dl class="govuk-summary-list">
+          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
+          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
+          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
+          {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity | number + ' megalitres per year', changeLink('/quantities', chargeElement.id)) }}
+
+          {% set billableQuantity = 'Not set' %}
+          {% if chargeElement.billableAnnualQuantity %}
+            {% set billableQuantity = chargeElement.billableAnnualQuantity | number + ' megalitres per year' %}
+          {% endif %}
+          {{ summaryListRow('Billable quantity', billableQuantity, changeLink('/quantities', chargeElement.id)) }}
+
+          {% set timeLimited = 'No' %}
+          {% if chargeElement.timeLimitedPeriod %}
+            {% set timeLimited %}
+              {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+            {% endset %}
+          {% endif %}
+          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
+
+          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
+          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
+          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
+          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+        </dl>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <form method="post" novalidate>
+              <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+              {% if loop.last %}
+                {{ govukButton({
+                  text: 'Add another element',
+                  name: 'buttonAction',
+                  value: 'addElement',
+                  classes: 'govuk-button--secondary'
+                  }) }}
+              {% endif %}
+              {% if draftChargeInformation.chargeElements.length > 1 %}
+                {{ govukButton({
+                  text: 'Remove element',
+                  name: 'buttonAction',
+                  value: 'removeElement:' + chargeElement.id,
+                  classes: 'govuk-button--secondary'
+                }) }}
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+{% endmacro %}
+  
+
+{% macro nonChargeableData(drafChargeInformation, licence) %}
+  <section class="govuk-!-margin-bottom-7">
+    <dl class="govuk-summary-list">
+      {{ summaryListRow(
+        'Reason licence is not chargeable',
+        draftChargeInformation.changeReason.description,
+        changeLink('/non-chargeable-reason'))
+      }}
+      {{ summaryListRow(
+        'Effective date',
+        draftChargeInformation.dateRange.startDate | date,
+        changeLink('/effective-date'))
+      }}
+    </dl>
+  </section>
+{% endmacro %}
+
+{% block content %}     
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle, caption, null, true) }}
-      <div class="govuk-!-margin-bottom-9">
-        {{ badge(draftChargeInformation | chargeVersionBadge(true)) }}
-      </div>
     </div>
-    <div class="govuk-grid-column-full">
-      <section class="govuk-!-margin-bottom-7">
+
+    {% if isChargeable %}
+      <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
-        <dl class="govuk-summary-list">
-          {{ summaryListRow('Reason', draftChargeInformation.changeReason.description, changeLink('/create'))}}
-          {{ summaryListRow('Start date', draftChargeInformation.dateRange.startDate | date, changeLink('/start-date'))}}
-
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Billing account</dt>
-            <dd class="govuk-summary-list__value">
-              {{ draftChargeInformation.invoiceAccount.accountNumber }}
-              <br>
-              {{ address(invoiceAccountAddress.address) }}
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
-            </dd>
-          </div>
-
-          {{ summaryListRow('Licence holder', draftChargeInformation.invoiceAccount.company.name | titleCase) }}
-        </dl>
-      </section>
-
-      {% for chargeElement in draftChargeInformation.chargeElements %}
-        <section class="govuk-!-margin-bottom-7">
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element {{loop.index}}</h2>
-          {% for validationWarning in chargeElement.validationWarnings %}
-            {{
-              govukWarningText({
-                text: validationWarning,
-                iconFallbackText: "Warning",
-                classes: "govuk-!-margin-bottom-1"
-              })
-            }}
-          {% endfor %}
-          <dl class="govuk-summary-list">
-            {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
-            {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
-            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
-            {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity | number + ' megalitres per year', changeLink('/quantities', chargeElement.id)) }}
-
-            {% set billableQuantity = 'Not set' %}
-            {% if chargeElement.billableAnnualQuantity %}
-              {% set billableQuantity = chargeElement.billableAnnualQuantity | number + ' megalitres per year' %}
-            {% endif %}
-            {{ summaryListRow('Billable quantity', billableQuantity, changeLink('/quantities', chargeElement.id)) }}
-
-            {% set timeLimited = 'No' %}
-            {% if chargeElement.timeLimitedPeriod %}
-              {% set timeLimited %}
-                {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
-              {% endset %}
-            {% endif %}
-            {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
-
-            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
-            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
-            {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
-            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
-          </dl>
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-full">
-                <form method="post" novalidate>
-                  <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-                  {% if loop.last %}
-                    {{ govukButton({
-                      text: 'Add another element',
-                      name: 'buttonAction',
-                      value: 'addElement',
-                      classes: 'govuk-button--secondary'
-                    }) }}
-                  {% endif %}
-                  {% if draftChargeInformation.chargeElements.length > 1 %}
-                    {{ govukButton({
-                      text: 'Remove element',
-                      name: 'buttonAction',
-                      value: 'removeElement:' + chargeElement.id,
-                      classes: 'govuk-button--secondary'
-                    }) }}
-                  {% endif %}
-                </form>
-              </div>
-            </div>
-        </section>
-      {% endfor %}
-    </div>
+        {{ chargeableData(draftChargeInformation, invoiceAccountAddress)}}
+      </div>
+    {% else %}
+      <div class="govuk-grid-column-two-thirds">
+        {{ nonChargeableData(draftChargeInformation, licence)}}
+      </div>
+    {% endif %}
   </div>
 
   <div class="govuk-grid-row">

@@ -25,22 +25,19 @@
 
       </section>
 
-      <section>
-        <h3 class="govuk-heading-m">Licence agreements</h3>
-        <p class="govuk-body">If this licence has an agreement you can set this up now.</p>
-
-        {# @Todo
-            Add URL to href property in govukButton macro below
-            Hide if non-chargeable
-         #}
-        {{
-          govukButton({
-            text: "Set up a new agreement",
-            href: "",
-            classes: "govuk-button--secondary"
-          })
-        }}
-      </section>
+      {% if isChargeable %}
+        <section>
+          <h3 class="govuk-heading-m">Licence agreements</h3>
+          <p class="govuk-body">
+            If this licence has an agreement you can set this up now.
+          </p>
+          {{ govukButton({
+            text: "Set up new agreement",
+            classes: "govuk-button--secondary",
+            href: "/licences/" + licence.id + "/agreements/create"
+          }) }}
+        </section>
+      {% endif %}
 
     </div>
   </div>

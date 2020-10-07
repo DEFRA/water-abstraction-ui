@@ -40,7 +40,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
 
     test('allows an optional start query param which is boolean', async () => {
       const request = {
-        url: `/licences/${licenceId}/charge-information/non-chargeable-reason?start=true`
+        url: `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`
       };
 
       const response = await server.inject(request);

@@ -108,7 +108,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the user has started the chargeable flow', () => {
       test('sets a back link to the chargeable reason page', async () => {
         request = createRequest();
-        request.query.start = true;
+        request.query.start = 1;
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
         expect(back).to.equal('/licences/test-doc-id#charge');

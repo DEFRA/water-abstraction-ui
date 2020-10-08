@@ -5,6 +5,7 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
+const { getFormAction } = require('./lib/routing');
 
 /**
  * Gets form to select agreement signed date
@@ -12,7 +13,7 @@ const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
 const dateSignedForm = request => {
   const { csrfToken } = request.view;
 
-  const f = formFactory(request.path, 'POST');
+  const f = formFactory(getFormAction(request), 'POST');
 
   const dateSigned = get(request, 'pre.flowState.dateSigned');
 

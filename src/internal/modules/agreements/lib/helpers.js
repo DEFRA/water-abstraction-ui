@@ -43,7 +43,7 @@ const createAddAgreementPostHandler = (request, h, formContainer, actionCreator,
     // Is the user within the 'check your answers' flow?
     const { check } = request.query;
     const redirectPath = check
-      ? `/licences/${request.pre.licence.id}/agreements/check-your-answers`
+      ? `/licences/${request.pre.licence.id}/agreements/check-answers`
       : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail);
 
     // Redirect to next page in flow

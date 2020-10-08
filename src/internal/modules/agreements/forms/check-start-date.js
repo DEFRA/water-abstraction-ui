@@ -4,6 +4,7 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
+const { getFormAction } = require('./lib/routing');
 
 const getDatePicker = licenceEndDate => {
   return fields.date('startDate', {
@@ -55,7 +56,7 @@ const getCustomStartDateField = request => {
 const checkStartDateForm = request => {
   const { csrfToken } = request.view;
 
-  const f = formFactory(request.path, 'POST');
+  const f = formFactory(getFormAction(request), 'POST');
 
   f.fields.push(getCustomStartDateField(request));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

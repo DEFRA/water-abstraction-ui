@@ -1,5 +1,6 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 const Joi = require('@hapi/joi');
+const moment = require('moment');
 
 /**
  * Creates an object to represent the form for setting the
@@ -15,18 +16,22 @@ const endAgreementForm = (request, endDate) => {
   const { licence, agreement } = request.pre;
   const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST');
   f.fields.push(fields.date('endDate', {
+    type: 'date',
     errors: {
+      'date.isoDate': {
+        message: 'Enter the agreement end date'
+      },
       'any.empty': {
         message: 'Enter the agreement end date'
       },
       'date.base': {
-        message: 'Enter a valid date for the agreement end date'
+        message: 'Enter the agreement end date'
       },
       'date.min': {
-        message: `Enter an end date on or after the agreement start date (${agreement.dateRange.startDate})`
+        message: `Enter an end date on or after the agreement start date (${moment(agreement.dateRange.startDate).format('DD-MM-YYYY')})`
       },
       'date.max': {
-        message: `Enter an end date on or before the licence end date (${licence.endDate})`
+        message: `Enter an end date on or before the licence end date (${moment(licence.endDate).format('DD-MM-YYYY')})`
       }
     }
   }, endDate));
@@ -43,6 +48,7 @@ const endAgreementFormSchema = (request, h) => {
       .date()
       .min(new Date(agreement.dateRange.startDate || '1000-1-1'))
       .max(new Date(licence.endDate || '3000-1-1'))
+      .iso()
       .required()
   };
 };

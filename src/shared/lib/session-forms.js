@@ -55,9 +55,6 @@ const postRedirectGet = function (form, customPath, customParams = null) {
     form: key
   };
 
-  console.log(key);
-  console.log(form);
-
   return this.redirect(`${path}?${queryString.stringify(params)}`);
 };
 
@@ -75,3 +72,4 @@ const postRedirectGetPlugin = {
 exports.get = getSessionForm;
 exports.set = setSessionForm;
 exports.plugin = postRedirectGetPlugin;
+exports._postRedirectGet = postRedirectGet;

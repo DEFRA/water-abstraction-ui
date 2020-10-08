@@ -1,4 +1,6 @@
 'use strict';
+
+const { get } = require('lodash');
 const sessionHelpers = require('shared/lib/session-helpers');
 const urlJoin = require('url-join');
 
@@ -41,7 +43,7 @@ const createAddAgreementPostHandler = (request, h, formContainer, actionCreator,
     setAddAgreementSessionData(request, nextState);
 
     // Is the user within the 'check your answers' flow?
-    const { check } = request.query;
+    const check = get(request, 'query.check', false);
     const redirectPath = check
       ? `/licences/${request.pre.licence.id}/agreements/check-answers`
       : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail);

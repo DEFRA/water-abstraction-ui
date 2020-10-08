@@ -31,6 +31,11 @@ const setSessionForm = (request, form) => {
   return key;
 };
 
+/**
+ * Gets the part of the url path before the query separator
+ * @param {String} path
+ * @return {String}
+ */
 const getPath = path => path.split('?')[0];
 
 /**

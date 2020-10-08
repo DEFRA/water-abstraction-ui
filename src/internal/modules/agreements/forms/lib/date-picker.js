@@ -33,9 +33,6 @@ const getMaxDate = (licenceEndDate, refDate) => {
 const getCommonErrors = (licenceEndDate, refDate) => {
   const { isLicenceEndDate } = getMaxDate(licenceEndDate, refDate);
   return {
-    'date.isoDate': {
-      message: 'Enter a real date'
-    },
     'date.format': {
       message: 'Enter a real date'
     },

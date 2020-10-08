@@ -27,9 +27,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
     test('sets the financial agreement code', async () => {
       const nextState = reducer({}, actions.setAgreementType(request, { financialAgreementCode: 'S127' }));
       expect(nextState).to.equal({
-        code: 'S127',
-        dateSigned: null,
-        startDate: null
+        code: 'S127'
       });
     });
   });

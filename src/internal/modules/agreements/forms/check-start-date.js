@@ -11,7 +11,7 @@ const getDatePicker = licenceEndDate => {
     isHeading: true,
     size: 'm',
     errors: {
-      'date.isoDate': {
+      'any.required': {
         message: 'Enter the agreement start date'
       },
       ...getCommonErrors(licenceEndDate)

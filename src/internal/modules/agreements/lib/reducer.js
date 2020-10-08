@@ -8,9 +8,8 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setAgreementType:
       const { financialAgreementCode: code } = action.payload;
       return {
-        code,
-        dateSigned: null,
-        startDate: null
+        ...state,
+        code
       };
 
     case ACTION_TYPES.setDateSigned:

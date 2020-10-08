@@ -34,13 +34,20 @@ const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreemen
  */
 const createAddAgreementPostHandler = (request, h, formContainer, actionCreator, tail) => {
   const form = handleRequest(formContainer.form(request), request, formContainer.schema(request));
+
   if (form.isValid) {
     const currentState = getAddAgreementSessionData(request);
     const nextState = reducer(currentState, actionCreator(request, getValues(form)));
     setAddAgreementSessionData(request, nextState);
 
+    // Is the user within the 'check your answers' flow?
+    const { check } = request.query;
+    const redirectPath = check
+      ? `/licences/${request.pre.licence.id}/agreements/check-your-answers`
+      : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail);
+
     // Redirect to next page in flow
-    return h.redirect(urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail));
+    return h.redirect(redirectPath);
   }
   // Redirect to redisplay form with errors
   return h.postRedirectGet(form);

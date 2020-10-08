@@ -23,7 +23,7 @@ const dateSignedForm = request => {
     heading: true,
     size: 'l',
     errors: {
-      'date.isoDate': {
+      'any.required': {
         message: 'Enter the date the agreement was signed'
       },
       ...getCommonErrors(endDate)

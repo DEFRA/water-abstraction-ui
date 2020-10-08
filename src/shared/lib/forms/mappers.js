@@ -1,5 +1,6 @@
+'use strict';
+
 const { trim, isArray, isUndefined, negate, find, identity } = require('lodash');
-const { months } = require('moment');
 const moment = require('moment');
 const isDefined = negate(isUndefined);
 const { extractLicenceNumbers } = require('../licence-helpers');
@@ -73,7 +74,7 @@ const getDayFromPayload = (payload, fieldName) => payload[fieldName + '-day'];
 const getMonthFromPayload = (payload, fieldName) => payload[fieldName + '-month'];
 const getYearFromPayload = (payload, fieldName) => payload[fieldName + '-year'];
 
-const isTrimmedStringEmpty = val => val.trim() === '';
+const isTrimmedStringEmpty = val => (val || '').trim() === '';
 
 /**
  * Date mapper - combines the day month and year form values to a single

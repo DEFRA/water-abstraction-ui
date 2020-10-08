@@ -38,6 +38,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         {
           changeReasonId: 'test-change-reason-id-2',
           type: 'new_non_chargeable_charge_version'
+        },
+        {
+          changeReasonId: 'test-change-reason-id-3',
+          type: 'new_non_chargeable_charge_version'
         }
       ]
     });
@@ -181,6 +185,54 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
+  experiment('loadNonChargeableChangeReasons', () => {
+    experiment('when data is found', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadNonChargeableChangeReasons(request);
+      });
+
+      test('the service method is called', async () => {
+        expect(
+          services.water.changeReasons.getChangeReasons.called
+        ).to.be.true();
+      });
+
+      test('resolves with reasons data', async () => {
+        expect(result).to.be.an.array().length(2);
+        expect(result[0].changeReasonId).to.equal('test-change-reason-id-2');
+        expect(result[1].changeReasonId).to.equal('test-change-reason-id-3');
+      });
+    });
+
+    experiment('when the data is not found', () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.changeReasons.getChangeReasons.rejects(err);
+        result = await preHandlers.loadNonChargeableChangeReasons(request);
+      });
+
+      test('resolves with a Boom 404 error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(404);
+        expect(result.message).to.equal('Change reasons not found');
+      });
+    });
+
+    experiment('for other errors', () => {
+      beforeEach(async () => {
+        const err = new Error('Oh no!');
+        services.water.changeReasons.getChangeReasons.rejects(err);
+      });
+
+      test('rejects with the error', async () => {
+        const func = () => preHandlers.loadNonChargeableChangeReasons(request);
+        const err = await expect(func()).to.reject();
+        expect(err.message).to.equal('Oh no!');
+      });
+    });
+  });
+
   experiment('loadDefaultCharges', () => {
     experiment('when data is found', () => {
       beforeEach(async () => {
@@ -280,6 +332,36 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const err = await expect(func()).to.reject();
         expect(err.message).to.equal('Oh no!');
       });
+    });
+  });
+
+  experiment('loadIsChargeable', () => {
+    test('returns true if the change reason is new_chargeable_charge_version', async () => {
+      request.pre = {
+        draftChargeInformation: {
+          changeReason: {
+            type: 'new_chargeable_charge_version'
+          }
+        }
+      };
+
+      result = await preHandlers.loadIsChargeable(request);
+
+      expect(result).to.equal(true);
+    });
+
+    test('returns true if the change reason is new_non_chargeable_charge_version', async () => {
+      request.pre = {
+        draftChargeInformation: {
+          changeReason: {
+            type: 'new_non_chargeable_charge_version'
+          }
+        }
+      };
+
+      result = await preHandlers.loadIsChargeable(request);
+
+      expect(result).to.equal(false);
     });
   });
 });

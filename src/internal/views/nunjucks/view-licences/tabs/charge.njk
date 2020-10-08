@@ -114,7 +114,7 @@
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/charge-versions/create"
+  <a href="/licences/{{ licenceId }}/charge-information/create"
     role="button"
     draggable="false"
     class="govuk-button govuk-!-margin-right-3"
@@ -122,13 +122,13 @@
     Setup a new charge
   </a>
 
-  <a href="/licences/{{ licenceId }}/make-non-chargeable"
+  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1"
     role="button"
     draggable="false"
     class="govuk-button govuk-button--secondary"
     data-module="govuk-button">
     Make licence non-chargeable
-  </a> #}
+  </a>
 {% else %}
   <p>No charge information for this licence.</p>
 {% endif %}

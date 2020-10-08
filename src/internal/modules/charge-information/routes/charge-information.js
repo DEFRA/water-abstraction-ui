@@ -92,7 +92,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
   },
@@ -263,7 +264,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
   },
@@ -288,7 +290,8 @@ module.exports = {
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
   },
@@ -359,6 +362,9 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        },
+        query: {
+          chargeable: Joi.boolean().default(false).optional()
         }
       },
       pre: [

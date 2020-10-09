@@ -56,6 +56,7 @@
     "@hapi/hoek": "^8.5.1",
     "@hapi/inert": "^5.2.2",
     "@hapi/joi": "^15.1.1",
+    "@hapi/joi-date": "^1.3.0",
     "@hapi/scooter": "^5.1.0",
     "@hapi/vision": "^5.5.2",
     "@hapi/yar": "^9.2.0",

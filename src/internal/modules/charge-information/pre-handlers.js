@@ -63,9 +63,9 @@ const loadIsChargeable = async request => {
 
 const loadDefaultCharges = async request => {
   const { licenceId } = request.params;
-  const startDate = new Date(request.pre.draftChargeInformation.dateRange.startDate);
-
   try {
+    const draftChargeInfo = await loadDraftChargeInformation(request);
+    const startDate = new Date(draftChargeInfo.dateRange.startDate);
     //  Find non 'draft' CVs where the draft CV start date is in the date range of
     //  charge versions then pick the one with the greatest version number.
     const versions = await services.water.licences.getLicenceVersions(licenceId);

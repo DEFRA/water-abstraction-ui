@@ -21,7 +21,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       params: {
         licenceId: 'test-licence-id'
       },
-      getDraftChargeInformation: sandbox.stub(),
+      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: '2018-01-16' } }),
       server: {
         methods: {
           cachedServiceRequest: sandbox.stub()

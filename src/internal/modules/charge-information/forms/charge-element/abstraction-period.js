@@ -21,7 +21,7 @@ const errors = {
 const getFormField = (key, date) => {
   const name = capitalize(key);
   return fields.date(`${key}Date`, {
-    label: `${name} Date`,
+    label: `${name} date`,
     subHeading: true,
     items: ['day', 'month'],
     type: 'date',

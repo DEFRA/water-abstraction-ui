@@ -50,11 +50,9 @@ const form = request => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.number().integer().greater(0).required(),
-    billableAnnualQuantity: Joi.number().integer().greater(0).allow(null).optional()
+    authorisedAnnualQuantity: Joi.number().min(0).required(),
+    billableAnnualQuantity: Joi.number().allow(null).min(0).optional()
   };
 };
-
 exports.schema = schema;
-
 exports.form = form;

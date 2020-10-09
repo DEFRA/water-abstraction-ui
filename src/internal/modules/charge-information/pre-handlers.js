@@ -72,7 +72,7 @@ const loadDefaultCharges = async request => {
     const version = versions.filter(v => {
       return v.status !== 'draft' && moment.range(v.startDate, v.endDate).contains(startDate);
     }).reduce((preVal, curVal) => {
-      return `${preVal.issue} + ${preVal.increment}` > `${curVal.issue} + ${curVal.increment}` ? preVal : curVal;
+      return (preVal.issue + preVal.increment > curVal.issue + curVal.increment) ? preVal : curVal;
     });
 
     if (version) {

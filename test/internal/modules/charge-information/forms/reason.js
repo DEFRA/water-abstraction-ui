@@ -90,7 +90,9 @@ experiment('internal/modules/charge-information/forms/reason', () => {
       });
     });
   });
+});
 
+experiment('internal/modules/charge-information/forms/reason', () => {
   experiment('.schema', () => {
     let request, reasonSchema;
     beforeEach(() => {

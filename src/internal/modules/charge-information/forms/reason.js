@@ -14,7 +14,10 @@ const mapChoice = changeReason => ({
 
 const getChoices = (changeReasons, isChargeable) => {
   const choices = changeReasons.map(mapChoice);
-  if (isChargeable) { choices.push({ divider: 'or' }, { label: 'Make this licence non-chargeable', value: 'non-chargeable' }); };
+  const divider = [{ divider: 'or' }, { label: 'Make this licence non-chargeable', value: 'non-chargeable' }];
+  if (isChargeable) {
+    choices.push(...divider);
+  };
   return choices;
 };
 
@@ -56,7 +59,9 @@ const selectReasonSchema = (request) => {
   const { changeReasons } = request.pre;
   const { isChargeable } = request.query;
   const validReasons = changeReasons.map(changeReason => changeReason.changeReasonId);
-  if (isChargeable) { validReasons.push('non-chargeable'); };
+  if (isChargeable) {
+    validReasons.push('non-chargeable');
+  };
 
   return {
     csrf_token: Joi.string().uuid().required(),

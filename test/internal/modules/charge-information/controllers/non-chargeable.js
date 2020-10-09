@@ -19,6 +19,7 @@ const services = require('../../../../../src/internal/lib/connectors/services');
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/non-chargeable');
 
 const createRequest = () => ({
+  query: { isChargeable: false },
   params: {
     licenceId: 'test-licence-id'
   },
@@ -96,7 +97,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getNonChargeableReason', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.query = { isChargeable: false };
       await controller.getNonChargeableReason(request, h);
     });
 
@@ -108,7 +108,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the user has started the chargeable flow', () => {
       test('sets a back link to the chargeable reason page', async () => {
         request = createRequest();
-        request.query = { isChargeable: true, start: 1 };
+        request.query = { start: 1 };
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
         expect(back).to.equal('/licences/test-doc-id#charge');
@@ -155,7 +155,6 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           reason: 'test-reason-1'
         };
-        request.query = { isChargeable: false };
         await controller.postNonChargeableReason(request, h);
       });
 
@@ -177,7 +176,6 @@ experiment('internal/modules/charge-information/controller', () => {
         request.payload = {
           csrf_token: request.view.csrfToken
         };
-        request.query = { isChargeable: false };
         await controller.postNonChargeableReason(request, h);
       });
 
@@ -195,12 +193,10 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when "licenceStartDate" is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'licenceStartDate'
       };
-      request.query = { isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 
@@ -221,7 +217,6 @@ experiment('internal/modules/charge-information/controller', () => {
 
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
@@ -229,7 +224,6 @@ experiment('internal/modules/charge-information/controller', () => {
         'customDate-month': customDate.format('MM'),
         'customDate-year': customDate.format('YYYY')
       };
-      request.query = { isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 
@@ -255,7 +249,6 @@ experiment('internal/modules/charge-information/controller', () => {
         'customDate-month': 'Tuesday',
         'customDate-year': 'Or Wednesday'
       };
-      request.query = { ...request.query, isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 
@@ -273,7 +266,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when a custom date before the licence started is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
@@ -281,7 +273,6 @@ experiment('internal/modules/charge-information/controller', () => {
         'customDate-month': '5',
         'customDate-year': '1966'
       };
-      request.query = { ...request.query, isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 
@@ -301,7 +292,6 @@ experiment('internal/modules/charge-information/controller', () => {
       const tomorrow = moment().add(1, 'day');
 
       request = createRequest();
-      request.pre.isChargeable = false;
       request.pre.licence.endDate = getISODate();
       request.payload = {
         csrf_token: request.view.csrfToken,
@@ -310,7 +300,6 @@ experiment('internal/modules/charge-information/controller', () => {
         'customDate-month': tomorrow.format('MM'),
         'customDate-year': tomorrow.format('YYYY')
       };
-      request.query = { ...request.query, isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 
@@ -328,7 +317,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when a custom date more than 6 years ago is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.pre.licence.startDate = '1990-01-01';
       request.payload = {
         csrf_token: request.view.csrfToken,
@@ -337,7 +325,6 @@ experiment('internal/modules/charge-information/controller', () => {
         'customDate-month': '01',
         'customDate-year': '1990'
       };
-      request.query = { ...request.query, isChargeable: false };
       await controller.postEffectiveDate(request, h);
     });
 

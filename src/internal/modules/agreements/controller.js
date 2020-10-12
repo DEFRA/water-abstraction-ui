@@ -182,17 +182,17 @@ const getCheckAnswers = async (request, h) => {
       label: 'Agreement',
       value: agreementDescriptions[flowState.code],
       visuallyHiddenText: 'agreement',
-      link: `${basePath}/select-type`
+      link: `${basePath}/select-type?check=1`
     }, {
       label: 'Date signed',
       value: isoToReadable(flowState.dateSigned),
       visuallyHiddenText: 'date signed',
-      link: `${basePath}/date-signed`
+      link: `${basePath}/date-signed?check=1`
     }, {
       label: 'Start date',
       value: isoToReadable(flowState.startDate),
       visuallyHiddenText: 'start date',
-      link: `${basePath}/check-start-date`
+      link: `${basePath}/check-start-date?check=1`
     }]
   };
   return h.view('nunjucks/agreements/check-answers', view);

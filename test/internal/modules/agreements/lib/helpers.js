@@ -92,7 +92,27 @@ experiment('internal/modules/agreements/lib/reducer', () => {
       });
 
       test('the user is redirected', async () => {
-        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/test/path'));
+        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/test/path')).to.be.true();
+      });
+    });
+
+    experiment('when the form is valid and the user is in the "check your answers" flow', () => {
+      beforeEach(async () => {
+        request.query = { check: 1 };
+        request.payload = {
+          foo: 'bar'
+        };
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
+      });
+
+      test('the next state is set in the session', async () => {
+        expect(request.yar.set.calledWith(
+          'licence.test-licence-id.create-agreement', { foo: 'bar' }
+        ));
+      });
+
+      test('the user is redirected', async () => {
+        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/check-answers')).to.be.true();
       });
     });
 

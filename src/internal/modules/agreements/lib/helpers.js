@@ -1,4 +1,6 @@
 'use strict';
+
+const { get } = require('lodash');
 const sessionHelpers = require('shared/lib/session-helpers');
 const urlJoin = require('url-join');
 
@@ -34,13 +36,20 @@ const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreemen
  */
 const createAddAgreementPostHandler = (request, h, formContainer, actionCreator, tail) => {
   const form = handleRequest(formContainer.form(request), request, formContainer.schema(request));
+
   if (form.isValid) {
     const currentState = getAddAgreementSessionData(request);
     const nextState = reducer(currentState, actionCreator(request, getValues(form)));
     setAddAgreementSessionData(request, nextState);
 
+    // Is the user within the 'check your answers' flow?
+    const check = get(request, 'query.check', false);
+    const redirectPath = check
+      ? `/licences/${request.pre.licence.id}/agreements/check-answers`
+      : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail);
+
     // Redirect to next page in flow
-    return h.redirect(urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail));
+    return h.redirect(redirectPath);
   }
   // Redirect to redisplay form with errors
   return h.postRedirectGet(form);

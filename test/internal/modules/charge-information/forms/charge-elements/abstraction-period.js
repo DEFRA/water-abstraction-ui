@@ -46,14 +46,14 @@ experiment('internal/modules/charge-information/forms/charge-element/abstraction
 
     test('has a startDate field', async () => {
       const dateField = findField(abstractionPeriodForm, 'startDate');
-      expect(dateField.options.label).to.equal('Start Date');
+      expect(dateField.options.label).to.equal('Start date');
       expect(dateField.options.widget).to.equal('date');
       expect(dateField.options.mapper).to.equal('dayOfYearMapper');
     });
 
     test('has a endDate field', async () => {
       const dateField = findField(abstractionPeriodForm, 'endDate');
-      expect(dateField.options.label).to.equal('End Date');
+      expect(dateField.options.label).to.equal('End date');
       expect(dateField.options.widget).to.equal('date');
       expect(dateField.options.mapper).to.equal('dayOfYearMapper');
     });

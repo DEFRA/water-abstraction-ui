@@ -12,30 +12,41 @@ const mapChoice = changeReason => ({
   label: changeReason.description
 });
 
+const getChoices = (changeReasons, isChargeable) => {
+  const choices = changeReasons.map(mapChoice);
+  const divider = [{ divider: 'or' }, { label: 'Make this licence non-chargeable', value: 'non-chargeable' }];
+  if (isChargeable) {
+    choices.push(...divider);
+  };
+  return choices;
+};
+
 /**
  * Select reason for new charge version
  */
-const selectReasonForm = request => {
+const selectReasonForm = (request) => {
   const { csrfToken } = request.view;
   const { changeReasons, licence, draftChargeInformation } = request.pre;
+  const { isChargeable } = request.query;
+
+  const action = isChargeable
+    ? getActionUrl(request, routing.getReason(licence.id))
+    : getActionUrl(request, routing.getNonChargeableReason(licence.id));
+
+  const errorMessage = isChargeable
+    ? 'Select a reason for new charge information' : 'Select a reason';
 
   const changeReasonId = get(draftChargeInformation, 'changeReason.changeReasonId');
-
-  const action = getActionUrl(request, routing.getReason(licence.id));
 
   const f = formFactory(action, 'POST');
 
   f.fields.push(fields.radio('reason', {
     errors: {
       'any.required': {
-        message: 'Select a reason for new charge information'
+        message: errorMessage
       }
     },
-    choices: [
-      ...changeReasons.map(mapChoice),
-      { divider: 'or' },
-      { label: 'Make this licence non-chargeable', value: 'non-chargeable' }
-    ]
+    choices: getChoices(changeReasons, isChargeable)
   }, changeReasonId));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
@@ -44,15 +55,17 @@ const selectReasonForm = request => {
   return f;
 };
 
-const selectReasonSchema = request => {
+const selectReasonSchema = (request) => {
   const { changeReasons } = request.pre;
+  const { isChargeable } = request.query;
+  const validReasons = changeReasons.map(changeReason => changeReason.changeReasonId);
+  if (isChargeable) {
+    validReasons.push('non-chargeable');
+  };
 
   return {
     csrf_token: Joi.string().uuid().required(),
-    reason: Joi.string().required().valid([
-      ...changeReasons.map(changeReason => changeReason.changeReasonId),
-      'non-chargeable'
-    ])
+    reason: Joi.string().required().valid(validReasons)
   };
 };
 

@@ -12,13 +12,13 @@ const getNonChargeableReason = async (request, h) => {
     : routing.getReason(licence.id);
 
   return h.view('nunjucks/form.njk', {
-    ...getDefaultView(request, backUrl, forms.nonChargeableReason),
+    ...getDefaultView(request, backUrl, forms.reason),
     pageTitle: 'Why is this licence not chargeable?'
   });
 };
 
 const postNonChargeableReason = createPostHandler(
-  forms.nonChargeableReason,
+  forms.reason,
   actions.setChangeReason,
   request => routing.getEffectiveDate(request.pre.licence.id)
 );

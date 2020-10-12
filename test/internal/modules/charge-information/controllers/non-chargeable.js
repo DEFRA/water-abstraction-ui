@@ -19,6 +19,7 @@ const services = require('../../../../../src/internal/lib/connectors/services');
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/non-chargeable');
 
 const createRequest = () => ({
+  query: { isChargeable: false },
   params: {
     licenceId: 'test-licence-id'
   },
@@ -26,14 +27,13 @@ const createRequest = () => ({
     foo: 'bar',
     csrfToken: uuid()
   },
-  query: {},
   pre: {
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
-    isChargeable: true,
+    isChargeable: false,
     changeReasons: [{
       changeReasonId: 'test-reason-1',
       description: 'New licence'
@@ -108,7 +108,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the user has started the chargeable flow', () => {
       test('sets a back link to the chargeable reason page', async () => {
         request = createRequest();
-        request.query.start = 1;
+        request.query = { start: 1 };
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
         expect(back).to.equal('/licences/test-doc-id#charge');
@@ -118,7 +118,7 @@ experiment('internal/modules/charge-information/controller', () => {
     experiment('when the user has started the non chargeable flow', () => {
       test('sets a back link to the charge table on the licence page', async () => {
         request = createRequest();
-        request.query.start = false;
+        request.query = { start: 0 };
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
         expect(back).to.equal('/licences/test-licence-id/charge-information/create');
@@ -193,7 +193,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when "licenceStartDate" is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'licenceStartDate'
@@ -218,7 +217,6 @@ experiment('internal/modules/charge-information/controller', () => {
 
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
@@ -244,7 +242,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when an invalid "customDate" is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
@@ -269,7 +266,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when a custom date before the licence started is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
@@ -296,7 +292,6 @@ experiment('internal/modules/charge-information/controller', () => {
       const tomorrow = moment().add(1, 'day');
 
       request = createRequest();
-      request.pre.isChargeable = false;
       request.pre.licence.endDate = getISODate();
       request.payload = {
         csrf_token: request.view.csrfToken,
@@ -322,7 +317,6 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('when a custom date more than 6 years ago is posted', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.pre.isChargeable = false;
       request.pre.licence.startDate = '1990-01-01';
       request.payload = {
         csrf_token: request.view.csrfToken,

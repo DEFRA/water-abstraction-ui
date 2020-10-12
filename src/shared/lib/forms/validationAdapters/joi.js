@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('@hapi/joi');
 const { mapFields } = require('../mapFields');
 const { get, uniqBy } = require('lodash');

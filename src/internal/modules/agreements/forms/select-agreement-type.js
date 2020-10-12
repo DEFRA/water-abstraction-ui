@@ -5,6 +5,7 @@ const { get } = require('lodash');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { agreementDescriptions } = require('shared/lib/mappers/agreements');
+const { getFormAction } = require('./lib/routing');
 
 /**
  * Gets field description for financial agreement type radio buttons
@@ -33,7 +34,7 @@ const selectAgreementTypeForm = request => {
 
   const financialAgreementCode = get(request, 'pre.flowState.code');
 
-  const f = formFactory(request.path, 'POST');
+  const f = formFactory(getFormAction(request), 'POST');
 
   f.fields.push(getFinancialAgreementTypeField(financialAgreementCode));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

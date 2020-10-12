@@ -284,6 +284,9 @@ experiment('internal/modules/agreements/controller', () => {
 
     beforeEach(async () => {
       request = {
+        url: {
+          pathname: '/some/action'
+        },
         params: {
           licenceId
         },
@@ -359,7 +362,7 @@ experiment('internal/modules/agreements/controller', () => {
         expect(field.options.choices[1].label).to.equal('Canal and Rivers Trust, supported source (S130S)');
         expect(field.options.choices[1].value).to.equal('S130S');
 
-        expect(field.options.choices[2].label).to.equal('Canal and Rivers Trust, unsupported source (S130S)');
+        expect(field.options.choices[2].label).to.equal('Canal and Rivers Trust, unsupported source (S130U)');
         expect(field.options.choices[2].value).to.equal('S130U');
       });
     });

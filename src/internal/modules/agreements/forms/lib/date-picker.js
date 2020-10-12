@@ -2,7 +2,9 @@
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 const moment = require('moment');
-const Joi = require('@hapi/joi');
+
+const JoiDate = require('@hapi/joi-date');
+const Joi = require('@hapi/joi').extend(JoiDate);
 
 /**
  * Gets the maximum date - this is the earliest of:
@@ -31,6 +33,9 @@ const getMaxDate = (licenceEndDate, refDate) => {
 const getCommonErrors = (licenceEndDate, refDate) => {
   const { isLicenceEndDate } = getMaxDate(licenceEndDate, refDate);
   return {
+    'date.format': {
+      message: 'Enter a real date'
+    },
     'date.max': {
       message: isLicenceEndDate
         ? 'Enter a date no later than the licence end date'
@@ -52,7 +57,7 @@ const getCommonErrors = (licenceEndDate, refDate) => {
 const getDateValidator = licence => {
   const { startDate, endDate } = licence;
   const { maxDate } = getMaxDate(endDate);
-  return Joi.date().min(startDate).max(maxDate).iso().required();
+  return Joi.date().format('YYYY-MM-DD').min(startDate).max(maxDate).required();
 };
 
 exports.getMaxDate = getMaxDate;

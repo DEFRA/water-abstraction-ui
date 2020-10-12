@@ -28,6 +28,9 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     test('returns the correct common date field errors when the licence end date is earlier', async () => {
       const errors = datePicker.getCommonErrors('2020-09-01', '2020-09-29');
       expect(errors).to.equal({
+        'date.format': {
+          message: 'Enter a real date'
+        },
         'date.max': { message: 'Enter a date no later than the licence end date' },
         'date.min': {
           message: 'Enter a date that is no earlier than the licence start date'
@@ -38,6 +41,9 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     test('returns the correct common date field errors when today is earlier', async () => {
       const errors = datePicker.getCommonErrors('2020-09-29', '2020-09-01');
       expect(errors).to.equal({
+        'date.format': {
+          message: 'Enter a real date'
+        },
         'date.max': { message: 'The date you enter must be today’s date or earlier. It cannot be in the future' },
         'date.min': {
           message: 'Enter a date that is no earlier than the licence start date'

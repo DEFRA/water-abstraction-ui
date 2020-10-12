@@ -48,8 +48,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
-      { id: 'test-licence-version-1', status: 'superceded' },
-      { id: 'test-licence-version-2', status: 'current' }
+      { id: 'test-licence-version-1', status: 'superceded', issue: 2, increment: 0, startDate: '2018-01-16', endDate: '2018-01-16' },
+      { id: 'test-licence-version-2', status: 'current', issue: 2, increment: 1, startDate: '2018-01-16', endDate: null }
     ]);
 
     sandbox.stub(services.water.licences, 'getLicenceAccountsByRefAndDate').resolves([

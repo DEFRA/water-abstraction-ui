@@ -139,7 +139,11 @@ const selectStartDateForm = (request, refDate) => {
   const f = formFactory(action, 'POST');
 
   f.fields.push(fields.radio('startDate', {
-    errors: errorMessage,
+    errors: {
+      'any.required': {
+        message: errorMessage
+      }
+    },
     choices: getChoices(dates, values, refDate, isChargeable)
   }, values.startDate));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

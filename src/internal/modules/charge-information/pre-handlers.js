@@ -1,5 +1,6 @@
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
+const moment = require('moment');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -60,11 +61,22 @@ const loadIsChargeable = async request => {
   return changeReason.type === 'new_chargeable_charge_version';
 };
 
+const getPaddedVersionString = version => version.toString().padStart(9, '0');
+const getSortableVersionNumber = (issue, increment) => parseFloat(`${getPaddedVersionString(issue)}.${getPaddedVersionString(increment)}`);
+
 const loadDefaultCharges = async request => {
   const { licenceId } = request.params;
   try {
+    const draftChargeInfo = await loadDraftChargeInformation(request);
+    const startDate = new Date(draftChargeInfo.dateRange.startDate);
+    //  Find non 'draft' licence versions for the licenceId where the draft charge version start date is in the date range of
+    //  licence versions then pick the licence version with the greatest version number.
     const versions = await services.water.licences.getLicenceVersions(licenceId);
-    const version = versions.find(v => v.status === 'current');
+    const version = versions.filter(v => {
+      return v.status !== 'draft' && moment.range(v.startDate, v.endDate).contains(startDate);
+    }).reduce((preVal, curVal) => {
+      return (getSortableVersionNumber(preVal.issue, preVal.increment) > getSortableVersionNumber(curVal.issue, curVal.increment)) ? preVal : curVal;
+    });
 
     if (version) {
       const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);

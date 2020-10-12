@@ -135,6 +135,8 @@ module.exports = {
   },
 
   featureToggles: {
-    manageAgreements: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV)
+    manageAgreements: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV),
+    chargeInformation: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV),
+    manageInvoiceAccounts: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV)
   }
 };

@@ -35,15 +35,18 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       data: [
         {
           changeReasonId: 'test-change-reason-id-1',
-          type: 'new_chargeable_charge_version'
+          type: 'new_chargeable_charge_version',
+          description: 'Description A'
         },
         {
           changeReasonId: 'test-change-reason-id-2',
-          type: 'new_non_chargeable_charge_version'
+          type: 'new_non_chargeable_charge_version',
+          description: 'Description B'
         },
         {
           changeReasonId: 'test-change-reason-id-3',
-          type: 'new_non_chargeable_charge_version'
+          type: 'new_non_chargeable_charge_version',
+          description: 'Description C'
         }
       ]
     });

@@ -37,7 +37,7 @@ const form = request => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    description: Joi.string().required()
+    description: Joi.string().trim().required()
   };
 };
 

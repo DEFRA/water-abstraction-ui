@@ -118,6 +118,7 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getReason', () => {
     beforeEach(async () => {
       request = createRequest();
+      request.query = { isChargeable: true };
       await controller.getReason(request, h);
     });
 
@@ -229,6 +230,7 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           reason: 'non-chargeable'
         };
+        request.query = { isChargeable: true };
         await controller.postReason(request, h);
       });
 
@@ -250,6 +252,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request.payload = {
           csrf_token: request.view.csrfToken
         };
+        request.query = { isChargeable: true };
         await controller.postReason(request, h);
       });
 

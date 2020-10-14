@@ -19,6 +19,9 @@ const endAgreementForm = (request, endDate) => {
   f.fields.push(fields.date('endDate', {
     type: 'date',
     errors: {
+      'any.required': {
+        message: 'Enter the agreement end date'
+      },
       'date.format': {
         message: 'Enter the agreement end date'
       },

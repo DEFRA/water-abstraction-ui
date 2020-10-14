@@ -15,21 +15,22 @@ const preHandlers = require('internal/modules/charge-information/pre-handlers');
 
 experiment('internal/modules/charge-information/pre-handlers', () => {
   let request, result;
+  const START_DATE = '2018-01-16';
 
   beforeEach(async () => {
     request = {
       params: {
         licenceId: 'test-licence-id'
       },
-      pre: {},
       query: {},
-      getDraftChargeInformation: sandbox.stub().returns({}),
       setDraftChargeInformation: sandbox.stub(),
+      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE } }),
       server: {
         methods: {
           cachedServiceRequest: sandbox.stub()
         }
-      }
+      },
+      pre: { draftChargeInformation: { dateRange: { startDate: START_DATE } } }
     };
 
     sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves([
@@ -48,8 +49,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     ]);
 
     sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
-      { id: 'test-licence-version-1', status: 'superseded' },
-      { id: 'test-licence-version-2', status: 'current' }
+      { id: 'test-licence-version-1', status: 'superseded', issue: 2, increment: 0, startDate: START_DATE, endDate: '2018-01-16' },
+      { id: 'test-licence-version-2', status: 'current', issue: 2, increment: 1, startDate: START_DATE, endDate: null }
     ]);
 
     sandbox.stub(services.water.licences, 'getLicenceAccountsByRefAndDate').resolves([

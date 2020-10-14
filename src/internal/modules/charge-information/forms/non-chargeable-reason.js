@@ -7,7 +7,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
 
 const mapChoice = changeReason => ({
-  value: changeReason.changeReasonId,
+  value: changeReason.id,
   label: changeReason.description
 });
 
@@ -18,7 +18,7 @@ const selectReasonForm = request => {
   const { csrfToken } = request.view;
   const { changeReasons, licence, draftChargeInformation } = request.pre;
 
-  const changeReasonId = get(draftChargeInformation, 'changeReason.changeReasonId');
+  const changeReasonId = get(draftChargeInformation, 'changeReason.id');
   const action = getActionUrl(request, routing.getNonChargeableReason(licence.id));
 
   const f = formFactory(action, 'POST');
@@ -44,7 +44,7 @@ const selectReasonSchema = request => {
   return {
     csrf_token: Joi.string().uuid().required(),
     reason: Joi.string().required().valid(
-      changeReasons.map(changeReason => changeReason.changeReasonId)
+      changeReasons.map(changeReason => changeReason.id)
     )
   };
 };

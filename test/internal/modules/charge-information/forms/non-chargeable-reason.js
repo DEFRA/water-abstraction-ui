@@ -18,8 +18,8 @@ const createRequest = () => ({
       id: 'test-licence-id'
     },
     changeReasons: [
-      { changeReasonId: 'test-id-1', description: 'test-desc-1' },
-      { changeReasonId: 'test-id-2', description: 'test-desc-2' }
+      { id: 'test-id-1', description: 'test-desc-1' },
+      { id: 'test-id-2', description: 'test-desc-2' }
     ],
     draftChargeInformation: {}
   }

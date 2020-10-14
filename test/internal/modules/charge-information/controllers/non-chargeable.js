@@ -35,10 +35,10 @@ const createRequest = () => ({
     },
     isChargeable: true,
     changeReasons: [{
-      changeReasonId: 'test-reason-1',
+      id: 'test-reason-1',
       description: 'New licence'
     }, {
-      changeReasonId: 'test-reason-2',
+      id: 'test-reason-2',
       description: 'Transfer'
     }],
     draftChargeInformation: {
@@ -161,7 +161,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the draft charge information is updated with the reason', async () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
+        expect(data.changeReason.id).to.equal(request.payload.reason);
       });
 
       test('the user is redirected to the expected page', async () => {

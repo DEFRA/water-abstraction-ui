@@ -12,11 +12,22 @@ const { find } = require('lodash');
 const moment = require('moment');
 
 const uuid = require('uuid/v4');
+const queryString = require('querystring');
 
 const sandbox = sinon.createSandbox();
 
 const services = require('../../../../../src/internal/lib/connectors/services');
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-information');
+
+const address = {
+  addressLine1: '98 The new road',
+  addressLine2: 'At the top',
+  addressLine3: 'Down below',
+  addressLine4: 'Middleshire',
+  town: 'Newton Blah',
+  postcode: 'NB1 2AA',
+  country: 'United Kingdom'
+};
 
 const createRequest = () => ({
   params: {
@@ -31,14 +42,15 @@ const createRequest = () => ({
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
-      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      region: { id: 'test-region-id' }
     },
     isChargeable: true,
     changeReasons: [{
-      changeReasonId: 'test-reason-1',
+      id: 'test-reason-1',
       description: 'New licence'
     }, {
-      changeReasonId: 'test-reason-2',
+      id: 'test-reason-2',
       description: 'Transfer'
     }],
     draftChargeInformation: {
@@ -54,13 +66,21 @@ const createRequest = () => ({
     billingAccounts: [
       {
         id: 'test-licence-account-1',
-        invoiceAccountAddresses: [],
-        company: { name: 'Test company' }
+        accountNumber: 'A12345678A',
+        company: { name: 'Test company' },
+        invoiceAccountAddresses: [{
+          id: 'test-invoice-account-address-1',
+          address
+        }]
       },
       {
         id: 'test-licence-account-2',
+        accountNumber: 'A12345678B',
         company: { name: 'Test company' },
-        invoiceAccountAddresses: []
+        invoiceAccountAddresses: [{
+          id: 'test-invoice-account-address-2',
+          address
+        }]
       }
     ]
   },
@@ -165,7 +185,7 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.changeReason = {
-          changeReasonId: 'test-reason-1'
+          id: 'test-reason-1'
         };
         await controller.getReason(request, h);
       });
@@ -192,7 +212,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the draft charge information is updated with the reason', async () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.changeReason.changeReasonId).to.equal(request.payload.reason);
+        expect(data.changeReason.id).to.equal(request.payload.reason);
       });
 
       test('the user is redirected to the expected page', async () => {
@@ -591,12 +611,19 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.billingAccounts = [];
+        request.pre.licenceHolderRole = {
+          company: { id: 'test-company-id' }
+        };
         await controller.getSelectBillingAccount(request, h);
       });
 
       test('the user is redirects to new billing account page', async () => {
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal('/licences/test-licence-id/charge-information/billing-account/create');
+        const expectedQueryString = queryString.stringify({
+          redirectPath: '/licences/test-licence-id/charge-information/use-abstraction-data',
+          licenceId: 'test-licence-id'
+        });
+        expect(url).to.equal(`/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`);
       });
     });
 
@@ -616,7 +643,7 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(back).to.equal('/licences/test-licence-id/charge-information/start-date');
       });
 
-      test('sets a page title including the comapny name', async () => {
+      test('sets a page title including the company name', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.pageTitle).to.equal('Select an existing billing account for Test company');
       });
@@ -630,20 +657,89 @@ experiment('internal/modules/charge-information/controller', () => {
   });
 
   experiment('.postSelectBillingAccount', () => {
-    experiment('when a the user chooses to set up a new billing account', () => {
+    experiment('when the user chooses to set up a new billing account', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
           invoiceAccountAddress: 'set-up-new-billing-account'
         };
+        request.pre.licenceHolderRole = {
+          company: { id: 'test-company-id' }
+        };
+        await controller.postSelectBillingAccount(request, h);
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        const expectedQueryString = queryString.stringify({
+          redirectPath: '/licences/test-licence-id/charge-information/use-abstraction-data',
+          licenceId: 'test-licence-id'
+        });
+        expect(h.redirect.calledWith(
+          `/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`
+        )).to.be.true();
+      });
+    });
+
+    experiment('when the user chooses an existing billing account', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          invoiceAccountAddress: 'test-invoice-account-address-2'
+        };
         await controller.postSelectBillingAccount(request, h);
       });
 
       test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/billing-account/create'
+          '/licences/test-licence-id/charge-information/use-abstraction-data'
         )).to.be.true();
+      });
+    });
+
+    experiment('when changing billing account from check charge info page', () => {
+      experiment('and the user chooses an existing billing account', () => {
+        beforeEach(async () => {
+          request = createRequest();
+          request.payload = {
+            csrf_token: request.view.csrfToken,
+            invoiceAccountAddress: 'test-invoice-account-address-2'
+          };
+          request.query = { returnToCheckData: 1 };
+          await controller.postSelectBillingAccount(request, h);
+        });
+
+        test('the user is redirected to the expected page', async () => {
+          expect(h.redirect.calledWith(
+            '/licences/test-licence-id/charge-information/check'
+          )).to.be.true();
+        });
+      });
+
+      experiment('and the user chooses to set up a new billing account', () => {
+        beforeEach(async () => {
+          request = createRequest();
+          request.payload = {
+            csrf_token: request.view.csrfToken,
+            invoiceAccountAddress: 'set-up-new-billing-account'
+          };
+          request.pre.licenceHolderRole = {
+            company: { id: 'test-company-id' }
+          };
+          request.query = { returnToCheckData: 1 };
+          await controller.postSelectBillingAccount(request, h);
+        });
+
+        test('the user is redirected to the expected page', async () => {
+          const expectedQueryString = queryString.stringify({
+            redirectPath: '/licences/test-licence-id/charge-information/check',
+            licenceId: 'test-licence-id'
+          });
+          expect(h.redirect.calledWith(
+            `/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`
+          )).to.be.true();
+        });
       });
     });
   });
@@ -711,7 +807,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when no option is seleceted', () => {
+    experiment('when no option is selected', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
@@ -739,7 +835,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/charge-information/check.njk');
+      expect(template).to.equal('nunjucks/charge-information/view.njk');
     });
 
     test('sets a back link', async () => {

@@ -1,27 +1,12 @@
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
+const { loadLicence } = require('shared/lib/pre-handlers/licences');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);
   }
   throw err;
-};
-
-/**
- * Loads the licence specified in the params,
- * or a Boom 404 error if not found
- * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
- * @param {Promise<Object>}
- */
-const loadLicence = async request => {
-  const { licenceId } = request.params;
-  try {
-    const data = await request.server.methods.cachedServiceRequest('water.licences.getLicenceById', licenceId);
-    return data;
-  } catch (err) {
-    return errorHandler(err, `Licence ${licenceId} not found`);
-  }
 };
 
 /**
@@ -34,8 +19,8 @@ const loadDraftChargeInformation = async request =>
 
 const getFilteredChangeReasons = async type => {
   try {
-    const response = await services.water.changeReasons.getChangeReasons();
-    return response.data.filter(reason => reason.type === type);
+    const changeReasons = await services.water.changeReasons.getChangeReasons();
+    return changeReasons.filter(reason => reason.type === type);
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);
   }
@@ -92,17 +77,76 @@ const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
 
   try {
-    const { chargeVersion } = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
+    const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
     return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version ${chargeVersionId}`);
   }
 };
+
+const decorateChargeVersion = chargeVersionWorkflow => {
+  const { chargeVersion, status } = chargeVersionWorkflow;
+  // set id of saved address to display
+  const invoiceAccountAddress = chargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
+  return {
+    ...chargeVersion,
+    status,
+    invoiceAccount: { ...chargeVersion.invoiceAccount, invoiceAccountAddress }
+  };
+};
+
+const loadChargeVersionWorkflow = async request => {
+  const { licenceId, chargeVersionWorkflowId } = request.params;
+
+  try {
+    const { chargeVersionWorkflow } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow(chargeVersionWorkflowId);
+    const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
+    request.setDraftChargeInformation(licenceId, chargeVersion);
+    return chargeVersion;
+  } catch (err) {
+    return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);
+  }
+};
+
+const loadLicenceHolderRole = async request => {
+  const { licenceId } = request.params;
+  const { startDate } = request.pre.draftChargeInformation.dateRange;
+
+  try {
+    const { roles } = await services.water.licences.getValidDocumentByLicenceIdAndDate(licenceId, startDate);
+    return roles.find(role => role.roleName === 'licenceHolder');
+  } catch (err) {
+    return errorHandler(err, `Cannot load document for licence ${licenceId} on ${startDate}`);
+  }
+};
+
+const saveInvoiceAccount = async request => {
+  const { invoiceAccountId } = request.query;
+  const { licenceId } = request.params;
+  const chargeInfo = request.getDraftChargeInformation(licenceId);
+  if (invoiceAccountId) {
+    try {
+      const invoiceAccount = await services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
+      chargeInfo.invoiceAccount = {
+        ...invoiceAccount,
+        invoiceAccountAddress: invoiceAccount.invoiceAccountAddresses[0].id
+      };
+      request.setDraftChargeInformation(licenceId, chargeInfo);
+    } catch (err) {
+      return errorHandler(err, `Cannot load invoice account ${invoiceAccountId}`);
+    }
+  }
+  return chargeInfo;
+};
+
 exports.loadBillingAccounts = loadBillingAccounts;
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
+exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
 exports.loadLicence = loadLicence;
 exports.loadIsChargeable = loadIsChargeable;
 exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
+exports.loadLicenceHolderRole = loadLicenceHolderRole;
+exports.saveInvoiceAccount = saveInvoiceAccount;

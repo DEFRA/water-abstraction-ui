@@ -19,15 +19,15 @@ const createRequest = changeReason => ({
       changeReason
     },
     changeReasons: [{
-      changeReasonId: 'change-reason-1',
+      id: 'change-reason-1',
       description: 'Change Reason 1'
     },
     {
-      changeReasonId: 'change-reason-2',
+      id: 'change-reason-2',
       description: 'Change Reason 2'
     },
     {
-      changeReasonId: 'change-reason-3',
+      id: 'change-reason-3',
       description: 'Change Reason 3'
     }]
   }
@@ -66,7 +66,7 @@ experiment('internal/modules/charge-information/forms/reason', () => {
     });
 
     test('sets the value of the changeReason, if provided', async () => {
-      reasonForm = form(createRequest({ changeReasonId: 'change-reason-2' }));
+      reasonForm = form(createRequest({ id: 'change-reason-2' }));
       const changeReasonField = findField(reasonForm, 'reason');
       expect(changeReasonField.value).to.equal('change-reason-2');
     });
@@ -92,7 +92,7 @@ experiment('internal/modules/charge-information/forms/reason', () => {
 
     experiment('reason', () => {
       test('can be one of the change reason ids', async () => {
-        const result = reasonSchema.reason.validate(request.pre.changeReasons[0].changeReasonId);
+        const result = reasonSchema.reason.validate(request.pre.changeReasons[0].id);
         expect(result.error).to.not.exist();
       });
 

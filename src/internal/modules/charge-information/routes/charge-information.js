@@ -152,7 +152,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
+        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
       ]
     }
   },
@@ -181,7 +182,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
+        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
       ]
     }
   },
@@ -205,10 +207,12 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
+          invoiceAccountId: VALID_GUID.optional(),
           returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
+        { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
@@ -263,6 +267,7 @@ module.exports = {
         }
       },
       pre: [
+        { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }

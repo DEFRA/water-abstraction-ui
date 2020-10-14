@@ -1,9 +1,10 @@
 const controller = require('../controllers/charge-information-workflow');
 const { billing } = require('internal/lib/constants').scope;
+const preHandlers = require('../pre-handlers');
 const allowedScopes = [billing];
 
 module.exports = {
-  getReason: {
+  getChargeInformationWorkflow: {
     method: 'GET',
     path: '/charge-information-workflow',
     handler: controller.getChargeInformationWorkflow,
@@ -16,7 +17,11 @@ module.exports = {
         viewContext: {
           activeNavLink: 'view'
         }
-      }
+      },
+      pre: [
+        { method: preHandlers.loadLicencesWithoutChargeVersions, assign: 'toSetUp' },
+        { method: preHandlers.loadLicencesWithWorkflowsInProgress, assign: 'inProgress' }
+      ]
     }
   }
 };

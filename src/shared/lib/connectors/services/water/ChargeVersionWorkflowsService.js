@@ -2,6 +2,13 @@ const ServiceClient = require('../ServiceClient');
 
 class ChargeVersionWorkflowsService extends ServiceClient {
   /**
+   * Fetches all charge version workflows in progress
+   */
+  getChargeVersionWorkflow () {
+    const url = this.joinUrl('charge-version-workflows');
+    return this.serviceRequest.get(url);
+  }
+  /**
    * Posts draft charge info to water service to store
    * @param {Object} draftChargeInformation
    */

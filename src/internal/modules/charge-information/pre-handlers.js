@@ -100,6 +100,22 @@ const loadBillingAccounts = async request => {
   }
 };
 
+const loadLicencesWithoutChargeVersions = async request => {
+  //  TODO this endpoint hasn't been built yet.
+  //  https://eaflood.atlassian.net/browse/WATER-2888
+  return [];
+};
+
+const loadLicencesWithWorkflowsInProgress = async request => {
+  try {
+    const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow();
+    return licencesWithWorkflowsInProgress.data;
+  } catch (err) {
+    console.log(err);
+    return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
+  }
+};
+
 exports.loadBillingAccounts = loadBillingAccounts;
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadDefaultCharges = loadDefaultCharges;
@@ -107,3 +123,5 @@ exports.loadDraftChargeInformation = loadDraftChargeInformation;
 exports.loadLicence = loadLicence;
 exports.loadIsChargeable = loadIsChargeable;
 exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
+exports.loadLicencesWithoutChargeVersions = loadLicencesWithoutChargeVersions;
+exports.loadLicencesWithWorkflowsInProgress = loadLicencesWithWorkflowsInProgress;

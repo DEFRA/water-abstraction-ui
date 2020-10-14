@@ -48,6 +48,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       ]
     });
 
+    sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflow').resolves({
+      data: []
+    });
+
     sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
       { id: 'test-licence-version-1', status: 'superceded', issue: 2, increment: 0, startDate: START_DATE, endDate: '2018-01-16' },
       { id: 'test-licence-version-2', status: 'current', issue: 2, increment: 1, startDate: START_DATE, endDate: null }
@@ -364,6 +368,21 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       result = await preHandlers.loadIsChargeable(request);
 
       expect(result).to.equal(false);
+    });
+  });
+
+  experiment('loadLicencesWithWorkflowsInProgress', () => {
+    experiment('when the service response is valid', async () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
+      });
+      // calls the service method
+      test('calls the service method', async () => {
+        expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflow.called).to.be.true();
+      });
+      test('returns an array', async () => {
+        expect(Array.isArray(result)).to.be.true();
+      });
     });
   });
 });

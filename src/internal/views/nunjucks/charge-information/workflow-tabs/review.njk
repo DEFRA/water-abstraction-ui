@@ -1,0 +1,30 @@
+<div>
+    {% if licencesCounts.review > 0 %}
+        <h1 class="govuk-heading-l">
+            Review
+        <br/>
+            <span class="govuk-caption-l">
+                {%if licencesCounts.review == 1 %}
+                    One licence
+                {% else %}
+                    {{licencesCounts.review}} licences
+                {% endif %}
+            </span>
+        </h1>
+        <table class="govuk-table phone--hide">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th class="govuk-table__header" scope="col">Licence</th>
+                    <th class="govuk-table__header" scope="col">Licence holder</th>
+                    <th class="govuk-table__header" scope="col">Set up by</th>
+                    <th class="govuk-table__header" scope="col">Charge information start date</th>
+                    <th class="govuk-table__header" scope="col">Action</th>
+                </tr>
+            </thead>
+        </table>
+    {% else %}
+        <div class="govuk-caption-m">
+            There are no licences that are awaiting charge information review.
+        </div>
+    {% endif %}
+</div>

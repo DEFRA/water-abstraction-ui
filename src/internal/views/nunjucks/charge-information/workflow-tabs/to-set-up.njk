@@ -1,0 +1,28 @@
+<div>
+    {% if licencesCounts.toSetUp > 0 %}
+        <h1 class="govuk-heading-l">To set up
+            <br/>
+            <span class="govuk-caption-l">
+                {%if licencesCounts.toSetUp == 1 %}
+                    One licence
+                {% else %}
+                    {{licencesCounts.toSetUp}} licences
+                {% endif %}
+            </span>
+        </h1>
+        <table class="govuk-table phone--hide">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th class="govuk-table__header" scope="col">Licence</th>
+                    <th class="govuk-table__header" scope="col">Licence holder</th>
+                    <th class="govuk-table__header" scope="col">Licence start date</th>
+                    <th class="govuk-table__header" scope="col">Action</th>
+                </tr>
+            </thead>
+        </table>
+    {% else %}
+        <div class="govuk-caption-m">
+            There are no licences that require charge information setup.
+        </div>
+    {% endif %}
+</div>

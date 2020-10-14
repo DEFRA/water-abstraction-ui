@@ -36,7 +36,7 @@ const loadDraftChargeInformation = async request =>
 const getFilteredChangeReasons = async type => {
   try {
     const response = await services.water.changeReasons.getChangeReasons();
-    return response.data.filter(reason => reason.type === type);
+    return response.data.filter(reason => reason.type === type).sort((a, b) => a.description.localeCompare(b.description));
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);
   }

@@ -20,12 +20,12 @@
                 </tr>
             </thead>
              <tbody>
-                {% for licence in licences.review %}
+                {% for chargeInformationRow in licences.review %}
                     <tr>
-                        <td>{{licence.licenceNumber}}</td>
-                        <td>{{licence.licenceHolder}}</td>
-                        <td>{{licence.startDate}}</td>
-                        <td>ACTION URL TODO</td>
+                        <td>{{chargeInformationRow.licenceNumber}}</td>
+                        <td>{{chargeInformationRow.licenceHolder}}</td>
+                        <td>TODO</td>
+                        <td><a href="">Create</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

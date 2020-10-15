@@ -22,13 +22,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for licence in licences.review %}
+                {% for chargeInformationRow in licences.review %}
                     <tr>
-                        <td>{{licence.licenceNumber}}</td>
-                        <td>{{licence.licenceHolder}}</td>
-                        <td>{{licence.createdBy.email}}</td>
-                        <td>Charge information start date TODO</td>
-                        <td>ACTION URL TODO</td>
+                        <td>{{chargeInformationRow.licenceNumber}}</td>
+                        <td>{{chargeInformationRow.licenceHolder}}</td>
+                        <td>{{chargeInformationRow.createdBy.email}}</td>
+                        <td>{{chargeInformationRow.startDate}}</td>
+                        <td><a href="">Review</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

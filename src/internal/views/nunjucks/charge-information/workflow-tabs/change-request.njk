@@ -22,12 +22,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for licence in licences.changeRequest %}
+                {% for chargeInformationRow in licences.changeRequest %}
                     <tr>
-                        <td>{{licence.licenceNumber}}</td>
-                        <td>{{licence.licenceHolder}}</td>
-                        <td>{{licence.createdBy.email}}</td>
-                        <td>CHANGE REQUESTED TODO</td>
+                        <td>{{chargeInformationRow.licenceNumber}}</td>
+                        <td>{{chargeInformationRow.licenceHolder}}</td>
+                        <td>{{chargeInformationRow.createdBy.email}}</td>
+                        <td>{{chargeInformationRow.approverComments}}</td>
                         <td>ACTION URL TODO</td>
                     </tr>
                 {% endfor %}

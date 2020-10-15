@@ -1,9 +1,8 @@
 'use-strict';
 
 const getChargeInformationWorkflow = async (request, h) => {
-  const licencesAwaitingReview = request.pre.inProgress.filter(x => x.status === 'review');
-  const licencesWithChangesRequested = request.pre.inProgress.filter(x => x.status === 'draft');
-
+  const licencesAwaitingReview = request.pre.inProgress.filter(x => x.status === 'draft');
+  const licencesWithChangesRequested = request.pre.inProgress.filter(x => x.status === 'changes_requested');
   const view = {
     back: '/manage',
     ...request.view,

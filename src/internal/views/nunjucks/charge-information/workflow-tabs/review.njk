@@ -21,6 +21,17 @@
                     <th class="govuk-table__header" scope="col">Action</th>
                 </tr>
             </thead>
+            <tbody>
+                {% for licence in licences.review %}
+                    <tr>
+                        <td>{{licence.licenceNumber}}</td>
+                        <td>{{licence.licenceHolder}}</td>
+                        <td>{{licence.createdBy.email}}</td>
+                        <td>Charge information start date TODO</td>
+                        <td>ACTION URL TODO</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     {% else %}
         <div class="govuk-caption-m">

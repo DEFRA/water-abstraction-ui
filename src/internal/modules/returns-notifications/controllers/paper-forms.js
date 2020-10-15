@@ -4,10 +4,14 @@ const { get } = require('lodash');
 
 const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
+const { crmRoles } = require('shared/lib/constants');
+const services = require('../../../lib/connectors/services');
+
+// Forms
 const licenceNumbersForm = require('../forms/licence-numbers');
 const confirmForm = require('shared/lib/forms/confirm-form');
-const { crmRoles } = require('shared/lib/constants');
 
+// State
 const actions = require('../lib/actions');
 const { reducer } = require('../lib/reducer');
 
@@ -17,7 +21,7 @@ const sessionKey = 'returns.paper-forms';
  * Renders a page for the user to input a list of licences to whom
  * they wish to send paper return forms
  */
-const getEnterLicenceNumber = async (request, h, form) => {
+const getEnterLicenceNumber = async (request, h) => {
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/manage',
@@ -38,7 +42,7 @@ const postEnterLicenceNumber = async (request, h) => {
 
     try {
       // Get water service data on incomplete returns
-      const data = await request.services.water.returns.getIncompleteReturns(licenceNumbers);
+      const data = await services.water.returns.getIncompleteReturns(licenceNumbers);
 
       // Set session state and redirect
       const nextState = reducer({}, actions.setInitialState(request, data));

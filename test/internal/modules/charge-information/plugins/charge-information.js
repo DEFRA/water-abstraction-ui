@@ -69,8 +69,7 @@ experiment('internal/modules/charge-information/plugins/charge-information', () 
         changeReason: null,
         dateRange: { startDate: null },
         chargeElements: [],
-        invoiceAccount: null,
-        status: 'draft'
+        invoiceAccount: null
       });
     });
   });

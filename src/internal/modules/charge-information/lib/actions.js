@@ -20,7 +20,7 @@ const setChangeReason = (request, formValues) => {
   }
   return {
     type: ACTION_TYPES.setReason,
-    payload: find(request.pre.changeReasons, { changeReasonId: formValues.reason })
+    payload: find(request.pre.changeReasons, { id: formValues.reason })
   };
 };
 

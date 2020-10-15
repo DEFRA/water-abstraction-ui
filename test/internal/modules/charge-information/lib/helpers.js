@@ -70,4 +70,36 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
       expect(formContainer.form.calledWith(request)).to.equal(true);
     });
   });
+
+  experiment('.prepareChargeInformation', () => {
+    let chargeData, mappedChargeData;
+    beforeEach(async () => {
+      chargeData = {
+        invoiceAccount: { id: 'test-invoice-account-id' },
+        chargeElements: [{
+          id: 'test-charge-element-id',
+          season: 'summer',
+          source: 'supported',
+          loss: 'high'
+        }]
+      };
+      mappedChargeData = helpers.prepareChargeInformation('test-licence-id', chargeData);
+    });
+
+    test('returns the licence id', () => {
+      expect(mappedChargeData.licenceId).to.equal('test-licence-id');
+    });
+
+    test('maps the charge data correctly', () => {
+      expect(mappedChargeData.chargeVersion.invoiceAccount).to.equal(chargeData.invoiceAccount);
+      expect(mappedChargeData.chargeVersion.chargeElements).to.be.an.array().and.have.length(1);
+    });
+
+    test('excludes the charge element ids', () => {
+      expect(mappedChargeData.chargeVersion.chargeElements[0].id).to.be.undefined();
+      expect(mappedChargeData.chargeVersion.chargeElements[0].season).to.equal('summer');
+      expect(mappedChargeData.chargeVersion.chargeElements[0].source).to.equal('supported');
+      expect(mappedChargeData.chargeVersion.chargeElements[0].loss).to.equal('high');
+    });
+  });
 });

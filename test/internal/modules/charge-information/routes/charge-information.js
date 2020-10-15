@@ -182,6 +182,10 @@ experiment('internal/modules/charge-information/routes', () => {
       expect(routes.getSelectBillingAccount.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.getSelectBillingAccount.options.pre[1].method).to.equal(preHandlers.loadLicence);
       expect(routes.getSelectBillingAccount.options.pre[1].assign).to.equal('licence');
+      expect(routes.getSelectBillingAccount.options.pre[2].method).to.equal(preHandlers.loadBillingAccounts);
+      expect(routes.getSelectBillingAccount.options.pre[2].assign).to.equal('billingAccounts');
+      expect(routes.getSelectBillingAccount.options.pre[3].method).to.equal(preHandlers.loadLicenceHolderRole);
+      expect(routes.getSelectBillingAccount.options.pre[3].assign).to.equal('licenceHolderRole');
     });
   });
 
@@ -216,6 +220,10 @@ experiment('internal/modules/charge-information/routes', () => {
       expect(routes.postSelectBillingAccount.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.postSelectBillingAccount.options.pre[1].method).to.equal(preHandlers.loadLicence);
       expect(routes.postSelectBillingAccount.options.pre[1].assign).to.equal('licence');
+      expect(routes.postSelectBillingAccount.options.pre[2].method).to.equal(preHandlers.loadBillingAccounts);
+      expect(routes.postSelectBillingAccount.options.pre[2].assign).to.equal('billingAccounts');
+      expect(routes.postSelectBillingAccount.options.pre[3].method).to.equal(preHandlers.loadLicenceHolderRole);
+      expect(routes.postSelectBillingAccount.options.pre[3].assign).to.equal('licenceHolderRole');
     });
   });
 
@@ -244,10 +252,11 @@ experiment('internal/modules/charge-information/routes', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getUseAbstractionData.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
-      expect(routes.getUseAbstractionData.options.pre[0].assign).to.equal('draftChargeInformation');
-      expect(routes.getUseAbstractionData.options.pre[1].method).to.equal(preHandlers.loadLicence);
-      expect(routes.getUseAbstractionData.options.pre[1].assign).to.equal('licence');
+      expect(routes.getUseAbstractionData.options.pre[0].method).to.equal(preHandlers.saveInvoiceAccount);
+      expect(routes.getUseAbstractionData.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.getUseAbstractionData.options.pre[1].assign).to.equal('draftChargeInformation');
+      expect(routes.getUseAbstractionData.options.pre[2].method).to.equal(preHandlers.loadLicence);
+      expect(routes.getUseAbstractionData.options.pre[2].assign).to.equal('licence');
     });
   });
 
@@ -310,10 +319,13 @@ experiment('internal/modules/charge-information/routes', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getCheckData.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
-      expect(routes.getCheckData.options.pre[0].assign).to.equal('draftChargeInformation');
-      expect(routes.getCheckData.options.pre[1].method).to.equal(preHandlers.loadLicence);
-      expect(routes.getCheckData.options.pre[1].assign).to.equal('licence');
+      expect(routes.getCheckData.options.pre[0].method).to.equal(preHandlers.saveInvoiceAccount);
+      expect(routes.getCheckData.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.getCheckData.options.pre[1].assign).to.equal('draftChargeInformation');
+      expect(routes.getCheckData.options.pre[2].method).to.equal(preHandlers.loadLicence);
+      expect(routes.getCheckData.options.pre[2].assign).to.equal('licence');
+      expect(routes.getCheckData.options.pre[3].method).to.equal(preHandlers.loadIsChargeable);
+      expect(routes.getCheckData.options.pre[3].assign).to.equal('isChargeable');
     });
   });
 

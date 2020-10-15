@@ -5,11 +5,6 @@ const { isFunction, isEmpty, omit } = require('lodash');
 const routing = require('../lib/routing');
 const services = require('../../../lib/connectors/services');
 
-const getLicencePageUrl = async licence => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
-  return `/licences/${document.document_id}#charge`;
-};
-
 const getPostedForm = (request, formContainer) => {
   const schema = formContainer.schema(request);
   return handleRequest(formContainer.form(request), request, schema);
@@ -24,9 +19,21 @@ const applyFormResponse = (request, form, actionCreator) => {
     : request.setDraftChargeInformation(licenceId, nextState);
 };
 
+/**
+ * Determine whether the url is part of the charge information
+ * flow to allow the user to go through an external multi-page flow
+ * before returning to the check your answers page
+ * @param {String} url
+ */
+const isUrlChargeInformationPage = url => {
+  const [baseUrl] = url.split('?');
+  return baseUrl.includes('charge-information');
+};
+
 const getRedirectPath = (request, nextPageInFlowUrl) => {
   const { returnToCheckData } = request.query;
-  if (returnToCheckData === 1) {
+  const isChargeInformationPage = isUrlChargeInformationPage(nextPageInFlowUrl);
+  if (returnToCheckData === 1 && isChargeInformationPage) {
     return routing.getCheckData(request.params.licenceId);
   }
   return nextPageInFlowUrl;
@@ -44,7 +51,7 @@ const createPostHandler = (formContainer, actionCreator, redirectPathFunc) => as
 };
 
 const getDefaultView = (request, backLink, formContainer) => {
-  const { licence } = request.pre;
+  const licence = request.pre.licence;
   const back = isFunction(backLink) ? backLink(licence.id) : backLink;
 
   const view = {
@@ -61,14 +68,27 @@ const getDefaultView = (request, backLink, formContainer) => {
 const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
-    ...omit(chargeData, 'status'),
+    ...chargeData,
     chargeElements: chargeData.chargeElements.map(element => omit(element, 'id'))
   }
 });
 
+const getLicencePageUrl = async licence => {
+  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
+  return `/licences/${document.document_id}#charge`;
+};
+
+const findInvoiceAccountAddress = request => {
+  const { draftChargeInformation, isChargeable } = request.pre;
+  return isChargeable ? draftChargeInformation.invoiceAccount.invoiceAccountAddresses
+    .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress) : null;
+};
+
+exports.getLicencePageUrl = getLicencePageUrl;
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
 exports.getLicencePageUrl = getLicencePageUrl;
+exports.findInvoiceAccountAddress = findInvoiceAccountAddress;

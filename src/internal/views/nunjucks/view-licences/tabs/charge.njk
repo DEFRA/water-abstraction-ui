@@ -3,7 +3,7 @@
 <h2 class="govuk-heading-l">Charge information</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-  {% if chargeVersion.status == 'review' or chargeVersion.status == 'changeRequest' %}
+  {% if chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
     <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
   {% else %}
     <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/view">View</a>

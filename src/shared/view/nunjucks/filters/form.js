@@ -33,7 +33,9 @@ const mapFormField = (field) => {
     name: field.name,
     type: field.options.type,
     label: {
-      text: field.options.label
+      text: field.options.label,
+      classes: field.options.heading ? 'govuk-label--l' : null,
+      isPageHeading: field.options.heading || false
     },
     value: field.value,
     hint: {
@@ -305,6 +307,8 @@ const mapFormDropdownField = (field) => {
   return applyErrors(options, field.errors);
 };
 
+const isFirstFieldHeading = form => get(form, 'fields[0].options.heading', false);
+
 exports.mapFormField = mapFormField;
 exports.mapFormErrorSummary = mapFormErrorSummary;
 exports.mapFormDateField = mapFormDateField;
@@ -312,3 +316,4 @@ exports.mapFormRadioField = mapFormRadioField;
 exports.setConditionalRadioField = setConditionalRadioField;
 exports.mapFormCheckbox = mapFormCheckbox;
 exports.mapFormDropdownField = mapFormDropdownField;
+exports.isFirstFieldHeading = isFirstFieldHeading;

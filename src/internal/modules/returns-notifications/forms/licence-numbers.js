@@ -44,8 +44,8 @@ const createNotFoundError = licenceNumbers => {
   const isPlural = licenceNumbers.length > 1;
   const summary = `The licence number${isPlural ? 's' : ''} ${licenceNumbers.join(', ')} could not be found`;
   return [{
-    name: 'licenceNumbers',
     summary,
+    name: 'licenceNumbers',
     message: 'Enter a real licence number'
   }];
 };

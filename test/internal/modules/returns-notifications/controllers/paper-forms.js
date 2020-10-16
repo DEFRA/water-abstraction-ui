@@ -8,11 +8,120 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 
+const { cloneDeep } = require('lodash');
+
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/returns-notifications/controllers/paper-forms');
 const services = require('internal/lib/connectors/services');
+
+const apiResponse = [{
+  'licence': {
+    'id': '00000000-0000-0000-0000-000000000001',
+    'licenceNumber': '01/123/ABC',
+    'isWaterUndertaker': false,
+    'startDate': '2020-01-01',
+    'expiredDate': null,
+    'lapsedDate': null,
+    'revokedDate': null,
+    'historicalArea': {
+      'type': 'EAAR',
+      'code': 'ARNA'
+    },
+    'regionalChargeArea': {
+      'type': 'regionalChargeArea',
+      'name': 'Anglian'
+    },
+    'region': {
+      'type': 'region',
+      'id': '00000000-0000-0000-0000-000000000002',
+      'name': 'Anglian',
+      'code': 'A',
+      'numericCode': 1,
+      'displayName': 'Anglian'
+    },
+    'endDate': null
+  },
+  'documents': [
+    {
+
+      'document': {
+        'roles': [
+          {
+            'id': '00000000-0000-0000-0000-000000000003',
+            'roleName': 'licenceHolder',
+            'dateRange': {
+              'startDate': '2020-01-01',
+              'endDate': null
+            },
+            'company': {
+              'companyAddresses': [],
+              'companyContacts': [],
+              'name': 'TEST WATER CO LTD',
+              'id': '00000000-0000-0000-0000-000000000004'
+            },
+            'contact': {},
+            'address': {
+              'town': 'TESTINGTON',
+              'county': 'TESTINGSHIRE',
+              'postcode': 'TT1 1TT',
+              'country': null,
+              'id': '00000000-0000-0000-0000-000000000005',
+              'addressLine1': 'BUTTERCUP ROAD',
+              'addressLine2': 'DAISY LANE',
+              'addressLine3': 'TESTINGLY',
+              'addressLine4': null
+            }
+          }
+        ]
+      },
+
+      'returns': [
+        {
+          'id': 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
+          'returnVersions': [],
+          'dateRange': {
+            'startDate': '2020-04-01',
+            'endDate': '2021-03-31'
+          },
+          'isUnderQuery': false,
+          'isSummer': false,
+          'dueDate': '2021-04-28',
+          'receivedDate': null,
+          'status': 'due',
+          'abstractionPeriod': {
+            'startDay': 1,
+            'startMonth': 1,
+            'endDay': 31,
+            'endMonth': 12
+          },
+          'returnRequirement': {
+            'returnRequirementPurposes': [
+              {
+                'id': '00000000-0000-0000-0000-000000000003',
+                'purposeAlias': 'Spray Irrigation - Storage',
+                'purposeUse': {
+                  'id': '00000000-0000-0000-0000-000000000004',
+                  'code': '420',
+                  'name': 'Spray Irrigation - Storage',
+                  'dateUpdated': '2020-10-12T09:00:03.130Z',
+                  'dateCreated': '2019-08-29T12:50:59.712Z',
+                  'lossFactor': 'high',
+                  'isTwoPartTariff': true
+                }
+              }
+            ],
+            'id': '00000000-0000-0000-0000-000000000005',
+            'isSummer': false,
+            'externalId': '1:1234',
+            'legacyId': 1234
+          }
+        }
+      ]
+    }
+  ]
+}];
 
 experiment('internal/modules/returns-notifications/controllers/paper-forms', () => {
   let request;
@@ -21,16 +130,22 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
   beforeEach(async () => {
     request = {
       view: {
+        csrfToken: '00000000-0000-0000-0000-000000000000'
       },
       yar: {
         set: sandbox.stub(),
         get: sandbox.stub(),
         clear: sandbox.stub()
+      },
+      payload: {
+        csrf_token: '00000000-0000-0000-0000-000000000000'
       }
     };
 
     h = {
-      view: sandbox.spy()
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.stub(),
+      redirect: sandbox.stub()
     };
 
     sandbox.stub(services.water.returns, 'getIncompleteReturns');
@@ -77,6 +192,124 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       expect(field.options.label).to.equal('Enter a licence number');
       expect(field.options.hint).to.equal('You can enter more than one licence. You can separate licence numbers using spaces, commas, or by entering them on different lines.');
       expect(field.options.heading).to.be.true();
+    });
+  });
+
+  experiment('.postEnterLicenceNumber', () => {
+    experiment('when the form has validation errors', () => {
+      beforeEach(async () => {
+        request.payload.licenceNumbers = '';
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the water service api is not called', async () => {
+        expect(services.water.returns.getIncompleteReturns.called).to.be.false();
+      });
+
+      test('the user is redirected to view the form in an error state', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].message).to.equal('Enter a licence number or licence numbers');
+      });
+    });
+
+    experiment('when one of the licence numbers is not found via the api call', () => {
+      beforeEach(async () => {
+        request.payload.licenceNumbers = '01/123/ABC,02/456/BCD';
+        const err = new Error();
+        err.statusCode = 404;
+        err.error = {
+          validationDetails: {
+            licenceNumbers: ['01/123/ABC']
+          }
+        };
+        services.water.returns.getIncompleteReturns.throws(err);
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the water service api is called with the licence numbers', async () => {
+        expect(services.water.returns.getIncompleteReturns.calledWith(
+          ['01/123/ABC', '02/456/BCD']
+        )).to.be.true();
+      });
+
+      test('nothing is stored in the session', async () => {
+        expect(request.yar.set.called).to.be.false();
+      });
+
+      test('the user is redirected to view the form in an error state', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].summary).to.equal('The licence number 01/123/ABC could not be found');
+        expect(form.errors[0].message).to.equal('Enter a real licence number');
+      });
+    });
+
+    experiment('when two or more of the licence numbers is not found via the api call', () => {
+      beforeEach(async () => {
+        request.payload.licenceNumbers = '01/123/ABC,02/456/BCD';
+        const err = new Error();
+        err.statusCode = 404;
+        err.error = {
+          validationDetails: {
+            licenceNumbers: ['01/123/ABC', '02/456/BCD']
+          }
+        };
+        services.water.returns.getIncompleteReturns.throws(err);
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the water service api is called with the licence numbers', async () => {
+        expect(services.water.returns.getIncompleteReturns.calledWith(
+          ['01/123/ABC', '02/456/BCD']
+        )).to.be.true();
+      });
+
+      test('nothing is stored in the session', async () => {
+        expect(request.yar.set.called).to.be.false();
+      });
+
+      test('the user is redirected to view the form in an error state', async () => {
+        const [form] = h.postRedirectGet.lastCall.args;
+        expect(form.errors[0].summary).to.equal('The licence numbers 01/123/ABC, 02/456/BCD could not be found');
+        expect(form.errors[0].message).to.equal('Enter a real licence number');
+      });
+    });
+
+    experiment('when a single requested licence is found', () => {
+      beforeEach(async () => {
+        request.payload.licenceNumbers = '01/123/ABC';
+        services.water.returns.getIncompleteReturns.resolves(apiResponse);
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the water service api is called with the licence numbers', async () => {
+        expect(services.water.returns.getIncompleteReturns.calledWith(
+          ['01/123/ABC']
+        )).to.be.true();
+      });
+
+      test('the session is updated', async () => {
+        expect(request.yar.set.called).to.be.true();
+      });
+
+      test('the user is redirected to the "check answers" page', async () => {
+        expect(h.redirect.calledWith('/returns-notifications/check-answers')).to.be.true();
+      });
+    });
+
+    experiment('when some of the licences have multiple documents', () => {
+      beforeEach(async () => {
+        const apiResponseWithMultipleDocuments = cloneDeep(apiResponse);
+        apiResponseWithMultipleDocuments[0].documents.push(
+          apiResponseWithMultipleDocuments[0].documents[0]
+        );
+        request.payload.licenceNumbers = '01/123/ABC';
+        services.water.returns.getIncompleteReturns.resolves(apiResponseWithMultipleDocuments);
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the user is redirected to the "select licence holders" page', async () => {
+        expect(h.redirect.calledWith('/returns-notifications/select-licence-holders')).to.be.true();
+      });
     });
   });
 });

@@ -105,7 +105,7 @@ const mapFieldErrorSummary = (field) => {
 
   // For radio/checkbox fields, the ID is the first item
   return errors.map(error => ({
-    text: error.message,
+    text: error.summary || error.message,
     href: `#${field.name}`
   }));
 };

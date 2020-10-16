@@ -13,7 +13,7 @@ const licenceNumbersForm = (request) => {
   f.fields.push(fields.text('licenceNumbers', {
     errors: {
       'array.min': {
-        message: 'Enter at least one licence number'
+        message: 'Enter a licence number or licence numbers'
       }
     },
     mapper: 'licenceNumbersMapper',
@@ -42,11 +42,11 @@ const schema = {
  */
 const createNotFoundError = licenceNumbers => {
   const isPlural = licenceNumbers.length > 1;
-  const message = `Licence number${isPlural ? 's' : ''} ${licenceNumbers.join(', ')} could not be found`;
+  const summary = `The licence number${isPlural ? 's' : ''} ${licenceNumbers.join(', ')} could not be found`;
   return [{
     name: 'licenceNumbers',
-    summary: message,
-    message
+    summary,
+    message: 'Enter a real licence number'
   }];
 };
 

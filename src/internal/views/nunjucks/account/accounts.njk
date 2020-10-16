@@ -16,7 +16,11 @@
                 <tbody>
                     {% for user in users %}
                         <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">{{user.user_name}}</td>
+                            <td class="govuk-table__cell">
+                                <a href="/user/{{user.user_id}}/status">
+                                    {{user.user_name}}
+                                </a>
+                            </td>
                             {% if user.enabled %}
                                 <td class="govuk-table__cell">Yes</td>
                                 <td class="govuk-table__cell">

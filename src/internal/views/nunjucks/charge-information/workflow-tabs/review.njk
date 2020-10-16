@@ -23,12 +23,15 @@
             </thead>
             <tbody>
                 {% for chargeInformationRow in licences.review %}
-                    <tr>
-                        <td>{{chargeInformationRow.licenceNumber}}</td>
-                        <td>{{chargeInformationRow.licenceHolder}}</td>
-                        <td>{{chargeInformationRow.createdBy.email}}</td>
-                        <td>{{chargeInformationRow.startDate}}</td>
-                        <td><a href="">Review</a></td>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceNumber}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceHolder}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.createdBy.email}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.startDate}}</td>
+                        <script>
+                        console.log({{chargeInformationRow | dump | safe}})
+                        </script>
+                        <td class="govuk-table__cell"><a href="/licences/{{chargeInformationRow.licence_id}}/charge-information/{{chargeInformationRow.id}}/review">Review</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

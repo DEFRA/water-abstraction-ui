@@ -96,7 +96,6 @@ const loadLicencesWithWorkflowsInProgress = async request => {
     const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
     return licencesWithWorkflowsInProgress.data;
   } catch (err) {
-    console.log(err);
     return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
   }
 };

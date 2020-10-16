@@ -19,13 +19,15 @@
                     <th class="govuk-table__header" scope="col">Action</th>
                 </tr>
             </thead>
-             <tbody>
+            <tbody>
                 {% for chargeInformationRow in licences.review %}
-                    <tr>
-                        <td>{{chargeInformationRow.licenceNumber}}</td>
-                        <td>{{chargeInformationRow.licenceHolder}}</td>
-                        <td>TODO</td>
-                        <td><a href="">Create</a></td>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceNumber}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceHolder}}</td>
+                        <td class="govuk-table__cell">TODO</td>
+                        <td class="govuk-table__cell">
+                            <a href="">Create</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

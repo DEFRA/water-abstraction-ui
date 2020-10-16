@@ -307,7 +307,10 @@ const mapFormDropdownField = (field) => {
   return applyErrors(options, field.errors);
 };
 
-const isFirstFieldHeading = form => get(form, 'fields[0].options.heading', false);
+const isFirstFieldHeading = form => {
+  const firstFieldWithLabel = form.fields.find(field => field.options.label);
+  return get(firstFieldWithLabel, 'options.heading', false);
+};
 
 exports.mapFormField = mapFormField;
 exports.mapFormErrorSummary = mapFormErrorSummary;

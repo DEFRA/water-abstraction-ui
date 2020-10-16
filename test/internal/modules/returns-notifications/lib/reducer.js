@@ -62,8 +62,9 @@ const createRole = roleName => ({
   }
 });
 
-const createReturn = (startDate, endDate, status) => ({
+const createReturn = (startDate, endDate, status, isSummer = false) => ({
   status,
+  isSummer,
   'id': 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
   'returnVersions': [],
   'dateRange': {
@@ -71,7 +72,6 @@ const createReturn = (startDate, endDate, status) => ({
     endDate
   },
   'isUnderQuery': false,
-  'isSummer': false,
   'dueDate': '2021-04-28',
   'receivedDate': null,
   'abstractionPeriod': {
@@ -104,6 +104,17 @@ const createReturn = (startDate, endDate, status) => ({
 });
 
 experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
+  experiment('for an unknown action', () => {
+    test('the state is passed through unchanghed', async () => {
+      const action = {
+        type: 'unknown'
+      };
+      const initialState = { foo: 'bar' };
+      const nextState = reducer.reducer(initialState, action);
+      expect(nextState).to.equal(initialState);
+    });
+  });
+
   experiment('setInitialState action', () => {
     const refDate = '2020-10-16';
     let licences, nextState;
@@ -176,6 +187,30 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
             },
             returns: [
               createReturn('2018-04-01', '2019-03-31', 'due')
+            ]
+          }]
+        }];
+
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
+      });
+
+      test('the return is not pre-selected', async () => {
+        expect(nextState[0].documents[0].returns[0].isSelected).to.be.false();
+      });
+    });
+
+    experiment('when a return does not match the current cycle season', () => {
+      beforeEach(async () => {
+        licences = [{
+          licence,
+          documents: [{
+            document: {
+              roles: [
+                createRole('licenceHolder')
+              ]
+            },
+            returns: [
+              createReturn('2019-04-01', '2020-03-31', 'due', true)
             ]
           }]
         }];

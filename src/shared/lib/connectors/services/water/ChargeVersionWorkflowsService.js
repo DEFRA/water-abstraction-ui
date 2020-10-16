@@ -4,10 +4,31 @@ class ChargeVersionWorkflowsService extends ServiceClient {
   /**
    * Fetches all charge version workflows in progress
    */
-  getChargeVersionWorkflow () {
+  getChargeVersionWorkflows () {
     const url = this.joinUrl('charge-version-workflows');
     return this.serviceRequest.get(url);
   }
+
+  /*
+   * Gets charge version workflows for given licence id
+   * @param {String} licenceId
+   */
+  getChargeVersionWorkflow (workflowId) {
+    const url = this.joinUrl('charge-version-workflows', workflowId);
+    return this.serviceRequest.get(url);
+  }
+
+  /**
+ * Gets charge version workflows for given licence id
+ * @param {String} licenceId
+ */
+  getChargeVersionWorkflowsForLicence (licenceId) {
+    const url = this.joinUrl('charge-version-workflows');
+    return this.serviceRequest.get(url, {
+      qs: { licenceId }
+    });
+  }
+
   /**
    * Posts draft charge info to water service to store
    * @param {Object} draftChargeInformation

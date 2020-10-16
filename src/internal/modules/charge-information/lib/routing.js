@@ -1,6 +1,6 @@
 'use strict';
 
-const querystring = require('querystring');
+const queryString = require('querystring');
 
 const createUrl = urlTail => licenceId => {
   return `/licences/${licenceId}/charge-information/${urlTail}`;
@@ -11,12 +11,19 @@ exports.getChargeElementStep = (licenceId, elementId, step) => {
 };
 
 exports.getSubmitted = (licenceId, isChargeable) => {
-  const qs = querystring.stringify({ chargeable: isChargeable });
+  const qs = queryString.stringify({ chargeable: isChargeable });
   return createUrl(`submitted?${qs}`)(licenceId);
 };
 
+exports.getCreateBillingAccount = (licence, licenceHolderRole, redirect) => {
+  const { id, region } = licence;
+  const qs = queryString.stringify({
+    redirectPath: createUrl(redirect)(id),
+    licenceId: id });
+  return `/invoice-accounts/create/${region.id}/${licenceHolderRole.company.id}?${qs}`;
+};
+
 exports.getCheckData = createUrl('check');
-exports.getCreateBillingAccount = createUrl('billing-account/create');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');
 exports.getSelectBillingAccount = createUrl('billing-account');

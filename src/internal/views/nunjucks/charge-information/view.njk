@@ -9,11 +9,13 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
-    <dd class="govuk-summary-list__actions">
-    {% if changeLink %}
-      <a class="govuk-link" href="{{ changeLink }}">Change</a>
+    {% if isEditable %}
+      <dd class="govuk-summary-list__actions">
+        {% if changeLink %}
+          <a class="govuk-link" href="{{ changeLink }}">Change</a>
+        {% endif %}
+      </dd>
     {% endif %}
-    </dd>
   </div>
 {% endmacro %}
 
@@ -33,33 +35,32 @@
 {% endmacro %}
 
 {% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
-  <div class="govuk-!-margin-bottom-9">
-    {{ badge(draftChargeInformation | chargeVersionBadge(true)) }}
-  </div>
   <div class="govuk-grid-column-full">
     <section class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
       <dl class="govuk-summary-list">
-        {{ summaryListRow('Reason', draftChargeInformation.changeReason.description, changeLink('/create'))}}
-        {{ summaryListRow('Start date', draftChargeInformation.dateRange.startDate | date, changeLink('/start-date'))}}
-
+        {{ summaryListRow('Reason', chargeVersion.changeReason.description, changeLink('/create'))}}
+        {{ summaryListRow('Start date', chargeVersion.dateRange.startDate | date, changeLink('/start-date'))}}
+        
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Billing account</dt>
           <dd class="govuk-summary-list__value">
-            {{ draftChargeInformation.invoiceAccount.accountNumber }}
+            {{ chargeVersion.invoiceAccount.accountNumber }}
             <br>
             {{ address(invoiceAccountAddress.address) }}
           </dd>
-          <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
-          </dd>
+          {% if isEditable %}
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+            </dd>
+          {% endif %}
         </div>
 
-        {{ summaryListRow('Licence holder', draftChargeInformation.invoiceAccount.company.name | titleCase) }}
+        {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
       </dl>
     </section>
 
-    {% for chargeElement in draftChargeInformation.chargeElements %}
+    {% for chargeElement in chargeVersion.chargeElements %}
       <section class="govuk-!-margin-bottom-7">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element {{loop.index}}</h2>
         {% for validationWarning in chargeElement.validationWarnings %}
@@ -108,7 +109,7 @@
                   classes: 'govuk-button--secondary'
                   }) }}
               {% endif %}
-              {% if draftChargeInformation.chargeElements.length > 1 %}
+              {% if chargeVersion.chargeElements.length > 1 %}
                 {{ govukButton({
                   text: 'Remove element',
                   name: 'buttonAction',
@@ -130,12 +131,12 @@
     <dl class="govuk-summary-list">
       {{ summaryListRow(
         'Reason licence is not chargeable',
-        draftChargeInformation.changeReason.description,
+        chargeVersion.changeReason.description,
         changeLink('/non-chargeable-reason'))
       }}
       {{ summaryListRow(
         'Effective date',
-        draftChargeInformation.dateRange.startDate | date,
+        chargeVersion.dateRange.startDate | date,
         changeLink('/effective-date'))
       }}
     </dl>
@@ -145,38 +146,40 @@
 {% block content %}     
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ title(pageTitle, caption, null, true) }}
+    <div class="govuk-!-margin-bottom-9">
+      {{ title(pageTitle, caption, null, isXlHeading) }}
+      {% if chargeVersion.status %}
+        {{ badge(chargeVersion | chargeVersionBadge(true)) }}
+      {% endif %}
+    </div>
     </div>
 
     {% if isChargeable %}
-      <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
-        {{ chargeableData(draftChargeInformation, invoiceAccountAddress)}}
-      </div>
+      {{ chargeableData(chargeVersion, invoiceAccountAddress)}}
     {% else %}
-      <div class="govuk-grid-column-two-thirds">
-        {{ nonChargeableData(draftChargeInformation, licence)}}
-      </div>
+      {{ nonChargeableData(chargeVersion, licence)}}
     {% endif %}
   </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <form method="post" novalidate>
-        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
-        {{ govukButton({
-          text: 'Confirm',
-          name: 'buttonAction',
-          value: 'confirm',
-          classes: 'govuk-!-margin-right-6'
-        }) }}
-        {{ govukButton({
-          text: 'Cancel charge information',
-          name: 'buttonAction',
-          value: 'cancel',
-          classes: 'govuk-button--secondary'
-        }) }}
-      </form>
+  {% if isEditable %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form method="post" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+          {{ govukButton({
+            text: 'Confirm',
+            name: 'buttonAction',
+            value: 'confirm',
+            classes: 'govuk-!-margin-right-6'
+          }) }}
+          {{ govukButton({
+            text: 'Cancel charge information',
+            name: 'buttonAction',
+            value: 'cancel',
+            classes: 'govuk-button--secondary'
+          }) }}
+        </form>
+      </div>
     </div>
-  </div>
+  {% endif %}
 {% endblock %}

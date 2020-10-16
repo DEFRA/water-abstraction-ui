@@ -3,8 +3,14 @@
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
-const { getLicencePageUrl, createPostHandler, getDefaultView,
-  applyFormResponse, prepareChargeInformation } = require('../lib/helpers');
+const {
+  createPostHandler,
+  getDefaultView,
+  applyFormResponse,
+  prepareChargeInformation,
+  getLicencePageUrl,
+  findInvoiceAccountAddress
+} = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
@@ -52,11 +58,12 @@ const postStartDate = createPostHandler(
 );
 
 const getSelectBillingAccount = async (request, h) => {
-  const { billingAccounts } = request.pre;
+  const { billingAccounts, licence, licenceHolderRole } = request.pre;
 
   // if no accounts redirect to the create new account page
   if (billingAccounts.length === 0) {
-    return h.redirect(routing.getCreateBillingAccount(request.params.licenceId));
+    const redirectPath = routing.getCreateBillingAccount(licence, licenceHolderRole, 'use-abstraction-data');
+    return h.redirect(redirectPath);
   }
 
   // we have billing accounts, get the name and populate the view
@@ -77,11 +84,13 @@ const getSelectBillingAccount = async (request, h) => {
  * @param {Object} formValues
  */
 const handleValidBillingAccountRedirect = (request, formValues) => {
-  const { licenceId } = request.params;
-
-  return formValues.invoiceAccountAddress === 'set-up-new-billing-account'
-    ? routing.getCreateBillingAccount(licenceId)
-    : routing.getUseAbstractionData(licenceId);
+  const { licence, licenceHolderRole } = request.pre;
+  if (formValues.invoiceAccountAddress === 'set-up-new-billing-account') {
+    const { returnToCheckData } = request.query;
+    const redirect = returnToCheckData === 1 ? 'check' : 'use-abstraction-data';
+    return routing.getCreateBillingAccount(licence, licenceHolderRole, redirect);
+  }
+  return routing.getUseAbstractionData(licence.id);
 };
 
 const postSelectBillingAccount = createPostHandler(
@@ -121,24 +130,24 @@ const postUseAbstractionData = createPostHandler(
 const getCheckData = async (request, h) => {
   const { draftChargeInformation, isChargeable } = request.pre;
   const licenceId = request.params.licenceId;
-
   const back = isChargeable
     ? routing.getUseAbstractionData(licenceId)
     : routing.getEffectiveDate(licenceId);
 
-  const invoiceAccountAddress = isChargeable ? draftChargeInformation.invoiceAccount.invoiceAccountAddresses
-    .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress) : null;
+  const invoiceAccountAddress = findInvoiceAccountAddress(request);
 
   const view = {
     ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
-    draftChargeInformation: chargeInformationValidator.addValidation(draftChargeInformation),
-    licenceId,
+    chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
+    licenceId: request.params.licenceId,
     invoiceAccountAddress,
-    isChargeable
+    isChargeable,
+    isEditable: true,
+    isXlHeading: true
   };
 
-  return h.view('nunjucks/charge-information/check.njk', view);
+  return h.view('nunjucks/charge-information/view.njk', view);
 };
 
 const submitDraftChargeInformation = async (request, h) => {

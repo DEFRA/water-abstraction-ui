@@ -8,7 +8,7 @@ const routing = require('../lib/routing');
 const { getActionUrl } = require('../lib/form-helpers');
 
 const mapChoice = changeReason => ({
-  value: changeReason.changeReasonId,
+  value: changeReason.id,
   label: changeReason.description
 });
 
@@ -36,7 +36,7 @@ const selectReasonForm = (request) => {
   const errorMessage = isChargeable
     ? 'Select a reason for new charge information' : 'Select a reason';
 
-  const changeReasonId = get(draftChargeInformation, 'changeReason.changeReasonId');
+  const changeReasonId = get(draftChargeInformation, 'changeReason.id');
 
   const f = formFactory(action, 'POST');
 
@@ -58,7 +58,7 @@ const selectReasonForm = (request) => {
 const selectReasonSchema = (request) => {
   const { changeReasons } = request.pre;
   const { isChargeable } = request.query;
-  const validReasons = changeReasons.map(changeReason => changeReason.changeReasonId);
+  const validReasons = changeReasons.map(changeReason => changeReason.id);
   if (isChargeable) {
     validReasons.push('non-chargeable');
   };

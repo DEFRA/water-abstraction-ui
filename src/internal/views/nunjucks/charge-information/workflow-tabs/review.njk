@@ -28,10 +28,7 @@
                         <td class="govuk-table__cell">{{chargeInformationRow.licenceHolder}}</td>
                         <td class="govuk-table__cell">{{chargeInformationRow.createdBy.email}}</td>
                         <td class="govuk-table__cell">{{chargeInformationRow.startDate}}</td>
-                        <script>
-                        console.log({{chargeInformationRow | dump | safe}})
-                        </script>
-                        <td class="govuk-table__cell"><a href="/licences/{{chargeInformationRow.licence_id}}/charge-information/{{chargeInformationRow.id}}/review">Review</a></td>
+                        <td class="govuk-table__cell"><a href="/licences/{{chargeInformationRow.licenceId}}/charge-information/{{chargeInformationRow.id}}/review">Review</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

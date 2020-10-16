@@ -35,12 +35,18 @@ formErrorSummary %}
                 Returns reference number
               </dt>
               <dd class="govuk-summary-list__value">
+
                 {% if document.returns.length === 0 %}
                   <p>None selected</p>
                 {% else %}
                   {% for return in document.returns %}
-                    Due
-                    {{ return.due | date }}
+                    <div class="meta">
+                      <div class="meta__key">{{ return.returnRequirement.legacyId }}
+                      </div>
+                      <div class="meta__value">
+                        Due
+                        {{ return.due | date }}</div>
+                    </div>
                   {% endfor %}
                   {% endif%}
                 </dd>

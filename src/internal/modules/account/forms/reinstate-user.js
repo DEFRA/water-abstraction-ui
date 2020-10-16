@@ -11,15 +11,15 @@ const { formFactory, fields } = require('shared/lib/forms');
 const form = (request, userEmail) => {
   const { csrfToken } = request.view;
 
-  const f = formFactory(`/account/delete-account/${request.params.userId}`);
+  const f = formFactory(`/account/reinstate-account/${request.params.userId}`);
 
-  f.fields.push(fields.checkbox('confirmDelete', {
+  f.fields.push(fields.checkbox('confirmReinstate', {
     choices: [{
-      htmlLabel: `Yes I want to disable the account for <strong>${userEmail}</strong>`,
+      htmlLabel: `Yes I want to reinstate the account for <strong>${userEmail}</strong>`,
       value: 'confirm'
     }],
     errors: {
-      'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to disable the account' }
+      'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to reinstate the account' }
     }
   }));
 
@@ -31,8 +31,8 @@ const form = (request, userEmail) => {
 
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  confirmDelete: Joi.array().length(1).items(Joi.valid('confirm').required())
+  confirmReinstate: Joi.array().length(1).items(Joi.valid('confirm').required())
 };
 
-exports.deleteUserForm = form;
-exports.deleteUserSchema = schema;
+exports.reinstateUserForm = form;
+exports.reinstateUserSchema = schema;

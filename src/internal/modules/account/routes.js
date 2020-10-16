@@ -82,6 +82,21 @@ module.exports = {
     }
   },
 
+  getManageAccounts: {
+    method: 'get',
+    path: '/accounts',
+    handler: controller.getManageAccounts,
+    config: {
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'View internal accounts',
+          activeNavLink: 'notifications'
+        }
+      }
+    }
+  },
+
   getDeleteUserAccount: {
     method: 'GET',
     path: '/account/delete-account/{userId}',
@@ -134,6 +149,69 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Account deleted',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
+  },
+
+  getReinstateUserAccount: {
+    method: 'GET',
+    path: '/account/reinstate-account/{userId}',
+    handler: controller.getReinstateUserAccount,
+    config: {
+      description: 'Admin: reinstate internal user account',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reinstate user account',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
+  },
+
+  postReinstateUserAccount: {
+    method: 'POST',
+    path: '/account/reinstate-account/{userId}',
+    handler: controller.postReinstateUserAccount,
+    config: {
+      description: 'Admin: reinstate internal user account',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Reinstate user account',
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          userId: Joi.number().integer().required()
+        }
+      }
+    }
+  },
+
+  getReinstateAccountSuccess: {
+    method: 'GET',
+    path: '/account/reinstate-account/{userId}/success',
+    handler: controller.getReinstateAccountSuccess,
+    config: {
+      description: 'Admin: internal user account reinstated successfully',
+      auth: { scope: 'manage_accounts' },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Account reinstated',
           activeNavLink: 'notifications'
         }
       },

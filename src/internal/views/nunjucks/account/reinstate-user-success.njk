@@ -6,10 +6,10 @@
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle) }}
       <p>
-        <strong>{{ deletedUser.userEmail }}</strong> no longer has access to this service.
+        <strong>{{ reinstatedUser.userEmail }}</strong>'s account has been reinstated. They may now log back in.
       </p>
       <p>
-        <a href="/user/{{ deletedUser.userId }}/status" class="govuk-link">
+        <a href="/user/{{ reinstatedUser.userId }}/status" class="govuk-link">
           View the user page
         </a>
       </p>

@@ -119,4 +119,30 @@ experiment('services/water/UsersService', () => {
       expect(options).to.equal(expectedOptions);
     });
   });
+
+  experiment('.enableInternalUser', () => {
+    let service;
+
+    beforeEach(async () => {
+      service = new UsersService('http://127.0.0.1:8001/water/1.0');
+      await service.enableInternalUser('calling-user-id', 'user-id');
+    });
+
+    test('passes the expected URL to the service request', async () => {
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/internal/user-id/reinstate`;
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+
+    test('passes the body data to the service request', async () => {
+      const expectedOptions = {
+        body: {
+          callingUserId: 'calling-user-id'
+        }
+      };
+      const [, options] = serviceRequest.post.lastCall.args;
+
+      expect(options).to.equal(expectedOptions);
+    });
+  });
 });

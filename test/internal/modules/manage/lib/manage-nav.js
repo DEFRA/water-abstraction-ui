@@ -116,14 +116,21 @@ experiment('getManageTabConfig', () => {
   });
 
   experiment('when user has manage accounts scope', () => {
-    test('they can view create account link', async () => {
+    test('they can view the account management links', async () => {
       const request = createRequest(scope.manageAccounts);
       const config = getManageTabConfig(request);
-      expect(getAllLinks(config)).to.equal([{
-        group: 'accounts',
-        name: 'Create an internal account',
-        path: '/account/create-user'
-      }]);
+      expect(getAllLinks(config)).to.equal([
+        {
+          group: 'accounts',
+          name: 'Create an internal account',
+          path: '/account/create-user'
+        },
+        {
+          group: 'accounts',
+          name: 'View internal accounts',
+          path: '/accounts'
+        }
+      ]);
     });
   });
 });

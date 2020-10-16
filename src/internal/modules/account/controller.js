@@ -1,6 +1,7 @@
 const { createUserForm, createUserSchema } = require('./forms/create-user');
 const { setPermissionsForm, setPermissionsSchema } = require('./forms/set-permissions');
 const { deleteUserForm, deleteUserSchema } = require('./forms/delete-user');
+const { reinstateUserForm, reinstateUserSchema } = require('./forms/reinstate-user');
 const { handleRequest, applyErrors } = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const config = require('internal/config');
@@ -86,6 +87,11 @@ const getCreateAccountSuccess = async (request, h) => {
   });
 };
 
+const getManageAccounts = async (request, h) => {
+  const users = await services.idm.users.findAll({ application: 'water_admin' });
+  return h.view('nunjucks/account/accounts', { ...request.view, users });
+};
+
 const getDeleteUserAccount = async (request, h, formFromPost) => {
   const { userId } = request.params;
   const { user_name: userEmail } = await services.idm.users.findOneById(userId);
@@ -95,7 +101,7 @@ const getDeleteUserAccount = async (request, h, formFromPost) => {
     ...request.view,
     userEmail,
     form,
-    back: `/user/${userId}/status`
+    back: `/accounts`
   };
 
   return h.view('nunjucks/form', view);
@@ -124,7 +130,8 @@ const postDeleteUserAccount = async (request, h) => {
       return getDeleteUserAccount(request, h, applyErrors(form, [{
         name: 'confirmDelete',
         message,
-        summary: message }]));
+        summary: message
+      }]));
     }
     throw (err);
   }
@@ -143,6 +150,64 @@ const getDeleteAccountSuccess = async (request, h) => {
   });
 };
 
+const getReinstateUserAccount = async (request, h, formFromPost) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+  const form = formFromPost || reinstateUserForm(request, userEmail);
+
+  const view = {
+    ...request.view,
+    userEmail,
+    form,
+    back: `/accounts`
+  };
+
+  return h.view('nunjucks/form', view);
+};
+
+const postReinstateUserAccount = async (request, h) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+
+  const form = handleRequest(
+    reinstateUserForm(request, userEmail),
+    request,
+    reinstateUserSchema
+  );
+
+  if (!form.isValid) {
+    return getReinstateUserAccount(request, h, form);
+  }
+  try {
+    await services.water.users.enableInternalUser(request.defra.userId, userId);
+
+    return h.redirect(`/account/reinstate-account/${userId}/success`);
+  } catch (err) {
+    if (err.statusCode === 404) {
+      const message = 'The account specified does not exist';
+      return getReinstateUserAccount(request, h, applyErrors(form, [{
+        name: 'confirmReinstate',
+        message,
+        summary: message
+      }]));
+    }
+    throw (err);
+  }
+};
+
+const getReinstateUserAccountSuccess = async (request, h) => {
+  const { userId } = request.params;
+  const { user_name: userEmail } = await services.idm.users.findOneById(userId);
+
+  return h.view('nunjucks/account/reinstate-user-success', {
+    ...request.view,
+    reinstatedUser: {
+      userEmail,
+      userId
+    }
+  });
+};
+
 exports.getCreateAccount = getCreateAccount;
 exports.postCreateAccount = postCreateAccount;
 
@@ -151,6 +216,12 @@ exports.postSetPermissions = postSetPermissions;
 
 exports.getCreateAccountSuccess = getCreateAccountSuccess;
 
+exports.getManageAccounts = getManageAccounts;
+
 exports.getDeleteUserAccount = getDeleteUserAccount;
 exports.postDeleteUserAccount = postDeleteUserAccount;
 exports.getDeleteAccountSuccess = getDeleteAccountSuccess;
+
+exports.getReinstateUserAccount = getReinstateUserAccount;
+exports.postReinstateUserAccount = postReinstateUserAccount;
+exports.getReinstateAccountSuccess = getReinstateUserAccountSuccess;

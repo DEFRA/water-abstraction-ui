@@ -1,0 +1,38 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            {{ title(pageTitle) }}
+            <table class="govuk-table phone--hide">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th class="govuk-table__header" scope="col">Username</th>
+                        <th class="govuk-table__header" scope="col">Enabled</th>
+                        <th class="govuk-table__header" scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">{{user.user_name}}</td>
+                            {% if user.enabled %}
+                                <td class="govuk-table__cell">Yes</td>
+                                <td class="govuk-table__cell">
+                                    <a href="/account/delete-account/{{user.user_id}}">Disable</a>
+                                </td>
+                            {% else %}
+                                <td class="govuk-table__cell">No</td>
+                                <td class="govuk-table__cell">
+                                    <a href="/account/reinstate-account/{{user.user_id}}">Reinstate</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

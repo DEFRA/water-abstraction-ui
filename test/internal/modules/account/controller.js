@@ -45,8 +45,10 @@ experiment('modules/account/controller', () => {
 
     sandbox.stub(services.idm.users, 'findOneByEmail');
     sandbox.stub(services.idm.users, 'findOneById').resolves(userData);
+    sandbox.stub(services.idm.users, 'findAll').resolves([]);
     sandbox.stub(services.water.users, 'postCreateInternalUser').resolves();
     sandbox.stub(services.water.users, 'disableInternalUser').resolves();
+    sandbox.stub(services.water.users, 'enableInternalUser').resolves();
   });
 
   afterEach(async () => sandbox.restore());
@@ -213,6 +215,29 @@ experiment('modules/account/controller', () => {
     });
   });
 
+  experiment('.getManageAccounts', () => {
+    beforeEach(async () => {
+      request.params.userId = 100;
+      services.idm.users.findAll.resolves([]);
+      await controller.getManageAccounts(request, h);
+    });
+
+    test('gets the users that belong to the internal application', async () => {
+      const params = services.idm.users.findAll.lastCall.args;
+      expect(params[0].application).to.equal('water_admin');
+    });
+
+    test('renders the expected template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/account/accounts');
+    });
+
+    test('sets the correct view data', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.users).to.equal([]);
+    });
+  });
+
   experiment('.getDeleteUserAccount', () => {
     beforeEach(async () => {
       request.params.userId = 100;
@@ -232,7 +257,7 @@ experiment('modules/account/controller', () => {
 
     test('sets the correct view data', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal(`/user/${request.params.userId}/status`);
+      expect(view.back).to.equal(`/accounts`);
       expect(view.form).to.be.an.object();
       expect(view.userEmail).to.equal(userData.data.user_name);
     });
@@ -276,7 +301,7 @@ experiment('modules/account/controller', () => {
         const [, view] = h.view.lastCall.args;
         const error = view.form.errors.find(e => e.name === 'confirmDelete');
         expect(error).to.be.an.object();
-        expect(error.message).to.equal('Tick the box to confirm you want to delete the account');
+        expect(error.message).to.equal('Tick the box to confirm you want to disable the account');
       });
     });
 
@@ -339,6 +364,135 @@ experiment('modules/account/controller', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.deletedUser.userId).to.equal(100);
       expect(view.deletedUser.userEmail).to.equal(userData.data.user_name);
+    });
+  });
+
+  experiment('.getReinstateUserAccount', () => {
+    beforeEach(async () => {
+      request.params.userId = 100;
+      services.idm.users.findOneById.resolves(userData.data);
+      await controller.getReinstateUserAccount(request, h);
+    });
+
+    test('gets the user using the userId param', async () => {
+      const [userId] = services.idm.users.findOneById.lastCall.args;
+      expect(userId).to.equal(100);
+    });
+
+    test('renders the expected template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/form');
+    });
+
+    test('sets the correct view data', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal(`/accounts`);
+      expect(view.form).to.be.an.object();
+      expect(view.userEmail).to.equal(userData.data.user_name);
+    });
+  });
+
+  experiment('.postReinstateUserAccount', () => {
+    experiment('happy path', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100; // callingUserId
+        request.params.userId = 999; // enabled user id
+        request.payload.confirmReinstate = ['confirm'];
+        services.water.users.enableInternalUser.resolves();
+        await controller.postReinstateUserAccount(request, h);
+      });
+
+      test('services.water.users.enableInternalUser is called with expected parameters', async () => {
+        expect(services.water.users.enableInternalUser.calledWith(
+          request.defra.userId, request.params.userId
+        )).to.be.true();
+      });
+
+      test('redirects to correct page', async () => {
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal(`/account/reinstate-account/${request.params.userId}/success`);
+      });
+    });
+
+    experiment('when the confirm box was not selected', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100;
+        request.payload.confirmReinstate = null;
+        await controller.postReinstateUserAccount(request, h);
+      });
+
+      test('the template is replayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+      });
+
+      test('the form object contains errors', async () => {
+        const [, view] = h.view.lastCall.args;
+        const error = view.form.errors.find(e => e.name === 'confirmReinstate');
+        expect(error).to.be.an.object();
+        expect(error.message).to.equal('Tick the box to confirm you want to reinstate the account');
+      });
+    });
+
+    experiment('when the user does not exists', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100;
+        request.payload.confirmReinstate = ['confirm'];
+        services.idm.users.findOneById.resolves(userData.data);
+        services.water.users.enableInternalUser.rejects({
+          statusCode: 404
+        });
+        await controller.postReinstateUserAccount(request, h);
+      });
+
+      test('the template is replayed', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+      });
+
+      test('the form object contains errors', async () => {
+        const [, view] = h.view.lastCall.args;
+        const error = view.form.errors.find(e => e.name === 'confirmReinstate');
+        expect(error).to.be.an.object();
+        expect(error.message).to.equal('The account specified does not exist');
+      });
+    });
+
+    experiment('for other API errors', () => {
+      beforeEach(async () => {
+        request.defra.userId = 100;
+        request.payload.confirmReinstate = ['confirm'];
+        services.water.users.enableInternalUser.rejects();
+      });
+
+      test('the error is rethrown', async () => {
+        const func = () => controller.postReinstateUserAccount(request, h);
+        expect(func()).to.reject();
+      });
+    });
+  });
+
+  experiment('.getReinstateAccountSuccess', () => {
+    beforeEach(async () => {
+      request.params.userId = 100;
+      services.idm.users.findOneById.resolves(userData.data);
+      await controller.getReinstateAccountSuccess(request, h);
+    });
+
+    test('gets the user using the userId param', async () => {
+      const [userId] = services.idm.users.findOneById.lastCall.args;
+      expect(userId).to.equal(100);
+    });
+
+    test('renders the expected template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/account/reinstate-user-success');
+    });
+
+    test('sets the correct view data', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.reinstatedUser.userId).to.equal(100);
+      expect(view.reinstatedUser.userEmail).to.equal(userData.data.user_name);
     });
   });
 });

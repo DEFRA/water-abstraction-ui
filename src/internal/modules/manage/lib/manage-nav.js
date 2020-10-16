@@ -39,7 +39,8 @@ const manageTabSkeleton = {
     createLink('Resume', 'notifications/4?start=1', scope.hofNotifications)
   ],
   accounts: [
-    createLink('Create an internal account', '/account/create-user', scope.manageAccounts)
+    createLink('Create an internal account', '/account/create-user', scope.manageAccounts),
+    createLink('View internal accounts', '/accounts', scope.manageAccounts)
   ],
   billing: [
     createLink('Create a bill run', '/billing/batch/type', scope.billing),

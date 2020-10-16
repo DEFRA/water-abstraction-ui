@@ -29,6 +29,11 @@ class UsersService extends ServiceClient {
       callingUserId
     } });
   };
+
+  enableInternalUser (callingUserId, userId) {
+    const url = this.joinUrl(`user/internal/${userId}/reinstate`);
+    return this.serviceRequest.post(url, { body: { callingUserId } });
+  }
 }
 
 module.exports = UsersService;

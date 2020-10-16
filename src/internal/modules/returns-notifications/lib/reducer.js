@@ -50,7 +50,7 @@ const isReturnInCycle = (ret, cycle) => {
  * @return {Boolean}
  */
 const isReturnInCurrentCycle = (ret, refDate) => {
-  const currentCycle = last(helpers.returns.date.createReturnCycles(refDate));
+  const currentCycle = last(helpers.returns.date.createReturnCycles('2017-11-01', refDate));
   return isReturnInCycle(ret, currentCycle);
 };
 
@@ -62,33 +62,35 @@ const isReturnInCurrentCycle = (ret, refDate) => {
  * @param {Object} ret
  * @return {Boolean}
  */
-const isReturnSelected = ret =>
-  (ret.status === returnStatuses.due) && isReturnInCurrentCycle(ret);
+const isReturnSelected = (ret, refDate) =>
+  (ret.status === returnStatuses.due) && isReturnInCurrentCycle(ret, refDate);
 
-const mapReturn = ret => ({
+const mapReturn = (ret, refDate) => ({
   ...ret,
-  isSelected: isReturnSelected(ret)
+  isSelected: isReturnSelected(ret, refDate)
 });
 
-const mapDocumentRow = ({ returns, document }) => ({
-  returns: returns.map(mapReturn),
+const mapDocumentRow = ({ returns, document }, refDate) => ({
+  returns: returns.map(ret => mapReturn(ret, refDate)),
   document: mapDocument(document)
 });
 
-const mapLicenceRow = ({ licence, documents }) => ({
+const mapLicenceRow = ({ licence, documents }, refDate) => ({
   licence,
   documents: documents.map(documentRow => ({
-    ...mapDocumentRow(documentRow),
+    ...mapDocumentRow(documentRow, refDate),
     isSelected: documents.length === 1
   }))
 });
 
-const mapLicencesToState = arr => arr.map(mapLicenceRow);
+const mapLicencesToState = (licences, refDate) =>
+  licences.map(licence => mapLicenceRow(licence, refDate));
 
 const reducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPES.setInitialState:
-      return mapLicencesToState(action.payload);
+      const { licences, refDate } = action.payload;
+      return mapLicencesToState(licences, refDate);
 
     default:
       return state;

@@ -88,7 +88,11 @@ const loadBillingAccounts = async request => {
 const loadLicencesWithoutChargeVersions = async request => {
   //  TODO this endpoint hasn't been built yet.
   //  https://eaflood.atlassian.net/browse/WATER-2888
-  return [];
+  try {
+    return [];
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve list of licences without charge versions.`);
+  }
 };
 
 const loadLicencesWithWorkflowsInProgress = async request => {

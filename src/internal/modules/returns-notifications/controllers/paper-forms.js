@@ -37,32 +37,33 @@ const isMultipleLicenceHoldersForLicence = data => data.some(row => row.document
 const postEnterLicenceNumber = async (request, h) => {
   let form = handleRequest(licenceNumbersForm.form(request), request, licenceNumbersForm.schema);
 
-  if (form.isValid) {
-    const { licenceNumbers } = getValues(form);
-
-    try {
-      // Get water service data on incomplete returns
-      const data = await services.water.returns.getIncompleteReturns(licenceNumbers);
-
-      // Set session state and redirect
-      const nextState = reducer({}, actions.setInitialState(request, data));
-      request.yar.set(sessionKey, nextState);
-
-      const path = isMultipleLicenceHoldersForLicence(data) ? '/returns-notifications/select-licence-holders' : '/returns-notifications/check-answers';
-      return h.redirect(path);
-    } catch (err) {
-      // Unexpected error
-      if (err.statusCode !== 404) {
-        throw err;
-      }
-
-      // Some/all licence numbers were not found
-      const licenceNumbers = get(err, 'error.validationDetails.licenceNumbers', []);
-      form = applyErrors(form, licenceNumbersForm.createNotFoundError(licenceNumbers));
-    }
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
   }
 
-  return h.postRedirectGet(form);
+  try {
+    const { licenceNumbers } = getValues(form);
+
+    // Get water service data on incomplete returns
+    const data = await services.water.returns.getIncompleteReturns(licenceNumbers);
+
+    // Set session state and redirect
+    const nextState = reducer({}, actions.setInitialState(request, data));
+    request.yar.set(sessionKey, nextState);
+
+    const path = isMultipleLicenceHoldersForLicence(data) ? '/returns-notifications/select-licence-holders' : '/returns-notifications/check-answers';
+    return h.redirect(path);
+  } catch (err) {
+    // Unexpected error
+    if (err.statusCode !== 404) {
+      throw err;
+    }
+
+    // Some/all licence numbers were not found
+    const licenceNumbers = get(err, 'error.validationDetails.licenceNumbers', []);
+    form = applyErrors(form, licenceNumbersForm.createNotFoundError(licenceNumbers));
+    return h.postRedirectGet(form);
+  }
 };
 
 const isLicenceHolderRole = role => role.roleName === crmRoles.licenceHolder;

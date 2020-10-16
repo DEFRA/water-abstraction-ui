@@ -10,7 +10,7 @@ const services = require('../../../lib/connectors/services');
 /**
  * Returns view object for first page in reminders flows
  */
-const getRemindersStartView = (request, isFinalReminder = false) => {
+const getRemindersStartView = request => {
   return {
     ...request.view,
     form: sendRemindersForm(request),

@@ -89,9 +89,10 @@ const reducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPES.setInitialState:
       return mapLicencesToState(action.payload);
-  }
 
-  return state;
+    default:
+      return state;
+  }
 };
 
 exports.reducer = reducer;

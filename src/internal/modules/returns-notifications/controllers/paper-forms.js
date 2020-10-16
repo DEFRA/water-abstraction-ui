@@ -1,6 +1,7 @@
 'use strict';
 
-const { get } = require('lodash');
+const { get, flatMap } = require('lodash');
+const Boom = require('@hapi/boom');
 
 const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
@@ -10,6 +11,7 @@ const services = require('../../../lib/connectors/services');
 // Forms
 const licenceNumbersForm = require('../forms/licence-numbers');
 const confirmForm = require('shared/lib/forms/confirm-form');
+const selectReturnsForm = require('../forms/select-returns');
 
 // State
 const actions = require('../lib/actions');
@@ -74,7 +76,9 @@ const mapStateToView = data => {
     documents: row.documents.map(({ document, returns }) => ({
       returns: returns.filter(ret => ret.isSelected),
       licenceHolderRole: document.roles.find(isLicenceHolderRole),
-      selectedRole: document.roles.find(doc => doc.roleName === document.selectedRole)
+      selectedRole: document.roles.find(doc => doc.roleName === document.selectedRole),
+      selectReturnsLink: `/returns-notifications/${document.id}/select-returns`,
+      selectAddressLink: `/returns-notifications/${document.id}/select-address`
     }))
   }));
 };
@@ -93,6 +97,32 @@ const getCheckAnswers = async (request, h) => {
   return h.view('nunjucks/returns-notifications/check-answers', view);
 };
 
+const getDocumentFromRequest = (request) => {
+  const { documentId } = request.params;
+  const state = request.yar.get(sessionKey);
+  const documents = flatMap(state.map(licenceRow => licenceRow.documents));
+  return documents.find(doc => doc.document.id === documentId);
+};
+
+/**
+ * Select which returns paper forms to send
+ */
+const getSelectReturns = async (request, h) => {
+  const document = getDocumentFromRequest(request);
+  if (!document) {
+    return Boom.notFound(`Document not found`);
+  }
+  console.log(document);
+  const view = {
+    ...request.view,
+    caption: `Licence ${document.document.licenceNumber}`,
+    back: '/returns-notifications/check-answers',
+    form: selectReturnsForm.form(request, document)
+  };
+  return h.view('nunjucks/form', view);
+};
+
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;
 exports.getCheckAnswers = getCheckAnswers;
+exports.getSelectReturns = getSelectReturns;

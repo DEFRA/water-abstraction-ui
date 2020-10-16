@@ -178,27 +178,25 @@ const mapChoices = (field, prop = 'checked') => {
  * @return {Object}       - legend options
  */
 const mapLegendOptions = (field) => {
-  const defaults = {
-    text: field.options.label
-  };
+  const options = {};
+
+  if (field.options.caption) {
+    options.html = `<span class="govuk-caption-l">${field.options.caption}</span> ${field.options.label}`;
+  } else {
+    options.text = field.options.label;
+  }
 
   if (field.options.heading) {
-    const size = field.options.size || 'xl';
-    return {
-      ...defaults,
-      isPageHeading: true,
-      classes: `govuk-fieldset__legend--${size}`
-    };
+    const size = field.options.size || 'l';
+    options.isPageHeading = true;
+    options.classes = `govuk-fieldset__legend--${size}`;
   }
 
   if (field.options.subHeading) {
-    return {
-      ...defaults,
-      classes: 'govuk-fieldset__legend--m'
-    };
+    options.classes = `govuk-fieldset__legend--m`;
   }
 
-  return defaults;
+  return options;
 };
 
 /**
@@ -270,9 +268,7 @@ const mapFormCheckbox = (field) => {
       text: field.options.hint
     },
     fieldset: {
-      legend: {
-        text: field.options.label
-      }
+      legend: mapLegendOptions(field)
     },
     items
   };

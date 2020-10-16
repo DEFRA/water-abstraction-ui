@@ -52,6 +52,22 @@ module.exports = {
       }
     },
     handler: controller.getCheckAnswers
+  },
+  getSelectReturns: {
+    method: 'GET',
+    path: '/returns-notifications/{documentId}/select-returns',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Which returns need a form?'
+        }
+      }
+    },
+    handler: controller.getSelectReturns
   }
 
 };

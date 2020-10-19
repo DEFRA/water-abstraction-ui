@@ -13,11 +13,9 @@ const routes = require('../../../../../src/internal/modules/charge-information/r
 const testHelpers = require('../../../test-helpers');
 
 experiment('internal/modules/charge-information/routes', () => {
-  let server;
-
   experiment('getChargeInformationWorkflow', () => {
     beforeEach(async () => {
-      server = testHelpers.getTestServer(routes.getChargeInformationWorkflow);
+      testHelpers.getTestServer(routes.getChargeInformationWorkflow);
     });
 
     test('has the correct URL', async () => {

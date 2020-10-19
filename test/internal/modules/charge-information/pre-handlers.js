@@ -52,6 +52,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       data: []
     });
 
+    sandbox.stub(services.water.chargeVersionWorkflows, 'getLicencesWithoutChargeInformation').resolves({
+      data: []
+    });
+
     sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
       { id: 'test-licence-version-1', status: 'superseded', issue: 2, increment: 0, startDate: START_DATE, endDate: '2018-01-16' },
       { id: 'test-licence-version-2', status: 'current', issue: 2, increment: 1, startDate: START_DATE, endDate: null }
@@ -327,6 +331,66 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
+  experiment('loadLicencesWithoutChargeVersions', () => {
+    experiment('when the service response is valid', async () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadLicencesWithoutChargeVersions(request);
+      });
+      // calls the service method
+      test('calls the service method', async () => {
+        expect(services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.called).to.be.true();
+      });
+      test('returns an array', async () => {
+        expect(Array.isArray(result)).to.be.true();
+      });
+    });
+    experiment('when the service response is invalid', async () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.rejects(err);
+        result = await preHandlers.loadLicencesWithoutChargeVersions(request);
+      });
+      // calls the service method
+      test('calls the service method', async () => {
+        expect(services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.called).to.be.true();
+      });
+      test('returns an error', async () => {
+        expect(result.message).to.equal('Could not retrieve list of licences without charge versions.');
+      });
+    });
+  });
+
+  experiment('loadLicencesWithWorkflowsInProgress', () => {
+    experiment('when the service response is valid', async () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
+      });
+      // calls the service method
+      test('calls the service method', async () => {
+        expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
+      });
+      test('returns an array', async () => {
+        expect(Array.isArray(result)).to.be.true();
+      });
+    });
+    experiment('when the service response is invalid', async () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.chargeVersionWorkflows.getChargeVersionWorkflows.rejects(err);
+        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
+      });
+      // calls the service method
+      test('calls the service method', async () => {
+        expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
+      });
+      test('returns an error', async () => {
+        expect(result.message).to.equal('Could not retrieve licences with pending charge versions.');
+      });
+    });
+  });
+
   experiment('.loadIsChargeable', () => {
     test('returns true if the change reason is new_chargeable_charge_version', async () => {
       request.pre = {
@@ -354,21 +418,6 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       result = await preHandlers.loadIsChargeable(request);
 
       expect(result).to.equal(false);
-    });
-  });
-
-  experiment('loadLicencesWithWorkflowsInProgress', () => {
-    experiment('when the service response is valid', async () => {
-      beforeEach(async () => {
-        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
-      });
-      // calls the service method
-      test('calls the service method', async () => {
-        expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
-      });
-      test('returns an array', async () => {
-        expect(Array.isArray(result)).to.be.true();
-      });
     });
   });
 

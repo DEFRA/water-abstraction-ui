@@ -87,7 +87,7 @@ const loadBillingAccounts = async request => {
 
 const loadLicencesWithoutChargeVersions = async request => {
   try {
-    const response = await services.water.licences.getLicencesWithoutChargeInformation();
+    const response = await services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation();
     return response.data.filter(row => row.licence.expiredDate !== null && moment(row.licence.expiredDate).isAfter(new Date())).sort((rowA, rowB) => new Date(rowA.licence.startDate) - new Date(rowB.licence.startDate));
   } catch (err) {
     return errorHandler(err, `Could not retrieve list of licences without charge versions.`);

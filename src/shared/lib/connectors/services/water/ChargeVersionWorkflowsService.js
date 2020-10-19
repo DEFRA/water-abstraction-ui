@@ -2,6 +2,13 @@ const ServiceClient = require('../ServiceClient');
 
 class ChargeVersionWorkflowsService extends ServiceClient {
   /**
+  * Fetches all licences without charge versions
+  */
+  getLicencesWithoutChargeInformation () {
+    const url = this.joinUrl('licences', 'without-charge-versions');
+    return this.serviceRequest.get(url);
+  }
+  /**
    * Fetches all charge version workflows in progress
    */
   getChargeVersionWorkflows () {

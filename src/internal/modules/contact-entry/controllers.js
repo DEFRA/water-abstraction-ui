@@ -113,11 +113,13 @@ const postCompanySearchController = async (request, h) => {
 
 const getSelectCompanyController = async (request, h) => {
   const { sessionKey } = request.payload || request.query;
-  const { selectedCompaniesHouseNumber } = await sessionHelper.saveToSession(request, sessionKey);
+  const { selectedCompaniesHouseNumber, companyNameOrNumber } = await sessionHelper.saveToSession(request, sessionKey);
 
-  return h.view('nunjucks/form', {
+  return h.view('nunjucks/contact-entry/select-company', {
     ...request.view,
-    pageTitle: 'Select a company',
+    pageTitle: 'Select the registered company details',
+    companyNameOrNumber,
+    sessionKey,
     back: `/contact-entry/new/details?sessionKey=${sessionKey}`,
     form: sessionForms.get(request, companySearchSelectCompany.form(request, selectedCompaniesHouseNumber))
   });

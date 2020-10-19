@@ -15,12 +15,10 @@ const generateChargeVersion = () => ({
     startDate: null
   },
   chargeElements: [],
-  invoiceAccount: null,
-  status: 'draft'
+  invoiceAccount: null
 });
 
 const getDraftChargeInformation = function (licenceId) {
-  console.log('called', licenceId);
   const key = getSessionKey(licenceId);
   const draftChargeInfo = this.yar.get(key);
   return draftChargeInfo || generateChargeVersion();

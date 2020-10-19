@@ -18,8 +18,6 @@ experiment('services/water/BillingVolumeService', () => {
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get');
-    sandbox.stub(serviceRequest, 'post');
-    sandbox.stub(serviceRequest, 'delete');
     sandbox.stub(serviceRequest, 'patch');
 
     service = new BillingVolumeService('https://example.com/water/1.0');

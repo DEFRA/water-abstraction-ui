@@ -86,10 +86,9 @@ const loadBillingAccounts = async request => {
 };
 
 const loadLicencesWithoutChargeVersions = async request => {
-  //  TODO this endpoint hasn't been built yet.
-  //  https://eaflood.atlassian.net/browse/WATER-2888
   try {
-    return [];
+    const response = await services.water.licences.getLicencesWithoutChargeInformation();
+    return response.data.filter(row => row.licence.expiredDate !== null && moment(row.licence.expiredDate).isAfter(new Date())).sort((rowA, rowB) => new Date(rowA.licence.startDate) - new Date(rowB.licence.startDate));
   } catch (err) {
     return errorHandler(err, `Could not retrieve list of licences without charge versions.`);
   }
@@ -98,7 +97,7 @@ const loadLicencesWithoutChargeVersions = async request => {
 const loadLicencesWithWorkflowsInProgress = async request => {
   try {
     const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
-    return licencesWithWorkflowsInProgress.data;
+    return licencesWithWorkflowsInProgress.data.sort((rowA, rowB) => new Date(rowB.startDate) - new Date(rowA.startDate)); ;
   } catch (err) {
     return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
   }

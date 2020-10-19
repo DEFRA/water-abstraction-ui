@@ -17,9 +17,13 @@ const form = (request, defaultValue) => {
     }
   }, defaultValue));
 
+  f.fields.push(fields.paragraph(null, {
+    text: 'We’ll use this information to search the Companies House register.'
+  }));
+
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.button(null, { label: 'Find company' }));
 
   return f;
 };

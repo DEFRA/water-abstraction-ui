@@ -14,7 +14,8 @@ const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
       }
     },
     choices: [
-      { value: 'organisation', label: 'Company or organisation' },
+      { value: 'organisation', label: 'Company' },
+      { divider: 'or' },
       {
         value: 'person',
         label: 'Individual',

@@ -28,7 +28,6 @@ const selectExistingCompanyForm = (request, defaultValue) => {
         message: contactSearchResults.length >= 1 ? 'Select an existing contact, or set up a new contact' : `Select 'Set up a new contact'`
       }
     },
-    label: 'Select a contact',
     choices: getContactChoices(contactSearchResults)
   }, defaultValue));
   f.fields.push(fields.hidden('filter', {}, filter));

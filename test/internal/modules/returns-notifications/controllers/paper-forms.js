@@ -9,6 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const { cloneDeep } = require('lodash');
+const uuid = require('uuid/v4');
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
@@ -16,10 +17,81 @@ const sandbox = sinon.createSandbox();
 const controller = require('internal/modules/returns-notifications/controllers/paper-forms');
 const services = require('internal/lib/connectors/services');
 
+const DOCUMENT_ID = uuid();
+const LICENCE_NUMBER = '01/123/ABC';
+
+const createRole = () => ({
+  'id': '00000000-0000-0000-0000-000000000003',
+  'roleName': 'licenceHolder',
+  'dateRange': {
+    'startDate': '2020-01-01',
+    'endDate': null
+  },
+  'company': {
+    'companyAddresses': [],
+    'companyContacts': [],
+    'name': 'TEST WATER CO LTD',
+    'id': '00000000-0000-0000-0000-000000000004'
+  },
+  'contact': {},
+  'address': {
+    'town': 'TESTINGTON',
+    'county': 'TESTINGSHIRE',
+    'postcode': 'TT1 1TT',
+    'country': null,
+    'id': '00000000-0000-0000-0000-000000000005',
+    'addressLine1': 'BUTTERCUP ROAD',
+    'addressLine2': 'DAISY LANE',
+    'addressLine3': 'TESTINGLY',
+    'addressLine4': null
+  }
+});
+
+const createReturn = (overrides = {}) => ({
+  'id': overrides.id || 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
+  'returnVersions': [],
+  'dateRange': {
+    'startDate': '2020-04-01',
+    'endDate': '2021-03-31'
+  },
+  'isUnderQuery': false,
+  'isSummer': false,
+  'dueDate': '2021-04-28',
+  'receivedDate': null,
+  'status': 'due',
+  'abstractionPeriod': {
+    'startDay': 1,
+    'startMonth': 1,
+    'endDay': 31,
+    'endMonth': 12
+  },
+  'returnRequirement': {
+    'returnRequirementPurposes': [
+      {
+        'id': '00000000-0000-0000-0000-000000000003',
+        'purposeAlias': 'Spray Irrigation - Storage',
+        'purposeUse': {
+          'id': '00000000-0000-0000-0000-000000000004',
+          'code': '420',
+          'name': 'Spray Irrigation - Storage',
+          'dateUpdated': '2020-10-12T09:00:03.130Z',
+          'dateCreated': '2019-08-29T12:50:59.712Z',
+          'lossFactor': 'high',
+          'isTwoPartTariff': true
+        }
+      }
+    ],
+    'id': '00000000-0000-0000-0000-000000000005',
+    'isSummer': false,
+    'externalId': '1:1234',
+    'legacyId': 1234
+  }
+});
+
 const apiResponse = [{
   'licence': {
     'id': '00000000-0000-0000-0000-000000000001',
-    'licenceNumber': '01/123/ABC',
+    'licenceNumber': LICENCE_NUMBER,
     'isWaterUndertaker': false,
     'startDate': '2020-01-01',
     'expiredDate': null,
@@ -45,83 +117,41 @@ const apiResponse = [{
   },
   'documents': [
     {
-
       'document': {
+        id: DOCUMENT_ID,
         'roles': [
-          {
-            'id': '00000000-0000-0000-0000-000000000003',
-            'roleName': 'licenceHolder',
-            'dateRange': {
-              'startDate': '2020-01-01',
-              'endDate': null
-            },
-            'company': {
-              'companyAddresses': [],
-              'companyContacts': [],
-              'name': 'TEST WATER CO LTD',
-              'id': '00000000-0000-0000-0000-000000000004'
-            },
-            'contact': {},
-            'address': {
-              'town': 'TESTINGTON',
-              'county': 'TESTINGSHIRE',
-              'postcode': 'TT1 1TT',
-              'country': null,
-              'id': '00000000-0000-0000-0000-000000000005',
-              'addressLine1': 'BUTTERCUP ROAD',
-              'addressLine2': 'DAISY LANE',
-              'addressLine3': 'TESTINGLY',
-              'addressLine4': null
-            }
-          }
+          createRole()
         ]
       },
 
       'returns': [
-        {
-          'id': 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
-          'returnVersions': [],
-          'dateRange': {
-            'startDate': '2020-04-01',
-            'endDate': '2021-03-31'
-          },
-          'isUnderQuery': false,
-          'isSummer': false,
-          'dueDate': '2021-04-28',
-          'receivedDate': null,
-          'status': 'due',
-          'abstractionPeriod': {
-            'startDay': 1,
-            'startMonth': 1,
-            'endDay': 31,
-            'endMonth': 12
-          },
-          'returnRequirement': {
-            'returnRequirementPurposes': [
-              {
-                'id': '00000000-0000-0000-0000-000000000003',
-                'purposeAlias': 'Spray Irrigation - Storage',
-                'purposeUse': {
-                  'id': '00000000-0000-0000-0000-000000000004',
-                  'code': '420',
-                  'name': 'Spray Irrigation - Storage',
-                  'dateUpdated': '2020-10-12T09:00:03.130Z',
-                  'dateCreated': '2019-08-29T12:50:59.712Z',
-                  'lossFactor': 'high',
-                  'isTwoPartTariff': true
-                }
-              }
-            ],
-            'id': '00000000-0000-0000-0000-000000000005',
-            'isSummer': false,
-            'externalId': '1:1234',
-            'legacyId': 1234
-          }
-        }
+        createReturn()
       ]
     }
   ]
 }];
+
+const createState = () => ({
+  [DOCUMENT_ID]: {
+    selectedRole: 'licenceHolder',
+    document: {
+      id: DOCUMENT_ID,
+      roles: [
+        createRole()
+      ]
+    },
+    licence: {
+      licenceNumber: '01/123/ABC'
+    },
+    returns: [{
+      ...createReturn({ id: 'v1:1:01/123/ABC:1234:2018-04-01:2019-03-31' }),
+      isSelected: false
+    }, {
+      ...createReturn({ id: 'v1:1:01/123/ABC:1234:2019-04-01:2020-03-31' }),
+      isSelected: true
+    }]
+  }
+});
 
 experiment('internal/modules/returns-notifications/controllers/paper-forms', () => {
   let request;
@@ -310,6 +340,57 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       test('the user is redirected to the "select licence holders" page', async () => {
         expect(h.redirect.calledWith('/returns-notifications/select-licence-holders')).to.be.true();
       });
+    });
+  });
+
+  experiment('.getCheckAnswers', () => {
+    beforeEach(async () => {
+      request.yar.get.returns(createState());
+      await controller.getCheckAnswers(request, h);
+    });
+
+    test('loads data from the session with the expected key', async () => {
+      expect(request.yar.get.calledWith(
+        'returns.paper-forms'
+      )).to.be.true();
+    });
+
+    test('maps the documents object from the state to an array in the view', async () => {
+      const [, { documents }] = h.view.lastCall.args;
+      expect(documents).to.be.an.array().length(1);
+    });
+
+    test('maps the document properties to the view', async () => {
+      const [, { documents: [document] }] = h.view.lastCall.args;
+
+      expect(document.id).to.equal(DOCUMENT_ID);
+      expect(document.licenceNumber).to.equal(LICENCE_NUMBER);
+      expect(document.returns).to.be.an.array().length(1);
+      expect(document.licenceHolderRole).to.be.an.object();
+      expect(document.selectedRole).to.be.an.object();
+      expect(document.selectReturnsLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-returns`);
+      expect(document.selectAddressLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-address`);
+    });
+
+    test('maps selected returns to the view', async () => {
+      const [, { documents: [document] }] = h.view.lastCall.args;
+      expect(document.returns[0].legacyId).to.equal(1234);
+      expect(document.returns[0].details).to.equal(`Due 28 April 2021`);
+    });
+
+    test('includes a confirm form object', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      expect(form).to.be.an.object();
+    });
+
+    test('includes a back link', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal('/returns-notifications/paper-forms');
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns-notifications/check-answers');
     });
   });
 });

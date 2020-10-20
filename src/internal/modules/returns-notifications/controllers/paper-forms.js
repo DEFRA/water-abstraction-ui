@@ -1,6 +1,6 @@
 'use strict';
 
-const { get, partialRight, isFunction } = require('lodash');
+const { get, partialRight } = require('lodash');
 
 const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
@@ -9,6 +9,9 @@ const services = require('../../../lib/connectors/services');
 
 const { getReturnStatusString } = require('../lib/return-mapper');
 const { SESSION_KEYS } = require('../lib/constants');
+
+// Controller helpers
+const controller = require('../lib/controller');
 
 // Forms
 const licenceNumbersForm = require('../forms/licence-numbers');
@@ -103,42 +106,10 @@ const getCheckAnswers = async (request, h) => {
 };
 
 /**
- * Generic get handler
- */
-const createGetHandler = async (request, h, formContainer) => {
-  const { document } = request.pre;
-  const view = {
-    ...request.view,
-    caption: `Licence ${document.document.licenceNumber}`,
-    back: checkAnswersRoute,
-    form: formContainer.form(request, document)
-  };
-  return h.view('nunjucks/form', view);
-};
-
-const createPostHandler = async (request, h, formContainer, actionCreator, redirectPath) => {
-  const { document } = request.pre;
-
-  const schema = formContainer.schema(request, document);
-  const form = handleRequest(formContainer.form(request, document), request, schema);
-
-  if (!form.isValid) {
-    return h.postRedirectGet(form);
-  }
-
-  const currentState = request.yar.get(SESSION_KEYS.paperFormsFlow);
-  const nextState = reducer(currentState, actionCreator(request, getValues(form)));
-  request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
-
-  const path = isFunction(redirectPath) ? redirectPath(request, { form, document, nextState }) : redirectPath;
-  return h.redirect(path);
-};
-
-/**
  * Select which returns paper forms to send
  */
-const getSelectReturns = partialRight(createGetHandler, selectReturnsForm);
-const postSelectReturns = partialRight(createPostHandler, selectReturnsForm, actions.setReturnIds, checkAnswersRoute);
+const getSelectReturns = partialRight(controller.createGetHandler, selectReturnsForm);
+const postSelectReturns = partialRight(controller.createPostHandler, selectReturnsForm, actions.setReturnIds, checkAnswersRoute);
 
 /**
  * Select which address to send the paper form to
@@ -150,8 +121,8 @@ const getSelectAddressRedirectPath = (request, { form, document }) => {
   }
   return checkAnswersRoute;
 };
-const getSelectAddress = partialRight(createGetHandler, selectAddressForm);
-const postSelectAddress = partialRight(createPostHandler, selectAddressForm, actions.setSelectedRole, getSelectAddressRedirectPath);
+const getSelectAddress = partialRight(controller.createGetHandler, selectAddressForm);
+const postSelectAddress = partialRight(controller.createPostHandler, selectAddressForm, actions.setSelectedRole, getSelectAddressRedirectPath);
 
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;

@@ -19,7 +19,9 @@
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Start Date</th>
                 <th scope="col" class="govuk-table__header">Reason</th>
-                <th scope="col" class="govuk-table__header">Status</th>
+                {% if drafiChargeInformation.status %}
+                  <th scope="col" class="govuk-table__header">Status</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -30,9 +32,11 @@
                 <td class="govuk-table__cell">
                   {{ draftChargeInformation.changeReason.description }}
                 </td>
+                {% if drafiChargeInformation.status %}
                 <td class="govuk-table__cell">
                   {{ badge(draftChargeInformation | chargeVersionBadge) }}
                 </td>
+                {% endif %}
               </tr>
             </tbody>
           </table>

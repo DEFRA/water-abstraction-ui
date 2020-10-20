@@ -75,6 +75,7 @@ const onPreHandler = async (request, h) => {
   try {
     // Load licence data and store on HAPI request instance
     const keys = Object.keys(config.load);
+
     request.licence = await loadLicenceData(keys, request, documentId, h);
   } catch (err) {
     const { credentials } = request.auth;

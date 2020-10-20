@@ -161,7 +161,7 @@ const selectStartDateSchema = (request) => {
     startDate: Joi.string().valid('today', 'licenceStartDate', 'customDate').required(),
     customDate: Joi.when('startDate', {
       is: 'customDate',
-      then: Joi.date().min(dates.minDate).max(dates.maxDate)
+      then: Joi.date().min(dates.minDate).max(dates.maxDate).required()
     })
   };
 };

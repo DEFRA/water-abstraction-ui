@@ -19,9 +19,9 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       request = {
         pre: {
           changeReasons: [
-            { changeReasonId: '00000000-0000-0000-0000-000000000001', description: 'test-1' },
-            { changeReasonId: '00000000-0000-0000-0000-000000000002', description: 'test-2' },
-            { changeReasonId: '00000000-0000-0000-0000-000000000003', description: 'test-3' }
+            { id: '00000000-0000-0000-0000-000000000001', description: 'test-1' },
+            { id: '00000000-0000-0000-0000-000000000002', description: 'test-2' },
+            { id: '00000000-0000-0000-0000-000000000003', description: 'test-3' }
           ]
         }
       };
@@ -46,7 +46,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setReason,
           payload: {
-            changeReasonId: '00000000-0000-0000-0000-000000000002',
+            id: '00000000-0000-0000-0000-000000000002',
             description: 'test-2'
           }
         });

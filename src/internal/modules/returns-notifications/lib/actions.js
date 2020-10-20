@@ -1,5 +1,6 @@
 'use strict';
 const moment = require('moment');
+const { pick, partialRight } = require('lodash');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const ACTION_TYPES = {
@@ -16,31 +17,20 @@ const setInitialState = (request, licences, refDate) => ({
   }
 });
 
-const setReturnIds = (request, formValues) => {
-  const { documentId } = request.params;
-  const { returnIds } = formValues;
-
+const createDocumentAction = (request, formValues, type, formKeys) => {
+  const payload = {
+    documentId: request.params.documentId,
+    ...pick(formValues, formKeys)
+  };
   return {
-    type: ACTION_TYPES.setReturnIds,
-    payload: {
-      documentId,
-      returnIds
-    }
+    type,
+    payload
   };
 };
 
-const setSelectedRole = (request, formValues) => {
-  const { documentId } = request.params;
-  const { selectedRole } = formValues;
+const setReturnIds = partialRight(createDocumentAction, ACTION_TYPES.setReturnIds, ['returnIds']);
 
-  return {
-    type: ACTION_TYPES.setSelectedRole,
-    payload: {
-      documentId,
-      selectedRole
-    }
-  };
-};
+const setSelectedRole = partialRight(createDocumentAction, ACTION_TYPES.setSelectedRole, ['selectedRole']);
 
 exports.ACTION_TYPES = ACTION_TYPES;
 exports.setInitialState = setInitialState;

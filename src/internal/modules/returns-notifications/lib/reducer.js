@@ -82,48 +82,52 @@ const mapLicencesToState = (licences, refDate) => {
 const isValidAddressRole = roleName =>
   ['oneTimeAddress', crmRoles.licenceHolder, crmRoles.returnsTo].includes(roleName);
 
-const reducer = (state, action) => {
-  let query;
+const setInitialState = (state, action) => {
+  const { licences, refDate } = action.payload;
+  return mapLicencesToState(licences, refDate);
+};
 
-  switch (action.type) {
-    case ACTION_TYPES.setInitialState:
-      const { licences, refDate } = action.payload;
-      return mapLicencesToState(licences, refDate);
-
-    case ACTION_TYPES.setReturnIds:
-      {
-        const { documentId, returnIds } = action.payload;
-        query = {
-          [documentId]: {
-            returns: state[documentId].returns.map(ret => ({
-              isSelected: {
-                $set: returnIds.includes(ret.id)
-              }
-            }))
-          }
-        };
-      }
-      return update(state, query);
-
-    case ACTION_TYPES.setSelectedRole:
-      {
-        const { documentId, selectedRole } = action.payload;
-        if (!isValidAddressRole(selectedRole)) {
-          return state;
+const setReturnIds = (state, action) => {
+  const { documentId, returnIds } = action.payload;
+  const query = {
+    [documentId]: {
+      returns: state[documentId].returns.map(ret => ({
+        isSelected: {
+          $set: returnIds.includes(ret.id)
         }
-        query = {
-          [documentId]: {
-            selectedRole: {
-              $set: selectedRole
-            }
-          }
-        };
-      }
-      return update(state, query);
+      }))
+    }
+  };
 
-    default:
-      return state;
+  return update(state, query);
+};
+
+const setSelectedRole = (state, action) => {
+  const { documentId, selectedRole } = action.payload;
+  if (!isValidAddressRole(selectedRole)) {
+    return state;
   }
+  const query = {
+    [documentId]: {
+      selectedRole: {
+        $set: selectedRole
+      }
+    }
+  };
+  return update(state, query);
+};
+
+const actions = {
+  [ACTION_TYPES.setInitialState]: setInitialState,
+  [ACTION_TYPES.setReturnIds]: setReturnIds,
+  [ACTION_TYPES.setSelectedRole]: setSelectedRole
+};
+
+const reducer = (state, action) => {
+  if (action.type in actions) {
+    return actions[action.type](state, action);
+  }
+  return state;
 };
 
 exports.reducer = reducer;

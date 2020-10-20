@@ -22,7 +22,8 @@ const getLicenceData = async (method, documentId, request) => {
     // Only fetch charge version workflows if authenticated user has sufficient scope
     let chargeVersionWorkflows = [];
     if (isChargeVersionWorkflowEditorOrReviewer(request)) {
-      chargeVersionWorkflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflowsForLicence(licence.id);
+      const { data } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflowsForLicence(licence.id);
+      chargeVersionWorkflows = data;
     }
 
     const { error, data: chargeVersions } = await services.water.chargeVersions[method](documentId);

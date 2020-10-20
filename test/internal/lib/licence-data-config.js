@@ -22,7 +22,9 @@ experiment('src/internal/lib/licence-data-config', () => {
         id: LICENCE_ID
       }
     });
-    sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflowsForLicence').resolves([]);
+    sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflowsForLicence').resolves({
+      data: []
+    });
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByDocumentId').resolves({
       data: [],
       error: null

@@ -8,7 +8,8 @@ const returnStatuses = {
 };
 
 const crmRoles = {
-  licenceHolder: 'licenceHolder'
+  licenceHolder: 'licenceHolder',
+  returnsTo: 'returnsTo'
 };
 
 exports.returnStatuses = returnStatuses;

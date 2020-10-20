@@ -13,67 +13,67 @@ formErrorSummary %}
 
       {{ title(pageTitle) }}
 
-      {% for licence in licences %}
+      {% for document in documents %}
 
-        {% for document in licence.documents %}
+        <h2 class="govuk-heading-m" id="{{ document.id }}">Licence
+          {{ document.licenceNumber }}</h2>
 
-          <h2 class="govuk-heading-m">Licence
-            {{ licence.licenceNumber }}</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Licence holder
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ company(document.licenceHolderRole.company) }}
+            </dd>
+            <dd class="govuk-summary-list__actions"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Returns reference
+              {{ 'number' | pluralize(document.returns) }}
+            </dt>
+            <dd class="govuk-summary-list__value">
 
-          <dl class="govuk-summary-list govuk-!-margin-bottom-9">
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">
-                Licence holder
-              </dt>
-              <dd class="govuk-summary-list__value">
-                {{ company(document.licenceHolderRole.company) }}
+              {% if document.returns.length === 0 %}
+                <p>None selected</p>
+              {% else %}
+                <div class="meta">
+                  {% for return in document.returns %}
+                    <div class="meta__row">
+                      <div class="meta__key">{{ return.legacyId }}
+                      </div>
+                      <div class="meta__value">
+                        {{ return.details}}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+                {% endif%}
               </dd>
-              <dd class="govuk-summary-list__actions"></dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ document.selectReturnsLink }}">
+                  Change<span class="govuk-visually-hidden">
+                    returns</span>
+                </a>
+              </dd>
             </div>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
-                Returns reference number
+                Address
               </dt>
               <dd class="govuk-summary-list__value">
-
-                {% if document.returns.length === 0 %}
-                  <p>None selected</p>
-                {% else %}
-                  {% for return in document.returns %}
-                    <div class="meta">
-                      <div class="meta__key">{{ return.returnRequirement.legacyId }}
-                      </div>
-                      <div class="meta__value">
-                        Due
-                        {{ return.due | date }}</div>
-                    </div>
-                  {% endfor %}
-                  {% endif%}
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                  <a class="govuk-link" href="{{ document.selectReturnsLink }}">
-                    Change<span class="govuk-visually-hidden">
-                      returns</span>
-                  </a>
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                  Address
-                </dt>
-                <dd class="govuk-summary-list__value">
-                  {{ address(document.selectedRole.address) }}
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                  <a class="govuk-link" href="{{ document.selectAddressLink }}">
-                    Change<span class="govuk-visually-hidden">
-                      address</span>
-                  </a>
-                </dd>
-              </div>
-            </dl>
-
-          {% endfor %}
+                {{ company(document.selectedRole.company) }}<br/>
+                {{ address(document.selectedRole.address) }}
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ document.selectAddressLink }}">
+                  Change<span class="govuk-visually-hidden">
+                    address</span>
+                </a>
+              </dd>
+            </div>
+          </dl>
 
         {% endfor %}
 

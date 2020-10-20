@@ -4,9 +4,12 @@ const Lab = require('@hapi/lab');
 const { experiment, test, beforeEach } = exports.lab = Lab.script();
 
 const { expect } = require('@hapi/code');
+const uuid = require('uuid/v4');
 
 const { setInitialState } = require('internal/modules/returns-notifications/lib/actions');
 const reducer = require('internal/modules/returns-notifications/lib/reducer');
+
+const DOCUMENT_ID = uuid();
 
 const licence = {
   'id': '00000000-0000-0000-0000-000000000001',
@@ -125,6 +128,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: DOCUMENT_ID,
               roles: [
                 createRole('licenceHolder')
               ]
@@ -139,15 +143,15 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the return is pre-selected because it is due and in the current return cycle', async () => {
-        expect(nextState[0].documents[0].returns[0].isSelected).to.be.true();
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.true();
       });
 
       test('the selected role is "licenceHolder"', async () => {
-        expect(nextState[0].documents[0].document.selectedRole).to.equal('licenceHolder');
+        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('licenceHolder');
       });
 
       test('the document is selected', async () => {
-        expect(nextState[0].documents[0].isSelected).to.be.true();
+        expect(nextState[DOCUMENT_ID].isSelected).to.be.true();
       });
     });
 
@@ -157,6 +161,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: DOCUMENT_ID,
               roles: [
                 createRole('licenceHolder')
               ]
@@ -171,7 +176,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[0].documents[0].returns[0].isSelected).to.be.false();
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
       });
     });
 
@@ -181,6 +186,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: DOCUMENT_ID,
               roles: [
                 createRole('licenceHolder')
               ]
@@ -195,7 +201,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[0].documents[0].returns[0].isSelected).to.be.false();
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
       });
     });
 
@@ -205,6 +211,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: DOCUMENT_ID,
               roles: [
                 createRole('licenceHolder')
               ]
@@ -219,7 +226,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[0].documents[0].returns[0].isSelected).to.be.false();
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
       });
     });
 
@@ -229,6 +236,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: DOCUMENT_ID,
               roles: [
                 createRole('licenceHolder'),
                 createRole('returnsTo')
@@ -244,7 +252,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the selected role is "returnsTo"', async () => {
-        expect(nextState[0].documents[0].document.selectedRole).to.equal('returnsTo');
+        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('returnsTo');
       });
     });
 
@@ -254,6 +262,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
           licence,
           documents: [{
             document: {
+              id: uuid(),
               roles: [
                 createRole('licenceHolder')
               ]
@@ -263,6 +272,7 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
             ]
           }, {
             document: {
+              id: uuid(),
               roles: [
                 createRole('licenceHolder')
               ]
@@ -277,8 +287,8 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
       });
 
       test('the documents are not selected', async () => {
-        expect(nextState[0].documents[0].isSelected).to.be.false();
-        expect(nextState[0].documents[1].isSelected).to.be.false();
+        const arr = Object.values(nextState).map(doc => doc.isSelected);
+        expect(arr).to.only.include(false);
       });
     });
   });

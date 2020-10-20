@@ -1,11 +1,13 @@
 'use strict';
 
+const update = require('immutability-helper');
 const { last } = require('lodash');
 const momentRange = require('moment-range');
 const moment = momentRange.extendMoment(require('moment'));
 
 const helpers = require('@envage/water-abstraction-helpers');
 
+const { crmRoles } = require('shared/lib/constants');
 const { returnStatuses } = require('shared/lib/constants');
 const { ACTION_TYPES } = require('./actions');
 
@@ -13,22 +15,6 @@ const isReturnsRole = role => role.roleName === 'returnsTo';
 
 const getInitiallySelectedRole = roles =>
   roles.some(isReturnsRole) ? 'returnsTo' : 'licenceHolder';
-
-const mapDocument = ({ roles, ...rest }) => {
-  return {
-    roles: [
-      ...roles,
-      {
-        roleName: 'customAddress',
-        company: null,
-        contact: null,
-        address: null
-      }
-    ],
-    selectedRole: getInitiallySelectedRole(roles),
-    ...rest
-  };
-};
 
 /**
  * Check if return is in supplied cycle
@@ -70,27 +56,70 @@ const mapReturn = (ret, refDate) => ({
   isSelected: isReturnSelected(ret, refDate)
 });
 
-const mapDocumentRow = ({ returns, document }, refDate) => ({
-  returns: returns.map(ret => mapReturn(ret, refDate)),
-  document: mapDocument(document)
-});
-
-const mapLicenceRow = ({ licence, documents }, refDate) => ({
+const mapDocumentRow = ({ licence, documents }, { document, returns }, refDate) => ({
   licence,
-  documents: documents.map(documentRow => ({
-    ...mapDocumentRow(documentRow, refDate),
-    isSelected: documents.length === 1
-  }))
+  document,
+  returns: returns.map(ret => mapReturn(ret, refDate)),
+  isSelected: documents.length === 1,
+  selectedRole: getInitiallySelectedRole(document.roles)
 });
 
-const mapLicencesToState = (licences, refDate) =>
-  licences.map(licence => mapLicenceRow(licence, refDate));
+/**
+ * Maps to a flat structure of documents for easier manipulation
+ * @param {Array<Object>} licences
+ * @param {*} refDate
+ */
+const mapLicencesToState = (licences, refDate) => {
+  const map = licences.reduce((acc, licenceRow) => {
+    licenceRow.documents.forEach(documentRow =>
+      acc.set(documentRow.document.id, mapDocumentRow(licenceRow, documentRow, refDate))
+    );
+    return acc;
+  }, new Map());
+  return Object.fromEntries(map);
+};
+
+const isValidAddressRole = roleName =>
+  ['oneTimeAddress', crmRoles.licenceHolder, crmRoles.returnsTo].includes(roleName);
 
 const reducer = (state, action) => {
+  let query;
+
   switch (action.type) {
     case ACTION_TYPES.setInitialState:
       const { licences, refDate } = action.payload;
       return mapLicencesToState(licences, refDate);
+
+    case ACTION_TYPES.setReturnIds:
+      {
+        const { documentId, returnIds } = action.payload;
+        query = {
+          [documentId]: {
+            returns: state[documentId].returns.map(ret => ({
+              isSelected: {
+                $set: returnIds.includes(ret.id)
+              }
+            }))
+          }
+        };
+      }
+      return update(state, query);
+
+    case ACTION_TYPES.setSelectedRole:
+      {
+        const { documentId, selectedRole } = action.payload;
+        if (!isValidAddressRole(selectedRole)) {
+          return state;
+        }
+        query = {
+          [documentId]: {
+            selectedRole: {
+              $set: selectedRole
+            }
+          }
+        };
+      }
+      return update(state, query);
 
     default:
       return state;

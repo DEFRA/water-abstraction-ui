@@ -33,20 +33,22 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       pre: { draftChargeInformation: { dateRange: { startDate: START_DATE } } }
     };
 
-    sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves([
-      {
-        id: 'test-change-reason-id-1',
-        type: 'new_chargeable_charge_version'
-      },
-      {
-        id: 'test-change-reason-id-2',
-        type: 'new_non_chargeable_charge_version'
-      },
-      {
-        id: 'test-change-reason-id-3',
-        type: 'new_non_chargeable_charge_version'
-      }
-    ]);
+    sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves({
+      data: [
+        {
+          id: 'test-change-reason-id-1',
+          type: 'new_chargeable_charge_version'
+        },
+        {
+          id: 'test-change-reason-id-2',
+          type: 'new_non_chargeable_charge_version'
+        },
+        {
+          id: 'test-change-reason-id-3',
+          type: 'new_non_chargeable_charge_version'
+        }
+      ]
+    });
 
     sandbox.stub(services.water.licences, 'getLicenceVersions').resolves([
       { id: 'test-licence-version-1', status: 'superseded', issue: 2, increment: 0, startDate: START_DATE, endDate: '2018-01-16' },

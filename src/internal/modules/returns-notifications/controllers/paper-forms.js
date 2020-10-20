@@ -20,6 +20,8 @@ const selectAddressForm = require('../forms/select-address');
 const actions = require('../lib/actions');
 const { reducer } = require('../lib/reducer');
 
+const checkAnswersRoute = '/returns-notifications/check-answers';
+
 /**
  * Renders a page for the user to input a list of licences to whom
  * they wish to send paper return forms
@@ -54,7 +56,7 @@ const postEnterLicenceNumber = async (request, h) => {
     const nextState = reducer({}, actions.setInitialState(request, data));
     request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
 
-    const path = isMultipleLicenceHoldersForLicence(data) ? '/returns-notifications/select-licence-holders' : '/returns-notifications/check-answers';
+    const path = isMultipleLicenceHoldersForLicence(data) ? '/returns-notifications/select-licence-holders' : checkAnswersRoute;
     return h.redirect(path);
   } catch (err) {
     // Unexpected error
@@ -108,7 +110,7 @@ const createGetHandler = async (request, h, formContainer) => {
   const view = {
     ...request.view,
     caption: `Licence ${document.document.licenceNumber}`,
-    back: '/returns-notifications/check-answers',
+    back: checkAnswersRoute,
     form: formContainer.form(request, document)
   };
   return h.view('nunjucks/form', view);
@@ -136,7 +138,7 @@ const createPostHandler = async (request, h, formContainer, actionCreator, redir
  * Select which returns paper forms to send
  */
 const getSelectReturns = partialRight(createGetHandler, selectReturnsForm);
-const postSelectReturns = partialRight(createPostHandler, selectReturnsForm, actions.setReturnIds, '/returns-notifications/check-answers');
+const postSelectReturns = partialRight(createPostHandler, selectReturnsForm, actions.setReturnIds, checkAnswersRoute);
 
 /**
  * Select which address to send the paper form to
@@ -146,7 +148,7 @@ const getSelectAddressRedirectPath = (request, { form, document }) => {
   if (selectedRole === 'createOneTimeAddress') {
     return `/returns-notifications/${document.document.id}/one-time-address`;
   }
-  return '/returns-notifications/check-answers';
+  return checkAnswersRoute;
 };
 const getSelectAddress = partialRight(createGetHandler, selectAddressForm);
 const postSelectAddress = partialRight(createPostHandler, selectAddressForm, actions.setSelectedRole, getSelectAddressRedirectPath);

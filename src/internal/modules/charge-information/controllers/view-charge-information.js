@@ -3,8 +3,12 @@ const {
   getLicencePageUrl,
   findInvoiceAccountAddress
 } = require('../lib/helpers');
+const forms = require('shared/lib/forms');
+const sessionForms = require('shared/lib/session-forms');
+const sessionHelper = require('shared/lib/session-helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
+const { reviewForm, reviewFormSchema } = require('../forms/review');
 const { hasScope } = require('internal/lib/permissions');
 const moment = require('moment');
 
@@ -29,7 +33,7 @@ const getViewChargeInformation = async (request, h) => {
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable } = request.pre;
   const backLink = await getLicencePageUrl(licence);
-  const isEditable = hasScope(request, chargeVersionWorkflowReviewer);
+  const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const invoiceAccountAddress = findInvoiceAccountAddress(request);
 
   return h.view('nunjucks/charge-information/view', {
@@ -38,10 +42,41 @@ const getReviewChargeInformation = async (request, h) => {
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     invoiceAccountAddress,
     licenceId: licence.id,
-    isEditable,
-    isChargeable
+    isEditable: false,
+    isApprover,
+    isChargeable,
+    reviewForm: reviewForm(request)
   });
 };
 
-exports.getReviewChargeInformation = getReviewChargeInformation;
+const postReviewChargeInformation = async (request, h) => {
+  const { draftChargeInformation, licence, isChargeable } = request.pre;
+  const backLink = await getLicencePageUrl(licence);
+  const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
+  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+
+  const form = forms.handleRequest(
+    reviewForm(request),
+    request,
+    reviewFormSchema
+  );
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form, `/licences/${request.params.licenceId}/charge-informtion/${request.params.chargeVersionWorkflowId}/review`);
+  } else {
+    return h.view('nunjucks/charge-information/view', {
+      ...getDefaultView(request, backLink),
+      pageTitle: `Check charge information`,
+      chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
+      invoiceAccountAddress,
+      licenceId: licence.id,
+      isEditable: false,
+      isApprover,
+      isChargeable
+    });
+  }
+};
+
 exports.getViewChargeInformation = getViewChargeInformation;
+exports.getReviewChargeInformation = getReviewChargeInformation;
+exports.postReviewChargeInformation = postReviewChargeInformation;

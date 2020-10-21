@@ -1,0 +1,34 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ title(pageTitle, caption, false, true, true) }}
+      <div class="govuk-tabs" data-module="govuk-tabs">
+        <h2 class="govuk-tabs__title">Contents</h2>
+
+        <ul class="govuk-tabs__list">
+          <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+            <a class="govuk-tabs__tab" href="#toSetUp">To set up ({{licencesCounts.toSetUp}})</a>
+          </li>
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#review">Review ({{licencesCounts.review}})</a>
+          </li>
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#changeRequest">Change request ({{licencesCounts.changeRequest}})</a>
+          </li>
+        </ul>
+
+        <section class="govuk-tabs__panel" id="toSetUp">
+          {% include "nunjucks/charge-information/workflow-tabs/to-set-up.njk" %}
+        </section>
+        <section class="govuk-tabs__panel" id="review">
+          {% include "nunjucks/charge-information/workflow-tabs/review.njk" %}
+        </section>
+        <section class="govuk-tabs__panel" id="changeRequest">
+          {% include "nunjucks/charge-information/workflow-tabs/change-request.njk" %}
+        </section>
+      </div>
+    </div>
+  </div>
+{% endblock %}

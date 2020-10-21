@@ -6,7 +6,7 @@ const { experiment, test, beforeEach } = exports.lab = Lab.script();
 const { expect } = require('@hapi/code');
 const uuid = require('uuid/v4');
 
-const { setInitialState } = require('internal/modules/returns-notifications/lib/actions');
+const { setInitialState, setReturnIds, setSelectedRole } = require('internal/modules/returns-notifications/lib/actions');
 const reducer = require('internal/modules/returns-notifications/lib/reducer');
 
 const DOCUMENT_ID = uuid();
@@ -68,7 +68,7 @@ const createRole = roleName => ({
 const createReturn = (startDate, endDate, status, isSummer = false) => ({
   status,
   isSummer,
-  'id': 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
+  'id': `v1:1:01/123/ABC:1234:${startDate}:${endDate}`,
   'returnVersions': [],
   'dateRange': {
     startDate,
@@ -290,6 +290,64 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
         const arr = Object.values(nextState).map(doc => doc.isSelected);
         expect(arr).to.only.include(false);
       });
+    });
+  });
+
+  experiment('setReturnIds action', () => {
+    let nextState;
+
+    beforeEach(async () => {
+      const request = {
+        params: {
+          documentId: 'test-document-id'
+        }
+      };
+      const currentState = {
+        'test-document-id': {
+          returns: [
+            createReturn('2017-04-01', '2018-03-31'),
+            createReturn('2018-04-01', '2019-03-31'),
+            createReturn('2019-04-01', '2020-03-31')
+          ]
+        }
+      };
+      const action = setReturnIds(request, { returnIds: ['v1:1:01/123/ABC:1234:2018-04-01:2019-03-31'] });
+      nextState = reducer.reducer(currentState, action);
+    });
+
+    test('sets the isSelected flags for return IDs in the provided array', async () => {
+      expect(nextState['test-document-id'].returns[0].isSelected).to.be.false();
+      expect(nextState['test-document-id'].returns[1].isSelected).to.be.true();
+      expect(nextState['test-document-id'].returns[2].isSelected).to.be.false();
+    });
+  });
+
+  experiment('setSelectedRole action', () => {
+    let currentState, request;
+
+    beforeEach(async () => {
+      request = {
+        params: {
+          documentId: 'test-document-id'
+        }
+      };
+      currentState = {
+        'test-document-id': {
+          selectedRole: 'returnsTo'
+        }
+      };
+    });
+
+    test('sets the selected role when the role is "licenceHolder"', async () => {
+      const action = setSelectedRole(request, { selectedRole: 'licenceHolder' });
+      const nextState = reducer.reducer(currentState, action);
+      expect(nextState['test-document-id'].selectedRole).to.equal('licenceHolder');
+    });
+
+    test('does not set the selected role when the role is "createOneTimeAddress"', async () => {
+      const action = setSelectedRole(request, { selectedRole: 'createOneTimeAddress' });
+      const nextState = reducer.reducer(currentState, action);
+      expect(nextState['test-document-id'].selectedRole).to.equal('returnsTo');
     });
   });
 });

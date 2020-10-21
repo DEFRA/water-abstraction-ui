@@ -1,5 +1,32 @@
 'use strict';
 
+const createRole = (overrides = {}) => ({
+  'id': '00000000-0000-0000-0000-000000000003',
+  'roleName': overrides.roleName || 'licenceHolder',
+  'dateRange': {
+    'startDate': '2020-01-01',
+    'endDate': null
+  },
+  'company': {
+    'companyAddresses': [],
+    'companyContacts': [],
+    'name': 'TEST WATER CO LTD',
+    'id': '00000000-0000-0000-0000-000000000004'
+  },
+  'contact': {},
+  'address': {
+    'town': 'TESTINGTON',
+    'county': 'TESTINGSHIRE',
+    'postcode': 'TT1 1TT',
+    'country': null,
+    'id': '00000000-0000-0000-0000-000000000005',
+    'addressLine1': 'BUTTERCUP ROAD',
+    'addressLine2': 'DAISY LANE',
+    'addressLine3': 'TESTINGLY',
+    'addressLine4': null
+  }
+});
+
 const createReturn = (overrides = {}) => ({
   'id': overrides.id || 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
   'returnVersions': [],
@@ -41,4 +68,5 @@ const createReturn = (overrides = {}) => ({
   }
 });
 
+exports.createRole = createRole;
 exports.createReturn = createReturn;

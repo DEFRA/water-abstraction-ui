@@ -47,7 +47,8 @@ experiment('manage - controller', () => {
         'licenceNotifications',
         'hofNotifications',
         'accounts',
-        'billing'
+        'billing',
+        'chargeInformationWorkflow'
       ]);
     });
   });

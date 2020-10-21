@@ -23,6 +23,26 @@ experiment('services/water/ChargeVersionsService', () => {
     sandbox.restore();
   });
 
+  experiment('.getLicencesWithoutChargeInformation', () => {
+    test('passes the expected URL to the service request', async () => {
+      const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
+      await service.getLicencesWithoutChargeInformation();
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/licences/without-charge-versions`;
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  experiment('.getChargeVersionWorkflows', () => {
+    test('passes the expected URL to the service request', async () => {
+      const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
+      await service.getChargeVersionWorkflows();
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows`;
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
   experiment('.getChargeVersionWorkflow', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');

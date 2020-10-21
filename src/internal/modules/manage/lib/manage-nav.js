@@ -44,6 +44,9 @@ const manageTabSkeleton = {
   billing: [
     createLink('Create a bill run', '/billing/batch/type', scope.billing),
     createLink('View past and open bill runs', '/billing/batch/list', scope.billing)
+  ],
+  chargeInformationWorkflow: [
+    createLink('Check licences in workflow', '/charge-information-workflow', scope.billing)
   ]
 };
 

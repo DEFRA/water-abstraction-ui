@@ -4,7 +4,8 @@
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "crm/address.njk" import address %}
 {% from "badge.njk" import badge %}
-{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
 
 {% macro summaryListRow(key, value, changeLink) %}
   <div class="govuk-summary-list__row">
@@ -99,7 +100,7 @@
           {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
           {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
         </dl>
-        {% if chargeVersion.status !== 'review' %}
+        {% if isEditable %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
               <form method="post" novalidate>
@@ -186,7 +187,7 @@
     </div>
   {% endif %}
 
-  {% if isApprover and chargeVersion.status == 'review' %}
+  {% if isApprover and chargeVersion.status == 'review' and reviewForm %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {{ formErrorSummary(reviewForm) }}

@@ -14,14 +14,14 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
   f.fields.push(fields.radio('reviewOutcome', {
     errors: {
       'any.required': {
-        message: 'Select a review outcome'
+        message: 'Select yes to approve the charge information or no to request changes.'
       }
     },
     choices: [
       {
         value: 'approve',
         label: 'Yes, approve',
-        fields: [fields.paragraph('Approval notice', {
+        fields: [fields.paragraph('approval_notice', {
           text: 'This licence will be added to the supplementary bill run'
         })]
       },
@@ -33,7 +33,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
           required: true,
           errors: {
             'any.empty': {
-              message: `er no`
+              message: `Enter details into the box about what needs to change.`
             }
           },
           label: 'Which parts of the charge information are incorrect?',
@@ -48,17 +48,16 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
   return f;
 };
 
-const reviewFormSchema = request => {
-  return {
-    csrf_token: Joi.string().uuid().required(),
-    reviewOutcome: Joi.string().allow('approve', 'requestChanges'),
-    reviewerComents: Joi.string().optional().allow(null).when('reviewOutcome', {
-      is: 'requestChanges',
-      then: Joi.required(),
-      otherwise: Joi.string().optional().allow(null)
-    })
-  };
-};
+const reviewFormSchema = () => ({
+  csrf_token: Joi.string().uuid().required(),
+  approval_notice: Joi.any(),
+  reviewOutcome: Joi.string().required().allow('approve', 'requestChanges'),
+  reviewerComments: Joi.string().when('reviewOutcome', {
+    is: 'requestChanges',
+    then: Joi.string().required(),
+    otherwise: Joi.string().optional().allow('').allow(null).default('')
+  })
+});
 
 exports.reviewForm = reviewForm;
 exports.reviewFormSchema = reviewFormSchema;

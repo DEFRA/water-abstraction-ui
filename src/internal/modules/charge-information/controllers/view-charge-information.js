@@ -4,8 +4,7 @@ const {
   findInvoiceAccountAddress
 } = require('../lib/helpers');
 const forms = require('shared/lib/forms');
-const sessionForms = require('shared/lib/session-forms');
-const sessionHelper = require('shared/lib/session-helpers');
+const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { reviewForm, reviewFormSchema } = require('../forms/review');
@@ -54,16 +53,13 @@ const postReviewChargeInformation = async (request, h) => {
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const invoiceAccountAddress = findInvoiceAccountAddress(request);
-
+  console.log(request.params);
   const form = forms.handleRequest(
     reviewForm(request),
     request,
-    reviewFormSchema
+    reviewFormSchema()
   );
-
   if (!form.isValid) {
-    return h.postRedirectGet(form, `/licences/${request.params.licenceId}/charge-informtion/${request.params.chargeVersionWorkflowId}/review`);
-  } else {
     return h.view('nunjucks/charge-information/view', {
       ...getDefaultView(request, backLink),
       pageTitle: `Check charge information`,
@@ -72,8 +68,14 @@ const postReviewChargeInformation = async (request, h) => {
       licenceId: licence.id,
       isEditable: false,
       isApprover,
-      isChargeable
+      isChargeable,
+      reviewForm: form
     });
+  } else {
+    // TODO make API call to the service
+    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, draftChargeInformation, request.params.chargeVersionWorkflowId);
+    // send user back to the charge info tab
+    return h.redirect(`/charge-information-workflows`);
   }
 };
 

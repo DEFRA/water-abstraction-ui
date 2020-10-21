@@ -33,6 +33,22 @@ class ChargeVersionWorkflowsService extends ServiceClient {
   }
 
   /**
+   * Send a PATCH request to the service relating to a charge version workflow
+   */
+  patchChargeVersionWorkflow (status, approverComments, chargeVersion, workflowId) {
+    console.log(status);
+    console.log(chargeVersion);
+    const url = this.joinUrl('charge-version-workflows', workflowId);
+    return this.serviceRequest.patch(url, {
+      body: {
+        status,
+        approverComments,
+        chargeVersion
+      }
+    });
+  }
+
+  /**
    * Call to delete the charge version work flow for id provided
    * @param {String} chargeVersionWorkflowId guid
    */

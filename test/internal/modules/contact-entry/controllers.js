@@ -281,7 +281,7 @@ experiment('internal/modules/contact-entry/controllers', () => {
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
+      expect(template).to.equal('nunjucks/contact-entry/select-company');
     });
 
     test('passes through request.view', async () => {

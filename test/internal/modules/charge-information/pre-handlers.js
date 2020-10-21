@@ -33,20 +33,22 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       pre: { draftChargeInformation: { dateRange: { startDate: START_DATE } } }
     };
 
-    sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves([
-      {
-        id: 'test-change-reason-id-1',
-        type: 'new_chargeable_charge_version'
-      },
-      {
-        id: 'test-change-reason-id-2',
-        type: 'new_non_chargeable_charge_version'
-      },
-      {
-        id: 'test-change-reason-id-3',
-        type: 'new_non_chargeable_charge_version'
-      }
-    ]);
+    sandbox.stub(services.water.changeReasons, 'getChangeReasons').resolves({
+      data: [
+        {
+          id: 'test-change-reason-id-1',
+          type: 'new_chargeable_charge_version'
+        },
+        {
+          id: 'test-change-reason-id-2',
+          type: 'new_non_chargeable_charge_version'
+        },
+        {
+          id: 'test-change-reason-id-3',
+          type: 'new_non_chargeable_charge_version'
+        }
+      ]
+    });
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves({
       data: []

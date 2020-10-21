@@ -10,9 +10,6 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-0">
   <div class="govuk-grid-column-two-thirds">
     <section class="govuk-!-margin-bottom-6">
-      {% set caption %}
-        {{ invoiceLicence.licence.licenceNumber }}
-      {% endset %}
       {{ title(pageTitle, caption) }}
     </section>
 
@@ -20,7 +17,7 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Charge period</th>
-          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable quantity</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">

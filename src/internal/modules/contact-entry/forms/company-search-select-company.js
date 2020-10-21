@@ -7,12 +7,13 @@ const getCompanyText = row => {
 };
 
 const getCompanyChoices = companies => {
-  const choices = companies.map(record => {
-    return ({
-      value: record.company.companyNumber,
-      label: getCompanyText(record)
-    });
-  });
+  const choices = [{ value: null, label: `${companies.length} companies found` },
+    ...companies.map(record => {
+      return ({
+        value: record.company.companyNumber,
+        label: getCompanyText(record)
+      });
+    })];
   return choices;
 };
 
@@ -26,6 +27,9 @@ const form = (request, defaultValue) => {
   f.fields.push(fields.dropdown('selectedCompaniesHouseNumber', {
     errors: {
       'any.required': {
+        message: 'Select a company from the list'
+      },
+      'any.empty': {
         message: 'Select a company from the list'
       }
     },

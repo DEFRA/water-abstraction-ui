@@ -20,7 +20,7 @@ const loadDraftChargeInformation = async request =>
 
 const getFilteredChangeReasons = async type => {
   try {
-    const changeReasons = await services.water.changeReasons.getChangeReasons();
+    const { data: changeReasons } = await services.water.changeReasons.getChangeReasons();
     return changeReasons.filter(reason => reason.type === type);
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);

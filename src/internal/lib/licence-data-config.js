@@ -30,8 +30,8 @@ const getLicenceData = async (method, documentId, request) => {
     return {
       error,
       data: [
-        ...chargeVersionWorkflows,
-        ...chargeVersions
+        ...Array.isArray(chargeVersionWorkflows) ? chargeVersionWorkflows : [],
+        ...Array.isArray(chargeVersions) ? chargeVersions : []
       ] };
   }
   return services.water.licences[method](documentId, { includeExpired: true });

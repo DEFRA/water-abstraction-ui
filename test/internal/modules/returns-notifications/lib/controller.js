@@ -160,12 +160,9 @@ experiment('internal/modules/returns-notifications/lib/controller', () => {
         await controller.createPostHandler(request, h, formContainer, actionCreator, getNextPath);
       });
 
-      test('the function that generates the path is called with the correct params', async () => {
+      test('the function that generates the path is called with the current request', async () => {
         const { args } = getNextPath.lastCall;
         expect(args[0]).to.equal(request);
-        expect(args[1].form).to.be.an.object();
-        expect(args[1].document).to.equal(request.pre.document);
-        expect(args[1].nextState).to.equal({ nextState: true });
       });
 
       test('the user is redirected', async () => {

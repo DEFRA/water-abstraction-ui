@@ -16,6 +16,7 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('internal/modules/returns-notifications/controllers/paper-forms');
 const services = require('internal/lib/connectors/services');
+const helpers = require('../helpers');
 
 const DOCUMENT_ID = uuid();
 const LICENCE_NUMBER = '01/123/ABC';
@@ -44,47 +45,6 @@ const createRole = () => ({
     'addressLine2': 'DAISY LANE',
     'addressLine3': 'TESTINGLY',
     'addressLine4': null
-  }
-});
-
-const createReturn = (overrides = {}) => ({
-  'id': overrides.id || 'v1:1:01/123/ABC:1234:2020-04-01:2021-03-31',
-  'returnVersions': [],
-  'dateRange': {
-    'startDate': '2020-04-01',
-    'endDate': '2021-03-31'
-  },
-  'isUnderQuery': false,
-  'isSummer': false,
-  'dueDate': '2021-04-28',
-  'receivedDate': null,
-  'status': 'due',
-  'abstractionPeriod': {
-    'startDay': 1,
-    'startMonth': 1,
-    'endDay': 31,
-    'endMonth': 12
-  },
-  'returnRequirement': {
-    'returnRequirementPurposes': [
-      {
-        'id': '00000000-0000-0000-0000-000000000003',
-        'purposeAlias': 'Spray Irrigation - Storage',
-        'purposeUse': {
-          'id': '00000000-0000-0000-0000-000000000004',
-          'code': '420',
-          'name': 'Spray Irrigation - Storage',
-          'dateUpdated': '2020-10-12T09:00:03.130Z',
-          'dateCreated': '2019-08-29T12:50:59.712Z',
-          'lossFactor': 'high',
-          'isTwoPartTariff': true
-        }
-      }
-    ],
-    'id': '00000000-0000-0000-0000-000000000005',
-    'isSummer': false,
-    'externalId': '1:1234',
-    'legacyId': 1234
   }
 });
 
@@ -125,7 +85,7 @@ const apiResponse = [{
       },
 
       'returns': [
-        createReturn()
+        helpers.createReturn()
       ]
     }
   ]
@@ -144,10 +104,10 @@ const createState = () => ({
       licenceNumber: '01/123/ABC'
     },
     returns: [{
-      ...createReturn({ id: 'v1:1:01/123/ABC:1234:2018-04-01:2019-03-31' }),
+      ...helpers.createReturn({ id: 'v1:1:01/123/ABC:1234:2018-04-01:2019-03-31' }),
       isSelected: false
     }, {
-      ...createReturn({ id: 'v1:1:01/123/ABC:1234:2019-04-01:2020-03-31' }),
+      ...helpers.createReturn({ id: 'v1:1:01/123/ABC:1234:2019-04-01:2020-03-31' }),
       isSelected: true
     }]
   }

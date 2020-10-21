@@ -53,7 +53,7 @@ const createPostHandler = async (request, h, formContainer, actionCreator, redir
   const nextState = reducer.reducer(currentState, actionCreator(request, getValues(form)));
   request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
 
-  const path = isFunction(redirectPath) ? redirectPath(request, { form, document, nextState }) : redirectPath;
+  const path = isFunction(redirectPath) ? redirectPath(request) : redirectPath;
   return h.redirect(path);
 };
 

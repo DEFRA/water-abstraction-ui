@@ -6,6 +6,7 @@ const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
 const { crmRoles } = require('shared/lib/constants');
 const services = require('../../../lib/connectors/services');
+const routing = require('../lib/routing');
 
 const { getReturnStatusString } = require('../lib/return-mapper');
 const { SESSION_KEYS } = require('../lib/constants');
@@ -22,8 +23,6 @@ const selectAddressForm = require('../forms/select-address');
 // State
 const actions = require('../lib/actions');
 const { reducer } = require('../lib/reducer');
-
-const checkAnswersRoute = '/returns-notifications/check-answers';
 
 /**
  * Renders a page for the user to input a list of licences to whom
@@ -59,7 +58,7 @@ const postEnterLicenceNumber = async (request, h) => {
     const nextState = reducer({}, actions.setInitialState(request, data));
     request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
 
-    const path = isMultipleLicenceHoldersForLicence(data) ? '/returns-notifications/select-licence-holders' : checkAnswersRoute;
+    const path = isMultipleLicenceHoldersForLicence(data) ? routing.getSelectLicenceHolders() : routing.getCheckAnswers();
     return h.redirect(path);
   } catch (err) {
     // Unexpected error
@@ -87,8 +86,8 @@ const mapStateToView = state => Object.values(state).map(({ document, returns, l
   returns: returns.filter(ret => ret.isSelected).map(mapReturnToView),
   licenceHolderRole: document.roles.find(isLicenceHolderRole),
   selectedRole: document.roles.find(role => role.roleName === selectedRole),
-  selectReturnsLink: `/returns-notifications/${document.id}/select-returns`,
-  selectAddressLink: `/returns-notifications/${document.id}/select-address`
+  selectReturnsLink: routing.getSelectReturns(document.id),
+  selectAddressLink: routing.getSelectAddress(document.id)
 }));
 
 /**
@@ -99,7 +98,7 @@ const getCheckAnswers = async (request, h) => {
   const view = {
     ...request.view,
     documents: mapStateToView(state),
-    back: '/returns-notifications/paper-forms',
+    back: routing.getEnterLicenceNumber(),
     form: confirmForm.form(request, 'Send paper forms')
   };
   return h.view('nunjucks/returns-notifications/check-answers', view);
@@ -109,20 +108,13 @@ const getCheckAnswers = async (request, h) => {
  * Select which returns paper forms to send
  */
 const getSelectReturns = partialRight(controller.createGetHandler, selectReturnsForm);
-const postSelectReturns = partialRight(controller.createPostHandler, selectReturnsForm, actions.setReturnIds, checkAnswersRoute);
+const postSelectReturns = partialRight(controller.createPostHandler, selectReturnsForm, actions.setReturnIds, routing.getCheckAnswers);
 
 /**
  * Select which address to send the paper form to
  */
-const getSelectAddressRedirectPath = (request, { form, document }) => {
-  const { selectedRole } = getValues(form);
-  if (selectedRole === 'createOneTimeAddress') {
-    return `/returns-notifications/${document.document.id}/one-time-address`;
-  }
-  return checkAnswersRoute;
-};
 const getSelectAddress = partialRight(controller.createGetHandler, selectAddressForm);
-const postSelectAddress = partialRight(controller.createPostHandler, selectAddressForm, actions.setSelectedRole, getSelectAddressRedirectPath);
+const postSelectAddress = partialRight(controller.createPostHandler, selectAddressForm, actions.setSelectedRole, routing.getSelectAddressRedirect);
 
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;

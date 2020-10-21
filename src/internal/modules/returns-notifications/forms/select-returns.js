@@ -16,9 +16,7 @@ const getSelectedReturnIds = returns =>
 const selectReturnsForm = (request, document) => {
   const { csrfToken } = request.view;
 
-  const action = `/returns-notifications/${document.document.id}/select-returns`;
-
-  const f = formFactory(action);
+  const f = formFactory(request.path);
 
   f.fields.push(fields.checkbox('returnIds', {
     caption: `Licence ${document.document.licenceNumber}`,

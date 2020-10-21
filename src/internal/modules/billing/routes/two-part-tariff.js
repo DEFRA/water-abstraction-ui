@@ -59,7 +59,7 @@ if (isAcceptanceTestTarget) {
     },
     getLicenceReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/{action}',
       handler: controller.getLicenceReview,
       config: {
         pre: [
@@ -76,7 +76,8 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            licenceId: VALID_GUID
+            licenceId: VALID_GUID,
+            action: Joi.string().allow(['review', 'view']).required()
           }
         }
       }

@@ -29,7 +29,7 @@ const getTwoPartTariffAction = async (request, h, action) => {
   // gets 2pt matching error messages and define error types
   const licences = licencesData
     .filter(getLicenceFilter(action))
-    .map(licence => twoPartTariff.mapLicence(batch, licence));
+    .map(licence => twoPartTariff.mapLicence(batch, licence, action));
 
   return h.view('nunjucks/billing/two-part-tariff-' + action, {
     ...request.view,
@@ -50,17 +50,22 @@ const getTwoPartTariffViewReady = partialRight(getTwoPartTariffAction, 'ready');
  */
 const getLicenceReview = async (request, h) => {
   const { batch, licence } = request.pre;
-  const { licenceId } = request.params;
+  const { licenceId, action } = request.params;
+
+  const pageTitle = action === 'review'
+    ? `Review returns data issues for ${licence.licenceNumber}`
+    : `View returns data for ${licence.licenceNumber}`;
+  const backLinkTail = action === 'review' ? 'review' : 'ready';
 
   const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
 
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
-    pageTitle: `Review returns data issues for ${licence.licenceNumber}`,
     ...request.view,
+    pageTitle,
     batch,
     licence,
     billingVolumeGroups: twoPartTariff.getBillingVolumeGroups(batch, licence, billingVolumes),
-    back: `/billing/batch/${batch.id}/two-part-tariff-review`
+    back: `/billing/batch/${batch.id}/two-part-tariff-${backLinkTail}`
   });
 };
 
@@ -97,7 +102,8 @@ const getBillingVolumeReview = async (request, h, form) => {
     error: twoPartTariff.getBillingVolumeError(billingVolume),
     licence,
     ...request.view,
-    pageTitle: `Review billable quantity ${billingVolume.chargeElement.description}`,
+    pageTitle: `Review quantity to bill for ${billingVolume.chargeElement.description}`,
+    caption: `Licence ${licence.licenceNumber}`,
     ...licenceData,
     billingVolume,
     form: form || twoPartTariffQuantityForm.form(request, billingVolume),
@@ -153,7 +159,8 @@ const getConfirmQuantity = async (request, h) => {
     quantity,
     licence,
     form,
-    pageTitle: `You are about to set the billable quantity to ${quantity}ML`,
+    pageTitle: `You're about to set the billable quantity to ${quantity}ML`,
+    caption: `Licence ${licence.licenceNumber}`,
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`
   });
 };

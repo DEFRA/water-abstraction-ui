@@ -48,7 +48,7 @@
     <p>Date signed:
       {{ agreement.dateSigned | date }}</p>
     <p>Action:
-      {{ agreementActions(agreement, isChargingUser) }}
+      {{ agreementActions(agreement, licenceId, isChargingUser) }}
     </p>
   </div>
 {% endmacro %}
@@ -86,7 +86,7 @@
       {{ agreement.dateSigned | date }}
     </td>
     <td class="govuk-table__cell">
-      {{ agreementActions(agreement, isChargingUser) }}
+      {{ agreementActions(agreement, licenceId, isChargingUser) }}
     </td>
   </tr>
 {% endmacro %}

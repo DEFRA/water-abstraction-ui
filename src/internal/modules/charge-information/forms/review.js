@@ -26,7 +26,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
         })]
       },
       {
-        value: 'requestChanges',
+        value: 'changes_requested',
         label: 'No, request a change',
         fields: [fields.text('reviewerComments', {
           multiline: true,
@@ -51,9 +51,9 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
 const reviewFormSchema = () => ({
   csrf_token: Joi.string().uuid().required(),
   approval_notice: Joi.any(),
-  reviewOutcome: Joi.string().required().allow('approve', 'requestChanges'),
+  reviewOutcome: Joi.string().required().allow('approve', 'changes_requested'),
   reviewerComments: Joi.string().when('reviewOutcome', {
-    is: 'requestChanges',
+    is: 'changes_requested',
     then: Joi.string().required(),
     otherwise: Joi.string().optional().allow('').allow(null).default('')
   })

@@ -53,7 +53,7 @@ const postReviewChargeInformation = async (request, h) => {
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const invoiceAccountAddress = findInvoiceAccountAddress(request);
-  console.log(request.params);
+
   const form = forms.handleRequest(
     reviewForm(request),
     request,
@@ -72,9 +72,14 @@ const postReviewChargeInformation = async (request, h) => {
       reviewForm: form
     });
   } else {
-    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, {}, request.params.chargeVersionWorkflowId);
-    // send user back to the charge info tab
-    return h.redirect(`/charge-information-workflow`);
+    if (request.payload.reviewOutcome === 'approve') {
+      await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
+      return h.redirect(`/charge-information-workflow`);
+    } else {
+      await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, {}, request.params.chargeVersionWorkflowId);
+      // send user back to the charge info tab
+      return h.redirect(`/charge-information-workflow`);
+    }
   }
 };
 

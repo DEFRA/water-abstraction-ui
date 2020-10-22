@@ -72,10 +72,9 @@ const postReviewChargeInformation = async (request, h) => {
       reviewForm: form
     });
   } else {
-    // TODO make API call to the service
-    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, draftChargeInformation, request.params.chargeVersionWorkflowId);
+    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, {}, request.params.chargeVersionWorkflowId);
     // send user back to the charge info tab
-    return h.redirect(`/charge-information-workflows`);
+    return h.redirect(`/charge-information-workflow`);
   }
 };
 

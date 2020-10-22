@@ -152,6 +152,74 @@ module.exports = {
       }
     },
     handler: controller.postSelectAddress
-  }
+  },
 
+  getRecipient: {
+    method: 'GET',
+    path: '/returns-notifications/{documentId}/recipient',
+    config: {
+      auth: {
+        scope: returns
+      },
+      validate: {
+        params: {
+          documentId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.getDocumentFromSession, assign: 'document' }
+      ],
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Who should receive the form?'
+        }
+      }
+    },
+    handler: controller.getRecipient
+  },
+
+  postRecipient: {
+    method: 'POST',
+    path: '/returns-notifications/{documentId}/recipient',
+    config: {
+      auth: {
+        scope: returns
+      },
+      validate: {
+        params: {
+          documentId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.getDocumentFromSession, assign: 'document' }
+      ],
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Who should receive the form?'
+        }
+      }
+    },
+    handler: controller.postRecipient
+  },
+
+  getAcceptOneTimeAddress: {
+    method: 'GET',
+    path: '/returns-notifications/{documentId}/accept-one-time-address',
+    config: {
+      auth: {
+        scope: returns
+      },
+      validate: {
+        params: {
+          documentId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.getDocumentFromSession, assign: 'document' }
+      ]
+    },
+    handler: controller.getAcceptOneTimeAddress
+  }
 };

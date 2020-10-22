@@ -6,7 +6,9 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const ACTION_TYPES = {
   setInitialState: 'setInitialState',
   setReturnIds: 'setReturnIds',
-  setSelectedRole: 'setSelectedRole'
+  setSelectedRole: 'setSelectedRole',
+  setOneTimeAddressName: 'setOneTimeAddressName',
+  setOneTimeAddress: 'setOneTimeAddress'
 };
 
 const setInitialState = (request, licences, refDate) => ({
@@ -32,7 +34,19 @@ const setReturnIds = partialRight(createDocumentAction, ACTION_TYPES.setReturnId
 
 const setSelectedRole = partialRight(createDocumentAction, ACTION_TYPES.setSelectedRole, ['selectedRole']);
 
+const setOneTimeAddressName = partialRight(createDocumentAction, ACTION_TYPES.setOneTimeAddressName, ['fullName']);
+
+const setOneTimeAddress = (documentId, address) => ({
+  type: ACTION_TYPES.setOneTimeAddress,
+  payload: {
+    documentId,
+    address
+  }
+});
+
 exports.ACTION_TYPES = ACTION_TYPES;
 exports.setInitialState = setInitialState;
 exports.setReturnIds = setReturnIds;
 exports.setSelectedRole = setSelectedRole;
+exports.setOneTimeAddressName = setOneTimeAddressName;
+exports.setOneTimeAddress = setOneTimeAddress;

@@ -9,6 +9,7 @@ const { isFunction } = require('lodash');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { SESSION_KEYS } = require('./constants');
 const reducer = require('./reducer');
+const sessionForms = require('shared/lib/session-forms');
 
 const checkAnswersRoute = '/returns-notifications/check-answers';
 
@@ -21,13 +22,21 @@ const checkAnswersRoute = '/returns-notifications/check-answers';
  */
 const createGetHandler = async (request, h, formContainer) => {
   const { document } = request.pre;
+  const form = sessionForms.get(request, formContainer.form(request, document));
   const view = {
     ...request.view,
     caption: `Licence ${document.document.licenceNumber}`,
     back: checkAnswersRoute,
-    form: formContainer.form(request, document)
+    form
   };
   return h.view('nunjucks/form', view);
+};
+
+const processAction = (request, action) => {
+  const currentState = request.yar.get(SESSION_KEYS.paperFormsFlow);
+  const nextState = reducer.reducer(currentState, action);
+  request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
+  return nextState;
 };
 
 /**
@@ -49,13 +58,12 @@ const createPostHandler = async (request, h, formContainer, actionCreator, redir
     return h.postRedirectGet(form);
   }
 
-  const currentState = request.yar.get(SESSION_KEYS.paperFormsFlow);
-  const nextState = reducer.reducer(currentState, actionCreator(request, getValues(form)));
-  request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
+  processAction(request, actionCreator(request, getValues(form)));
 
   const path = isFunction(redirectPath) ? redirectPath(request) : redirectPath;
   return h.redirect(path);
 };
 
 exports.createGetHandler = createGetHandler;
+exports.processAction = processAction;
 exports.createPostHandler = createPostHandler;

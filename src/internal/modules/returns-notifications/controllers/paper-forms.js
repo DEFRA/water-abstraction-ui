@@ -19,6 +19,7 @@ const licenceNumbersForm = require('../forms/licence-numbers');
 const confirmForm = require('shared/lib/forms/confirm-form');
 const selectReturnsForm = require('../forms/select-returns');
 const selectAddressForm = require('../forms/select-address');
+const recipientForm = require('../forms/recipient');
 
 // State
 const actions = require('../lib/actions');
@@ -116,6 +117,25 @@ const postSelectReturns = partialRight(controller.createPostHandler, selectRetur
 const getSelectAddress = partialRight(controller.createGetHandler, selectAddressForm);
 const postSelectAddress = partialRight(controller.createPostHandler, selectAddressForm, actions.setSelectedRole, routing.getSelectAddressRedirect);
 
+/**
+ * Select one-time address full name
+ */
+const getRecipient = partialRight(controller.createGetHandler, recipientForm);
+const postRecipient = partialRight(controller.createPostHandler, recipientForm, actions.setOneTimeAddressName, routing.getAddressFlowRedirect);
+
+/**
+ * Handle return from address flow plugin
+ */
+const getAcceptOneTimeAddress = (request, h) => {
+  // Get address from address plugin and process action
+  const { documentId } = request.params;
+  const action = actions.setOneTimeAddress(documentId, request.getNewAddress());
+  controller.processAction(request, action);
+
+  // Redirect to check answers page
+  return h.redirect(routing.getCheckAnswers());
+};
+
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;
 exports.getCheckAnswers = getCheckAnswers;
@@ -125,3 +145,8 @@ exports.postSelectReturns = postSelectReturns;
 
 exports.getSelectAddress = getSelectAddress;
 exports.postSelectAddress = postSelectAddress;
+
+exports.getRecipient = getRecipient;
+exports.postRecipient = postRecipient;
+
+exports.getAcceptOneTimeAddress = getAcceptOneTimeAddress;

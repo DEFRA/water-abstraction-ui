@@ -20,6 +20,20 @@ class ReturnsService extends SharedReturnsService {
       qs: { returnId }
     });
   }
+
+  /**
+   * Gets a returns and the licence holder/returns contacts for
+   * the supplied list of licence numbers
+   * @param {Array<String>} licenceNumbers
+   * @return {Promise<Array>}
+   */
+  getIncompleteReturns (licenceNumbers) {
+    const url = this.joinUrl('returns/incomplete');
+    return this.serviceRequest.get(url, {
+      qs: { licenceNumbers },
+      qsStringifyOptions: { arrayFormat: 'repeat' }
+    });
+  }
 }
 
 module.exports = ReturnsService;

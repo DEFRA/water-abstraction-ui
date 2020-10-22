@@ -3,7 +3,7 @@
 const { VALID_GUID } = require('shared/lib/validators');
 
 const controller = require('../controllers/paper-forms');
-const preHandlers = require('../controllers/pre-handlers');
+const preHandlers = require('../pre-handlers');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
 

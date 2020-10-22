@@ -2,7 +2,7 @@
 
 const Boom = require('@hapi/boom');
 
-const { SESSION_KEYS } = require('../lib/constants');
+const { SESSION_KEYS } = require('./lib/constants');
 
 /**
  * Gets the requested document by ID from the paper forms flow session data

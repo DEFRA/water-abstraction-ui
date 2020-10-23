@@ -39,6 +39,12 @@ formErrorSummary %}
 
 {% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
   <div class="govuk-grid-column-full">
+    {% if chargeVersion.status == 'changes_requested' and chargeVersion.approverComments %}
+        <section class="govuk-!-margin-bottom-7">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Change Request</h2>
+            <p style="padding-top: 1em; padding-bottom: 1em;">{{ chargeVersion.approverComments }}</p>
+        </section>
+    {% endif %}
     <section class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
       <dl class="govuk-summary-list">

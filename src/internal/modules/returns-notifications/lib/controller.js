@@ -22,10 +22,10 @@ const checkAnswersRoute = '/returns-notifications/check-answers';
  */
 const createGetHandler = async (request, h, formContainer) => {
   const { document } = request.pre;
-  const form = sessionForms.get(request, formContainer.form(request, document));
+  const form = sessionForms.get(request, formContainer.form(request));
   const view = {
     ...request.view,
-    caption: `Licence ${document.document.licenceNumber}`,
+    caption: document && `Licence ${document.document.licenceNumber}`,
     back: checkAnswersRoute,
     form
   };
@@ -49,10 +49,8 @@ const processAction = (request, action) => {
  * @return {Object}
  */
 const createPostHandler = async (request, h, formContainer, actionCreator, redirectPath) => {
-  const { document } = request.pre;
-
-  const schema = formContainer.schema(request, document);
-  const form = handleRequest(formContainer.form(request, document), request, schema);
+  const schema = formContainer.schema(request);
+  const form = handleRequest(formContainer.form(request), request, schema);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);

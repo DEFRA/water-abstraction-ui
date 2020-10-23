@@ -20,6 +20,7 @@ const confirmForm = require('shared/lib/forms/confirm-form');
 const selectReturnsForm = require('../forms/select-returns');
 const selectAddressForm = require('../forms/select-address');
 const recipientForm = require('../forms/recipient');
+const licenceHoldersForm = require('../forms/select-licence-holders');
 
 // State
 const actions = require('../lib/actions');
@@ -81,15 +82,17 @@ const mapReturnToView = ret => ({
   details: getReturnStatusString(ret)
 });
 
-const mapStateToView = state => Object.values(state).map(({ document, returns, licence, selectedRole }) => ({
-  id: document.id,
-  licenceNumber: licence.licenceNumber,
-  returns: returns.filter(ret => ret.isSelected).map(mapReturnToView),
-  licenceHolderRole: document.roles.find(isLicenceHolderRole),
-  selectedRole: document.roles.find(role => role.roleName === selectedRole),
-  selectReturnsLink: routing.getSelectReturns(document.id),
-  selectAddressLink: routing.getSelectAddress(document.id)
-}));
+const mapStateToView = state => Object.values(state)
+  .filter(row => row.isSelected)
+  .map(({ document, returns, licence, selectedRole }) => ({
+    id: document.id,
+    licenceNumber: licence.licenceNumber,
+    returns: returns.filter(ret => ret.isSelected).map(mapReturnToView),
+    licenceHolderRole: document.roles.find(isLicenceHolderRole),
+    selectedRole: document.roles.find(role => role.roleName === selectedRole),
+    selectReturnsLink: routing.getSelectReturns(document.id),
+    selectAddressLink: routing.getSelectAddress(document.id)
+  }));
 
 /**
  * Check answers page for forms to send
@@ -104,6 +107,12 @@ const getCheckAnswers = async (request, h) => {
   };
   return h.view('nunjucks/returns-notifications/check-answers', view);
 };
+
+/**
+ * Select which licence holders to include
+ */
+const getSelectLicenceHolders = partialRight(controller.createGetHandler, licenceHoldersForm);
+const postSelectLicenceHolders = partialRight(controller.createPostHandler, licenceHoldersForm, actions.setLicenceHolders, routing.getCheckAnswers);
 
 /**
  * Select which returns paper forms to send
@@ -139,6 +148,9 @@ const getAcceptOneTimeAddress = (request, h) => {
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;
 exports.getCheckAnswers = getCheckAnswers;
+
+exports.getSelectLicenceHolders = getSelectLicenceHolders;
+exports.postSelectLicenceHolders = postSelectLicenceHolders;
 
 exports.getSelectReturns = getSelectReturns;
 exports.postSelectReturns = postSelectReturns;

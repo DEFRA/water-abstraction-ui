@@ -63,6 +63,7 @@ const mapDocumentRow = ({ licence, documents }, { document, returns }, refDate) 
   document,
   returns: returns.map(ret => mapReturn(ret, refDate)),
   isSelected: documents.length === 1,
+  isMultipleDocument: documents.length > 1,
   selectedRole: getInitiallySelectedRole(document.roles)
 });
 
@@ -162,12 +163,29 @@ const setOneTimeAddress = (state, action) => {
   return update(state, query);
 };
 
+const isMultipleDocument = document => document.isMultipleDocument;
+
+const setLicenceHolders = (state, action) => {
+  const docs = Object.values(state).filter(isMultipleDocument);
+
+  const query = docs.reduce((acc, doc) => ({
+    ...acc,
+    [doc.document.id]: {
+      isSelected: {
+        $set: action.payload.documentIds.includes(doc.document.id)
+      }
+    }
+  }), {});
+  return update(state, query);
+};
+
 const actions = {
   [ACTION_TYPES.setInitialState]: setInitialState,
   [ACTION_TYPES.setReturnIds]: setReturnIds,
   [ACTION_TYPES.setSelectedRole]: setSelectedRole,
   [ACTION_TYPES.setOneTimeAddressName]: setOneTimeAddressName,
-  [ACTION_TYPES.setOneTimeAddress]: setOneTimeAddress
+  [ACTION_TYPES.setOneTimeAddress]: setOneTimeAddress,
+  [ACTION_TYPES.setLicenceHolders]: setLicenceHolders
 };
 
 const reducer = (state, action) => {

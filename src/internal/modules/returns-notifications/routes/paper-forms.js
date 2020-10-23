@@ -221,5 +221,45 @@ module.exports = {
       ]
     },
     handler: controller.getAcceptOneTimeAddress
+  },
+
+  getLicenceHolders: {
+    method: 'GET',
+    path: '/returns-notifications/select-licence-holders',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Which licence holders need a form?'
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
+    },
+    handler: controller.getSelectLicenceHolders
+  },
+
+  postLicenceHolders: {
+    method: 'POST',
+    path: '/returns-notifications/select-licence-holders',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Which licence holders need a form?'
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
+    },
+    handler: controller.postSelectLicenceHolders
   }
 };

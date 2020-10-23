@@ -1,6 +1,6 @@
 'use strict';
 const moment = require('moment');
-const { pick, partialRight } = require('lodash');
+const { pick, partialRight, flatMap, omit } = require('lodash');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const ACTION_TYPES = {
@@ -8,7 +8,8 @@ const ACTION_TYPES = {
   setReturnIds: 'setReturnIds',
   setSelectedRole: 'setSelectedRole',
   setOneTimeAddressName: 'setOneTimeAddressName',
-  setOneTimeAddress: 'setOneTimeAddress'
+  setOneTimeAddress: 'setOneTimeAddress',
+  setLicenceHolders: 'setLicenceHolders'
 };
 
 const setInitialState = (request, licences, refDate) => ({
@@ -44,9 +45,20 @@ const setOneTimeAddress = (documentId, address) => ({
   }
 });
 
+const setLicenceHolders = (request, formValues) => {
+  const documentIds = flatMap(Object.values(omit(formValues, 'csrf_token')));
+  return {
+    type: ACTION_TYPES.setLicenceHolders,
+    payload: {
+      documentIds
+    }
+  };
+};
+
 exports.ACTION_TYPES = ACTION_TYPES;
 exports.setInitialState = setInitialState;
 exports.setReturnIds = setReturnIds;
 exports.setSelectedRole = setSelectedRole;
 exports.setOneTimeAddressName = setOneTimeAddressName;
 exports.setOneTimeAddress = setOneTimeAddress;
+exports.setLicenceHolders = setLicenceHolders;

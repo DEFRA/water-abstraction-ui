@@ -3,7 +3,8 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
-const recipientForm = (request, document) => {
+const recipientForm = request => {
+  const { document } = request.pre;
   const { csrfToken } = request.view;
 
   const f = formFactory(request.path);

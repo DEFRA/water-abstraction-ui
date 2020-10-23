@@ -41,7 +41,7 @@ const getReviewChargeInformation = async (request, h) => {
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     invoiceAccountAddress,
     licenceId: licence.id,
-    isEditable: false,
+    isEditable: draftChargeInformation.status === 'changes_requested',
     isApprover,
     isChargeable,
     reviewForm: reviewForm(request)

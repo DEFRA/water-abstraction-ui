@@ -2,6 +2,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
+const { get } = require('lodash');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -42,8 +43,8 @@ const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeab
 const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
 
 const loadIsChargeable = async request => {
-  const { changeReason } = request.pre.draftChargeInformation;
-  return changeReason.type === 'new_chargeable_charge_version';
+  const type = get(request, 'pre.draftChargeInformation.changeReason.type');
+  return type === 'new_chargeable_charge_version';
 };
 
 const getPaddedVersionString = version => version.toString().padStart(9, '0');
@@ -118,12 +119,14 @@ const loadChargeVersion = async request => {
 };
 
 const decorateChargeVersion = chargeVersionWorkflow => {
-  const { chargeVersion, status } = chargeVersionWorkflow;
+  const { chargeVersion, status, approverComments } = chargeVersionWorkflow;
   // set id of saved address to display
-  const invoiceAccountAddress = chargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
+  const invoiceAccountAddress = get(chargeVersion, 'invoiceAccount.invoiceAccountAddress[0].id', null);
+  // const invoiceAccountAddress = chargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
   return {
     ...chargeVersion,
     status,
+    approverComments,
     invoiceAccount: { ...chargeVersion.invoiceAccount, invoiceAccountAddress }
   };
 };

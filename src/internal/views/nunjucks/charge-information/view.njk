@@ -109,7 +109,7 @@ formErrorSummary %}
         {% if isEditable %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-              <form method="post" novalidate>
+              <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
                 <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
                 {% if loop.last %}
                   {{ govukButton({
@@ -174,7 +174,7 @@ formErrorSummary %}
   {% if isEditable %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <form method="post" novalidate>
+        <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
           {{ govukButton({
             text: 'Confirm',

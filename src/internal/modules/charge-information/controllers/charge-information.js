@@ -165,6 +165,7 @@ const submitDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
+  preparedChargeInfo.chargeVersion['status'] = 'draft';
   await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   await applyFormResponse(request, {}, actions.clearData);
   const route = routing.getSubmitted(id, isChargeable);

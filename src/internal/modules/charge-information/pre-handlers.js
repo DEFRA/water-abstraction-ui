@@ -144,7 +144,7 @@ const loadChargeVersionWorkflow = async request => {
     const { chargeVersionWorkflow } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow(chargeVersionWorkflowId);
     const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
 
-    request.setDraftChargeInformation(licenceId, {...chargeVersion, chargeVersionWorkflowId});
+    request.setDraftChargeInformation(licenceId, { ...chargeVersion, chargeVersionWorkflowId });
     return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);

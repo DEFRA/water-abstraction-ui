@@ -170,20 +170,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     });
 
     experiment('sets isEditable flag', () => {
-      test('to true if user is a charge version workflow reviewer', async () => {
-        const { isEditable } = h.view.lastCall.args[1];
-        expect(isEditable).to.be.true();
-      });
-
-      test('to false if user is a charge version workflow editor', async () => {
-        request.auth = {
-          credentials: {
-            scope: chargeVersionWorkflowEditor
-          }
-        };
+      test('to false if the charge information draft is in review', async () => {
+        request.pre.draftChargeInformation['status'] = 'review';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.false();
+      });
+
+      test('to true if the charge information draft has changes_requested status', async () => {
+        request.pre.draftChargeInformation['status'] = 'changes_requested';
+        await controller.getReviewChargeInformation(request, h);
+        const { isEditable } = h.view.lastCall.args[1];
+        expect(isEditable).to.be.true();
       });
     });
   });

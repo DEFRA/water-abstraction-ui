@@ -77,7 +77,7 @@ const postReviewChargeInformation = async (request, h) => {
       invoiceAccountAddress,
       licenceId: licence.id,
       chargeVersionWorkflowId,
-      isEditable: false,
+      isEditable: draftChargeInformation.status === 'changes_requested',
       isApprover,
       isChargeable,
       reviewForm: form
@@ -85,12 +85,11 @@ const postReviewChargeInformation = async (request, h) => {
   } else {
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
-      return h.redirect(`/charge-information-workflow`);
     } else {
       await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, {}, request.params.chargeVersionWorkflowId);
-      // send user back to the charge info tab
-      return h.redirect(`/charge-information-workflow`);
     }
+    const { document_id: documentId } = await services.water.licences.getDocumentByLicenceId(licence.id);
+    return h.redirect(`/licences/${documentId}#charge`);
   }
 };
 

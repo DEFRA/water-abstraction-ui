@@ -58,6 +58,7 @@ const createRequest = () => ({
       invoiceAccount: {
         invoiceAccountAddresses: []
       },
+      status: 'draft',
       dateRange: {}
     },
     defaultCharges: [

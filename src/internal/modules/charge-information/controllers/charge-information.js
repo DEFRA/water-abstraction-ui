@@ -156,7 +156,12 @@ const updateDraftChargeInformation = async (request, h) => {
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
 
-  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow('review', preparedChargeInfo.chargeVersion.approverComments, preparedChargeInfo.chargeVersion, preparedChargeInfo.chargeVersion.chargeVersionWorkflowId);
+  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+    preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
+    'review',
+    preparedChargeInfo.chargeVersion.approverComments,
+    preparedChargeInfo.chargeVersion
+  );
   const route = routing.getSubmitted(id, isChargeable);
   return h.redirect(route);
 };

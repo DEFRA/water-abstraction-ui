@@ -81,7 +81,7 @@ const getLicencePageUrl = async licence => {
 const findInvoiceAccountAddress = request => {
   const { draftChargeInformation, isChargeable } = request.pre;
   const address = draftChargeInformation.invoiceAccount.invoiceAccountAddresses
-    .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress);
+    .find(eachAddress => eachAddress.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress);
   return isChargeable ? address : null;
 };
 

@@ -86,7 +86,12 @@ const postReviewChargeInformation = async (request, h) => {
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
     } else {
-      await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(request.payload.reviewOutcome, request.payload.reviewerComments, {}, request.params.chargeVersionWorkflowId);
+      await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+        request.params.chargeVersionWorkflowId,
+        request.payload.reviewOutcome,
+        request.payload.reviewerComments,
+        {}
+      );
     }
     const { document_id: documentId } = await services.water.licences.getDocumentByLicenceId(licence.id);
     return h.redirect(`/licences/${documentId}#charge`);

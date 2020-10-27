@@ -69,6 +69,11 @@ class ChargeVersionWorkflowsService extends ServiceClient {
     const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
     return this.serviceRequest.delete(url);
   }
+
+  deleteChargeVersionWorkflowByLicenceId (licenceId, status) {
+    const url = this.joinUrl('licences/', licenceId, 'pending-charge-version-workflow', status);
+    return this.serviceRequest.delete(url);
+  }
 }
 
 module.exports = ChargeVersionWorkflowsService;

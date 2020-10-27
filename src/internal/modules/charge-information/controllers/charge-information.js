@@ -152,8 +152,11 @@ const getCheckData = async (request, h) => {
 
 const updateDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
+
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
-  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow('review', draftChargeInformation.approverComments, preparedChargeInfo /* TODO CHARGE WORKFLOW ID NEEDS TO BE HERE */);
+  preparedChargeInfo.chargeVersion['status'] = 'draft';
+
+  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow('review', preparedChargeInfo.chargeVersion.approverComments, preparedChargeInfo.chargeVersion, preparedChargeInfo.chargeVersion.chargeVersionWorkflowId);
   const route = routing.getSubmitted(id, isChargeable);
   return h.redirect(route);
 };
@@ -192,7 +195,6 @@ const checkDataButtonActions = {
 
 const postCheckData = async (request, h) => {
   const { buttonAction } = request.payload;
-
   const [action] = buttonAction.split(':');
   return checkDataButtonActions[action](request, h);
 };

@@ -176,12 +176,21 @@ formErrorSummary %}
       <div class="govuk-grid-column-full">
         <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
-          {{ govukButton({
-            text: 'Confirm',
-            name: 'buttonAction',
-            value: 'confirm',
-            classes: 'govuk-!-margin-right-6'
-          }) }}
+          {% if chargeVersion.status == 'changes_requested' %}
+              {{ govukButton({
+                text: 'Update and send back for review',
+                name: 'buttonAction',
+                value: 'update',
+                classes: 'govuk-!-margin-right-6'
+              }) }}
+          {% else %}
+              {{ govukButton({
+                  text: 'Confirm',
+                  name: 'buttonAction',
+                  value: 'confirm',
+                  classes: 'govuk-!-margin-right-6'
+                }) }}
+            {% endif %}
           {{ govukButton({
             text: 'Cancel charge information',
             name: 'buttonAction',

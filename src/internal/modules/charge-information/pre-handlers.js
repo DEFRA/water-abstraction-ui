@@ -17,8 +17,7 @@ const errorHandler = (err, message) => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request =>
-  request.getDraftChargeInformation(request.params.licenceId);
+const loadDraftChargeInformation = async request => request.getDraftChargeInformation(request.params.licenceId);
 
 const getFilteredChangeReasons = async type => {
   try {
@@ -141,11 +140,11 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 
 const loadChargeVersionWorkflow = async request => {
   const { licenceId, chargeVersionWorkflowId } = request.params;
-
   try {
     const { chargeVersionWorkflow } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow(chargeVersionWorkflowId);
     const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
-    request.setDraftChargeInformation(licenceId, chargeVersion);
+
+    request.setDraftChargeInformation(licenceId, {...chargeVersion, chargeVersionWorkflowId});
     return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);

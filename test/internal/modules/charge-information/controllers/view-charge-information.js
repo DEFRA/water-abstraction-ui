@@ -12,7 +12,7 @@ const uuid = require('uuid/v4');
 const sandbox = sinon.createSandbox();
 
 const services = require('../../../../../src/internal/lib/connectors/services');
-const { chargeVersionWorkflowReviewer, chargeVersionWorkflowEditor } = require('../../../../../src/internal/lib/constants').scope;
+const { chargeVersionWorkflowReviewer } = require('../../../../../src/internal/lib/constants').scope;
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/view-charge-information');
 
 const createRequest = () => ({

@@ -3,6 +3,7 @@ const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get } = require('lodash');
+const uuid = require('uuid');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -109,7 +110,6 @@ const loadLicencesWithWorkflowsInProgress = async request => {
 
 const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
-
   try {
     const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
     return chargeVersion;
@@ -121,10 +121,18 @@ const loadChargeVersion = async request => {
 const decorateChargeVersion = chargeVersionWorkflow => {
   const { chargeVersion, status, approverComments } = chargeVersionWorkflow;
   // set id of saved address to display
-  const invoiceAccountAddress = get(chargeVersion, 'invoiceAccount.invoiceAccountAddress[0].id', null);
-  // const invoiceAccountAddress = chargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
+  const invoiceAccountAddress = get(chargeVersion, 'invoiceAccount.invoiceAccountAddresses[0].id', null);
+
+  const modifiedChargeVersion = chargeVersion;
+  // Give each charge element a GUID if it doesn't have one
+  modifiedChargeVersion.chargeElements.map(element => {
+    if (!element.id) {
+      element['id'] = uuid();
+    }
+  });
+
   return {
-    ...chargeVersion,
+    ...modifiedChargeVersion,
     status,
     approverComments,
     invoiceAccount: { ...chargeVersion.invoiceAccount, invoiceAccountAddress }

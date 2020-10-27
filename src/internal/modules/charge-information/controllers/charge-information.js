@@ -29,7 +29,6 @@ const getReason = async (request, h) => {
 
 const handleValidReasonRedirect = (request, formValues) => {
   const { licenceId } = request.params;
-
   return formValues.reason === 'non-chargeable'
     ? routing.getNonChargeableReason(licenceId)
     : routing.getStartDate(licenceId);
@@ -129,7 +128,7 @@ const postUseAbstractionData = createPostHandler(
 
 const getCheckData = async (request, h) => {
   const { draftChargeInformation, isChargeable } = request.pre;
-  const licenceId = request.params.licenceId;
+  const { chargeVersionWorkflowId, licenceId } = request.params;
   const back = isChargeable
     ? routing.getUseAbstractionData(licenceId)
     : routing.getEffectiveDate(licenceId);
@@ -142,12 +141,21 @@ const getCheckData = async (request, h) => {
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId: request.params.licenceId,
     invoiceAccountAddress,
+    chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,
     isXlHeading: true
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);
+};
+
+const updateDraftChargeInformation = async (request, h) => {
+  const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
+  const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
+  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow('review', draftChargeInformation.approverComments, preparedChargeInfo /* TODO CHARGE WORKFLOW ID NEEDS TO BE HERE */);
+  const route = routing.getSubmitted(id, isChargeable);
+  return h.redirect(route);
 };
 
 const submitDraftChargeInformation = async (request, h) => {
@@ -175,6 +183,7 @@ const removeElement = async (request, h) => {
 };
 
 const checkDataButtonActions = {
+  update: updateDraftChargeInformation,
   confirm: submitDraftChargeInformation,
   cancel: redirectToCancelPage,
   addElement: redirectToStartOfElementFlow,

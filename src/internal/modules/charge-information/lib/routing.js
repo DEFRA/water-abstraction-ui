@@ -23,7 +23,7 @@ exports.getCreateBillingAccount = (licence, licenceHolderRole, redirect) => {
   return `/invoice-accounts/create/${region.id}/${licenceHolderRole.company.id}?${qs}`;
 };
 
-exports.postReview = request => `/licences/${request.params.licenceId}/charge-information/${request.params.chargeVersionWorkflowId}/review`;
+exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
 
 exports.getCheckData = createUrl('check');
 exports.getReason = createUrl('create');

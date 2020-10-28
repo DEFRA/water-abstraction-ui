@@ -209,7 +209,10 @@ const getSend = async (request, h) => {
   }
 
   // Show the confirmation page
-  return h.view('nunjucks/returns-notifications/confirmation', request.view);
+  return h.view('nunjucks/returns-notifications/confirmation', {
+    ...request.view,
+    pageTitle: 'Paper return forms sent'
+  });
 };
 
 exports.getEnterLicenceNumber = getEnterLicenceNumber;

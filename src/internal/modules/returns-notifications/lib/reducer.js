@@ -134,21 +134,23 @@ const setOneTimeAddressName = (state, action) => {
 
 const isLicenceHolderRole = role => role.roleName === crmRoles.licenceHolder;
 
+const createOneTimeAddressRole = (company, fullName, address) => ({
+  roleName: ONE_TIME_ADDRESS_ROLE,
+  address,
+  company,
+  contact: {
+    type: 'department',
+    department: fullName
+  }
+});
+
 const setOneTimeAddress = (state, action) => {
   const { documentId, address } = action.payload;
 
   const index = findIndex(state[documentId].document.roles, role => role.roleName === ONE_TIME_ADDRESS_ROLE);
   const licenceHolderRole = state[documentId].document.roles.find(isLicenceHolderRole);
 
-  const newRole = {
-    roleName: ONE_TIME_ADDRESS_ROLE,
-    address,
-    company: licenceHolderRole.company,
-    contact: {
-      type: 'department',
-      department: state[documentId].fullName
-    }
-  };
+  const newRole = createOneTimeAddressRole(licenceHolderRole.company, state[documentId].fullName, address);
 
   const roles = index === -1
     ? { $push: [newRole] }

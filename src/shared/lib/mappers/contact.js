@@ -4,7 +4,7 @@ const { isObject, identity } = require('lodash');
 
 const mapContactToString = contact => {
   if (!isObject(contact)) {
-    return;
+    return null;
   }
   if (contact.type === 'department') {
     return contact.department;

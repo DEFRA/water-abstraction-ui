@@ -7,11 +7,10 @@ const preHandlers = require('../pre-handlers');
 const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
-const { createHandlerPair } = require('../lib/route-helpers');
+const { createFormRoutes } = require('../lib/route-helpers');
 
-module.exports = {
-
-  ...createHandlerPair(controller, 'getEnterLicenceNumber', {
+const formRoutes = {
+  getEnterLicenceNumber: {
     path: '/returns-notifications/forms',
     config: {
       auth: {
@@ -24,9 +23,9 @@ module.exports = {
         }
       }
     }
-  }),
+  },
 
-  ...createHandlerPair(controller, 'getCheckAnswers', {
+  getCheckAnswers: {
     path: '/returns-notifications/check-answers',
     config: {
       auth: {
@@ -42,9 +41,9 @@ module.exports = {
         { method: preHandlers.getStateFromSession, assign: 'state' }
       ]
     }
-  }),
+  },
 
-  ...createHandlerPair(controller, 'getSelectReturns', {
+  getSelectReturns: {
     path: '/returns-notifications/{documentId}/select-returns',
     config: {
       auth: {
@@ -65,9 +64,9 @@ module.exports = {
         }
       }
     }
-  }),
+  },
 
-  ...createHandlerPair(controller, 'getSelectAddress', {
+  getSelectAddress: {
     path: '/returns-notifications/{documentId}/select-address',
     config: {
       auth: {
@@ -88,9 +87,9 @@ module.exports = {
         }
       }
     }
-  }),
+  },
 
-  ...createHandlerPair(controller, 'getRecipient', {
+  getRecipient: {
     path: '/returns-notifications/{documentId}/recipient',
     config: {
       auth: {
@@ -111,7 +110,31 @@ module.exports = {
         }
       }
     }
-  }),
+  },
+
+  getSelectLicenceHolders: {
+    path: '/returns-notifications/select-licence-holders',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Which licence holders need a form?'
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
+    }
+  }
+
+};
+
+module.exports = {
+
+  ...createFormRoutes(controller, formRoutes),
 
   getAcceptOneTimeAddress: {
     method: 'GET',
@@ -131,24 +154,6 @@ module.exports = {
     },
     handler: controller.getAcceptOneTimeAddress
   },
-
-  ...createHandlerPair(controller, 'getSelectLicenceHolders', {
-    path: '/returns-notifications/select-licence-holders',
-    config: {
-      auth: {
-        scope: returns
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Which licence holders need a form?'
-        }
-      },
-      pre: [
-        { method: preHandlers.getStateFromSession, assign: 'state' }
-      ]
-    }
-  }),
 
   getSend: {
     method: 'GET',

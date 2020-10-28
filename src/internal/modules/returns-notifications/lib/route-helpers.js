@@ -16,4 +16,11 @@ const createHandlerPair = (controller, getMethodName, config) => {
   };
 };
 
+const createFormRoutes = (controller, config) =>
+  Object.keys(config).reduce((acc, getMethodName) => ({
+    ...acc,
+    ...createHandlerPair(controller, getMethodName, config[getMethodName])
+  }), {});
+
 exports.createHandlerPair = createHandlerPair;
+exports.createFormRoutes = createFormRoutes;

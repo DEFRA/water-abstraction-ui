@@ -7,22 +7,7 @@ const preHandlers = require('../pre-handlers');
 const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
-
-const createHandlerPair = (controller, getMethodName, config) => {
-  const postMethodName = getMethodName.replace('get', 'post');
-  return {
-    [getMethodName]: {
-      method: 'GET',
-      handler: controller[getMethodName],
-      ...config
-    },
-    [postMethodName]: {
-      method: 'POST',
-      handler: controller[postMethodName],
-      ...config
-    }
-  };
-};
+const { createHandlerPair } = require('../lib/route-helpers');
 
 module.exports = {
 

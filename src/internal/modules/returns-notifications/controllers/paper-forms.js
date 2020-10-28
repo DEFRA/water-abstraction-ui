@@ -120,9 +120,9 @@ const mapStateToWaterApi = state => ({
       const { company, contact, address } = document.roles.find(role => role.roleName === selectedRole);
 
       return {
+        address,
         company,
         contact: contact || null,
-        address,
         returns: returns.filter(ret => ret.isSelected).map(ret => ({
           returnId: ret.id
         }))

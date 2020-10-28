@@ -135,9 +135,9 @@ const setOneTimeAddressName = (state, action) => {
 const isLicenceHolderRole = role => role.roleName === crmRoles.licenceHolder;
 
 const createOneTimeAddressRole = (company, fullName, address) => ({
-  roleName: ONE_TIME_ADDRESS_ROLE,
   address,
   company,
+  roleName: ONE_TIME_ADDRESS_ROLE,
   contact: {
     type: 'department',
     department: fullName

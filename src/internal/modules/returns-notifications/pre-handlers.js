@@ -9,9 +9,8 @@ const { SESSION_KEYS } = require('./lib/constants');
  * @param {Object} request - hapi request
  * @return {Object} session state
  */
-const getStateFromSession = request => {
-  return request.yar.get(SESSION_KEYS.paperFormsFlow);
-};
+const getStateFromSession = request =>
+  request.yar.get(SESSION_KEYS.paperFormsFlow);
 
 /**
  * Gets the requested document by ID from the paper forms flow session data

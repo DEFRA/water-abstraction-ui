@@ -94,6 +94,8 @@ const postReviewChargeInformation = async (request, h) => {
       );
     }
     const { document_id: documentId } = await services.water.licences.getDocumentByLicenceId(licence.id);
+    // Clear session
+    request.clearDraftChargeInformation(licence.id);
     return h.redirect(`/licences/${documentId}#charge`);
   }
 };

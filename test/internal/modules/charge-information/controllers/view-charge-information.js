@@ -274,11 +274,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             licenceId: licenceId,
             chargeVersionWorkflowId: workflowId
           };
+          request.clearDraftChargeInformation = sandbox.stub().resolves();
+
           await sandbox.stub(services.water.chargeVersions, 'postCreateFromWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
             document_id: uuid()
           });
+
           await controller.postReviewChargeInformation(request, h);
+        });
+
+        test('clears the session data', async () => {
+          expect(request.clearDraftChargeInformation.called).to.be.true();
         });
 
         test('calls the service method to create a charge version', async () => {
@@ -302,11 +309,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             licenceId: licenceId,
             chargeVersionWorkflowId: workflowId
           };
+          request.clearDraftChargeInformation = sandbox.stub().resolves();
+
           await sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
             document_id: uuid()
           });
+
           await controller.postReviewChargeInformation(request, h);
+        });
+
+        test('clears the session data', async () => {
+          expect(request.clearDraftChargeInformation.called).to.be.true();
         });
 
         test('calls the service method to update the charge version workflow', async () => {

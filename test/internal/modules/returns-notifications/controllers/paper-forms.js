@@ -66,7 +66,9 @@ const apiResponse = [{
 
 const createState = () => ({
   [DOCUMENT_ID]: {
+    id: DOCUMENT_ID,
     selectedRole: 'licenceHolder',
+    isSelected: true,
     document: {
       id: DOCUMENT_ID,
       roles: [
@@ -102,7 +104,8 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       },
       payload: {
         csrf_token: '00000000-0000-0000-0000-000000000000'
-      }
+      },
+      pre: {}
     };
 
     h = {
@@ -277,53 +280,62 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
   });
 
   experiment('.getCheckAnswers', () => {
-    beforeEach(async () => {
-      request.yar.get.returns(createState());
-      await controller.getCheckAnswers(request, h);
+    experiment('when the documents are selected', () => {
+      beforeEach(async () => {
+        request.pre.state = createState();
+        await controller.getCheckAnswers(request, h);
+      });
+
+      test('maps selected documents in the state object to an array in the view', async () => {
+        const [, { documents }] = h.view.lastCall.args;
+        expect(documents).to.be.an.array().length(1);
+      });
+
+      test('maps the document properties to the view', async () => {
+        const [, { documents: [document] }] = h.view.lastCall.args;
+
+        expect(document.id).to.equal(DOCUMENT_ID);
+        expect(document.licenceNumber).to.equal(LICENCE_NUMBER);
+        expect(document.returns).to.be.an.array().length(1);
+        expect(document.licenceHolderRole).to.be.an.object();
+        expect(document.address).to.be.an.array();
+        expect(document.selectReturnsLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-returns`);
+        expect(document.selectAddressLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-address`);
+      });
+
+      test('maps selected returns to the view', async () => {
+        const [, { documents: [document] }] = h.view.lastCall.args;
+        expect(document.returns[0].legacyId).to.equal(1234);
+        expect(document.returns[0].details).to.equal(`Due 28 April 2021`);
+      });
+
+      test('includes a confirm form object', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form).to.be.an.object();
+      });
+
+      test('includes a back link', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal('/returns-notifications/paper-forms');
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/returns-notifications/check-answers');
+      });
     });
 
-    test('loads data from the session with the expected key', async () => {
-      expect(request.yar.get.calledWith(
-        'returns.paper-forms'
-      )).to.be.true();
-    });
+    experiment('when the documents are not selected', () => {
+      beforeEach(async () => {
+        request.pre.state = createState();
+        request.pre.state[DOCUMENT_ID].isSelected = false;
+        await controller.getCheckAnswers(request, h);
+      });
 
-    test('maps the documents object from the state to an array in the view', async () => {
-      const [, { documents }] = h.view.lastCall.args;
-      expect(documents).to.be.an.array().length(1);
-    });
-
-    test('maps the document properties to the view', async () => {
-      const [, { documents: [document] }] = h.view.lastCall.args;
-
-      expect(document.id).to.equal(DOCUMENT_ID);
-      expect(document.licenceNumber).to.equal(LICENCE_NUMBER);
-      expect(document.returns).to.be.an.array().length(1);
-      expect(document.licenceHolderRole).to.be.an.object();
-      expect(document.selectedRole).to.be.an.object();
-      expect(document.selectReturnsLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-returns`);
-      expect(document.selectAddressLink).to.equal(`/returns-notifications/${DOCUMENT_ID}/select-address`);
-    });
-
-    test('maps selected returns to the view', async () => {
-      const [, { documents: [document] }] = h.view.lastCall.args;
-      expect(document.returns[0].legacyId).to.equal(1234);
-      expect(document.returns[0].details).to.equal(`Due 28 April 2021`);
-    });
-
-    test('includes a confirm form object', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      expect(form).to.be.an.object();
-    });
-
-    test('includes a back link', async () => {
-      const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal('/returns-notifications/paper-forms');
-    });
-
-    test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns-notifications/check-answers');
+      test('they are omitted from the view model', async () => {
+        const [, { documents }] = h.view.lastCall.args;
+        expect(documents).to.be.an.array().length(0);
+      });
     });
   });
 });

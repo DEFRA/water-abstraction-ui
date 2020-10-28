@@ -35,7 +35,7 @@ const getNotificationScope = task => {
 const checkAccess = (request, task) => {
   const scope = getNotificationScope(task);
   if (!hasScope(request, scope)) {
-    throw Boom.unauthorized(`Access denied to notification task ${task.task_config_id}`, request.defra);
+    throw Boom.unauthorized(`Access denied to notification task ${task.task_config_id}`);
   }
 };
 

@@ -1,15 +1,18 @@
 'use strict';
 
+const Boom = require('@hapi/boom');
 const { get, partialRight } = require('lodash');
 
 const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
 const { crmRoles } = require('shared/lib/constants');
-const services = require('../../../lib/connectors/services');
 const routing = require('../lib/routing');
 
 const { getReturnStatusString } = require('../lib/return-mapper');
 const { SESSION_KEYS } = require('../lib/constants');
+
+// Services
+const services = require('../../../lib/connectors/services');
 
 // Controller helpers
 const controller = require('../lib/controller');
@@ -25,6 +28,9 @@ const licenceHoldersForm = require('../forms/select-licence-holders');
 // State
 const actions = require('../lib/actions');
 const { reducer } = require('../lib/reducer');
+
+// Mappers
+const roleMapper = require('shared/lib/mappers/role');
 
 /**
  * Renders a page for the user to input a list of licences to whom
@@ -89,7 +95,7 @@ const mapStateToView = state => Object.values(state)
     licenceNumber: licence.licenceNumber,
     returns: returns.filter(ret => ret.isSelected).map(mapReturnToView),
     licenceHolderRole: document.roles.find(isLicenceHolderRole),
-    selectedRole: document.roles.find(role => role.roleName === selectedRole),
+    address: roleMapper.mapRoleToAddressArray(document.roles.find(role => role.roleName === selectedRole)),
     selectReturnsLink: routing.getSelectReturns(document.id),
     selectAddressLink: routing.getSelectAddress(document.id)
   }));
@@ -98,14 +104,45 @@ const mapStateToView = state => Object.values(state)
  * Check answers page for forms to send
  */
 const getCheckAnswers = async (request, h) => {
-  const state = request.yar.get(SESSION_KEYS.paperFormsFlow);
   const view = {
     ...request.view,
-    documents: mapStateToView(state),
+    documents: mapStateToView(request.pre.state),
     back: routing.getEnterLicenceNumber(),
     form: confirmForm.form(request, 'Send paper forms')
   };
   return h.view('nunjucks/returns-notifications/check-answers', view);
+};
+
+const mapStateToWaterApi = state => ({
+  forms: Object.values(state)
+    .filter(doc => doc.isSelected)
+    .map(({ document, returns, selectedRole }) => {
+      const { company, contact, address } = document.roles.find(role => role.roleName === selectedRole);
+
+      return {
+        company,
+        contact: contact || null,
+        address,
+        returns: returns.filter(ret => ret.isSelected).map(ret => ({
+          returnId: ret.id
+        }))
+      };
+    })
+});
+
+/**
+ * Post handler to send forms
+ */
+const postCheckAnswers = async (request, h) => {
+  // Prepare data for API call
+  const { userName: issuer } = request.defra;
+  const data = mapStateToWaterApi(request.pre.state);
+
+  // Prepare batch notification
+  const { data: { id: eventId } } = await services.water.batchNotifications.preparePaperReturnForms(issuer, data);
+
+  // Redirect to waiting page while messages are sent
+  return h.redirect(`/returns-notifications/${eventId}/send`);
 };
 
 /**
@@ -145,9 +182,41 @@ const getAcceptOneTimeAddress = (request, h) => {
   return h.redirect(routing.getCheckAnswers());
 };
 
+const isValidEvent = event => event.type === 'notification' && event.subtype === 'paperReturnForms';
+
+/**
+ * Waits while the water service event is processed, then sends the notification
+ * @param {*} request
+ * @param {*} h
+ */
+const getSend = async (request, h) => {
+  const { event } = request.pre;
+
+  if (!isValidEvent(event)) {
+    return Boom.notFound(`Event ${event.event_id} is not a paper forms notification`);
+  }
+
+  // Water service processing in progress - show waiting page
+  if (event.status === 'processing') {
+    return h.view('nunjucks/returns-notifications/waiting', {
+      ...request.view,
+      pageTitle: 'Sending paper return forms'
+    });
+  }
+  // Error
+  if (event.status === 'error') {
+    return Boom.badImplementation(`Event ${event.event_id} error`);
+  }
+
+  // Show the confirmation page
+  return h.view('nunjucks/returns-notifications/confirmation', request.view);
+};
+
 exports.getEnterLicenceNumber = getEnterLicenceNumber;
 exports.postEnterLicenceNumber = postEnterLicenceNumber;
+
 exports.getCheckAnswers = getCheckAnswers;
+exports.postCheckAnswers = postCheckAnswers;
 
 exports.getSelectLicenceHolders = getSelectLicenceHolders;
 exports.postSelectLicenceHolders = postSelectLicenceHolders;
@@ -162,3 +231,5 @@ exports.getRecipient = getRecipient;
 exports.postRecipient = postRecipient;
 
 exports.getAcceptOneTimeAddress = getAcceptOneTimeAddress;
+
+exports.getSend = getSend;

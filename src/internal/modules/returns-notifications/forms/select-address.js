@@ -32,7 +32,7 @@ const mapRole = (role, selectedRole) => ({
 
 const mapChoices = document => ([
   ...document.document.roles
-    .filter(role => isRoleName(role, crmRoles.licenceHolder, crmRoles.licenceHolder))
+    .filter(role => isRoleName(role, crmRoles.licenceHolder, crmRoles.returnsTo))
     .map(role => mapRole(role, document.selectedRole)),
   {
     divider: 'Or'

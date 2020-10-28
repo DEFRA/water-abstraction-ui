@@ -4,6 +4,7 @@ const { VALID_GUID } = require('shared/lib/validators');
 
 const controller = require('../controllers/paper-forms');
 const preHandlers = require('../pre-handlers');
+const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
 
@@ -52,9 +53,31 @@ module.exports = {
           activeNavLink: 'notifications',
           pageTitle: 'Check returns details'
         }
-      }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
     },
     handler: controller.getCheckAnswers
+  },
+  postCheckAnswers: {
+    method: 'POST',
+    path: '/returns-notifications/check-answers',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Check returns details'
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
+    },
+    handler: controller.postCheckAnswers
   },
   getSelectReturns: {
     method: 'GET',
@@ -261,5 +284,24 @@ module.exports = {
       ]
     },
     handler: controller.postSelectLicenceHolders
+  },
+
+  getSend: {
+    method: 'GET',
+    path: '/returns-notifications/{eventId}/send',
+    config: {
+      auth: {
+        scope: returns
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      pre: [
+        { method: eventPreHandlers.loadEvent, assign: 'event' }
+      ]
+    },
+    handler: controller.getSend
   }
 };

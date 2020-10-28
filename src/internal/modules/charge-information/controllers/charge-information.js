@@ -9,7 +9,8 @@ const {
   applyFormResponse,
   prepareChargeInformation,
   getLicencePageUrl,
-  findInvoiceAccountAddress
+  findInvoiceAccountAddress,
+  isOverridingChargeVersion
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
@@ -135,7 +136,7 @@ const getCheckData = async (request, h) => {
     : routing.getEffectiveDate(licenceId);
 
   const invoiceAccountAddress = findInvoiceAccountAddress(request);
-
+  const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const view = {
     ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
@@ -144,7 +145,8 @@ const getCheckData = async (request, h) => {
     invoiceAccountAddress,
     isChargeable,
     isEditable: true,
-    isXlHeading: true
+    isXlHeading: true,
+    editChargeVersionWarning
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);

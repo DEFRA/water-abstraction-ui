@@ -84,6 +84,23 @@ const findInvoiceAccountAddress = request => {
     .find(address => address.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress) : null;
 };
 
+/**
+ * Checks if the new draft charge version has the same start date as an existing charge version
+ * @param {*} request hapi request object
+ * @param {*} draftChargeVersionStartDate the start date of the draft charge version
+ */
+const isOverridingChargeVersion = async (request, draftChargeVersionStartDate) => {
+  try {
+    const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(request.pre.licence.id);
+    return !!chargeVersions.find(version => version.dateRange.startDate === draftChargeVersionStartDate);
+  } catch (error) {
+    if (error.statusCode !== 404) {
+      return error;
+    } else return false;
+  }
+};
+
+exports.isOverridingChargeVersion = isOverridingChargeVersion;
 exports.getLicencePageUrl = getLicencePageUrl;
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;

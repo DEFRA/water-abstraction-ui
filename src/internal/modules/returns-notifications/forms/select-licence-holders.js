@@ -25,7 +25,7 @@ const mapDocumentsToCheckboxField = documents => {
   const { licence } = documents[0];
 
   const sortedDocuments = sortBy(documents, row => row.document.dateRange.startDate).reverse();
-  const value = sortedDocuments.filter(doc => doc.isSelected).map(doc => doc.id);
+  const value = sortedDocuments.filter(doc => doc.isSelected).map(doc => doc.document.id);
 
   return fields.checkbox(`licence_${licence.id}`, {
     label: `Licence ${licence.licenceNumber}`,
@@ -66,7 +66,9 @@ const selectLicenceHoldersSchema = request => {
   const obj = documentGroups.reduce((acc, documents) => {
     return {
       ...acc,
-      [`licence_${documents[0].licence.id}`]: Joi.array().items(Joi.string().guid())
+      [`licence_${documents[0].licence.id}`]: Joi.array().items(
+        Joi.string().guid().valid(documents.map(doc => doc.document.id))
+      )
     };
   }, {
     csrf_token: Joi.string().guid().required()

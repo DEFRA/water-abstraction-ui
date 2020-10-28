@@ -5,7 +5,7 @@ const createRole = (overrides = {}) => ({
   'roleName': overrides.roleName || 'licenceHolder',
   'dateRange': {
     'startDate': '2020-01-01',
-    'endDate': null
+    'endDate': overrides.endDate || null
   },
   'company': {
     'companyAddresses': [],

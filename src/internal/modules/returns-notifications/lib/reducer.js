@@ -1,7 +1,7 @@
 'use strict';
 
 const update = require('immutability-helper');
-const { last } = require('lodash');
+const { last, findIndex } = require('lodash');
 const momentRange = require('moment-range');
 const moment = momentRange.extendMoment(require('moment'));
 
@@ -10,6 +10,8 @@ const helpers = require('@envage/water-abstraction-helpers');
 const { crmRoles } = require('shared/lib/constants');
 const { returnStatuses } = require('shared/lib/constants');
 const { ACTION_TYPES } = require('./actions');
+
+const ONE_TIME_ADDRESS_ROLE = 'oneTimeAddress';
 
 const isReturnsRole = role => role.roleName === 'returnsTo';
 
@@ -61,6 +63,7 @@ const mapDocumentRow = ({ licence, documents }, { document, returns }, refDate) 
   document,
   returns: returns.map(ret => mapReturn(ret, refDate)),
   isSelected: documents.length === 1,
+  isMultipleDocument: documents.length > 1,
   selectedRole: getInitiallySelectedRole(document.roles)
 });
 
@@ -80,7 +83,7 @@ const mapLicencesToState = (licences, refDate) => {
 };
 
 const isValidAddressRole = roleName =>
-  ['oneTimeAddress', crmRoles.licenceHolder, crmRoles.returnsTo].includes(roleName);
+  [ONE_TIME_ADDRESS_ROLE, crmRoles.licenceHolder, crmRoles.returnsTo].includes(roleName);
 
 const setInitialState = (state, action) => {
   const { licences, refDate } = action.payload;
@@ -117,10 +120,79 @@ const setSelectedRole = (state, action) => {
   return update(state, query);
 };
 
+const setOneTimeAddressName = (state, action) => {
+  const { documentId, fullName } = action.payload;
+  const query = {
+    [documentId]: {
+      fullName: {
+        $set: fullName
+      }
+    }
+  };
+  return update(state, query);
+};
+
+const isLicenceHolderRole = role => role.roleName === crmRoles.licenceHolder;
+
+const createOneTimeAddressRole = (company, fullName, address) => ({
+  address,
+  company,
+  roleName: ONE_TIME_ADDRESS_ROLE,
+  contact: {
+    type: 'department',
+    department: fullName
+  }
+});
+
+const setOneTimeAddress = (state, action) => {
+  const { documentId, address } = action.payload;
+
+  const index = findIndex(state[documentId].document.roles, role => role.roleName === ONE_TIME_ADDRESS_ROLE);
+  const licenceHolderRole = state[documentId].document.roles.find(isLicenceHolderRole);
+
+  const newRole = createOneTimeAddressRole(licenceHolderRole.company, state[documentId].fullName, address);
+
+  const roles = index === -1
+    ? { $push: [newRole] }
+    : { $splice: [[index, 1, newRole]] };
+
+  const query = {
+    [documentId]: {
+      document: {
+        roles
+      },
+      selectedRole: {
+        $set: ONE_TIME_ADDRESS_ROLE
+      }
+    }
+  };
+
+  return update(state, query);
+};
+
+const isMultipleDocument = document => document.isMultipleDocument;
+
+const setLicenceHolders = (state, action) => {
+  const docs = Object.values(state).filter(isMultipleDocument);
+
+  const query = docs.reduce((acc, doc) => ({
+    ...acc,
+    [doc.document.id]: {
+      isSelected: {
+        $set: action.payload.documentIds.includes(doc.document.id)
+      }
+    }
+  }), {});
+  return update(state, query);
+};
+
 const actions = {
   [ACTION_TYPES.setInitialState]: setInitialState,
   [ACTION_TYPES.setReturnIds]: setReturnIds,
-  [ACTION_TYPES.setSelectedRole]: setSelectedRole
+  [ACTION_TYPES.setSelectedRole]: setSelectedRole,
+  [ACTION_TYPES.setOneTimeAddressName]: setOneTimeAddressName,
+  [ACTION_TYPES.setOneTimeAddress]: setOneTimeAddress,
+  [ACTION_TYPES.setLicenceHolders]: setLicenceHolders
 };
 
 const reducer = (state, action) => {

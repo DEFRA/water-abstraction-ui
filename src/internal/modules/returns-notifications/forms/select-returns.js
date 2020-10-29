@@ -13,7 +13,8 @@ const getSelectedReturnIds = returns =>
     .filter(isSelectedReturn)
     .map(getReturnId);
 
-const selectReturnsForm = (request, document) => {
+const selectReturnsForm = request => {
+  const { document } = request.pre;
   const { csrfToken } = request.view;
 
   const f = formFactory(request.path);
@@ -41,7 +42,8 @@ const selectReturnsForm = (request, document) => {
  * @param {Object} document - the currently selected CRM v2 document
  * @return {Object} Joi schema
  */
-const selectReturnsSchema = (request, document) => {
+const selectReturnsSchema = request => {
+  const { document } = request.pre;
   const validReturnIds = document.returns.map(getReturnId);
   return Joi.object({
     csrf_token: Joi.string().guid().required(),

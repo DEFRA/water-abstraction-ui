@@ -100,15 +100,23 @@ const mapStateToView = state => Object.values(state)
     selectAddressLink: routing.getSelectAddress(document.id)
   }));
 
+const getRecipientCount = state => Object.values(state)
+  .filter(row => row.isSelected)
+  .reduce((acc, doc) =>
+    acc || doc.returns.filter(ret => ret.isSelected).length > 0
+  , false);
+
 /**
  * Check answers page for forms to send
  */
 const getCheckAnswers = async (request, h) => {
+  const isRecipients = getRecipientCount(request.pre.state) > 0;
+
   const view = {
     ...request.view,
     documents: mapStateToView(request.pre.state),
     back: routing.getEnterLicenceNumber(),
-    form: confirmForm.form(request, 'Send paper forms')
+    form: isRecipients && confirmForm.form(request, 'Send paper forms')
   };
   return h.view('nunjucks/returns-notifications/check-answers', view);
 };

@@ -3,6 +3,7 @@
 formErrorSummary %}
 {% from "title.njk" import title %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "crm/contact.njk" import contact %}
 {% from "crm/company.njk" import company %}
 {% from "crm/address.njk" import address %}
 {% from "forms/index.njk" import formRender %}
@@ -63,8 +64,11 @@ formErrorSummary %}
                 Address
               </dt>
               <dd class="govuk-summary-list__value">
-                {{ company(document.selectedRole.company) }}<br/>
-                {{ address(document.selectedRole.address) }}
+
+                {% for addressLine in document.address %}
+                  {{ addressLine }}<br>
+                {% endfor %}
+
               </dd>
               <dd class="govuk-summary-list__actions">
                 <a class="govuk-link" href="{{ document.selectAddressLink }}">

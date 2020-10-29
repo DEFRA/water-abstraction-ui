@@ -35,6 +35,11 @@ class ChargeVersionsService extends ServiceClient {
     const url = this.joinUrl('charge-versions/default', licenceVersionId);
     return this.serviceRequest.get(url);
   }
+
+  postCreateFromWorkflow (chargeVersionWorkflowId) {
+    const url = this.joinUrl('charge-versions/create-from-workflow', chargeVersionWorkflowId);
+    return this.serviceRequest.post(url);
+  }
 }
 
 module.exports = ChargeVersionsService;

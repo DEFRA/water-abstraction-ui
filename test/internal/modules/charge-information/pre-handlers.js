@@ -94,6 +94,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         id: 'test-charge-version-workflow-id',
         status: 'review',
         chargeVersion: {
+          chargeElements: [],
           id: 'test-charge-version-id',
           invoiceAccount: {
             invoiceAccountAddresses: [{

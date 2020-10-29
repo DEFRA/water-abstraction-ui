@@ -2,6 +2,8 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
+const { get } = require('lodash');
+const uuid = require('uuid');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -15,8 +17,7 @@ const errorHandler = (err, message) => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request =>
-  request.getDraftChargeInformation(request.params.licenceId);
+const loadDraftChargeInformation = async request => request.getDraftChargeInformation(request.params.licenceId);
 
 const getFilteredChangeReasons = async type => {
   try {
@@ -42,8 +43,8 @@ const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeab
 const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
 
 const loadIsChargeable = async request => {
-  const { changeReason } = request.pre.draftChargeInformation;
-  return changeReason.type === 'new_chargeable_charge_version';
+  const type = get(request, 'pre.draftChargeInformation.changeReason.type');
+  return type === 'new_chargeable_charge_version';
 };
 
 const getPaddedVersionString = version => version.toString().padStart(9, '0');
@@ -108,7 +109,6 @@ const loadLicencesWithWorkflowsInProgress = async request => {
 
 const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
-
   try {
     const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
     return chargeVersion;
@@ -118,23 +118,33 @@ const loadChargeVersion = async request => {
 };
 
 const decorateChargeVersion = chargeVersionWorkflow => {
-  const { chargeVersion, status } = chargeVersionWorkflow;
+  const { chargeVersion, status, approverComments } = chargeVersionWorkflow;
   // set id of saved address to display
-  const invoiceAccountAddress = chargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
+  const invoiceAccountAddress = get(chargeVersion, 'invoiceAccount.invoiceAccountAddresses[0].id', null);
+
+  const modifiedChargeVersion = chargeVersion;
+  // Give each charge element a GUID if it doesn't have one
+  modifiedChargeVersion.chargeElements.map(element => {
+    if (!element.id) {
+      element['id'] = uuid();
+    }
+  });
+
   return {
-    ...chargeVersion,
+    ...modifiedChargeVersion,
     status,
+    approverComments,
     invoiceAccount: { ...chargeVersion.invoiceAccount, invoiceAccountAddress }
   };
 };
 
 const loadChargeVersionWorkflow = async request => {
   const { licenceId, chargeVersionWorkflowId } = request.params;
-
   try {
     const { chargeVersionWorkflow } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow(chargeVersionWorkflowId);
     const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
-    request.setDraftChargeInformation(licenceId, chargeVersion);
+
+    request.setDraftChargeInformation(licenceId, { ...chargeVersion, chargeVersionWorkflowId });
     return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);

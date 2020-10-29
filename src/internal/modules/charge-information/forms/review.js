@@ -52,10 +52,9 @@ const reviewFormSchema = () => ({
   csrf_token: Joi.string().uuid().required(),
   approval_notice: Joi.any(),
   reviewOutcome: Joi.string().required().allow('approve', 'changes_requested'),
-  reviewerComments: Joi.string().when('reviewOutcome', {
+  reviewerComments: Joi.when('reviewOutcome', {
     is: 'changes_requested',
-    then: Joi.string().required(),
-    otherwise: Joi.string().optional().allow('').allow(null).default('')
+    then: Joi.string().required()
   })
 });
 

@@ -97,7 +97,7 @@ const isOverridingChargeVersion = async (request, draftChargeVersionStartDate) =
   } catch (error) {
     if (error.statusCode !== 404) {
       return error;
-    } else return false;
+    } else { return false; }
   }
 };
 

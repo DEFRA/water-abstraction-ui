@@ -17,6 +17,7 @@ const sandbox = sinon.createSandbox();
 const controller = require('internal/modules/returns-notifications/controllers/paper-forms');
 const services = require('internal/lib/connectors/services');
 const helpers = require('../helpers');
+const controllerLib = require('internal/modules/returns-notifications/lib/controller');
 
 const DOCUMENT_ID = uuid();
 const LICENCE_NUMBER = '01/123/ABC';
@@ -105,7 +106,12 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       payload: {
         csrf_token: '00000000-0000-0000-0000-000000000000'
       },
-      pre: {}
+      pre: {},
+      defra: {
+        userName: 'mail@example.com'
+      },
+      params: {},
+      getNewAddress: sandbox.stub()
     };
 
     h = {
@@ -115,6 +121,11 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
     };
 
     sandbox.stub(services.water.returns, 'getIncompleteReturns');
+    sandbox.stub(services.water.batchNotifications, 'preparePaperReturnForms').resolves({
+      data: {
+        id: 'test-event-id'
+      }
+    });
   });
 
   afterEach(async () => {
@@ -336,6 +347,136 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
         const [, { documents }] = h.view.lastCall.args;
         expect(documents).to.be.an.array().length(0);
       });
+    });
+  });
+
+  experiment('.postCheckAnswers', () => {
+    experiment('when a document is selected', () => {
+      beforeEach(async () => {
+        request.pre.state = createState();
+        await controller.postCheckAnswers(request, h);
+      });
+
+      test('calls the water batch notifications service with the expected issuer', async () => {
+        const [issuer, data] = services.water.batchNotifications.preparePaperReturnForms.lastCall.args;
+        expect(issuer).to.equal('mail@example.com');
+
+        expect(data.forms).to.be.an.array().length(1);
+        expect(Object.keys(data.forms[0])).to.only.include([
+          'address',
+          'company',
+          'contact',
+          'returns'
+        ]);
+      });
+
+      test('calls the water batch notifications service with the expected data shape', async () => {
+        const [, data] = services.water.batchNotifications.preparePaperReturnForms.lastCall.args;
+
+        expect(data.forms).to.be.an.array().length(1);
+        expect(Object.keys(data.forms[0])).to.only.include([
+          'address',
+          'company',
+          'contact',
+          'returns'
+        ]);
+        expect(data.forms[0].returns).to.be.an.array().length(1);
+      });
+
+      test('only selected returns are included', async () => {
+        const [, data] = services.water.batchNotifications.preparePaperReturnForms.lastCall.args;
+        expect(data.forms[0].returns).to.only.include({
+          returnId: 'v1:1:01/123/ABC:1234:2019-04-01:2020-03-31'
+        });
+      });
+
+      test('the user is redirected to the sending page with the event id', async () => {
+        expect(h.redirect.calledWith(
+          '/returns-notifications/test-event-id/send'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a document is not selected', () => {
+      beforeEach(async () => {
+        request.pre.state = createState();
+        request.pre.state[DOCUMENT_ID].isSelected = false;
+        await controller.postCheckAnswers(request, h);
+      });
+
+      test('the document is not included', async () => {
+        const [, data] = services.water.batchNotifications.preparePaperReturnForms.lastCall.args;
+        expect(data.forms).to.be.an.array().length(0);
+      });
+    });
+  });
+
+  experiment('.getAcceptOneTimeAddress', () => {
+    beforeEach(async () => {
+      sandbox.stub(controllerLib, 'processAction');
+
+      request.params.documentId = DOCUMENT_ID;
+      request.getNewAddress.returns({
+        addressLine1: 'Test Farm'
+      });
+
+      await controller.getAcceptOneTimeAddress(request, h);
+    });
+
+    test('creates and processes an action', async () => {
+      const { args } = controllerLib.processAction.lastCall;
+      expect(args[0]).to.equal(request);
+      expect(args[1]).to.be.an.object();
+      expect(args[1].type).to.equal('setOneTimeAddress');
+      expect(args[1].payload.documentId).to.equal(DOCUMENT_ID);
+      expect(args[1].payload.address).to.equal({
+        addressLine1: 'Test Farm'
+      });
+    });
+
+    test('redirects to check answers page', async () => {
+      expect(h.redirect.calledWith('/returns-notifications/check-answers')).to.be.true();
+    });
+  });
+
+  experiment('.getSend', () => {
+    beforeEach(async () => {
+      request.pre.event = {
+        event_id: 'test-event-id',
+        type: 'notification',
+        subtype: 'paperReturnForms',
+        status: 'processing'
+      };
+    });
+
+    test('returns a Boom not found error if the event is of an unexpected type', async () => {
+      request.pre.event.type = 'not-a-notification';
+      const result = await controller.getSend(request);
+      expect(result.isBoom).to.be.true();
+      expect(result.output.statusCode).to.equal(404);
+    });
+
+    test('displays waiting page if event is processing', async () => {
+      request.pre.event.status = 'processing';
+      await controller.getSend(request, h);
+      const [template, view] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns-notifications/waiting');
+      expect(view.pageTitle).to.equal('Sending paper return forms');
+    });
+
+    test('returns a Boom 500 error if the event status is "error"', async () => {
+      request.pre.event.status = 'error';
+      const result = await controller.getSend(request);
+      expect(result.isBoom).to.be.true();
+      expect(result.output.statusCode).to.equal(500);
+    });
+
+    test('shows a confirmation page otherwise', async () => {
+      request.pre.event.status = 'processed';
+      await controller.getSend(request, h);
+      const [template, view] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/returns-notifications/confirmation');
+      expect(view.pageTitle).to.equal('Paper return forms sent');
     });
   });
 });

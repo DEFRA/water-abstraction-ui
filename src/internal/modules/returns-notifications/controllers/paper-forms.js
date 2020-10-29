@@ -182,7 +182,8 @@ const getAcceptOneTimeAddress = (request, h) => {
   return h.redirect(routing.getCheckAnswers());
 };
 
-const isValidEvent = event => event.type === 'notification' && event.subtype === 'paperReturnForms';
+const isValidEvent = event =>
+  `${event.type}.${event.subtype}` === 'notification.paperReturnForms';
 
 /**
  * Waits while the water service event is processed, then sends the notification

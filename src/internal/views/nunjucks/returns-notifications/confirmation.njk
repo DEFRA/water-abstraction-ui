@@ -1,0 +1,35 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({
+        titleText: "Paper return forms sent",
+        html: "They will arrive in three to five working days",
+        classes: "govuk-!-margin-bottom-9"
+      }) }}
+
+      <h2 class="govuk-heading-m">You may need to update some licence addresses</h2>
+      <p class="govuk-body">
+        If you used a one time address for any licences the details will not be saved to the licence holder's account.
+      </p>
+      <p class="govuk-body">
+        To change these details on the licence holder’s account:</p>
+
+      <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
+        <li>
+          email the
+          <a href="mailto:watrestecchecnald@environment-agency.gov.uk?subject=Address%20change%20request">Billing and Data team</a>
+          to update the returns contact.<p></p>
+        </li>
+        <li>email the
+          <a href=" mailto:psc-waterresources@environment-agency.gov.uk?subject=Licence%20holder%20update">Permitting and Support Centre team</a>
+          to update the licence holder’s address.</li>
+      </ul>
+
+      <a href="/manage" class="govuk-body">Return to Manage</a>
+
+    </div>
+  </div>
+{% endblock %}

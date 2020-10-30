@@ -6,13 +6,6 @@ const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/select-address');
 const helpers = require('../helpers');
 
-const request = {
-  path: 'returns-notifications/test-document-id/select-returns',
-  view: {
-    csrfToken: uuid()
-  }
-};
-
 const document = {
   document: {
     licenceNumber: '01/234/ABC',
@@ -24,11 +17,21 @@ const document = {
   selectedRole: 'returnsTo'
 };
 
+const request = {
+  path: 'returns-notifications/test-document-id/select-returns',
+  view: {
+    csrfToken: uuid()
+  },
+  pre: {
+    document
+  }
+};
+
 experiment('internal/modules/returns-notifications/forms/select-address', () => {
   experiment('.form', () => {
     let form;
     beforeEach(async () => {
-      form = formContainer.form(request, document);
+      form = formContainer.form(request);
     });
 
     test('contains a radio field for the addresses', async () => {
@@ -82,7 +85,7 @@ experiment('internal/modules/returns-notifications/forms/select-address', () => 
   experiment('.schema', () => {
     let schema;
     beforeEach(async () => {
-      schema = formContainer.schema(request, document);
+      schema = formContainer.schema(request);
     });
 
     test('validates when the selected role is supplied', async () => {

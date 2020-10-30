@@ -45,7 +45,8 @@ experiment('internal/modules/returns-notifications/lib/controller', () => {
     request = {
       yar: {
         set: sandbox.stub(),
-        get: sandbox.stub().returns({ currentState: true })
+        get: sandbox.stub(),
+        clear: sandbox.stub()
       },
       payload: {
         csrf_token: '00000000-0000-0000-0000-000000000000'
@@ -102,6 +103,10 @@ experiment('internal/modules/returns-notifications/lib/controller', () => {
   });
 
   experiment('.createPostHandler', () => {
+    beforeEach(async () => {
+      request.yar.get.returns({ currentState: true });
+    });
+
     experiment('when the request payload is invalid', () => {
       beforeEach(async () => {
         request.payload.foo = 'not-bar';

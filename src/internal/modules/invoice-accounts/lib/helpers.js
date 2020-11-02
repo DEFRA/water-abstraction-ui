@@ -178,20 +178,24 @@ const postDataHandler = (request) => {
   requestBody['startDate'] = moment().format('YYYY-MM-DD');
   requestBody['regionId'] = regionId; // Stuff the regionId into the request body
   requestBody['address'] = session.address; // Stuff the address into the request body
-  // If the address is a temp/new one, we remove the ID from the request
 
+  // If the address is a temp/new one, we remove the ID from the request
   if (requestBody.address && requestBody.address.id === tempId) {
     delete requestBody.address.id;
     delete requestBody.address.addressId;
   }
 
-  delete requestBody.address.dataSource; // Remove the data source property from the address object
-  // Remove properties from the address sub-object where there is no corresponding value
   Object.entries(requestBody.address).map(eachProperty => {
-    if (eachProperty[0] && eachProperty[1].length === 0) {
+    if (['source', 'dataSource'].includes(eachProperty[0])) {
+      // remove source/dataSource from the body to bypass validation errors.
+      // This is necessary because the EA Address Facade returns an unexpected value
       delete requestBody.address[eachProperty[0]];
     }
+    if (eachProperty[0] && eachProperty[1].length === 0) {
+      delete requestBody.address[eachProperty[0]]; // Remove properties from the address sub-object where there is no corresponding value
+    }
   });
+
   requestBody['agent'] = session.agent; // Stuff the agent into the request body
   // If the agent is a temp/new one, we remove the ID from the request
   if (requestBody.agent && requestBody.agent.id === tempId) {
@@ -202,7 +206,9 @@ const postDataHandler = (request) => {
       delete requestBody.agent.companyNumber;
     }
   }
+
   requestBody['contact'] = session.contact; // Stuff the contact into the request body
+
   return requestBody;
 };
 

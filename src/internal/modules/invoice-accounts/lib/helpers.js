@@ -191,7 +191,7 @@ const postDataHandler = (request) => {
       // This is necessary because the EA Address Facade returns an unexpected value
       delete requestBody.address[eachProperty[0]];
     }
-    if (eachProperty[0] && eachProperty[1].length === 0) {
+    if (eachProperty[0] && (!eachProperty[1] || eachProperty[1].length === 0)) {
       delete requestBody.address[eachProperty[0]]; // Remove properties from the address sub-object where there is no corresponding value
     }
   });

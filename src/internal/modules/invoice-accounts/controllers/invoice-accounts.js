@@ -233,7 +233,11 @@ const postCheckDetails = async (request, h) => {
   const requestBody = await helpers.postDataHandler(request);
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
-  request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
+  // The following line is commented out so that the data is
+  // not erased, in case the user taps the 'Back' button,
+  // returning into the workflow from elsewhere.
+
+  // request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
   const path = redirectPath + '?' + queryString.stringify({ invoiceAccountId: invoiceAcc.id });
   return h.redirect(path);
 };

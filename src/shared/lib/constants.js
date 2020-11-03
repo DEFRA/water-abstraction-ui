@@ -12,5 +12,13 @@ const crmRoles = {
   returnsTo: 'returnsTo'
 };
 
+const transactionStatuses = {
+  candidate: 'candidate',
+  chargeCreated: 'charge_created',
+  approved: 'approved',
+  error: 'error'
+};
+
 exports.returnStatuses = returnStatuses;
 exports.crmRoles = crmRoles;
+exports.transactionStatuses = transactionStatuses;

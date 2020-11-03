@@ -12,7 +12,43 @@ invoiceDebitsTotal %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
+{% macro invoiceErrors(errors) %}
+  {% if errors.length %}
+    <!-- Invoice-level error alerts -->
+    <div class="alert alert--error">
+      <h2 class="govuk-heading-m">We could not calculate all the transactions on this bill</h2>
+      <ul class="govuk-list">
+        {% for error in errors %}
+          <li>
+            <a href="#{{ error.id }}">{{ error.message }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro licenceErrors() %}
+  <span id="transactions-error" class="govuk-error-message">
+    <span class="govuk-visually-hidden">Error:</span>
+    <p class="govuk-body govuk-error-message">We could not calculate some transactions for this licence.</p>
+    <ul class="govuk-list govuk-list--bullet govuk-error-message">
+      <li>
+        Remove the bill from the bill run
+      </li>
+      <li>Check the set up of this licence in the NALD abstraction leg
+      </li>
+    </ul>
+    <p class="govuk-body govuk-error-message">
+      The bill will be added to the next supplementary bill run.
+    </p>
+  </span>
+{% endmacro %}
+
 {% block content %}
+
+  {{ invoiceErrors(errors) }}
+
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-6">
@@ -37,33 +73,37 @@ invoiceDebitsTotal %}
     </div>
   </div>
 
-  <!-- Net total -->
-  <div class="govuk-grid-row govuk-!-margin-bottom-3">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-!-margin-bottom-0">
-        {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
-      </h2>
+  {% if invoice.totals %}
 
-      {% if invoice.isDeMinimis %}
-        {{ govukInsetText({
+    <!-- Net total -->
+    <div class="govuk-grid-row govuk-!-margin-bottom-3">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-!-margin-bottom-0">
+          {{ invoiceTotal(invoice.totals.netTotal, invoice.totals.netTotal < 0) }}
+        </h2>
+
+        {% if invoice.isDeMinimis %}
+          {{ govukInsetText({
             text: "De minimis rule applied"
         }) }}
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
-  </div>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
-      <h2>
-        {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
-      </h2>
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
+        </h2>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
+        </h2>
+      </div>
     </div>
-    <div class="govuk-grid-column-one-half">
-      <h2>
-        {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
-      </h2>
-    </div>
-  </div>
+
+  {% endif %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
@@ -75,33 +115,42 @@ invoiceDebitsTotal %}
     <div class="govuk-grid-column-full">
       <hr class="govuk-section-break section-break--heavy section-break--margin-7"/>
 
-      {% for financialYear, licences in transactions %}
-        <h2 class="govuk-heading-xl">{{ financialYear }}</h2>
+      <h2 class="govuk-heading-xl">{{ financialYearEnding }}</h2>
 
-        {% for licenceNumber, licence in licences %}
-          <h3 class="govuk-heading-l govuk-!-margin-bottom-0">Licence
-            {{ licenceNumber }}</h3>
+      {% for invoiceLicence in invoiceLicences %}
+
+        {% if invoiceLicence.hasTransactionErrors %}
+          <div class="govuk-form-group govuk-form-group--error">
+          {% endif %}
+
+          <h3 class="govuk-heading-l govuk-!-margin-bottom-0" id="{{ invoiceLicence.id }}">Licence
+            {{ invoiceLicence.licenceNumber }}</h3>
+
           <p>
             <a href="{{ licence.link }}">View licence</a>
           </p>
 
-          {% for transaction in licence.minimumChargeTransactions %}
+          {% if invoiceLicence.hasTransactionErrors%}
+            {{ licenceErrors() }}
+          {% endif %}
+
+          {% for transaction in invoiceLicence.minimumChargeTransactions %}
             {% set minChargeHtml %}
-              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                {{ transaction.value | charge }}
-              </p>
-              <p class="govuk-body">
+            <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+              {{ transaction.value | charge }}
+            </p>
+            <p class="govuk-body">
               Minimum charge applied
-              </p>
+            </p>
             {% endset %}
 
-             {{ govukInsetText({
+            {{ govukInsetText({
               html : minChargeHtml,
               classes: 'govuk-!-padding-bottom-0 govuk-!-padding-top-0'
             }) }}
           {% endfor %}
 
-          {% for group in licence.chargeElements %}
+          {% for group in invoiceLicence.transactionGroups %}
 
             {% set insetHtml %}
             <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
@@ -126,11 +175,68 @@ invoiceDebitsTotal %}
 
           {% endfor %}
 
+          {% if invoiceLicence.hasTransactionErrors %}
+          </div>
+          {% endif%}
+
         {% endfor %}
 
-      {% endfor %}
+        {% for financialYear, licences in transactions %}
+          <h2 class="govuk-heading-xl">{{ financialYear }}</h2>
 
+          {% for licenceNumber, licence in licences %}
+            <h3 class="govuk-heading-l govuk-!-margin-bottom-0" id="{{ licenceNumber }}">Licence
+              {{ licenceNumber }}</h3>
+            <p>
+              <a href="{{ licence.link }}">View licence</a>
+            </p>
+
+            {% for transaction in licence.minimumChargeTransactions %}
+              {% set minChargeHtml %}
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+                {{ transaction.value | charge }}
+              </p>
+              <p class="govuk-body">
+                Minimum charge applied
+              </p>
+              {% endset %}
+
+              {{ govukInsetText({
+              html : minChargeHtml,
+              classes: 'govuk-!-padding-bottom-0 govuk-!-padding-top-0'
+            }) }}
+            {% endfor %}
+
+            {% for group in licence.chargeElements %}
+
+              {% set insetHtml %}
+              <h4 class="govuk-heading-m govuk-!-margin-bottom-1">
+                {{ group.chargeElement.purposeUse.name }},
+                {{ group.chargeElement.description }}
+              </h4>
+
+              <p class="govuk-body">
+                {{ group.chargeElement.abstractionPeriod | abstractionPeriod }}
+              </p>
+              {% endset %}
+
+              {{ govukInsetText({
+              html : insetHtml
+            }) }}
+
+              {% if batch.type == 'two_part_tariff' %}
+                {{ twoPartTariffTransactionsTable(group) }}
+              {% else %}
+                {{ transactionsTable(group) }}
+              {% endif %}
+
+            {% endfor %}
+
+          {% endfor %}
+
+        {% endfor %}
+
+      </div>
     </div>
-  </div>
 
-{% endblock %}
+  {% endblock %}

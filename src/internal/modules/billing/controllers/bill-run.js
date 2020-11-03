@@ -1,5 +1,11 @@
 'use strict';
 
+const titleCase = require('title-case');
+const { pluralize } = require('shared/lib/pluralize');
+const moment = require('moment');
+const Boom = require('@hapi/boom');
+const { get } = require('lodash');
+
 const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
@@ -8,10 +14,6 @@ const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
-const titleCase = require('title-case');
-const { pluralize } = require('shared/lib/pluralize');
-const moment = require('moment');
-const Boom = require('@hapi/boom');
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
 
@@ -49,16 +51,19 @@ const getBillingBatchInvoice = async (request, h) => {
   const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
   const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
 
+  console.log(JSON.stringify(mappers.mapInvoiceLicences(invoice, documentIds), null, 2));
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
     pageTitle: `Bill for ${titleCase(invoice.invoiceAccount.company.name)}`,
     invoice,
+    financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    transactions: mappers.mapInvoiceTransactions(invoice, documentIds),
-    isCredit: invoice.totals.netTotal < 0,
-    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`
+    invoiceLicences: mappers.mapInvoiceLicences(invoice, documentIds),
+    isCredit: get(invoice, 'totals.netTotal', 0) < 0,
+    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
+    errors: mappers.mapInvoiceLevelErrors(invoice)
   });
 };
 

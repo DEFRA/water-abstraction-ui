@@ -34,6 +34,7 @@ const getBillingBatchSummary = async (request, h) => {
     invoices: mappers.mapInvoices(batch, invoices),
     isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
+    errors: mappers.mapBatchLevelErrors(batch, invoices),
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && '/billing/batch/list'
@@ -51,7 +52,6 @@ const getBillingBatchInvoice = async (request, h) => {
   const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
   const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
 
-  console.log(JSON.stringify(mappers.mapInvoiceLicences(invoice, documentIds), null, 2));
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,

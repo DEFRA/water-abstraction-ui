@@ -52,6 +52,9 @@ const invoice = {
     company: {
       name: 'COMPANY NAME'
     }
+  },
+  financialYear: {
+    yearEnding: 2020
   }
 };
 
@@ -279,9 +282,10 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.invoice).to.equal(invoice);
       expect(view.batch).to.equal(batchData);
       expect(view.batchType).to.equal('Supplementary');
-      expect(view.transactions).to.be.an.object();
+      expect(view.invoiceLicences).to.be.an.array();
       expect(view.isCredit).to.be.false();
       expect(view.caption).to.equal('Billing account A12345678A');
+      expect(view.financialYearEnding).to.equal(2020);
     });
   });
 

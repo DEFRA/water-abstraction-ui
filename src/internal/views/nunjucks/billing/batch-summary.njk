@@ -14,7 +14,28 @@ chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton, sendBatchButton, downloadBatchButton %}
 {% from "./nunjucks/billing/macros/invoices-table.njk" import invoicesTable %}
 
+{% macro batchErrors(errors) %}
+  {% if errors.length %}
+    <!-- Invoice-level error alerts -->
+    <div class="alert">
+      <ul class="govuk-list">
+        {% for error in errors %}
+          <li class="govuk-!-font-weight-bold">
+            There are problems with the
+            <a href="{{ error.link }}">{{ error.financialYearEnding }}
+              bill for
+              {{ error.accountNumber }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
+
+  {{ batchErrors(errors) }}
 
   {% if not batch.totals %}
     <div class="govuk-grid-row">

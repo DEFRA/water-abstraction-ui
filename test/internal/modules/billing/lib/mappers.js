@@ -209,104 +209,104 @@ experiment('modules/billing/lib/mappers', () => {
     });
   });
 
-  experiment('.mapInvoiceTransactions', () => {
+  experiment('.mapInvoiceLicences', () => {
     let data;
+
     beforeEach(async () => {
-      result = mappers.mapInvoiceTransactions(invoice, documentIdMap);
+      result = mappers.mapInvoiceLicences(invoice, documentIdMap);
     });
 
-    test('items are grouped first by financial year', () => {
-      expect(Object.keys(result)).to.only.include(['2020', '2021']);
+    test('the result is an array of items corresponding to the invoiceLicence models', () => {
+      expect(result).to.be.an.array().length(2);
+      expect(result[0].id).to.equal(invoice.invoiceLicences[0].id);
+      expect(result[1].id).to.equal(invoice.invoiceLicences[1].id);
     });
 
-    experiment('in financial year ending 2020', () => {
-      experiment('licence 1', () => {
-        beforeEach(async () => {
-          data = result['2020'][LICENCE_1];
-        });
+    experiment('for the first invoice licence', () => {
+      beforeEach(async () => {
+        data = result[0];
+      });
+      test('has the correct link', async () => {
+        expect(data.link).to.equal('/licences/7d6a672f-1d3a-414a-81f7-69e66ff1381c');
+      });
 
-        test('has the correct link', async () => {
-          expect(data.link).to.equal('/licences/7d6a672f-1d3a-414a-81f7-69e66ff1381c');
-        });
+      test('has 1 x charge element', async () => {
+        expect(data.transactionGroups.length).to.equal(1);
+      });
 
-        test('has 1 x charge element', async () => {
-          expect(data.chargeElements.length).to.equal(1);
-        });
+      test('has 1 x transaction in the charge element', async () => {
+        expect(data.transactionGroups[0].transactions).to.have.length(1);
+      });
 
-        test('has 1 x transaction in the charge element', async () => {
-          expect(data.chargeElements[0].transactions).to.have.length(1);
-        });
-
-        test('has the correct transactions', async () => {
-          expect(data.chargeElements[0].transactions[0]).to.equal({
-            value: 924,
-            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
-            volume: 12.35,
-            billingVolume: {
-              calculatedVolume: 12.35,
-              volume: 12.35
-            },
-            isEdited: false,
-            isMinimumCharge: false
-          });
-        });
-
-        test('has the correct charge element total', async () => {
-          expect(data.chargeElements[0].totals).to.equal({
-            debits: 924,
-            credits: 0,
-            netTotal: 924
-          });
-        });
-
-        test('has the correct value', async () => {
-          const { value } = data.chargeElements[0].transactions[0];
-          expect(value).to.equal(924);
-        });
-
-        test('has the correct charge period', async () => {
-          const { chargePeriod } = data.chargeElements[0].transactions[0];
-          expect(chargePeriod).to.equal({ startDate: '2019-04-01', endDate: '2020-03-31' });
-        });
-
-        test('has the correct volumes', async () => {
-          const { volume, billingVolume } = data.chargeElements[0].transactions[0];
-          expect(volume).to.equal(12.35);
-          expect(billingVolume.calculatedVolume).to.equal(12.35);
-          expect(billingVolume.volume).to.equal(12.35);
-        });
-
-        test('has isEdited flag false because the two volumes are the same', async () => {
-          const { isEdited } = data.chargeElements[0].transactions[0];
-          expect(isEdited).to.be.false();
-        });
-
-        test('has the correct minimum charge transactions', async () => {
-          expect(data.minimumChargeTransactions[0]).to.equal({
-            value: 1576,
-            chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
-            isMinimumCharge: true
-          });
+      test('has the correct transactions', async () => {
+        expect(data.transactionGroups[0].transactions[0]).to.equal({
+          value: 924,
+          chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
+          volume: 12.35,
+          billingVolume: {
+            calculatedVolume: 12.35,
+            volume: 12.35
+          },
+          isEdited: false,
+          isMinimumCharge: false
         });
       });
 
-      experiment('licence 2', () => {
+      test('has the correct charge element total', async () => {
+        expect(data.transactionGroups[0].totals).to.equal({
+          debits: 924,
+          credits: 0,
+          netTotal: 924
+        });
+      });
+
+      test('has the correct value', async () => {
+        const { value } = data.transactionGroups[0].transactions[0];
+        expect(value).to.equal(924);
+      });
+
+      test('has the correct charge period', async () => {
+        const { chargePeriod } = data.transactionGroups[0].transactions[0];
+        expect(chargePeriod).to.equal({ startDate: '2019-04-01', endDate: '2020-03-31' });
+      });
+
+      test('has the correct volumes', async () => {
+        const { volume, billingVolume } = data.transactionGroups[0].transactions[0];
+        expect(volume).to.equal(12.35);
+        expect(billingVolume.calculatedVolume).to.equal(12.35);
+        expect(billingVolume.volume).to.equal(12.35);
+      });
+
+      test('has isEdited flag false because the two volumes are the same', async () => {
+        const { isEdited } = data.transactionGroups[0].transactions[0];
+        expect(isEdited).to.be.false();
+      });
+
+      test('has the correct minimum charge transactions', async () => {
+        expect(data.minimumChargeTransactions[0]).to.equal({
+          value: 1576,
+          chargePeriod: { startDate: '2019-04-01', endDate: '2020-03-31' },
+          isMinimumCharge: true
+        });
+      });
+
+      experiment('for the second invoice licence', () => {
         beforeEach(async () => {
-          data = result['2020'][LICENCE_2];
+          data = result[1];
         });
 
         test('has 2 x charge element', async () => {
-          expect(data.chargeElements.length).to.equal(2);
+          expect(data.transactionGroups.length).to.equal(2);
         });
 
         experiment('the first charge element', async () => {
           test('has 1 x transaction', async () => {
-            expect(data.chargeElements[0].transactions).to.have.length(1);
+            expect(data.transactionGroups[0].transactions).to.have.length(1);
           });
 
           experiment('the transaction', () => {
             test('has isEdited flag true as the volume is different to the calculated volume', async () => {
-              const { volume, billingVolume, isEdited } = data.chargeElements[0].transactions[0];
+              const { volume, billingVolume, isEdited } = data.transactionGroups[0].transactions[0];
               expect(volume).to.equal(12.35);
               expect(billingVolume.calculatedVolume).to.equal(null);
               expect(billingVolume.volume).to.equal(12.35);
@@ -315,18 +315,14 @@ experiment('modules/billing/lib/mappers', () => {
           });
 
           test('has the correct totals', async () => {
-            const { totals } = data.chargeElements[0];
+            const { totals } = data.transactionGroups[0];
             expect(totals).to.equal({ debits: 1234, credits: 0, netTotal: 1234 });
           });
         });
 
-        experiment('handles no billing volume', async () => {
-          test('has 1 x transaction', async () => {
-            const data = result['2021'][LICENCE_2];
-
-            expect(data.chargeElements[0].transactions[1].billingVolume).to.be.undefined();
-            expect(data.chargeElements[0].transactions[1].isEdited).to.be.false();
-          });
+        test('handles no billing volume', async () => {
+          expect(data.transactionGroups[1].transactions[3].billingVolume).to.be.undefined();
+          expect(data.transactionGroups[1].transactions[3].isEdited).to.be.false();
         });
       });
     });

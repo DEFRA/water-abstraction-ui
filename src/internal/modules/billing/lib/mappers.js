@@ -1,6 +1,6 @@
 'use strict';
 
-const { omit, sortBy, groupBy } = require('lodash');
+const { omit, sortBy, groupBy, pick } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
@@ -129,9 +129,17 @@ const mapInvoiceLevelErrors = invoice => invoice.invoiceLicences
     message: `There are problems with transactions on licence ${invoiceLicence.licence.licenceNumber}`
   }));
 
+const mapBatchLevelErrors = (batch, invoices) => invoices
+  .filter(invoice => invoice.hasTransactionErrors)
+  .map(invoice => ({
+    link: `/billing/batch/${batch.id}/invoice/${invoice.id}`,
+    ...pick(invoice, 'accountNumber', 'id', 'financialYearEnding')
+  }));
+
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceLicences = mapInvoiceLicences;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
 exports.mapInvoices = mapInvoices;
 exports.mapInvoiceLevelErrors = mapInvoiceLevelErrors;
+exports.mapBatchLevelErrors = mapBatchLevelErrors;

@@ -19,7 +19,7 @@ invoiceDebitsTotal %}
       <h2 class="govuk-heading-m">We could not calculate all the transactions on this bill</h2>
       <ul class="govuk-list">
         {% for error in errors %}
-          <li>
+          <li class="govuk-!-font-weight-bold">
             <a href="#{{ error.id }}">{{ error.message }}</a>
           </li>
         {% endfor %}

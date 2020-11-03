@@ -133,7 +133,7 @@ const mapBatchLevelErrors = (batch, invoices) => invoices
   .filter(invoice => invoice.hasTransactionErrors)
   .map(invoice => ({
     link: `/billing/batch/${batch.id}/invoice/${invoice.id}`,
-    ...pick(invoice, 'accountNumber', 'id', 'financialYearEnding')
+    ...pick(invoice, 'accountNumber', 'financialYearEnding')
   }));
 
 exports.mapBatchListRow = mapBatchListRow;

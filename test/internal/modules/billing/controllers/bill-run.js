@@ -40,8 +40,10 @@ const invoice = {
       transactions: [],
       licence: {
         licenceNumber: '12/34/56'
-      }
-    }],
+      },
+      hasTransactionErrors: false
+    }
+  ],
   dateCreated: '2020-01-27T13:51:29.234Z',
   totals: {
     netTotal: '1234.56'
@@ -170,6 +172,10 @@ experiment('internal/modules/billing/controller', () => {
         test('the "other abstractors" group only includes invoices where the flag is cleared', async () => {
           expect(view.invoices.otherAbstractors[0].isWaterUndertaker).to.be.false();
         });
+
+        test('an "errors" array', async () => {
+          expect(view.errors).to.be.an.array().length(0);
+        });
       });
     });
 
@@ -233,6 +239,10 @@ experiment('internal/modules/billing/controller', () => {
             sortValue: -12345
           });
         });
+
+        test('an "errors" array', async () => {
+          expect(view.errors).to.be.an.array().length(0);
+        });
       });
 
       test('does not include the back link if the "back" query param is zero', async () => {
@@ -286,6 +296,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view.isCredit).to.be.false();
       expect(view.caption).to.equal('Billing account A12345678A');
       expect(view.financialYearEnding).to.equal(2020);
+      expect(view.errors).to.be.an.array().length(0);
     });
   });
 

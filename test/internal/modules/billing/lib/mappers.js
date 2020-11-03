@@ -39,6 +39,7 @@ const LICENCE_2 = '02/345/678/B';
 const invoice = {
   invoiceLicences: [
     {
+      id: 'test-invoice-licence-id-1',
       licence: {
         licenceNumber: LICENCE_1
       },
@@ -64,9 +65,11 @@ const invoice = {
           endDate: '2020-03-31'
         },
         isMinimumCharge: true
-      }]
+      }],
+      hasTransactionErrors: true
     },
     {
+      id: 'test-invoice-licence-id-2',
       licence: {
         licenceNumber: LICENCE_2
       },
@@ -142,13 +145,27 @@ const invoice = {
         },
         volume: 12.35,
         isMinimumCharge: false
-      }]
+      }],
+      hasTransactionErrors: false
     }]
 };
 
 const documentIdMap = new Map();
 documentIdMap.set(LICENCE_1, '7d6a672f-1d3a-414a-81f7-69e66ff1381c');
 documentIdMap.set(LICENCE_2, '80b8e0a7-2057-45a4-aad5-fefae0faa43d');
+
+const batchInvoices = [{
+  id: 'test-invoice-id-1',
+  accountNumber: 'A00000000A',
+  financialYearEnding: 2020,
+  hasTransactionErrors: false
+},
+{
+  id: 'test-invoice-id-2',
+  accountNumber: 'B00000000B',
+  financialYearEnding: 2019,
+  hasTransactionErrors: true
+}];
 
 experiment('modules/billing/lib/mappers', () => {
   let result;
@@ -377,6 +394,33 @@ experiment('modules/billing/lib/mappers', () => {
         result = mappers.mapInvoices(batch, [invoice]);
         expect(result[0].sortValue).to.equal(-123);
       });
+    });
+  });
+
+  experiment('.mapInvoiceLevelErrors', () => {
+    beforeEach(async () => {
+      result = mappers.mapInvoiceLevelErrors(invoice);
+    });
+
+    test('maps to an array of error objects for invoice licences with errors', async () => {
+      expect(result).to.equal([{
+        id: 'test-invoice-licence-id-1',
+        message: 'There are problems with transactions on licence 01/123/456/A'
+      }]);
+    });
+  });
+
+  experiment('.mapBatchLevelErrors', () => {
+    beforeEach(async () => {
+      result = mappers.mapBatchLevelErrors(batch, batchInvoices);
+    });
+
+    test('maps to an array of error objects for invoice licences with errors', async () => {
+      expect(result).to.equal([{
+        link: `/billing/batch/${batch.id}/invoice/test-invoice-id-2`,
+        accountNumber: 'B00000000B',
+        financialYearEnding: 2019
+      }]);
     });
   });
 });

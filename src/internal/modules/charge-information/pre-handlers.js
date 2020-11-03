@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get } = require('lodash');
+const { get, sortBy } = require('lodash');
 const uuid = require('uuid');
 
 const errorHandler = (err, message) => {
@@ -48,7 +48,7 @@ const loadIsChargeable = async request => {
 };
 
 const getPaddedVersionString = version => version.toString().padStart(9, '0');
-const getSortableVersionNumber = (issue, increment) => parseFloat(`${getPaddedVersionString(issue)}.${getPaddedVersionString(increment)}`);
+const getSortableVersionNumber = obj => parseFloat(`${getPaddedVersionString(obj.issue)}.${getPaddedVersionString(obj.increment)}`);
 
 const loadDefaultCharges = async request => {
   const { licenceId } = request.params;
@@ -58,11 +58,11 @@ const loadDefaultCharges = async request => {
     //  Find non 'draft' licence versions for the licenceId where the draft charge version start date is in the date range of
     //  licence versions then pick the licence version with the greatest version number.
     const versions = await services.water.licences.getLicenceVersions(licenceId);
-    const version = versions.filter(v => {
+    const versionsFiltered = versions.filter(v => {
       return v.status !== 'draft' && moment.range(v.startDate, v.endDate).contains(startDate);
-    }).reduce((preVal, curVal) => {
-      return (getSortableVersionNumber(preVal.issue, preVal.increment) > getSortableVersionNumber(curVal.issue, curVal.increment)) ? preVal : curVal;
     });
+
+    const version = sortBy(versionsFiltered, getSortableVersionNumber).pop();
 
     if (version) {
       const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);

@@ -1,11 +1,22 @@
 .alert {
   @extend .govuk-inset-text;
 
-  border-color: #008EC9;
-  background-color: #E8F4FA;
+  border-color: #144e81;
+  background-color: #d2e2f1;
   margin-top: 0;
 
-  @media screen and (min-width: 641px) {
-    width : 66%;
+  a {
+    color: #144e81;
+  }
+}
+
+.alert--error {
+  @extend .alert;
+
+  border-color: #942514;
+  background-color: #f6d7d2;
+
+  a {
+    color: #942514;
   }
 }

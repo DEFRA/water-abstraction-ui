@@ -9,11 +9,11 @@ const mapDataToTaskList = (data, licence) => ([{
   tasks: [{
     text: 'Select reason for new charge information',
     badge: getBadge(!!data.changeReason, 'task-reason'),
-    link: routing.getReason(licence)
+    link: routing.getReason(licence.id)
   }, {
     text: 'Set charge start date',
     badge: getBadge(!!data.startDate, 'task-start-date'),
-    link: routing.getStartDate(licence)
+    link: routing.getStartDate(licence.id)
   }, {
     text: 'Set up element',
     badge: getBadge(data.chargeElements.length > 0, 'task-charge-elements')

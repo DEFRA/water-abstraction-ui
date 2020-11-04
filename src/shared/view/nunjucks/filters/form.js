@@ -33,7 +33,9 @@ const mapFormField = (field) => {
     name: field.name,
     type: field.options.type,
     label: {
-      text: field.options.label
+      ...getLabelText(field.options),
+      classes: field.options.heading ? 'govuk-label--l' : null,
+      isPageHeading: field.options.heading || false
     },
     value: field.value,
     hint: {
@@ -103,7 +105,7 @@ const mapFieldErrorSummary = (field) => {
 
   // For radio/checkbox fields, the ID is the first item
   return errors.map(error => ({
-    text: error.message,
+    text: error.summary || error.message,
     href: `#${field.name}`
   }));
 };
@@ -170,32 +172,37 @@ const mapChoices = (field, prop = 'checked') => {
 };
 
 /**
+ * Maps label / caption to either an html or text property as needed
+ * @param {Object} options - field options
+ * @return {Object}
+ */
+const getLabelText = options => {
+  const { label, caption } = options;
+  return caption
+    ? { html: `<span class="govuk-caption-l">${caption}</span> ${label}` }
+    : { text: label };
+};
+
+/**
  * Gets radio legend options.  If field.options.heading is true, it sets
  * options to render the label text as a page heading
  * @param  {Object} field - radio button field description
  * @return {Object}       - legend options
  */
 const mapLegendOptions = (field) => {
-  const defaults = {
-    text: field.options.label
-  };
+  const options = getLabelText(field.options);
 
   if (field.options.heading) {
-    return {
-      ...defaults,
-      isPageHeading: true,
-      classes: 'govuk-fieldset__legend--xl'
-    };
+    const size = field.options.size || 'l';
+    options.isPageHeading = true;
+    options.classes = `govuk-fieldset__legend--${size}`;
   }
 
   if (field.options.subHeading) {
-    return {
-      ...defaults,
-      classes: 'govuk-fieldset__legend--m'
-    };
+    options.classes = `govuk-fieldset__legend--m`;
   }
 
-  return defaults;
+  return options;
 };
 
 /**
@@ -267,9 +274,7 @@ const mapFormCheckbox = (field) => {
       text: field.options.hint
     },
     fieldset: {
-      legend: {
-        text: field.options.label
-      }
+      legend: mapLegendOptions(field)
     },
     items
   };
@@ -304,6 +309,11 @@ const mapFormDropdownField = (field) => {
   return applyErrors(options, field.errors);
 };
 
+const isFirstFieldHeading = form => {
+  const firstFieldWithLabel = form.fields.find(field => field.options.label);
+  return get(firstFieldWithLabel, 'options.heading', false);
+};
+
 exports.mapFormField = mapFormField;
 exports.mapFormErrorSummary = mapFormErrorSummary;
 exports.mapFormDateField = mapFormDateField;
@@ -311,3 +321,4 @@ exports.mapFormRadioField = mapFormRadioField;
 exports.setConditionalRadioField = setConditionalRadioField;
 exports.mapFormCheckbox = mapFormCheckbox;
 exports.mapFormDropdownField = mapFormDropdownField;
+exports.isFirstFieldHeading = isFirstFieldHeading;

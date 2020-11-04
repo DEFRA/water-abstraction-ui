@@ -66,6 +66,29 @@ experiment('services/water/BatchNotificationsService', () => {
     });
   });
 
+  experiment('preparePaperReturnForms', () => {
+    beforeEach(async () => {
+      await client.preparePaperReturnForms('issuer', {
+        foo: 'bar'
+      });
+    });
+
+    test('passes the expected URL to the request', async () => {
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal('https/example.com/water/batch-notifications/prepare/paperReturnForms');
+    });
+
+    test('adds the issuer to the request body', async () => {
+      const [, options] = serviceRequest.post.lastCall.args;
+      expect(options.body.issuer).to.equal('issuer');
+    });
+
+    test('adds the data to the request body', async () => {
+      const [, options] = serviceRequest.post.lastCall.args;
+      expect(options.body.data).to.equal({ foo: 'bar' });
+    });
+  });
+
   experiment('sendReminders', () => {
     beforeEach(async () => {
       await client.sendReminders('test-event-id', 'issuer');

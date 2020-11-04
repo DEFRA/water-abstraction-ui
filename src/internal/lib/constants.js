@@ -10,6 +10,9 @@ const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts';
 const SCOPE_CHARGING = 'charging';
 const SCOPE_BILLING = 'billing';
 const SCOPE_DELETE_AGREEMENTS = 'delete_agreements';
+const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements';
+const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer';
+const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor';
 
 module.exports = {
   scope: {
@@ -37,6 +40,9 @@ module.exports = {
     manageAccounts: SCOPE_MANAGE_ACCOUNTS,
     charging: SCOPE_CHARGING,
     billing: SCOPE_BILLING,
-    deleteAgreements: SCOPE_DELETE_AGREEMENTS
+    deleteAgreements: SCOPE_DELETE_AGREEMENTS,
+    manageAgreements: SCOPE_MANAGE_AGREEMENTS,
+    chargeVersionWorkflowReviewer: SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER,
+    chargeVersionWorkflowEditor: SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR
   }
 };

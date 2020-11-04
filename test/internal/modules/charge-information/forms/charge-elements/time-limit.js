@@ -7,33 +7,33 @@ const Joi = require('@hapi/joi');
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/time-limit');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = draftChargeInformation => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
   },
   pre: {
     licence: { id: 'test-licence-id', expiredDate: '2020-12-31' },
-    draftChargeInformation: { startDate: '2001-01-01' }
+    draftChargeInformation
   }
 });
 
 const testUuid = 'c5afe238-fb77-4131-be80-384aaf245842';
 
-const sessionData = {
-  timeLimitedPeriod: false
-};
-
 experiment('internal/modules/charge-information/forms/charge-element/time-limited', () => {
   let timeLimitForm;
 
   beforeEach(async () => {
-    timeLimitForm = form(createRequest(), sessionData);
+    timeLimitForm = form(createRequest({
+      chargeElements: []
+    }));
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(timeLimitForm.method).to.equal('POST');
     });
@@ -48,57 +48,97 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
       expect(button.options.label).to.equal('Continue');
     });
 
-    test('has a choice for using abstraction data', async () => {
+    test('has a choice for setting a time limit', async () => {
       const radio = findField(timeLimitForm, 'timeLimitedPeriod');
       expect(radio.options.choices[0].label).to.equal('Yes');
       expect(radio.options.choices[0].value).to.equal('yes');
-      expect(radio.options.choices[0].fields.length).to.equal(2);
-      expect(radio.options.choices[0].fields[0].name).to.equal('startDate');
-      expect(radio.options.choices[0].fields[0].options.label).to.equal('Enter start date');
-      expect(radio.options.choices[0].fields[0].options.widget).to.equal('date');
-      expect(radio.options.choices[0].fields[1].name).to.equal('endDate');
-      expect(radio.options.choices[0].fields[1].options.label).to.equal('Enter end date');
-      expect(radio.options.choices[0].fields[1].options.widget).to.equal('date');
       expect(radio.options.choices[1].label).to.equal('No');
       expect(radio.options.choices[1].value).to.equal('no');
     });
+
+    test('has start and end date fields under "yes" choice', async () => {
+      const radio = findField(timeLimitForm, 'timeLimitedPeriod');
+      const dateFields = radio.options.choices[0].fields;
+      expect(dateFields.length).to.equal(2);
+      expect(dateFields[0].name).to.equal('startDate');
+      expect(dateFields[0].options.label).to.equal('Enter start date');
+      expect(dateFields[0].options.widget).to.equal('date');
+      expect(dateFields[1].name).to.equal('endDate');
+      expect(dateFields[1].options.label).to.equal('Enter end date');
+      expect(dateFields[1].options.widget).to.equal('date');
+    });
+
+    test('sets the value of the timeLimitedPeriod, if provided', async () => {
+      timeLimitForm = form(createRequest({ chargeElements: [{
+        id: 'test-element-id',
+        timeLimitedPeriod: false
+      }] }));
+      const radio = findField(timeLimitForm, 'timeLimitedPeriod');
+      expect(radio.value).to.equal('no');
+    });
+
+    test('sets the value of the timeLimitedPeriod dates, if provided', async () => {
+      timeLimitForm = form(createRequest({
+        chargeElements: [{
+          id: 'test-element-id',
+          timeLimitedPeriod: {
+            startDate: '2020-04-01',
+            endDate: '2021-03-31'
+          }
+        }]
+      }));
+      const radio = findField(timeLimitForm, 'timeLimitedPeriod');
+      const startDateField = findField(radio.options.choices[0], 'startDate');
+      const endDateField = findField(radio.options.choices[0], 'endDate');
+      expect(radio.value).to.equal('yes');
+      expect(startDateField.value).to.equal('2020-04-01');
+      expect(endDateField.value).to.equal('2021-03-31');
+    });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
+    let timeLimitSchema;
+    beforeEach(() => {
+      timeLimitSchema = schema(createRequest({
+        dateRange: {
+          startDate: '2001-01-01'
+        }
+      }));
+    });
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest().pre).csrf_token.validate(testUuid);
+        const result = timeLimitSchema.csrf_token.validate(testUuid);
         expect(result.error).to.be.null();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest().pre).csrf_token.validate('sciccors');
+        const result = timeLimitSchema.csrf_token.validate('sciccors');
         expect(result.error).to.exist();
       });
     });
 
     experiment('timeLimitedPeriod', () => {
       test('validates yes', async () => {
-        const result = schema(createRequest().pre).timeLimitedPeriod.validate('yes');
+        const result = timeLimitSchema.timeLimitedPeriod.validate('yes');
         expect(result.error).to.not.exist();
       });
       test('validates no', async () => {
-        const result = schema(createRequest().pre).timeLimitedPeriod.validate('no');
+        const result = timeLimitSchema.timeLimitedPeriod.validate('no');
         expect(result.error).to.not.exist();
       });
 
       test('can not be a nomral string', async () => {
-        const result = schema(createRequest().pre).timeLimitedPeriod.validate('something');
+        const result = timeLimitSchema.timeLimitedPeriod.validate('something');
         expect(result.error).to.exist();
       });
     });
     experiment('startDate', () => {
       test('accepts a valid date', async () => {
-        const result = schema(createRequest().pre).startDate.validate('2001-01-02');
+        const result = timeLimitSchema.startDate.validate('2001-01-02');
         expect(result.error).to.not.exist();
       });
       test('accepts an empty string', async () => {
-        const result = schema(createRequest().pre).startDate.validate('');
+        const result = timeLimitSchema.startDate.validate('');
         expect(result.error).to.not.exist();
       });
       test('is not required if timeLimitedPeriod is no', async () => {
@@ -106,17 +146,17 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).not.to.exist();
       });
     });
     experiment('endDate', () => {
       test('accepts a valid date', async () => {
-        const result = schema(createRequest().pre).endDate.validate('2001-01-02');
+        const result = timeLimitSchema.endDate.validate('2001-01-02');
         expect(result.error).to.not.exist();
       });
       test('accepts an empty string', async () => {
-        const result = schema(createRequest().pre).endDate.validate('');
+        const result = timeLimitSchema.endDate.validate('');
         expect(result.error).to.not.exist();
       });
       test('is not required if timeLimitedPeriod is no/false', async () => {
@@ -124,7 +164,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).not.to.exist();
       });
     });
@@ -136,7 +176,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).not.to.exist();
       });
       test('fails when startDate is before chargeStartDate', async () => {
@@ -146,7 +186,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2000-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).to.exist();
       });
       test('fails when endDate is after expiredDate', async () => {
@@ -158,7 +198,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           draftChargeInformation: { startDate: '2001-01-01' },
           licence: { expiredDate: '2001-12-31' }
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).to.exist();
       });
       test('is OK when start and end dates are on the boundaries', async () => {
@@ -168,7 +208,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-01',
           endDate: '2001-12-31'
         };
-        const result = Joi.validate(data, schema(createRequest().pre));
+        const result = Joi.validate(data, timeLimitSchema);
         expect(result.error).not.to.exist();
       });
     });

@@ -2,9 +2,9 @@
 
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { has } = require('lodash');
-const routing = require('../../lib/routing');
-const { capitalize } = require('lodash');
+const { capitalize, has } = require('lodash');
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const errors = {
   empty: {
@@ -21,7 +21,7 @@ const errors = {
 const getFormField = (key, date) => {
   const name = capitalize(key);
   return fields.date(`${key}Date`, {
-    label: `${name} Date`,
+    label: `${name} date`,
     subHeading: true,
     items: ['day', 'month'],
     type: 'date',
@@ -36,9 +36,9 @@ const getFormField = (key, date) => {
   }, date);
 };
 
-const getSessionDates = (key, sessionData) => {
-  return has(sessionData, `abstractionPeriod.${key}Day`)
-    ? sessionData.abstractionPeriod[`${key}Month`] + '-' + sessionData.abstractionPeriod[`${key}Day`] : '';
+const getSessionDates = (key, data) => {
+  return has(data, `abstractionPeriod.${key}Day`)
+    ? data.abstractionPeriod[`${key}Month`] + '-' + data.abstractionPeriod[`${key}Day`] : '';
 };
 
 /**
@@ -47,14 +47,14 @@ const getSessionDates = (key, sessionData) => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  data object containing selected and default options for the form
   */
-const form = (request, sessionData = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, elementId, 'abstraction');
+  const data = getChargeElementData(request);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.abstractionPeriod);
 
   const f = formFactory(action, 'POST');
-  f.fields.push(getFormField('start', getSessionDates('start', sessionData)));
-  f.fields.push(getFormField('end', getSessionDates('end', sessionData)));
+  f.fields.push(getFormField('start', getSessionDates('start', data)));
+  f.fields.push(getFormField('end', getSessionDates('end', data)));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;

@@ -1,8 +1,9 @@
 'use strict';
 
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
+const { cloneDeep } = require('lodash');
 const { handleRequest } = require('shared/lib/forms');
 
 const {
@@ -12,7 +13,8 @@ const {
   mapFormRadioField,
   setConditionalRadioField,
   mapFormCheckbox,
-  mapFormDropdownField
+  mapFormDropdownField,
+  isFirstFieldHeading
 } = require('shared/view/nunjucks/filters/form');
 
 const {
@@ -26,55 +28,126 @@ const {
 } = require('./test-helpers');
 
 experiment('mapFormField', () => {
-  const result = mapFormField(textField);
+  let result;
 
-  test('It should set the label property', async () => {
-    expect(result.label.text).to.equal(textField.options.label);
+  experiment('for a simple example', () => {
+    beforeEach(async () => {
+      result = mapFormField(textField);
+    });
+
+    test('It should set the label property', async () => {
+      expect(result.label.text).to.equal(textField.options.label);
+    });
+
+    test('The label class is null', async () => {
+      expect(result.label.classes).to.equal(null);
+    });
+
+    test('The label isPageHeading property is false', async () => {
+      expect(result.label.isPageHeading).to.equal(false);
+    });
+
+    test('It should set the name property', async () => {
+      expect(result.name).to.equal(textField.name);
+    });
+
+    test('It should set the id property', async () => {
+      expect(result.id).to.equal(textField.name);
+    });
+
+    test('It should set the hint text property', async () => {
+      expect(result.hint.text).to.equal(textField.options.hint);
+    });
+
+    test('It should set the value property', async () => {
+      expect(result.value).to.equal(textField.value);
+    });
+
+    test('It should set the class property', async () => {
+      expect(result.classes).to.equal(textField.options.controlClass);
+    });
   });
 
-  test('It should set the name property', async () => {
-    expect(result.name).to.equal(textField.name);
-  });
+  experiment('when the field "heading" property is true', () => {
+    beforeEach(async () => {
+      result = mapFormField({
+        ...textField,
+        options: {
+          ...textField.options,
+          heading: true
+        }
+      });
+    });
 
-  test('It should set the id property', async () => {
-    expect(result.id).to.equal(textField.name);
-  });
+    test('It should set the label property', async () => {
+      expect(result.label.text).to.equal(textField.options.label);
+    });
 
-  test('It should set the hint text property', async () => {
-    expect(result.hint.text).to.equal(textField.options.hint);
-  });
+    test('The label class is govuk-label--l', async () => {
+      expect(result.label.classes).to.equal('govuk-label--l');
+    });
 
-  test('It should set the value property', async () => {
-    expect(result.value).to.equal(textField.value);
-  });
-
-  test('It should set the class property', async () => {
-    expect(result.classes).to.equal(textField.options.controlClass);
+    test('The label isPageHeading property is true', async () => {
+      expect(result.label.isPageHeading).to.equal(true);
+    });
   });
 });
 
 experiment('mapFormErrorSummary', () => {
-  const f = handleRequest(form, { log: console.log, payload: {} }, schema);
-  const result = mapFormErrorSummary(f);
+  let f, result;
+  experiment('when there is only an error message', () => {
+    beforeEach(async () => {
+      const formWithError = cloneDeep(form);
+      formWithError.fields[0].options.errors = {
+        'any.required': {
+          message: 'Error message'
+        }
+      };
+      f = handleRequest(formWithError, { log: console.log, payload: {} }, schema);
+      result = mapFormErrorSummary(f);
+    });
 
-  test('It should set the title property', async () => {
-    expect(result.titleText).to.equal('There is a problem');
+    test('It should set the title property', async () => {
+      expect(result.titleText).to.equal('There is a problem');
+    });
+
+    test('It should set the href property', async () => {
+      expect(result.errorList[0].href).to.equal('#text_field');
+    });
+
+    test('It should set the error message property', async () => {
+      expect(result.errorList[0].text).to.be.a.string();
+    });
+
+    test('The error message used is from the "message" property of the field errors object', async () => {
+      expect(result.errorList[0].text).to.equal('Error message');
+    });
+
+    test('It should set the href to the first radio button in a list', async () => {
+      expect(result.errorList[1].href).to.equal('#radio_field');
+    });
+
+    test('It should set the href to the first radio button in a list', async () => {
+      expect(result.errorList[2].href).to.equal('#checkbox_field');
+    });
   });
 
-  test('It should set the href property', async () => {
-    expect(result.errorList[0].href).to.equal('#text_field');
-  });
+  experiment('when there is an error message and summary', () => {
+    beforeEach(async () => {
+      const formWithError = cloneDeep(form);
+      formWithError.fields[0].options.errors = {
+        'any.required': {
+          message: 'Error message',
+          summary: 'Error summary'
+        }
+      };
+      f = handleRequest(formWithError, { log: console.log, payload: {} }, schema);
+      result = mapFormErrorSummary(f);
+    });
 
-  test('It should set the error message property', async () => {
-    expect(result.errorList[0].text).to.be.a.string();
-  });
-
-  test('It should set the href to the first radio button in a list', async () => {
-    expect(result.errorList[1].href).to.equal('#radio_field');
-  });
-
-  test('It should set the href to the first radio button in a list', async () => {
-    expect(result.errorList[2].href).to.equal('#checkbox_field');
+    test('The error message used is from the "summary" property of the field errors object', async () => {
+      expect(result.errorList[0].text).to.equal('Error summary');
+    });
   });
 });
 
@@ -234,5 +307,23 @@ experiment('mapFormDropdownField', () => {
   test('It should set the selected flag on the correct choice', async () => {
     expect(result.items[0].selected).to.equal(false);
     expect(result.items[1].selected).to.equal(true);
+  });
+
+  experiment('.isFirstFieldHeading', () => {
+    test('returns false when the first form field is a label but the heading option is false', async () => {
+      expect(isFirstFieldHeading(form)).to.be.false();
+    });
+
+    test('returns true when the first form field is a label and the heading option is true', async () => {
+      const formWithHeading = cloneDeep(form);
+      formWithHeading.fields[0].options.heading = true;
+      expect(isFirstFieldHeading(formWithHeading)).to.be.true();
+    });
+
+    test('returns false when the second form field is a label and the heading option is true', async () => {
+      const formWithHeading = cloneDeep(form);
+      formWithHeading.fields[1].options.heading = true;
+      expect(isFirstFieldHeading(formWithHeading)).to.be.false();
+    });
   });
 });

@@ -14,16 +14,11 @@ const sandbox = sinon.createSandbox();
 const plugin = require('internal/modules/charge-information/plugins/charge-information');
 
 experiment('internal/modules/charge-information/plugins/charge-information', () => {
-  let server, policy;
+  let server;
 
   beforeEach(async () => {
-    policy = {
-      get: sandbox.stub(),
-      set: sandbox.stub()
-    };
     server = {
-      cache: sandbox.stub().returns(policy),
-      method: sandbox.stub()
+      decorate: sandbox.stub()
     };
   });
 
@@ -45,40 +40,34 @@ experiment('internal/modules/charge-information/plugins/charge-information', () 
       plugin.register(server);
     });
 
-    test('a policy is created', async () => {
-      const [options] = server.cache.lastCall.args;
-      expect(options.expiresIn).to.equal(31536000000);
-      expect(options.segment).to.equal('draftChargeInformation');
-      expect(options.generateFunc).to.be.a.function();
-      expect(options.generateTimeout).to.equal(2000);
-    });
-
-    test('a getDraftChargeInformation server method is registered', async () => {
-      const [name, func] = server.method.firstCall.args;
+    test('the request object is decorated with "getDraftChargeInformation"', async () => {
+      const [obj, name, func] = server.decorate.firstCall.args;
+      expect(obj).to.equal('request');
       expect(name).to.equal('getDraftChargeInformation');
       expect(func).to.be.a.function();
     });
 
-    test('.getDraftChargeInformation server method gets the data from the cache', async () => {
-      const [, func] = server.method.firstCall.args;
-      func('test-id');
-      expect(policy.get.calledWith('test-id')).to.be.true();
+    test('the request object is decorated with "setDraftChargeInformation"', async () => {
+      const [obj, name, func] = server.decorate.secondCall.args;
+      expect(obj).to.equal('request');
+      expect(name).to.equal('setDraftChargeInformation');
+      expect(func).to.be.a.function();
     });
 
-    test('.getDraftChargeInformation server method gets the data from the cache', async () => {
-      const [, func] = server.method.secondCall.args;
-      func('test-id', { foo: 'bar' });
-      expect(policy.set.calledWith('test-id', { foo: 'bar' })).to.be.true();
+    test('the request object is decorated with "clearDraftChargeInformation"', async () => {
+      const [obj, name, func] = server.decorate.thirdCall.args;
+      expect(obj).to.equal('request');
+      expect(name).to.equal('clearDraftChargeInformation');
+      expect(func).to.be.a.function();
     });
   });
 
-  experiment('.generateChargeVersion', () => {
+  experiment('._generateChargeVersion', () => {
     test('gets initial state', () => {
       const initialState = plugin._generateChargeVersion('test-id');
       expect(initialState).to.equal({
-        licenceId: 'test-id',
         changeReason: null,
-        startDate: null,
+        dateRange: { startDate: null },
         chargeElements: [],
         invoiceAccount: null
       });

@@ -1,8 +1,35 @@
-exports.getCheckData = licence => `/licences/${licence.id}/charge-information/check`;
-exports.getCreateBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account/create`;
-exports.getNonChargeableReason = licence => `/licences/${licence.id}/charge-information/non-chargeable-reason`;
-exports.getReason = licence => `/licences/${licence.id}/charge-information/create`;
-exports.getStartDate = licence => `/licences/${licence.id}/charge-information/start-date`;
-exports.getSelectBillingAccount = licence => `/licences/${licence.id}/charge-information/billing-account`;
-exports.getUseAbstractionData = licence => `/licences/${licence.id}/charge-information/use-abstraction-data`;
-exports.getChargeElementStep = (licenceId, elementId, step) => `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`;
+'use strict';
+
+const queryString = require('querystring');
+
+const createUrl = urlTail => licenceId => {
+  return `/licences/${licenceId}/charge-information/${urlTail}`;
+};
+
+exports.getChargeElementStep = (licenceId, elementId, step) => {
+  return createUrl(`charge-element/${elementId}/${step}`)(licenceId);
+};
+
+exports.getSubmitted = (licenceId, isChargeable) => {
+  const qs = queryString.stringify({ chargeable: isChargeable });
+  return createUrl(`submitted?${qs}`)(licenceId);
+};
+
+exports.getCreateBillingAccount = (licence, licenceHolderRole, redirect) => {
+  const { id, region } = licence;
+  const qs = queryString.stringify({
+    redirectPath: createUrl(redirect)(id),
+    licenceId: id });
+  return `/invoice-accounts/create/${region.id}/${licenceHolderRole.company.id}?${qs}`;
+};
+
+exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
+
+exports.getCheckData = createUrl('check');
+exports.getReason = createUrl('create');
+exports.getStartDate = createUrl('start-date');
+exports.getSelectBillingAccount = createUrl('billing-account');
+exports.getUseAbstractionData = createUrl('use-abstraction-data');
+exports.getEffectiveDate = createUrl('effective-date');
+exports.getNonChargeableReason = createUrl('non-chargeable-reason');
+exports.getCancelData = createUrl('cancel');

@@ -1,0 +1,215 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "crm/address.njk" import address %}
+{% from "badge.njk" import badge %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+
+{% macro summaryListRow(key, value, changeLink) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ key }}</dt>
+    <dd class="govuk-summary-list__value">{{ value }}</dd>
+    {% if isEditable %}
+      <dd class="govuk-summary-list__actions">
+        {% if changeLink %}
+          <a class="govuk-link" href="{{ changeLink }}">Change</a>
+        {% endif %}
+      </dd>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro timeLimitedPeriod(period) %}
+  {{ period.startDate | date }} to {{ period.endDate | date }}
+{% endmacro %}
+
+{% macro changeLink(urlTail, chargeElementId) %}
+  {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
+  {% set queryTail = {
+    returnToCheckData: 1
+  } | queryString %}
+  {% if chargeElementId %}
+    {{ changeLinkRoot + '/charge-element/' + chargeElementId + urlTail + '?' + queryTail }}
+  {% else %}
+    {{ changeLinkRoot + urlTail + '?' + queryTail }}
+  {% endif %}
+{% endmacro %}
+
+{% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
+  <div class="govuk-grid-column-full">
+    {% if chargeVersion.status == 'changes_requested' and chargeVersion.approverComments %}
+        <section class="govuk-!-margin-bottom-7">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Change Request</h2>
+            <p style="padding-top: 1em; padding-bottom: 1em;">{{ chargeVersion.approverComments }}</p>
+        </section>
+    {% endif %}
+    <section class="govuk-!-margin-bottom-7">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
+      <dl class="govuk-summary-list">
+        {{ summaryListRow('Reason', chargeVersion.changeReason.description, changeLink('/create'))}}
+        {{ summaryListRow('Start date', chargeVersion.dateRange.startDate | date, changeLink('/start-date'))}}
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Billing account</dt>
+          <dd class="govuk-summary-list__value">
+            {{ chargeVersion.invoiceAccount.accountNumber }}
+            <br>
+            {{ address(invoiceAccountAddress.address) }}
+          </dd>
+          {% if isEditable %}
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+            </dd>
+          {% endif %}
+        </div>
+
+        {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+      </dl>
+    </section>
+
+    {% for chargeElement in chargeVersion.chargeElements %}
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element {{loop.index}}</h2>
+        {% for validationWarning in chargeElement.validationWarnings %}
+          {{
+            govukWarningText({
+              text: validationWarning,
+              iconFallbackText: "Warning",
+              classes: "govuk-!-margin-bottom-1"
+            })
+          }}
+        {% endfor %}
+        <dl class="govuk-summary-list">
+          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
+          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
+          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
+          {{ summaryListRow('Authorised quantity', chargeElement.authorisedAnnualQuantity | number + ' megalitres per year', changeLink('/quantities', chargeElement.id)) }}
+
+          {% set billableQuantity = 'Not set' %}
+          {% if chargeElement.billableAnnualQuantity %}
+            {% set billableQuantity = chargeElement.billableAnnualQuantity | number + ' megalitres per year' %}
+          {% endif %}
+          {{ summaryListRow('Billable quantity', billableQuantity, changeLink('/quantities', chargeElement.id)) }}
+
+          {% set timeLimited = 'No' %}
+          {% if chargeElement.timeLimitedPeriod %}
+            {% set timeLimited %}
+            {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+            {% endset %}
+          {% endif %}
+          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
+
+          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
+          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
+          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
+          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+        </dl>
+        {% if isEditable %}
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
+                {% if loop.last %}
+                  {{ govukButton({
+                  text: 'Add another element',
+                  name: 'buttonAction',
+                  value: 'addElement',
+                  classes: 'govuk-button--secondary'
+                  }) }}
+                {% endif %}
+                {% if chargeVersion.chargeElements.length > 1 %}
+                  {{ govukButton({
+                  text: 'Remove element',
+                  name: 'buttonAction',
+                  value: 'removeElement:' + chargeElement.id,
+                  classes: 'govuk-button--secondary'
+                }) }}
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro nonChargeableData(drafChargeInformation, licence) %}
+  <section class="govuk-!-margin-bottom-7">
+    <dl class="govuk-summary-list">
+      {{ summaryListRow(
+        'Reason licence is not chargeable',
+        chargeVersion.changeReason.description,
+        changeLink('/non-chargeable-reason'))
+      }}
+      {{ summaryListRow(
+        'Effective date',
+        chargeVersion.dateRange.startDate | date,
+        changeLink('/effective-date'))
+      }}
+    </dl>
+  </section>
+{% endmacro %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-!-margin-bottom-9">
+        {{ title(pageTitle, caption, null, isXlHeading) }}
+        {% if chargeVersion.status %}
+          {{ badge(chargeVersion | chargeVersionBadge(true)) }}
+        {% endif %}
+      </div>
+    </div>
+
+    {% if isChargeable %}
+      {{ chargeableData(chargeVersion, invoiceAccountAddress)}}
+    {% else %}
+      {{ nonChargeableData(chargeVersion, licence)}}
+    {% endif %}
+  </div>
+
+  {% if isEditable %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
+          {% if chargeVersion.status == 'changes_requested' %}
+              {{ govukButton({
+                text: 'Update and send back for review',
+                name: 'buttonAction',
+                value: 'update',
+                classes: 'govuk-!-margin-right-6'
+              }) }}
+          {% else %}
+              {{ govukButton({
+                  text: 'Confirm',
+                  name: 'buttonAction',
+                  value: 'confirm',
+                  classes: 'govuk-!-margin-right-6'
+                }) }}
+            {% endif %}
+          {{ govukButton({
+            text: 'Cancel charge information',
+            name: 'buttonAction',
+            value: 'cancel',
+            classes: 'govuk-button--secondary'
+          }) }}
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if isApprover and chargeVersion.status == 'review' and reviewForm %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ formErrorSummary(reviewForm) }}
+        {{ title('Do you want to approve this charge information?') }}
+        {{ formRender(reviewForm) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}

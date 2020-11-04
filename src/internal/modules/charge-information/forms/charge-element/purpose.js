@@ -1,9 +1,10 @@
 'use strict';
 
-const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { uniqBy } = require('lodash');
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const options = defaultCharges => {
   return uniqBy(defaultCharges.map(row => {
@@ -15,13 +16,13 @@ const options = defaultCharges => {
  * Form to request the charge element purpose
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
+ * @param {Boolean}  data object containing charge element data
   */
-const form = (request, sessionData = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
   const { defaultCharges } = request.pre;
-  const { licenceId, elementId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, elementId, 'purpose');
+  const { purposeUse } = getChargeElementData(request);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.purpose);
 
   const f = formFactory(action, 'POST');
 
@@ -32,7 +33,7 @@ const form = (request, sessionData = {}) => {
       }
     },
     choices: options(defaultCharges)
-  }, sessionData.purpose || ''));
+  }, purposeUse ? purposeUse.id : ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

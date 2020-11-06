@@ -17,14 +17,14 @@ const getBatchFinancialYearEnding = (type, isSummer, refDate) => {
   }
   // Find most recent cycle with matching season where due date has passed
   const cycles = helpers.returns.date.createReturnCycles().reverse();
-  const cycle = cycles.find(cycle => {
+  const mostRecentCycle = cycles.find(cycle => {
     const isDueDatePast = moment(cycle.dueDate).isBefore(moment(refDate), 'day');
     const isSeasonMatch = cycle.isSummer === isSummer;
     return isDueDatePast && isSeasonMatch;
   });
 
   // Get financial year of cycle end date
-  return helpers.charging.getFinancialYear(cycle.endDate);
+  return helpers.charging.getFinancialYear(mostRecentCycle.endDate);
 };
 
 exports.getBatchFinancialYearEnding = getBatchFinancialYearEnding;

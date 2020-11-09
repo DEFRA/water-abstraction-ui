@@ -10,18 +10,15 @@ const Joi = require('joi');
  */
 const checkAccess = (request, documentHeader) => {
   const companyId = get(request, 'defra.companyId');
-  const params = {
-    returnId: request.query.returnId,
-    defra: request.defra
-  };
+
   if (!documentHeader.company_entity_id) {
-    throw Boom.unauthorized(`Access denied to edit return - document not registered`, params);
+    throw Boom.unauthorized(`Access denied to edit return - document not registered`);
   }
   if (!companyId) {
-    throw Boom.unauthorized(`Access denied to edit return - no company selected`, params);
+    throw Boom.unauthorized(`Access denied to edit return - no company selected`);
   }
   if (documentHeader.company_entity_id !== companyId) {
-    throw Boom.unauthorized(`Access denied to edit return`, params);
+    throw Boom.unauthorized(`Access denied to edit return`);
   }
 };
 

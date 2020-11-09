@@ -5,14 +5,7 @@
  */
 
 const { partialRight } = require('lodash');
-const Boom = require('@hapi/boom');
-
-const errorHandler = (err, message) => {
-  if (err.statusCode === 404) {
-    return Boom.notFound(message);
-  }
-  throw err;
-};
+const { errorHandler } = require('./lib/error-handler');
 
 const createPreHandler = async (request, h, methodName, errorString) => {
   const { licenceId } = request.params;

@@ -26,7 +26,7 @@ experiment('internal/modules/returns-notifications/lib/routing', () => {
 
     test('returns the "one time address" route path if the selected role is "createOneTimeAddress"', async () => {
       const path = routing.getSelectAddressRedirect(request);
-      expect(path).to.equal('/returns-notifications/test-document-id/one-time-address');
+      expect(path).to.equal('/returns-notifications/test-document-id/recipient');
     });
 
     test('returns the "check answers" route path otherwise', async () => {

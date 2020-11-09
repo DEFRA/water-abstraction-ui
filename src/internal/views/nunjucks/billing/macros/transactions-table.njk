@@ -22,15 +22,21 @@
 
 {% macro transactionDetailCell(group, transaction) %}
   <td class="govuk-table__cell">
-    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">{{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}</h5>
-    <p>{{ "Compensation" if transaction.isCompensationCharge else "Standard" }} charge</p>
+    <h5 class="govuk-heading-s govuk-!-margin-bottom-0">{{ transaction.chargePeriod.startDate | date }}
+      to
+      {{ transaction.chargePeriod.endDate | date }}</h5>
+    <p>{{ "Compensation" if transaction.isCompensationCharge else "Standard" }}
+      charge</p>
 
     <ul class="govuk-list">
-      <li>{{ group.chargeElement.loss | sentenceCase }} loss</li>
+      <li>{{ group.chargeElement.loss | sentenceCase }}
+        loss</li>
       <li>{{ group.chargeElement.season | sentenceCase }}</li>
-      <li>{{ group.chargeElement.source | sentenceCase }} source</li>
+      <li>{{ group.chargeElement.source | sentenceCase }}
+        source</li>
       {% for agreement in transaction.agreements %}
-      <li>{{ agreement.code }} agreement</li>
+        <li>{{ agreement.code }}
+          agreement</li>
       {% endfor %}
     </ul>
   </td>
@@ -51,7 +57,7 @@
 {% macro creditCell(transaction) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {% if transaction.isCredit %}
-    {{ transaction.value | charge }}
+      {{ transaction.value | charge }}
     {% endif %}
   </td>
 {% endmacro %}
@@ -59,7 +65,7 @@
 {% macro debitCell(transaction) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {% if not transaction.isCredit %}
-    {{ transaction.value | charge }}
+      {{ transaction.value | charge }}
     {% endif %}
   </td>
 {% endmacro %}
@@ -68,7 +74,7 @@
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {{ transaction.volume }}ML
     {% if transaction.isEdited %}
-    <p>Edited</p>
+      <p>Edited</p>
     {% endif %}
   </td>
 {% endmacro %}
@@ -100,56 +106,68 @@
 {% endmacro %}
 
 {% macro creditsDebitsFooter(totals) %}
-  <tfoot>
-    <tr class="govuk-table__row">
-      <th scope="row" colspan="2" class="govuk-table__header">Credits</th>
-      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ totals.credits | charge }}</b></td>
-      <td class="govuk-table__header"></td>
-    </tr>
-      <th scope="row" colspan="3" class="govuk-table__header">Debits</th>
-      <td class="govuk-table__header govuk-table__header--numeric"><b>{{ totals.debits | charge }}</b></td>
-    </tr>
-    </tr>
-      <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
-        <span class="govuk-visually-hidden">Total</span>
-      </th>
-      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ totals.netTotal | charge(true) }}</b></td>
-    </tr>
-  </tfoot>
+  {% if totals %}
+    <tfoot>
+      <tr class="govuk-table__row">
+        <th scope="row" colspan="2" class="govuk-table__header">Credits</th>
+        <td class="govuk-table__header govuk-table__header--numeric">
+          <b>{{ totals.credits | charge }}</b>
+        </td>
+        <td class="govuk-table__header"></td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" colspan="3" class="govuk-table__header">Debits</th>
+        <td class="govuk-table__header govuk-table__header--numeric">
+          <b>{{ totals.debits | charge }}</b>
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
+          <span class="govuk-visually-hidden">Total</span>
+        </th>
+        <td class="govuk-table__header govuk-table__header--numeric table__header--totals">
+          <b>{{ totals.netTotal | charge(true) }}</b>
+        </td>
+      </tr>
+    </tfoot>
+  {% endif %}
 {% endmacro %}
 
 {% macro debitsFooter(totals) %}
-  <tfoot>
-    </tr>
-      <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
-        <span class="govuk-visually-hidden">Total</span>
-      </th>
-      <td class="govuk-table__header govuk-table__header--numeric table__header--totals"><b>{{ totals.netTotal | charge(true) }}</b></td>
-    </tr>
-  </tfoot>
+  {% if totals %}
+    <tfoot>
+      <tr class="govuk-table__row">
+        <th scope="col" colspan="3" class="govuk-table__header table__header--totals">
+          <span class="govuk-visually-hidden">Total</span>
+        </th>
+        <td class="govuk-table__header govuk-table__header--numeric table__header--totals">
+          <b>{{ totals.netTotal | charge(true) }}</b>
+        </td>
+      </tr>
+    </tfoot>
+  {% endif %}
 {% endmacro %}
 
 {% macro transactionsTable(group) %}
- <table class="govuk-table">
-  {{ header() }}
-  <tbody class="govuk-table__body">
-    {% for transaction in group.transactions %}
-      {{ transactionRow(group, transaction) }}
-    {% endfor %}
-  </tbody>
-  {{ creditsDebitsFooter(group.totals) }}
- </table>
+  <table class="govuk-table">
+    {{ header() }}
+    <tbody class="govuk-table__body">
+      {% for transaction in group.transactions %}
+        {{ transactionRow(group, transaction) }}
+      {% endfor %}
+    </tbody>
+    {{ creditsDebitsFooter(group.totals) }}
+  </table>
 {% endmacro %}
 
 {% macro twoPartTariffTransactionsTable(group) %}
- <table class="govuk-table">
-  {{ twoPartTariffHeader() }}
-  <tbody class="govuk-table__body">
-    {% for transaction in group.transactions %}
-    {{ twoPartTariffTransactionRow(group, transaction) }}
-    {% endfor %}
-  </tbody>
-  {{ debitsFooter(group.totals) }}
- </table>
+  <table class="govuk-table">
+    {{ twoPartTariffHeader() }}
+    <tbody class="govuk-table__body">
+      {% for transaction in group.transactions %}
+        {{ twoPartTariffTransactionRow(group, transaction) }}
+      {% endfor %}
+    </tbody>
+    {{ debitsFooter(group.totals) }}
+  </table>
 {% endmacro %}
-

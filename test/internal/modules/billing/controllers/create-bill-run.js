@@ -426,7 +426,10 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
   experiment('.getBillingBatchExists', () => {
     beforeEach(async () => {
       request.pre.batch = {
-        id: 'test-batch-id'
+        id: 'test-batch-id',
+        endYear: {
+          yearEnding: '2019'
+        }
       };
       await controller.getBillingBatchExists(request, h);
     });
@@ -436,9 +439,14 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       expect(templateName).to.equal('nunjucks/billing/batch-creation-error');
     });
 
-    test('adds a date to the view context', async () => {
+    test('view context contains the expected page title', async () => {
       const [, context] = h.view.lastCall.args;
-      expect(context.today).to.be.a.date();
+      expect(context.pageTitle).to.equal('There is already a bill run in progress for this region');
+    });
+
+    test('view context contains the expected warning message', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.warningMessage).to.equal('You need to confirm or cancel this bill run before you can create a new one');
     });
 
     test('view context contains the expected back link', async () => {
@@ -450,17 +458,15 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       const [, context] = h.view.lastCall.args;
       expect(context.batch.id).to.equal('test-batch-id');
     });
-
-    test('view context contains batch creation error', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.error).to.equal('liveBatchExists');
-    });
   });
 
   experiment('.getBillingBatchDuplicate', () => {
     beforeEach(async () => {
       request.pre.batch = {
-        id: 'test-batch-id'
+        id: 'test-batch-id',
+        endYear: {
+          yearEnding: '2019'
+        }
       };
       await controller.getBillingBatchDuplicate(request, h);
     });
@@ -470,9 +476,14 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       expect(templateName).to.equal('nunjucks/billing/batch-creation-error');
     });
 
-    test('adds a date to the view context', async () => {
+    test('view context contains the expected page title', async () => {
       const [, context] = h.view.lastCall.args;
-      expect(context.today).to.be.a.date();
+      expect(context.pageTitle).to.equal('This bill run type has already been processed for 2019');
+    });
+
+    test('view context contains the expected warning message', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.warningMessage).to.equal('You can only have one of this bill run type for a region in a financial year');
     });
 
     test('view context contains the expected back link', async () => {
@@ -483,11 +494,6 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     test('adds the batch from the pre handler to the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context.batch.id).to.equal('test-batch-id');
-    });
-
-    test('view context contains batch creation error', async () => {
-      const [, context] = h.view.lastCall.args;
-      expect(context.error).to.equal('duplicateSentBatch');
     });
   });
 });

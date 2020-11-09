@@ -7,42 +7,46 @@ const { crmRoles } = require('shared/lib/constants');
 const { mapAddressToString } = require('shared/lib/mappers/address');
 const { mapCompanyToString } = require('shared/lib/mappers/company');
 
-const mapRoleName = roleName => {
+const ONE_TIME_ADDRESS_ROLE = 'oneTimeAddress';
+
+const mapRoleHint = role => {
   const roleNames = {
     [crmRoles.licenceHolder]: 'Licence holder',
-    [crmRoles.returnsTo]: 'Returns contact'
+    [crmRoles.returnsTo]: 'Returns contact',
+    [ONE_TIME_ADDRESS_ROLE]: 'One time address'
   };
-  return roleNames[roleName];
+  return roleNames[role.roleName];
 };
-
-const isLicenceHolderOrReturnsRole = role =>
-  [crmRoles.licenceHolder, crmRoles.returnsTo].includes(role.roleName);
 
 const mapRoleLabel = role => `${mapCompanyToString(role.company)}, ${mapAddressToString(role.address)}`;
 
-const mapChoices = document => {
-  const roles = document.document.roles
-    .filter(isLicenceHolderOrReturnsRole)
-    .map(role => ({
-      value: role.roleName,
-      label: mapRoleLabel(role),
-      hint: mapRoleName(role.roleName),
-      selected: role.roleName === document.selectedRole
-    }));
+const isRoleName = (role, ...roleNames) =>
+  roleNames.includes(role.roleName);
 
-  roles.push({
+const mapRole = (role, selectedRole) => ({
+  value: role.roleName,
+  label: mapRoleLabel(role),
+  hint: mapRoleHint(role),
+  selected: role.roleName === selectedRole
+});
+
+const mapChoices = document => ([
+  ...document.document.roles
+    .filter(role => isRoleName(role, crmRoles.licenceHolder, crmRoles.returnsTo))
+    .map(role => mapRole(role, document.selectedRole)),
+  {
     divider: 'Or'
-  });
-
-  roles.push({
+  }, {
     label: 'Set up a one time address',
     value: 'createOneTimeAddress'
-  });
+  },
+  ...document.document.roles
+    .filter(role => isRoleName(role, ONE_TIME_ADDRESS_ROLE))
+    .map(role => mapRole(role, document.selectedRole))
+]);
 
-  return roles;
-};
-
-const selectAddressForm = (request, document) => {
+const selectAddressForm = request => {
+  const { document } = request.pre;
   const { csrfToken } = request.view;
 
   const action = `/returns-notifications/${document.document.id}/select-address`;
@@ -67,7 +71,8 @@ const selectAddressForm = (request, document) => {
  * @param {Object} document - the currently selected CRM v2 document
  * @return {Object} Joi schema
  */
-const selectAddressSchema = (request, document) => {
+const selectAddressSchema = request => {
+  const { document } = request.pre;
   const validRoleNames = [
     ...document.document.roles.map(role => role.roleName),
     'createOneTimeAddress',

@@ -46,19 +46,6 @@ const getInvoiceAccountData = invoiceAccount => {
   };
 };
 
-const getInvoiceData = invoice => ({
-  contact: invoice.contact ? invoice.contact.fullName : null,
-  agentCompanyName: invoice.agentCompany ? invoice.agentCompany.name : null,
-  addressLine1: invoice.address.addressLine1,
-  addressLine2: invoice.address.addressLine2,
-  addressLine3: invoice.address.addressLine3,
-  addressLine4: invoice.address.addressLine4,
-  town: invoice.address.town,
-  county: invoice.address.county,
-  postcode: invoice.address.postcode,
-  country: invoice.address.country
-});
-
 const createCSV = async data => {
   const dataForCSV = [];
   return data.reduce((dataForCSV, dataObj) => {
@@ -70,8 +57,7 @@ const createCSV = async data => {
           isWaterUndertaker: invLic.licence.isWaterUndertaker,
           historicalArea: invLic.licence.historicalArea.code,
           ...getTransactionData(trans),
-          ...getInvoiceAccountData(dataObj.invoiceAccount),
-          ...getInvoiceData(dataObj)
+          ...getInvoiceAccountData(dataObj.invoiceAccount)
         };
         dataForCSV.push(rowToStrings(csvLine));
       });

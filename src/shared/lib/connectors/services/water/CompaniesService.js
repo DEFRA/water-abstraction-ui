@@ -13,7 +13,9 @@ class CompaniesService extends ServiceClient {
     const url = this.joinUrl('company', entityId, 'returns');
     const options = {
       qs: {
-        ...currentCycle,
+        startDate: currentCycle.startDate,
+        endDate: currentCycle.endDate,
+        isSummer: currentCycle.isSummer,
         status: 'due'
       }
     };

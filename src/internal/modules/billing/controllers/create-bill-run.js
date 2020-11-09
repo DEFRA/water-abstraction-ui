@@ -3,6 +3,7 @@
 const { kebabCase } = require('lodash');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
+const moment = require('moment');
 
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
@@ -14,6 +15,8 @@ const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -83,7 +86,8 @@ const getBatchDetails = (request, billingRegionForm) => {
   } = forms.getValues(billingRegionForm);
 
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer);
+  const today = moment().format(DATE_FORMAT);
+  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, today);
 
   const batch = {
     userEmail: request.defra.user.user_name,

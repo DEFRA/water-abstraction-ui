@@ -104,6 +104,28 @@ if (isAcceptanceTestTarget) {
           }
         }
       }
+    },
+
+    getBillingBatchDuplicate: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/duplicate',
+      handler: controller.getBillingBatchDuplicate,
+      config: {
+        pre: [{ method: preHandlers.loadBatch, assign: 'batch' }],
+        auth: { scope: allowedScopes },
+        description: 'If a bill run has already been run for region, year and season, warn user and display short summary',
+        plugins: {
+          viewContext: {
+            pageTitle: 'This bill run has already been run',
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
+          }
+        }
+      }
     }
 
   };

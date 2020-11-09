@@ -1,4 +1,4 @@
-const { kebabCase } = require('lodash');
+const { kebabCase, partialRight } = require('lodash');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
 
@@ -97,6 +97,14 @@ const getBatchDetails = (request, billingRegionForm) => {
   return batch;
 };
 
+const getBatchCreationErrorRedirectPath = err => {
+  const { batch } = err.error;
+  if (batch.status === 'sent') {
+    return `/billing/batch/${batch.id}/duplicate`;
+  }
+  return `/billing/batch/${batch.id}/exists`;
+};
+
 /**
  * Step 2b received step 2a posted data
  * try to create a new billing run batch
@@ -122,25 +130,50 @@ const postBillingBatchRegion = async (request, h) => {
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect(`/billing/batch/${err.error.existingBatch.id}/exists`);
+      return h.redirect(getBatchCreationErrorRedirectPath(err));
     }
     throw err;
   }
 };
 
+const getCreationErrorText = (error, batch) => {
+  const creationErrorText = {
+    liveBatchExists: {
+      pageTitle: 'There is already a bill run in progress for this region',
+      warningMessage: 'You need to confirm or cancel this bill run before you can create a new one'
+    },
+    duplicateSentBatch: {
+      pageTitle: `This bill run type has already been processed for ${batch.endYear.yearEnding}`,
+      warningMessage: 'You can only have one of this bill run type for a region in a financial year'
+    }
+  };
+  return creationErrorText[error];
+};
+
+const getBillingBatchCreationError = async (request, h, error) => {
+  const { batch } = request.pre;
+  return h.view('nunjucks/billing/batch-creation-error', {
+    ...request.view,
+    ...getCreationErrorText(error, batch),
+    back: '/billing/batch/region',
+    batch: batch
+  });
+};
+
 /**
- * If the Bill run for the type and region exists then display a basic summary page
+ * If a bill run for the region exists, then display a basic summary page
  * @param {*} request
  * @param {*} h
  */
-const getBillingBatchExists = async (request, h) => {
-  return h.view('nunjucks/billing/batch-exist', {
-    ...request.view,
-    today: new Date(),
-    back: '/billing/batch/region',
-    batch: request.pre.batch
-  });
-};
+const getBillingBatchExists = partialRight(getBillingBatchCreationError, 'liveBatchExists');
+
+/**
+ * If the bill run type for the region, year and season has already been run, then display a basic summary page
+ *    Annual and TPT bill runs can only be run once per region, financial year and season
+ * @param {*} request
+ * @param {*} h
+ */
+const getBillingBatchDuplicate = partialRight(getBillingBatchCreationError, 'duplicateSentBatch');
 
 exports.getBillingBatchType = getBillingBatchType;
 exports.postBillingBatchType = postBillingBatchType;
@@ -149,3 +182,4 @@ exports.getBillingBatchRegion = getBillingBatchRegion;
 exports.postBillingBatchRegion = postBillingBatchRegion;
 
 exports.getBillingBatchExists = getBillingBatchExists;
+exports.getBillingBatchDuplicate = getBillingBatchDuplicate;

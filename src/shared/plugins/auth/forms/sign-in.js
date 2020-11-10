@@ -63,8 +63,7 @@ const applyErrorState = form => {
   // return form;
   return applyErrors(form, [{
     name: 'email',
-    message: 'Check your email address',
-    summary: 'Yo'
+    message: 'Check your email address'
   }, {
     name: 'password',
     message: 'Check your password'

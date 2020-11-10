@@ -1,11 +1,11 @@
+'use strict';
+
 const { kebabCase } = require('lodash');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
-
-const helpers = require('@envage/water-abstraction-helpers');
+const moment = require('moment');
 
 const forms = require('shared/lib/forms');
-
 const services = require('internal/lib/connectors/services');
 
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
@@ -14,6 +14,9 @@ const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
+const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -82,10 +85,9 @@ const getBatchDetails = (request, billingRegionForm) => {
     selectedTwoPartTariffSeason
   } = forms.getValues(billingRegionForm);
 
-  const financialYear = helpers.charging.getFinancialYear();
-  const financialYearEnding = selectedTwoPartTariffSeason === seasons.WINTER_AND_ALL_YEAR
-    ? financialYear - 1
-    : financialYear;
+  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
+  const today = moment().format(DATE_FORMAT);
+  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, today);
 
   const batch = {
     userEmail: request.defra.user.user_name,

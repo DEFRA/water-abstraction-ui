@@ -338,11 +338,10 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       });
     });
 
-    experiment(`for all bill runs except winter two part tariff the finacial year is this year's`, () => {
+    experiment(`for annual and supplementary batches`, () => {
       const billRunCombinations = [
         { billRunType: billRunTypes.ANNUAL },
-        { billRunType: billRunTypes.SUPPLEMENTARY },
-        { billRunType: billRunTypes.TWO_PART_TARIFF, season: seasons.SUMMER }
+        { billRunType: billRunTypes.SUPPLEMENTARY }
       ];
 
       billRunCombinations.forEach(combo => {

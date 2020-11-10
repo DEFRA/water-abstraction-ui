@@ -91,14 +91,8 @@ const findInvoiceAccountAddress = request => {
  * @param {*} draftChargeVersionStartDate the start date of the draft charge version
  */
 const isOverridingChargeVersion = async (request, draftChargeVersionStartDate) => {
-  try {
-    const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(request.pre.licence.id);
-    return !!chargeVersions.find(version => version.dateRange.startDate === draftChargeVersionStartDate);
-  } catch (error) {
-    if (error.statusCode !== 404) {
-      return error;
-    } else { return false; }
-  }
+  const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(request.pre.licence.id);
+  return !!chargeVersions.find(version => version.dateRange.startDate === draftChargeVersionStartDate);
 };
 
 exports.isOverridingChargeVersion = isOverridingChargeVersion;

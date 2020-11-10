@@ -12,6 +12,7 @@ const sandbox = require('sinon').createSandbox();
 
 const sessionForms = require('shared/lib/session-forms');
 const helpers = require('internal/modules/charge-information/lib/helpers');
+const services = require('internal/lib/connectors/services');
 
 experiment('internal/modules/charge-information/lib/helpers', () => {
   experiment('getDefaultView', () => {
@@ -100,6 +101,35 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
       expect(mappedChargeData.chargeVersion.chargeElements[0].season).to.equal('summer');
       expect(mappedChargeData.chargeVersion.chargeElements[0].source).to.equal('supported');
       expect(mappedChargeData.chargeVersion.chargeElements[0].loss).to.equal('high');
+    });
+  });
+
+  experiment('.isOverridingChargeVersion', () => {
+    const request = { pre: { licence: { id: 'test-licence-id' } } };
+    const chargeVersions = [
+      { id: 'test-charge-version-id', dateRange: { startDate: '2020-03-01', endDate: null }, licence: { id: 'test-licence-id' } },
+      { id: 'test-charge-version-id', dateRange: { startDate: '2020-01-16', endDate: '2020-02-28' }, licence: { id: 'test-licence-id' } }
+    ];
+
+    beforeEach(async () => {
+      sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').returns({ data: chargeVersions });
+    });
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    experiment('when the new charge version start date is the same as an existing one', () => {
+      test('is isOverridingChargeVersion returns true', async () => {
+        const result = await helpers.isOverridingChargeVersion(request, '2020-03-01');
+        expect(result).to.be.true();
+      });
+    });
+
+    experiment('when the new charge version start date is NOT the same as an existing one', () => {
+      test('isOverridingChargeVersion returns false', async () => {
+        const result = await helpers.isOverridingChargeVersion(request, '2020-03-31');
+        expect(result).to.be.false();
+      });
     });
   });
 });

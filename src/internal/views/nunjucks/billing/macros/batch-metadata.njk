@@ -12,7 +12,7 @@
       <dt class="meta__key">Bill run type</dt>
       <dd class="meta__value">
       {% if batch.type == 'two_part_tariff' %}
-        Two-part tariff
+        Two-part tariff {{ 'summer' if batch.isSummer else 'winter and all year' }}
       {% else %}
         {{ batch.type | sentenceCase }}
       {% endif %}

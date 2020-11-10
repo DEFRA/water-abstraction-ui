@@ -320,21 +320,43 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       expect(form).to.be.an.object();
     });
 
-    experiment('when the batch already exists', () => {
+    experiment('when the a live batch already exists', () => {
       test('the user is redirected to the batch-exists page', async () => {
         const id = uuid();
         services.water.billingBatches.createBillingBatch.rejects({
           statusCode: 409,
           error: {
-            existingBatch: { id }
+            batch: {
+              id,
+              status: 'processing'
+            }
           }
         });
 
         await controller.postBillingBatchRegion(request, h);
 
         const [url] = h.redirect.lastCall.args;
-
         expect(url).to.equal(`/billing/batch/${id}/exists`);
+      });
+
+      experiment('when the batch type has already been sent', () => {
+        test('the user is redirected to the duplicate batch page', async () => {
+          const id = uuid();
+          services.water.billingBatches.createBillingBatch.rejects({
+            statusCode: 409,
+            error: {
+              batch: {
+                id,
+                status: 'sent'
+              }
+            }
+          });
+
+          await controller.postBillingBatchRegion(request, h);
+
+          const [url] = h.redirect.lastCall.args;
+          expect(url).to.equal(`/billing/batch/${id}/duplicate`);
+        });
       });
     });
 
@@ -403,22 +425,67 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
   experiment('.getBillingBatchExists', () => {
     beforeEach(async () => {
       request.pre.batch = {
-        id: 'test-batch-id'
+        id: 'test-batch-id',
+        endYear: {
+          yearEnding: '2019'
+        }
       };
       await controller.getBillingBatchExists(request, h);
     });
 
     test('the expected view template is used for bill run exist', async () => {
       const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/billing/batch-exist');
+      expect(templateName).to.equal('nunjucks/billing/batch-creation-error');
     });
 
-    test('adds a date to the view context', async () => {
+    test('view context contains the expected page title', async () => {
       const [, context] = h.view.lastCall.args;
-      expect(context.today).to.be.a.date();
+      expect(context.pageTitle).to.equal('There is already a bill run in progress for this region');
     });
 
-    test('view context is assigned a back link path for exist', async () => {
+    test('view context contains the expected warning message', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.warningMessage).to.equal('You need to confirm or cancel this bill run before you can create a new one');
+    });
+
+    test('view context contains the expected back link', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/billing/batch/region');
+    });
+
+    test('adds the batch from the pre handler to the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.batch.id).to.equal('test-batch-id');
+    });
+  });
+
+  experiment('.getBillingBatchDuplicate', () => {
+    beforeEach(async () => {
+      request.pre.batch = {
+        id: 'test-batch-id',
+        endYear: {
+          yearEnding: '2019'
+        }
+      };
+      await controller.getBillingBatchDuplicate(request, h);
+    });
+
+    test('the expected view template is used for bill run exist', async () => {
+      const [templateName] = h.view.lastCall.args;
+      expect(templateName).to.equal('nunjucks/billing/batch-creation-error');
+    });
+
+    test('view context contains the expected page title', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.pageTitle).to.equal('This bill run type has already been processed for 2019');
+    });
+
+    test('view context contains the expected warning message', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.warningMessage).to.equal('You can only have one of this bill run type for a region in a financial year');
+    });
+
+    test('view context contains the expected back link', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.back).to.equal('/billing/batch/region');
     });

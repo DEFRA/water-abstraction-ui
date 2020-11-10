@@ -228,21 +228,10 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       'absPeriodEndDate',
       'authorisedAnnualQuantity',
       'billableAnnualQuantity',
-      'accountNumber',
-      'companyName',
-      'agentCompanyName',
-      'contact',
-      'addressLine1',
-      'addressLine2',
-      'addressLine3',
-      'addressLine4',
-      'town',
-      'county',
-      'postcode',
-      'country',
-      'volume',
       'calculatedVolume',
-      'isDeMinimis'
+      'volume',
+      'accountNumber',
+      'companyName'
     ];
 
     beforeEach(async () => {
@@ -260,17 +249,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(csvData[0].historicalArea).to.equal('AREA');
       expect(csvData[0].accountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
       expect(csvData[0].companyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
-    });
-
-    test('includes the invoice address', async () => {
-      expect(csvData[0].addressLine1).to.equal(invoicesForBatch[0].address.addressLine1);
-      expect(csvData[0].addressLine2).to.equal(invoicesForBatch[0].address.addressLine2);
-      expect(csvData[0].addressLine3).to.equal(invoicesForBatch[0].address.addressLine3);
-      expect(csvData[0].addressLine4).to.equal(invoicesForBatch[0].address.addressLine4);
-      expect(csvData[0].town).to.equal(invoicesForBatch[0].address.town);
-      expect(csvData[0].county).to.equal(invoicesForBatch[0].address.county);
-      expect(csvData[0].postcode).to.equal(invoicesForBatch[0].address.postcode);
-      expect(csvData[0].country).to.equal(invoicesForBatch[0].address.country);
     });
 
     test('creates a line for each transaction', async () => {

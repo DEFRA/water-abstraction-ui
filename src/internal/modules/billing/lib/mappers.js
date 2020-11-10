@@ -1,8 +1,9 @@
-const { omit, flatMap, mapValues, sortBy, groupBy, uniq, compact } = require('lodash');
-const groupArray = require('group-array');
+'use strict';
+
+const { omit, sortBy, groupBy, pick } = require('lodash');
 const sentenceCase = require('sentence-case');
-const helpers = require('@envage/water-abstraction-helpers');
 const routing = require('./routing');
+const { transactionStatuses } = require('shared/lib/constants');
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -27,7 +28,14 @@ const mapTransaction = transaction => ({
   isEdited: isTransactionEdited(transaction)
 });
 
+const isTransactionInErrorStatus = transaction => transaction.status === transactionStatuses.error;
+
 const getTransactionTotals = transactions => {
+  const hasErrors = transactions.some(isTransactionInErrorStatus);
+  if (hasErrors) {
+    return null;
+  }
+
   const initialValue = {
     debits: 0,
     credits: 0,
@@ -41,60 +49,40 @@ const getTransactionTotals = transactions => {
   }), initialValue);
 };
 
-const mapChargeElementTransactions = (transactions, chargeElementId) => {
-  const chargeElementTransactions = transactions.filter(trans => {
-    if (!trans.isMinimumCharge) return trans.chargeElement.id === chargeElementId;
-  });
+const isMinimimChargeTransaction = trans => trans.isMinimumCharge;
+const isNotMinimumChargeTransaction = trans => !isMinimimChargeTransaction(trans);
 
-  return {
-    transactions: chargeElementTransactions.map(mapTransaction),
-    totals: getTransactionTotals(chargeElementTransactions),
-    chargeElement: chargeElementTransactions[0].chargeElement
-  };
+const mapTransactionGroup = transactions => ({
+  chargeElement: transactions[0].chargeElement,
+  transactions: transactions.map(mapTransaction),
+  totals: getTransactionTotals(transactions)
+});
+
+const getTransactionGroups = transactions => {
+  const arr = transactions.filter(isNotMinimumChargeTransaction);
+  const grouped = groupBy(arr, trans => trans.chargeElement.id);
+  return Object.values(grouped).map(mapTransactionGroup);
 };
-
-const getChargeElementIds = transactions => uniq(compact(transactions.map(trans => {
-  if (!trans.isMinimumCharge) return trans.chargeElement.id;
-})));
-
-const getMinimumChargeTransactions = transactions =>
-  transactions.filter(trans => trans.isMinimumCharge);
-
-const mapLicence = licenceTransactions => {
-  const transactions = licenceTransactions.map(row => row.transaction);
-
-  const chargeElementIds = getChargeElementIds(transactions);
-  const chargeElements = chargeElementIds.map(id => mapChargeElementTransactions(transactions, id));
-  return {
-    link: licenceTransactions[0].link,
-    minimumChargeTransactions: getMinimumChargeTransactions(transactions),
-    chargeElements
-  };
-};
-
-const mapFinancialYear = licences => mapValues(licences, mapLicence);
 
 /**
    *
    * @param {Object} invoice - payload from water service invoice detail call
    * @param {Map} documentIds - map of licence numbers / CRM document IDs
    */
-const mapInvoiceTransactions = (invoice, documentIds) => {
-  const transactions = flatMap(invoice.invoiceLicences.map(invoiceLicence => {
+const mapInvoiceLicences = (invoice, documentIds) =>
+  invoice.invoiceLicences.map(invoiceLicence => {
     const { licenceNumber } = invoiceLicence.licence;
-    return invoiceLicence.transactions.map(transaction => ({
-      transaction,
-      financialYear: helpers.charging.getFinancialYear(transaction.chargePeriod.startDate),
-      licenceNumber,
-      link: `/licences/${documentIds.get(licenceNumber)}`
-    }));
-  }));
-  // Group by financial year, licence number
-  const grouped = groupArray(transactions, 'financialYear', 'licenceNumber');
+    const { id, hasTransactionErrors, transactions } = invoiceLicence;
 
-  // Map the returned values
-  return mapValues(grouped, mapFinancialYear);
-};
+    return {
+      id,
+      licenceNumber,
+      hasTransactionErrors,
+      link: `/licences/${documentIds.get(licenceNumber)}`,
+      minimumChargeTransactions: transactions.filter(isMinimimChargeTransaction),
+      transactionGroups: getTransactionGroups(transactions)
+    };
+  });
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
@@ -134,8 +122,24 @@ const mapInvoices = (batch, invoices) => {
   return batch.type === 'annual' ? groupBy(mappedInvoices, 'group') : mappedInvoices;
 };
 
+const mapInvoiceLevelErrors = invoice => invoice.invoiceLicences
+  .filter(invoiceLicence => invoiceLicence.hasTransactionErrors)
+  .map(invoiceLicence => ({
+    id: invoiceLicence.id,
+    message: `There are problems with transactions on licence ${invoiceLicence.licence.licenceNumber}`
+  }));
+
+const mapBatchLevelErrors = (batch, invoices) => invoices
+  .filter(invoice => invoice.hasTransactionErrors)
+  .map(invoice => ({
+    link: `/billing/batch/${batch.id}/invoice/${invoice.id}`,
+    ...pick(invoice, 'accountNumber', 'financialYearEnding')
+  }));
+
 exports.mapBatchListRow = mapBatchListRow;
-exports.mapInvoiceTransactions = mapInvoiceTransactions;
+exports.mapInvoiceLicences = mapInvoiceLicences;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
 exports.mapInvoices = mapInvoices;
+exports.mapInvoiceLevelErrors = mapInvoiceLevelErrors;
+exports.mapBatchLevelErrors = mapBatchLevelErrors;

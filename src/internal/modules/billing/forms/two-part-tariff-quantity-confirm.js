@@ -2,13 +2,13 @@
 
 const Joi = require('@hapi/joi');
 
-const confirmForm = require('./confirm-form');
 const { fields } = require('shared/lib/forms/');
+const confirmForm = require('shared/lib/forms/confirm-form');
 
 const twoPartTariffQuantityConfirmForm = (request, quantity) => {
   const { batchId, licenceId, billingVolumeId } = request.params;
   const action = `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}/billing-volume/${billingVolumeId}/confirm`;
-  const form = confirmForm(request, action, 'Continue');
+  const form = confirmForm.form(request, 'Continue', action);
   form.fields.push(fields.hidden('quantity', {}, quantity));
   return form;
 };

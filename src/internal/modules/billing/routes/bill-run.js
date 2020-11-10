@@ -6,8 +6,11 @@ const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];
 const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
 const preHandlers = require('../pre-handlers');
+
+const { featureToggles } = require('../../../config');
+
 if (isAcceptanceTestTarget) {
-  module.exports = {
+  const routes = {
 
     getBillingBatchSummary: {
       method: 'GET',
@@ -272,4 +275,17 @@ if (isAcceptanceTestTarget) {
       }
     }
   };
+
+  if (featureToggles.deleteAllBillingData) {
+    routes.postDeleteAllBillingData = {
+      method: 'POST',
+      path: '/billing/batch/delete-all-data',
+      handler: controller.postDeleteAllBillingData,
+      config: {
+        auth: { scope: allowedScopes }
+      }
+    };
+  }
+
+  module.exports = routes;
 };

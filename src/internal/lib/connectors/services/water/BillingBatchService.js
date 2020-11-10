@@ -116,6 +116,14 @@ class BillingBatchService extends ServiceClient {
     const uri = this.joinUrl(`/billing/batches/${batchId}/licences/${licenceId}`);
     return this.serviceRequest.delete(uri);
   }
+
+  /**
+   * Deletes all bills/charge versions (!)
+   */
+  deleteAllBillingData () {
+    const uri = this.joinUrl('billing/batches');
+    return this.serviceRequest.delete(uri);
+  }
 }
 
 module.exports = BillingBatchService;

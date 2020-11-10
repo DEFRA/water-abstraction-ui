@@ -19,6 +19,8 @@ const confirmForm = require('shared/lib/forms/confirm-form');
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
 
+const BATCH_LIST_ROUTE = '/billing/batch/list';
+
 /**
  * Shows a batch with its list of invoices
  * together with their totals
@@ -39,7 +41,7 @@ const getBillingBatchSummary = async (request, h) => {
     errors: mappers.mapBatchLevelErrors(batch, invoices),
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
-    back: request.query.back && '/billing/batch/list'
+    back: request.query.back && BATCH_LIST_ROUTE
   });
 };
 
@@ -107,7 +109,7 @@ const postBillingBatchCancel = async (request, h) => {
   } catch (err) {
     logger.info(`Did not successfully delete batch ${batchId}`);
   }
-  return h.redirect('/billing/batch/list');
+  return h.redirect(BATCH_LIST_ROUTE);
 };
 
 const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm');
@@ -205,7 +207,7 @@ const getBillingBatchEmpty = async (request, h) => {
  */
 const postDeleteAllBillingData = async (request, h) => {
   await services.water.billingBatches.deleteAllBillingData();
-  return h.redirect('/billing/batch/list');
+  return h.redirect(BATCH_LIST_ROUTE);
 };
 
 exports.getBillingBatchList = getBillingBatchList;

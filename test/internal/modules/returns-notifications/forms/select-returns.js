@@ -6,13 +6,6 @@ const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/select-returns');
 const helpers = require('../helpers');
 
-const request = {
-  path: 'returns-notifications/test-document-id/select-returns',
-  view: {
-    csrfToken: uuid()
-  }
-};
-
 const document = {
   document: {
     licenceNumber: '01/234/ABC'
@@ -22,11 +15,21 @@ const document = {
   ]
 };
 
+const request = {
+  path: 'returns-notifications/test-document-id/select-returns',
+  view: {
+    csrfToken: uuid()
+  },
+  pre: {
+    document
+  }
+};
+
 experiment('internal/modules/returns-notifications/forms/select-returns', () => {
   experiment('.form', () => {
     let form;
     beforeEach(async () => {
-      form = formContainer.form(request, document);
+      form = formContainer.form(request);
     });
 
     test('contains a checkbox field for the returns', async () => {
@@ -62,7 +65,7 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
   experiment('.schema', () => {
     let schema;
     beforeEach(async () => {
-      schema = formContainer.schema(request, document);
+      schema = formContainer.schema(request);
     });
 
     test('validates when return IDs is empty array', async () => {

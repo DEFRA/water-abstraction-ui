@@ -8,10 +8,10 @@
   </div>
 
   <p class="heading-small">
-    {% if user.lastLogin %}
-      Last signed in {{user.lastLogin | date('D MMMM YYYY, HH:MM')}}
-    {% elseif user.isDisabled %}
+    {% if user.isDisabled %}
       Account removed {{ user.dateDisabled | date('D MMMM YYYY, HH:MMa')}}
+    {% elseif user.lastLogin %}
+      Last signed in {{user.lastLogin | date('D MMMM YYYY, HH:MM')}}
     {% else %}
       Never signed in
     {% endif %}

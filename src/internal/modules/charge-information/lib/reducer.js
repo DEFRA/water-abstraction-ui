@@ -11,19 +11,21 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setStartDate:
       return {
         ...state,
-        startDate: action.payload
-      };
-
-    case ACTION_TYPES.setAbstractionData:
-      return {
-        ...state,
-        chargeElements: action.payload
+        dateRange: {
+          startDate: action.payload
+        }
       };
 
     case ACTION_TYPES.setBillingAccount:
       return {
         ...state,
-        billingAccount: action.payload
+        invoiceAccount: action.payload
+      };
+
+    case ACTION_TYPES.setChargeElementData:
+      return {
+        ...state,
+        chargeElements: action.payload
       };
 
     case ACTION_TYPES.clearData:

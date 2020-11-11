@@ -1,25 +1,30 @@
 'use strict';
 
-const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { capitalize } = require('lodash');
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
-const getFormField = (key, sessionData) => {
+const getFormField = (key, data) => {
   const fieldName = `${key}AnnualQuantity`;
   return fields.text(fieldName, {
     controlClass: 'govuk-input govuk-input--width-10',
     label: `${capitalize(key)}${key === 'billable' ? ' (optional)' : ''}`,
     suffix: 'megalitres per year',
+    mapper: 'numberMapper',
     errors: {
       'any.empty': {
         message: `Enter an ${key} quantity`
       },
       'number.base': {
         message: `Enter a valid ${key} quantity as a number that is more than zero`
+      },
+      'number.greater': {
+        message: `Enter a valid ${key} quantity as a number that is more than zero`
       }
     }
-  }, sessionData[fieldName] || '');
+  }, data[fieldName] || '');
 };
 
 /**
@@ -28,14 +33,14 @@ const getFormField = (key, sessionData) => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  data object containing selected and default options for the form
   */
-const form = (request, sessionData = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, elementId, 'quantities');
+  const data = getChargeElementData(request);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.quantities);
 
   const f = formFactory(action, 'POST');
-  f.fields.push(getFormField('authorised', sessionData));
-  f.fields.push(getFormField('billable', sessionData));
+  f.fields.push(getFormField('authorised', data));
+  f.fields.push(getFormField('billable', data));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -45,11 +50,9 @@ const form = (request, sessionData = {}) => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.number().integer().required(),
-    billableAnnualQuantity: Joi.number().integer().allow('').optional()
+    authorisedAnnualQuantity: Joi.number().min(0).required(),
+    billableAnnualQuantity: Joi.number().allow(null).min(0).optional()
   };
 };
-
 exports.schema = schema;
-
 exports.form = form;

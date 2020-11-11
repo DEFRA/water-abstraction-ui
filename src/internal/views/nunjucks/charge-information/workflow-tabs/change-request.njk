@@ -1,0 +1,41 @@
+<div>
+    {% if licencesCounts.changeRequest > 0 %}
+        <h1 class="govuk-heading-l">
+            Change Request
+        <br/>
+            <span class="govuk-caption-l">
+                {%if licencesCounts.changeRequest == 1 %}
+                    One licence
+                {% else %}
+                    {{licencesCounts.changeRequest}} licences
+                {% endif %}
+            </span>
+        </h1>
+        <table class="govuk-table phone--hide">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th class="govuk-table__header" scope="col">Licence</th>
+                    <th class="govuk-table__header" scope="col">Licence holder</th>
+                    <th class="govuk-table__header" scope="col">Set up by</th>
+                    <th class="govuk-table__header" scope="col">Change request</th>
+                    <th class="govuk-table__header" scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chargeInformationRow in licences.changeRequest %}
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceNumber}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.licenceHolder}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.createdBy.email}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.approverComments}}</td>
+                        <td class="govuk-table__cell"><a href="/licences/{{chargeInformationRow.licenceId}}/charge-information/{{chargeInformationRow.id}}/review">Review</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="govuk-caption-m">
+            There are no licences that are awaiting charge information changes.
+        </div>
+    {% endif %}
+</div>

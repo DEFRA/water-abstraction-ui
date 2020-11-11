@@ -130,22 +130,48 @@ experiment('booleanMapper', () => {
 });
 
 experiment('dateMapper', () => {
-  const payload = {
-    'field-day': '1',
-    'field-month': '5',
-    'field-year': '2018'
-  };
+  experiment('when the payload contains values', () => {
+    const payload = {
+      'field-day': '1',
+      'field-month': '5',
+      'field-year': '2018'
+    };
 
-  test('Should import date from separate day/month/year fields and convert to ISO 8601', async () => {
-    expect(dateMapper.import('field', payload)).to.equal('2018-05-01');
+    test('Should import date from separate day/month/year fields and convert to ISO 8601', async () => {
+      expect(dateMapper.import('field', payload)).to.equal('2018-05-01');
+    });
+
+    test('Should export date as separate components for day/month/year', async () => {
+      const value = dateMapper.export('2018-05-01');
+      expect(value).to.equal({
+        day: '01',
+        month: '05',
+        year: '2018'
+      });
+    });
   });
 
-  test('Should export date as separate components for day/month/year', async () => {
-    const value = dateMapper.export('2018-05-01');
-    expect(value).to.equal({
-      day: '01',
-      month: '05',
-      year: '2018'
+  experiment('when the payload contains some empty values', () => {
+    const payload = {
+      'field-day': '1',
+      'field-month': '',
+      'field-year': '2018'
+    };
+
+    test('Should import date from separate day/month/year fields and convert to ISO 8601', async () => {
+      expect(dateMapper.import('field', payload)).to.equal('2018--01');
+    });
+  });
+
+  experiment('when values are empty or whitespace only', () => {
+    const payload = {
+      'field-day': '',
+      'field-month': ' ',
+      'field-year': '   '
+    };
+
+    test('Imports the date as undefined', async () => {
+      expect(dateMapper.import('field', payload)).to.be.undefined();
     });
   });
 });

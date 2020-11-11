@@ -92,4 +92,18 @@ experiment('internal/modules/billing/routes', () => {
       expect(route.config.pre[0].assign).to.equal('batch');
     });
   });
+
+  experiment('.getBillingBatchDuplicate', () => {
+    const route = routes.getBillingBatchExists;
+    test('limits scope to users with billing role', async () => {
+      expect(route.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+
+    test('uses a pre handler to load the batch', async () => {
+      expect(route.config.pre).to.have.length(1);
+      expect(route.config.pre[0].method).to.equal(preHandlers.loadBatch);
+      expect(route.config.pre[0].assign).to.equal('batch');
+    });
+  });
 });

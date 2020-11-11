@@ -1,3 +1,5 @@
+'use strict';
+
 const { trim, isArray, isUndefined, negate, find, identity } = require('lodash');
 const moment = require('moment');
 const isDefined = negate(isUndefined);
@@ -68,17 +70,35 @@ const formatYearSegment = (year) => {
   return '';
 };
 
+const getDayFromPayload = (payload, fieldName) => payload[fieldName + '-day'];
+const getMonthFromPayload = (payload, fieldName) => payload[fieldName + '-month'];
+const getYearFromPayload = (payload, fieldName) => payload[fieldName + '-year'];
+
+const isTrimmedStringEmpty = val => (val || '').trim() === '';
+
 /**
  * Date mapper - combines the day month and year form values to a single
  * string formatted as YYYY-MM-DD
  */
 const dateMapper = {
   import: (fieldName, payload) => {
-    const day = payload[fieldName + '-day'] ? formatDateSegment(payload[fieldName + '-day']) : '';
-    const month = payload[fieldName + '-month'] ? `${formatDateSegment(payload[fieldName + '-month'])}-` : '';
-    const year = payload[fieldName + '-year'] ? `${formatYearSegment(payload[fieldName + '-year'])}-` : '';
+    const arr = [
+      getYearFromPayload(payload, fieldName),
+      getMonthFromPayload(payload, fieldName),
+      getDayFromPayload(payload, fieldName)
+    ];
 
-    return `${year}${month}${day}`;
+    // No date entered
+    if (arr.every(isTrimmedStringEmpty)) {
+      return undefined;
+    }
+
+    // User attempted date entry, parse and format
+    return [
+      formatYearSegment(arr[0]),
+      formatDateSegment(arr[1]),
+      formatDateSegment(arr[2])
+    ].join('-');
   },
   postValidate: value => {
     // The internal date format is an ISO 8601 string, YYYY-MM-DD, so if we

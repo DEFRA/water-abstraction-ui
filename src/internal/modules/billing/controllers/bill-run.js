@@ -1,5 +1,11 @@
 'use strict';
 
+const titleCase = require('title-case');
+const { pluralize } = require('shared/lib/pluralize');
+const moment = require('moment');
+const Boom = require('@hapi/boom');
+const { get } = require('lodash');
+
 const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
@@ -8,10 +14,6 @@ const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
-const titleCase = require('title-case');
-const { pluralize } = require('shared/lib/pluralize');
-const moment = require('moment');
-const Boom = require('@hapi/boom');
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
 
@@ -32,6 +34,7 @@ const getBillingBatchSummary = async (request, h) => {
     invoices: mappers.mapInvoices(batch, invoices),
     isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
+    errors: mappers.mapBatchLevelErrors(batch, invoices),
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && '/billing/batch/list'
@@ -54,11 +57,13 @@ const getBillingBatchInvoice = async (request, h) => {
     back: `/billing/batch/${batchId}/summary`,
     pageTitle: `Bill for ${titleCase(invoice.invoiceAccount.company.name)}`,
     invoice,
+    financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    transactions: mappers.mapInvoiceTransactions(invoice, documentIds),
-    isCredit: invoice.totals.netTotal < 0,
-    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`
+    invoiceLicences: mappers.mapInvoiceLicences(invoice, documentIds),
+    isCredit: get(invoice, 'totals.netTotal', 0) < 0,
+    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
+    errors: mappers.mapInvoiceLevelErrors(invoice)
   });
 };
 

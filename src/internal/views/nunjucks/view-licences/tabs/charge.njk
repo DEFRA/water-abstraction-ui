@@ -3,18 +3,18 @@
 <h2 class="govuk-heading-l">Charge information</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-  {% if chargeVersion.status == 'review' %}
-    <a class="govuk-link" href="/charge-version/{{ chargeVersion.id }}/review">Review</a>
+  {% if chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
+    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
   {% else %}
-    <a class="govuk-link" href="/charge-version/{{ chargeVersion.id }}/view">View</a>
+    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/view">View</a>
   {% endif %}
 {% endmacro %}
 
-{% macro agreementActions(agreement, isChargingUser) %}
-  {# {% if not agreement.dateRange.endDate %}
-    <a href='/licences/{licenceId}/agreements/{{ agreement.id }}/end'>End</a> 
-  {% endif %} #}
-  {% if isChargingUser %}
+{% macro agreementActions(agreement, licenceId, isChargingUser) %}
+  {% if isChargingUser and featureToggles.manageAgreements %}
+    {% if not agreement.dateRange.endDate %}
+      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a> |
+    {% endif %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
 {% endmacro %}
@@ -31,11 +31,11 @@
     </p>
     <p>Status:
       {{ badge(chargeVersion | chargeVersionBadge) }}</p>
-    {# <p>Action: {{ chargeVersionLink(chargeVersion) }}</p> #}
+    <p>Action: {{ chargeVersionLink(chargeVersion) }}</p>
   </div>
 {% endmacro %}
 
-{% macro agreementRowMobile(agreement, isChargingUser, licenceId) %}
+{% macro agreementRowMobile(agreement, isChargingUser) %}
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
@@ -65,13 +65,13 @@
     <td class="govuk-table__cell">
       {{ badge(chargeVersion | chargeVersionBadge) }}
     </td>
-    {# <td class="govuk-table__cell">
+    <td class="govuk-table__cell">
       {{ chargeVersionLink(chargeVersion) }}
-    </td> #}
+    </td>
   </tr>
 {% endmacro %}
 
-{% macro agreementRow(agreement, isChargingUser, licenceId) %}
+{% macro agreementRow(agreement, isChargingUser) %}
   <tr class="govuk-table__row">
     <td class="govuk-table__cell">
       {{ agreement.dateRange.startDate | date }}
@@ -104,7 +104,7 @@
         <th class="govuk-table__header" scope="col">End date</th>
         <th class="govuk-table__header" scope="col">Reason</th>
         <th class="govuk-table__header" scope="col">Status</th>
-        {# <th class="govuk-table__header" scope="col">Action</th> #}
+        <th class="govuk-table__header" scope="col">Action</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -114,7 +114,7 @@
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/charge-versions/create"
+  <a href="/licences/{{ licenceId }}/charge-information/create"
     role="button"
     draggable="false"
     class="govuk-button govuk-!-margin-right-3"
@@ -122,13 +122,13 @@
     Setup a new charge
   </a>
 
-  <a href="/licences/{{ licenceId }}/make-non-chargeable"
+  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1"
     role="button"
     draggable="false"
     class="govuk-button govuk-button--secondary"
     data-module="govuk-button">
     Make licence non-chargeable
-  </a> #}
+  </a>
 {% else %}
   <p>No charge information for this licence.</p>
 {% endif %}
@@ -139,7 +139,7 @@
   <h2 class="govuk-heading-l">Agreements</h2>
 
   {% for agreement in agreements %}
-    {{ agreementRowMobile(agreement, isChargingUser, licenceId, true) }}
+    {{ agreementRowMobile(agreement, isChargingUser, true) }}
   {% endfor %}
 
   <table class="govuk-table phone--hide">
@@ -154,18 +154,15 @@
     </thead>
     <tbody class="govuk-table__body">
       {% for agreement in agreements %}
-        {{ agreementRow(agreement, isChargingUser, licenceId, true) }}
+        {{ agreementRow(agreement, isChargingUser, true) }}
       {% endfor %}
     </tbody>
   </table>
 
-  {# <a href="/licences/{{ licenceId }}/agreements/create"
-    role="button"
-    draggable="false"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button">
-    Set up a new agreement
-  </a> #}
 {% else %}
   <p>No agreements for this licence.</p>
 {% endif %}
+
+<a href="/licences/{{ licenceId }}/agreements/select-type" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  Set up a new agreement
+</a>

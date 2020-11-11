@@ -6,6 +6,7 @@ const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLe
 const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService');
+const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
 
 // Internal services (possibly unique, or overriding shared)
 const ReturnsService = require('./ReturnsService');
@@ -13,6 +14,7 @@ const BatchNotificationsService = require('./BatchNotificationsService');
 const ChangeReasonsService = require('./ChangeReasonsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const InternalSearchService = require('./InternalSearchService');
+const InvoiceAccountService = require('./InvoiceAccountService');
 const AddressSearchService = require('./AddressSearchService');
 const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
@@ -41,11 +43,13 @@ module.exports = config => ({
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
   chargeVersions: new ChargeVersionsService(config.services.water, logger),
+  chargeVersionWorkflows: new ChargeVersionWorkflowsService(config.services.water, logger),
 
   // Internal services
   returns: new ReturnsService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
+  invoiceAccounts: new InvoiceAccountService(config.services.water, logger),
   internalSearch: new InternalSearchService(config.services.water, logger),
   addressSearch: new AddressSearchService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),

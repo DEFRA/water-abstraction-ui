@@ -3,32 +3,35 @@
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
-const { createPostHandler, getDefaultView, applyFormResponse } = require('../lib/helpers');
+const {
+  createPostHandler,
+  getDefaultView,
+  applyFormResponse,
+  prepareChargeInformation,
+  getLicencePageUrl,
+  findInvoiceAccountAddress
+} = require('../lib/helpers');
+const chargeInformationValidator = require('../lib/charge-information-validator');
+const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
 const uuid = require('uuid');
-const getLicencePageUrl = async licence => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
-  return `/licences/${document.document_id}`;
-};
 
 /**
  * Select the reason for the creation of a new charge version
  */
 const getReason = async (request, h) => {
   const licenceUrl = await getLicencePageUrl(request.pre.licence);
-
-  return h.view('nunjucks/charge-information/form.njk', {
-    ...getDefaultView(request, forms.reason, licenceUrl),
+  return h.view('nunjucks/form.njk', {
+    ...getDefaultView(request, licenceUrl, forms.reason),
     pageTitle: 'Select reason for new charge information'
   });
 };
 
 const handleValidReasonRedirect = (request, formValues) => {
-  const { licence } = request.pre;
-
+  const { licenceId } = request.params;
   return formValues.reason === 'non-chargeable'
-    ? routing.getNonChargeableReason(licence)
-    : routing.getStartDate(licence);
+    ? routing.getNonChargeableReason(licenceId)
+    : routing.getStartDate(licenceId);
 };
 
 const postReason = createPostHandler(
@@ -41,8 +44,8 @@ const postReason = createPostHandler(
  * Select the start date for the new charge version
  */
 const getStartDate = async (request, h) => {
-  return h.view('nunjucks/charge-information/form.njk', {
-    ...getDefaultView(request, forms.startDate, routing.getReason),
+  return h.view('nunjucks/form.njk', {
+    ...getDefaultView(request, routing.getReason, forms.startDate),
     pageTitle: 'Set charge start date'
   });
 };
@@ -50,22 +53,23 @@ const getStartDate = async (request, h) => {
 const postStartDate = createPostHandler(
   forms.startDate,
   actions.setStartDate,
-  request => routing.getSelectBillingAccount(request.pre.licence)
+  request => routing.getSelectBillingAccount(request.params.licenceId)
 );
 
 const getSelectBillingAccount = async (request, h) => {
-  const { billingAccounts } = request.pre;
+  const { billingAccounts, licence, licenceHolderRole } = request.pre;
 
   // if no accounts redirect to the create new account page
   if (billingAccounts.length === 0) {
-    return h.redirect(routing.getCreateBillingAccount(request.pre.licence));
+    const redirectPath = routing.getCreateBillingAccount(licence, licenceHolderRole, 'use-abstraction-data');
+    return h.redirect(redirectPath);
   }
 
   // we have billing accounts, get the name and populate the view
   const companyName = billingAccounts[0].company.name;
 
-  return h.view('nunjucks/charge-information/form.njk', {
-    ...getDefaultView(request, forms.billingAccount, routing.getStartDate),
+  return h.view('nunjucks/form.njk', {
+    ...getDefaultView(request, routing.getStartDate, forms.billingAccount),
     pageTitle: `Select an existing billing account for ${companyName}`
   });
 };
@@ -79,11 +83,13 @@ const getSelectBillingAccount = async (request, h) => {
  * @param {Object} formValues
  */
 const handleValidBillingAccountRedirect = (request, formValues) => {
-  const { licence } = request.pre;
-
-  return formValues.invoiceAccountAddress === 'set-up-new-billing-account'
-    ? routing.getCreateBillingAccount(licence)
-    : routing.getUseAbstractionData(licence);
+  const { licence, licenceHolderRole } = request.pre;
+  if (formValues.invoiceAccountAddress === 'set-up-new-billing-account') {
+    const { returnToCheckData } = request.query;
+    const redirect = returnToCheckData === 1 ? 'check' : 'use-abstraction-data';
+    return routing.getCreateBillingAccount(licence, licenceHolderRole, redirect);
+  }
+  return routing.getUseAbstractionData(licence.id);
 };
 
 const postSelectBillingAccount = createPostHandler(
@@ -93,8 +99,8 @@ const postSelectBillingAccount = createPostHandler(
 );
 
 const getUseAbstractionData = async (request, h) => {
-  return h.view('nunjucks/charge-information/form.njk', {
-    ...getDefaultView(request, forms.useAbstractionData, routing.getSelectBillingAccount),
+  return h.view('nunjucks/form.njk', {
+    ...getDefaultView(request, routing.getSelectBillingAccount, forms.useAbstractionData),
     pageTitle: 'Use abstraction data to set up the element?'
   });
 };
@@ -108,10 +114,10 @@ const getUseAbstractionData = async (request, h) => {
 * @param {Object} formValues
 */
 const handleValidAbstractionDataRedirect = (request, formValues) => {
-  const { licence } = request.pre;
+  const { licenceId } = request.params;
   return formValues.useAbstractionData
-    ? routing.getCheckData(licence)
-    : routing.getChargeElementStep(licence.id, uuid(), 'purpose');
+    ? routing.getCheckData(licenceId)
+    : routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_STEPS.purpose);
 };
 
 const postUseAbstractionData = createPostHandler(
@@ -121,45 +127,124 @@ const postUseAbstractionData = createPostHandler(
 );
 
 const getCheckData = async (request, h) => {
-  const { licence, draftChargeInformation } = request.pre;
+  const { draftChargeInformation, isChargeable } = request.pre;
+  const { chargeVersionWorkflowId, licenceId } = request.params;
+  const back = isChargeable
+    ? routing.getUseAbstractionData(licenceId)
+    : routing.getEffectiveDate(licenceId);
 
-  const invoiceAccountAddress = draftChargeInformation.billingAccount.billingAccount.invoiceAccountAddresses.find(add => {
-    return add.id === draftChargeInformation.billingAccount.invoiceAccountAddress;
-  });
+  const invoiceAccountAddress = findInvoiceAccountAddress(request);
 
   const view = {
-    ...request.view,
-    caption: `Licence ${licence.licenceNumber}`,
-    back: routing.getUseAbstractionData(licence),
+    ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
-    draftChargeInformation,
-    invoiceAccountAddress
+    chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
+    licenceId: request.params.licenceId,
+    invoiceAccountAddress,
+    chargeVersionWorkflowId,
+    isChargeable,
+    isEditable: true,
+    isXlHeading: true
   };
 
-  return h.view('nunjucks/charge-information/check.njk', view);
+  return h.view('nunjucks/charge-information/view.njk', view);
+};
+
+const updateDraftChargeInformation = async (request, h) => {
+  const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
+
+  const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
+  preparedChargeInfo.chargeVersion['status'] = 'draft';
+
+  await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+    preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
+    'review',
+    preparedChargeInfo.chargeVersion.approverComments,
+    preparedChargeInfo.chargeVersion
+  );
+  const route = routing.getSubmitted(id, isChargeable);
+  return h.redirect(route);
+};
+
+const submitDraftChargeInformation = async (request, h) => {
+  const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
+
+  const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
+  preparedChargeInfo.chargeVersion['status'] = 'draft';
+  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
+  await applyFormResponse(request, {}, actions.clearData);
+  const route = routing.getSubmitted(id, isChargeable);
+  return h.redirect(route);
+};
+
+const redirectToCancelPage = (request, h) =>
+  h.redirect(routing.getCancelData(request.params.licenceId));
+
+const redirectToStartOfElementFlow = (request, h) => {
+  const { licenceId } = request.params;
+  // need to generate new id for new charge element
+  return h.redirect(routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_FIRST_STEP));
+};
+
+const removeElement = async (request, h) => {
+  await applyFormResponse(request, {}, actions.removeChargeElement);
+  return h.redirect(routing.getCheckData(request.params.licenceId));
+};
+
+const checkDataButtonActions = {
+  update: updateDraftChargeInformation,
+  confirm: submitDraftChargeInformation,
+  cancel: redirectToCancelPage,
+  addElement: redirectToStartOfElementFlow,
+  removeElement: removeElement
 };
 
 const postCheckData = async (request, h) => {
-  const { nextStep } = request.payload;
-  const { licence } = request.pre;
+  const { buttonAction } = request.payload;
+  const [action] = buttonAction.split(':');
+  return checkDataButtonActions[action](request, h);
+};
 
-  if (nextStep === 'confirm') {
-    // send the draft data to the water service to save
-    console.log('Collected data', request.pre.draftChargeInformation);
-  } else {
-    await applyFormResponse(request, {}, actions.clearData);
+const getCancelData = (request, h) =>
+  h.view('nunjucks/charge-information/cancel.njk', {
+    ...getDefaultView(request, routing.getCheckData, forms.cancelChargeInfo),
+    pageTitle: 'You\'re about to cancel this charge information',
+    draftChargeInformation: request.pre.draftChargeInformation
+  });
+
+const postCancelData = async (request, h) => {
+  const { licence, draftChargeInformation: { chargeVersionWorkflowId } } = request.pre;
+  if (chargeVersionWorkflowId) {
+    await services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow(chargeVersionWorkflowId);
   }
+  await applyFormResponse(request, {}, actions.clearData);
 
   const url = await getLicencePageUrl(licence);
   return h.redirect(url);
 };
 
+const getSubmitted = async (request, h) => {
+  const { licence } = request.pre;
+  const { chargeable: isChargeable } = request.query;
+  const licencePageUrl = await getLicencePageUrl(licence);
+
+  return h.view('nunjucks/charge-information/submitted.njk', {
+    ...getDefaultView(request),
+    pageTitle: 'Charge information complete',
+    licencePageUrl,
+    isChargeable
+  });
+};
+
+exports.getCancelData = getCancelData;
 exports.getCheckData = getCheckData;
 exports.getReason = getReason;
 exports.getSelectBillingAccount = getSelectBillingAccount;
 exports.getStartDate = getStartDate;
+exports.getSubmitted = getSubmitted;
 exports.getUseAbstractionData = getUseAbstractionData;
 
+exports.postCancelData = postCancelData;
 exports.postCheckData = postCheckData;
 exports.postReason = postReason;
 exports.postSelectBillingAccount = postSelectBillingAccount;

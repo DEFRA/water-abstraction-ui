@@ -1,0 +1,87 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+{% from "title.njk" import title %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "crm/contact.njk" import contact %}
+{% from "crm/company.njk" import company %}
+{% from "crm/address.njk" import address %}
+{% from "forms/index.njk" import formRender %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ title(pageTitle) }}
+
+      {% for document in documents %}
+
+        <h2 class="govuk-heading-m" id="{{ document.id }}">Licence
+          {{ document.licenceNumber }}</h2>
+
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Licence holder
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ company(document.licenceHolderRole.company) }}
+            </dd>
+            <dd class="govuk-summary-list__actions"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Returns reference
+              {{ 'number' | pluralize(document.returns) }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+              {% if document.returns.length === 0 %}
+                <p>None selected</p>
+              {% else %}
+                <div class="meta">
+                  {% for return in document.returns %}
+                    <div class="meta__row">
+                      <div class="meta__key">{{ return.legacyId }}
+                      </div>
+                      <div class="meta__value">
+                        {{ return.details}}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+                {% endif%}
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ document.selectReturnsLink }}">
+                  Change<span class="govuk-visually-hidden">
+                    returns</span>
+                </a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Address
+              </dt>
+              <dd class="govuk-summary-list__value">
+
+                {% for addressLine in document.address %}
+                  {{ addressLine }}<br>
+                {% endfor %}
+
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ document.selectAddressLink }}">
+                  Change<span class="govuk-visually-hidden">
+                    address</span>
+                </a>
+              </dd>
+            </div>
+          </dl>
+
+        {% endfor %}
+
+        {{ formRender(form)}}
+      </div>
+    </div>
+  {% endblock %}

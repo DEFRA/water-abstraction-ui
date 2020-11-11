@@ -6,25 +6,30 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/quantities');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
+  },
+  pre: {
+    draftChargeInformation: {
+      chargeElements: chargeElements || []
+    }
   }
 });
-
-const sessionData = {};
 
 experiment('internal/modules/charge-information/forms/charge-element/quantities', () => {
   let quantitiesForm;
 
   beforeEach(async () => {
-    quantitiesForm = form(createRequest(), sessionData);
+    quantitiesForm = form(createRequest());
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(quantitiesForm.method).to.equal('POST');
     });
@@ -43,13 +48,32 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
       const text = findField(quantitiesForm, 'authorisedAnnualQuantity');
       expect(text.options.label).to.equal('Authorised');
     });
+
     test('has a choice for using billableAnnualQuantity', async () => {
       const text = findField(quantitiesForm, 'billableAnnualQuantity');
       expect(text.options.label).to.equal('Billable (optional)');
     });
+
+    test('sets the value of the authorisedAnnualQuantity, if provided', async () => {
+      quantitiesForm = form(createRequest([{
+        id: 'test-element-id',
+        authorisedAnnualQuantity: 234
+      }]));
+      const quantityField = findField(quantitiesForm, 'authorisedAnnualQuantity');
+      expect(quantityField.value).to.equal(234);
+    });
+
+    test('sets the value of the billableAnnualQuantity, if provided', async () => {
+      quantitiesForm = form(createRequest([{
+        id: 'test-element-id',
+        billableAnnualQuantity: 123
+      }]));
+      const quantityField = findField(quantitiesForm, 'billableAnnualQuantity');
+      expect(quantityField.value).to.equal(123);
+    });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
@@ -84,8 +108,8 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
         expect(result.error).to.not.exist();
       });
 
-      test('can not null or empty', async () => {
-        const result = schema().billableAnnualQuantity.validate('');
+      test('can be null or empty', async () => {
+        const result = schema().billableAnnualQuantity.validate(null);
         expect(result.error).not.to.exist();
       });
     });

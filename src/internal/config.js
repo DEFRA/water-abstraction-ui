@@ -4,7 +4,6 @@ require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
-const isProductionLike = ['production', 'preprod'].includes(process.env.NODE_ENV);
 
 const { internal } = require('./lib/constants').scope;
 
@@ -139,6 +138,6 @@ module.exports = {
     manageAgreements: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV),
     chargeInformation: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV),
     manageInvoiceAccounts: ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV),
-    deleteAllBillingData: !isProductionLike
+    deleteAllBillingData: ['local', 'dev', 'development', 'test'].includes(process.env.NODE_ENV)
   }
 };

@@ -17,15 +17,6 @@ const isLockedHttpStatus = err => [423, 429].includes(err.statusCode);
 const isErrorHttpStatus = err => [401, 404].includes(err.statusCode);
 const isConflictHttpStatus = err => err.statusCode === 409;
 
-// this comment should be removed - testing sonarcloud
-const functionThatDoesntDoAnything = () => {
-  const test = 'test';
-  console.log(test);
-  return '1';
-};
-
-exports.functionThatDoesntDoAnything = functionThatDoesntDoAnything;
-
 /**
  * Renders account screen with options to change email/password
  */

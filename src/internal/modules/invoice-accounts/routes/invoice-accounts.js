@@ -34,7 +34,7 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
+          { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
     },
@@ -56,7 +56,9 @@ if (isAcceptanceTestTarget) {
             selectedCompany: Joi.string().optional().allow('')
           }
         },
-        pre: [{ method: preHandlers.loadCompany, assign: 'company' }]
+        pre: [
+          { method: preHandlers.loadCompanies, assign: 'companies' }
+        ]
       }
     },
     getAddress: {
@@ -101,6 +103,66 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+    getContactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
+      handler: controller.getContactEntryHandover,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirects the user into the invoice-account flow after a new contact has been created',
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { sessionKey: VALID_GUID }
+        }
+      }
+
+    },
+    getCreateAddress: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/create-address',
+      handler: controller.getCreateAddress,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Enter invoice account address',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { form: Joi.string().optional() }
+        }
+      }
+    },
+    getAddressEntered: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/address-entered',
+      handler: controller.getAddressEntered,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'Redirect path from the address entry module',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: { form: Joi.string().optional() }
+        }
+      }
+    },
+
     getFao: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/add-fao',
@@ -162,7 +224,7 @@ if (isAcceptanceTestTarget) {
           }
         },
         pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
+          { method: preHandlers.loadCompanies, assign: 'companies' }
         ]
       }
     },
@@ -186,10 +248,40 @@ if (isAcceptanceTestTarget) {
           payload: {
             csrf_token: Joi.string().uuid().required()
           }
+        }
+      }
+    },
+    getSearchCompany: {
+      method: 'GET',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.getSearchCompany,
+      config: {
+        auth: { scope: allowedScopes },
+        description: 'find an existing contact to associate with the invoice account',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
         },
-        pre: [
-          { method: preHandlers.loadCompany, assign: 'company' }
-        ]
+        validate: {
+          params: {
+            regionId: VALID_GUID,
+            companyId: VALID_GUID
+          },
+          query: {
+            filter: Joi.string().required(),
+            form: Joi.string().optional()
+          }
+        },
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
+      }
+    },
+    postSearchCompany: {
+      method: 'POST',
+      path: '/invoice-accounts/create/{regionId}/{companyId}/contact-search',
+      handler: controller.postSearchCompany,
+      options: {
+        pre: [{ method: preHandlers.searchForCompaniesByString, assign: 'contactSearchResults' }]
       }
     }
   };

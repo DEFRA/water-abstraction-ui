@@ -41,7 +41,8 @@ const getRadioChoices = authorisedAnnualQuantity => [{
  */
 const getQuantityRadio = authorisedAnnualQuantity => fields.radio('quantity', {
   label: 'Set the billable quantity for this bill run',
-  subHeading: true,
+  heading: true,
+  size: 'l',
   errors: {
     'any.required': {
       message: 'Select the billable quantity'

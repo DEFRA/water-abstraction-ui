@@ -6,12 +6,19 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/description');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
-const createRequest = () => ({
+const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
   },
+  query: {},
   params: {
-    licenceId: 'test-licence-id'
+    licenceId: 'test-licence-id',
+    elementId: 'test-element-id'
+  },
+  pre: {
+    draftChargeInformation: {
+      chargeElements: chargeElements || []
+    }
   }
 });
 
@@ -24,7 +31,7 @@ experiment('internal/modules/charge-information/forms/charge-element/description
     descriptionForm = form(createRequest(), sessionData);
   });
 
-  experiment('form', () => {
+  experiment('.form', () => {
     test('sets the form method to POST', async () => {
       expect(descriptionForm.method).to.equal('POST');
     });
@@ -39,14 +46,23 @@ experiment('internal/modules/charge-information/forms/charge-element/description
       expect(button.options.label).to.equal('Continue');
     });
 
-    test('has a choice for using abstraction data', async () => {
+    test('has a description text field with the expected hint', async () => {
       const text = findField(descriptionForm, 'description');
       expect(text.options.label).to.equal('');
       expect(text.options.hint).to.equal('For example, describe where the abstraction point is');
     });
+
+    test('sets the value of the description, if provided', async () => {
+      descriptionForm = form(createRequest([{
+        id: 'test-element-id',
+        description: 'test-description'
+      }]));
+      const text = findField(descriptionForm, 'description');
+      expect(text.value).to.equal('test-description');
+    });
   });
 
-  experiment('schema', () => {
+  experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');

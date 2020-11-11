@@ -30,6 +30,9 @@ const server = Hapi.server({
   cache: createCache(config)
 });
 
+// Add service connectors to request
+server.decorate('request', 'services', connectors);
+
 const pluginsArray = [
   ...common,
   ...Object.values(plugins),
@@ -66,6 +69,8 @@ const pluginsArray = [
     }
   }, {
     plugin: require('internal/modules/address-entry/plugin')
+  }, {
+    plugin: require('internal/modules/contact-entry/plugin')
   }
 ];
 

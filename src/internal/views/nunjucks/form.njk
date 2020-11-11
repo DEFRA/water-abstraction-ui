@@ -4,9 +4,13 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
     {{ formErrorSummary(form) }}
-    {{ title(pageTitle, caption) }}
+
+    {% if not form | isFirstFieldHeading %}
+      {{ title(pageTitle, caption) }}
+    {% endif %}
+
     </div>
     <div class="govuk-grid-column-full">
       {{ formRender(form) }}

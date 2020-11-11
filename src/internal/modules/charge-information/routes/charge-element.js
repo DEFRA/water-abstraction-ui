@@ -26,7 +26,11 @@ module.exports = {
         params: {
           licenceId: VALID_GUID,
           step: Joi.string().valid(chargeElementSteps).required(),
-          elementId: Joi.string().uuid().required()
+          elementId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().allow(0, 1).optional()
         }
       },
       pre: [
@@ -44,7 +48,7 @@ module.exports = {
       auth: {
         scope: allowedScopes
       },
-      description: 'Single POST route for all charge element poperties',
+      description: 'Single POST route for all charge element properties',
       plugins: {
         viewContext: {
           activeNavLink: 'view'
@@ -54,7 +58,11 @@ module.exports = {
         params: {
           licenceId: VALID_GUID,
           step: Joi.string().valid(chargeElementSteps).required(),
-          elementId: Joi.string().uuid().required()
+          elementId: VALID_GUID
+        },
+        query: {
+          form: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().allow(0, 1).optional()
         }
       },
       pre: [

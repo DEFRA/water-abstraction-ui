@@ -1,11 +1,11 @@
 'use strict';
 
-const routing = require('../../lib/routing');
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const helpers = require('@envage/water-abstraction-helpers');
 const { capitalize } = require('lodash');
-const { SEASONS } = require('../../lib/charge-elements/constants');
+const { SEASONS, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const options = (absPeriod) => {
   const defaultSeason = absPeriod ? helpers.returns.date.getAbstractionPeriodSeason(absPeriod) : '';
@@ -22,10 +22,10 @@ const options = (absPeriod) => {
  * @param {Object} request The Hapi request object
  * @param {Boolean}  data object containing selected and default options for the form
   */
-const form = (request, sessionData = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
-  const { licenceId, elementId } = request.params;
-  const action = routing.getChargeElementStep(licenceId, elementId, 'season');
+  const data = getChargeElementData(request);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.season);
   const f = formFactory(action, 'POST');
 
   f.fields.push(fields.radio('season', {
@@ -34,8 +34,8 @@ const form = (request, sessionData = {}) => {
         message: 'Select a season'
       }
     },
-    choices: options(sessionData.abstractionPeriod)
-  }, sessionData.season));
+    choices: options(data.abstractionPeriod)
+  }, data.season));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

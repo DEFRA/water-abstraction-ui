@@ -1,4 +1,7 @@
+'use strict';
+
 const { formFactory, fields } = require('shared/lib/forms/');
+
 /**
  * Creates an object to represent the form for deleting
  * an agreement

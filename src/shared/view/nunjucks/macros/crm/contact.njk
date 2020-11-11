@@ -1,3 +1,9 @@
 {% macro contact(contact) %}
-  {{ contact.salutation }} {{ contact.initials }} {{ contact.lastName }}
+  {% if contact.type === 'department' %}
+    {{ contact.department }}
+  {% else %}
+    {{ contact.salutation }}
+    {{ contact.initials }}
+    {{ contact.lastName }}
+  {% endif %}
 {% endmacro %}

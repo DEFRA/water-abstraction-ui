@@ -1,10 +1,10 @@
 const controller = require('../controllers/charge-information');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
-
+const Joi = require('@hapi/joi');
 const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
-const chargeElementRoutes = require('./charge-element');
+
 module.exports = {
   getReason: {
     method: 'GET',
@@ -25,7 +25,9 @@ module.exports = {
           licenceId: VALID_GUID
         },
         query: {
-          form: VALID_GUID.optional()
+          form: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().default(0).allow(0, 1),
+          isChargeable: Joi.boolean().default(true)
         }
       },
       pre: [
@@ -53,6 +55,10 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        },
+        query: {
+          returnToCheckData: Joi.number().default(0).allow(0, 1),
+          isChargeable: Joi.boolean().default(true)
         }
       },
       pre: [
@@ -82,12 +88,14 @@ module.exports = {
           licenceId: VALID_GUID
         },
         query: {
-          form: VALID_GUID.optional()
+          form: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
   },
@@ -109,6 +117,9 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        },
+        query: {
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
@@ -136,13 +147,15 @@ module.exports = {
           licenceId: VALID_GUID
         },
         query: {
-          form: VALID_GUID.optional()
+          form: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
+        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
       ]
     }
   },
@@ -163,12 +176,16 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        },
+        query: {
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' }
+        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
+        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
       ]
     }
   },
@@ -191,10 +208,13 @@ module.exports = {
           licenceId: VALID_GUID
         },
         query: {
-          form: VALID_GUID.optional()
+          form: VALID_GUID.optional(),
+          invoiceAccountId: VALID_GUID.optional(),
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
+        { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
@@ -217,6 +237,9 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
+        },
+        query: {
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [
@@ -243,14 +266,13 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
-        },
-        query: {
-          form: VALID_GUID.optional()
         }
       },
       pre: [
+        { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' }
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
   },
@@ -271,9 +293,32 @@ module.exports = {
       validate: {
         params: {
           licenceId: VALID_GUID
-        },
-        query: {
-          form: VALID_GUID.optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
+      ]
+    }
+  },
+
+  getCancelData: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/cancel',
+    handler: controller.getCancelData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
         }
       },
       pre: [
@@ -282,5 +327,56 @@ module.exports = {
       ]
     }
   },
-  ...Object.values(chargeElementRoutes)
+
+  postCancelData: {
+    method: 'POST',
+    path: '/licences/{licenceId}/charge-information/cancel',
+    handler: controller.postCancelData,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
+  },
+
+  getSubmitted: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/submitted',
+    handler: controller.getSubmitted,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          licenceId: VALID_GUID
+        },
+        query: {
+          chargeable: Joi.boolean().default(false).optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ]
+    }
+  }
 };

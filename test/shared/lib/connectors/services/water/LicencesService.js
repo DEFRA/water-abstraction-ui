@@ -15,6 +15,7 @@ experiment('services/water/LicencesService', () => {
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get').resolves();
     sandbox.stub(serviceRequest, 'patch').resolves();
+    sandbox.stub(serviceRequest, 'post').resolves();
     service = new LicencesService('https://example.com/api');
   });
 
@@ -195,7 +196,8 @@ experiment('services/water/LicencesService', () => {
       expect(options).to.equal({
         body: {
           callingUserId: 'user-id'
-        } });
+        }
+      });
     });
   });
 
@@ -239,6 +241,30 @@ experiment('services/water/LicencesService', () => {
         documentRef: '123/123',
         date: '2000-01-01'
       });
+    });
+  });
+
+  experiment('.getDocumentByLicenceId', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.getDocumentByLicenceId('licence-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/document');
+    });
+  });
+
+  experiment('.createAgreement', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.createAgreement('licence-id', { some: 'data' });
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/agreements');
+    });
+  });
+
+  experiment('.getValidDocumentByLicenceIdAndDate', () => {
+    test('makes a get request to the expected URL', async () => {
+      await service.getValidDocumentByLicenceIdAndDate('licence-id', '2019-04-01');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/valid-documents/2019-04-01');
     });
   });
 });

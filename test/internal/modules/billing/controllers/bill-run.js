@@ -134,6 +134,8 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
 
+    sandbox.stub(services.water.billingBatches, 'deleteAllBillingData').resolves();
+
     sandbox.stub(batchService, 'getBatchList');
     sandbox.stub(batchService, 'getBatchInvoice').resolves({ id: 'invoice-account-id', accountNumber: 'A12345678A' });
     sandbox.stub(logger, 'info');
@@ -670,6 +672,20 @@ experiment('internal/modules/billing/controller', () => {
     test('back link is to the batch list page', async () => {
       const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal('/billing/batch/list');
+    });
+  });
+
+  experiment('.postDeleteAllBillingData', () => {
+    beforeEach(async () => {
+      await controller.postDeleteAllBillingData(request, h);
+    });
+
+    test('calls water service method to delete all data', async () => {
+      expect(services.water.billingBatches.deleteAllBillingData.callCount).to.equal(1);
+    });
+
+    test('redirects to the billing page', async () => {
+      expect(h.redirect.calledWith('/billing/batch/list')).to.be.true();
     });
   });
 });

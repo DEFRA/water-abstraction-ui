@@ -6,60 +6,64 @@
 
 {% block content %}
 
-{{ title(pageTitle) }}
-{{
+  {{ title(pageTitle) }}
+  {{
   govukButton({
     text: "Create a bill run",
     href: '/billing/batch/type'
   })
 }}
 
-{% if batches.length %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-  <h2 class="govuk-visually-hidden">Past and open bill runs</h2>
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Date</th>
-          <th class="govuk-table__header" scope="col">Region</th>
-          <th class="govuk-table__header" scope="col">Run type</th>
-          <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bills</th>
-          <th class="govuk-table__header govuk-table__header--numeric table__header--width-20" scope="col">Value</th>
-          <th class="govuk-table__header govuk-table__header--numeric table__header--width-15" scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        {% for batch in batches %}
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">
-            {% if batch.link %}
-              <a class="govuk-link" href="{{ batch.link }}">
-                {{ batch.dateCreated | date }}
-              </a>
-            {% else %}
-              {{ batch.dateCreated | date }}
-            {% endif %}
-          </td>
-          <td class="govuk-table__cell">{{ batch.region.displayName }}</td>
-          <td class="govuk-table__cell">{{ batch.batchType }}</td>
+  {% if batches.length %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-visually-hidden">Past and open bill runs</h2>
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Date</th>
+              <th class="govuk-table__header" scope="col">Region</th>
+              <th class="govuk-table__header" scope="col">Run type</th>
+              <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bills</th>
+              <th class="govuk-table__header govuk-table__header--numeric table__header--width-20" scope="col">Value</th>
+              <th class="govuk-table__header govuk-table__header--numeric table__header--width-15" scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for batch in batches %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  {% if batch.link %}
+                    <a class="govuk-link" href="{{ batch.link }}">
+                      {{ batch.dateCreated | date }}
+                    </a>
+                  {% else %}
+                    {{ batch.dateCreated | date }}
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell">{{ batch.region.displayName }}</td>
+                <td class="govuk-table__cell">{{ batch.batchType }}</td>
 
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount | defaultTo('-') }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">
-            {% if batch.status == 'error' %}
-              <span>-</span>
-            {% else %}
-              {{ chargeOrDash(batch.totals.netTotal, true) }}
-            {% endif %}
-          </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">{{ batch.billCount | defaultTo('-') }}</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                  {% if batch.status == 'error' %}
+                    <span>-</span>
+                  {% else %}
+                    {{ chargeOrDash(batch.totals.netTotal, true) }}
+                  {% endif %}
+                </td>
 
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {{ paginate(pagination, '/billing/batch/list') }}
-   </div>
-</div>
-{% endif %}
+                <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {{ paginate(pagination, '/billing/batch/list') }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if form %}
+    {{ formRender(form) }}
+  {% endif %}
 {% endblock %}

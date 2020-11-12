@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
-const confirmForm = require('../forms/confirm-form');
+const confirmForm = require('shared/lib/forms/confirm-form');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
@@ -202,7 +202,7 @@ const getRemoveLicence = async (request, h) => {
 
   // Confirm form
   const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/remove`;
-  const form = confirmForm(request, action, 'Remove licence');
+  const form = confirmForm.form(request, 'Remove licence', action);
 
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
@@ -232,7 +232,7 @@ const getApproveReview = (request, h) => {
   const { batch } = request.pre;
 
   const action = `/billing/batch/${batch.id}/approve-review`;
-  const form = confirmForm(request, action, 'Confirm');
+  const form = confirmForm.form(request, 'Confirm', action);
 
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,

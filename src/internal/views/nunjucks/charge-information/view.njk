@@ -57,21 +57,24 @@ formErrorSummary %}
           {{ summaryListRow('End date', chargeVersion.dateRange.endDate | date) }}
         {% endif %}
 
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Billing account</dt>
-          <dd class="govuk-summary-list__value">
-            {{ chargeVersion.invoiceAccount.accountNumber }}
-            <br>
-            {{ address(invoiceAccountAddress.address) }}
-          </dd>
-          {% if isEditable %}
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+        {% if chargeVersion.invoiceAccount %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Billing account</dt>
+            <dd class="govuk-summary-list__value">
+              {{ chargeVersion.invoiceAccount.accountNumber }}
+              <br>
+              {{ address(invoiceAccountAddress.address) }}
             </dd>
-          {% endif %}
-        </div>
+            {% if isEditable %}
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+              </dd>
+            {% endif %}
+          </div>
 
-        {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+          {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+        {% endif %}
+
       </dl>
     </section>
 

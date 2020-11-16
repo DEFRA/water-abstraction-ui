@@ -216,6 +216,7 @@ module.exports = {
       pre: [
         { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
@@ -245,7 +246,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' }
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
+        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' }
       ]
     }
   },

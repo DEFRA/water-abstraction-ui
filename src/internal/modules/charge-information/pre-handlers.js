@@ -107,6 +107,17 @@ const loadLicencesWithWorkflowsInProgress = async request => {
   }
 };
 
+const loadChargeVersions = async request => {
+  const { licenceId } = request.params;
+  try {
+    const chargeVersions = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
+    return chargeVersions.filter(cv => (cv.status === 'current' || cv.status === 'superseded'))
+      .sort((rowA, rowB) => new Date(rowB.dateRange.startDate) - new Date(rowA.dateRange.startDate));
+  } catch (err) {
+    return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);
+  };
+};
+
 const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
   try {
@@ -185,6 +196,7 @@ const saveInvoiceAccount = async request => {
 exports.loadBillingAccounts = loadBillingAccounts;
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
+exports.loadChargeVersions = loadChargeVersions;
 exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;

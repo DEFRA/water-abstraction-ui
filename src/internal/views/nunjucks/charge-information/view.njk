@@ -168,6 +168,12 @@ formErrorSummary %}
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-bottom-9">
         {{ title(pageTitle, caption, null, isXlHeading) }}
+        {% if editChargeVersionWarning %}
+          {{ govukWarningText({
+            text: "You've entered a date that will make older charge information invalid.",
+            iconFallbackText: "Warning"
+          }) }}
+        {% endif %}
         {% if chargeVersion.status %}
           {{ badge(chargeVersion | chargeVersionBadge(true)) }}
         {% endif %}

@@ -6,15 +6,9 @@ class ChargeVersionsService extends ServiceClient {
    * @param {String} licenceRef The licence id
    * @return {Promise} resolves with the charge versions data
    */
-  getChargeVersionsByLicenceRef (licenceRef) {
-    const url = this.joinUrl('charge-versions');
-    const options = {
-      qs: {
-        licenceRef
-      }
-    };
-
-    return this.serviceRequest.get(url, options);
+  getChargeVersionsByLicenceId (licenceId) {
+    const url = this.joinUrl('charge-versions/licence', licenceId);
+    return this.serviceRequest.get(url);
   };
 
   /**

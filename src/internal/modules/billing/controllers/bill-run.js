@@ -6,7 +6,6 @@ const moment = require('moment');
 const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 
-const confirmForm = require('../forms/confirm-form');
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
 const services = require('internal/lib/connectors/services');
 const batchService = require('../services/batch-service');
@@ -14,8 +13,13 @@ const transactionsCSV = require('../services/transactions-csv');
 const csv = require('internal/lib/csv-download');
 const { logger } = require('internal/logger');
 const mappers = require('../lib/mappers');
+const { featureToggles } = require('../../../config');
+
+const confirmForm = require('shared/lib/forms/confirm-form');
 
 const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
+
+const BATCH_LIST_ROUTE = '/billing/batch/list';
 
 /**
  * Shows a batch with its list of invoices
@@ -37,7 +41,7 @@ const getBillingBatchSummary = async (request, h) => {
     errors: mappers.mapBatchLevelErrors(batch, invoices),
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
-    back: request.query.back && '/billing/batch/list'
+    back: request.query.back && BATCH_LIST_ROUTE
   });
 };
 
@@ -74,7 +78,11 @@ const getBillingBatchList = async (request, h) => {
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
     batches: data.map(mappers.mapBatchListRow),
-    pagination
+    pagination,
+    form: featureToggles.deleteAllBillingData && confirmForm.form(request, 'Delete all bills and charge information', {
+      action: '/billing/batch/delete-all-data',
+      isWarning: true
+    })
   });
 };
 
@@ -101,7 +109,7 @@ const postBillingBatchCancel = async (request, h) => {
   } catch (err) {
     logger.info(`Did not successfully delete batch ${batchId}`);
   }
-  return h.redirect('/billing/batch/list');
+  return h.redirect(BATCH_LIST_ROUTE);
 };
 
 const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm');
@@ -132,10 +140,8 @@ const getTransactionsCSV = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchDeleteInvoice = async (request, h) => {
-  const { batchId, invoiceId } = request.params;
+  const { batchId } = request.params;
   const { batch, invoice } = request.pre;
-
-  const action = `/billing/batch/${batchId}/delete-invoice/${invoiceId}`;
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
 
@@ -144,7 +150,7 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
     pageTitle: `You're about to remove this bill from the ${batchType} bill run`,
     batch,
     invoice,
-    form: confirmForm(request, action, 'Remove bill'),
+    form: confirmForm.form(request, 'Remove bill'),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });
@@ -196,6 +202,14 @@ const getBillingBatchEmpty = async (request, h) => {
   });
 };
 
+/**
+ * Deletes all billing data
+ */
+const postDeleteAllBillingData = async (request, h) => {
+  await services.water.billingBatches.deleteAllBillingData();
+  return h.redirect(BATCH_LIST_ROUTE);
+};
+
 exports.getBillingBatchList = getBillingBatchList;
 exports.getBillingBatchSummary = getBillingBatchSummary;
 exports.getBillingBatchInvoice = getBillingBatchInvoice;
@@ -213,3 +227,5 @@ exports.getTransactionsCSV = getTransactionsCSV;
 
 exports.getBillingBatchProcessing = getBillingBatchProcessing;
 exports.getBillingBatchEmpty = getBillingBatchEmpty;
+
+exports.postDeleteAllBillingData = postDeleteAllBillingData;

@@ -13,7 +13,8 @@
 {% macro agreementActions(agreement, licenceId, isChargingUser) %}
   {% if isChargingUser and featureToggles.manageAgreements %}
     {% if not agreement.dateRange.endDate %}
-      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a> |
+      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a>
+      |
     {% endif %}
     <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
   {% endif %}
@@ -31,7 +32,8 @@
     </p>
     <p>Status:
       {{ badge(chargeVersion | chargeVersionBadge) }}</p>
-    <p>Action: {{ chargeVersionLink(chargeVersion) }}</p>
+    <p>Action:
+      {{ chargeVersionLink(chargeVersion) }}</p>
   </div>
 {% endmacro %}
 
@@ -61,7 +63,9 @@
     <td class="govuk-table__cell">
       {{ chargeVersion.dateRange.endDate | date }}
     </td>
-    <td class="govuk-table__cell"></td>
+    <td class="govuk-table__cell">
+      {{ chargeVersion.changeReason.description }}
+    </td>
     <td class="govuk-table__cell">
       {{ badge(chargeVersion | chargeVersionBadge) }}
     </td>
@@ -114,19 +118,11 @@
     </tbody>
   </table>
 
-  <a href="/licences/{{ licenceId }}/charge-information/create"
-    role="button"
-    draggable="false"
-    class="govuk-button govuk-!-margin-right-3"
-    data-module="govuk-button">
+  <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
     Setup a new charge
   </a>
 
-  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1"
-    role="button"
-    draggable="false"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button">
+  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
     Make licence non-chargeable
   </a>
 {% else %}

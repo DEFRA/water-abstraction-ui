@@ -22,7 +22,9 @@ formErrorSummary %}
 {% endmacro %}
 
 {% macro timeLimitedPeriod(period) %}
-  {{ period.startDate | date }} to {{ period.endDate | date }}
+  {{ period.startDate | date }}
+  to
+  {{ period.endDate | date }}
 {% endmacro %}
 
 {% macro changeLink(urlTail, chargeElementId) %}
@@ -40,10 +42,10 @@ formErrorSummary %}
 {% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
   <div class="govuk-grid-column-full">
     {% if chargeVersion.status == 'changes_requested' and chargeVersion.approverComments %}
-        <section class="govuk-!-margin-bottom-7">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Change Request</h2>
-            <p style="padding-top: 1em; padding-bottom: 1em;">{{ chargeVersion.approverComments }}</p>
-        </section>
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Change Request</h2>
+        <p style="padding-top: 1em; padding-bottom: 1em;">{{ chargeVersion.approverComments }}</p>
+      </section>
     {% endif %}
     <section class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Charge information</h2>
@@ -51,27 +53,35 @@ formErrorSummary %}
         {{ summaryListRow('Reason', chargeVersion.changeReason.description, changeLink('/create'))}}
         {{ summaryListRow('Start date', chargeVersion.dateRange.startDate | date, changeLink('/start-date'))}}
 
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Billing account</dt>
-          <dd class="govuk-summary-list__value">
-            {{ chargeVersion.invoiceAccount.accountNumber }}
-            <br>
-            {{ address(invoiceAccountAddress.address) }}
-          </dd>
-          {% if isEditable %}
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
-            </dd>
-          {% endif %}
-        </div>
+        {% if chargeVersion.dateRange.endDate %}
+          {{ summaryListRow('End date', chargeVersion.dateRange.endDate | date) }}
+        {% endif %}
 
-        {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+        {% if chargeVersion.invoiceAccount %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Billing account</dt>
+            <dd class="govuk-summary-list__value">
+              {{ chargeVersion.invoiceAccount.accountNumber }}
+              <br>
+              {{ address(invoiceAccountAddress.address) }}
+            </dd>
+            {% if isEditable %}
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ changeLink('/billing-account') }}">Change</a>
+              </dd>
+            {% endif %}
+          </div>
+
+          {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+        {% endif %}
+
       </dl>
     </section>
 
     {% for chargeElement in chargeVersion.chargeElements %}
       <section class="govuk-!-margin-bottom-7">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element {{loop.index}}</h2>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element
+          {{loop.index}}</h2>
         {% for validationWarning in chargeElement.validationWarnings %}
           {{
             govukWarningText({
@@ -109,7 +119,7 @@ formErrorSummary %}
         {% if isEditable %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-              <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
+              <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate="novalidate">
                 <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
                 {% if loop.last %}
                   {{ govukButton({
@@ -174,23 +184,23 @@ formErrorSummary %}
   {% if isEditable %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate>
+        <form method="post" action="/licences/{{licenceId}}/charge-information/check" novalidate="novalidate">
           <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
           {% if chargeVersion.status == 'changes_requested' %}
-              {{ govukButton({
+            {{ govukButton({
                 text: 'Update and send back for review',
                 name: 'buttonAction',
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
           {% else %}
-              {{ govukButton({
+            {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',
                   value: 'confirm',
                   classes: 'govuk-!-margin-right-6'
                 }) }}
-            {% endif %}
+          {% endif %}
           {{ govukButton({
             text: 'Cancel charge information',
             name: 'buttonAction',

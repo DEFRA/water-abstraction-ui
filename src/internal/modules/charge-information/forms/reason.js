@@ -12,8 +12,12 @@ const mapChoice = changeReason => ({
   label: changeReason.description
 });
 
+const isEnabledReason = changeReason => changeReason.isEnabledForNewChargeVersions;
+
 const getChoices = (changeReasons, isChargeable) => {
-  const choices = changeReasons.map(mapChoice);
+  const choices = changeReasons
+    .filter(isEnabledReason)
+    .map(mapChoice);
   const divider = [{ divider: 'or' }, { label: 'Make this licence non-chargeable', value: 'non-chargeable' }];
   if (isChargeable) {
     choices.push(...divider);

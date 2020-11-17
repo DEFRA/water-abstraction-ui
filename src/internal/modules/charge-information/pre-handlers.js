@@ -110,7 +110,7 @@ const loadLicencesWithWorkflowsInProgress = async request => {
 const loadChargeVersions = async request => {
   const { licenceId } = request.params;
   try {
-    const chargeVersions = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
+    const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
     return chargeVersions.filter(cv => (cv.status === 'current' || cv.status === 'superseded'))
       .sort((rowA, rowB) => new Date(rowB.dateRange.startDate) - new Date(rowA.dateRange.startDate));
   } catch (err) {

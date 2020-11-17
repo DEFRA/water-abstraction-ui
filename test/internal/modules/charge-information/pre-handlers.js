@@ -84,6 +84,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       ]
     });
 
+    sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({
+      data: [{ id: 'test-cv-id', status: 'current', dateRange: { startDate: '2010-04-01' } }]
+    });
+
     sandbox.stub(services.water.chargeVersions, 'getChargeVersion').resolves({
       id: 'test-charge-version-id',
       status: 'current'
@@ -463,6 +467,53 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
 
       test('rejects with the error', async () => {
         const func = () => preHandlers.loadChargeVersion(request);
+        const err = await expect(func()).to.reject();
+        expect(err.message).to.equal('Oh no!');
+      });
+    });
+  });
+
+  experiment('.loadChargeVersions', () => {
+    experiment('when data is found', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadChargeVersions(request);
+      });
+
+      test('the service method is called', async () => {
+        expect(
+          services.water.chargeVersions.getChargeVersionsByLicenceId.called
+        ).to.be.true();
+      });
+
+      test('resolves with reasons data', async () => {
+        expect(result).to.be.an.array().length(1);
+        expect(result[0].id).to.equal('test-cv-id');
+      });
+    });
+
+    experiment('when the data is not found', () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.chargeVersions.getChargeVersionsByLicenceId.rejects(err);
+        result = await preHandlers.loadChargeVersions(request);
+      });
+
+      test('resolves with a Boom 404 error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(404);
+        expect(result.message).to.equal('Cannot load charge versions for licence test-licence-id');
+      });
+    });
+
+    experiment('for other errors', () => {
+      beforeEach(async () => {
+        const err = new Error('Oh no!');
+        services.water.chargeVersions.getChargeVersionsByLicenceId.rejects(err);
+      });
+
+      test('rejects with the error', async () => {
+        const func = () => preHandlers.loadChargeVersions(request);
         const err = await expect(func()).to.reject();
         expect(err.message).to.equal('Oh no!');
       });

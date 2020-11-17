@@ -61,8 +61,7 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
       expect(radio.options.choices[0].label).to.equal('Yes');
       expect(radio.options.choices[1].label).to.equal('No');
       expect(radio.options.choices[2].divider).to.equal('or');
-      expect(radio.options.choices[3].label).to.equal('Use charge information valid from 19 March 2001');
-      expect(radio.options.choices[4].label).to.equal('Use charge information valid from 19 June 2015');
+      expect(radio.options.choices[3].label).to.equal('Use charge information valid from 19 June 2015');
     });
   });
 

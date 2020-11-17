@@ -29,7 +29,7 @@ const useAbstractionDataForm = request => {
   ];
 
   if (chargeVersions.length > 0) {
-    choices.push(...getAddionalChoices(chargeVersions));
+    choices.push(...getAddionalChoices(chargeVersions.filter(cv => cv.status === 'current')));
   }
 
   const action = getActionUrl(request, routing.getUseAbstractionData(licence.id));

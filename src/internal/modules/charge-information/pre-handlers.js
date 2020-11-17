@@ -111,7 +111,7 @@ const loadChargeVersions = async request => {
   const { licenceId } = request.params;
   try {
     const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
-    return sortBy(chargeVersions.filter(cv => cv.status === 'current'), ['dateRange.startDate', 'versionNumber']);
+    return sortBy(chargeVersions, ['dateRange.startDate', 'versionNumber']);
   } catch (err) {
     return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);
   };

@@ -255,8 +255,10 @@ experiment('internal/modules/charge-information/routes', () => {
       expect(routes.getUseAbstractionData.options.pre[0].method).to.equal(preHandlers.saveInvoiceAccount);
       expect(routes.getUseAbstractionData.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.getUseAbstractionData.options.pre[1].assign).to.equal('draftChargeInformation');
-      expect(routes.getUseAbstractionData.options.pre[2].method).to.equal(preHandlers.loadLicence);
-      expect(routes.getUseAbstractionData.options.pre[2].assign).to.equal('licence');
+      expect(routes.getUseAbstractionData.options.pre[2].method).to.equal(preHandlers.loadChargeVersions);
+      expect(routes.getUseAbstractionData.options.pre[2].assign).to.equal('chargeVersions');
+      expect(routes.getUseAbstractionData.options.pre[3].method).to.equal(preHandlers.loadLicence);
+      expect(routes.getUseAbstractionData.options.pre[3].assign).to.equal('licence');
     });
   });
 

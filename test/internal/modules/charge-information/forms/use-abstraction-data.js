@@ -15,7 +15,8 @@ const createRequest = () => ({
     licence: {
       id: 'test-licence-id'
     },
-    draftChargeInformation: {}
+    draftChargeInformation: {},
+    chargeVersions: []
   }
 });
 
@@ -62,17 +63,17 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
 
     experiment('useAbstractionData', () => {
       test('can be true', async () => {
-        const result = schema().useAbstractionData.validate(true);
+        const result = schema(createRequest()).useAbstractionData.validate('yes');
         expect(result.error).to.not.exist();
       });
 
       test('can be true', async () => {
-        const result = schema().useAbstractionData.validate(false);
+        const result = schema(createRequest()).useAbstractionData.validate('no');
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a unexpected string be true', async () => {
-        const result = schema().useAbstractionData.validate('pizza');
+        const result = schema(createRequest()).useAbstractionData.validate('pizza');
         expect(result.error).to.exist();
       });
     });

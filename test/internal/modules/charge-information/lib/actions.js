@@ -109,14 +109,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         pre: {
           defaultCharges: [
             { source: 'unsupported' }
-          ]
+          ],
+          chargeVersions: [ { chargeElements: [{ id: 'test-id' }] } ]
         }
       };
     });
 
     experiment('when the existing data is used', () => {
       test('the abstraction data is added to the action payload', async () => {
-        const formValues = { useAbstractionData: true };
+        const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
@@ -124,7 +125,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       });
 
       test('the charge elements are assigned a guid id', async () => {
-        const formValues = { useAbstractionData: true };
+        const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
         const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
         expect(action.payload[0].id).to.match(guidRegex);
@@ -133,7 +134,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
     experiment('when the existing data is not used', () => {
       test('the action payload is set to false', async () => {
-        const formValues = { useAbstractionData: false };
+        const formValues = { useAbstractionData: 'no' };
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);

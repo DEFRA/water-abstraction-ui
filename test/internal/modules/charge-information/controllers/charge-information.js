@@ -83,7 +83,8 @@ const createRequest = () => ({
           address
         }]
       }
-    ]
+    ],
+    chargeVersions: []
   },
   yar: {
     get: sandbox.stub()
@@ -793,12 +794,12 @@ experiment('internal/modules/charge-information/controller', () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          useAbstractionData: true
+          useAbstractionData: 'yes'
         };
         await controller.postUseAbstractionData(request, h);
       });
 
-      test('the draft charge information is updated with the reason', async () => {
+      test('the draft charge information is updated with the abstraction data', async () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);

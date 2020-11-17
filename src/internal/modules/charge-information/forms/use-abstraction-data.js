@@ -29,7 +29,10 @@ const useAbstractionDataForm = request => {
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' }
   ];
-  if (chargeVersions.length > 0) { choices.push(...getAddionalChoices(chargeVersions)); }
+
+  if (chargeVersions.length > 0) {
+    choices.push(...getAddionalChoices(chargeVersions));
+  }
 
   const action = getActionUrl(request, routing.getUseAbstractionData(licence.id));
 

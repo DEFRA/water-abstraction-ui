@@ -84,7 +84,10 @@ const createRequest = () => ({
         }]
       }
     ],
-    chargeVersions: []
+    chargeVersions: [
+      { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
+      { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
+    ]
   },
   yar: {
     get: sandbox.stub()
@@ -803,6 +806,30 @@ experiment('internal/modules/charge-information/controller', () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
+        expect(data.chargeElements[0]).to.include('id');
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/check'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a an existing charge version option is selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          useAbstractionData: 'test-cv-id-1'
+        };
+        await controller.postUseAbstractionData(request, h);
+      });
+
+      test('the draft charge information is updated with the charge version data', async () => {
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.chargeElements[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
         expect(data.chargeElements[0]).to.include('id');
       });
 

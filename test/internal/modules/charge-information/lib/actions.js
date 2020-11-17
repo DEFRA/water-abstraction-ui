@@ -110,12 +110,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           defaultCharges: [
             { source: 'unsupported' }
           ],
-          chargeVersions: [ { chargeElements: [{ id: 'test-id' }] } ]
+          chargeVersions: [
+            { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
+            { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
+          ]
         }
       };
     });
 
-    experiment('when the existing data is used', () => {
+    experiment('when the existing abstraction data is used', () => {
       test('the abstraction data is added to the action payload', async () => {
         const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
@@ -132,13 +135,30 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       });
     });
 
-    experiment('when the existing data is not used', () => {
+    experiment('when the abstraction data is not used', () => {
       test('the action payload is set to false', async () => {
         const formValues = { useAbstractionData: 'no' };
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
         expect(action.payload).to.equal([]);
+      });
+    });
+
+    experiment('when the existing charge version data is used', () => {
+      test('the charge version data is added to the action payload', async () => {
+        const formValues = { useAbstractionData: 'test-cv-id-1' };
+        const action = actions.setAbstractionData(request, formValues);
+
+        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
+        expect(action.payload[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
+      });
+
+      test('the charge elements are assigned a guid id', async () => {
+        const formValues = { useAbstractionData: 'test-cv-id-1' };
+        const action = actions.setAbstractionData(request, formValues);
+        const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
+        expect(action.payload[0].id).to.match(guidRegex);
       });
     });
   });

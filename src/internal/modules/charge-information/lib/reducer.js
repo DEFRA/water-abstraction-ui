@@ -1,5 +1,3 @@
-'use-strict';
-
 const { ACTION_TYPES } = require('./actions');
 
 const reducer = (state, action) => {

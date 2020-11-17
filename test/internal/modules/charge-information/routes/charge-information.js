@@ -293,6 +293,10 @@ experiment('internal/modules/charge-information/routes', () => {
       expect(routes.postUseAbstractionData.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.postUseAbstractionData.options.pre[1].method).to.equal(preHandlers.loadLicence);
       expect(routes.postUseAbstractionData.options.pre[1].assign).to.equal('licence');
+      expect(routes.postUseAbstractionData.options.pre[2].method).to.equal(preHandlers.loadDefaultCharges);
+      expect(routes.postUseAbstractionData.options.pre[2].assign).to.equal('defaultCharges');
+      expect(routes.postUseAbstractionData.options.pre[3].method).to.equal(preHandlers.loadChargeVersions);
+      expect(routes.postUseAbstractionData.options.pre[3].assign).to.equal('chargeVersions');
     });
   });
 

@@ -101,7 +101,7 @@ const loadLicencesWithoutChargeVersions = async request => {
 const loadLicencesWithWorkflowsInProgress = async request => {
   try {
     const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
-    return licencesWithWorkflowsInProgress.data.sort((rowA, rowB) => new Date(rowB.startDate) - new Date(rowA.startDate));
+    return sortBy(licencesWithWorkflowsInProgress.data, 'startDate');
   } catch (err) {
     return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
   }
@@ -111,8 +111,7 @@ const loadChargeVersions = async request => {
   const { licenceId } = request.params;
   try {
     const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
-    return chargeVersions.filter(cv => (cv.status === 'current' || cv.status === 'superseded'))
-      .sort((rowA, rowB) => new Date(rowB.dateRange.startDate) - new Date(rowA.dateRange.startDate));
+    return sortBy(chargeVersions.filter(cv => cv.status === 'current'), ['dateRange.startDate', 'versionNumber']);
   } catch (err) {
     return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);
   };

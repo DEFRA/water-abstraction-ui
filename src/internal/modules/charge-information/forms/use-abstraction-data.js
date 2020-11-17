@@ -11,12 +11,10 @@ const { getActionUrl } = require('../lib/form-helpers');
 const getAddionalChoices = (chargeVersions) => {
   const choices = [{ divider: 'or' }];
   chargeVersions.map(cv => {
-    if (cv.status === 'current' || cv.status === 'superseded') {
-      choices.push(
-        { value: cv.id,
-          label: `Use charge information valid from ${moment(cv.dateRange.startDate).format('D MMMM YYYY')}`
-        });
-    }
+    choices.push(
+      { value: cv.id,
+        label: `Use charge information valid from ${moment(cv.dateRange.startDate).format('D MMMM YYYY')}`
+      });
   });
   return choices;
 };

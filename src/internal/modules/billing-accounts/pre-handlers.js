@@ -11,8 +11,7 @@ const errorHandler = (err, message) => {
 const loadBillingAccount = async request => {
   const { billingAccountId } = request.params;
   try {
-    const billingAccount = await water.billingAccounts.getBillingAccount(billingAccountId);
-    return billingAccount;
+    return water.billingAccounts.getBillingAccount(billingAccountId);
   } catch (err) {
     return errorHandler(err, `Cannot load billing account ${billingAccountId}`);
   }

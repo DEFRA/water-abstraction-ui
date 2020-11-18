@@ -53,7 +53,7 @@ experiment('internal/modules/billing-accounts/routes', () => {
 
     test('limits scope to users with billing role', async () => {
       expect(routes.getBillingAccount.options.auth.scope)
-        .to.only.include([scope.billing]);
+        .to.only.include([scope.manageBillingAccounts]);
     });
 
     test('uses the correct handler', async () => {

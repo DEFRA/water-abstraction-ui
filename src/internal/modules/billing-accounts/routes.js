@@ -2,8 +2,8 @@ const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 const Joi = require('@hapi/joi');
 const { VALID_GUID } = require('shared/lib/validators');
-const { billing } = require('internal/lib/constants').scope;
-const allowedScopes = [billing];
+const { manageBillingAccounts } = require('internal/lib/constants').scope;
+const allowedScopes = [manageBillingAccounts];
 
 module.exports = {
   getBillingAccount: {

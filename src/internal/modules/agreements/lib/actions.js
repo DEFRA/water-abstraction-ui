@@ -17,6 +17,7 @@ const setDateSigned = (request, formValues) => ({
   type: ACTION_TYPES.setDateSigned,
   payload: {
     dateSigned: formValues.dateSigned,
+    isDateSignedKnown: formValues.isDateSignedKnown,
     licenceStartDate: request.pre.licence.startDate
   }
 });

@@ -20,7 +20,7 @@ const createError = code => {
 
 experiment('internal/modules/billing-accounts/pre-handlers', () => {
   beforeEach(() => {
-    sandbox.stub(services.water.billingAccounts, 'getBillingAccount').resolves({
+    sandbox.stub(services.water.invoiceAccounts, 'getInvoiceAccount').resolves({
       id: 'test-billing-account-id',
       company: {
         name: 'test-company'
@@ -43,7 +43,7 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
     });
 
     test('gets the billing account', () => {
-      const [id] = services.water.billingAccounts.getBillingAccount.lastCall.args;
+      const [id] = services.water.invoiceAccounts.getInvoiceAccount.lastCall.args;
       expect(id).to.equal('test-billing-account-id');
     });
 
@@ -58,7 +58,7 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
 
     experiment('when the billing account is not found', () => {
       beforeEach(async () => {
-        services.water.billingAccounts.getBillingAccount.throws(createError(404));
+        services.water.invoiceAccounts.getInvoiceAccount.throws(createError(404));
         result = await preHandlers.loadBillingAccount(request);
       });
 
@@ -71,7 +71,7 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
 
     experiment('when an unexpected error is thrown', () => {
       beforeEach(() => {
-        services.water.billingAccounts.getBillingAccount.throws(createError(500));
+        services.water.invoiceAccounts.getInvoiceAccount.throws(createError(500));
       });
 
       test('the error is thrown', async () => {

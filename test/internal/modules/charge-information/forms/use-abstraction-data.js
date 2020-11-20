@@ -93,10 +93,10 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
         const request = createRequest();
         request.pre.chargeVersions = [
           { id: 'test-cv-id-1', status: 'superseded', dateRange: { startDate: '2001-03-19' } },
-          { id: 'test-cv-id-2', status: 'current', dateRange: { startDate: '2015-06-19' } },
+          { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
           { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
         ];
-        const result = schema(request).useAbstractionData.validate('test-cv-id-1');
+        const result = schema(request).useAbstractionData.validate('test-cv-id-3');
         expect(result.error).to.not.exist();
       });
 

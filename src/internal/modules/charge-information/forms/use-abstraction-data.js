@@ -9,15 +9,20 @@ const routing = require('../lib/routing');
 const { getActionUrl } = require('../lib/form-helpers');
 
 const getAddionalChoices = (chargeVersions) => {
-  const choices = [{ divider: 'or' }];
-  chargeVersions.map(cv => {
-    choices.push(
-      { value: cv.id,
-        label: `Use charge information valid from ${moment(cv.dateRange.startDate).format('D MMMM YYYY')}`
-      });
-  });
-  return choices;
+  if (chargeVersions.length > 0) {
+    const choices = [{ divider: 'or' }];
+    chargeVersions.map(cv => {
+      choices.push(
+        { value: cv.id,
+          label: `Use charge information valid from ${moment(cv.dateRange.startDate).format('D MMMM YYYY')}`
+        });
+    });
+    return choices;
+  }
+  return [];
 };
+
+const filterChargeVersions = chargeVersions => chargeVersions.filter(cv => cv.status === 'current');
 
 const useAbstractionDataForm = request => {
   const { csrfToken } = request.view;
@@ -25,12 +30,9 @@ const useAbstractionDataForm = request => {
   const useAbstractionData = get(draftChargeInformation, 'abstractionData');
   const choices = [
     { value: 'yes', label: 'Yes' },
-    { value: 'no', label: 'No' }
+    { value: 'no', label: 'No' },
+    ...getAddionalChoices(filterChargeVersions(chargeVersions))
   ];
-
-  if (chargeVersions.length > 0) {
-    choices.push(...getAddionalChoices(chargeVersions.filter(cv => cv.status === 'current')));
-  }
 
   const action = getActionUrl(request, routing.getUseAbstractionData(licence.id));
 
@@ -53,7 +55,7 @@ const useAbstractionDataForm = request => {
 
 const useAbstractionDataSchema = (request) => {
   const { chargeVersions } = request.pre;
-  const validIds = chargeVersions.map(cv => (cv.status === 'current' || cv.status === 'superseded') ? cv.id : null);
+  const validIds = filterChargeVersions(chargeVersions).map(cv => (cv.status === 'current') ? cv.id : null);
   return {
     csrf_token: Joi.string().uuid().required(),
     useAbstractionData: Joi.string().valid(['yes', 'no', ...validIds]).required()

@@ -821,7 +821,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          useAbstractionData: 'test-cv-id-1'
+          useAbstractionData: 'test-cv-id-2'
         };
         await controller.postUseAbstractionData(request, h);
       });
@@ -829,8 +829,9 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the draft charge information is updated with the charge version data', async () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
-        expect(data.chargeElements[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
-        expect(data.chargeElements[0]).to.include('id');
+        expect(data.chargeElements[0].source).to.equal(request.pre.chargeVersions[1].chargeElements[0].source);
+        const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
+        expect(data.chargeElements[0].id).to.match(guidRegex);
       });
 
       test('the user is redirected to the expected page', async () => {

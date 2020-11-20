@@ -116,9 +116,9 @@ const getUseAbstractionData = async (request, h) => {
 */
 const handleValidAbstractionDataRedirect = (request, formValues) => {
   const { licenceId } = request.params;
-  return formValues.useAbstractionData
-    ? routing.getCheckData(licenceId)
-    : routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_STEPS.purpose);
+  return formValues.useAbstractionData === 'no'
+    ? routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_STEPS.purpose)
+    : routing.getCheckData(licenceId);
 };
 
 const postUseAbstractionData = createPostHandler(

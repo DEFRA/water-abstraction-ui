@@ -57,6 +57,7 @@ experiment('internal/modules/agreements/controller', () => {
   beforeEach(() => {
     sandbox.stub(water.agreements, 'deleteAgreement');
     sandbox.stub(water.agreements, 'endAgreement');
+    sandbox.stub(water.licences, 'createAgreement');
     sandbox.stub(helpers, 'endAgreementSessionManager').returns({ endDate: '2020-01-01' });
     sandbox.stub(logger, 'info');
   });
@@ -369,6 +370,9 @@ experiment('internal/modules/agreements/controller', () => {
 
     experiment('.getDateSigned', () => {
       beforeEach(async () => {
+        request.pre.flowState = {
+          isDateSignedKnown: false
+        };
         await controller.getDateSigned(request, h);
       });
 
@@ -398,12 +402,32 @@ experiment('internal/modules/agreements/controller', () => {
         expect(form).to.be.an.object();
       });
 
-      test('the form has a date field for the date signed', async () => {
-        const [, { form }] = h.view.lastCall.args;
-        const field = form.fields.find(field => field.name === 'dateSigned');
+      experiment('the form has', () => {
+        let field;
+        beforeEach(() => {
+          const [, { form }] = h.view.lastCall.args;
+          field = form.fields.find(field => field.name === 'isDateSignedKnown');
+        });
 
-        expect(field.options.label).to.equal('Enter date agreement was signed');
-        expect(field.options.widget).to.equal('date');
+        test('2 radio options for yes/no', async () => {
+          expect(field.options.widget).to.equal('radio');
+          expect(field.options.label).to.equal('Do you know the date the agreement was signed?');
+
+          expect(field.options.choices.length).to.equal(2);
+
+          expect(field.options.choices[0].label).to.equal('Yes');
+          expect(field.options.choices[0].value).to.equal(true);
+
+          expect(field.options.choices[1].label).to.equal('No');
+          expect(field.options.choices[1].value).to.equal(false);
+        });
+
+        test('a date field for the date signed as a child of the first radio', async () => {
+          const dateField = field.options.choices[0].fields[0];
+
+          expect(dateField.name).to.equal('dateSigned');
+          expect(dateField.options.widget).to.equal('date');
+        });
       });
     });
 
@@ -506,6 +530,112 @@ experiment('internal/modules/agreements/controller', () => {
           expect(isLicenceStartDate).to.be.false();
           expect(isFinancialYearStartDate).to.be.false();
         });
+      });
+    });
+
+    experiment('.getCheckAnswers', () => {
+      beforeEach(async () => {
+        request.pre.flowState = {
+          code: 'S127',
+          dateSigned: '2020-05-03',
+          startDate: '2020-04-01'
+        };
+        await controller.getCheckAnswers(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        expect(h.view.calledWith(
+          'nunjucks/agreements/check-answers'
+        )).to.be.true();
+      });
+
+      test('sets the caption in the view', async () => {
+        const [, { caption }] = h.view.lastCall.args;
+        expect(caption).to.equal(`Licence 01/234/ABC`);
+      });
+
+      test('sets the page title in the view', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal(`Check agreement details`);
+      });
+
+      test('sets the correct back link in the view', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal(`/licences/${licenceId}/agreements/check-start-date`);
+      });
+
+      test('defines a form', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form).to.be.an.object();
+      });
+
+      experiment('sets the answers:', () => {
+        test('agreement is set correctly', async () => {
+          const [, { answers }] = h.view.lastCall.args;
+          expect(answers[0].label).to.equal('Agreement');
+          expect(answers[0].value).to.equal('Two-part tariff (S127)');
+          expect(answers[0].link).to.equal(`/licences/${licenceId}/agreements/select-type?check=1`);
+        });
+
+        test('date signed is set correctly', async () => {
+          const [, { answers }] = h.view.lastCall.args;
+          expect(answers[1].label).to.equal('Date signed');
+          expect(answers[1].value).to.equal('3 May 2020');
+          expect(answers[1].link).to.equal(`/licences/${licenceId}/agreements/date-signed?check=1`);
+        });
+
+        test('date signed value is set correctly when no date signed provided', async () => {
+          delete request.pre.flowState.dateSigned;
+          await controller.getCheckAnswers(request, h);
+          const [, { answers }] = h.view.lastCall.args;
+          expect(answers[1].value).to.equal('Not known');
+        });
+
+        test('start date is set correctly', async () => {
+          const [, { answers }] = h.view.lastCall.args;
+          expect(answers[2].label).to.equal('Start date');
+          expect(answers[2].value).to.equal('1 April 2020');
+          expect(answers[2].link).to.equal(`/licences/${licenceId}/agreements/check-start-date?check=1`);
+        });
+      });
+
+      test('the form has a submit button', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = form.fields.find(field => field.options.widget === 'button');
+
+        expect(field.options.label).to.equal('Submit');
+      });
+    });
+
+    experiment('.postCheckAnswers', () => {
+      beforeEach(async () => {
+        request.pre.flowState = {
+          code: 'S127',
+          dateSigned: '2020-05-03',
+          isDateSignedKnown: true,
+          startDate: '2020-04-01'
+        };
+        await controller.postCheckAnswers(request, h);
+      });
+
+      test('creates the agreement with flow state data, omitting isDateSignedKnown flag', () => {
+        const [id, data] = water.licences.createAgreement.lastCall.args;
+        expect(id).to.equal(licenceId);
+        expect(data).to.equal({
+          code: 'S127',
+          dateSigned: '2020-05-03',
+          startDate: '2020-04-01'
+        });
+      });
+
+      test('clears the session', () => {
+        const [key] = request.yar.clear.lastCall.args;
+        expect(key).to.equal(`licence.${licenceId}.create-agreement`);
+      });
+
+      test('redirects back to licence page', () => {
+        const [redirectPath] = h.redirect.lastCall.args;
+        expect(redirectPath).to.equal(`/licences/${documentId}#charge`);
       });
     });
   });

@@ -48,10 +48,12 @@ const createRequest = () => ({
     isChargeable: true,
     changeReasons: [{
       id: 'test-reason-1',
-      description: 'New licence'
+      description: 'New licence',
+      isEnabledForNewChargeVersions: true
     }, {
       id: 'test-reason-2',
-      description: 'Transfer'
+      description: 'Transfer',
+      isEnabledForNewChargeVersions: true
     }],
     draftChargeInformation: {
       chargeElements: [],

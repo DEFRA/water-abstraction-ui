@@ -48,10 +48,12 @@ const createRequest = () => ({
     isChargeable: true,
     changeReasons: [{
       id: 'test-reason-1',
-      description: 'New licence'
+      description: 'New licence',
+      isEnabledForNewChargeVersions: true
     }, {
       id: 'test-reason-2',
-      description: 'Transfer'
+      description: 'Transfer',
+      isEnabledForNewChargeVersions: true
     }],
     draftChargeInformation: {
       chargeElements: [],
@@ -83,6 +85,10 @@ const createRequest = () => ({
           address
         }]
       }
+    ],
+    chargeVersions: [
+      { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
+      { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
     ]
   },
   yar: {
@@ -793,16 +799,41 @@ experiment('internal/modules/charge-information/controller', () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          useAbstractionData: true
+          useAbstractionData: 'yes'
         };
         await controller.postUseAbstractionData(request, h);
       });
 
-      test('the draft charge information is updated with the reason', async () => {
+      test('the draft charge information is updated with the abstraction data', async () => {
         const [id, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
         expect(data.chargeElements[0]).to.include('id');
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/check'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a an existing charge version option is selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          useAbstractionData: 'test-cv-id-2'
+        };
+        await controller.postUseAbstractionData(request, h);
+      });
+
+      test('the draft charge information is updated with the charge version data', async () => {
+        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(data.chargeElements[0].source).to.equal(request.pre.chargeVersions[1].chargeElements[0].source);
+        const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
+        expect(data.chargeElements[0].id).to.match(guidRegex);
       });
 
       test('the user is redirected to the expected page', async () => {

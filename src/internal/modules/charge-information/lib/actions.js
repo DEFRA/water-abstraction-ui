@@ -60,13 +60,16 @@ const generateIds = chargeElements =>
   }));
 
 const setAbstractionData = (request, formValues) => {
-  const abstractionData = formValues.useAbstractionData
-    ? generateIds(request.pre.defaultCharges)
-    : [];
-
+  let chargeElements = [];
+  if (formValues.useAbstractionData === 'yes') {
+    chargeElements = generateIds(request.pre.defaultCharges);
+  } else if (formValues.useAbstractionData !== 'no') {
+    const chargeVersion = request.pre.chargeVersions.find(cv => cv.id === formValues.useAbstractionData);
+    chargeElements = generateIds(chargeVersion.chargeElements);
+  }
   return {
     type: ACTION_TYPES.setChargeElementData,
-    payload: abstractionData
+    payload: chargeElements
   };
 };
 

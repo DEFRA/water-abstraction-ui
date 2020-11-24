@@ -13,10 +13,12 @@ const reducer = (state, action) => {
       };
 
     case ACTION_TYPES.setDateSigned:
-      const { dateSigned, licenceStartDate } = action.payload;
+      const { isDateSignedKnown, licenceStartDate } = action.payload;
+      const dateSigned = isDateSignedKnown ? action.payload.dateSigned : undefined;
       return {
         ...state,
         dateSigned,
+        isDateSignedKnown,
         startDate: getDefaultStartDate(dateSigned, licenceStartDate)
       };
 

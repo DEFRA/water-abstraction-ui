@@ -3,17 +3,17 @@
 
 {% macro invoiceAddress(invoice, company) %}
 
-  {% if invoice.contact %}
-    FAO
-    {{ contact(invoice.contact) }}<br/>
-  {% endif %}
-
   {% if invoice.agentCompany %}
     {{ invoice.agentCompany.name | titleCase }}
   {% else %}
     {{ company.name | titleCase }}
   {% endif %}
     <br/>
+
+  {% if invoice.contact %}
+    FAO
+    {{ contact(invoice.contact) }}<br/>
+  {% endif %}
 
   {{ address(invoice.address) }}
 {% endmacro %}

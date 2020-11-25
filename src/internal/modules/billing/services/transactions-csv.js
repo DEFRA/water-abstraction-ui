@@ -4,7 +4,8 @@ const numberFormatter = require('../../../../shared/lib/number-formatter');
 const { mapValues, isNull } = require('lodash');
 const mappers = require('../lib/mappers');
 
-const valueToString = (value, key) => isNull(value) ? '' : value.toString();
+const isNullOrUndefined = value => isNull(value) || value === undefined;
+const valueToString = (value, key) => isNullOrUndefined(value) ? '' : value.toString();
 const rowToStrings = row => mapValues(row, valueToString);
 
 const getAbsStartAndEnd = absPeriod => {
@@ -16,25 +17,31 @@ const getAbsStartAndEnd = absPeriod => {
 
 const getAgreementsString = agreements => agreements.map(agreement => agreement.code).join(', ');
 
+const getChargeElementData = trans => {
+  if (trans.isMinimumCharge) return {};
+  return { source: trans.chargeElement.source,
+    season: trans.chargeElement.season,
+    loss: trans.chargeElement.loss,
+    chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
+    chargeElementPurposeName: trans.chargeElement.purposeUse.name,
+    ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod),
+    authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
+    billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity
+  };
+};
+
 const getTransactionData = trans => ({
   value: numberFormatter.penceToPound(trans.value, true),
   isDeMinimis: trans.isDeMinimis,
   isCredit: trans.isCredit,
   isCompensationCharge: trans.isCompensationCharge,
-  source: trans.chargeElement.source,
-  season: trans.chargeElement.season,
-  loss: trans.chargeElement.loss,
-  chargeElementPurposeCode: trans.chargeElement.purposeUse.code,
-  chargeElementPurposeName: trans.chargeElement.purposeUse.name,
+  ...getChargeElementData(trans),
   description: trans.description,
   agreements: getAgreementsString(trans.agreements),
   chargePeriodStartDate: trans.chargePeriod.startDate,
   chargePeriodEndDate: trans.chargePeriod.endDate,
   authorisedDays: trans.authorisedDays,
   billableDays: trans.billableDays,
-  ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod),
-  authorisedAnnualQuantity: trans.chargeElement.authorisedAnnualQuantity,
-  billableAnnualQuantity: trans.chargeElement.billableAnnualQuantity,
   calculatedVolume: trans.billingVolume ? trans.billingVolume.calculatedVolume : null,
   volume: trans.volume
 });

@@ -5,7 +5,7 @@ const { mapValues, isNull } = require('lodash');
 const mappers = require('../lib/mappers');
 
 const isNullOrUndefined = value => isNull(value) || value === undefined;
-const valueToString = (value, key) => isNullOrUndefined(value) ? '' : value.toString();
+const valueToString = value => isNullOrUndefined(value) ? '' : value.toString();
 const rowToStrings = row => mapValues(row, valueToString);
 
 const getAbsStartAndEnd = absPeriod => {

@@ -70,6 +70,7 @@ experiment('internal/modules/address-entry', () => {
   beforeEach(() => {
     sandbox.stub(sessionForms, 'get').returns({ form: 'object' });
     sandbox.stub(forms, 'handleRequest');
+    sandbox.stub(forms, 'getValues');
 
     sandbox.stub(addressEntryHelpers, 'saveReferenceData');
 
@@ -259,9 +260,18 @@ experiment('internal/modules/address-entry', () => {
         address3: 'Test Place',
         town: 'Testington',
         postcode: POSTCODE,
-        country: 'United Kingdom' };
-      request = createRequest({ payload: { ...addressData,
-        crsf_token: '111111111-1111-1111-1111-111111111111' } });
+        country: 'United Kingdom'
+      };
+
+      const payload = {
+        ...addressData,
+        crsf_token: '111111111-1111-1111-1111-111111111111'
+      };
+
+      request = createRequest({ payload });
+
+      forms.getValues.returns(payload);
+
       controller.postManualAddressEntry(request, h);
     });
 

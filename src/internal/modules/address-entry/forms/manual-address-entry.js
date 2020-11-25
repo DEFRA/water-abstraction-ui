@@ -90,22 +90,24 @@ const form = (request, address = {}) => {
   return f;
 };
 
+const OPTIONAL_STRING = Joi.string().empty('').default(null);
+
 const schema = {
   csrf_token: Joi.string().uuid().required(),
-  addressLine1: Joi.string().allow('').optional(),
-  addressLine2: Joi.string().allow('').optional(),
-  addressLine3: Joi.string().allow('').optional(),
-  addressLine4: Joi.string().allow('').optional(),
-  town: Joi.string().allow('').optional(),
-  county: Joi.string().allow('').optional(),
-  postcode: Joi.string().trim().empty('').allow('').optional().when('country', {
+  addressLine1: OPTIONAL_STRING,
+  addressLine2: OPTIONAL_STRING,
+  addressLine3: OPTIONAL_STRING,
+  addressLine4: OPTIONAL_STRING,
+  town: OPTIONAL_STRING,
+  county: OPTIONAL_STRING,
+  postcode: OPTIONAL_STRING.when('country', {
     is: Joi.string().valid(UNITED_KINGDOM),
     then: postcodeSchema,
     otherwise: Joi.string().allow('').optional()
   }),
   country: Joi.string().required().valid(countryList),
   dataSource: Joi.string().required().valid('wrls'),
-  uprn: Joi.string().valid('', null).default(null)
+  uprn: OPTIONAL_STRING
 };
 
 const isAtLeastOneFieldPopulated = fields => fields.some(field => !isEmpty(field));

@@ -1,6 +1,6 @@
 const dataService = require('../services/data-service');
 const forms = require('shared/lib/forms');
-const { has, isEmpty, assign } = require('lodash');
+const { has, isEmpty, assign, omit } = require('lodash');
 const moment = require('moment');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
@@ -169,6 +169,26 @@ const processContactEntry = async (request) => {
   return response;
 };
 
+const isTempGuid = id => id === tempId;
+
+/**
+ * Maps the address data stored in the session to a shape expected
+ * by the water service endpoint
+ * @param {Object} address
+ * @return {Object}
+ */
+const mapAddressFromSession = address => {
+  const addressId = address.id || address.addressId;
+
+  // If a valid ID is present, send this only
+  if (addressId && !isTempGuid(addressId)) {
+    return { addressId };
+  }
+
+  // Otherwise send the address excluding the temp ID
+  return omit(address, 'id', 'addressId');
+};
+
 const postDataHandler = (request) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
@@ -177,21 +197,9 @@ const postDataHandler = (request) => {
   // TODO default start date added here - might need to create a screen for the user to select a date
   requestBody['startDate'] = moment().format('YYYY-MM-DD');
   requestBody['regionId'] = regionId; // Stuff the regionId into the request body
-  requestBody['address'] = session.address; // Stuff the address into the request body
-  // If the address is a temp/new one, we remove the ID from the request
 
-  if (requestBody.address && requestBody.address.id === tempId) {
-    delete requestBody.address.id;
-    delete requestBody.address.addressId;
-  }
+  requestBody.address = mapAddressFromSession(session.address);
 
-  delete requestBody.address.dataSource; // Remove the data source property from the address object
-  // Remove properties from the address sub-object where there is no corresponding value
-  Object.entries(requestBody.address).map(eachProperty => {
-    if (eachProperty[0] && eachProperty[1].length === 0) {
-      delete requestBody.address[eachProperty[0]];
-    }
-  });
   requestBody['agent'] = session.agent; // Stuff the agent into the request body
   // If the agent is a temp/new one, we remove the ID from the request
   if (requestBody.agent && requestBody.agent.id === tempId) {

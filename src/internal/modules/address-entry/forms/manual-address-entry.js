@@ -93,7 +93,6 @@ const form = (request, address = {}) => {
 
   f = setValues(f, address);
 
-  f.fields.push(fields.hidden('dataSource', {}, 'wrls'));
   f.fields.push(fields.hidden('uprn', {}, null));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

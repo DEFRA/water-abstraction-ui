@@ -287,7 +287,10 @@ experiment('internal/modules/address-entry', () => {
       test('stores the address data in the payload', () => {
         const { csrfToken, ...payload } = request.payload;
         const [address] = request.setNewAddress.lastCall.args;
-        expect(address).to.equal(payload);
+        expect(address).to.equal({
+          ...payload,
+          source: 'wrls'
+        });
         expect(address).to.not.contain(csrfToken);
       });
 

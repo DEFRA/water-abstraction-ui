@@ -61,13 +61,6 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(field.value).to.equal('United Kingdom');
     });
 
-    test('has a hidden data source field set to "wrls"', async () => {
-      const form = manualAddressEntry.form(createRequest());
-      const field = findField(form, 'dataSource');
-      expect(field.value).to.equal('wrls');
-      expect(field.options.type).to.equal('hidden');
-    });
-
     test('has a hidden uprn field set to null', async () => {
       const form = manualAddressEntry.form(createRequest());
       const field = findField(form, 'uprn');

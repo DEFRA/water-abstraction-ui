@@ -81,7 +81,10 @@ const postManualAddressEntry = (request, h) => {
   );
 
   if (form.isValid) {
-    const data = omit(forms.getValues(form), 'csrf_token');
+    const data = {
+      source: 'wrls',
+      ...omit(forms.getValues(form), 'csrf_token')
+    };
     return storeAddressAndRedirect(request, h, data);
   }
   return h.postRedirectGet(form);

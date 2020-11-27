@@ -7,6 +7,8 @@ const Joi = require('@hapi/joi');
 const { isEmpty } = require('lodash');
 const countryList = require('./country-list');
 
+const GOVUK_WIDTH_TWO_THIRDS = 'govuk-!-width-two-thirds';
+
 const addressTextFields = [
   fields.text('addressLine1', {
     label: 'Sub-building',
@@ -28,7 +30,7 @@ const addressTextFields = [
   }),
   fields.text('addressLine4', {
     label: 'Street name',
-    controlClass: 'govuk-!-width-two-thirds',
+    controlClass: GOVUK_WIDTH_TWO_THIRDS,
     errors: {
       'any.empty': {
         message: 'Enter either a street name or town or city'
@@ -37,11 +39,11 @@ const addressTextFields = [
   }),
   fields.text('town', {
     label: 'Town or city',
-    controlClass: 'govuk-!-width-two-thirds'
+    controlClass: GOVUK_WIDTH_TWO_THIRDS
   }),
   fields.text('county', {
     label: 'County',
-    controlClass: 'govuk-!-width-two-thirds'
+    controlClass: GOVUK_WIDTH_TWO_THIRDS
   }),
   fields.text('postcode', {
     errors: {

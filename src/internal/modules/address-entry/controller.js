@@ -74,7 +74,7 @@ const getManualAddressEntry = (request, h) => h.view('nunjucks/form', {
 });
 
 const postManualAddressEntry = (request, h) => {
-  let form = forms.handleRequest(
+  const form = forms.handleRequest(
     manualAddressEntry.form(request, request.payload),
     request,
     manualAddressEntry.schema

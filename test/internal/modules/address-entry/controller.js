@@ -80,7 +80,6 @@ experiment('internal/modules/address-entry', () => {
     sandbox.stub(addressEntryForms.selectAddress, 'schema');
     sandbox.stub(addressEntryForms.manualAddressEntry, 'form').returns({ manualAddressEntry: 'form' });
     sandbox.stub(addressEntryForms.manualAddressEntry, 'schema');
-    sandbox.stub(addressEntryForms.manualAddressEntry, 'applyRequiredFieldErrors');
   });
 
   afterEach(() => sandbox.restore());
@@ -250,10 +249,12 @@ experiment('internal/modules/address-entry', () => {
 
   experiment('.postManualAddressEntry', () => {
     let request, addressData;
+
     beforeEach(() => {
-      forms.handleRequest.returns({ manualAddressEntry: 'form' });
-      addressEntryForms.manualAddressEntry.applyRequiredFieldErrors
-        .returns({ isValid: true });
+      forms.handleRequest.returns({
+        isValid: true,
+        manualAddressEntry: 'form'
+      });
 
       addressData = {
         address2: '123',
@@ -290,12 +291,6 @@ experiment('internal/modules/address-entry', () => {
         expect(address).to.not.contain(csrfToken);
       });
 
-      test('applies required field errors', () => {
-        const [form, payload] = addressEntryForms.manualAddressEntry.applyRequiredFieldErrors.lastCall.args;
-        expect(form).to.equal({ manualAddressEntry: 'form' });
-        expect(payload).to.equal(request.payload);
-      });
-
       test('redirects to the expected path', () => {
         const [redirectPath] = h.redirect.lastCall.args;
         expect(redirectPath).to.equal(addressFlowData.redirectPath);
@@ -303,13 +298,15 @@ experiment('internal/modules/address-entry', () => {
     });
 
     test('redirects with the form and expected path when form is not valid', () => {
-      addressEntryForms.manualAddressEntry.applyRequiredFieldErrors
-        .returns({ isValid: false });
-
+      const form = {
+        isValid: false,
+        manualAddressEntry: 'form'
+      };
+      forms.handleRequest.returns(form);
       controller.postManualAddressEntry(request, h);
 
       const [formObject] = h.postRedirectGet.lastCall.args;
-      expect(formObject).to.equal({ isValid: false });
+      expect(formObject).to.equal(form);
     });
   });
 });

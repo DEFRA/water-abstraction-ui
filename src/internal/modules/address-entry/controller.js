@@ -80,8 +80,6 @@ const postManualAddressEntry = (request, h) => {
     manualAddressEntry.schema
   );
 
-  form = manualAddressEntry.applyRequiredFieldErrors(form, request.payload);
-
   if (form.isValid) {
     const data = omit(forms.getValues(form), 'csrf_token');
     return storeAddressAndRedirect(request, h, data);

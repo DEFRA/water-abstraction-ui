@@ -1,5 +1,3 @@
-const { describe, before, it } = require('mocha');
-
 /* eslint-disable no-undef */
 describe('Login page', function () {
   before(() => {

@@ -89,7 +89,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-service
-          path: './water-abstraction-service'
+          path: '~/water-abstraction-service'
 
       - name: Install water service dependencies
         run: cd ~/water-abstraction-service && npm ci && npm run migrate && cd ~
@@ -98,7 +98,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-tactical-crm
-          path: './water-abstraction-tactical-crm'
+          path: '~/water-abstraction-tactical-crm'
 
       - name: Install CRM dependencies
         run: cd ~/water-abstraction-tactical-crm && npm ci && npm run migrate && cd ~
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-tactical-idm
-          path: './water-abstraction-tactical-idm'
+          path: '~/water-abstraction-tactical-idm'
 
       - name: Install IDM dependencies
         run: cd ~/water-abstraction-tactical-idm && npm ci && npm run migrate && cd ~
@@ -116,7 +116,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-returns
-          path: './water-abstraction-returns'
+          path: '~/water-abstraction-returns'
 
       - name: Install returns service dependencies
         run: cd ~/water-abstraction-returns && npm ci && npm run migrate && cd ~
@@ -125,7 +125,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-permits-repository
-          path: './water-abstraction-permits-repository'
+          path: '~/water-abstraction-permits-repository'
 
       - name: Install permits repo dependencies
         run: cd ~/water-abstraction-permits-repository && npm ci && npm run migrate && cd ~

@@ -88,10 +88,10 @@ jobs:
           cd ./water-abstraction-service
           npm ci
 
-     - name: Run database migrations
-       run: |
-         cd ./water-abstraction-service
-         npm run migrate
+      - name: Run database migrations
+        run: |
+          cd ./water-abstraction-service
+          npm run migrate
 
       - name: Install CRM
         uses: actions/checkout@v2

@@ -61,7 +61,7 @@ jobs:
       - name: Set default schema
         run: |
           psql -d water -U water -c "SHOW search_path;"
-          PGPASSWORD=water psql -U water -tc "SET search_path TO water;"
+          PGPASSWORD=water psql -U water -tc "ALTER ROLE water SET search_path TO water;"
           psql -d water -U water -c "SHOW search_path;"
 
       # Downloads a copy of the code in your repository before running CI tests

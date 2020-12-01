@@ -69,19 +69,6 @@ jobs:
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
-      - name: Install CRM
-        uses: actions/checkout@v2
-        with:
-          repository: defra/water-abstraction-tactical-crm
-          path: './water-abstraction-tactical-crm'
-
-      - name: Install CRM dependencies
-        run: cd ./water-abstraction-tactical-crm && npm ci && npm run migrate && cd ../
-
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
-      - name: Install UI dependencies
-        run: npm ci
 
       - name: Install water service
         uses: actions/checkout@v2
@@ -98,6 +85,21 @@ jobs:
         run: |
           cd ./water-abstraction-service
           npm run migrate
+
+      - name: Install CRM
+        uses: actions/checkout@v2
+        with:
+          repository: defra/water-abstraction-tactical-crm
+          path: './water-abstraction-tactical-crm'
+
+      - name: Install CRM dependencies
+        run: cd ./water-abstraction-tactical-crm && npm ci && npm run migrate && cd ../
+
+      # Performs a clean installation of all dependencies in the `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - name: Install UI dependencies
+        run: npm ci
+
 
       - name: Install IDM
         uses: actions/checkout@v2

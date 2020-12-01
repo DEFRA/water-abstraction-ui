@@ -70,6 +70,7 @@ experiment('internal/modules/address-entry', () => {
   beforeEach(() => {
     sandbox.stub(sessionForms, 'get').returns({ form: 'object' });
     sandbox.stub(forms, 'handleRequest');
+    sandbox.stub(forms, 'getValues');
 
     sandbox.stub(addressEntryHelpers, 'saveReferenceData');
 
@@ -79,7 +80,6 @@ experiment('internal/modules/address-entry', () => {
     sandbox.stub(addressEntryForms.selectAddress, 'schema');
     sandbox.stub(addressEntryForms.manualAddressEntry, 'form').returns({ manualAddressEntry: 'form' });
     sandbox.stub(addressEntryForms.manualAddressEntry, 'schema');
-    sandbox.stub(addressEntryForms.manualAddressEntry, 'applyRequiredFieldErrors');
   });
 
   afterEach(() => sandbox.restore());
@@ -249,19 +249,30 @@ experiment('internal/modules/address-entry', () => {
 
   experiment('.postManualAddressEntry', () => {
     let request, addressData;
+
     beforeEach(() => {
-      forms.handleRequest.returns({ manualAddressEntry: 'form' });
-      addressEntryForms.manualAddressEntry.applyRequiredFieldErrors
-        .returns({ isValid: true });
+      forms.handleRequest.returns({
+        isValid: true,
+        manualAddressEntry: 'form'
+      });
 
       addressData = {
         address2: '123',
         address3: 'Test Place',
         town: 'Testington',
         postcode: POSTCODE,
-        country: 'United Kingdom' };
-      request = createRequest({ payload: { ...addressData,
-        crsf_token: '111111111-1111-1111-1111-111111111111' } });
+        country: 'United Kingdom'
+      };
+
+      const payload = {
+        ...addressData,
+        crsf_token: '111111111-1111-1111-1111-111111111111'
+      };
+
+      request = createRequest({ payload });
+
+      forms.getValues.returns(payload);
+
       controller.postManualAddressEntry(request, h);
     });
 
@@ -276,14 +287,11 @@ experiment('internal/modules/address-entry', () => {
       test('stores the address data in the payload', () => {
         const { csrfToken, ...payload } = request.payload;
         const [address] = request.setNewAddress.lastCall.args;
-        expect(address).to.equal(payload);
+        expect(address).to.equal({
+          ...payload,
+          source: 'wrls'
+        });
         expect(address).to.not.contain(csrfToken);
-      });
-
-      test('applies required field errors', () => {
-        const [form, payload] = addressEntryForms.manualAddressEntry.applyRequiredFieldErrors.lastCall.args;
-        expect(form).to.equal({ manualAddressEntry: 'form' });
-        expect(payload).to.equal(request.payload);
       });
 
       test('redirects to the expected path', () => {
@@ -293,13 +301,15 @@ experiment('internal/modules/address-entry', () => {
     });
 
     test('redirects with the form and expected path when form is not valid', () => {
-      addressEntryForms.manualAddressEntry.applyRequiredFieldErrors
-        .returns({ isValid: false });
-
+      const form = {
+        isValid: false,
+        manualAddressEntry: 'form'
+      };
+      forms.handleRequest.returns(form);
       controller.postManualAddressEntry(request, h);
 
       const [formObject] = h.postRedirectGet.lastCall.args;
-      expect(formObject).to.equal({ isValid: false });
+      expect(formObject).to.equal(form);
     });
   });
 });

@@ -63,7 +63,7 @@ invoiceDebitsTotal %}
 
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-        {{ invoiceAddress(invoice) }}
+        {{ invoiceAddress(invoice, invoice.invoiceAccount.company) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing contact address",

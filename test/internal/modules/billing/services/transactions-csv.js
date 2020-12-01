@@ -153,7 +153,7 @@ const invoicesForBatch = [
 experiment('internal/modules/billing/services/transactions-csv', async () => {
   experiment('_getTransactionData', async () => {
     const transaction = invoicesForBatch[0].invoiceLicences[0].transactions[0];
-    test('returns transaction data in expected order', async () => {
+    test('returns expected transaction data', async () => {
       const transactionData = transactionsCSV._getTransactionData(transaction);
       expect(transactionData.value).to.equal('40.05');
 
@@ -191,6 +191,37 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
         billingVolume: undefined
       });
       expect(transactionData.calculatedVolume).to.be.null();
+    });
+
+    test('handles minimum charge transactions', async () => {
+      const minChargeTransaction = {
+        value: 1468,
+        isCredit: false,
+        agreements: [],
+        status: 'candidate',
+        startDate: '2019-04-01',
+        endDate: '2020-03-31',
+        externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
+        description:
+         'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
+        isCompensationCharge: false,
+        isMinimumCharge: true,
+        isDeMinimis: false,
+        isNewLicence: true,
+        chargePeriod: {
+          startDate: '2019-04-01',
+          endDate: '2020-03-31' }
+      };
+
+      const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
+      expect(transactionData.value).to.equal('14.68');
+      expect(transactionData.isCredit).to.equal(false);
+      expect(transactionData.isCompensationCharge).to.equal(false);
+      expect(transactionData.description).to.equal(minChargeTransaction.description);
+      expect(transactionData.agreements).to.equal('');
+      expect(transactionData.chargePeriodStartDate).to.equal(minChargeTransaction.chargePeriod.startDate);
+      expect(transactionData.chargePeriodEndDate).to.equal(minChargeTransaction.chargePeriod.endDate);
+      expect(transactionData.isDeMinimis).to.equal(minChargeTransaction.isDeMinimis);
     });
   });
 

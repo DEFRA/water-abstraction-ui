@@ -36,12 +36,7 @@ experiment('internal view licences controller', () => {
             earliestEndDate: '2019-07-04',
             earliestEndDateReason: 'lapsed'
           },
-          communications: [],
-          chargeVersions: [
-            { versionNumber: 101 },
-            { versionNumber: 103 },
-            { versionNumber: 102 }
-          ]
+          communications: []
         }
       };
 
@@ -79,31 +74,10 @@ experiment('internal view licences controller', () => {
       expect(view.documentId).to.equal(request.params.documentId);
     });
 
-    test('adds the charge versions sorted by version number', async () => {
-      await controller.getExpiredLicence(request, h);
-      const [ , view ] = h.view.lastCall.args;
-      expect(view.chargeVersions).to.equal([
-        { versionNumber: 103 },
-        { versionNumber: 102 },
-        { versionNumber: 101 }
-      ]);
-    });
-
-    test('sets showChargeVersions to false if user does not have charging scope', async () => {
+    test('sets showChargeVersions to false', async () => {
       await controller.getExpiredLicence(request, h);
       const [ , view ] = h.view.lastCall.args;
       expect(view.showChargeVersions).to.be.false();
-    });
-
-    test('sets showChargeVersions to true if user has the charging scope', async () => {
-      request.auth = {
-        credentials: {
-          scope: ['charging']
-        }
-      };
-      await controller.getExpiredLicence(request, h);
-      const [ , view ] = h.view.lastCall.args;
-      expect(view.showChargeVersions).to.be.true();
     });
 
     test('adds links to the returns', async () => {

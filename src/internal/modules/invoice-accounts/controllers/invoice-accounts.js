@@ -231,6 +231,7 @@ const postCheckDetails = async (request, h) => {
   const redirectPath = session.viewData.redirectPath;
   // Formulate the body of the request
   const requestBody = await helpers.postDataHandler(request);
+
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);

@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api/archive/v4.3.0.tar.gz",
-    "@envage/water-abstraction-helpers": "^4.3.3",
+    "@envage/water-abstraction-helpers": "^4.3.5",
     "@hapi/boom": "^7.4.2",
     "@hapi/catbox-redis": "^5.0.5",
     "@hapi/good": "^8.2.4",

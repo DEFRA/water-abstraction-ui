@@ -74,16 +74,18 @@ const getManualAddressEntry = (request, h) => h.view('nunjucks/form', {
 });
 
 const postManualAddressEntry = (request, h) => {
-  let form = forms.handleRequest(
+  const form = forms.handleRequest(
     manualAddressEntry.form(request, request.payload),
     request,
     manualAddressEntry.schema
   );
 
-  form = manualAddressEntry.applyRequiredFieldErrors(form, request.payload);
-
   if (form.isValid) {
-    return storeAddressAndRedirect(request, h, omit(request.payload, 'csrf_token'));
+    const data = {
+      source: 'wrls',
+      ...omit(forms.getValues(form), 'csrf_token')
+    };
+    return storeAddressAndRedirect(request, h, data);
   }
   return h.postRedirectGet(form);
 };

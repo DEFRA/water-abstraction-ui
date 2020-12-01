@@ -62,6 +62,7 @@ jobs:
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT 'CREATE DATABASE water' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'water')"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water AUTHORIZATION water;"
+          PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
 
       # Our projects use .nvmrc files to specify the node version to use. We can read and then output it as the result
       # this step. Subsequent steps can then access the value

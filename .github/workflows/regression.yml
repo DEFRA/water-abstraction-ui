@@ -130,6 +130,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-permits-repository
+          ref: 'develop'
           path: './water-abstraction-permits-repository'
 
       - name: Install permits repo dependencies

@@ -25,7 +25,7 @@ jobs:
       WHITELIST_NOTIFY_KEY: ${{ secrets.WHITELIST_NOTIFY_KEY }}
       LIVE_NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
       TEST_MODE: 1
-      NODE_ENV: dev
+      NODE_ENV: test
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       WATER_URI: http://127.0.0.1:8001/water/1.0
       WATER_URI_INTERNAL: http://127.0.0.1:8001/water/1.0
@@ -69,6 +69,15 @@ jobs:
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
+      - name: Install CRM
+        uses: actions/checkout@v2
+        with:
+          repository: defra/water-abstraction-tactical-crm
+          path: './water-abstraction-tactical-crm'
+
+      - name: Install CRM dependencies
+        run: cd ./water-abstraction-tactical-crm && npm ci && npm run migrate && cd ../
+
       # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install UI dependencies
@@ -89,15 +98,6 @@ jobs:
         run: |
           cd ./water-abstraction-service
           npm run migrate
-
-      - name: Install CRM
-        uses: actions/checkout@v2
-        with:
-          repository: defra/water-abstraction-tactical-crm
-          path: './water-abstraction-tactical-crm'
-
-      - name: Install CRM dependencies
-        run: cd ./water-abstraction-tactical-crm && npm ci && npm run migrate && cd ../
 
       - name: Install IDM
         uses: actions/checkout@v2

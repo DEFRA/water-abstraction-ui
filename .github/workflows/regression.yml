@@ -64,8 +64,8 @@ jobs:
 
       - name: Grant database permission
         run: |
-          PGPASSWORD=water psql -U water -tc "GRANT ALL ON SCHEMA water TO water;"
           PGPASSWORD=water psql -U water -tc "GRANT ALL ON SCHEMA public TO water;"
+          PGPASSWORD=water psql -U water -tc "GRANT ALL ON SCHEMA water TO water;"
 
       # Gets the version to use by referring to the previous step
       - name: Install Node

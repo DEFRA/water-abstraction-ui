@@ -61,11 +61,7 @@ jobs:
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT 'CREATE DATABASE water' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'water')"
-
-      - name: Grant database permission
-        run: |
-          PGPASSWORD=water psql -U water -tc "GRANT ALL ON SCHEMA public TO water;"
-          PGPASSWORD=water psql -U water -tc "GRANT ALL ON SCHEMA water TO water;"
+          PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water AUTHORIZATION water;"
 
       # Gets the version to use by referring to the previous step
       - name: Install Node

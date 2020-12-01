@@ -58,12 +58,6 @@ jobs:
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT 'CREATE DATABASE water' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'water')"
 
-      - name: Set default schema
-        run: |
-          psql -d water -U water -c "SHOW search_path;"
-          PGPASSWORD=water psql -U water -tc "ALTER ROLE water SET search_path TO water;"
-          psql -d water -U water -c "SHOW search_path;"
-
       # Downloads a copy of the code in your repository before running CI tests
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -84,7 +78,7 @@ jobs:
         with:
           repository: defra/water-abstraction-service
           path: './water-abstraction-service'
-          ref: 'water-2944/exp'
+          ref: 'release/charging-sprint-32'
 
       - name: Install water service dependencies
         run: |

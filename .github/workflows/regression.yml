@@ -94,8 +94,8 @@ jobs:
         with:
           repository: defra/water-abstraction-tactical-crm
           path: ~/water-abstraction-tactical-crm
-          - name: Install dependencies
-            run: cd ~/water-abstraction-tactical-crm && npm ci && npm run migrate && cd ~
+      - name: Install dependencies
+        run: cd ~/water-abstraction-tactical-crm && npm ci && npm run migrate && cd ~
 
       - name: Install IDM
         uses: actions/checkout@v2

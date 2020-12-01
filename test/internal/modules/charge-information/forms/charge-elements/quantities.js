@@ -81,15 +81,30 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest()).csrf_token.validate('scissors');
         expect(result.error).to.exist();
       });
     });
 
     experiment('authorisedAnnualQuantity', () => {
-      test('validates for a string', async () => {
-        const result = schema().authorisedAnnualQuantity.validate(132);
+      test('validates for a number string', async () => {
+        const result = schema().authorisedAnnualQuantity.validate('132');
         expect(result.error).to.not.exist();
+      });
+
+      test('validates for a number string with 6 decimal places', async () => {
+        const result = schema().authorisedAnnualQuantity.validate('132.123456');
+        expect(result.error).to.not.exist();
+      });
+
+      test('must not have more than 6 decimal places', async () => {
+        const result = schema().authorisedAnnualQuantity.validate('132.1234567');
+        expect(result.error).to.exist();
+      });
+
+      test('must not be zero', async () => {
+        const result = schema().authorisedAnnualQuantity.validate('0');
+        expect(result.error).to.exist();
       });
 
       test('must be a number', async () => {
@@ -104,12 +119,12 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
     });
     experiment('billableAnnualQuantity', () => {
       test('validates for a string', async () => {
-        const result = schema().billableAnnualQuantity.validate(123);
+        const result = schema().billableAnnualQuantity.validate('123');
         expect(result.error).to.not.exist();
       });
 
-      test('can be null or empty', async () => {
-        const result = schema().billableAnnualQuantity.validate(null);
+      test('can be empty', async () => {
+        const result = schema().billableAnnualQuantity.validate('');
         expect(result.error).not.to.exist();
       });
     });

@@ -78,7 +78,7 @@ jobs:
 
       # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
-      - name: Install dependencies
+      - name: Install UI dependencies
         run: npm ci
 
       - name: Install water service
@@ -86,7 +86,7 @@ jobs:
         with:
           repository: defra/water-abstraction-service
           path: ~/water-abstraction-service
-      - name: Install dependencies
+      - name: Install water service dependencies
         run: cd ~/water-abstraction-service && npm ci && npm run migrate && cd ~
 
       - name: Install CRM
@@ -94,7 +94,7 @@ jobs:
         with:
           repository: defra/water-abstraction-tactical-crm
           path: ~/water-abstraction-tactical-crm
-      - name: Install dependencies
+      - name: Install CRM dependencies
         run: cd ~/water-abstraction-tactical-crm && npm ci && npm run migrate && cd ~
 
       - name: Install IDM
@@ -102,24 +102,24 @@ jobs:
         with:
           repository: defra/water-abstraction-tactical-idm
           path: ~/water-abstraction-tactical-idm
-          - name: Install dependencies
-            run: cd ~/water-abstraction-tactical-idm && npm ci && npm run migrate && cd ~
+      - name: Install IDM dependencies
+        run: cd ~/water-abstraction-tactical-idm && npm ci && npm run migrate && cd ~
 
       - name: Install returns service
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-returns
           path: ~/water-abstraction-returns
-          - name: Install dependencies
-            run: cd ~/water-abstraction-returns && npm ci && npm run migrate && cd ~
+      - name: Install returns service dependencies
+        run: cd ~/water-abstraction-returns && npm ci && npm run migrate && cd ~
 
       - name: Install permits repo
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-permits-repository
           path: ~/water-abstraction-permits-repository
-          - name: Install dependencies
-            run: cd ~/water-abstraction-permits-repository && npm ci && npm run migrate && cd ~
+      - name: Install permits repo dependencies
+        run: cd ~/water-abstraction-permits-repository && npm ci && npm run migrate && cd ~
 
       - name: Run regression tests
         run: |

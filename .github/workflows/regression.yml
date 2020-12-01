@@ -84,7 +84,14 @@ jobs:
           path: './water-abstraction-service'
 
       - name: Install water service dependencies
-        run: cd ./water-abstraction-service && npm ci && npm run migrate && cd ../
+        run: |
+          cd ./water-abstraction-service
+          npm ci
+
+     - name: Run database migrations
+       run: |
+         cd ./water-abstraction-service
+         npm run migrate
 
       - name: Install CRM
         uses: actions/checkout@v2

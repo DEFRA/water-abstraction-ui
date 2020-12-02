@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: circleci/node:lts-browsers
+    runs-on: ubuntu-latest
     env:
       COOKIE_SECRET: somethingverysecrethere
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
@@ -54,6 +54,20 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
+      - name: Install Google Chrome # Using shell script to install Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip xvfb libxi6 libgconf-2-4
+          sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
+          sudo echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get -y update
+          sudo apt-get -y install google-chrome-stable
+          wget https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/bin/chromedriver
+          sudo chown root:root /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
+
       # Downloads a copy of the code in your repository before running CI tests
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -134,8 +148,6 @@ jobs:
 
       - name: Install permit repo dependencies
         run: cd ./water-abstraction-permit-repository && npm ci && npm run migrate && cd ../
-
-      - uses: nanasess/setup-chromedriver@master
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change

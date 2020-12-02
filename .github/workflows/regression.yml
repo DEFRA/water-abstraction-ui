@@ -147,6 +147,10 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
 
+      - name: Provision SQL data
+        run: |
+          PGPASSWORD=water psql -U water -d water -a -f ./test/regression/shared-helpers/provision.sql
+
       - name: Run regression tests
         run: |
           npm run test:regression

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       COOKIE_SECRET: somethingverysecrethere
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test

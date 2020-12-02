@@ -107,11 +107,7 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: [
-    ['chromedriver', {
-      logFileName: 'wdio-chromedriver.log', // default
-      outputDir: 'driver-logs', // overwrites the config.outputDir
-      args: ['--silent', '--disable-gpu', '--no-sandbox', '--disable-extensions']
-    }]
+    ['selenium-standalone', { drivers: { firefox: '0.28.0', chrome: true, chromiumedge: 'latest' } }]
   ],
 
   // Framework you want to run your specs with.

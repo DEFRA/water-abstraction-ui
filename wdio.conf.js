@@ -110,7 +110,7 @@ exports.config = {
     ['chromedriver', {
       logFileName: 'wdio-chromedriver.log', // default
       outputDir: 'driver-logs', // overwrites the config.outputDir
-      args: ['--silent']
+      args: ['--silent', '--disable-gpu', '--no-sandbox', '--disable-extensions']
     }]
   ],
 

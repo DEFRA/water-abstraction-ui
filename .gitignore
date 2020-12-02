@@ -10,3 +10,4 @@ jsconfig.json
 .vscode/
 .DS_Store
 temp/
+driver-logs/wdio-chromedriver.log

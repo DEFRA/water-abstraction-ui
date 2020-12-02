@@ -34,25 +34,6 @@ jobs:
       CRM_URI: http://127.0.0.1:8002/crm/1.0
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
 
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres:13-alpine
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: water
-          POSTGRES_HOST: localhost
-          POSTGRES_PASSWORD: water
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: water
-        # Maps tcp port 5432 on service container to the host
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started. You must have this so the runner knows to wait till
-        # postgres is up and running before proceeding
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: get Docker
         run: |

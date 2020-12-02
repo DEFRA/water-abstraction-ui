@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       COOKIE_SECRET: somethingverysecrethere
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
@@ -134,6 +134,18 @@ jobs:
 
       - name: Install permit repo dependencies
         run: cd ./water-abstraction-permit-repository && npm ci && npm run migrate && cd ../
+
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1) \
+            && CHROMEDRIVER_RELEASE=$(curl --location --fail --retry 3 http://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}) \
+            && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
+            && cd /tmp \
+            && unzip chromedriver_linux64.zip \
+            && rm -rf chromedriver_linux64.zip \
+            && sudo mv chromedriver /usr/local/bin/chromedriver \
+            && sudo chmod +x /usr/local/bin/chromedriver \
+            && chromedriver --version
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change

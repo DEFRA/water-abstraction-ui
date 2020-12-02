@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: circleci/node:lts-browsers
     env:
       COOKIE_SECRET: somethingverysecrethere
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
@@ -136,7 +136,7 @@ jobs:
         run: cd ./water-abstraction-permit-repository && npm ci && npm run migrate && cd ../
 
       - uses: nanasess/setup-chromedriver@master
-      
+
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change
       - name: Cache Node modules

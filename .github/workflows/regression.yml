@@ -126,15 +126,14 @@ jobs:
       - name: Install returns service dependencies
         run: cd ./water-abstraction-returns && npm ci && npm run migrate && cd ../
 
-      - name: Install permits repo
+      - name: Install permit repo
         uses: actions/checkout@v2
         with:
-          repository: defra/water-abstraction-permits-repository
-          ref: 'develop'
-          path: './water-abstraction-permits-repository'
+          repository: defra/water-abstraction-permit-repository
+          path: './water-abstraction-permit-repository'
 
-      - name: Install permits repo dependencies
-        run: cd ./water-abstraction-permits-repository && npm ci && npm run migrate && cd ../
+      - name: Install permit repo dependencies
+        run: cd ./water-abstraction-permit-repository && npm ci && npm run migrate && cd ../
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change

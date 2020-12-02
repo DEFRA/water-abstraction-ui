@@ -35,10 +35,14 @@ jobs:
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
 
     steps:
-      - name: get Docker
+      - name: Setup postgres
         run: |
-          brew install docker-machine docker
-          sudo docker –version
+          brew install postgres
+          psql -c "createuser -s water"
+          psql -c "create role water with login password 'water';"
+          psql -c "createdb water"
+          GRANT permissions ON DATABASE water TO water;
+
       - name: Install Google Chrome # Using shell script to install Google Chrome
         run: |
           brew cask install google-chrome

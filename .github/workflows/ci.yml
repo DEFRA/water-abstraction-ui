@@ -22,18 +22,10 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of sonarcloud analysis
 
-      # Our projects use .nvmrc files to specify the node version to use. We can read and then output it as the result
-      # this step. Subsequent steps can then access the value
-      - name: Read Node version
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        # Give the step an ID to make it easier to refer to
-        id: nvm
-
-      # Gets the version to use by referring to the previous step
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2-beta
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          node-version: '12'
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change
@@ -75,3 +67,4 @@ jobs:
             -Dsonar.organization=defra
             -Dsonar.projectKey=DEFRA_water-abstraction-ui
             -Dsonar.javascript.lcov.reportPaths=**/coverage/lcov.info
+            -Dsonar.exclusions=test/regression/**

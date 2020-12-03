@@ -173,8 +173,13 @@ jobs:
       - name: Provision SQL data and start pm2
         run: |
           PGPASSWORD=water psql -U water -d water -a -f ./test/regression/shared-helpers/provision.sql
-          sh ./test/regression/shared-helpers/start.sh
-
+          pm2 start ecosystem.config.json
+          cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..
+          cd water-abstraction-service && pm2 start ecosystem.config.json && cd ..
+          cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json && cd ..
+          cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json && cd ..
+          cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
+          
       - name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@master
         with:

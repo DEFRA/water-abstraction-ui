@@ -1,10 +1,33 @@
 This regression pack is powered by [WebdriverIO](https://webdriver.io/).
 
-Running regression tests
+### Dependencies
+For the pack to run successfully, you will need:
+##### Services
+- Postgres 13.x onwards
+- Node 12.x
+- Redis 6.x 
+
+##### Drivers
+- msedgedriver
+- chrome-driver (`brew install --cask chromedriver`)
+
+##### Components
+- water-abstraction-service
+- water-abstraction-returns
+- water-abstraction-tactical-idm
+- water-abstraction-tactical-crm
+- water-abstraction-permit-repository
+
+
+
+
+### Usage
 The pack can be run from the root of this repository.
 ```
 npm run test:regression
 ```
+
+### Structure
 
 The pack uses the [Mocha framework](https://mochajs.org/).
 

@@ -198,6 +198,7 @@ jobs:
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           pm2 start ecosystem.config.json
+          pm2 logs --err
 
       - name: Run regression tests
         run: |

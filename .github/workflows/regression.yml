@@ -101,6 +101,7 @@ jobs:
         with:
           repository: defra/water-abstraction-service
           path: './water-abstraction-service'
+          ref: 'water-2944/exp'
 
       - name: Install water service dependencies
         run: |

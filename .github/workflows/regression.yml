@@ -54,18 +54,11 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      # Our projects use .nvmrc files to specify the node version to use. We can read and then output it as the result
-      # this step. Subsequent steps can then access the value
-      - name: Read Node version
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        # Give the step an ID to make it easier to refer to
-        id: nvm
-
       # Gets the version to use by referring to the previous step
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2-beta
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          node-version: '12'
 
       - name: Install Google Chrome
         run: |
@@ -115,6 +108,7 @@ jobs:
         with:
           repository: defra/water-abstraction-tactical-crm
           path: './water-abstraction-tactical-crm'
+          ref: 'water-2944/exp'
 
       - name: Install CRM dependencies
         run: |

@@ -3,7 +3,7 @@ const { loginAsUser } = require('./helpers/loginAsUser');
 
 describe('Login page', function () {
   before(async () => {
-    await loginAsUser(browser);
+    await loginAsUser();
   });
 
   it('has the title of the service', async () => {

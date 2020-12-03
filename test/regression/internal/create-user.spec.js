@@ -4,7 +4,7 @@ const uuid = require('uuid/v4');
 
 describe('creating an internal user:', function () {
   before(async () => {
-    await loginAsSuperUser(browser);
+    await loginAsSuperUser();
   });
 
   describe('navigates to the new internal user form:', () => {

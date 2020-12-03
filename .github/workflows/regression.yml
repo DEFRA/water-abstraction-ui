@@ -54,6 +54,19 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
+      # Our projects use .nvmrc files to specify the node version to use. We can read and then output it as the result
+      # this step. Subsequent steps can then access the value
+      - name: Read Node version
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        # Give the step an ID to make it easier to refer to
+        id: nvm
+
+      # Gets the version to use by referring to the previous step
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
       - name: Install Google Chrome
         run: |
           wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -61,6 +74,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install google-chrome-stable
           sudo apt-get install chromium-chromedriver
+          sudo npm i pm2 -g
 
       - name: Install msedgedriver
         run: |
@@ -81,19 +95,6 @@ jobs:
           PGPASSWORD=water psql -U water -tc "SELECT 'CREATE DATABASE water' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'water')"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water AUTHORIZATION water;"
 
-      # Our projects use .nvmrc files to specify the node version to use. We can read and then output it as the result
-      # this step. Subsequent steps can then access the value
-      - name: Read Node version
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        # Give the step an ID to make it easier to refer to
-        id: nvm
-
-      # Gets the version to use by referring to the previous step
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
-
 
       - name: Install water service
         uses: actions/checkout@v2
@@ -105,11 +106,8 @@ jobs:
         run: |
           cd ./water-abstraction-service
           npm ci
-
-      - name: Run database migrations
-        run: |
-          cd ./water-abstraction-service
           npm run migrate
+          pm2 start ecosystem.config.json;
 
       - name: Install CRM
         uses: actions/checkout@v2
@@ -118,12 +116,18 @@ jobs:
           path: './water-abstraction-tactical-crm'
 
       - name: Install CRM dependencies
-        run: cd ./water-abstraction-tactical-crm && npm ci && npm run migrate && cd ../
+        run: |
+          cd ./water-abstraction-tactical-crm
+          npm ci
+          npm run migrate
+          pm2 start ecosystem.config.json;
 
       # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install UI dependencies
-        run: npm ci
+        run: |
+          npm ci
+          pm2 start ecosystem.config.json;
 
 
       - name: Install IDM
@@ -133,7 +137,11 @@ jobs:
           path: './water-abstraction-tactical-idm'
 
       - name: Install IDM dependencies
-        run: cd ./water-abstraction-tactical-idm && npm ci && npm run migrate && cd ../
+        run: |
+          cd ./water-abstraction-tactical-idm
+          npm ci
+          npm run migrate
+          pm2 start ecosystem.config.json;
 
       - name: Install returns service
         uses: actions/checkout@v2
@@ -142,7 +150,11 @@ jobs:
           path: './water-abstraction-returns'
 
       - name: Install returns service dependencies
-        run: cd ./water-abstraction-returns && npm ci && npm run migrate && cd ../
+        run: |
+          cd ./water-abstraction-returns
+          npm ci
+          npm run migrate
+          pm2 start ecosystem.config.json;
 
       - name: Install permit repo
         uses: actions/checkout@v2
@@ -151,7 +163,11 @@ jobs:
           path: './water-abstraction-permit-repository'
 
       - name: Install permit repo dependencies
-        run: cd ./water-abstraction-permit-repository && npm ci && npm run migrate && cd ../
+        run: |
+          cd ./water-abstraction-permit-repository
+          npm ci
+          npm run migrate
+          pm2 start ecosystem.config.json;
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change

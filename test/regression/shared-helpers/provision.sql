@@ -5,4 +5,4 @@ VALUES (505050, 'regression.tests@defra.gov.uk', '$2b$10$YJrZWaJ3dDyamlr6WNxVpuf
 ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO idm.user_groups(user_group_id, user_id, group_id, date_created, date_updated)
-VALUES (gen_random_uuid (), 505050, SELECT(group_id) FROM idm.groups WHERE group = 'super' LIMIT 1, now(), now())
+VALUES (gen_random_uuid (), 505050, (SELECT group_id FROM idm.groups WHERE idm.groups."group" = 'super' LIMIT 1), now(), now());

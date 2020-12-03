@@ -1,20 +1,20 @@
 /* eslint-disable no-undef */
 
 const loginAsSuperUser = async (instanceOfBrowser) => {
-  await browser.url('http://localhost:8008/signin');
+  const loginPage = await instanceOfBrowser.url('http://localhost:8008/signin');
 
-  let emailField = await $('#email');
+  let emailField = await loginPage.$('#email');
   await emailField.setValue('regression.tests@defra.gov.uk');
 
-  let passwordField = await $('#password');
+  let passwordField = await loginPage.$('#password');
   await passwordField.setValue('regression.tests#100');
 
-  let SignInButton = await $('button[class="govuk-button govuk-button--start"]');
+  let SignInButton = await loginPage.$('button[class="govuk-button govuk-button--start"]');
   await SignInButton.click();
 
-  await $('#navbar-notifications').isDisplayed;
+  await loginPage.$('#navbar-notifications').isDisplayed;
 
-  return browser;
+  return instanceOfBrowser;
 };
 
 exports.loginAsSuperUser = loginAsSuperUser;

@@ -176,9 +176,15 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
 
-      - name: Provision SQL data
+      - name: Provision SQL data and start pm2
         run: |
           PGPASSWORD=water psql -U water -d water -a -f ./test/regression/shared-helpers/provision.sql
+          pm2 start all
+
+      - name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
 
       - name: Run regression tests
         run: |

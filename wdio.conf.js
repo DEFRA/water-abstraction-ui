@@ -51,7 +51,9 @@ exports.config = {
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
     maxInstances: 5,
-    //
+    chromeOptions: {
+      args: ['--headless', '--disable-gpu']
+    },
     browserName: 'chrome',
     acceptInsecureCerts: true
     // If outputDir is provided WebdriverIO can capture driver session logs

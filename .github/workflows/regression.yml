@@ -99,9 +99,8 @@ jobs:
       - name: Install water service dependencies
         run: |
           cd ./water-abstraction-service
-          npm ci
+          npm i
           npm run migrate
-          pm2 start ecosystem.config.json;
 
       - name: Install CRM
         uses: actions/checkout@v2
@@ -113,16 +112,14 @@ jobs:
       - name: Install CRM dependencies
         run: |
           cd ./water-abstraction-tactical-crm
-          npm ci
+          npm i
           npm run migrate
-          pm2 start ecosystem.config.json;
 
       # Performs a clean installation of all dependencies in the `package.json` file
       # For more information, see https://docs.npmjs.com/cli/ci.html
       - name: Install UI dependencies
         run: |
-          npm ci
-          pm2 start ecosystem.config.json;
+          npm i
 
 
       - name: Install IDM
@@ -134,9 +131,8 @@ jobs:
       - name: Install IDM dependencies
         run: |
           cd ./water-abstraction-tactical-idm
-          npm ci
+          npm i
           npm run migrate
-          pm2 start ecosystem.config.json;
 
       - name: Install returns service
         uses: actions/checkout@v2
@@ -147,9 +143,8 @@ jobs:
       - name: Install returns service dependencies
         run: |
           cd ./water-abstraction-returns
-          npm ci
+          npm i
           npm run migrate
-          pm2 start ecosystem.config.json;
 
       - name: Install permit repo
         uses: actions/checkout@v2
@@ -160,9 +155,8 @@ jobs:
       - name: Install permit repo dependencies
         run: |
           cd ./water-abstraction-permit-repository
-          npm ci
+          npm i
           npm run migrate
-          pm2 start ecosystem.config.json;
 
       # Speeds up workflows by reading the node modules from cache. Obviously you need to run it at least once, and the
       # cache will be updated should the package-lock.json file change
@@ -179,7 +173,7 @@ jobs:
       - name: Provision SQL data and start pm2
         run: |
           PGPASSWORD=water psql -U water -d water -a -f ./test/regression/shared-helpers/provision.sql
-          pm2 start all
+          sh ./test/regression/shared-helpers/start.sh
 
       - name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@master

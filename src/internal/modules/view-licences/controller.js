@@ -29,7 +29,8 @@ const getExpiredLicence = async (request, h) => {
     // internal licences to use the licence id instead of the document id
     showChargeVersions: false,
     returns: returns.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
-    pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`
+    pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`,
+    back: '/licences'
   };
 
   return h.view('nunjucks/view-licences/expired-licence', view);

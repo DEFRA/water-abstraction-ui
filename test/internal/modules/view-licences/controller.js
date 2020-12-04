@@ -86,5 +86,11 @@ experiment('internal view licences controller', () => {
       expect(view.returns[0].path).to.be.a.string();
       expect(view.returns[0].isEdit).to.be.a.boolean();
     });
+
+    test('sets the correct back link', async () => {
+      await controller.getExpiredLicence(request, h);
+      const [, view] = h.view.lastCall.args;
+      expect(view.back).to.equal('/licences');
+    });
   });
 });

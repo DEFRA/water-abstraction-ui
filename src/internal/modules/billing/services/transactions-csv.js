@@ -31,7 +31,7 @@ const getChargeElementData = trans => {
 };
 
 const getTransactionData = trans => ({
-  value: numberFormatter.penceToPound(trans.value, true),
+  value: trans.value ? numberFormatter.penceToPound(trans.value, true) : 'Error - not calculated',
   isDeMinimis: trans.isDeMinimis,
   isCredit: trans.isCredit,
   isCompensationCharge: trans.isCompensationCharge,

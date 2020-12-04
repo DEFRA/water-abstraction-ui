@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  Regression tests:
+  RegressionTests:
     runs-on: ubuntu-latest
     env:
       COOKIE_SECRET: somethingverysecrethere

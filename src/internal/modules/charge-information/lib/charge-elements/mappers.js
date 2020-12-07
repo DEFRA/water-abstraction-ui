@@ -1,6 +1,7 @@
 'use-strict';
 
 const { SOURCES, EIUC_SOURCE_OTHER } = require('./constants');
+const { isEmpty } = require('lodash');
 
 const abstraction = (formValues) => {
   const [startMonth, startDay] = (formValues.startDate).toString().split(/[- T]/g);
@@ -37,7 +38,16 @@ const source = formValues => ({
   eiucSource: formValues.source === SOURCES.tidal ? formValues.source : EIUC_SOURCE_OTHER
 });
 
+const quantities = formValues => {
+  const { authorisedAnnualQuantity, billableAnnualQuantity } = formValues;
+  return {
+    authorisedAnnualQuantity: parseFloat(authorisedAnnualQuantity),
+    billableAnnualQuantity: isEmpty(billableAnnualQuantity) ? null : parseFloat(billableAnnualQuantity)
+  };
+};
+
 exports.purpose = purpose;
 exports.time = time;
 exports.abstraction = abstraction;
 exports.source = source;
+exports.quantities = quantities;

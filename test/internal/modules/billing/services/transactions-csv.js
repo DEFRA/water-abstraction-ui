@@ -177,6 +177,14 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(transactionData.isDeMinimis).to.equal(transaction.isDeMinimis);
     });
 
+    test('handles a null transaction value', () => {
+      const transactionData = transactionsCSV._getTransactionData({
+        ...transaction,
+        value: null
+      });
+      expect(transactionData.value).to.equal('Error - not calculated');
+    });
+
     test('handles multiple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,

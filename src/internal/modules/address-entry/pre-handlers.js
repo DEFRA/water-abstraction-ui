@@ -1,5 +1,10 @@
+'use strict';
+
 const Boom = require('@hapi/boom');
+const Joi = require('@hapi/joi');
 const services = require('../../lib/connectors/services');
+const session = require('./lib/session');
+const postcodeValidator = require('./lib/postcode-validator');
 
 /**
  * Retrieves addresses for the specified postcode,
@@ -8,17 +13,27 @@ const services = require('../../lib/connectors/services');
  * @param {Promise<Array>}
  */
 const searchForAddressesByPostcode = async request => {
-  const { postcode } = request.payload || request.query;
+  const { error, value: postcode } = Joi.validate(request.query.postcode, postcodeValidator.postcodeSchema);
 
-  try {
-    const { data } = await services.water.addressSearch.getAddressSearchResults(postcode);
-    return data;
-  } catch (err) {
-    if (err.statusCode === 404) {
-      return Boom.notFound(`No addresses found for postcode ${postcode}`);
+  if (!error) {
+    try {
+      const { data } = await services.water.addressSearch.getAddressSearchResults(postcode);
+      return data;
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return Boom.notFound(`No addresses found for postcode ${postcode}`);
+      }
+      throw err;
     }
-    throw err;
   }
+  return null;
+};
+
+const getSessionData = request => {
+  const { key } = request.params;
+  const data = session.get(request, key);
+  return data || Boom.notFound(`Session data not found for ${key}`);
 };
 
 exports.searchForAddressesByPostcode = searchForAddressesByPostcode;
+exports.getSessionData = getSessionData;

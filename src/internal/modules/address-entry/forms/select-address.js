@@ -1,7 +1,13 @@
+'use strict';
+
 const { formFactory, fields } = require('shared/lib/forms');
 const { compact } = require('lodash');
 const titleCase = require('title-case');
 const Joi = require('@hapi/joi');
+const queryString = require('querystring');
+const routing = require('../lib/routing');
+
+const { COUNTRY_UK } = require('../lib/constants');
 
 const getAddressText = address => {
   const { addressLine1, addressLine2, addressLine3, addressLine4 } = address;
@@ -29,14 +35,15 @@ const getAddressChoices = addresses => {
  * an address
  *
  * @param {Object} request The Hapi request object
- * @param {String} uprn The selected address
  */
 const form = (request, uprn) => {
   const { csrfToken } = request.view;
   const { postcode } = request.query;
   const { addressSearchResults } = request.pre;
 
-  const f = formFactory('/address-entry/address/select');
+  const manualEntryLink = routing.getManualEntry(request, { country: COUNTRY_UK, postcode });
+
+  const f = formFactory(`${request.path}?${queryString.stringify({ postcode })}`);
 
   f.fields.push(fields.dropdown('uprn', {
     errors: {
@@ -53,7 +60,7 @@ const form = (request, uprn) => {
 
   f.fields.push(fields.link(null, {
     text: 'I cannot find the address in the list',
-    url: '/address-entry/manual-entry?country=United Kingdom'
+    url: manualEntryLink
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

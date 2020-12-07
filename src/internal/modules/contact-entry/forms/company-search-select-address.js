@@ -1,7 +1,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const { uniqBy } = require('lodash');
-const { getAddressText } = require('../../address-entry/lib/helpers');
+const { getAddressText } = require('../lib/helpers');
 
 const getAddressChoices = addresses => {
   const choices = uniqBy(addresses, entity => [entity.postcode].join()).map(record => {

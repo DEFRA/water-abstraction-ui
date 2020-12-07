@@ -1,54 +1,52 @@
+'use strict';
+
+const { omit } = require('lodash');
+
 const { ukPostcode, selectAddress, manualAddressEntry } = require('./forms');
 const forms = require('shared/lib/forms');
-const helpers = require('./lib/helpers');
-const { omit } = require('lodash');
-const queryString = require('querystring');
+const session = require('./lib/session');
+const routing = require('./lib/routing');
 
 const sessionForms = require('shared/lib/session-forms');
 
-const storeAddressAndRedirect = (request, h, address) => {
-  request.setNewAddress(address);
-  const redirectPath = helpers.getRedirectPath(request);
-  return h.redirect(redirectPath);
-};
-
-const getPostcode = async (request, h) => {
-  await helpers.saveReferenceData(request);
-
-  return h.view('nunjucks/address-entry/enter-uk-postcode', {
+const getDefaultView = request => {
+  const { sessionData: { caption, back } } = request.pre;
+  return {
     ...request.view,
-    ...helpers.getPageCaption(request),
-    pageTitle: 'Enter the UK postcode',
-    back: request.query.back,
-    form: sessionForms.get(request, ukPostcode.form(request))
-  });
+    back,
+    caption
+  };
 };
 
-const postPostcode = async (request, h) => {
-  const { postcode } = request.payload;
-  const form = forms.handleRequest(
+const getPostcode = async (request, h, form) => {
+  // Create and handle postcode form
+  const postcodeForm = forms.handleRequest(
     ukPostcode.form(request),
     request,
     ukPostcode.schema
   );
 
-  if (form.isValid) {
-    const queryTail = queryString.stringify({ postcode: postcode.toUpperCase() });
-    return h.redirect(`/address-entry/address/select?${queryTail}`);
+  // If valid postcode, select available addresses
+  if (postcodeForm.isValid) {
+    return h.view('nunjucks/address-entry/select-address', {
+      ...getDefaultView(request),
+      back: request.path,
+      pageTitle: 'Select the address',
+      form: sessionForms.get(request, selectAddress.form(request)),
+      ...forms.getValues(postcodeForm)
+    });
   }
-  return h.postRedirectGet(form, '/address-entry/postcode', helpers.getPostcodeUrlParams(request));
+
+  // Otherwise display postcode form
+  return h.view('nunjucks/address-entry/enter-uk-postcode', {
+    ...getDefaultView(request),
+    pageTitle: 'Enter the UK postcode',
+    form: postcodeForm
+  });
 };
 
-const getSelectAddress = (request, h) => h.view('nunjucks/address-entry/select-address', {
-  ...request.view,
-  ...helpers.getPageCaption(request),
-  pageTitle: 'Select the address',
-  back: helpers.getPostcodeUrl(request),
-  postcode: request.query.postcode,
-  form: sessionForms.get(request, selectAddress.form(request, helpers.getAddressUprn(request)))
-});
-
 const postSelectAddress = (request, h) => {
+  const { key } = request.params;
   const { postcode, uprn } = request.payload;
   const { addressSearchResults } = request.pre;
   const form = forms.handleRequest(
@@ -59,21 +57,23 @@ const postSelectAddress = (request, h) => {
 
   if (form.isValid) {
     const selectedAddress = addressSearchResults.find(address => address.uprn === parseInt(uprn));
-    return storeAddressAndRedirect(request, h, selectedAddress);
+    const { redirectPath } = session.merge(request, key, { data: selectedAddress });
+    return h.redirect(redirectPath);
   }
 
-  return h.postRedirectGet(form, '/address-entry/address/select', { postcode });
+  return h.postRedirectGet(form, `/address-entry/${key}/postcode`, { postcode });
 };
 
 const getManualAddressEntry = (request, h) => h.view('nunjucks/form', {
-  ...request.view,
-  ...helpers.getPageCaption(request),
+  ...getDefaultView(request),
   pageTitle: 'Enter the address',
-  back: helpers.getManualAddressEntryBackLink(request),
+  back: routing.getPostcode(request),
   form: sessionForms.get(request, manualAddressEntry.form(request, request.getNewAddress(false)))
 });
 
 const postManualAddressEntry = (request, h) => {
+  const { key } = request.params;
+
   const form = forms.handleRequest(
     manualAddressEntry.form(request, request.payload),
     request,
@@ -85,14 +85,14 @@ const postManualAddressEntry = (request, h) => {
       source: 'wrls',
       ...omit(forms.getValues(form), 'csrf_token')
     };
-    return storeAddressAndRedirect(request, h, data);
+
+    const { redirectPath } = session.merge(request, key, { data });
+    return h.redirect(redirectPath);
   }
   return h.postRedirectGet(form);
 };
 
 exports.getPostcode = getPostcode;
-exports.postPostcode = postPostcode;
-exports.getSelectAddress = getSelectAddress;
 exports.postSelectAddress = postSelectAddress;
 exports.getManualAddressEntry = getManualAddressEntry;
 exports.postManualAddressEntry = postManualAddressEntry;

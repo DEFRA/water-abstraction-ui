@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('@hapi/joi');
 
 // https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom#Validation

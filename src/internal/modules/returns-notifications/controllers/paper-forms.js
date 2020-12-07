@@ -183,7 +183,7 @@ const postRecipient = partialRight(controller.createPostHandler, recipientForm, 
 const getAcceptOneTimeAddress = (request, h) => {
   // Get address from address plugin and process action
   const { documentId } = request.params;
-  const action = actions.setOneTimeAddress(documentId, request.getNewAddress());
+  const action = actions.setOneTimeAddress(documentId, request.getNewAddress(documentId));
   controller.processAction(request, action);
 
   // Redirect to check answers page

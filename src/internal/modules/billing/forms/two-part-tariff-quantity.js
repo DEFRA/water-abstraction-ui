@@ -17,6 +17,7 @@ const getRadioChoices = authorisedAnnualQuantity => [{
   fields: [
     fields.text('customQuantity', {
       label: 'Billable quantity',
+      hint: 'Enter a number with no more than 6 decimal places. For example, 20.123456',
       type: 'number',
       controlClass: 'govuk-!-width-one-third',
       errors: {
@@ -74,7 +75,7 @@ const twoPartTariffQuantitySchema = billingVolume => {
     quantity: Joi.string().valid(['authorised', 'custom']).required(),
     customQuantity: Joi.when('quantity', {
       is: 'custom',
-      then: Joi.number().required().min(0).max(maxQuantity)
+      then: Joi.number().required().min(0).max(maxQuantity).precision(6)
     })
   };
 };

@@ -6,24 +6,28 @@ const { capitalize } = require('lodash');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
+const getErrors = key => {
+  const errors = { 'string.regex.base': {
+    message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
+  } };
+  if (key === 'authorised') {
+    const requiredAuthorisedQuantityError = {
+      message: `Enter an authorised quantity`
+    };
+    errors['any.required'] = requiredAuthorisedQuantityError;
+    errors['any.empty'] = requiredAuthorisedQuantityError;
+  };
+
+  return errors;
+};
+
 const getFormField = (key, data) => {
   const fieldName = `${key}AnnualQuantity`;
   return fields.text(fieldName, {
     controlClass: 'govuk-input govuk-input--width-10',
     label: `${capitalize(key)}${key === 'billable' ? ' (optional)' : ''}`,
-    type: 'number',
     suffix: 'megalitres per year',
-    errors: {
-      'any.required': {
-        message: `Enter an ${key} quantity`
-      },
-      'any.empty': {
-        message: `Enter an ${key} quantity`
-      },
-      'string.regex.base': {
-        message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
-      }
-    }
+    errors: getErrors(key)
   }, data[fieldName] || '');
 };
 

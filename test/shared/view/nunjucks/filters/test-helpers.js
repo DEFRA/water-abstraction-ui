@@ -4,7 +4,10 @@ const { formFactory, fields } = require('shared/lib/forms');
 const textField = fields.text('text_field', {
   label: 'A text field',
   hint: 'A hint',
-  controlClass: 'css-class'
+  controlClass: 'css-class',
+  attr: { data: 'test' },
+  suffix: 'some unit',
+  autoComplete: false
 }, 'value');
 
 const radioField = fields.radio('radio_field', {

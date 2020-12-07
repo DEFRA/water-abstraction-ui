@@ -43,7 +43,7 @@ const mapFormField = (field) => {
     },
     classes: field.options.controlClass,
     attributes: field.options.attr || {},
-    suffix: field.options.suffix,
+    suffix: { text: field.options.suffix },
     autocomplete: field.options.autoComplete
   };
 
